@@ -1,115 +1,354 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const MyApp());
+import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
+
+import 'client/client.dart';
+import 'client/matrix/matrix_client.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final client = MatrixClient();
+
+  await client.init();
+  runApp(MatrixExampleChat(
+    client: client,
+  ));
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MatrixExampleChat extends StatelessWidget {
+  final Client client;
+  const MatrixExampleChat({required this.client, Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
+      title: 'Matrix Example Chat',
+      builder: (context, child) => Provider<Client>(
+        create: (context) => client,
+        child: child,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: client.isLoggedIn() ? const RoomListPage() : const LoginPage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  _LoginPageState createState() => _LoginPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _LoginPageState extends State<LoginPage> {
+  final TextEditingController _homeserverTextField = TextEditingController(
+    text: 'matrix.org',
+  );
+  final TextEditingController _usernameTextField = TextEditingController();
+  final TextEditingController _passwordTextField = TextEditingController();
 
-  void _incrementCounter() {
+  bool _loading = false;
+
+  void _login() async {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      _loading = true;
     });
+
+    try {
+      final client = Provider.of<Client>(context, listen: false);
+      await client.login(LoginType.loginPassword, _usernameTextField.text,
+          _homeserverTextField.text.trim(),
+          password: _passwordTextField.text);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+      setState(() {
+        _loading = false;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
+      appBar: AppBar(title: const Text('Login')),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have clicked the button this many times:',
+          children: [
+            TextField(
+              controller: _homeserverTextField,
+              readOnly: _loading,
+              autocorrect: false,
+              decoration: const InputDecoration(
+                prefixText: 'https://',
+                border: OutlineInputBorder(),
+                labelText: 'Homeserver',
+              ),
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+            const SizedBox(height: 16),
+            TextField(
+              controller: _usernameTextField,
+              readOnly: _loading,
+              autocorrect: false,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Username',
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _passwordTextField,
+              readOnly: _loading,
+              autocorrect: false,
+              obscureText: true,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Password',
+              ),
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _loading ? null : _login,
+                child: _loading
+                    ? const LinearProgressIndicator()
+                    : const Text('Login'),
+              ),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
+
+class RoomListPage extends StatefulWidget {
+  const RoomListPage({Key? key}) : super(key: key);
+
+  @override
+  _RoomListPageState createState() => _RoomListPageState();
+}
+
+class _RoomListPageState extends State<RoomListPage> {
+  void _logout() async {
+    final client = Provider.of<Client>(context, listen: false);
+    await client.logout();
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => const LoginPage()),
+      (route) => false,
+    );
+  }
+
+  /*
+  void _join(Room room) async {
+    if (room.membership != Membership.join) {
+      await room.join();
+    }
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => RoomPage(room: room),
+      ),
+    );
+  }*/
+
+  @override
+  Widget build(BuildContext context) {
+    final client = Provider.of<Client>(context, listen: false);
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Chats'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: _logout,
+          ),
+        ],
+      ),
+      body: StreamBuilder(
+        stream: client.onSync.stream,
+        builder: (context, _) => ListView.builder(
+          itemCount: client.rooms.length,
+          itemBuilder: (context, i) => ListTile(
+            leading: CircleAvatar(foregroundImage: client.rooms[i].avatar),
+            title: Row(
+              children: [
+                Expanded(child: Text(client.rooms[i].displayName)),
+                if (client.rooms[i].notificationCount > 0)
+                  Material(
+                      borderRadius: BorderRadius.circular(99),
+                      color: Colors.red,
+                      child: Padding(
+                        padding: const EdgeInsets.all(2.0),
+                        child:
+                            Text(client.rooms[i].notificationCount.toString()),
+                      ))
+              ],
+            ),
+            subtitle: Text(
+              'No messages',
+              maxLines: 1,
+            ),
+            //onTap: () => _join(client.rooms[i]),
+          ),
+        ),
+      ),
+    );
+  }
+}
+/*
+class RoomPage extends StatefulWidget {
+  final Room room;
+  const RoomPage({required this.room, Key? key}) : super(key: key);
+
+  @override
+  _RoomPageState createState() => _RoomPageState();
+}
+
+class _RoomPageState extends State<RoomPage> {
+  late final Future<Timeline> _timelineFuture;
+  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
+  int _count = 0;
+
+  @override
+  void initState() {
+    _timelineFuture = widget.room.getTimeline(onChange: (i) {
+      print('on change! $i');
+      _listKey.currentState?.setState(() {});
+    }, onInsert: (i) {
+      print('on insert! $i');
+      _listKey.currentState?.insertItem(i);
+      _count++;
+    }, onRemove: (i) {
+      print('On remove $i');
+      _count--;
+      _listKey.currentState?.removeItem(i, (_, __) => const ListTile());
+    }, onUpdate: () {
+      print('On update');
+    });
+    super.initState();
+  }
+
+  final TextEditingController _sendController = TextEditingController();
+
+  void _send() {
+    widget.room.sendTextEvent(_sendController.text.trim());
+    _sendController.clear();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.room.displayname),
+      ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: FutureBuilder<Timeline>(
+                future: _timelineFuture,
+                builder: (context, snapshot) {
+                  final timeline = snapshot.data;
+                  if (timeline == null) {
+                    return const Center(
+                      child: CircularProgressIndicator.adaptive(),
+                    );
+                  }
+                  _count = timeline.events.length;
+                  return Column(
+                    children: [
+                      Center(
+                        child: TextButton(
+                            onPressed: timeline.requestHistory,
+                            child: const Text('Load more...')),
+                      ),
+                      const Divider(height: 1),
+                      Expanded(
+                        child: AnimatedList(
+                          key: _listKey,
+                          reverse: true,
+                          initialItemCount: timeline.events.length,
+                          itemBuilder: (context, i, animation) => timeline
+                                      .events[i].relationshipEventId !=
+                                  null
+                              ? Container()
+                              : ScaleTransition(
+                                  scale: animation,
+                                  child: Opacity(
+                                    opacity: timeline.events[i].status.isSent
+                                        ? 1
+                                        : 0.5,
+                                    child: ListTile(
+                                      leading: CircleAvatar(
+                                        foregroundImage: timeline.events[i]
+                                                    .sender.avatarUrl ==
+                                                null
+                                            ? null
+                                            : NetworkImage(timeline
+                                                .events[i].sender.avatarUrl!
+                                                .getThumbnail(
+                                                  widget.room.client,
+                                                  width: 56,
+                                                  height: 56,
+                                                )
+                                                .toString()),
+                                      ),
+                                      title: Row(
+                                        children: [
+                                          Expanded(
+                                            child: Text(timeline
+                                                .events[i].sender
+                                                .calcDisplayname()),
+                                          ),
+                                          Text(
+                                            timeline.events[i].originServerTs
+                                                .toIso8601String(),
+                                            style:
+                                                const TextStyle(fontSize: 10),
+                                          ),
+                                        ],
+                                      ),
+                                      subtitle: Text(timeline.events[i]
+                                          .getDisplayEvent(timeline)
+                                          .body),
+                                    ),
+                                  ),
+                                ),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
+            const Divider(height: 1),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
+                children: [
+                  Expanded(
+                      child: TextField(
+                    controller: _sendController,
+                    decoration: const InputDecoration(
+                      hintText: 'Send message',
+                    ),
+                  )),
+                  IconButton(
+                    icon: const Icon(Icons.send_outlined),
+                    onPressed: _send,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}*/
