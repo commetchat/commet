@@ -7,13 +7,18 @@ import 'package:provider/provider.dart';
 
 import 'client/client.dart';
 import 'client/matrix/matrix_client.dart';
+import 'client/simulated/simulated_client.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final clientManager = ClientManager();
   final client = MatrixClient();
 
+  final simulated = SimulatedClient();
+  simulated.login(LoginType.loginPassword, "", "");
+
   clientManager.addClient(client);
+  clientManager.addClient(simulated);
 
   await client.init();
   runApp(MatrixExampleChat(

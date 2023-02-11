@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 
@@ -80,12 +81,13 @@ class ClientManager {
     _updateRoomslist();
   }
 
-  void log(String s) {
+  void log(Object s) {
     print('Client Manager] $s');
   }
 
   bool isLoggedIn() {
-    return _clients.any((element) => element.isLoggedIn());
+    return _clients[0].isLoggedIn();
+    //return _clients.any((element) => element.isLoggedIn());
   }
 
   void _synced() {
@@ -101,24 +103,33 @@ class ClientManager {
   }
 
   void _updateRoomslist() {
+    var allRooms = List.empty(growable: true);
+
     for (var client in _clients) {
-      var rooms = client.rooms;
-      //Add rooms that dont exist in the list
-      for (var room in rooms) {
-        if (!_rooms.any((element) => element.identifier == room.identifier)) {
-          _rooms.add(room);
-        }
-      }
+      allRooms.addAll(client.rooms);
+    }
 
-      //Remove rooms that no longer exist in the list
-      for (var room in _rooms.where(
-          (element) => !rooms.any((r) => element.identifier == r.identifier))) {
-        _rooms.remove(room);
-      }
+    var addRooms = allRooms.where((room) => !_rooms.any((e) =>
+        e.runtimeType == room.runtimeType && e.identifier == room.identifier));
 
-      for (var room in _rooms) {
-        log(room.identifier);
-      }
+    log(addRooms);
+    for (var room in addRooms) {
+      _rooms.add(room);
+    }
+
+    var removeRooms = _rooms.where((room) => !allRooms.any((e) =>
+        (e.runtimeType == room.runtimeType &&
+            e.identifier == room.identifier)));
+
+    log(removeRooms);
+
+    for (var room in removeRooms) {
+      log(room.runtimeType);
+      _rooms.remove(room);
+    }
+
+    for (var room in _rooms) {
+      log(room.identifier);
     }
   }
 }
