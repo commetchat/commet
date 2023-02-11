@@ -98,9 +98,11 @@ class _RoomPageState extends State<RoomPage> {
                                     ),
                                   ],
                                 ),
-                                //subtitle: Text(timeline.events[i]
-                                //    .getDisplayEvent(timeline)
-                                //    .body),
+                                subtitle: timeline.events[i].body == null
+                                    ? null
+                                    : Text(i.toString() +
+                                        "] " +
+                                        timeline.events[i].body!),
                               ),
                             ),
                           ),

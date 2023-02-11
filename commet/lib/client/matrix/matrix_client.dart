@@ -37,8 +37,8 @@ class MatrixClient implements Client {
     onSync = StreamController<void>();
     onRoomListUpdated = StreamController<void>();
 
-    _client.onSync.stream
-        .listen((event) => {log("On Sync Happened?"), onSync.add(null)});
+    _client.onSync.stream.listen((event) =>
+        {log("On Sync Happened?"), onSync.add(null), _updateRoomslist()});
 
     log("Done!");
   }
@@ -48,9 +48,11 @@ class MatrixClient implements Client {
   }
 
   @override
-  Future<void> init() {
+  Future<void> init() async {
     log("Initialising client");
-    return _client.init();
+    var result = await _client.init();
+    _updateRoomslist();
+    return result;
   }
 
   @override

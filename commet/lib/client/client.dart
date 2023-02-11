@@ -80,6 +80,8 @@ class TimelineEvent {
   late TimelineEventStatus status;
   late Peer sender;
   late DateTime originServerTs;
+  // todo: make this better
+  late String? body;
 }
 
 abstract class Timeline {

@@ -60,6 +60,7 @@ class SimulatedRoom implements Room {
       e.type = EventType.message;
       e.originServerTs = DateTime.now();
       e.sender = p;
+      e.body = i.toString() + "] " + getRandomString(50);
       t.events.add(e);
     }
 

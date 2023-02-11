@@ -18,7 +18,7 @@ void main() async {
   simulated.login(LoginType.loginPassword, "", "");
 
   clientManager.addClient(client);
-  //clientManager.addClient(simulated);
+  clientManager.addClient(simulated);
 
   await client.init();
   runApp(MatrixExampleChat(

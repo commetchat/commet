@@ -23,6 +23,8 @@ class MatrixRoom implements Room {
 
   late matrix.Room _matrixRoom;
 
+  late Timeline _timeline;
+
   MatrixRoom(this.client, matrix.Room room, matrix.Client matrixClient) {
     identifier = room.id;
     _matrixRoom = room;
@@ -36,7 +38,16 @@ class MatrixRoom implements Room {
 
     displayName = room.getLocalizedDisplayname();
     notificationCount = room.notificationCount;
+    _matrixRoom.client.onSync.stream.listen((event) {
+      print("OnSync");
+    });
+
+    _matrixRoom.onUpdate.stream.listen((event) {
+      print("onUpdate");
+    });
   }
+
+  Function(int index)? onInsert;
 
   @override
   Future<Timeline> getTimeline(
@@ -46,54 +57,73 @@ class MatrixRoom implements Room {
       void Function()? onNewEvent,
       void Function()? onUpdate,
       String? eventContextId}) async {
-    return _matrixRoom
-        .getTimeline(
-            onChange: (val) => {onChange!(val)},
-            onRemove: (val) => {onRemove!(val)},
-            onInsert: (val) => {onInsert!(val)},
-            onNewEvent: () => {onNewEvent!()},
-            onUpdate: () => {onUpdate!()})
-        .then((value) => convertMatrixTimeline(value));
+    this.onInsert = onInsert;
+
+    var timeline = await _matrixRoom.getTimeline(
+        onChange: (val) => {onChange?.call(val), print("onChange")},
+        onRemove: (val) => {onRemove?.call(val), print("onRemove")},
+        onInsert: (val) => _insertMessage(val),
+        onNewEvent: () => {onNewEvent?.call(), print("onNewEvent")},
+        onUpdate: () => {onUpdate?.call(), print("onUpdate")});
+
+    _timeline = await convertMatrixTimeline(timeline);
+
+    return _timeline;
+  }
+
+  void _insertMessage(int index) async {
+    print("Inserting message at index: $index");
+    var timeline = await _matrixRoom.getTimeline();
+    var event = await convertEvent(timeline.events[index], timeline);
+
+    _timeline.events.insert(index, event);
+    onInsert?.call(index);
   }
 
   Future<Timeline> convertMatrixTimeline(matrix.Timeline timeline) async {
     Timeline t = MatrixTimeline();
-
     for (var event in timeline.events) {
-      TimelineEvent e = TimelineEvent();
-
-      e.eventId = event.eventId;
-      e.originServerTs = event.originServerTs;
-      event.status.isSent;
-      var user = await event.fetchSenderUser();
-      e.sender =
-          MatrixPeer(client, event.senderId, user!.calcDisplayname(), null);
-
-      switch (event.status) {
-        case matrix.EventStatus.removed:
-          e.status = TimelineEventStatus.removed;
-          break;
-        case matrix.EventStatus.error:
-          e.status = TimelineEventStatus.error;
-          break;
-        case matrix.EventStatus.sending:
-          e.status = TimelineEventStatus.sending;
-          break;
-        case matrix.EventStatus.sent:
-          e.status = TimelineEventStatus.sent;
-          break;
-        case matrix.EventStatus.synced:
-          e.status = TimelineEventStatus.synced;
-          break;
-        case matrix.EventStatus.roomState:
-          e.status = TimelineEventStatus.roomState;
-          break;
-      }
-
+      var e = await convertEvent(event, timeline);
       t.events.add(e);
     }
-
     return t;
+  }
+
+  Future<TimelineEvent> convertEvent(
+      matrix.Event event, matrix.Timeline timeline) async {
+    TimelineEvent e = TimelineEvent();
+
+    e.eventId = event.eventId;
+    e.originServerTs = event.originServerTs;
+    event.status.isSent;
+    var user = await event.fetchSenderUser();
+    e.sender =
+        MatrixPeer(client, event.senderId, user!.calcDisplayname(), null);
+
+    e.body = event.getDisplayEvent(timeline).body;
+
+    switch (event.status) {
+      case matrix.EventStatus.removed:
+        e.status = TimelineEventStatus.removed;
+        break;
+      case matrix.EventStatus.error:
+        e.status = TimelineEventStatus.error;
+        break;
+      case matrix.EventStatus.sending:
+        e.status = TimelineEventStatus.sending;
+        break;
+      case matrix.EventStatus.sent:
+        e.status = TimelineEventStatus.sent;
+        break;
+      case matrix.EventStatus.synced:
+        e.status = TimelineEventStatus.synced;
+        break;
+      case matrix.EventStatus.roomState:
+        e.status = TimelineEventStatus.roomState;
+        break;
+    }
+
+    return e;
   }
 
   @override
