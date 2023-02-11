@@ -21,10 +21,12 @@ class MatrixRoom implements Room {
 
   MatrixRoom(this.client, matrix.Room room, matrix.Client matrixClient) {
     identifier = room.id;
+
     if (room.avatar != null) {
-      avatar = NetworkImage(room.avatar!
+      var url = room.avatar!
           .getThumbnail(matrixClient, width: 56, height: 56)
-          .toString());
+          .toString();
+      avatar = NetworkImage(url);
     }
 
     displayName = room.getLocalizedDisplayname();

@@ -1,3 +1,5 @@
+import 'package:commet/screens/login_screen.dart';
+import 'package:commet/screens/room_list_screen.dart';
 import 'package:flutter/material.dart';
 
 import 'package:path_provider/path_provider.dart';
@@ -24,7 +26,7 @@ class MatrixExampleChat extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Matrix Example Chat',
+      title: 'Commet',
       builder: (context, child) => Provider<Client>(
         create: (context) => client,
         child: child,
@@ -34,173 +36,6 @@ class MatrixExampleChat extends StatelessWidget {
   }
 }
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
-
-  @override
-  _LoginPageState createState() => _LoginPageState();
-}
-
-class _LoginPageState extends State<LoginPage> {
-  final TextEditingController _homeserverTextField = TextEditingController(
-    text: 'matrix.org',
-  );
-  final TextEditingController _usernameTextField = TextEditingController();
-  final TextEditingController _passwordTextField = TextEditingController();
-
-  bool _loading = false;
-
-  void _login() async {
-    setState(() {
-      _loading = true;
-    });
-
-    try {
-      final client = Provider.of<Client>(context, listen: false);
-      await client.login(LoginType.loginPassword, _usernameTextField.text,
-          _homeserverTextField.text.trim(),
-          password: _passwordTextField.text);
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.toString()),
-        ),
-      );
-      setState(() {
-        _loading = false;
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _homeserverTextField,
-              readOnly: _loading,
-              autocorrect: false,
-              decoration: const InputDecoration(
-                prefixText: 'https://',
-                border: OutlineInputBorder(),
-                labelText: 'Homeserver',
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _usernameTextField,
-              readOnly: _loading,
-              autocorrect: false,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Username',
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _passwordTextField,
-              readOnly: _loading,
-              autocorrect: false,
-              obscureText: true,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Password',
-              ),
-            ),
-            const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _loading ? null : _login,
-                child: _loading
-                    ? const LinearProgressIndicator()
-                    : const Text('Login'),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class RoomListPage extends StatefulWidget {
-  const RoomListPage({Key? key}) : super(key: key);
-
-  @override
-  _RoomListPageState createState() => _RoomListPageState();
-}
-
-class _RoomListPageState extends State<RoomListPage> {
-  void _logout() async {
-    final client = Provider.of<Client>(context, listen: false);
-    await client.logout();
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const LoginPage()),
-      (route) => false,
-    );
-  }
-
-  /*
-  void _join(Room room) async {
-    if (room.membership != Membership.join) {
-      await room.join();
-    }
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => RoomPage(room: room),
-      ),
-    );
-  }*/
-
-  @override
-  Widget build(BuildContext context) {
-    final client = Provider.of<Client>(context, listen: false);
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Chats'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: _logout,
-          ),
-        ],
-      ),
-      body: StreamBuilder(
-        stream: client.onSync.stream,
-        builder: (context, _) => ListView.builder(
-          itemCount: client.rooms.length,
-          itemBuilder: (context, i) => ListTile(
-            leading: CircleAvatar(foregroundImage: client.rooms[i].avatar),
-            title: Row(
-              children: [
-                Expanded(child: Text(client.rooms[i].displayName)),
-                if (client.rooms[i].notificationCount > 0)
-                  Material(
-                      borderRadius: BorderRadius.circular(99),
-                      color: Colors.red,
-                      child: Padding(
-                        padding: const EdgeInsets.all(2.0),
-                        child:
-                            Text(client.rooms[i].notificationCount.toString()),
-                      ))
-              ],
-            ),
-            subtitle: Text(
-              'No messages',
-              maxLines: 1,
-            ),
-            //onTap: () => _join(client.rooms[i]),
-          ),
-        ),
-      ),
-    );
-  }
-}
 /*
 class RoomPage extends StatefulWidget {
   final Room room;
