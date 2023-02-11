@@ -25,7 +25,9 @@ class _LoginPageState extends State<LoginPage> {
     });
 
     try {
-      final client = Provider.of<Client>(context, listen: false);
+      final client =
+          Provider.of<ClientManager>(context, listen: false).clients[0];
+
       await client.login(LoginType.loginPassword, _usernameTextField.text,
           _homeserverTextField.text.trim(),
           password: _passwordTextField.text);

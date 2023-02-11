@@ -13,8 +13,8 @@ class RoomListPage extends StatefulWidget {
 
 class _RoomListPageState extends State<RoomListPage> {
   void _logout() async {
-    final client = Provider.of<Client>(context, listen: false);
-    await client.logout();
+    final client = Provider.of<ClientManager>(context, listen: false);
+    //await client.logout();
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(builder: (_) => const LoginPage()),
       (route) => false,
@@ -35,7 +35,7 @@ class _RoomListPageState extends State<RoomListPage> {
 
   @override
   Widget build(BuildContext context) {
-    final client = Provider.of<Client>(context, listen: false);
+    final client = Provider.of<ClientManager>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Chats'),

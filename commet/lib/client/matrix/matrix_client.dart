@@ -1,11 +1,8 @@
 import 'dart:async';
-
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:flutter/src/widgets/async.dart';
-
 import '../client.dart';
 import 'package:matrix/matrix.dart' as matrix;
-import 'package:path_provider/path_provider.dart';
 
 class MatrixClient implements Client {
   @override
@@ -18,6 +15,9 @@ class MatrixClient implements Client {
 
   @override
   late StreamController<void> onSync;
+
+  @override
+  late StreamController<void> onRoomListUpdated;
 
   MatrixClient() {
     log("Creating matrix client");
@@ -34,6 +34,7 @@ class MatrixClient implements Client {
     _rooms = List.empty(growable: true);
 
     onSync = StreamController<void>();
+    onRoomListUpdated = StreamController<void>();
 
     _client.onSync.stream
         .listen((event) => {log("On Sync Happened?"), onSync.add(null)});
@@ -99,6 +100,7 @@ class MatrixClient implements Client {
 
   void _updateRoomslist() {
     var rooms = _client.rooms;
+    bool updated = false;
     //Add rooms that dont exist in the list
     for (var room in rooms) {
       if (!_rooms.any((element) => element.identifier == room.id)) {
@@ -107,6 +109,7 @@ class MatrixClient implements Client {
           room,
           _client,
         ));
+        updated = true;
       }
     }
 
@@ -114,10 +117,13 @@ class MatrixClient implements Client {
     for (var room in _rooms
         .where((element) => !rooms.any((r) => element.identifier == r.id))) {
       _rooms.remove(room);
+      updated = true;
     }
 
     for (var room in _rooms) {
       log(room.identifier);
     }
+
+    if (updated) onRoomListUpdated.add(null);
   }
 }

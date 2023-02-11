@@ -10,24 +10,26 @@ import 'client/matrix/matrix_client.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  final clientManager = ClientManager();
   final client = MatrixClient();
+
+  clientManager.addClient(client);
 
   await client.init();
   runApp(MatrixExampleChat(
-    client: client,
+    client: clientManager,
   ));
 }
 
 class MatrixExampleChat extends StatelessWidget {
-  final Client client;
+  final ClientManager client;
   const MatrixExampleChat({required this.client, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Commet',
-      builder: (context, child) => Provider<Client>(
+      builder: (context, child) => Provider<ClientManager>(
         create: (context) => client,
         child: child,
       ),
