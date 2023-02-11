@@ -3,6 +3,7 @@ import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:flutter/src/widgets/async.dart';
 import '../client.dart';
 import 'package:matrix/matrix.dart' as matrix;
+import 'package:path_provider/path_provider.dart';
 
 class MatrixClient implements Client {
   @override
@@ -23,12 +24,12 @@ class MatrixClient implements Client {
     log("Creating matrix client");
     _client = matrix.Client(
       'Commet',
-      /*databaseBuilder: (_) async {
+      databaseBuilder: (_) async {
         final dir = await getApplicationSupportDirectory();
         final db = matrix.HiveCollectionsDatabase('matrix_commet.', dir.path);
         await db.open();
         return db;
-      },*/
+      },
     );
 
     _rooms = List.empty(growable: true);

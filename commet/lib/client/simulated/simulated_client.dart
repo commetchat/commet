@@ -57,11 +57,11 @@ class SimulatedClient implements Client {
   }
 
   void _updateRoomslist() {
-    _rooms.add(SimulatedRoom("Simulated Room"));
-    _rooms.add(SimulatedRoom("Simulated Room 2"));
-    _rooms.add(SimulatedRoom("Simulated Room 3"));
-    _rooms.add(SimulatedRoom("Simulated Room 4"));
-    _rooms.add(SimulatedRoom("Simulated Room 5"));
+    _rooms.add(SimulatedRoom("Simulated Room", this));
+    _rooms.add(SimulatedRoom("Simulated Room 2", this));
+    _rooms.add(SimulatedRoom("Simulated Room 3", this));
+    _rooms.add(SimulatedRoom("Simulated Room 4", this));
+    _rooms.add(SimulatedRoom("Simulated Room 5", this));
 
     onRoomListUpdated.add(null);
   }

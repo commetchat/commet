@@ -1,4 +1,5 @@
 import 'package:commet/client/client.dart';
+import 'package:commet/screens/room_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -21,17 +22,16 @@ class _RoomListPageState extends State<RoomListPage> {
     );
   }
 
-  /*
   void _join(Room room) async {
-    if (room.membership != Membership.join) {
-      await room.join();
-    }
+    //if (room.membership != Membership.join) {
+    //  await room.join();
+    //}
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => RoomPage(room: room),
       ),
     );
-  }*/
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +70,7 @@ class _RoomListPageState extends State<RoomListPage> {
               'No messages',
               maxLines: 1,
             ),
-            //onTap: () => _join(client.rooms[i]),
+            onTap: () => _join(client.rooms[i]),
           ),
         ),
       ),
