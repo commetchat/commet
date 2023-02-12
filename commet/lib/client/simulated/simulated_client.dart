@@ -1,9 +1,13 @@
 import 'dart:async';
 import 'package:commet/client/simulated/simulated_room.dart';
+import 'package:commet/client/simulated/simulated_space.dart';
 import '../client.dart';
 
 class SimulatedClient implements Client {
   late List<Room> _rooms;
+
+  @override
+  List<Space> get spaces => _spaces;
 
   @override
   List<Room> get rooms => _rooms;
@@ -13,6 +17,8 @@ class SimulatedClient implements Client {
 
   @override
   late StreamController<void> onRoomListUpdated;
+
+  late final List<Space> _spaces = List.empty(growable: true);
 
   bool _isLogged = false;
 
@@ -54,6 +60,7 @@ class SimulatedClient implements Client {
 
   void _postLoginSuccess() {
     _updateRoomslist();
+    _updateSpacesList();
   }
 
   void _updateRoomslist() {
@@ -64,5 +71,11 @@ class SimulatedClient implements Client {
     _rooms.add(SimulatedRoom("Simulated Room 5", this));
 
     onRoomListUpdated.add(null);
+  }
+
+  void _updateSpacesList() {
+    _spaces.add((SimulatedSpace("Simulated Space 1", this)));
+    _spaces.add((SimulatedSpace("Simulated Space 2", this)));
+    _spaces.add((SimulatedSpace("Simulated Space 3", this)));
   }
 }

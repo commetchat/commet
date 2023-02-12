@@ -119,6 +119,18 @@ abstract class Room {
       String? eventContextId});
 }
 
+abstract class Space {
+  late String identifier;
+  late Client client;
+  late ImageProvider? avatar;
+  late List<Room> rooms;
+
+  late String displayName;
+  int notificationCount = 0;
+
+  Space(this.identifier, this.client);
+}
+
 abstract class Client {
   Future<void> init();
 
@@ -130,27 +142,30 @@ abstract class Client {
       LoginType type, String userIdentifier, String server,
       {String? password, String? token});
 
-  late List<Room> _rooms;
+  late final List<Room> _rooms = List.empty(growable: true);
+  late final List<Space> _spaces = List.empty(growable: true);
 
   List<Room> get rooms => _rooms;
+  List<Space> get spaces => _spaces;
 
   late StreamController<void> onSync;
   late StreamController<void> onRoomListUpdated;
 }
 
 class ClientManager {
-  late List<Client> _clients;
+  late final List<Client> _clients = List.empty(growable: true);
   List<Client> get clients => _clients;
 
-  late List<Room> _rooms;
+  late final List<Room> _rooms = List.empty(growable: true);
   List<Room> get rooms => _rooms;
+
+  late final List<Space> _spaces = List.empty(growable: true);
+  List<Space> get spaces => _spaces;
 
   late StreamController<void> onSync;
   late StreamController<void> onRoomListUpdated;
 
   ClientManager() {
-    _clients = List.empty(growable: true);
-    _rooms = List.empty(growable: true);
     onSync = StreamController<void>();
     onRoomListUpdated = StreamController<void>();
   }
@@ -161,6 +176,7 @@ class ClientManager {
     client.onSync.stream.listen((_) => _synced());
     client.onRoomListUpdated.stream.listen((_) => _roomListUpdated());
 
+    _updateSpacesList();
     _updateRoomslist();
   }
 
@@ -176,6 +192,7 @@ class ClientManager {
   void _synced() {
     log("Syncing");
     _updateRoomslist();
+    _updateSpacesList();
     onSync.add(null);
   }
 
@@ -213,6 +230,30 @@ class ClientManager {
 
     for (var room in _rooms) {
       log(room.identifier);
+    }
+  }
+
+  void _updateSpacesList() {
+    var allSpaces = List.empty(growable: true);
+
+    for (var client in _clients) {
+      allSpaces.addAll(client.spaces);
+    }
+
+    var addSpaces = allSpaces.where((space) => !_spaces.any((e) =>
+        e.runtimeType == space.runtimeType &&
+        e.identifier == space.identifier));
+
+    var removeSpaces = _spaces.where((space) => !allSpaces.any((e) =>
+        e.runtimeType == space.runtimeType &&
+        e.identifier == space.identifier));
+
+    for (var space in addSpaces) {
+      _spaces.add(space);
+    }
+
+    for (var space in removeSpaces) {
+      _spaces.remove(space);
     }
   }
 }

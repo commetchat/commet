@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 
-import '../widgets/avatar.dart';
+import '../ui/atoms/avatar.dart';
 import '../widgets/room.dart';
 
 class Navigation extends StatelessWidget {

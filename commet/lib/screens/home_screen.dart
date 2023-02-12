@@ -1,5 +1,5 @@
- import 'package:commet/screens/navigation.dart';
-import 'package:commet/widgets/avatar.dart';
+import 'package:commet/screens/navigation.dart';
+import 'package:commet/ui/atoms/avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';

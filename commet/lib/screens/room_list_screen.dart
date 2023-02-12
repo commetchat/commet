@@ -1,5 +1,7 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/screens/room_screen.dart';
+import 'package:commet/ui/molecules/space_selector.dart';
+import 'package:commet/ui/organisms/space_navigator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -37,43 +39,15 @@ class _RoomListPageState extends State<RoomListPage> {
   Widget build(BuildContext context) {
     final client = Provider.of<ClientManager>(context, listen: false);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Chats'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: _logout,
-          ),
-        ],
-      ),
-      body: StreamBuilder(
-        stream: client.onSync.stream,
-        builder: (context, _) => ListView.builder(
-          itemCount: client.rooms.length,
-          itemBuilder: (context, i) => ListTile(
-            leading: CircleAvatar(foregroundImage: client.rooms[i].avatar),
-            title: Row(
-              children: [
-                Expanded(child: Text(client.rooms[i].displayName)),
-                if (client.rooms[i].notificationCount > 0)
-                  Material(
-                      borderRadius: BorderRadius.circular(99),
-                      color: Colors.red,
-                      child: Padding(
-                        padding: const EdgeInsets.all(2.0),
-                        child:
-                            Text(client.rooms[i].notificationCount.toString()),
-                      ))
-              ],
+        appBar: AppBar(
+          title: const Text('Chats'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.logout),
+              onPressed: _logout,
             ),
-            subtitle: Text(
-              'No messages',
-              maxLines: 1,
-            ),
-            onTap: () => _join(client.rooms[i]),
-          ),
+          ],
         ),
-      ),
-    );
+        body: Row(children: [SpaceNavigator(client.spaces)]));
   }
 }
