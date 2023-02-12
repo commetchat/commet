@@ -1,6 +1,9 @@
+import 'package:commet/widgets/custom_scroll.dart';
+import 'package:commet/widgets/custom_scroll_bar.dart';
 import 'package:flutter/material.dart';
 
 import '../client/client.dart';
+import '../widgets/message.dart';
 
 class RoomPage extends StatefulWidget {
   final Room room;
@@ -14,6 +17,7 @@ class _RoomPageState extends State<RoomPage> {
   late final Future<Timeline> _timelineFuture;
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
   int _count = 0;
+  late ScrollController _scrollController;
 
   @override
   void initState() {
@@ -31,6 +35,8 @@ class _RoomPageState extends State<RoomPage> {
     }, onUpdate: () {
       print('On update');
     });
+
+    _scrollController = ScrollController();
     super.initState();
   }
 
@@ -70,44 +76,27 @@ class _RoomPageState extends State<RoomPage> {
                       // ),
                       const Divider(height: 1),
                       Expanded(
-                        child: AnimatedList(
-                          key: _listKey,
-                          reverse: true,
-                          initialItemCount: timeline.events.length,
-                          itemBuilder: (context, i, animation) =>
-                              ScaleTransition(
-                            scale: animation,
-                            child: Opacity(
-                              opacity:
-                                  timeline.events[i].status.isSent ? 1 : 0.5,
-                              child: ListTile(
-                                leading: CircleAvatar(
-                                  foregroundImage:
-                                      timeline.events[i].sender.avatar,
-                                ),
-                                title: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Text(timeline
-                                          .events[i].sender.displayName),
-                                    ),
-                                    Text(
-                                      timeline.events[i].originServerTs
-                                          .toIso8601String(),
-                                      style: const TextStyle(fontSize: 10),
-                                    ),
-                                  ],
-                                ),
-                                subtitle: timeline.events[i].body == null
-                                    ? null
-                                    : Text(i.toString() +
-                                        "] " +
-                                        timeline.events[i].body!),
-                              ),
-                            ),
+                        child: WebSmoothScroll(
+                          controller: _scrollController,
+                          animationDuration: 200,
+                          child: AnimatedList(
+                            key: _listKey,
+                            physics: const NeverScrollableScrollPhysics(),
+                            controller: _scrollController,
+                            reverse: true,
+                            initialItemCount: timeline.events.length,
+                            itemBuilder: (context, i, animation) =>
+                                ScaleTransition(
+                                    scale: animation,
+                                    child: Message(timeline.events[i])),
                           ),
                         ),
                       ),
+                      Container(
+                        alignment: Alignment.bottomRight,
+                        child: CustomScrollbar(
+                            height: 110, scrollController: _scrollController),
+                      )
                     ],
                   );
                 },
