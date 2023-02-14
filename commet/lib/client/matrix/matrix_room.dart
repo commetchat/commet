@@ -132,4 +132,15 @@ class MatrixRoom implements Room {
     // TODO: implement sendMessage
     throw UnimplementedError();
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! Room) return false;
+
+    return identifier == other.identifier;
+  }
+
+  @override
+  int get hashCode => identifier.hashCode;
 }

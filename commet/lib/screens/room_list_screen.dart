@@ -1,4 +1,5 @@
 import 'package:commet/client/client.dart';
+import 'package:commet/client/client_manager.dart';
 import 'package:commet/screens/room_screen.dart';
 import 'package:commet/ui/molecules/space_selector.dart';
 import 'package:commet/ui/organisms/space_navigator.dart';

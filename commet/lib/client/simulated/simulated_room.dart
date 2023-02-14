@@ -1,11 +1,9 @@
 import 'dart:math';
 
+import 'package:commet/client/client.dart';
 import 'package:commet/client/simulated/simulated_peer.dart';
 import 'package:commet/client/simulated/simulated_timeline.dart';
 import 'package:flutter/painting.dart';
-
-import '../client.dart';
-import 'package:matrix/matrix.dart' as matrix;
 
 class SimulatedRoom implements Room {
   @override

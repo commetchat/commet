@@ -1,27 +1,22 @@
 import 'dart:async';
-import 'package:commet/client/matrix/matrix_room.dart';
-import 'package:commet/client/matrix/matrix_space.dart';
-import 'package:flutter/src/widgets/async.dart';
-import '../client.dart';
+
+import 'package:commet/client/client.dart';
+import 'package:commet/utils/union.dart';
 import 'package:matrix/matrix.dart' as matrix;
 import 'package:path_provider/path_provider.dart';
 
+import 'matrix_room.dart';
+import 'matrix_space.dart';
+
 class MatrixClient implements Client {
   @override
-  List<Space> get spaces => _spaces;
+  late StreamController<void> onSync = StreamController.broadcast();
 
   @override
-  List<Room> get rooms => _rooms;
+  Union<Room> rooms = Union<Room>();
 
   @override
-  late StreamController<void> onSync;
-
-  @override
-  late StreamController<void> onRoomListUpdated;
-
-  late final List<Room> _rooms = List.empty(growable: true);
-
-  late final List<Space> _spaces = List.empty(growable: true);
+  Union<Space> spaces = Union<Space>();
 
   late matrix.Client _client;
 
@@ -36,9 +31,6 @@ class MatrixClient implements Client {
         return db;
       },
     );
-
-    onSync = StreamController<void>();
-    onRoomListUpdated = StreamController<void>();
 
     _client.onSync.stream.listen((event) => {
           log("On Sync Happened?"),
@@ -110,62 +102,26 @@ class MatrixClient implements Client {
   }
 
   void _updateRoomslist() {
-    var rooms = _client.rooms.where((element) => !element.isSpace);
+    var all_rooms = _client.rooms.where((element) => !element.isSpace);
+    List<Room> new_rooms = List.empty(growable: true);
 
-    bool updated = false;
-    //Add rooms that dont exist in the list
-    for (var room in rooms) {
-      if (!_rooms.any((element) => element.identifier == room.id)) {
-        _rooms.add(MatrixRoom(
-          this,
-          room,
-          _client,
-        ));
-        updated = true;
-      }
+    for (var room in all_rooms) {
+      var r = MatrixRoom(this, room, _client);
+      new_rooms.add(r);
     }
 
-    //Remove rooms that no longer exist in the list
-    for (var room in _rooms
-        .where((element) => !rooms.any((r) => element.identifier == r.id))) {
-      _rooms.remove(room);
-      updated = true;
-    }
-
-    for (var room in _rooms) {
-      log(room.identifier);
-    }
-
-    if (updated) onRoomListUpdated.add(null);
+    rooms.addItems(new_rooms);
   }
 
   void _updateSpacesList() {
     var rooms = _client.rooms.where((element) => element.isSpace);
+    List<Space> new_spaces = List.empty(growable: true);
 
-    bool updated = false;
-    //Add rooms that dont exist in the list
     for (var room in rooms) {
-      if (!_spaces.any((element) => element.identifier == room.id)) {
-        _spaces.add(MatrixSpace(
-          this,
-          room,
-          _client,
-        ));
-        updated = true;
-      }
+      var r = MatrixSpace(this, room, _client);
+      new_spaces.add(r);
     }
 
-    //Remove rooms that no longer exist in the list
-    for (var room in _spaces
-        .where((element) => !rooms.any((r) => element.identifier == r.id))) {
-      _spaces.remove(room);
-      updated = true;
-    }
-
-    for (var room in _spaces) {
-      log(room.identifier);
-    }
-
-    if (updated) onRoomListUpdated.add(null);
+    spaces.addItems(new_spaces);
   }
 }

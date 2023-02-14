@@ -7,10 +7,11 @@ import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:provider/provider.dart';
 
 import '../../client/client.dart';
+import '../../utils/union.dart';
 
 class SpaceNavigator extends StatefulWidget {
   SpaceNavigator(this.spaces, {super.key});
-  List<Space> spaces;
+  Union<Space> spaces;
   final double width = 70;
 
   @override
@@ -35,7 +36,7 @@ class _SpaceNavigatorState extends State<SpaceNavigator> {
           },
         ),
       ),
-      SpaceViewer(widget.spaces[selectedIndex])
+      SpaceViewer(widget.spaces.getItems()[selectedIndex])
     ]);
   }
 }

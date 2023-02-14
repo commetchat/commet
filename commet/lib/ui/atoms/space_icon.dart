@@ -18,6 +18,14 @@ class _SpaceIconState extends State<SpaceIcon> {
   BorderRadiusGeometry _borderRadius = BorderRadius.circular(20);
 
   @override
+  void initState() {
+    widget.space.onUpdate.stream.listen((event) {
+      print("Space State Updated");
+      setState(() {});
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SizedBox(
       child: AspectRatio(

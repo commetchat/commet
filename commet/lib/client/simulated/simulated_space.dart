@@ -1,11 +1,9 @@
+import 'dart:async';
 import 'dart:math';
 
-import 'package:commet/client/simulated/simulated_peer.dart';
-import 'package:commet/client/simulated/simulated_timeline.dart';
+import 'package:commet/client/client.dart';
+import 'package:commet/utils/union.dart';
 import 'package:flutter/painting.dart';
-
-import '../client.dart';
-import 'package:matrix/matrix.dart' as matrix;
 
 class SimulatedSpace implements Space {
   @override
@@ -24,12 +22,26 @@ class SimulatedSpace implements Space {
   int notificationCount = 0;
 
   @override
-  List<Room> rooms = List.empty(growable: true);
+  StreamController<void> onUpdate = StreamController.broadcast();
+
+  @override
+  Union<Room> rooms = Union();
 
   SimulatedSpace(this.displayName, this.client) {
     identifier = getRandomString(20);
     notificationCount = 1;
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! Space) return false;
+
+    return identifier == other.identifier;
+  }
+
+  @override
+  int get hashCode => identifier.hashCode;
 
   static const _chars =
       'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';

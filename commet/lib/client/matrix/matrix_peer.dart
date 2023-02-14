@@ -1,5 +1,5 @@
 import 'package:commet/client/client.dart';
-import 'package:flutter/src/painting/image_provider.dart';
+import 'package:flutter/material.dart';
 
 class MatrixPeer implements Peer {
   @override
