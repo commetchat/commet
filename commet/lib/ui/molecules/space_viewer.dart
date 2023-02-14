@@ -14,7 +14,7 @@ class SpaceViewer extends StatefulWidget {
 
 class _SpaceViewerState extends State<SpaceViewer>
     with TickerProviderStateMixin {
-  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
+  GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
   int _count = 0;
   late List<Room> _rooms;
 
@@ -36,7 +36,8 @@ class _SpaceViewerState extends State<SpaceViewer>
     _rooms = widget.space.rooms.getItems(onChange: (i) {
       _listKey.currentState?.setState(() {});
     }, onInsert: (i) {
-      _listKey.currentState?.insertItem(i);
+      _listKey.currentState
+          ?.insertItem(i, duration: Duration(milliseconds: 300));
       _count++;
     }, onRemove: (i) {
       _count--;
@@ -48,29 +49,22 @@ class _SpaceViewerState extends State<SpaceViewer>
     super.initState();
   }
 
-  // Surely theres a better way to do this right?
   @override
   void didUpdateWidget(covariant SpaceViewer oldWidget) {
-    final length = _rooms.length;
-    for (int i = length - 1; i >= 0; i--) {
-      _listKey.currentState?.removeItem(i, (_, __) => const ListTile());
-    }
+    _listKey = GlobalKey();
 
     _rooms = widget.space.rooms.getItems(onChange: (i) {
       _listKey.currentState?.setState(() {});
     }, onInsert: (i) {
-      _listKey.currentState?.insertItem(i);
+      _listKey.currentState
+          ?.insertItem(i, duration: Duration(milliseconds: 300));
       _count++;
     }, onRemove: (i) {
       _count--;
       _listKey.currentState?.removeItem(i, (_, __) => const ListTile());
     });
 
-    _listKey.currentState?.setState(() {});
-
-    for (int i = 0; i < _rooms.length; i++) {
-      _listKey.currentState?.insertItem(i);
-    }
+    _count = _rooms.length;
   }
 
   @override
@@ -90,8 +84,9 @@ class _SpaceViewerState extends State<SpaceViewer>
               child: AnimatedList(
                 key: _listKey,
                 initialItemCount: _count,
-                itemBuilder: (context, i, animation) => ScaleTransition(
-                  scale: animation,
+                itemBuilder: (context, i, animation) => SlideTransition(
+                  position: Tween<Offset>(begin: Offset(1, 0), end: Offset.zero)
+                      .animate(animation),
                   child: Text(_rooms[i].displayName),
                 ),
               ),
