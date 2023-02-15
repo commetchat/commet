@@ -15,6 +15,8 @@ abstract class Room {
 
   Room(this.identifier, this.client);
 
+  late Key key;
+
   Future<Timeline> getTimeline(
       {void Function(int index)? onChange,
       void Function(int index)? onRemove,

@@ -1,5 +1,6 @@
 import 'package:commet/client/matrix/matrix_peer.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 
 import '../client.dart';
@@ -20,6 +21,9 @@ class MatrixRoom implements Room {
 
   @override
   int notificationCount = 0;
+
+  @override
+  Key key = UniqueKey();
 
   late matrix.Room _matrixRoom;
 

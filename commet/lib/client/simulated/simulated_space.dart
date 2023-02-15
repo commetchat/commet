@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/utils/union.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 
 class SimulatedSpace implements Space {
@@ -26,6 +27,9 @@ class SimulatedSpace implements Space {
 
   @override
   Union<Room> rooms = Union();
+
+  @override
+  Key key = UniqueKey();
 
   SimulatedSpace(this.displayName, this.client) {
     identifier = getRandomString(20);

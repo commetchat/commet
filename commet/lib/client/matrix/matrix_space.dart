@@ -27,6 +27,9 @@ class MatrixSpace implements Space {
   Union<Room> rooms = Union();
 
   @override
+  Key key = UniqueKey();
+
+  @override
   StreamController<void> onUpdate = StreamController.broadcast();
 
   late matrix.Room _matrixRoom;

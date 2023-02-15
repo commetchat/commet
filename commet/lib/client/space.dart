@@ -11,6 +11,7 @@ abstract class Space {
   late Client client;
   late ImageProvider? avatar;
   late Union<Room> rooms;
+  late Key key;
 
   late String displayName;
   int notificationCount = 0;

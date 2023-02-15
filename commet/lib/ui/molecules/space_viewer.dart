@@ -6,8 +6,10 @@ import '../../client/client.dart';
 import '../atoms/room_button.dart';
 
 class SpaceViewer extends StatefulWidget {
-  SpaceViewer(this.space, {super.key});
+  SpaceViewer(this.space, {super.key, this.onRoomSelected});
   Space space;
+
+  void Function(int)? onRoomSelected;
 
   @override
   State<SpaceViewer> createState() => _SpaceViewerState();
@@ -19,21 +21,11 @@ class _SpaceViewerState extends State<SpaceViewer>
   int _count = 0;
   late List<Room> _rooms;
 
-  late final AnimationController _controller = AnimationController(
-    duration: const Duration(seconds: 2),
-    vsync: this,
-  )..repeat(reverse: true);
-  late final Animation<double> _animation = CurvedAnimation(
-    parent: _controller,
-    curve: Curves.fastOutSlowIn,
-  );
-
   @override
   void initState() {
     widget.space.onUpdate.stream.listen((event) {
       setState(() {});
     });
-
     _rooms = widget.space.rooms.getItems(onChange: (i) {
       _listKey.currentState?.setState(() {});
     }, onInsert: (i) {
@@ -46,26 +38,15 @@ class _SpaceViewerState extends State<SpaceViewer>
     });
 
     _count = _rooms.length;
-    print("Rooms: $_count");
+
     super.initState();
   }
 
   @override
-  void didUpdateWidget(covariant SpaceViewer oldWidget) {
-    _listKey = GlobalKey();
-
-    _rooms = widget.space.rooms.getItems(onChange: (i) {
-      _listKey.currentState?.setState(() {});
-    }, onInsert: (i) {
-      _listKey.currentState
-          ?.insertItem(i, duration: Duration(milliseconds: 300));
-      _count++;
-    }, onRemove: (i) {
-      _count--;
-      _listKey.currentState?.removeItem(i, (_, __) => const ListTile());
-    });
-
-    _count = _rooms.length;
+  void setState(VoidCallback fn) {
+    // TODO: implement setState
+    print("Setting state");
+    super.setState(fn);
   }
 
   @override
@@ -86,7 +67,10 @@ class _SpaceViewerState extends State<SpaceViewer>
                   scrollDirection: Axis.vertical,
                   itemBuilder: (context, i, animation) => ScaleTransition(
                     scale: animation,
-                    child: RoomButton(_rooms[i]),
+                    child: RoomButton(
+                      _rooms[i],
+                      onTap: () => {widget.onRoomSelected?.call(i)},
+                    ),
                   ),
                 ),
               ),

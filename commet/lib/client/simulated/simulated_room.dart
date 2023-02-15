@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/simulated/simulated_peer.dart';
 import 'package:commet/client/simulated/simulated_timeline.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 
 class SimulatedRoom implements Room {
@@ -20,6 +21,9 @@ class SimulatedRoom implements Room {
 
   @override
   int notificationCount = 0;
+
+  @override
+  Key key = UniqueKey();
 
   SimulatedRoom(this.displayName, this.client) {
     identifier = getRandomString(20);
