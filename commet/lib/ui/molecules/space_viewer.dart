@@ -3,6 +3,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 
 import '../../client/client.dart';
+import '../atoms/room_button.dart';
 
 class SpaceViewer extends StatefulWidget {
   SpaceViewer(this.space, {super.key});
@@ -69,31 +70,28 @@ class _SpaceViewerState extends State<SpaceViewer>
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-        child: Container(
-      alignment: Alignment.topLeft,
-      child: Padding(
+    return Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            Text(widget.space.displayName,
-                style: Theme.of(context).textTheme.titleLarge),
-            SizedBox(
-              width: 300,
-              height: 500,
-              child: AnimatedList(
-                key: _listKey,
-                initialItemCount: _count,
-                itemBuilder: (context, i, animation) => SlideTransition(
-                  position: Tween<Offset>(begin: Offset(1, 0), end: Offset.zero)
-                      .animate(animation),
-                  child: Text(_rooms[i].displayName),
+        child: SizedBox(
+          width: 300,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(widget.space.displayName,
+                  style: Theme.of(context).textTheme.titleLarge),
+              Flexible(
+                child: AnimatedList(
+                  key: _listKey,
+                  initialItemCount: _count,
+                  scrollDirection: Axis.vertical,
+                  itemBuilder: (context, i, animation) => ScaleTransition(
+                    scale: animation,
+                    child: RoomButton(_rooms[i]),
+                  ),
                 ),
               ),
-            ),
-          ],
-        ),
-      ),
-    ));
+            ],
+          ),
+        ));
   }
 }

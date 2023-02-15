@@ -1,10 +1,6 @@
-import 'package:commet/screens/space_list.dart';
 import 'package:commet/ui/molecules/space_selector.dart';
 import 'package:commet/ui/molecules/space_viewer.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:provider/provider.dart';
 
 import '../../client/client.dart';
 import '../../utils/union.dart';
@@ -36,7 +32,7 @@ class _SpaceNavigatorState extends State<SpaceNavigator> {
           },
         ),
       ),
-      SpaceViewer(widget.spaces.getItems()[selectedIndex])
+      Container(child: SpaceViewer(widget.spaces.getItems()[selectedIndex]))
     ]);
   }
 }

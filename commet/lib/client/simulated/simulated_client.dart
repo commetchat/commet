@@ -66,7 +66,9 @@ class SimulatedClient implements Client {
 
   void _updateSpacesList() {
     List<Space> _spaces = List.empty(growable: true);
-    _spaces.add((SimulatedSpace("Simulated Space 1", this)));
+    var space = SimulatedSpace("Simulated Space 1", this);
+    space.rooms.addItems(rooms.getItems());
+    _spaces.add((space));
     _spaces.add((SimulatedSpace("Simulated Space 2", this)));
     _spaces.add((SimulatedSpace("Simulated Space 3", this)));
 
