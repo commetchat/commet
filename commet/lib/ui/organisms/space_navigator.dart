@@ -27,7 +27,7 @@ class _SpaceNavigatorState extends State<SpaceNavigator> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         mainAxisSize: MainAxisSize.max,
-        children: [
+        children: <Widget>[
           SizedBox(
             width: widget.width,
             child: SpaceSelector(
@@ -42,27 +42,22 @@ class _SpaceNavigatorState extends State<SpaceNavigator> {
               },
             ),
           ),
-          SizedBox(
-            width: 300,
-            child: selectedSpace != null
-                ? Container(
+          if (selectedSpace != null)
+            SizedBox(
+                width: 300,
+                child: Container(
                     child: SpaceViewer(
-                    selectedSpace!,
-                    key: selectedSpace!.key,
-                    onRoomSelected: (i) => setState(() {
-                      roomIndex = i;
-                      selectedRoom = selectedSpace!.rooms.getItems()[roomIndex];
-                    }),
-                  ))
-                : Placeholder(),
-          ),
-          SizedBox(
-              width: 800,
-              child: selectedRoom != null
-                  ? Expanded(
-                      child: TimelineViewer(
-                          key: selectedRoom!.key, room: selectedRoom!))
-                  : Text("ASKDHAK"))
+                  selectedSpace!,
+                  key: selectedSpace!.key,
+                  onRoomSelected: (i) => setState(() {
+                    roomIndex = i;
+                    selectedRoom = selectedSpace!.rooms.getItems()[roomIndex];
+                  }),
+                ))),
+          if (selectedRoom != null)
+            Expanded(
+                child:
+                    TimelineViewer(key: selectedRoom!.key, room: selectedRoom!))
         ]);
   }
 }

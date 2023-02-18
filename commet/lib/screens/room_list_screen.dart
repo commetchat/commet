@@ -49,6 +49,6 @@ class _RoomListPageState extends State<RoomListPage> {
             ),
           ],
         ),
-        body: Row(children: [SpaceNavigator(client.spaces)]));
+        body: SpaceNavigator(client.spaces));
   }
 }
