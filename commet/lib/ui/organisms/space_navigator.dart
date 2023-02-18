@@ -55,7 +55,7 @@ class _SpaceNavigatorState extends State<SpaceNavigator> {
                   }),
                 ))),
           if (selectedRoom != null)
-            Expanded(
+            Flexible(
                 child:
                     TimelineViewer(key: selectedRoom!.key, room: selectedRoom!))
         ]);

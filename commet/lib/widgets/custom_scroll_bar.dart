@@ -11,9 +11,9 @@ class CustomScrollbar extends StatefulWidget {
   const CustomScrollbar({
     Key? key,
     required this.scrollController,
-    this.height = 10.0,
-    this.backgroundColor = Colors.grey,
-    this.thumbColor = Colors.black,
+    this.height = 50.0,
+    this.backgroundColor = Colors.transparent,
+    this.thumbColor = Colors.grey,
   }) : super(key: key);
 
   @override
@@ -51,7 +51,6 @@ class _CustomScrollbarState extends State<CustomScrollbar> {
         double y = details.localPosition.dy;
         double percent = y / widget.height;
 
-        print(percent);
         percent = min(percent, 1);
         percent = max(percent, 0);
         percent = 1 - percent;
@@ -64,7 +63,7 @@ class _CustomScrollbarState extends State<CustomScrollbar> {
         percent = min(percent, 1);
         percent = max(percent, 0);
         percent = 1 - percent;
-        print(percent);
+
         widget.scrollController
             .jumpTo(percent * widget.scrollController.position.maxScrollExtent);
       },

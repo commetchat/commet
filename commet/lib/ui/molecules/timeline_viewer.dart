@@ -75,56 +75,44 @@ class _TimelineViewerState extends State<TimelineViewer> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.room.displayName),
-      ),
       body: SafeArea(
-        child: Expanded(
-          child: Column(
-            children: [
-              Expanded(
-                child: FutureBuilder<Timeline>(
-                  future: _timelineFuture,
-                  builder: (context, snapshot) {
-                    final timeline = snapshot.data;
-                    if (timeline == null) {
-                      return const Center(
-                        child: CircularProgressIndicator.adaptive(),
-                      );
-                    }
-                    _count = timeline.events.length - 1;
-                    return Row(
-                      children: [
-                        const Divider(height: 1),
-                        Expanded(
-                          child: WebSmoothScroll(
-                            controller: _scrollController,
-                            animationDuration: 200,
-                            child: AnimatedList(
-                              key: _listKey,
-                              physics: const NeverScrollableScrollPhysics(),
-                              controller: _scrollController,
-                              reverse: true,
-                              initialItemCount: _count,
-                              itemBuilder: (context, i, animation) =>
-                                  ScaleTransition(
-                                      scale: animation,
-                                      child: Message(timeline.events[i])),
-                            ),
-                          ),
-                        ),
-                        Container(
-                          alignment: Alignment.bottomRight,
-                          child: CustomScrollbar(
-                              height: 110, scrollController: _scrollController),
-                        )
-                      ],
-                    );
-                  },
+        child: FutureBuilder<Timeline>(
+          future: _timelineFuture,
+          builder: (context, snapshot) {
+            final timeline = snapshot.data;
+            if (timeline == null) {
+              return const Center(
+                child: CircularProgressIndicator.adaptive(),
+              );
+            }
+            _count = timeline.events.length - 1;
+
+            return Row(
+              children: [
+                const Divider(height: 1),
+                Expanded(
+                  child: WebSmoothScroll(
+                    controller: _scrollController,
+                    animationDuration: 200,
+                    child: AnimatedList(
+                      key: _listKey,
+                      physics: const NeverScrollableScrollPhysics(),
+                      controller: _scrollController,
+                      reverse: true,
+                      initialItemCount: _count,
+                      itemBuilder: (context, i, animation) => ScaleTransition(
+                          scale: animation, child: Message(timeline.events[i])),
+                    ),
+                  ),
                 ),
-              ),
-            ],
-          ),
+                Container(
+                  alignment: Alignment.bottomRight,
+                  child: CustomScrollbar(
+                      height: 110, scrollController: _scrollController),
+                )
+              ],
+            );
+          },
         ),
       ),
     );
