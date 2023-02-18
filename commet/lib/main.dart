@@ -1,4 +1,5 @@
 import 'package:commet/client/client_manager.dart';
+import 'package:commet/config/style/theme_changer.dart';
 import 'package:commet/screens/login_screen.dart';
 import 'package:commet/screens/room_list_screen.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'client/client.dart';
 import 'client/matrix/matrix_client.dart';
 import 'client/simulated/simulated_client.dart';
+import 'config/style/theme_dark.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,8 +35,24 @@ class MatrixExampleChat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    /*return ThemeChanger(
+        initialTheme: ThemeDark().theme,
+        materialAppBuilder: ((context, theme) {
+          return MaterialApp(
+            title: 'Commet',
+            theme: theme,
+            builder: (context, child) => Provider<ClientManager>(
+              create: (context) => client,
+              child: child,
+            ),
+            home:
+                client.isLoggedIn() ? const RoomListPage() : const LoginPage(),
+          );
+        }));*/
+
     return MaterialApp(
       title: 'Commet',
+      theme: ThemeDark().theme,
       builder: (context, child) => Provider<ClientManager>(
         create: (context) => client,
         child: child,

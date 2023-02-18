@@ -1,4 +1,5 @@
 import 'package:commet/client/client.dart';
+import 'package:commet/config/style/theme_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -41,7 +42,7 @@ class _SpaceSelectorState extends State<SpaceSelector> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.grey.shade900,
+      color: Theme.of(context).extension<ExtraColors>()!.surfaceExtraLow,
       child: Padding(
         padding: const EdgeInsets.all(7.0),
         child: SizedBox(
@@ -50,8 +51,7 @@ class _SpaceSelectorState extends State<SpaceSelector> {
             initialItemCount: _count,
             itemBuilder: (context, i, animation) => ScaleTransition(
               scale: animation,
-              child: SpaceIcon(_spaces[i],
-                  width: widget.width, onTap: () => widget.onSelected?.call(i)),
+              child: SpaceIcon(_spaces[i], width: widget.width, onTap: () => widget.onSelected?.call(i)),
             ),
           ),
         ),

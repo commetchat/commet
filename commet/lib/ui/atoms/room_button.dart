@@ -16,13 +16,27 @@ class _RoomButtonState extends State<RoomButton> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 30,
       child: Padding(
-        padding: const EdgeInsets.all(2),
+        padding: const EdgeInsets.all(1),
         child: TextButton(
-            child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(widget.room.displayName)),
+            child: Row(
+              children: [
+                const Padding(
+                  padding: EdgeInsets.all(2.0),
+                  child: SizedBox(
+                      width: 30,
+                      height: 30,
+                      child: Icon(
+                        Icons.tag,
+                        weight: 3,
+                      )),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Align(alignment: Alignment.centerLeft, child: Text(widget.room.displayName)),
+                ),
+              ],
+            ),
             onPressed: () => widget.onTap?.call()),
       ),
     );

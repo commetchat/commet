@@ -39,16 +39,6 @@ class _RoomListPageState extends State<RoomListPage> {
   @override
   Widget build(BuildContext context) {
     final client = Provider.of<ClientManager>(context, listen: false);
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text('Chats'),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.logout),
-              onPressed: _logout,
-            ),
-          ],
-        ),
-        body: SpaceNavigator(client.spaces));
+    return Scaffold(body: SpaceNavigator(client.spaces));
   }
 }

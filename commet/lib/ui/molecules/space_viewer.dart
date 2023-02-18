@@ -3,6 +3,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 
 import '../../client/client.dart';
+import '../../config/style/theme_extensions.dart';
 import '../atoms/room_button.dart';
 
 class SpaceViewer extends StatefulWidget {
@@ -15,8 +16,7 @@ class SpaceViewer extends StatefulWidget {
   State<SpaceViewer> createState() => _SpaceViewerState();
 }
 
-class _SpaceViewerState extends State<SpaceViewer>
-    with TickerProviderStateMixin {
+class _SpaceViewerState extends State<SpaceViewer> with TickerProviderStateMixin {
   GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
   int _count = 0;
   late List<Room> _rooms;
@@ -29,8 +29,7 @@ class _SpaceViewerState extends State<SpaceViewer>
     _rooms = widget.space.rooms.getItems(onChange: (i) {
       _listKey.currentState?.setState(() {});
     }, onInsert: (i) {
-      _listKey.currentState
-          ?.insertItem(i, duration: Duration(milliseconds: 300));
+      _listKey.currentState?.insertItem(i, duration: Duration(milliseconds: 300));
       _count++;
     }, onRemove: (i) {
       _count--;
@@ -51,31 +50,50 @@ class _SpaceViewerState extends State<SpaceViewer>
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: SizedBox(
-          width: 300,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(widget.space.displayName,
-                  style: Theme.of(context).textTheme.titleLarge),
-              Flexible(
-                child: AnimatedList(
-                  key: _listKey,
-                  initialItemCount: _count,
-                  scrollDirection: Axis.vertical,
-                  itemBuilder: (context, i, animation) => ScaleTransition(
-                    scale: animation,
-                    child: RoomButton(
-                      _rooms[i],
-                      onTap: () => {widget.onRoomSelected?.call(i)},
+    return Container(
+      color: Theme.of(context).extension<ExtraColors>()!.surfaceLow,
+      child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: SizedBox(
+            width: 300,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                      color: Theme.of(context).extension<ExtraColors>()!.surfaceLow,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          spreadRadius: 5,
+                          blurRadius: 7,
+                          offset: Offset(0, 3), // changes position of shadow
+                        ),
+                      ]),
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Text(widget.space.displayName, style: Theme.of(context).textTheme.titleLarge),
+                  ),
+                ),
+                Flexible(
+                  child: AnimatedList(
+                    key: _listKey,
+                    initialItemCount: _count,
+                    scrollDirection: Axis.vertical,
+                    itemBuilder: (context, i, animation) => ScaleTransition(
+                      scale: animation,
+                      child: RoomButton(
+                        _rooms[i],
+                        onTap: () => {widget.onRoomSelected?.call(i)},
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        ));
+              ],
+            ),
+          )),
+    );
   }
 }
