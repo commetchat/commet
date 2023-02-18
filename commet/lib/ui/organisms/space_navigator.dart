@@ -32,7 +32,6 @@ class _SpaceNavigatorState extends State<SpaceNavigator> {
             width: widget.width,
             child: SpaceSelector(
               widget.spaces,
-              width: widget.width,
               onSelected: (index) {
                 setState(() {
                   selectedIndex = index;
@@ -54,10 +53,7 @@ class _SpaceNavigatorState extends State<SpaceNavigator> {
                     selectedRoom = selectedSpace!.rooms.getItems()[roomIndex];
                   }),
                 ))),
-          if (selectedRoom != null)
-            Flexible(
-                child:
-                    TimelineViewer(key: selectedRoom!.key, room: selectedRoom!))
+          if (selectedRoom != null) Flexible(child: TimelineViewer(key: selectedRoom!.key, room: selectedRoom!))
         ]);
   }
 }

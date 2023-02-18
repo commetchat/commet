@@ -34,6 +34,16 @@ class SimulatedSpace implements Space {
   SimulatedSpace(this.displayName, this.client) {
     identifier = getRandomString(20);
     notificationCount = 1;
+
+    var images = [
+      "assets/images/placeholder/generic/checker_green.png",
+      "assets/images/placeholder/generic/checker_purple.png",
+      "assets/images/placeholder/generic/checker_orange.png"
+    ];
+
+    var placeholderImageIndex = Random().nextInt(images.length);
+
+    avatar = AssetImage(images[placeholderImageIndex]);
   }
 
   @override
@@ -47,10 +57,9 @@ class SimulatedSpace implements Space {
   @override
   int get hashCode => identifier.hashCode;
 
-  static const _chars =
-      'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
+  static const _chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
   final Random _rnd = Random();
 
-  String getRandomString(int length) => String.fromCharCodes(Iterable.generate(
-      length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
+  String getRandomString(int length) =>
+      String.fromCharCodes(Iterable.generate(length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
 }

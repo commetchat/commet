@@ -9,9 +9,8 @@ import '../../utils/union.dart';
 import '../atoms/space_icon.dart';
 
 class SpaceSelector extends StatefulWidget {
-  SpaceSelector(this.spaces, {super.key, this.width = 100, this.onSelected});
+  SpaceSelector(this.spaces, {super.key, this.onSelected});
 
-  double width = 100;
   Union<Space> spaces;
   @override
   State<SpaceSelector> createState() => _SpaceSelectorState();
@@ -51,7 +50,7 @@ class _SpaceSelectorState extends State<SpaceSelector> {
             initialItemCount: _count,
             itemBuilder: (context, i, animation) => ScaleTransition(
               scale: animation,
-              child: SpaceIcon(_spaces[i], width: widget.width, onTap: () => widget.onSelected?.call(i)),
+              child: SpaceIcon(_spaces[i], onTap: () => widget.onSelected?.call(i)),
             ),
           ),
         ),

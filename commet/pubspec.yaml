@@ -29,3 +29,4 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/placeholder/avatars/
+    - assets/images/placeholder/generic/

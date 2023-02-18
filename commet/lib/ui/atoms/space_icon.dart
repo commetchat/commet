@@ -54,12 +54,9 @@ class _SpaceIconState extends State<SpaceIcon> {
                   decoration: BoxDecoration(
                       borderRadius: _borderRadius,
                       image: widget.space.avatar != null
-                          ? DecorationImage(
-                              image: widget.space.avatar!,
-                              fit: BoxFit.fitHeight)
+                          ? DecorationImage(image: widget.space.avatar!, fit: BoxFit.fitHeight)
                           : const DecorationImage(
-                              image: AssetImage(
-                                  "assets/images/placeholder/avatars/zombieHead.png"),
+                              image: AssetImage("assets/images/placeholder/generic/checker_red.png"),
                               fit: BoxFit.fitHeight)),
                 ),
               ),
