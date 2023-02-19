@@ -32,12 +32,8 @@ class MatrixClient implements Client {
       },
     );
 
-    _client.onSync.stream.listen((event) => {
-          log("On Sync Happened?"),
-          onSync.add(null),
-          _updateRoomslist(),
-          _updateSpacesList()
-        });
+    _client.onSync.stream
+        .listen((event) => {log("On Sync Happened?"), onSync.add(null), _updateRoomslist(), _updateSpacesList()});
 
     log("Done!");
   }
@@ -59,8 +55,7 @@ class MatrixClient implements Client {
   bool isLoggedIn() => _client.isLogged();
 
   @override
-  Future<LoginResult> login(
-      LoginType type, String userIdentifier, String server,
+  Future<LoginResult> login(LoginType type, String userIdentifier, String server,
       {String? password, String? token}) async {
     LoginResult loginResult = LoginResult.error;
 
@@ -70,9 +65,7 @@ class MatrixClient implements Client {
       case LoginType.loginPassword:
         await _client.checkHomeserver((Uri.https((server))));
         var result = await _client.login(matrix.LoginType.mLoginPassword,
-            password: password,
-            identifier:
-                matrix.AuthenticationUserIdentifier(user: userIdentifier));
+            password: password, identifier: matrix.AuthenticationUserIdentifier(user: userIdentifier));
 
         loginResult = LoginResult.success;
 

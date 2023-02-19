@@ -59,24 +59,6 @@ class _SpaceViewerState extends State<SpaceViewer> with TickerProviderStateMixin
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                      color: Theme.of(context).extension<ExtraColors>()!.surfaceLow,
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          spreadRadius: 5,
-                          blurRadius: 7,
-                          offset: Offset(0, 3), // changes position of shadow
-                        ),
-                      ]),
-                  child: Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Text(widget.space.displayName, style: Theme.of(context).textTheme.titleLarge),
-                  ),
-                ),
                 Flexible(
                   child: AnimatedList(
                     key: _listKey,

@@ -1,4 +1,6 @@
 import 'package:commet/client/client_manager.dart';
+import 'package:commet/ui/atoms/room_header.dart';
+import 'package:commet/ui/atoms/space_header.dart';
 import 'package:commet/ui/molecules/message_input.dart';
 import 'package:commet/ui/molecules/space_viewer.dart';
 import 'package:commet/ui/molecules/timeline_viewer.dart';
@@ -51,11 +53,7 @@ class _DesktopChatViewState extends State<DesktopChatView> {
               width: 250,
               child: Column(
                 children: [
-                  SizedBox(
-                      height: 50,
-                      child: Placeholder(
-                        child: Text("Room Header"),
-                      )),
+                  Container(child: SizedBox(height: 50, child: Container(child: SpaceHeader(selectedSpace!)))),
                   Expanded(
                       child: SpaceViewer(
                     selectedSpace!,
@@ -76,7 +74,7 @@ class _DesktopChatViewState extends State<DesktopChatView> {
           Flexible(
               child: Column(
             children: [
-              SizedBox(height: 50, child: Placeholder()),
+              SizedBox(height: 50, child: RoomHeader(selectedRoom!)),
               Flexible(
                 child: Row(
                   children: [

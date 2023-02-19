@@ -16,10 +16,14 @@ class MessageInput extends StatelessWidget {
             decoration:
                 BoxDecoration(color: Colors.black.withAlpha(30), borderRadius: BorderRadius.all(Radius.circular(10))),
             child: Padding(
-              padding: const EdgeInsets.all(2.0),
+              padding: const EdgeInsets.all(0.0),
               child: Row(
                 children: [
-                  Flexible(child: const TextField()),
+                  Flexible(
+                      child: Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                    child: const TextField(),
+                  )),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Icon(Icons.emoji_emotions),

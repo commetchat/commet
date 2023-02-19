@@ -44,4 +44,8 @@ class Union<T> {
     if (onRemove != null) _onRemove = onRemove;
     if (onInsert != null) _onInsert = onInsert;
   }
+
+  bool hasItem(T item) {
+    return _items.contains(item);
+  }
 }

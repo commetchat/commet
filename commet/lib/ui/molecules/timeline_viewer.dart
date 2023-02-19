@@ -51,7 +51,7 @@ class _TimelineViewerState extends State<TimelineViewer> {
       _listKey.currentState?.setState(() {});
     }, onInsert: (i) {
       print('on insert! $i');
-      _listKey.currentState?.insertItem(i);
+      _listKey.currentState?.insertItem(i, duration: Duration(seconds: 1));
       _count++;
     }, onRemove: (i) {
       print('On remove $i');
@@ -100,15 +100,14 @@ class _TimelineViewerState extends State<TimelineViewer> {
                       controller: _scrollController,
                       reverse: true,
                       initialItemCount: _count,
-                      itemBuilder: (context, i, animation) => ScaleTransition(
-                          scale: animation, child: Message(timeline.events[i])),
+                      itemBuilder: (context, i, animation) =>
+                          ScaleTransition(scale: animation, child: Message(timeline.events[i])),
                     ),
                   ),
                 ),
                 Container(
                   alignment: Alignment.bottomRight,
-                  child: CustomScrollbar(
-                      height: 110, scrollController: _scrollController),
+                  child: CustomScrollbar(height: 110, scrollController: _scrollController),
                 )
               ],
             );

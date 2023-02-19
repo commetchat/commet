@@ -34,16 +34,16 @@ class MatrixRoom implements Room {
     _matrixRoom = room;
 
     if (room.avatar != null) {
-      var url = room.avatar!
-          .getThumbnail(matrixClient, width: 56, height: 56)
-          .toString();
+      var url = room.avatar!.getThumbnail(matrixClient, width: 56, height: 56).toString();
       avatar = NetworkImage(url);
     }
 
     displayName = room.getLocalizedDisplayname();
     notificationCount = room.notificationCount;
+
+    print("Listening to matrix room sync in room");
     _matrixRoom.client.onSync.stream.listen((event) {
-      print("OnSync");
+      print("OnSync (Room)");
     });
 
     _matrixRoom.onUpdate.stream.listen((event) {
@@ -93,16 +93,14 @@ class MatrixRoom implements Room {
     return t;
   }
 
-  Future<TimelineEvent> convertEvent(
-      matrix.Event event, matrix.Timeline timeline) async {
+  Future<TimelineEvent> convertEvent(matrix.Event event, matrix.Timeline timeline) async {
     TimelineEvent e = TimelineEvent();
 
     e.eventId = event.eventId;
     e.originServerTs = event.originServerTs;
     event.status.isSent;
     var user = await event.fetchSenderUser();
-    e.sender =
-        MatrixPeer(client, event.senderId, user!.calcDisplayname(), null);
+    e.sender = MatrixPeer(client, event.senderId, user!.calcDisplayname(), null);
 
     e.body = event.getDisplayEvent(timeline).body;
 
@@ -131,8 +129,7 @@ class MatrixRoom implements Room {
   }
 
   @override
-  Future<TimelineEvent?> sendMessage(String message,
-      {TimelineEvent? inReplyTo}) {
+  Future<TimelineEvent?> sendMessage(String message, {TimelineEvent? inReplyTo}) {
     // TODO: implement sendMessage
     throw UnimplementedError();
   }

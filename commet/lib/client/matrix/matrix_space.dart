@@ -46,6 +46,7 @@ class MatrixSpace implements Space {
       onUpdate.add(null);
     });
 
+    print("Listening to onsync stream in MatrixSpace");
     client.onSync.stream.listen((event) {
       refresh();
     });
@@ -57,17 +58,14 @@ class MatrixSpace implements Space {
     displayName = _matrixRoom.getLocalizedDisplayname();
 
     if (_matrixRoom.avatar != null) {
-      var url = _matrixRoom.avatar!
-          .getThumbnail(_matrixClient, width: 56, height: 56)
-          .toString();
+      var url = _matrixRoom.avatar!.getThumbnail(_matrixClient, width: 56, height: 56).toString();
       avatar = NetworkImage(url);
     }
     List<Room> newRooms = List.empty(growable: true);
 
     for (var child in _matrixRoom.spaceChildren) {
       print(child.roomId);
-      newRooms.add(MatrixRoom(
-          client, _matrixClient.getRoomById(child.roomId!)!, _matrixClient));
+      newRooms.add(MatrixRoom(client, _matrixClient.getRoomById(child.roomId!)!, _matrixClient));
     }
 
     rooms.addItems(newRooms);

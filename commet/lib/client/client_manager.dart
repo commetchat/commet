@@ -17,6 +17,8 @@ class ClientManager {
     _clients.add(client);
 
     client.onSync.stream.listen((_) => _synced());
+
+    print("Adding listener to client manager room and spaces");
     client.rooms.addListeners(onChange: (index) => _updateRoomslist());
     client.spaces.addListeners(onChange: (index) => _updateSpacesList());
 
