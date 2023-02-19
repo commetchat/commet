@@ -22,17 +22,6 @@ class SimulatedSpace extends Space {
     avatar = AssetImage(images[placeholderImageIndex]);
   }
 
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    if (other is! Space) return false;
-
-    return identifier == other.identifier;
-  }
-
-  @override
-  int get hashCode => identifier.hashCode;
-
   static const _chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
   final Random _rnd = Random();
 
