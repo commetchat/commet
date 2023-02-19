@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:commet/client/client.dart';
 import 'package:commet/config/style/theme_extensions.dart';
 import 'package:flutter/material.dart';
@@ -20,25 +22,23 @@ class _SpaceSelectorState extends State<SpaceSelector> {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
   int _count = 0;
 
+  late StreamSubscription<int>? onInsertListener;
+
   @override
   void initState() {
-    widget.onSpaceInsert?.listen((index) {
+    onInsertListener = widget.onSpaceInsert?.listen((index) {
       _listKey.currentState?.insertItem(index);
       _count++;
     });
 
-    /*_spaces = widget.spaces.getItems(onChange: (i) {
-      _listKey.currentState?.setState(() {});
-    }, onInsert: (i) {
-      _listKey.currentState?.insertItem(i);
-      _count++;
-    }, onRemove: (i) {
-      _count--;
-      _listKey.currentState?.removeItem(i, (_, __) => const ListTile());
-    });*/
-
     _count = widget.spaces.length;
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    onInsertListener?.cancel();
+    super.dispose();
   }
 
   @override

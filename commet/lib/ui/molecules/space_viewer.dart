@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -18,34 +20,32 @@ class SpaceViewer extends StatefulWidget {
 }
 
 class _SpaceViewerState extends State<SpaceViewer> with TickerProviderStateMixin {
-  GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
+  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
   int _count = 0;
+  late StreamSubscription<int>? onInsertListener;
+  late StreamSubscription<void>? onUpdateListener;
 
   @override
   void initState() {
-    widget.space.onUpdate.stream.listen((event) {
+    onUpdateListener = widget.space.onUpdate.stream.listen((event) {
       setState(() {});
     });
 
-    widget.onRoomInsert?.listen((index) {
+    onInsertListener = widget.onRoomInsert?.listen((index) {
       _listKey.currentState?.insertItem(index);
       _count++;
     });
 
-/*
-    _rooms = widget.space.rooms.getItems(onChange: (i) {
-      _listKey.currentState?.setState(() {});
-    }, onInsert: (i) {
-      _listKey.currentState?.insertItem(i, duration: Duration(milliseconds: 300));
-      _count++;
-    }, onRemove: (i) {
-      _count--;
-      _listKey.currentState?.removeItem(i, (_, __) => const ListTile());
-    });
-*/
     _count = widget.space.rooms.length;
 
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    onInsertListener?.cancel();
+    onUpdateListener?.cancel();
+    super.dispose();
   }
 
   @override
