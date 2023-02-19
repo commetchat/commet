@@ -8,7 +8,6 @@ import 'package:matrix/matrix.dart' as matrix;
 
 class MatrixRoom extends Room {
   late matrix.Room _matrixRoom;
-
   late Timeline _timeline;
 
   MatrixRoom(client, matrix.Room room, matrix.Client matrixClient) : super(room.id, client) {
@@ -21,6 +20,14 @@ class MatrixRoom extends Room {
 
     displayName = room.getLocalizedDisplayname();
     notificationCount = room.notificationCount;
+
+    var users = room.getParticipants();
+
+    for (var user in users) {
+      if (!this.client.peerExists(user.id)) {
+        this.client.addPeer(MatrixPeer(matrixClient, user.id));
+      }
+    }
 
     print("Listening to matrix room sync in room");
     _matrixRoom.client.onSync.stream.listen((event) {
@@ -80,8 +87,10 @@ class MatrixRoom extends Room {
     e.eventId = event.eventId;
     e.originServerTs = event.originServerTs;
     event.status.isSent;
-    var user = await event.fetchSenderUser();
-    e.sender = MatrixPeer(client, event.senderId, user!.calcDisplayname(), null);
+
+    if (client.peerExists(event.senderId)) {
+      e.sender = client.getPeer(event.senderId)!;
+    }
 
     e.body = event.getDisplayEvent(timeline).body;
 

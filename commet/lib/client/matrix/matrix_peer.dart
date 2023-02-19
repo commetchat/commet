@@ -1,18 +1,27 @@
 import 'package:commet/client/client.dart';
+import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:flutter/material.dart';
+import 'package:matrix/matrix.dart' as matrix;
 
-class MatrixPeer implements Peer {
-  @override
-  ImageProvider<Object>? avatar;
+class MatrixPeer extends Peer {
+  late matrix.Client _matrixClient;
 
-  @override
-  Client client;
+  MatrixPeer(matrix.Client matrixClient, String userId) {
+    _matrixClient = matrixClient;
+    identifier = userId;
+    init();
+  }
 
-  @override
-  String displayName;
+  void init() async {
+    try {
+      var name = await _matrixClient.getDisplayName(identifier);
+      if (name != null) displayName = name;
 
-  @override
-  String identifier;
-
-  MatrixPeer(this.client, this.identifier, this.displayName, this.avatar);
+      var avatarUrl = await _matrixClient.getAvatarUrl(identifier);
+      var url = avatarUrl!.getThumbnail(_matrixClient, width: 56, height: 56).toString();
+      if (avatarUrl != null) avatar = NetworkImage(url);
+    } catch (_) {
+      print("Unable to retreive profile info for: " + identifier);
+    }
+  }
 }

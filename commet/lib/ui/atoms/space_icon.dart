@@ -5,10 +5,11 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 
 class SpaceIcon extends StatefulWidget {
-  SpaceIcon(this.space, {super.key, this.width = 44, this.onTap});
+  SpaceIcon(this.space, {super.key, this.width = 44, this.onTap, this.showUser = false});
   final Space space;
   double width;
   void Function()? onTap;
+  bool showUser;
 
   @override
   State<SpaceIcon> createState() => _SpaceIconState();
@@ -48,16 +49,38 @@ class _SpaceIconState extends State<SpaceIcon> {
                     _borderRadius = BorderRadius.circular(20);
                   });
                 },
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  curve: Curves.easeInOut,
-                  decoration: BoxDecoration(
-                      borderRadius: _borderRadius,
-                      image: widget.space.avatar != null
-                          ? DecorationImage(image: widget.space.avatar!, fit: BoxFit.fitHeight)
-                          : const DecorationImage(
-                              image: AssetImage("assets/images/placeholder/generic/checker_red.png"),
-                              fit: BoxFit.fitHeight)),
+                child: Tooltip(
+                  message: widget.space.displayName,
+                  child: Stack(children: [
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      curve: Curves.easeInOut,
+                      decoration: BoxDecoration(
+                          borderRadius: _borderRadius,
+                          image: widget.space.avatar != null
+                              ? DecorationImage(image: widget.space.avatar!, fit: BoxFit.fitHeight)
+                              : const DecorationImage(
+                                  image: AssetImage("assets/images/placeholder/generic/checker_red.png"),
+                                  fit: BoxFit.fitHeight)),
+                    ),
+                    if (widget.showUser && widget.space.client.user!.avatar != null)
+                      Positioned(
+                        child: SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              boxShadow: [BoxShadow(color: Colors.black, blurRadius: 4)],
+                              image: DecorationImage(image: widget.space.client.user!.avatar!, fit: BoxFit.fitHeight),
+                              //border: Border.all(color: Colors.white, width: 1)),
+                            ),
+                          ),
+                        ),
+                        right: 0,
+                        bottom: 0,
+                      )
+                  ]),
                 ),
               ),
             ),

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:commet/client/client.dart';
+import 'package:commet/client/matrix/matrix_peer.dart';
 import 'package:commet/utils/rng.dart';
 import 'package:matrix/matrix.dart' as matrix;
 import 'package:path_provider/path_provider.dart';
@@ -42,6 +43,9 @@ class MatrixClient extends Client {
     var result = await _matrixClient.init();
     _updateRoomslist();
     _updateSpacesList();
+
+    if (_matrixClient.userID != null) user = MatrixPeer(_matrixClient, _matrixClient.userID!);
+
     return result;
   }
 
@@ -86,6 +90,8 @@ class MatrixClient extends Client {
 
   void _postLoginSuccess() {
     _updateRoomslist();
+
+    print(_matrixClient.accountData.keys);
   }
 
   void _updateRoomslist() {

@@ -4,6 +4,6 @@ import 'package:flutter/material.dart';
 abstract class Peer {
   late String identifier;
   late String displayName;
-  late ImageProvider? avatar;
+  late ImageProvider? avatar = null;
   late Client client;
 }

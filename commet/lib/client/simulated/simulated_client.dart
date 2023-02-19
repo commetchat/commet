@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'package:commet/client/client.dart';
+import 'package:commet/client/simulated/simulated_peer.dart';
 import 'package:commet/client/simulated/simulated_room.dart';
 import 'package:commet/client/simulated/simulated_space.dart';
 import 'package:commet/utils/rng.dart';
+import 'package:flutter/material.dart';
 
 class SimulatedClient extends Client {
   bool _isLogged = false;
@@ -39,6 +41,9 @@ class SimulatedClient extends Client {
   void _postLoginSuccess() {
     _updateRoomslist();
     _updateSpacesList();
+
+    user = SimulatedPeer(
+        this, "simulated@example.com", "Simulated", AssetImage("assets/images/placeholder/generic/checker_red.png"));
   }
 
   void _updateRoomslist() {

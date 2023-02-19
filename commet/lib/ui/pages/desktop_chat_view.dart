@@ -4,6 +4,7 @@ import 'package:commet/ui/atoms/space_header.dart';
 import 'package:commet/ui/molecules/message_input.dart';
 import 'package:commet/ui/molecules/space_viewer.dart';
 import 'package:commet/ui/molecules/timeline_viewer.dart';
+import 'package:commet/ui/molecules/user_panel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -41,6 +42,7 @@ class _DesktopChatViewState extends State<DesktopChatView> {
             child: SpaceSelector(
               _clientManager.spaces,
               onSpaceInsert: _clientManager.onSpaceAdded.stream,
+              showSpaceOwnerAvatar: true,
               onSelected: (index) {
                 setState(() {
                   selectedSpace = _clientManager.spaces[index];
@@ -68,7 +70,7 @@ class _DesktopChatViewState extends State<DesktopChatView> {
                   )),
                   SizedBox(
                     height: 70,
-                    child: Placeholder(),
+                    child: UserPanel(selectedSpace!.client.user!),
                   )
                 ],
               )),

@@ -10,9 +10,10 @@ import 'package:provider/provider.dart';
 import '../atoms/space_icon.dart';
 
 class SpaceSelector extends StatefulWidget {
-  SpaceSelector(this.spaces, {super.key, this.onSelected, this.onSpaceInsert});
+  SpaceSelector(this.spaces, {super.key, this.onSelected, this.onSpaceInsert, this.showSpaceOwnerAvatar = false});
   Stream<int>? onSpaceInsert;
   List<Space> spaces;
+  bool showSpaceOwnerAvatar;
   @override
   State<SpaceSelector> createState() => _SpaceSelectorState();
   void Function(int index)? onSelected;
@@ -53,7 +54,11 @@ class _SpaceSelectorState extends State<SpaceSelector> {
             initialItemCount: _count,
             itemBuilder: (context, i, animation) => ScaleTransition(
               scale: animation,
-              child: SpaceIcon(widget.spaces[i], onTap: () => widget.onSelected?.call(i)),
+              child: SpaceIcon(
+                widget.spaces[i],
+                onTap: () => widget.onSelected?.call(i),
+                showUser: widget.showSpaceOwnerAvatar,
+              ),
             ),
           ),
         ),
