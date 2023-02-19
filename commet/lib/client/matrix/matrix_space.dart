@@ -5,40 +5,17 @@ import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
-import '../../utils/union.dart';
-
-class MatrixSpace implements Space {
-  @override
-  late Client client;
-
-  @override
-  late String identifier;
-
-  @override
-  ImageProvider? avatar;
-
-  @override
-  late String displayName;
-
-  @override
-  int notificationCount = 0;
-
-  @override
-  Union<Room> rooms = Union();
-
-  @override
-  Key key = UniqueKey();
-
+class MatrixSpace extends Space {
   @override
   StreamController<void> onUpdate = StreamController.broadcast();
 
   late matrix.Room _matrixRoom;
   late matrix.Client _matrixClient;
 
-  MatrixSpace(this.client, matrix.Room room, matrix.Client matrixClient) {
+  MatrixSpace(client, matrix.Room room, matrix.Client matrixClient) : super(room.id, client) {
     _matrixRoom = room;
     _matrixClient = matrixClient;
-    identifier = room.id;
+
     displayName = room.getLocalizedDisplayname();
 
     room.onUpdate.stream.listen((event) {
@@ -61,14 +38,16 @@ class MatrixSpace implements Space {
       var url = _matrixRoom.avatar!.getThumbnail(_matrixClient, width: 56, height: 56).toString();
       avatar = NetworkImage(url);
     }
-    List<Room> newRooms = List.empty(growable: true);
 
+    updateRoomsList();
+  }
+
+  void updateRoomsList() {
     for (var child in _matrixRoom.spaceChildren) {
-      print(child.roomId);
-      newRooms.add(MatrixRoom(client, _matrixClient.getRoomById(child.roomId!)!, _matrixClient));
+      // reuse the existing room object
+      var room = client.getRoom(child.roomId!);
+      if (room != null) rooms.add(room);
     }
-
-    rooms.addItems(newRooms);
   }
 
   @override

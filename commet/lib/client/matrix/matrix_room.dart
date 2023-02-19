@@ -6,31 +6,12 @@ import 'package:flutter/painting.dart';
 import '../client.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
-class MatrixRoom implements Room {
-  @override
-  late Client client;
-
-  @override
-  late String identifier;
-
-  @override
-  ImageProvider? avatar;
-
-  @override
-  late String displayName;
-
-  @override
-  int notificationCount = 0;
-
-  @override
-  Key key = UniqueKey();
-
+class MatrixRoom extends Room {
   late matrix.Room _matrixRoom;
 
   late Timeline _timeline;
 
-  MatrixRoom(this.client, matrix.Room room, matrix.Client matrixClient) {
-    identifier = room.id;
+  MatrixRoom(client, matrix.Room room, matrix.Client matrixClient) : super(room.id, client) {
     _matrixRoom = room;
 
     if (room.avatar != null) {

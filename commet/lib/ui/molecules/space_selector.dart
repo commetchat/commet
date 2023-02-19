@@ -5,13 +5,12 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:provider/provider.dart';
 
-import '../../utils/union.dart';
 import '../atoms/space_icon.dart';
 
 class SpaceSelector extends StatefulWidget {
-  SpaceSelector(this.spaces, {super.key, this.onSelected});
-
-  Union<Space> spaces;
+  SpaceSelector(this.spaces, {super.key, this.onSelected, this.onSpaceInsert});
+  Stream<int>? onSpaceInsert;
+  List<Space> spaces;
   @override
   State<SpaceSelector> createState() => _SpaceSelectorState();
   void Function(int index)? onSelected;
@@ -20,11 +19,15 @@ class SpaceSelector extends StatefulWidget {
 class _SpaceSelectorState extends State<SpaceSelector> {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
   int _count = 0;
-  late final List<Space> _spaces;
 
   @override
   void initState() {
-    _spaces = widget.spaces.getItems(onChange: (i) {
+    widget.onSpaceInsert?.listen((index) {
+      _listKey.currentState?.insertItem(index);
+      _count++;
+    });
+
+    /*_spaces = widget.spaces.getItems(onChange: (i) {
       _listKey.currentState?.setState(() {});
     }, onInsert: (i) {
       _listKey.currentState?.insertItem(i);
@@ -32,9 +35,9 @@ class _SpaceSelectorState extends State<SpaceSelector> {
     }, onRemove: (i) {
       _count--;
       _listKey.currentState?.removeItem(i, (_, __) => const ListTile());
-    });
+    });*/
 
-    _count = _spaces.length;
+    _count = widget.spaces.length;
     super.initState();
   }
 
@@ -50,7 +53,7 @@ class _SpaceSelectorState extends State<SpaceSelector> {
             initialItemCount: _count,
             itemBuilder: (context, i, animation) => ScaleTransition(
               scale: animation,
-              child: SpaceIcon(_spaces[i], onTap: () => widget.onSelected?.call(i)),
+              child: SpaceIcon(widget.spaces[i], onTap: () => widget.onSelected?.call(i)),
             ),
           ),
         ),

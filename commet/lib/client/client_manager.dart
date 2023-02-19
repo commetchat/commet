@@ -2,28 +2,33 @@ import 'dart:async';
 
 import 'package:commet/client/client.dart';
 
-import '../utils/union.dart';
-
 class ClientManager {
-  late final List<Client> _clients = List.empty(growable: true);
-  List<Client> get clients => _clients;
+  final Map<String, Room> _rooms = Map();
+  final Map<String, Space> _spaces = Map();
+  final Map<String, Client> _clients = Map();
 
-  Union<Space> spaces = Union<Space>();
-  Union<Room> rooms = Union<Room>();
+  List<Room> rooms = List.empty(growable: true);
+  List<Space> spaces = List.empty(growable: true);
 
   late StreamController<void> onSync = StreamController.broadcast();
+  late StreamController<int> onRoomAdded = StreamController.broadcast();
+  late StreamController<int> onSpaceAdded = StreamController.broadcast();
 
   void addClient(Client client) {
-    _clients.add(client);
+    _clients[client.identifier] = client;
 
     client.onSync.stream.listen((_) => _synced());
 
     print("Adding listener to client manager room and spaces");
-    client.rooms.addListeners(onChange: (index) => _updateRoomslist());
-    client.spaces.addListeners(onChange: (index) => _updateSpacesList());
+    client.onRoomAdded.stream.listen((i) {
+      rooms.add(client.rooms[i]);
+      onRoomAdded.add(rooms.length - 1);
+    });
 
-    _updateSpacesList();
-    _updateRoomslist();
+    client.onSpaceAdded.stream.listen((i) {
+      spaces.add(client.spaces[i]);
+      onSpaceAdded.add(spaces.length - 1);
+    });
   }
 
   void log(Object s) {
@@ -31,26 +36,12 @@ class ClientManager {
   }
 
   bool isLoggedIn() {
-    return _clients[0].isLoggedIn();
+    return _clients.values.any((element) => element.isLoggedIn());
   }
 
   void _synced() {
     log("Syncing");
 
-    _updateRoomslist();
-    _updateSpacesList();
     onSync.add(null);
-  }
-
-  void _updateRoomslist() {
-    for (var client in clients) {
-      rooms.addItems(client.rooms.getItems());
-    }
-  }
-
-  void _updateSpacesList() {
-    for (var client in clients) {
-      spaces.addItems(client.spaces.getItems());
-    }
   }
 }

@@ -4,11 +4,10 @@ import 'package:commet/ui/molecules/timeline_viewer.dart';
 import 'package:flutter/material.dart';
 
 import '../../client/client.dart';
-import '../../utils/union.dart';
 
 class SpaceNavigator extends StatefulWidget {
   SpaceNavigator(this.spaces, {super.key});
-  Union<Space> spaces;
+  List<Space> spaces;
   final double width = 70;
 
   @override
@@ -35,7 +34,7 @@ class _SpaceNavigatorState extends State<SpaceNavigator> {
               onSelected: (index) {
                 setState(() {
                   selectedIndex = index;
-                  selectedSpace = widget.spaces.getItems()[selectedIndex];
+                  selectedSpace = widget.spaces[index];
                   roomIndex = 0;
                 });
               },
@@ -50,7 +49,7 @@ class _SpaceNavigatorState extends State<SpaceNavigator> {
                   key: selectedSpace!.key,
                   onRoomSelected: (i) => setState(() {
                     roomIndex = i;
-                    selectedRoom = selectedSpace!.rooms.getItems()[roomIndex];
+                    selectedRoom = selectedSpace!.rooms[roomIndex];
                   }),
                 ))),
           if (selectedRoom != null) Flexible(child: TimelineViewer(key: selectedRoom!.key, room: selectedRoom!))

@@ -1,28 +1,22 @@
 import 'dart:async';
 
 import 'package:commet/client/client.dart';
-import 'package:commet/utils/union.dart';
+import 'package:commet/utils/rng.dart';
 import 'package:matrix/matrix.dart' as matrix;
 import 'package:path_provider/path_provider.dart';
 
 import 'matrix_room.dart';
 import 'matrix_space.dart';
 
-class MatrixClient implements Client {
+class MatrixClient extends Client {
   @override
   late StreamController<void> onSync = StreamController.broadcast();
 
-  @override
-  Union<Room> rooms = Union<Room>();
+  late matrix.Client _matrixClient;
 
-  @override
-  Union<Space> spaces = Union<Space>();
-
-  late matrix.Client _client;
-
-  MatrixClient() {
+  MatrixClient() : super(RandomUtils.getRandomString(20)) {
     log("Creating matrix client");
-    _client = matrix.Client(
+    _matrixClient = matrix.Client(
       'Commet',
       databaseBuilder: (_) async {
         final dir = await getApplicationSupportDirectory();
@@ -32,7 +26,7 @@ class MatrixClient implements Client {
       },
     );
 
-    _client.onSync.stream
+    _matrixClient.onSync.stream
         .listen((event) => {log("On Sync Happened?"), onSync.add(null), _updateRoomslist(), _updateSpacesList()});
 
     log("Done!");
@@ -45,14 +39,14 @@ class MatrixClient implements Client {
   @override
   Future<void> init() async {
     log("Initialising client");
-    var result = await _client.init();
+    var result = await _matrixClient.init();
     _updateRoomslist();
     _updateSpacesList();
     return result;
   }
 
   @override
-  bool isLoggedIn() => _client.isLogged();
+  bool isLoggedIn() => _matrixClient.isLogged();
 
   @override
   Future<LoginResult> login(LoginType type, String userIdentifier, String server,
@@ -63,8 +57,8 @@ class MatrixClient implements Client {
 
     switch (type) {
       case LoginType.loginPassword:
-        await _client.checkHomeserver((Uri.https((server))));
-        var result = await _client.login(matrix.LoginType.mLoginPassword,
+        await _matrixClient.checkHomeserver((Uri.https((server))));
+        var result = await _matrixClient.login(matrix.LoginType.mLoginPassword,
             password: password, identifier: matrix.AuthenticationUserIdentifier(user: userIdentifier));
 
         loginResult = LoginResult.success;
@@ -87,7 +81,7 @@ class MatrixClient implements Client {
 
   @override
   Future<void> logout() {
-    return _client.logout();
+    return _matrixClient.logout();
   }
 
   void _postLoginSuccess() {
@@ -95,26 +89,22 @@ class MatrixClient implements Client {
   }
 
   void _updateRoomslist() {
-    var all_rooms = _client.rooms.where((element) => !element.isSpace);
-    List<Room> new_rooms = List.empty(growable: true);
+    var allRooms = _matrixClient.rooms.where((element) => !element.isSpace);
 
-    for (var room in all_rooms) {
-      var r = MatrixRoom(this, room, _client);
-      new_rooms.add(r);
+    for (var room in allRooms) {
+      if (roomExists(room.id)) continue;
+
+      addRoom(MatrixRoom(this, room, _matrixClient));
     }
-
-    rooms.addItems(new_rooms);
   }
 
   void _updateSpacesList() {
-    var rooms = _client.rooms.where((element) => element.isSpace);
-    List<Space> new_spaces = List.empty(growable: true);
+    var allSpaces = _matrixClient.rooms.where((element) => element.isSpace);
 
-    for (var room in rooms) {
-      var r = MatrixSpace(this, room, _client);
-      new_spaces.add(r);
+    for (var space in allSpaces) {
+      if (spaceExists(space.id)) continue;
+
+      addSpace(MatrixSpace(this, space, _matrixClient));
     }
-
-    spaces.addItems(new_spaces);
   }
 }

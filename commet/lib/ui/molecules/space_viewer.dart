@@ -7,8 +7,9 @@ import '../../config/style/theme_extensions.dart';
 import '../atoms/room_button.dart';
 
 class SpaceViewer extends StatefulWidget {
-  SpaceViewer(this.space, {super.key, this.onRoomSelected});
+  SpaceViewer(this.space, {super.key, this.onRoomSelected, this.onRoomInsert});
   Space space;
+  Stream<int>? onRoomInsert;
 
   void Function(int)? onRoomSelected;
 
@@ -19,13 +20,19 @@ class SpaceViewer extends StatefulWidget {
 class _SpaceViewerState extends State<SpaceViewer> with TickerProviderStateMixin {
   GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
   int _count = 0;
-  late List<Room> _rooms;
 
   @override
   void initState() {
     widget.space.onUpdate.stream.listen((event) {
       setState(() {});
     });
+
+    widget.onRoomInsert?.listen((index) {
+      _listKey.currentState?.insertItem(index);
+      _count++;
+    });
+
+/*
     _rooms = widget.space.rooms.getItems(onChange: (i) {
       _listKey.currentState?.setState(() {});
     }, onInsert: (i) {
@@ -35,8 +42,8 @@ class _SpaceViewerState extends State<SpaceViewer> with TickerProviderStateMixin
       _count--;
       _listKey.currentState?.removeItem(i, (_, __) => const ListTile());
     });
-
-    _count = _rooms.length;
+*/
+    _count = widget.space.rooms.length;
 
     super.initState();
   }
@@ -67,7 +74,7 @@ class _SpaceViewerState extends State<SpaceViewer> with TickerProviderStateMixin
                     itemBuilder: (context, i, animation) => ScaleTransition(
                       scale: animation,
                       child: RoomButton(
-                        _rooms[i],
+                        widget.space.rooms[i],
                         onTap: () => {widget.onRoomSelected?.call(i)},
                       ),
                     ),

@@ -2,19 +2,12 @@ import 'dart:async';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/simulated/simulated_room.dart';
 import 'package:commet/client/simulated/simulated_space.dart';
+import 'package:commet/utils/rng.dart';
 
-import '../../utils/union.dart';
-
-class SimulatedClient implements Client {
-  @override
-  Union<Room> rooms = Union<Room>();
-
-  @override
-  Union<Space> spaces = Union<Space>();
-
-  @override
-  late StreamController<void> onSync = StreamController.broadcast();
+class SimulatedClient extends Client {
   bool _isLogged = false;
+
+  SimulatedClient() : super(RandomUtils.getRandomString(20));
 
   void log(String s) {
     print('Matrix Client] $s');
@@ -29,8 +22,7 @@ class SimulatedClient implements Client {
   bool isLoggedIn() => _isLogged;
 
   @override
-  Future<LoginResult> login(
-      LoginType type, String userIdentifier, String server,
+  Future<LoginResult> login(LoginType type, String userIdentifier, String server,
       {String? password, String? token}) async {
     LoginResult loginResult = LoginResult.success;
     _isLogged = true;
@@ -50,35 +42,26 @@ class SimulatedClient implements Client {
   }
 
   void _updateRoomslist() {
-    List<Room> _rooms = List.empty(growable: true);
-    _rooms.add(SimulatedRoom("Simulated Room", this));
-    _rooms.add(SimulatedRoom("Simulated Room 2", this));
-    _rooms.add(SimulatedRoom("Simulated Room 3", this));
-    _rooms.add(SimulatedRoom("Simulated Room 4", this));
-    _rooms.add(SimulatedRoom("Simulated Room 5", this));
-
-    rooms.addItems(_rooms);
-
-    Future.delayed(const Duration(seconds: 10), () {
-      print("Adding another space");
-    });
+    addRoom(SimulatedRoom("Simulated Room", this));
+    addRoom(SimulatedRoom("Simulated Room 2", this));
+    addRoom(SimulatedRoom("Simulated Room 3", this));
+    addRoom(SimulatedRoom("Simulated Room 4", this));
+    addRoom(SimulatedRoom("Simulated Room 5", this));
+    addRoom(SimulatedRoom("Simulated Room 6", this));
+    addRoom(SimulatedRoom("Simulated Room 7", this));
   }
 
   void _updateSpacesList() {
     List<Space> _spaces = List.empty(growable: true);
-    var space = SimulatedSpace("Simulated Space 1", this);
-    space.rooms.addItems(rooms.getItems());
-    _spaces.add((space));
-    _spaces.add((SimulatedSpace("Simulated Space 2", this)));
-    _spaces.add((SimulatedSpace("Simulated Space 3", this)));
 
-    spaces.addItems(_spaces);
+    addSpace(SimulatedSpace("Simulated Space 1", this));
+    addSpace(SimulatedSpace("Simulated Space 2", this));
+    addSpace(SimulatedSpace("Simulated Space 3", this));
 
     Future.delayed(const Duration(seconds: 10), () {
       List<Space> _spaces = List.empty(growable: true);
-      _spaces.add((SimulatedSpace("Simulated Space 4", this)));
-      _spaces.add((SimulatedSpace("Simulated Space 5", this)));
-      spaces.addItems(_spaces);
+      addSpace(SimulatedSpace("Simulated Space 4", this));
+      addSpace(SimulatedSpace("Simulated Space 5", this));
     });
   }
 }

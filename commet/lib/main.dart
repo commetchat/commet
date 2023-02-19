@@ -16,15 +16,17 @@ import 'config/style/theme_dark.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final clientManager = ClientManager();
-  final client = MatrixClient();
 
+  final client = MatrixClient();
   final simulated = SimulatedClient();
-  simulated.login(LoginType.loginPassword, "", "");
 
   clientManager.addClient(client);
   clientManager.addClient(simulated);
 
+  simulated.login(LoginType.loginPassword, "", "");
+
   await client.init();
+
   runApp(MatrixExampleChat(
     client: clientManager,
   ));

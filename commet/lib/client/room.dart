@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 abstract class Room {
   late String identifier;
   late Client client;
+  final Key key = UniqueKey();
   Future<TimelineEvent?> sendMessage(String message, {TimelineEvent inReplyTo});
 
   late ImageProvider? avatar;
@@ -13,9 +14,10 @@ abstract class Room {
 
   int notificationCount = 0;
 
-  Room(this.identifier, this.client);
-
-  late Key key;
+  Room(this.identifier, this.client) {
+    identifier = identifier;
+    client = client;
+  }
 
   Future<Timeline> getTimeline(
       {void Function(int index)? onChange,

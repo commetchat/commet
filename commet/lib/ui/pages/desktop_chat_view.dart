@@ -40,9 +40,10 @@ class _DesktopChatViewState extends State<DesktopChatView> {
             width: 70,
             child: SpaceSelector(
               _clientManager.spaces,
+              onSpaceInsert: _clientManager.onSpaceAdded.stream,
               onSelected: (index) {
                 setState(() {
-                  selectedSpace = _clientManager.spaces.getItems()[index];
+                  selectedSpace = _clientManager.spaces[index];
                 });
 
                 print("Selected Space: " + selectedSpace!.displayName);
@@ -58,9 +59,10 @@ class _DesktopChatViewState extends State<DesktopChatView> {
                       child: SpaceViewer(
                     selectedSpace!,
                     key: selectedSpace!.key,
+                    onRoomInsert: selectedSpace!.onRoomAdded.stream,
                     onRoomSelected: (index) {
                       setState(() {
-                        selectedRoom = selectedSpace!.rooms.getItems()[index];
+                        selectedRoom = selectedSpace!.rooms[index];
                       });
                     },
                   )),

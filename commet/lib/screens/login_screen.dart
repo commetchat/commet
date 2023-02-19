@@ -24,7 +24,7 @@ class _LoginPageState extends State<LoginPage> {
     setState(() {
       _loading = true;
     });
-
+    /*
     try {
       final client =
           Provider.of<ClientManager>(context, listen: false).clients[0];
@@ -45,7 +45,7 @@ class _LoginPageState extends State<LoginPage> {
       setState(() {
         _loading = false;
       });
-    }
+    }*/
   }
 
   @override
@@ -92,9 +92,7 @@ class _LoginPageState extends State<LoginPage> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: _loading ? null : _login,
-                child: _loading
-                    ? const LinearProgressIndicator()
-                    : const Text('Login'),
+                child: _loading ? const LinearProgressIndicator() : const Text('Login'),
               ),
             ),
           ],
