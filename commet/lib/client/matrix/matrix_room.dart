@@ -8,10 +8,11 @@ import 'package:matrix/matrix.dart' as matrix;
 
 class MatrixRoom extends Room {
   late matrix.Room _matrixRoom;
-  late Timeline _timeline;
+  late matrix.Timeline _matrixTimeline;
 
   MatrixRoom(client, matrix.Room room, matrix.Client matrixClient) : super(room.id, client) {
     _matrixRoom = room;
+    timeline = MatrixTimeline();
 
     if (room.avatar != null) {
       var url = room.avatar!.getThumbnail(matrixClient, width: 56, height: 56).toString();
@@ -37,48 +38,20 @@ class MatrixRoom extends Room {
     _matrixRoom.onUpdate.stream.listen((event) {
       print("onUpdate");
     });
+
+    initTimeline();
   }
 
-  Function(int index)? onInsert;
-
-  @override
-  Future<Timeline> getTimeline(
-      {void Function(int index)? onChange,
-      void Function(int index)? onRemove,
-      void Function(int insertID)? onInsert,
-      void Function()? onNewEvent,
-      void Function()? onUpdate,
-      String? eventContextId}) async {
-    this.onInsert = onInsert;
-
-    var timeline = await _matrixRoom.getTimeline(
-        onChange: (val) => {onChange?.call(val), print("onChange")},
-        onRemove: (val) => {onRemove?.call(val), print("onRemove")},
-        onInsert: (val) => _insertMessage(val),
-        onNewEvent: () => {onNewEvent?.call(), print("onNewEvent")},
-        onUpdate: () => {onUpdate?.call(), print("onUpdate")});
-
-    _timeline = await convertMatrixTimeline(timeline);
-
-    return _timeline;
-  }
-
-  void _insertMessage(int index) async {
-    print("Inserting message at index: $index");
-    var timeline = await _matrixRoom.getTimeline();
-    var event = await convertEvent(timeline.events[index], timeline);
-
-    _timeline.events.insert(index, event);
-    onInsert?.call(index);
-  }
-
-  Future<Timeline> convertMatrixTimeline(matrix.Timeline timeline) async {
-    Timeline t = MatrixTimeline();
-    for (var event in timeline.events) {
-      var e = await convertEvent(event, timeline);
-      t.events.add(e);
+  void initTimeline() async {
+    _matrixTimeline = await _matrixRoom.getTimeline(
+      onInsert: (index) async {
+        timeline!.insertEvent(index, await convertEvent(_matrixTimeline.events[index], _matrixTimeline));
+      },
+    );
+    for (int i = 0; i < _matrixTimeline.events.length; i++) {
+      var converted = await convertEvent(_matrixTimeline.events[i], _matrixTimeline);
+      timeline!.insertEvent(i, converted);
     }
-    return t;
   }
 
   Future<TimelineEvent> convertEvent(matrix.Event event, matrix.Timeline timeline) async {
@@ -123,15 +96,4 @@ class MatrixRoom extends Room {
     // TODO: implement sendMessage
     throw UnimplementedError();
   }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    if (other is! Room) return false;
-
-    return identifier == other.identifier;
-  }
-
-  @override
-  int get hashCode => identifier.hashCode;
 }

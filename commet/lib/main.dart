@@ -1,7 +1,6 @@
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/config/style/theme_changer.dart';
 import 'package:commet/screens/login_screen.dart';
-import 'package:commet/screens/room_list_screen.dart';
 import 'package:commet/ui/pages/desktop_chat_view.dart';
 import 'package:flutter/material.dart';
 
@@ -24,6 +23,8 @@ void main() async {
   clientManager.addClient(simulated);
 
   simulated.login(LoginType.loginPassword, "", "");
+
+  simulated.spaces[0].addRoom(simulated.rooms[0]);
 
   await client.init();
 

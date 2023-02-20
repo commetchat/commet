@@ -11,6 +11,9 @@ class SimulatedRoom extends Room {
   SimulatedRoom(displayName, client) : super(RandomUtils.getRandomString(20), client) {
     identifier = RandomUtils.getRandomString(20);
     notificationCount = 1;
+    this.displayName = displayName;
+    timeline = SimulatedTimeline();
+    addMessage();
   }
 
   @override
@@ -19,28 +22,21 @@ class SimulatedRoom extends Room {
     throw UnimplementedError();
   }
 
-  @override
-  Future<Timeline> getTimeline(
-      {void Function(int index)? onChange,
-      void Function(int index)? onRemove,
-      void Function(int insertID)? onInsert,
-      void Function()? onNewEvent,
-      void Function()? onUpdate,
-      String? eventContextId}) async {
-    Timeline t = SimulatedTimeline();
+  void addMessage() async {
     Peer p = SimulatedPeer(client, "alice@commet.chat", "alice", null);
+    print("Adding message");
 
-    for (var i = 0; i < 20; i++) {
+    await Future.delayed(const Duration(seconds: 1), () {
       TimelineEvent e = TimelineEvent();
       e.eventId = RandomUtils.getRandomString(20);
       e.status = TimelineEventStatus.sent;
       e.type = EventType.message;
       e.originServerTs = DateTime.now();
       e.sender = p;
-      e.body = i.toString() + "] " + RandomUtils.getRandomString(50);
-      t.events.add(e);
-    }
+      e.body = RandomUtils.getRandomSentence(Random().nextInt(10) + 10);
+      timeline!.insertEvent(0, e);
+    });
 
-    return t;
+    addMessage();
   }
 }

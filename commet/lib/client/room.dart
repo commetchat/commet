@@ -7,7 +7,7 @@ abstract class Room {
   late Client client;
   final Key key = UniqueKey();
   Future<TimelineEvent?> sendMessage(String message, {TimelineEvent inReplyTo});
-
+  Timeline? timeline = null;
   late ImageProvider? avatar;
 
   late String displayName;
@@ -18,14 +18,6 @@ abstract class Room {
     identifier = identifier;
     client = client;
   }
-
-  Future<Timeline> getTimeline(
-      {void Function(int index)? onChange,
-      void Function(int index)? onRemove,
-      void Function(int insertID)? onInsert,
-      void Function()? onNewEvent,
-      void Function()? onUpdate,
-      String? eventContextId});
 
   @override
   bool operator ==(Object other) {
