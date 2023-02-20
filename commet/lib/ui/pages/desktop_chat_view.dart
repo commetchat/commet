@@ -84,16 +84,14 @@ class _DesktopChatViewState extends State<DesktopChatView> {
                   children: [
                     Flexible(
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Expanded(
                               child: TimelineViewer(
                             key: selectedRoom!.key,
                             room: selectedRoom!,
                           )),
-                          SizedBox(
-                            height: 80,
-                            child: MessageInput(),
-                          )
+                          MessageInput()
                         ],
                       ),
                     ),

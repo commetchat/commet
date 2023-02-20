@@ -3,7 +3,8 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 
 class MessageInput extends StatelessWidget {
-  const MessageInput({super.key});
+  const MessageInput({super.key, this.maxHeight = 200});
+  final double maxHeight;
 
   @override
   Widget build(BuildContext context) {
@@ -20,10 +21,17 @@ class MessageInput extends StatelessWidget {
               child: Row(
                 children: [
                   Flexible(
-                      child: Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                    child: const TextField(),
-                  )),
+                    child: ConstrainedBox(
+                        constraints: BoxConstraints.loose(Size.fromHeight(maxHeight)),
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                          child: const TextField(
+                            maxLines: null,
+                            cursorColor: Colors.white,
+                            cursorWidth: 1,
+                          ),
+                        )),
+                  ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Icon(Icons.emoji_emotions),
