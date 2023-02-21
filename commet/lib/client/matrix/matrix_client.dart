@@ -26,11 +26,6 @@ class MatrixClient extends Client {
         return db;
       },
     );
-
-    _matrixClient.onSync.stream
-        .listen((event) => {log("On Sync Happened?"), onSync.add(null), _updateRoomslist(), _updateSpacesList()});
-
-    log("Done!");
   }
 
   void log(String s) {
@@ -40,13 +35,16 @@ class MatrixClient extends Client {
   @override
   Future<void> init() async {
     log("Initialising client");
-    var result = await _matrixClient.init();
+    if (!_matrixClient.isLogged()) {
+      var result = await _matrixClient.init();
+      if (_matrixClient.userID != null) user = MatrixPeer(_matrixClient, _matrixClient.userID!);
+    }
+
+    _matrixClient.onSync.stream
+        .listen((event) => {log("On Sync Happened?"), onSync.add(null), _updateRoomslist(), _updateSpacesList()});
+
     _updateRoomslist();
     _updateSpacesList();
-
-    if (_matrixClient.userID != null) user = MatrixPeer(_matrixClient, _matrixClient.userID!);
-
-    return result;
   }
 
   @override
@@ -89,9 +87,7 @@ class MatrixClient extends Client {
   }
 
   void _postLoginSuccess() {
-    _updateRoomslist();
-
-    print(_matrixClient.accountData.keys);
+    if (_matrixClient.userID != null) user = MatrixPeer(_matrixClient, _matrixClient.userID!);
   }
 
   void _updateRoomslist() {

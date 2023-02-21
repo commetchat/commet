@@ -19,7 +19,6 @@ class ClientManager {
 
     client.onSync.stream.listen((_) => _synced());
 
-    print("Adding listener to client manager room and spaces");
     client.onRoomAdded.stream.listen((i) {
       rooms.add(client.rooms[i]);
       onRoomAdded.add(rooms.length - 1);
@@ -29,6 +28,10 @@ class ClientManager {
       spaces.add(client.spaces[i]);
       onSpaceAdded.add(spaces.length - 1);
     });
+  }
+
+  List<Client> getClients() {
+    return _clients.values.toList();
   }
 
   void log(Object s) {

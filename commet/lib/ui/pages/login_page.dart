@@ -1,14 +1,59 @@
+import 'package:commet/client/matrix/matrix_client.dart';
+import 'package:commet/ui/pages/desktop_chat_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:provider/provider.dart';
 
-class LoginPage extends StatelessWidget {
+import '../../client/client.dart';
+import '../../client/client_manager.dart';
+
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
   @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final TextEditingController _homeserverTextField = TextEditingController(
+    text: 'matrix.org',
+  );
+  final TextEditingController _usernameTextField = TextEditingController();
+  final TextEditingController _passwordTextField = TextEditingController();
+
+  bool _loading = false;
+
+  void _tryLogin() async {
+    try {
+      final manager = Provider.of<ClientManager>(context, listen: false);
+      var client = MatrixClient();
+
+      var result = await client.login(
+          LoginType.loginPassword, _usernameTextField.text, _homeserverTextField.text.trim(),
+          password: _passwordTextField.text);
+      manager.addClient(client);
+
+      client.init();
+
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const DesktopChatPage()),
+        (route) => false,
+      );
+    } catch (e) {
+      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Material(
-      child: Container(
+    return Scaffold(
+      body: Container(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -34,6 +79,19 @@ class LoginPage extends StatelessWidget {
                           const SizedBox(height: 16),
                           TextField(
                             autocorrect: false,
+                            controller: _homeserverTextField,
+                            readOnly: _loading,
+                            decoration: const InputDecoration(
+                              prefixText: 'https://',
+                              border: OutlineInputBorder(),
+                              labelText: 'Homeserver',
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          TextField(
+                            autocorrect: false,
+                            controller: _usernameTextField,
+                            readOnly: _loading,
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'Username',
@@ -42,10 +100,21 @@ class LoginPage extends StatelessWidget {
                           const SizedBox(height: 16),
                           TextField(
                             autocorrect: false,
+                            controller: _passwordTextField,
                             obscureText: true,
+                            readOnly: _loading,
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'Password',
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          SizedBox(
+                            width: double.infinity,
+                            height: 50,
+                            child: ElevatedButton(
+                              onPressed: _loading ? null : _tryLogin,
+                              child: _loading ? const LinearProgressIndicator() : const Text('Login'),
                             ),
                           ),
                         ]),
