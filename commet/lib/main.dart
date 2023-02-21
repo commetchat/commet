@@ -14,32 +14,17 @@ import 'config/style/theme_dark.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final clientManager = ClientManager();
 
-  // final client = MatrixClient();
-  final simulated = SimulatedClient();
-
-  //clientManager.addClient(client);
-  clientManager.addClient(simulated);
-
-  simulated.login(LoginType.loginPassword, "", "");
-
-  simulated.spaces[0].addRoom(simulated.rooms[0]);
-
-  // await client.init();
-
-  runApp(MatrixExampleChat(
-    client: clientManager,
-  ));
+  runApp(App());
 }
 
-class MatrixExampleChat extends StatelessWidget {
-  final ClientManager client;
-  const MatrixExampleChat({required this.client, Key? key}) : super(key: key);
+class App extends StatelessWidget {
+  App({Key? key}) : super(key: key);
+  final clientManager = ClientManager();
 
   @override
   Widget build(BuildContext context) {
-    /*return ThemeChanger(
+    /* return ThemeChanger(
         initialTheme: ThemeDark().theme,
         materialAppBuilder: ((context, theme) {
           return MaterialApp(
@@ -52,13 +37,14 @@ class MatrixExampleChat extends StatelessWidget {
             home:
                 client.isLoggedIn() ? const RoomListPage() : const LoginPage(),
           );
-        }));*/
+        }));
+      */
 
     return MaterialApp(
         title: 'Commet',
         theme: ThemeDark().theme,
         builder: (context, child) => Provider<ClientManager>(
-              create: (context) => client,
+              create: (context) => clientManager,
               child: child,
             ),
         home: LoginPage() //client.isLoggedIn() ? const DesktopChatPage() : const LoginPage(),
