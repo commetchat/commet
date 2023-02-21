@@ -13,14 +13,14 @@ import 'package:provider/provider.dart';
 import '../../client/client.dart';
 import '../molecules/space_selector.dart';
 
-class DesktopChatView extends StatefulWidget {
-  const DesktopChatView({super.key});
+class DesktopChatPage extends StatefulWidget {
+  const DesktopChatPage({super.key});
 
   @override
-  State<DesktopChatView> createState() => _DesktopChatViewState();
+  State<DesktopChatPage> createState() => _DesktopChatPageState();
 }
 
-class _DesktopChatViewState extends State<DesktopChatView> {
+class _DesktopChatPageState extends State<DesktopChatPage> {
   late ClientManager _clientManager;
   late Space? selectedSpace;
   late Room? selectedRoom;

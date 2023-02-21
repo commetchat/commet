@@ -1,7 +1,7 @@
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/config/style/theme_changer.dart';
-import 'package:commet/screens/login_screen.dart';
-import 'package:commet/ui/pages/desktop_chat_view.dart';
+import 'package:commet/ui/pages/desktop_chat_page.dart';
+import 'package:commet/ui/pages/login_page.dart';
 import 'package:flutter/material.dart';
 
 import 'package:path_provider/path_provider.dart';
@@ -16,17 +16,17 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final clientManager = ClientManager();
 
-  final client = MatrixClient();
+  // final client = MatrixClient();
   final simulated = SimulatedClient();
 
-  clientManager.addClient(client);
+  //clientManager.addClient(client);
   clientManager.addClient(simulated);
 
   simulated.login(LoginType.loginPassword, "", "");
 
   simulated.spaces[0].addRoom(simulated.rooms[0]);
 
-  await client.init();
+  // await client.init();
 
   runApp(MatrixExampleChat(
     client: clientManager,
@@ -55,13 +55,13 @@ class MatrixExampleChat extends StatelessWidget {
         }));*/
 
     return MaterialApp(
-      title: 'Commet',
-      theme: ThemeDark().theme,
-      builder: (context, child) => Provider<ClientManager>(
-        create: (context) => client,
-        child: child,
-      ),
-      home: client.isLoggedIn() ? const DesktopChatView() : const LoginPage(),
-    );
+        title: 'Commet',
+        theme: ThemeDark().theme,
+        builder: (context, child) => Provider<ClientManager>(
+              create: (context) => client,
+              child: child,
+            ),
+        home: LoginPage() //client.isLoggedIn() ? const DesktopChatPage() : const LoginPage(),
+        );
   }
 }
