@@ -56,14 +56,20 @@ class MatrixClient extends Client {
     LoginResult loginResult = LoginResult.error;
 
     log("Attempting to log in!");
-
+    print(type);
     switch (type) {
       case LoginType.loginPassword:
+        print("Checking homeserver");
         await _matrixClient.checkHomeserver((Uri.https((server))));
-        var result = await _matrixClient.login(matrix.LoginType.mLoginPassword,
-            password: password, identifier: matrix.AuthenticationUserIdentifier(user: userIdentifier));
 
-        loginResult = LoginResult.success;
+        try {
+          await _matrixClient.login(matrix.LoginType.mLoginPassword,
+              password: password, identifier: matrix.AuthenticationUserIdentifier(user: userIdentifier));
+          loginResult = LoginResult.success;
+        } catch (_) {
+          loginResult = LoginResult.failed;
+        }
+        print("Result received!");
 
         break;
       case LoginType.token:

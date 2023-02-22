@@ -7,13 +7,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
+import 'package:integration_test/integration_test.dart';
 import 'package:commet/main.dart';
 
 void main() {
   testWidgets('Test Matrix Login', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(App());
+    var app = App();
+    await tester.pumpWidget(app);
 
     var inputs = find.byType(TextField);
     expect(inputs, findsWidgets);
@@ -46,5 +47,7 @@ void main() {
     await tester.tap(button);
 
     await Future.delayed(const Duration(seconds: 20));
+
+    expect(app.clientManager.isLoggedIn(), equals(true));
   });
 }
