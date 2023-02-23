@@ -17,15 +17,6 @@ class MatrixClient extends Client {
 
   MatrixClient() : super(RandomUtils.getRandomString(20)) {
     log("Creating matrix client");
-    _matrixClient = matrix.Client(
-      'Commet',
-      databaseBuilder: (_) async {
-        final dir = await getApplicationSupportDirectory();
-        final db = matrix.HiveCollectionsDatabase('matrix_commet.', dir.path);
-        await db.open();
-        return db;
-      },
-    );
   }
 
   void log(String s) {
@@ -60,16 +51,26 @@ class MatrixClient extends Client {
     switch (type) {
       case LoginType.loginPassword:
         print("Checking homeserver");
+        _matrixClient = matrix.Client(
+          'Commet',
+          databaseBuilder: (_) async {
+            final dir = await getApplicationSupportDirectory();
+            final db = matrix.HiveCollectionsDatabase('matrix_commet.', dir.path);
+            await db.open();
+            return db;
+          },
+        );
+
         await _matrixClient.checkHomeserver((Uri.https((server))));
 
         try {
           await _matrixClient.login(matrix.LoginType.mLoginPassword,
               password: password, identifier: matrix.AuthenticationUserIdentifier(user: userIdentifier));
+
           loginResult = LoginResult.success;
         } catch (_) {
           loginResult = LoginResult.failed;
         }
-        print("Result received!");
 
         break;
       case LoginType.token:
@@ -77,11 +78,9 @@ class MatrixClient extends Client {
         break;
     }
 
-    switch (loginResult) {
-      case LoginResult.success:
-        log("Login success!");
-        _postLoginSuccess();
-        break;
+    if (loginResult == LoginResult.success) {
+      log("Login success!");
+      _postLoginSuccess();
     }
 
     return loginResult;

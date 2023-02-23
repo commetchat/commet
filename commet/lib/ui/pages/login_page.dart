@@ -29,17 +29,26 @@ class _LoginPageState extends State<LoginPage> {
       final manager = Provider.of<ClientManager>(context, listen: false);
       var client = MatrixClient();
 
+      print(_homeserverTextField.text);
+
       var result = await client.login(
           LoginType.loginPassword, _usernameTextField.text, _homeserverTextField.text.trim(),
           password: _passwordTextField.text);
-      manager.addClient(client);
 
-      client.init();
-
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const DesktopChatPage()),
-        (route) => false,
-      );
+      if (result == LoginResult.success) {
+        manager.addClient(client);
+        client.init();
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const DesktopChatPage()),
+          (route) => false,
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Login Failed"),
+          ),
+        );
+      }
     } catch (e) {
       print(e);
       ScaffoldMessenger.of(context).showSnackBar(
