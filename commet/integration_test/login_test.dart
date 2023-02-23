@@ -21,7 +21,7 @@ void main() {
 
     var hs = String.fromEnvironment(
       'HOME_SERVER',
-      defaultValue: 'matrix.org',
+      defaultValue: 'localhost',
     );
 
     var username = String.fromEnvironment(
@@ -34,10 +34,6 @@ void main() {
       defaultValue: 'AliceInWonderland',
     );
 
-    print(inputs.at(0));
-    print(inputs.at(1));
-    print(inputs.at(2));
-
     await tester.enterText(inputs.at(0), hs);
     await tester.enterText(inputs.at(1), username);
     await tester.enterText(inputs.at(2), password);
@@ -46,7 +42,7 @@ void main() {
 
     await tester.tap(button);
 
-    await Future.delayed(const Duration(seconds: 20));
+    await Future.delayed(const Duration(seconds: 5));
 
     expect(app.clientManager.isLoggedIn(), equals(true));
   });

@@ -27,7 +27,7 @@ class MatrixClient extends Client {
   Future<void> init() async {
     log("Initialising client");
     if (!_matrixClient.isLogged()) {
-      var result = await _matrixClient.init();
+      await _matrixClient.init();
       if (_matrixClient.userID != null) user = MatrixPeer(_matrixClient, _matrixClient.userID!);
     }
 
@@ -61,10 +61,13 @@ class MatrixClient extends Client {
           },
         );
 
-        await _matrixClient.checkHomeserver((Uri.https((server))));
+        var uri = Uri.https(server);
+        if (server == "localhost") uri = Uri.http(server);
+
+        await _matrixClient.checkHomeserver(uri);
 
         try {
-          await _matrixClient.login(matrix.LoginType.mLoginPassword,
+          var result = await _matrixClient.login(matrix.LoginType.mLoginPassword,
               password: password, identifier: matrix.AuthenticationUserIdentifier(user: userIdentifier));
 
           loginResult = LoginResult.success;
