@@ -1,0 +1,50 @@
+on: push
+name: integration-test
+
+env:
+  HOMESERVER: localhost
+  USER1_NAME: alice
+  USER1_PW: AliceInWonderLand
+  USER2_NAME: bob
+  USER2_PW: CanWeFixIt
+  PROJECT_PATH: commet
+
+jobs:
+  integration-test:
+    name: Integration Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout  ┏━┓ ︵ /(^.^/)
+        uses: actions/checkout@v2
+        
+      - name: Setup Flutter  ╰(✿˙ᗜ˙)੭━☆ﾟ.*･｡ﾟ
+        uses: subosito/flutter-action@v2.8.0
+        with:
+          flutter-version: '3.7.3'
+          channel: 'stable'
+
+      - name: Setup Tools  ᕙ|” ◉ ◡ ◉ ”|ᕗ
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ninja-build libgtk-3-dev
+
+      - name: Start Synapse  [◯ ‸ ◯]
+        run: |
+          cd $PROJECT_PATH
+          scripts/integration-server-synapse.sh
+
+      - name: Configure Synapse  ╰[ ⁰﹏⁰ ]╯
+        run: |
+          cd $PROJECT_PATH
+          scripts/integration-prepare-homeserver.sh
+
+      
+      - name: Configure Flutter (∩｀-´)⊃━☆ﾟ.*･｡ﾟ
+        run: flutter config --enable-linux-desktop
+
+      - name: Run Tests (っ ºДº)っ ︵ ⌨
+        run: |
+          cd $PROJECT_PATH
+          export DISPLAY=:99
+          sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 &
+          flutter test integration_test -d linux --dart-define=HOMESERVER=$HOMESERVER --dart-define=USER1_NAME=$USER1_NAME --dart-define=USER1_PW=$USER1_PW

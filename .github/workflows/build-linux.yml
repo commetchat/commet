@@ -1,0 +1,29 @@
+on: push
+name: build-linux
+
+env:
+  PROJECT_PATH: commet
+
+jobs:
+  build-linux:
+    name: Build Linux
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2
+        
+      - name: Setup Flutter 💻
+        uses: subosito/flutter-action@v2.8.0
+        with:
+          flutter-version: '3.7.3'
+          channel: 'stable'
+      - name: Setup Tools 💻
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ninja-build libgtk-3-dev
+      - name: Configure Flutter 🔧
+        run: flutter config --enable-linux-desktop
+      - name: Build 🏗️
+        run: |
+          cd $PROJECT_PATH
+          flutter build linux

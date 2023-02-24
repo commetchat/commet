@@ -12,27 +12,17 @@ import 'package:commet/main.dart';
 
 void main() {
   testWidgets('Test Matrix Login', (WidgetTester tester) async {
+    const hs = String.fromEnvironment('HOMESERVER');
+
+    const username = String.fromEnvironment('USER1_NAME');
+
+    const password = String.fromEnvironment('USER1_PW');
     // Build our app and trigger a frame.
     var app = App();
     await tester.pumpWidget(app);
 
     var inputs = find.byType(TextField);
     expect(inputs, findsWidgets);
-
-    var hs = String.fromEnvironment(
-      'HOME_SERVER',
-      defaultValue: 'localhost',
-    );
-
-    var username = String.fromEnvironment(
-      'USER_NAME',
-      defaultValue: 'alice',
-    );
-
-    var password = String.fromEnvironment(
-      'USER_PW',
-      defaultValue: 'AliceInWonderland',
-    );
 
     await tester.enterText(inputs.at(0), hs);
     await tester.enterText(inputs.at(1), username);
