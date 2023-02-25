@@ -32,10 +32,6 @@ class _LoadingPageState extends State<LoadingPage> {
 
     var client = Provider.of<ClientManager>(context, listen: false);
 
-    var sim = SimulatedClient();
-    client.addClient(sim);
-    sim.login(LoginType.loginPassword, "asdhj", "");
-
     print("finished loading");
     Navigator.push(
         context,
