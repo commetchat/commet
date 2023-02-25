@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:io';
+import 'package:commet/client/client_manager.dart';
 import 'package:path/path.dart' as p;
 
 import 'package:crypto/crypto.dart';
@@ -18,6 +20,25 @@ class MatrixClient extends Client {
   late StreamController<void> onSync = StreamController.broadcast();
 
   late matrix.Client _matrixClient;
+
+  static Future<String> getDBPath() async {
+    final dir = await getApplicationSupportDirectory();
+    var path = p.join(dir.path, "matrix") + p.separator;
+    return path;
+  }
+
+  static Future<String> getDBPathWithName(String userName) async {
+    final dir = await getDBPath();
+    var path = p.join(dir, userName, "data");
+    return path;
+  }
+
+  static void loadFromDB(ClientManager manager) async {
+    print("Loading from db");
+    var dir = Directory(await getDBPath());
+    var subdirs = dir.list();
+    subdirs.map((subd) => print(subd.path));
+  }
 
   MatrixClient() : super(RandomUtils.getRandomString(20)) {
     log("Creating matrix client");
@@ -67,9 +88,9 @@ class MatrixClient extends Client {
         _matrixClient = matrix.Client(
           'Commet',
           databaseBuilder: (_) async {
-            final dir = await getApplicationSupportDirectory();
-            var path = p.join(dir.path, name, name) + p.separator;
-            final db = matrix.HiveCollectionsDatabase('data.', path.toString());
+            final dir = await getDBPathWithName(name);
+            print(dir);
+            final db = matrix.HiveCollectionsDatabase('chat.commet.app', dir);
             await db.open();
             return db;
           },

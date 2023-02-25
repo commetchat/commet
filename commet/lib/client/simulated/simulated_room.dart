@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:commet/client/attachment.dart';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/simulated/simulated_peer.dart';
 import 'package:commet/client/simulated/simulated_timeline.dart';
@@ -34,6 +35,12 @@ class SimulatedRoom extends Room {
       e.originServerTs = DateTime.now();
       e.sender = p;
       e.body = RandomUtils.getRandomSentence(Random().nextInt(10) + 10);
+      if (Random().nextInt(10) > 7) {
+        e.attachments = List.empty(growable: true);
+        for (int i = 0; i < Random().nextInt(3) + 1; i++) {
+          e.attachments!.add(Attachment("https://picsum.photos/200/300", "image"));
+        }
+      }
       timeline!.insertEvent(0, e);
     });
 

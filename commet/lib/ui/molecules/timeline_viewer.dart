@@ -1,9 +1,9 @@
+import 'package:commet/ui/molecules/message.dart';
 import 'package:commet/widgets/custom_scroll.dart';
 import 'package:commet/widgets/custom_scroll_bar.dart';
 import 'package:flutter/material.dart';
 
 import '../../client/client.dart';
-import '../../widgets/message.dart';
 
 class TimelineViewer extends StatefulWidget {
   final Room room;
@@ -41,7 +41,10 @@ class _TimelineViewerState extends State<TimelineViewer> {
               initialItemCount: _count,
               itemBuilder: (context, i, animation) => SizeTransition(
                   sizeFactor: animation.drive(CurveTween(curve: Curves.easeOutCubic)),
-                  child: Message(widget.room.timeline!.events[i])),
+                  child: Message(
+                    widget.room.timeline!.events[i],
+                    showSender: true,
+                  )),
             ),
           ),
         ],

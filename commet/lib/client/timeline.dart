@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:commet/client/attachment.dart';
 import 'package:commet/client/peer.dart';
 
 enum TimelineEventStatus {
@@ -69,6 +70,8 @@ class TimelineEvent {
   late DateTime originServerTs;
   // todo: make this better
   late String? body;
+
+  List<Attachment>? attachments;
 }
 
 abstract class Timeline {
