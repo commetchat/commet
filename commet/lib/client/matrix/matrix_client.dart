@@ -1,4 +1,8 @@
 import 'dart:async';
+import 'package:path/path.dart' as p;
+
+import 'package:crypto/crypto.dart';
+import 'dart:convert'; // for the utf8.encode method
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/matrix/matrix_peer.dart';
@@ -51,18 +55,25 @@ class MatrixClient extends Client {
     switch (type) {
       case LoginType.loginPassword:
         print("Checking homeserver");
+
+        var uri = Uri.https(server);
+        if (server == "localhost") uri = Uri.http(server);
+
+        var name = 'matrix_$userIdentifier@$server';
+        var bytes = utf8.encode(name);
+        var hash = sha256.convert(bytes);
+        name = hash.toString();
+
         _matrixClient = matrix.Client(
           'Commet',
           databaseBuilder: (_) async {
             final dir = await getApplicationSupportDirectory();
-            final db = matrix.HiveCollectionsDatabase('matrix_commet.', dir.path);
+            var path = p.join(dir.path, name, name) + p.separator;
+            final db = matrix.HiveCollectionsDatabase('data.', path.toString());
             await db.open();
             return db;
           },
         );
-
-        var uri = Uri.https(server);
-        if (server == "localhost") uri = Uri.http(server);
 
         await _matrixClient.checkHomeserver(uri);
 
@@ -84,6 +95,11 @@ class MatrixClient extends Client {
     if (loginResult == LoginResult.success) {
       log("Login success!");
       _postLoginSuccess();
+    } else {
+      _matrixClient.clearArchivesFromCache();
+      _matrixClient.clear();
+      _matrixClient.database?.close();
+      _matrixClient.database?.clear();
     }
 
     return loginResult;

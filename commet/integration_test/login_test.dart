@@ -11,7 +11,7 @@ import 'package:integration_test/integration_test.dart';
 import 'package:commet/main.dart';
 
 void main() {
-  testWidgets('Test Matrix Login', (WidgetTester tester) async {
+  testWidgets('Test Matrix Login Succeeds', (WidgetTester tester) async {
     const hs = String.fromEnvironment('HOMESERVER');
 
     const username = String.fromEnvironment('USER1_NAME');
@@ -35,5 +35,30 @@ void main() {
     await Future.delayed(const Duration(seconds: 5));
 
     expect(app.clientManager.isLoggedIn(), equals(true));
+  });
+
+  testWidgets('Test Matrix Login Fails', (WidgetTester tester) async {
+    const hs = String.fromEnvironment('HOMESERVER');
+
+    const username = "invalidUser";
+    const password = "InvalidPassword!";
+    // Build our app and trigger a frame.
+    var app = App();
+    await tester.pumpWidget(app);
+
+    var inputs = find.byType(TextField);
+    expect(inputs, findsWidgets);
+
+    await tester.enterText(inputs.at(0), hs);
+    await tester.enterText(inputs.at(1), username);
+    await tester.enterText(inputs.at(2), password);
+
+    var button = find.widgetWithText(ElevatedButton, "Login");
+
+    await tester.tap(button);
+
+    await Future.delayed(const Duration(seconds: 5));
+
+    expect(app.clientManager.isLoggedIn(), equals(false));
   });
 }
