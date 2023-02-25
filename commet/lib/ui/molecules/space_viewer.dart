@@ -58,7 +58,7 @@ class _SpaceViewerState extends State<SpaceViewer> with TickerProviderStateMixin
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Theme.of(context).extension<ExtraColors>()!.surfaceLow,
+      color: Theme.of(context).extension<ExtraColors>()!.surfaceLow1,
       child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: SizedBox(

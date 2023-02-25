@@ -17,6 +17,7 @@ dependencies:
   matrix: ^0.15.12
   flutter_olm: ^1.2.0
   flutter_openssl_crypto: ^0.1.0
+  just_the_tooltip: ^0.0.12
 
 
 dev_dependencies:

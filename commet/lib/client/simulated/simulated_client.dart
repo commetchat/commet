@@ -58,8 +58,11 @@ class SimulatedClient extends Client {
 
   void _updateSpacesList() {
     List<Space> _spaces = List.empty(growable: true);
-
-    addSpace(SimulatedSpace("Simulated Space 1", this));
+    var space = SimulatedSpace("Simulated Space 1", this);
+    for (var room in this.rooms) {
+      space.addRoom(room);
+    }
+    addSpace(space);
     addSpace(SimulatedSpace("Simulated Space 2", this));
     addSpace(SimulatedSpace("Simulated Space 3", this));
 

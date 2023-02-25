@@ -12,10 +12,24 @@ class SpaceHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      color: Theme.of(context).extension<ExtraColors>()!.surfaceLow1,
       width: double.infinity,
-      child: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Text(space.displayName, style: Theme.of(context).textTheme.titleLarge),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+            border:
+                Border(bottom: BorderSide(color: Theme.of(context).extension<ExtraColors>()!.surfaceLow2, width: 1.5)),
+            boxShadow: [BoxShadow(color: Colors.black.withAlpha(50), blurRadius: 10)],
+            color: Theme.of(context).extension<ExtraColors>()!.surfaceLow1),
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(space.displayName, style: Theme.of(context).textTheme.titleLarge),
+            ],
+          ),
+        ),
       ),
     );
   }

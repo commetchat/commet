@@ -19,6 +19,9 @@ class MatrixPeer extends Peer {
 
       var avatarUrl = await _matrixClient.getAvatarUrl(identifier);
       var url = avatarUrl!.getThumbnail(_matrixClient, width: 56, height: 56).toString();
+      userName = identifier.split('@').last.split(':').first;
+      detail = identifier.split(':').last;
+
       if (avatarUrl != null) avatar = NetworkImage(url);
     } catch (_) {
       print("Unable to retreive profile info for: " + identifier);

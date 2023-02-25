@@ -45,7 +45,7 @@ class _SpaceSelectorState extends State<SpaceSelector> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Theme.of(context).extension<ExtraColors>()!.surfaceExtraLow,
+      color: Theme.of(context).extension<ExtraColors>()!.surfaceLow3,
       child: Padding(
         padding: const EdgeInsets.all(7.0),
         child: SizedBox(

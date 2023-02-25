@@ -1,18 +1,13 @@
 import 'package:commet/client/client.dart';
 import 'package:flutter/material.dart';
 
-class SimulatedPeer implements Peer {
-  @override
-  ImageProvider<Object>? avatar;
-
-  @override
-  Client client;
-
-  @override
-  String displayName;
-
-  @override
-  String identifier;
-
-  SimulatedPeer(this.client, this.identifier, this.displayName, this.avatar);
+class SimulatedPeer extends Peer {
+  SimulatedPeer(Client client, String identifier, String displayName, ImageProvider? avatar) {
+    this.client = client;
+    this.identifier = identifier;
+    this.displayName = displayName;
+    this.avatar = avatar;
+    userName = displayName;
+    detail = "simulated";
+  }
 }

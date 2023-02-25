@@ -1,20 +1,31 @@
 import 'package:commet/config/style/theme_extensions.dart';
 import 'package:flutter/material.dart';
 
+class ThemeDarkColors {
+  static const Color surfaceHigh1 = Color.fromARGB(255, 47, 51, 55);
+  static const Color surface = Color.fromARGB(255, 43, 46, 49);
+  static const Color surfaceLow1 = Color.fromARGB(255, 38, 41, 44);
+  static const Color surfaceLow2 = Color.fromARGB(255, 30, 34, 37);
+  static const Color surfaceLow3 = Color.fromARGB(255, 25, 28, 31);
+  static const Color surfaceLowest = Color.fromARGB(255, 19, 21, 22);
+}
+
 class ThemeDark {
   ThemeData get theme => ThemeData(
       brightness: Brightness.dark,
       extensions: const <ThemeExtension<dynamic>>[
         ExtraColors(
-            surfaceLow: Color.fromARGB(255, 38, 41, 44),
-            surfaceExtraLow: Color.fromARGB(255, 22, 24, 26),
-            surfaceLowest: Color.fromARGB(255, 15, 17, 18))
+            surfaceHigh1: ThemeDarkColors.surfaceHigh1,
+            surfaceLow1: ThemeDarkColors.surfaceLow1,
+            surfaceLow2: ThemeDarkColors.surfaceLow2,
+            surfaceLow3: ThemeDarkColors.surfaceLow3,
+            surfaceLowest: ThemeDarkColors.surfaceLowest)
       ],
       colorScheme: ColorScheme(
         primary: Colors.blue,
         secondary: Colors.green,
-        surface: Color.fromARGB(255, 47, 51, 55),
-        background: Colors.grey.shade500,
+        surface: ThemeDarkColors.surface,
+        background: Colors.grey.shade900,
         error: Colors.red,
         onPrimary: Colors.white,
         onSecondary: Colors.white,
@@ -22,6 +33,9 @@ class ThemeDark {
         onBackground: Colors.black,
         onError: Colors.white,
         brightness: Brightness.dark,
+      ),
+      listTileTheme: const ListTileThemeData(
+        tileColor: ThemeDarkColors.surface,
       ),
       textButtonTheme: TextButtonThemeData(
           style: ButtonStyle(

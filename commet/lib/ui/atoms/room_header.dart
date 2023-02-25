@@ -12,10 +12,33 @@ class RoomHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      color: Theme.of(context).colorScheme.surface,
       width: double.infinity,
-      child: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Text(room.displayName, style: Theme.of(context).textTheme.titleMedium),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+            border:
+                Border(bottom: BorderSide(color: Theme.of(context).extension<ExtraColors>()!.surfaceLow2, width: 1.5))),
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Row(
+            children: [
+              SizedBox(
+                  width: 40,
+                  height: 40,
+                  child: Icon(
+                    Icons.tag,
+                    weight: 3,
+                  )),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(room.displayName, style: Theme.of(context).textTheme.titleMedium),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

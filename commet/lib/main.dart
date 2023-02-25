@@ -40,14 +40,18 @@ class App extends StatelessWidget {
         }));
       */
 
+    // var simulated = SimulatedClient();
+    // clientManager.addClient(simulated);
+    // simulated.login(LoginType.loginPassword, "Simulated Client", "");
+
     return MaterialApp(
-        title: 'Commet',
-        theme: ThemeDark().theme,
-        builder: (context, child) => Provider<ClientManager>(
-              create: (context) => clientManager,
-              child: child,
-            ),
-        home: LoginPage() //client.isLoggedIn() ? const DesktopChatPage() : const LoginPage(),
-        );
+      title: 'Commet',
+      theme: ThemeDark().theme,
+      builder: (context, child) => Provider<ClientManager>(
+        create: (context) => clientManager,
+        child: child,
+      ),
+      home: clientManager.isLoggedIn() ? const DesktopChatPage() : const LoginPage(),
+    );
   }
 }

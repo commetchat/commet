@@ -69,8 +69,8 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
                     },
                   )),
                   SizedBox(
-                    height: 70,
-                    child: UserPanel(selectedSpace!.client.user!),
+                    height: 55,
+                    child: Container(color: Colors.red, child: UserPanel(selectedSpace!.client.user!)),
                   )
                 ],
               )),
@@ -83,16 +83,18 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
                 child: Row(
                   children: [
                     Flexible(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Expanded(
-                              child: TimelineViewer(
-                            key: selectedRoom!.key,
-                            room: selectedRoom!,
-                          )),
-                          MessageInput()
-                        ],
+                      child: Container(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Expanded(
+                                child: TimelineViewer(
+                              key: selectedRoom!.key,
+                              room: selectedRoom!,
+                            )),
+                            MessageInput()
+                          ],
+                        ),
                       ),
                     ),
                     SizedBox(width: 250, child: Placeholder()),
