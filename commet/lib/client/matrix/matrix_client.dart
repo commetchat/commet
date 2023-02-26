@@ -21,6 +21,13 @@ class MatrixClient extends Client {
 
   late matrix.Client _matrixClient;
 
+  MatrixClient({String? databasePath}) : super(RandomUtils.getRandomString(20)) {
+    if (databasePath != null) {
+      print("Loading from database" + databasePath);
+      _matrixClient = _createMatrixClient(databasePath);
+    }
+  }
+
   static Future<String> getDBPath() async {
     final dir = await getApplicationSupportDirectory();
     var path = p.join(dir.path, "matrix") + p.separator;
@@ -30,18 +37,23 @@ class MatrixClient extends Client {
   static Future<String> getDBPathWithName(String userName) async {
     final dir = await getDBPath();
     var path = p.join(dir, userName, "data");
+    path += p.separator;
     return path;
   }
 
-  static void loadFromDB(ClientManager manager) async {
-    print("Loading from db");
+  static Future<void> loadFromDB(ClientManager manager) async {
     var dir = Directory(await getDBPath());
-    var subdirs = dir.list();
-    subdirs.map((subd) => print(subd.path));
-  }
 
-  MatrixClient() : super(RandomUtils.getRandomString(20)) {
-    log("Creating matrix client");
+    if (!await dir.exists()) return;
+
+    var subdirs = await dir.list().toList();
+
+    for (var subdir in subdirs) {
+      var databasePath = await getDBPathWithName(p.basename(subdir.absolute.path));
+      var client = MatrixClient(databasePath: databasePath);
+      manager.addClient(client);
+      await client.init();
+    }
   }
 
   void log(String s) {
@@ -66,6 +78,18 @@ class MatrixClient extends Client {
   @override
   bool isLoggedIn() => _matrixClient.isLogged();
 
+  matrix.Client _createMatrixClient(String databasePath) {
+    print("Creating matrix client at " + databasePath);
+    return matrix.Client(
+      'Commet',
+      databaseBuilder: (_) async {
+        final db = matrix.HiveCollectionsDatabase('chat.commet.app', databasePath);
+        await db.open();
+        return db;
+      },
+    );
+  }
+
   @override
   Future<LoginResult> login(LoginType type, String userIdentifier, String server,
       {String? password, String? token}) async {
@@ -84,18 +108,9 @@ class MatrixClient extends Client {
         var bytes = utf8.encode(name);
         var hash = sha256.convert(bytes);
         name = hash.toString();
+        final dir = await getDBPathWithName(name);
 
-        _matrixClient = matrix.Client(
-          'Commet',
-          databaseBuilder: (_) async {
-            final dir = await getDBPathWithName(name);
-            print(dir);
-            final db = matrix.HiveCollectionsDatabase('chat.commet.app', dir);
-            await db.open();
-            return db;
-          },
-        );
-
+        _matrixClient = _createMatrixClient(dir);
         await _matrixClient.checkHomeserver(uri);
 
         try {

@@ -1,6 +1,8 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
+import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/simulated/simulated_client.dart';
+import 'package:commet/ui/pages/desktop_chat_page.dart';
 import 'package:commet/ui/pages/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -24,19 +26,18 @@ class _LoadingPageState extends State<LoadingPage> {
   }
 
   Future<bool> load() async {
-    await Future.delayed(Duration(seconds: 5));
+    var client = Provider.of<ClientManager>(context, listen: false);
+
+    await MatrixClient.loadFromDB(client);
 
     setState(() {
       isLoading = false;
     });
 
-    var client = Provider.of<ClientManager>(context, listen: false);
-
-    print("finished loading");
     Navigator.push(
         context,
         PageRouteBuilder(
-            pageBuilder: (_, __, ___) => LoginPage(),
+            pageBuilder: (_, __, ___) => client.isLoggedIn() ? DesktopChatPage() : LoginPage(),
             transitionDuration: Duration(milliseconds: 500),
             transitionsBuilder: (_, animation, __, child) => SlideTransition(
                 child: child,
