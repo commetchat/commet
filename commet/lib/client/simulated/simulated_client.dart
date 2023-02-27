@@ -6,6 +6,8 @@ import 'package:commet/client/simulated/simulated_space.dart';
 import 'package:commet/utils/rng.dart';
 import 'package:flutter/material.dart';
 
+import '../client_manager.dart';
+
 class SimulatedClient extends Client {
   bool _isLogged = false;
 
@@ -31,6 +33,13 @@ class SimulatedClient extends Client {
 
     _postLoginSuccess();
     return loginResult;
+  }
+
+  static Future<void> loadFromDB(ClientManager clientManager) async {
+    var client = SimulatedClient();
+    clientManager.addClient(client);
+    client.login(LoginType.loginPassword, "alice", "");
+    client.init();
   }
 
   @override

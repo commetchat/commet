@@ -1,5 +1,6 @@
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/ui/atoms/room_header.dart';
+import 'package:commet/ui/atoms/side_panel_button.dart';
 import 'package:commet/ui/atoms/space_header.dart';
 import 'package:commet/ui/molecules/message_input.dart';
 import 'package:commet/ui/molecules/space_viewer.dart';
@@ -37,73 +38,86 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        SizedBox(
-            width: 70,
-            child: SpaceSelector(
-              _clientManager.spaces,
-              onSpaceInsert: _clientManager.onSpaceAdded.stream,
-              showSpaceOwnerAvatar: true,
-              onSelected: (index) {
-                setState(() {
-                  selectedSpace = _clientManager.spaces[index];
-                });
-
-                print("Selected Space: " + selectedSpace!.displayName);
-              },
-            )),
-        if (selectedSpace != null)
-          SizedBox(
-              width: 250,
-              child: Column(
-                children: [
-                  Container(child: SizedBox(height: 50, child: Container(child: SpaceHeader(selectedSpace!)))),
-                  Expanded(
-                      child: SpaceViewer(
-                    selectedSpace!,
-                    key: selectedSpace!.key,
-                    onRoomInsert: selectedSpace!.onRoomAdded.stream,
-                    onRoomSelected: (index) {
-                      setState(() {
-                        selectedRoom = selectedSpace!.rooms[index];
-                      });
-                    },
-                  )),
-                  SizedBox(
-                    height: 55,
-                    child: Container(color: Colors.red, child: UserPanel(selectedSpace!.client.user!)),
-                  )
-                ],
-              )),
-        if (selectedRoom != null)
-          Flexible(
-              child: Column(
-            children: [
-              SizedBox(height: 50, child: RoomHeader(selectedRoom!)),
-              Flexible(
-                child: Row(
-                  children: [
-                    Flexible(
-                      child: Container(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Expanded(
-                                child: TimelineViewer(
-                              key: selectedRoom!.key,
-                              room: selectedRoom!,
-                            )),
-                            MessageInput()
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 250, child: Placeholder()),
-                  ],
-                ),
-              ),
-            ],
-          )),
+        spaceSelector(),
+        if (selectedSpace != null) spaceRoomSelector(),
+        if (selectedRoom != null) roomChatView(),
       ],
     );
+  }
+
+  SizedBox spaceSelector() {
+    return SizedBox(
+        width: 70,
+        child: SpaceSelector(
+          _clientManager.spaces,
+          onSpaceInsert: _clientManager.onSpaceAdded.stream,
+          header: SidePanelButton(
+            tooltip: "Home",
+          ),
+          footer: SidePanelButton(tooltip: "Add a Space"),
+          showSpaceOwnerAvatar: true,
+          onSelected: (index) {
+            setState(() {
+              selectedSpace = _clientManager.spaces[index];
+            });
+            print("Selected Space: " + selectedSpace!.displayName);
+          },
+        ));
+  }
+
+  Flexible roomChatView() {
+    return Flexible(
+        child: Column(
+      children: [
+        SizedBox(height: 50, child: RoomHeader(selectedRoom!)),
+        Flexible(
+          child: Row(
+            children: [
+              Flexible(
+                child: Container(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Expanded(
+                          child: TimelineViewer(
+                        key: selectedRoom!.key,
+                        room: selectedRoom!,
+                      )),
+                      MessageInput()
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(width: 250, child: Placeholder()),
+            ],
+          ),
+        ),
+      ],
+    ));
+  }
+
+  SizedBox spaceRoomSelector() {
+    return SizedBox(
+        width: 250,
+        child: Column(
+          children: [
+            Container(child: SizedBox(height: 50, child: Container(child: SpaceHeader(selectedSpace!)))),
+            Expanded(
+                child: SpaceViewer(
+              selectedSpace!,
+              key: selectedSpace!.key,
+              onRoomInsert: selectedSpace!.onRoomAdded.stream,
+              onRoomSelected: (index) {
+                setState(() {
+                  selectedRoom = selectedSpace!.rooms[index];
+                });
+              },
+            )),
+            SizedBox(
+              height: 55,
+              child: Container(color: Colors.red, child: UserPanel(selectedSpace!.client.user!)),
+            )
+          ],
+        ));
   }
 }

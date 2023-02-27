@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/config/style/theme_extensions.dart';
+import 'package:commet/ui/atoms/side_panel_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -10,12 +11,15 @@ import 'package:provider/provider.dart';
 import '../atoms/space_icon.dart';
 
 class SpaceSelector extends StatefulWidget {
-  SpaceSelector(this.spaces, {super.key, this.onSelected, this.onSpaceInsert, this.showSpaceOwnerAvatar = false});
+  SpaceSelector(this.spaces,
+      {super.key, this.onSelected, this.onSpaceInsert, this.showSpaceOwnerAvatar = false, this.header, this.footer});
   Stream<int>? onSpaceInsert;
   List<Space> spaces;
   bool showSpaceOwnerAvatar;
   @override
   State<SpaceSelector> createState() => _SpaceSelectorState();
+  Widget? header;
+  Widget? footer;
   void Function(int index)? onSelected;
 }
 
@@ -48,20 +52,49 @@ class _SpaceSelectorState extends State<SpaceSelector> {
       color: Theme.of(context).extension<ExtraColors>()!.surfaceLow3,
       child: Padding(
         padding: const EdgeInsets.all(7.0),
-        child: SizedBox(
-          child: AnimatedList(
-            key: _listKey,
-            initialItemCount: _count,
-            itemBuilder: (context, i, animation) => ScaleTransition(
-              scale: animation,
-              child: SpaceIcon(
-                widget.spaces[i],
-                onTap: () => widget.onSelected?.call(i),
-                showUser: widget.showSpaceOwnerAvatar,
+        child: Column(
+          children: [
+            Flexible(
+              child: ScrollConfiguration(
+                behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (widget.header != null) widget.header!,
+                      if (widget.header != null) seperator(),
+                      AnimatedList(
+                        key: _listKey,
+                        shrinkWrap: true,
+                        initialItemCount: _count,
+                        itemBuilder: (context, i, animation) => ScaleTransition(
+                          scale: animation,
+                          child: SpaceIcon(
+                            widget.spaces[i],
+                            onTap: () => widget.onSelected?.call(i),
+                            showUser: widget.showSpaceOwnerAvatar,
+                          ),
+                        ),
+                      ),
+                      if (widget.footer != null) seperator(),
+                      if (widget.footer != null) widget.footer!,
+                    ],
+                  ),
+                ),
               ),
             ),
-          ),
+          ],
         ),
+      ),
+    );
+  }
+
+  Padding seperator() {
+    return const Padding(
+      padding: EdgeInsets.all(8.0),
+      child: Divider(
+        height: 1,
       ),
     );
   }
