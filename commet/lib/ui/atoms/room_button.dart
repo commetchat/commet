@@ -4,9 +4,10 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 
 class RoomButton extends StatefulWidget {
-  RoomButton(this.room, {super.key, this.onTap});
-  final Room room;
+  RoomButton(this.displayText, {super.key, this.onTap, this.icon = Icons.tag});
+  final String displayText;
   void Function()? onTap;
+  IconData icon = Icons.tag;
 
   @override
   State<RoomButton> createState() => _RoomButtonState();
@@ -21,19 +22,19 @@ class _RoomButtonState extends State<RoomButton> {
         child: TextButton(
             child: Row(
               children: [
-                const Padding(
+                Padding(
                   padding: EdgeInsets.all(2.0),
                   child: SizedBox(
                       width: 30,
                       height: 30,
                       child: Icon(
-                        Icons.tag,
+                        widget.icon,
                         weight: 3,
                       )),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Align(alignment: Alignment.centerLeft, child: Text(widget.room.displayName)),
+                  child: Align(alignment: Alignment.centerLeft, child: Text(widget.displayText)),
                 ),
               ],
             ),

@@ -66,6 +66,7 @@ class _SpaceSelectorState extends State<SpaceSelector> {
                       if (widget.header != null) seperator(),
                       AnimatedList(
                         key: _listKey,
+                        physics: NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
                         initialItemCount: _count,
                         itemBuilder: (context, i, animation) => ScaleTransition(

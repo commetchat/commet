@@ -7,6 +7,7 @@ import 'package:flutter/src/widgets/placeholder.dart';
 import '../../client/client.dart';
 import '../../config/style/theme_extensions.dart';
 import '../atoms/room_button.dart';
+import '../atoms/room_list.dart';
 
 class SpaceViewer extends StatefulWidget {
   SpaceViewer(this.space, {super.key, this.onRoomSelected, this.onRoomInsert});
@@ -20,34 +21,6 @@ class SpaceViewer extends StatefulWidget {
 }
 
 class _SpaceViewerState extends State<SpaceViewer> with TickerProviderStateMixin {
-  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
-  int _count = 0;
-  late StreamSubscription<int>? onInsertListener;
-  late StreamSubscription<void>? onUpdateListener;
-
-  @override
-  void initState() {
-    onUpdateListener = widget.space.onUpdate.stream.listen((event) {
-      setState(() {});
-    });
-
-    onInsertListener = widget.onRoomInsert?.listen((index) {
-      _listKey.currentState?.insertItem(index);
-      _count++;
-    });
-
-    _count = widget.space.rooms.length;
-
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    onInsertListener?.cancel();
-    onUpdateListener?.cancel();
-    super.dispose();
-  }
-
   @override
   void setState(VoidCallback fn) {
     // TODO: implement setState
@@ -67,19 +40,14 @@ class _SpaceViewerState extends State<SpaceViewer> with TickerProviderStateMixin
               mainAxisSize: MainAxisSize.min,
               children: [
                 Flexible(
-                  child: AnimatedList(
-                    key: _listKey,
-                    initialItemCount: _count,
-                    scrollDirection: Axis.vertical,
-                    itemBuilder: (context, i, animation) => ScaleTransition(
-                      scale: animation,
-                      child: RoomButton(
-                        widget.space.rooms[i],
-                        onTap: () => {widget.onRoomSelected?.call(i)},
-                      ),
-                    ),
-                  ),
-                ),
+                    child: RoomList(
+                  widget.space.rooms,
+                  expanderText: "Test Expander",
+                  onInsertStream: widget.space.onRoomAdded.stream,
+                  onUpdateStream: widget.space.onUpdate.stream,
+                  onRoomSelected: widget.onRoomSelected,
+                  expandable: true,
+                )),
               ],
             ),
           )),
