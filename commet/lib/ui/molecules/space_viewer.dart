@@ -46,7 +46,7 @@ class _SpaceViewerState extends State<SpaceViewer> with TickerProviderStateMixin
                   onInsertStream: widget.space.onRoomAdded.stream,
                   onUpdateStream: widget.space.onUpdate.stream,
                   onRoomSelected: widget.onRoomSelected,
-                  expandable: true,
+                  expandable: false,
                 )),
               ],
             ),

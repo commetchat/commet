@@ -12,7 +12,9 @@ import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:provider/provider.dart';
 
 import '../../client/client.dart';
+import '../atoms/popup_dialog.dart';
 import '../molecules/space_selector.dart';
+import '../organisms/add_space_dialog.dart';
 
 class DesktopChatPage extends StatefulWidget {
   const DesktopChatPage({super.key});
@@ -54,7 +56,12 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
           header: SidePanelButton(
             tooltip: "Home",
           ),
-          footer: SidePanelButton(tooltip: "Add a Space"),
+          footer: SidePanelButton(
+            tooltip: "Add a Space",
+            onTap: () {
+              PopupDialog.Show(context, AddSpaceDialog(), title: "Add Space");
+            },
+          ),
           showSpaceOwnerAvatar: true,
           onSelected: (index) {
             setState(() {

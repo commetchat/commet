@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/config/style/theme_extensions.dart';
+import 'package:commet/ui/atoms/seperator.dart';
 import 'package:commet/ui/atoms/side_panel_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -63,7 +64,7 @@ class _SpaceSelectorState extends State<SpaceSelector> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       if (widget.header != null) widget.header!,
-                      if (widget.header != null) seperator(),
+                      if (widget.header != null) Seperator(),
                       AnimatedList(
                         key: _listKey,
                         physics: NeverScrollableScrollPhysics(),
@@ -78,7 +79,7 @@ class _SpaceSelectorState extends State<SpaceSelector> {
                           ),
                         ),
                       ),
-                      if (widget.footer != null) seperator(),
+                      if (widget.footer != null) Seperator(),
                       if (widget.footer != null) widget.footer!,
                     ],
                   ),
@@ -87,15 +88,6 @@ class _SpaceSelectorState extends State<SpaceSelector> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Padding seperator() {
-    return const Padding(
-      padding: EdgeInsets.all(8.0),
-      child: Divider(
-        height: 1,
       ),
     );
   }
