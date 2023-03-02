@@ -11,12 +11,21 @@ import 'package:provider/provider.dart';
 import 'client/client.dart';
 import 'client/matrix/matrix_client.dart';
 import 'client/simulated/simulated_client.dart';
+import 'config/build_config.dart';
 import 'config/style/theme_dark.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final ClientManager clientManager = ClientManager();
+
+  if (BuildConfig.DEBUG) {
+    print("Is Debug Mode!");
+  } else if (BuildConfig.RELEASE) {
+    print("Is Release Mode");
+  } else {
+    print("Unknown build config");
+  }
 
   runApp(MaterialApp(
       home: App(),

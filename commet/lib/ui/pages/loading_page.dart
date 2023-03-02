@@ -9,6 +9,8 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:provider/provider.dart';
 
+import '../../config/build_config.dart';
+
 class LoadingPage extends StatefulWidget {
   const LoadingPage({super.key});
 
@@ -28,8 +30,11 @@ class _LoadingPageState extends State<LoadingPage> {
   Future<bool> load() async {
     var client = Provider.of<ClientManager>(context, listen: false);
 
-    //await MatrixClient.loadFromDB(client);
-    await SimulatedClient.loadFromDB(client);
+    await MatrixClient.loadFromDB(client);
+
+    if (BuildConfig.DEBUG) {
+      await SimulatedClient.loadFromDB(client);
+    }
 
     setState(() {
       isLoading = false;

@@ -47,4 +47,4 @@ jobs:
           cd $PROJECT_PATH
           export DISPLAY=:99
           sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 &
-          flutter test integration_test -d linux --dart-define=HOMESERVER=$HOMESERVER --dart-define=USER1_NAME=$USER1_NAME --dart-define=USER1_PW=$USER1_PW
+          scripts/integration-test.sh
