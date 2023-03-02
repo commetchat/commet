@@ -47,6 +47,10 @@ class _SpaceViewerState extends State<SpaceViewer> with TickerProviderStateMixin
                   onUpdateStream: widget.space.onUpdate.stream,
                   onRoomSelected: widget.onRoomSelected,
                   expandable: false,
+                  showHeader: true,
+                  onRoomReordered: (oldIndex, newIndex) {
+                    widget.space.reorderRooms(oldIndex, newIndex);
+                  },
                 )),
               ],
             ),

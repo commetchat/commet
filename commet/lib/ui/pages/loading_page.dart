@@ -28,8 +28,8 @@ class _LoadingPageState extends State<LoadingPage> {
   Future<bool> load() async {
     var client = Provider.of<ClientManager>(context, listen: false);
 
-    await MatrixClient.loadFromDB(client);
-    // await SimulatedClient.loadFromDB(client);
+    //await MatrixClient.loadFromDB(client);
+    await SimulatedClient.loadFromDB(client);
 
     setState(() {
       isLoading = false;

@@ -22,6 +22,11 @@ class SimulatedSpace extends Space {
     avatar = AssetImage(images[placeholderImageIndex]);
   }
 
+  @override
+  void onRoomReorderedCallback(int oldIndex, int newIndex) {
+    print("REORDERED IN SIMULATED SPACE");
+  }
+
   static const _chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
   final Random _rnd = Random();
 

@@ -41,6 +41,18 @@ abstract class Space {
     }
   }
 
+  void reorderRooms(int oldIndex, int newIndex) {
+    onRoomReorderedCallback(oldIndex, newIndex);
+
+    if (newIndex > oldIndex) {
+      newIndex = newIndex - 1;
+    }
+    final item = rooms.removeAt(oldIndex);
+    rooms.insert(newIndex, item);
+  }
+
+  void onRoomReorderedCallback(int oldIndex, int newIndex) {}
+
   @override
   int get hashCode => identifier.hashCode;
 }

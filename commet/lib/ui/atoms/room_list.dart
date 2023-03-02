@@ -14,14 +14,18 @@ class RoomList extends StatefulWidget {
       this.onInsertStream,
       this.onUpdateStream,
       this.onRoomSelected,
+      this.onRoomReordered,
       this.expandable = false,
+      this.showHeader = false,
       this.expanderText});
   bool expandable;
+  bool showHeader;
   List<Room> rooms;
   Stream<void>? onUpdateStream;
   Stream<int>? onInsertStream;
   String? expanderText;
   void Function(int)? onRoomSelected;
+  void Function(int oldIndex, int newIndex)? onRoomReordered;
   @override
   State<RoomList> createState() => _RoomListState();
 }
@@ -33,6 +37,7 @@ class _RoomListState extends State<RoomList> with SingleTickerProviderStateMixin
   StreamSubscription<void>? onUpdateListener;
   AnimationController? controller;
   bool expanded = false;
+  bool editMode = false;
 
   @override
   void initState() {
@@ -64,6 +69,7 @@ class _RoomListState extends State<RoomList> with SingleTickerProviderStateMixin
     return SingleChildScrollView(
       child: Column(
         children: [
+          if (widget.showHeader) header(),
           if (widget.expandable)
             RoomButton(
               widget.expanderText!,
@@ -85,7 +91,52 @@ class _RoomListState extends State<RoomList> with SingleTickerProviderStateMixin
     );
   }
 
-  AnimatedList listRooms() {
+  Widget header() {
+    return Material(
+      child: Padding(
+        padding: const EdgeInsets.all(2.0),
+        child: SizedBox(
+          height: 40,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                "Rooms",
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              Spacer(),
+              ElevatedButton.icon(onPressed: toggleEditMode, icon: Icon(Icons.edit), label: Text("ASASD"))
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void toggleEditMode() {
+    setState(() {
+      editMode = !editMode;
+    });
+  }
+
+  Widget listRooms() {
+    if (editMode) {
+      return ReorderableListView.builder(
+        itemBuilder: (context, index) {
+          return RoomButton(
+            widget.rooms[index].displayName,
+            key: widget.rooms[index].key,
+          );
+        },
+        itemCount: widget.rooms.length,
+        onReorder: (oldIndex, newIndex) {
+          widget.onRoomReordered?.call(oldIndex, newIndex);
+        },
+        shrinkWrap: true,
+      );
+    }
+
     return AnimatedList(
       key: _listKey,
       initialItemCount: _count,
