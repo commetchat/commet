@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 class BuildConfig {
   static const bool DEBUG = String.fromEnvironment('BUILD_MODE', defaultValue: "debug") == "debug";
 
