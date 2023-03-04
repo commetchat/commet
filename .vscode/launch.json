@@ -5,10 +5,22 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "commet",
+            "name": "commet (debug desktop)",
             "cwd": "commet",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "toolArgs": [
+                "--dart-define", "PLATFORM=desktop"
+            ],
+        },
+        {
+            "name": "commet (debug mobile)",
+            "cwd": "commet",
+            "request": "launch",
+            "type": "dart",
+            "toolArgs": [
+                "--dart-define", "PLATFORM=mobile"
+            ],
         },
         {
             "name": "commet (profile mode)",

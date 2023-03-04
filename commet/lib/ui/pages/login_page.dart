@@ -1,4 +1,5 @@
 import 'package:commet/client/matrix/matrix_client.dart';
+import 'package:commet/ui/pages/chat_page.dart';
 import 'package:commet/ui/pages/desktop_chat_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -39,7 +40,7 @@ class _LoginPageState extends State<LoginPage> {
         manager.addClient(client);
         client.init();
         Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (_) => const DesktopChatPage()),
+          MaterialPageRoute(builder: (_) => const ChatPage()),
           (route) => false,
         );
       } else {

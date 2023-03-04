@@ -34,26 +34,23 @@ class _SpaceViewerState extends State<SpaceViewer> with TickerProviderStateMixin
       color: Theme.of(context).extension<ExtraColors>()!.surfaceLow1,
       child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: SizedBox(
-            width: 300,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Flexible(
-                    child: RoomList(
-                  widget.space.rooms,
-                  expanderText: "Test Expander",
-                  onInsertStream: widget.space.onRoomAdded.stream,
-                  onUpdateStream: widget.space.onUpdate.stream,
-                  onRoomSelected: widget.onRoomSelected,
-                  expandable: false,
-                  showHeader: true,
-                  onRoomReordered: (oldIndex, newIndex) {
-                    widget.space.reorderRooms(oldIndex, newIndex);
-                  },
-                )),
-              ],
-            ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Flexible(
+                  child: RoomList(
+                widget.space.rooms,
+                expanderText: "Test Expander",
+                onInsertStream: widget.space.onRoomAdded.stream,
+                onUpdateStream: widget.space.onUpdate.stream,
+                onRoomSelected: widget.onRoomSelected,
+                expandable: false,
+                showHeader: true,
+                onRoomReordered: (oldIndex, newIndex) {
+                  widget.space.reorderRooms(oldIndex, newIndex);
+                },
+              )),
+            ],
           )),
     );
   }

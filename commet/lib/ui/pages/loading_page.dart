@@ -2,8 +2,10 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/simulated/simulated_client.dart';
+import 'package:commet/ui/pages/chat_page.dart';
 import 'package:commet/ui/pages/desktop_chat_page.dart';
 import 'package:commet/ui/pages/login_page.dart';
+import 'package:commet/ui/pages/mobile_chat_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -32,6 +34,9 @@ class _LoadingPageState extends State<LoadingPage> {
 
     await MatrixClient.loadFromDB(client);
 
+    //dont let simulated client contribute to logged in status
+    bool isLoggedIn = client.isLoggedIn();
+
     if (BuildConfig.DEBUG) {
       await SimulatedClient.loadFromDB(client);
     }
@@ -43,7 +48,7 @@ class _LoadingPageState extends State<LoadingPage> {
     Navigator.push(
         context,
         PageRouteBuilder(
-            pageBuilder: (_, __, ___) => client.isLoggedIn() ? DesktopChatPage() : LoginPage(),
+            pageBuilder: (_, __, ___) => isLoggedIn ? ChatPage() : LoginPage(),
             transitionDuration: Duration(milliseconds: 500),
             transitionsBuilder: (_, animation, __, child) => SlideTransition(
                 child: child,

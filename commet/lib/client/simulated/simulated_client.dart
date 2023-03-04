@@ -74,11 +74,18 @@ class SimulatedClient extends Client {
     addSpace(space);
     addSpace(SimulatedSpace("Simulated Space 2", this));
     addSpace(SimulatedSpace("Simulated Space 3", this));
+    addSpace(SimulatedSpace("Simulated Space 4", this));
+    addSpace(SimulatedSpace("Simulated Space 5", this));
+    addSpace(SimulatedSpace("Simulated Space 6", this));
+    addSpace(SimulatedSpace("Simulated Space 7", this));
+    addSpace(SimulatedSpace("Simulated Space 8", this));
+    addSpace(SimulatedSpace("Simulated Space 9", this));
+    addSpace(SimulatedSpace("Simulated Space 10", this));
 
     Future.delayed(const Duration(seconds: 10), () {
       List<Space> _spaces = List.empty(growable: true);
-      addSpace(SimulatedSpace("Simulated Space 4", this));
-      addSpace(SimulatedSpace("Simulated Space 5", this));
+      addSpace(SimulatedSpace("Simulated Space 11", this));
+      addSpace(SimulatedSpace("Simulated Space 12", this));
     });
   }
 }
