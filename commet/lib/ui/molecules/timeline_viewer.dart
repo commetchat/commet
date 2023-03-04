@@ -38,6 +38,7 @@ class _TimelineViewerState extends State<TimelineViewer> {
             child: AnimatedList(
               key: _listKey,
               reverse: true,
+              physics: BouncingScrollPhysics(),
               initialItemCount: _count,
               itemBuilder: (context, i, animation) => SizeTransition(
                   sizeFactor: animation.drive(CurveTween(curve: Curves.easeOutCubic)),

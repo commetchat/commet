@@ -2,7 +2,6 @@ import 'package:commet/ui/atoms/popup_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:overlapping_panels/overlapping_panels.dart';
 import 'package:provider/provider.dart';
 
 import '../../client/client_manager.dart';
@@ -12,6 +11,7 @@ import '../atoms/room_header.dart';
 import '../atoms/side_panel_button.dart';
 import '../atoms/space_header.dart';
 import '../molecules/message_input.dart';
+import '../molecules/overlapping_panels.dart';
 import '../molecules/space_selector.dart';
 import '../molecules/space_viewer.dart';
 import '../molecules/timeline_viewer.dart';
@@ -41,7 +41,9 @@ class _MobileChatPageState extends State<MobileChatPage> {
 
   @override
   Widget build(BuildContext newContext) {
-    return OverlappingPanels(key: panelsKey, left: navigation(newContext), main: timelineView(), right: Placeholder());
+    return SafeArea(
+        child: OverlappingPanels(
+            key: panelsKey, left: navigation(newContext), main: timelineView(), right: Placeholder()));
   }
 
   Widget navigation(BuildContext newContext) {
@@ -103,7 +105,7 @@ class _MobileChatPageState extends State<MobileChatPage> {
                   selectedRoom = selectedSpace!.rooms[index];
                   print(panelsKey);
                   print(panelsKey.currentState);
-                  panelsKey.currentState!.reveal(RevealSide.right);
+                  panelsKey.currentState!.reveal(RevealSide.main);
                 });
               },
             ),
