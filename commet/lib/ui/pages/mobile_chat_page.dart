@@ -15,6 +15,7 @@ import '../molecules/overlapping_panels.dart';
 import '../molecules/space_selector.dart';
 import '../molecules/space_viewer.dart';
 import '../molecules/timeline_viewer.dart';
+import '../molecules/user_list.dart';
 import '../organisms/add_space_dialog.dart';
 
 class MobileChatPage extends StatefulWidget {
@@ -43,7 +44,10 @@ class _MobileChatPageState extends State<MobileChatPage> {
   Widget build(BuildContext newContext) {
     return SafeArea(
         child: OverlappingPanels(
-            key: panelsKey, left: navigation(newContext), main: timelineView(), right: Placeholder()));
+            key: panelsKey,
+            left: navigation(newContext),
+            main: timelineView(),
+            right: selectedRoom != null ? userList() : null));
   }
 
   Widget navigation(BuildContext newContext) {
@@ -75,6 +79,19 @@ class _MobileChatPageState extends State<MobileChatPage> {
             print("Selected Space: " + selectedSpace!.displayName);
           },
         ));
+  }
+
+  Widget userList() {
+    if (selectedRoom != null) {
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(50, 20, 0, 0),
+        child: PeerList(
+          selectedRoom!.members,
+          key: selectedRoom!.key,
+        ),
+      );
+    }
+    return Placeholder();
   }
 
   Widget timelineView() {

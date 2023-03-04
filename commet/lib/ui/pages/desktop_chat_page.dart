@@ -5,6 +5,7 @@ import 'package:commet/ui/atoms/space_header.dart';
 import 'package:commet/ui/molecules/message_input.dart';
 import 'package:commet/ui/molecules/space_viewer.dart';
 import 'package:commet/ui/molecules/timeline_viewer.dart';
+import 'package:commet/ui/molecules/user_list.dart';
 import 'package:commet/ui/molecules/user_panel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -95,7 +96,12 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
                   ),
                 ),
               ),
-              SizedBox(width: 250, child: Placeholder()),
+              SizedBox(
+                  width: 250,
+                  child: PeerList(
+                    selectedRoom!.members,
+                    key: selectedRoom!.key,
+                  )),
             ],
           ),
         ),

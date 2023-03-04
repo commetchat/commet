@@ -9,12 +9,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 
 class SimulatedRoom extends Room {
+  late Peer alice = SimulatedPeer(
+      client, "alice@commet.chat", "alice", AssetImage("assets/images/placeholder/generic/checker_green.png"));
+  late Peer bob = SimulatedPeer(
+      client, "bob@commet.chat", "bob", AssetImage("assets/images/placeholder/generic/checker_orange.png"));
+
   SimulatedRoom(displayName, client) : super(RandomUtils.getRandomString(20), client) {
     identifier = RandomUtils.getRandomString(20);
     notificationCount = 1;
     this.displayName = displayName;
     timeline = SimulatedTimeline();
     addMessage();
+
+    members.add(alice);
+    members.add(bob);
+    members.add((client as Client).user!);
   }
 
   @override
@@ -24,8 +33,7 @@ class SimulatedRoom extends Room {
   }
 
   void addMessage() async {
-    Peer p = SimulatedPeer(client, "alice@commet.chat", "alice", null);
-    print("Adding message");
+    Peer sender = Random().nextDouble() > 0.5 ? alice : bob;
 
     await Future.delayed(const Duration(seconds: 1), () {
       TimelineEvent e = TimelineEvent();
@@ -33,7 +41,7 @@ class SimulatedRoom extends Room {
       e.status = TimelineEventStatus.sent;
       e.type = EventType.message;
       e.originServerTs = DateTime.now();
-      e.sender = p;
+      e.sender = sender;
       e.body = RandomUtils.getRandomSentence(Random().nextInt(10) + 10);
       if (Random().nextInt(10) > 7) {
         e.attachments = List.empty(growable: true);

@@ -24,17 +24,12 @@ class _MessageState extends State<Message> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (widget.showSender)
-            SizedBox(
-              width: 40,
-              height: 40,
-              child: CircleAvatar(
-                foregroundImage: widget.event.sender.avatar,
-              ),
+            Avatar.medium(
+              image: widget.event.sender.avatar,
             ),
           if (!widget.showSender)
-            SizedBox(
-              width: 40,
-              child: Container(),
+            Avatar.medium(
+              image: null,
             ),
           Flexible(
             child: Padding(

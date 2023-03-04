@@ -9,6 +9,7 @@ abstract class Room {
   Future<TimelineEvent?> sendMessage(String message, {TimelineEvent inReplyTo});
   Timeline? timeline = null;
   late ImageProvider? avatar;
+  late List<Peer> members;
 
   late String displayName;
 
@@ -17,6 +18,7 @@ abstract class Room {
   Room(this.identifier, this.client) {
     identifier = identifier;
     client = client;
+    members = List.empty(growable: true);
   }
 
   @override

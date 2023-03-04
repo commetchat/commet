@@ -48,11 +48,12 @@ class SimulatedClient extends Client {
   }
 
   void _postLoginSuccess() {
-    _updateRoomslist();
-    _updateSpacesList();
-
     user = SimulatedPeer(
         this, "simulated@example.com", "Simulated", AssetImage("assets/images/placeholder/generic/checker_red.png"));
+    peers.add(user!);
+
+    _updateRoomslist();
+    _updateSpacesList();
   }
 
   void _updateRoomslist() {

@@ -42,10 +42,7 @@ class _TimelineViewerState extends State<TimelineViewer> {
               initialItemCount: _count,
               itemBuilder: (context, i, animation) => SizeTransition(
                   sizeFactor: animation.drive(CurveTween(curve: Curves.easeOutCubic)),
-                  child: Message(
-                    widget.room.timeline!.events[i],
-                    showSender: true,
-                  )),
+                  child: Message(widget.room.timeline!.events[i], showSender: true)),
             ),
           ),
         ],
