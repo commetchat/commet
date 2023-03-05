@@ -5,7 +5,6 @@ import 'package:commet/ui/atoms/space_header.dart';
 import 'package:commet/ui/molecules/alternate_timeline_viewer.dart';
 import 'package:commet/ui/molecules/message_input.dart';
 import 'package:commet/ui/molecules/space_viewer.dart';
-import 'package:commet/ui/molecules/timeline_viewer.dart';
 import 'package:commet/ui/molecules/user_list.dart';
 import 'package:commet/ui/molecules/user_panel.dart';
 import 'package:flutter/foundation.dart';

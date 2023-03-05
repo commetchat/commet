@@ -16,7 +16,6 @@ import '../molecules/message_input.dart';
 import '../molecules/overlapping_panels.dart';
 import '../molecules/space_selector.dart';
 import '../molecules/space_viewer.dart';
-import '../molecules/timeline_viewer.dart';
 import '../molecules/user_list.dart';
 import '../organisms/add_space_dialog.dart';
 
