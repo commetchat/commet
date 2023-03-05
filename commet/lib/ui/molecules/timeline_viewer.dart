@@ -1,9 +1,13 @@
+import 'dart:async';
+import 'dart:math';
+
 import 'package:commet/config/style/theme_extensions.dart';
 import 'package:commet/ui/molecules/message.dart';
 import 'package:commet/widgets/custom_scroll.dart';
 import 'package:commet/widgets/custom_scroll_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/scheduler.dart';
 
 import '../../client/client.dart';
 
@@ -17,69 +21,103 @@ class TimelineViewer extends StatefulWidget {
 
 class _TimelineViewerState extends State<TimelineViewer> {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
-  final ScrollController scrollController = ScrollController();
-  int _count = 0;
-  final GlobalKey _offstageMessageKey = GlobalKey();
-  late List<TimelineEvent> _renderedEvents;
+  late ScrollController scrollController;
+  int _displayCount = 0;
+  late GlobalKey lastKey;
 
-  int _lastAddedMessageIndex = 0;
-
-  final ValueNotifier<double> _messageHeight = ValueNotifier<double>(-1);
-  bool disposing = false;
-
-  @override
-  void dispose() {
-    disposing = true;
-  }
+  late List<TimelineEvent> displayEvents;
 
   bool isScrolledToBottom() {
-    return scrollController.position.pixels <= scrollController.position.minScrollExtent;
+    var result = scrollController.position.pixels >= scrollController.position.maxScrollExtent;
+    return result;
   }
 
   bool isScrolledToTop() {
-    return scrollController.position.pixels >= scrollController.position.maxScrollExtent;
+    return scrollController.position.pixels <= scrollController.position.minScrollExtent;
   }
 
-  double prevHeight = 0;
+  // We manually reverse the list because using ListView's 'reverse' makes the scroll behaviour annoying
+  // And doing it this way allows us to work around some annoying hacky stuff like offsetting the scroll position
+  // When appending new items to the list
+  int reverseIndex(int index) {
+    return _displayCount - index - 1;
+  }
 
-  void onNextFrame(_) {
-    print("-----");
-    double height = _offstageMessageKey.currentContext!.size!.height;
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
+  }
 
-    print("Next message height: " + _offstageMessageKey.currentContext!.size.toString());
+  void loadMoreHistory() {
+    double scrollHeight = scrollController.position.maxScrollExtent;
+    var timelineEvents = widget.room.timeline!.events;
+    int numToCopy = min(20, timelineEvents.length - displayEvents.length);
+    if (displayEvents.length < timelineEvents.length) {
+      int startIndex = displayEvents.length;
+      displayEvents.addAll(timelineEvents.sublist(displayEvents.length, displayEvents.length + numToCopy));
+      int endIndex = displayEvents.length;
+      _displayCount = displayEvents.length;
 
-    _renderedEvents.insert(_lastAddedMessageIndex, widget.room.timeline!.events[_lastAddedMessageIndex]);
-    _listKey.currentState?.insertItem(_lastAddedMessageIndex, duration: const Duration(milliseconds: 500));
-    if (scrollController.position.isScrollingNotifier.value) {
-      print("Skipping offset because user scrolling");
-      return;
+      for (int i = startIndex; i < endIndex; i++) {
+        _listKey.currentState!.insertItem(reverseIndex(i));
+      }
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        print(scrollHeight);
+        print(scrollController.position.maxScrollExtent);
+        print(scrollController.position.maxScrollExtent - scrollHeight);
+      });
     }
-    if (!isScrolledToBottom()) scrollController.jumpTo(scrollController.offset + 68);
   }
 
-  double prev = 0;
+  void recursiveScrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      scrollController.jumpTo(scrollController.position.maxScrollExtent);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!isScrolledToBottom()) {
+          recursiveScrollToBottom();
+        }
+      });
+    });
+  }
 
   @override
   void initState() {
-    _count = widget.room.timeline!.events.length;
+    displayEvents = List.from(widget.room.timeline!.events.sublist(0, min(20, widget.room.timeline!.events.length - 1)),
+        growable: true);
+    _displayCount = displayEvents.length;
 
-    _renderedEvents = List.from(widget.room.timeline!.events, growable: true);
-    _count = _renderedEvents.length;
+    print("Num Events: " + _displayCount.toString());
+
+    scrollController = ScrollController();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      scrollController.animateTo(scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 500), curve: Curves.easeOutExpo);
+    });
 
     widget.room.timeline!.onEventAdded.stream.listen((index) {
-      if (!disposing) {
-        setState(() {
-          _lastAddedMessageIndex = index;
-        });
+      _displayCount++;
+      if (index < displayEvents.length) {
+        displayEvents.insert(index, widget.room.timeline!.events[index]);
 
-        WidgetsBinding.instance.addPostFrameCallback(onNextFrame);
+        _listKey.currentState?.insertItem(reverseIndex(index), duration: const Duration(milliseconds: 0));
+      }
+
+      if (!scrollController.hasClients) return;
+
+      if (isScrolledToBottom()) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          scrollController.animateTo(scrollController.position.maxScrollExtent,
+              duration: const Duration(milliseconds: 500), curve: Curves.easeOutExpo);
+        });
       }
     });
 
     scrollController.addListener(() {
-      print("Scrolling");
       if (isScrolledToTop()) {
-        widget.room.timeline!.loadMoreHistory();
+        loadMoreHistory();
       }
     });
 
@@ -97,39 +135,24 @@ class _TimelineViewerState extends State<TimelineViewer> {
             children: [
               const Divider(height: 1),
               Expanded(
+                key: widget.room.key,
                 child: AnimatedList(
                     key: _listKey,
-                    reverse: true,
+                    reverse: false,
                     controller: scrollController,
-                    physics: BouncingScrollPhysics(),
-                    initialItemCount: _count,
+                    initialItemCount: _displayCount,
+                    //physics: BouncingScrollPhysics(),
                     itemBuilder: (context, i, animation) {
                       // This feels gross? is there a better way to do this?
-                      if (widget.room.timeline!.events[i].widget == null) return SizedBox();
+                      if (displayEvents[reverseIndex(i)].widget == null) return SizedBox();
 
-                      if (i == 0) {}
-
-                      return SizeTransition(
-                          sizeFactor: animation.drive(CurveTween(curve: Curves.easeOutCubic)),
-                          child: _renderedEvents[i].widget);
+                      return displayEvents[reverseIndex(i)].widget!;
                     }),
               ),
             ],
           ),
         )),
-        Offstage(
-          offstage: true,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                color: Colors.black.withAlpha(128),
-                child: widget.room.timeline!.events[0].widget,
-                key: _offstageMessageKey,
-              ),
-            ],
-          ),
-        )
+        ElevatedButton(onPressed: recursiveScrollToBottom, child: Text("Scroll to bottom"))
       ],
     );
   }

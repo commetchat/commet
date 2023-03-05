@@ -1,4 +1,6 @@
 import 'package:commet/ui/atoms/popup_dialog.dart';
+import 'package:commet/ui/molecules/alternate_timeline_viewer.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -30,6 +32,7 @@ class _MobileChatPageState extends State<MobileChatPage> {
   late Space? selectedSpace;
   late Room? selectedRoom;
   late GlobalKey<OverlappingPanelsState> panelsKey;
+  late GlobalKey<AlternateTimelineViewerState> timelineKey = GlobalKey<AlternateTimelineViewerState>();
 
   @override
   void initState() {
@@ -120,10 +123,9 @@ class _MobileChatPageState extends State<MobileChatPage> {
               onRoomSelected: (index) {
                 setState(() {
                   selectedRoom = selectedSpace!.rooms[index];
-                  print(panelsKey);
-                  print(panelsKey.currentState);
                   panelsKey.currentState!.reveal(RevealSide.main);
                 });
+                timelineKey.currentState?.scrollToEndNextFrame(Duration.zero);
               },
             ),
           ))
@@ -142,8 +144,8 @@ class _MobileChatPageState extends State<MobileChatPage> {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Expanded(
-                    child: TimelineViewer(
-                  key: selectedRoom!.key,
+                    child: AlternateTimelineViewer(
+                  key: timelineKey,
                   room: selectedRoom!,
                 )),
                 MessageInput()

@@ -2,11 +2,13 @@ import 'package:commet/client/client_manager.dart';
 import 'package:commet/ui/atoms/room_header.dart';
 import 'package:commet/ui/atoms/side_panel_button.dart';
 import 'package:commet/ui/atoms/space_header.dart';
+import 'package:commet/ui/molecules/alternate_timeline_viewer.dart';
 import 'package:commet/ui/molecules/message_input.dart';
 import 'package:commet/ui/molecules/space_viewer.dart';
 import 'package:commet/ui/molecules/timeline_viewer.dart';
 import 'package:commet/ui/molecules/user_list.dart';
 import 'package:commet/ui/molecules/user_panel.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -28,6 +30,7 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
   late ClientManager _clientManager;
   late Space? selectedSpace;
   late Room? selectedRoom;
+  late GlobalKey<AlternateTimelineViewerState> timelineKey = GlobalKey<AlternateTimelineViewerState>();
 
   @override
   void initState() {
@@ -87,8 +90,8 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Expanded(
-                          child: TimelineViewer(
-                        key: selectedRoom!.key,
+                          child: AlternateTimelineViewer(
+                        key: timelineKey,
                         room: selectedRoom!,
                       )),
                       MessageInput()
@@ -124,6 +127,7 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
                 setState(() {
                   selectedRoom = selectedSpace!.rooms[index];
                 });
+                timelineKey.currentState?.scrollToEndNextFrame(Duration.zero);
               },
             )),
             SizedBox(

@@ -30,10 +30,13 @@
             "flutterMode": "profile"
         },
         {
-            "name": "commet (release mode)",
+            "name": "commet (release desktop)",
             "cwd": "commet",
             "request": "launch",
             "type": "dart",
+            "toolArgs": [
+                "--dart-define", "PLATFORM=desktop"
+            ],
             "flutterMode": "release"
         }
     ]
