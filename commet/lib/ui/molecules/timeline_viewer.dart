@@ -6,15 +6,15 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 
-class AlternateTimelineViewer extends StatefulWidget {
-  const AlternateTimelineViewer({required this.room, Key? key}) : super(key: key);
+class TimelineViewer extends StatefulWidget {
+  const TimelineViewer({required this.room, Key? key}) : super(key: key);
   final Room room;
 
   @override
-  State<AlternateTimelineViewer> createState() => AlternateTimelineViewerState();
+  State<TimelineViewer> createState() => TimelineViewerState();
 }
 
-class AlternateTimelineViewerState extends State<AlternateTimelineViewer> {
+class TimelineViewerState extends State<TimelineViewer> {
   late ScrollController scrollController;
   late StreamSubscription eventAdded;
 
