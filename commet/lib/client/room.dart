@@ -6,7 +6,6 @@ abstract class Room {
   late String identifier;
   late Client client;
   final Key key = UniqueKey();
-  Future<TimelineEvent?> sendMessage(String message, {TimelineEvent inReplyTo});
   Timeline? timeline = null;
   late ImageProvider? avatar;
   late List<Peer> members;

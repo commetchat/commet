@@ -4,6 +4,7 @@ import 'package:commet/client/attachment.dart';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/simulated/simulated_peer.dart';
 import 'package:commet/client/simulated/simulated_timeline.dart';
+import 'package:commet/ui/molecules/message.dart';
 import 'package:commet/utils/rng.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -43,6 +44,7 @@ class SimulatedRoom extends Room {
       e.originServerTs = DateTime.now();
       e.sender = sender;
       e.body = RandomUtils.getRandomSentence(Random().nextInt(10) + 10);
+      e.widget = Message(e);
       if (Random().nextInt(10) > 7) {
         e.attachments = List.empty(growable: true);
         for (int i = 0; i < Random().nextInt(3) + 1; i++) {

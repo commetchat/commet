@@ -5,7 +5,5 @@ import '../client.dart';
 
 class SimulatedTimeline extends Timeline {
   @override
-  Future<int> loadMoreHistory() {
-    throw UnimplementedError();
-  }
+  Future<void> loadMoreHistory() async {}
 }

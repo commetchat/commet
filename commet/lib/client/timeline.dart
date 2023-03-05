@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:commet/client/attachment.dart';
+import 'package:commet/client/client.dart';
 import 'package:commet/client/peer.dart';
+import 'package:flutter/material.dart';
 
 enum TimelineEventStatus {
   removed,
@@ -70,15 +72,16 @@ class TimelineEvent {
   late DateTime originServerTs;
   // todo: make this better
   late String? body;
-
+  late Widget? widget;
   List<Attachment>? attachments;
 }
 
 abstract class Timeline {
   late List<TimelineEvent> events = List.empty(growable: true);
   late StreamController<int> onEventAdded = StreamController.broadcast();
+  late Client client;
 
-  Future<int> loadMoreHistory();
+  Future<void> loadMoreHistory();
 
   void insertEvent(int index, TimelineEvent event) {
     events.insert(index, event);

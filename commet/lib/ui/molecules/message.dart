@@ -46,7 +46,10 @@ class _MessageState extends State<Message> {
                         style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Colors.red, fontSize: 17),
                       ),
                     ),
-                  Text(widget.event.body!),
+                  Text(
+                    widget.event.body!,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
                   if (widget.event.attachments != null)
                     Wrap(
                       children: widget.event.attachments!
