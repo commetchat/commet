@@ -119,7 +119,10 @@ class _MobileChatPageState extends State<MobileChatPage> {
               selectedSpace!,
               key: selectedSpace!.key,
               onRoomInsert: selectedSpace!.onRoomAdded.stream,
-              onRoomSelected: (index) {
+              onRoomSelected: (index) async {
+                // Putting this here so we can see a bit of the animation when the room button is clicked
+                // feels better ^-^
+                await Future.delayed(Duration(milliseconds: 125));
                 setState(() {
                   selectedRoom = selectedSpace!.rooms[index];
                   panelsKey.currentState!.reveal(RevealSide.main);
