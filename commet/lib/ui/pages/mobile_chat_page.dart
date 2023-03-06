@@ -32,6 +32,7 @@ class _MobileChatPageState extends State<MobileChatPage> {
   late Room? selectedRoom;
   late GlobalKey<OverlappingPanelsState> panelsKey;
   late GlobalKey<TimelineViewerState> timelineKey = GlobalKey<TimelineViewerState>();
+  late Map<String, GlobalKey<TimelineViewerState>> timelines = Map();
 
   @override
   void initState() {
@@ -123,11 +124,7 @@ class _MobileChatPageState extends State<MobileChatPage> {
                 // Putting this here so we can see a bit of the animation when the room button is clicked
                 // feels better ^-^
                 await Future.delayed(Duration(milliseconds: 125));
-                setState(() {
-                  selectedRoom = selectedSpace!.rooms[index];
-                  panelsKey.currentState!.reveal(RevealSide.main);
-                });
-                timelineKey.currentState?.scrollToEndNextFrame(Duration.zero);
+                roomSelected(index);
               },
             ),
           ))
@@ -147,7 +144,7 @@ class _MobileChatPageState extends State<MobileChatPage> {
               children: [
                 Expanded(
                     child: TimelineViewer(
-                  key: timelineKey,
+                  key: timelines[selectedRoom!.identifier],
                   room: selectedRoom!,
                 )),
                 MessageInput()
@@ -157,5 +154,30 @@ class _MobileChatPageState extends State<MobileChatPage> {
         ),
       ],
     );
+  }
+
+  void roomSelected(index) {
+    var room = selectedSpace!.rooms[index];
+    if (!timelines.containsKey(room.identifier)) {
+      timelines[room.identifier] = GlobalKey<TimelineViewerState>();
+    }
+
+    if (kDebugMode) {
+      if (selectedRoom != null) {
+        timelines[selectedRoom!.identifier]!.currentState!.prepareForDisposal();
+      }
+      WidgetsBinding.instance.addPostFrameCallback((_) => _setSelectedRoom(room));
+    } else {
+      _setSelectedRoom(room);
+    }
+  }
+
+  void _setSelectedRoom(Room room) {
+    setState(() {
+      selectedRoom = room;
+    });
+
+    timelines[room.identifier]!.currentState?.scrollToEndNextFrame(Duration.zero);
+    panelsKey.currentState!.reveal(RevealSide.main);
   }
 }

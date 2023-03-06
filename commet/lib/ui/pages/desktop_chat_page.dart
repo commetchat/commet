@@ -30,6 +30,7 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
   late Space? selectedSpace;
   late Room? selectedRoom;
   late GlobalKey<TimelineViewerState> timelineKey = GlobalKey<TimelineViewerState>();
+  late Map<String, GlobalKey<TimelineViewerState>> timelines = Map();
 
   @override
   void initState() {
@@ -90,7 +91,7 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
                     children: [
                       Expanded(
                           child: TimelineViewer(
-                        key: timelineKey,
+                        key: timelines[selectedRoom!.identifier],
                         room: selectedRoom!,
                       )),
                       MessageInput()
@@ -122,12 +123,7 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
               selectedSpace!,
               key: selectedSpace!.key,
               onRoomInsert: selectedSpace!.onRoomAdded.stream,
-              onRoomSelected: (index) {
-                setState(() {
-                  selectedRoom = selectedSpace!.rooms[index];
-                });
-                timelineKey.currentState?.scrollToEndNextFrame(Duration.zero);
-              },
+              onRoomSelected: roomSelected,
             )),
             SizedBox(
               height: 55,
@@ -135,5 +131,30 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
             )
           ],
         ));
+  }
+
+  void roomSelected(index) {
+    var room = selectedSpace!.rooms[index];
+    if (!timelines.containsKey(room.identifier)) {
+      timelines[room.identifier] = GlobalKey<TimelineViewerState>();
+    }
+
+    if (kDebugMode) {
+      //Hacky workaround for scroll controller issue mentioned in #2
+      if (selectedRoom != null) {
+        timelines[selectedRoom!.identifier]!.currentState!.prepareForDisposal();
+      }
+      WidgetsBinding.instance.addPostFrameCallback((_) => _setSelectedRoom(room));
+    } else {
+      _setSelectedRoom(room);
+    }
+  }
+
+  void _setSelectedRoom(Room room) {
+    setState(() {
+      selectedRoom = room;
+    });
+
+    timelines[room.identifier]!.currentState?.scrollToEndNextFrame(Duration.zero);
   }
 }
