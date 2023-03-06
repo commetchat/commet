@@ -121,9 +121,6 @@ class _MobileChatPageState extends State<MobileChatPage> {
               key: selectedSpace!.key,
               onRoomInsert: selectedSpace!.onRoomAdded.stream,
               onRoomSelected: (index) async {
-                // Putting this here so we can see a bit of the animation when the room button is clicked
-                // feels better ^-^
-                await Future.delayed(Duration(milliseconds: 125));
                 roomSelected(index);
               },
             ),
@@ -145,7 +142,7 @@ class _MobileChatPageState extends State<MobileChatPage> {
                 Expanded(
                     child: TimelineViewer(
                   key: timelines[selectedRoom!.identifier],
-                  room: selectedRoom!,
+                  timeline: selectedRoom!.timeline!,
                 )),
                 MessageInput()
               ],
@@ -158,27 +155,34 @@ class _MobileChatPageState extends State<MobileChatPage> {
 
   void roomSelected(index) {
     var room = selectedSpace!.rooms[index];
+    if (room == selectedRoom) return;
+
     if (!timelines.containsKey(room.identifier)) {
       timelines[room.identifier] = GlobalKey<TimelineViewerState>();
     }
 
     if (kDebugMode) {
-      //Hacky workaround for scroll controller issue mentioned in #2
-      if (selectedRoom != null) {
-        timelines[selectedRoom!.identifier]!.currentState!.prepareForDisposal();
-      }
+      // Weird hacky work around mentioned in #2
+      timelines[selectedRoom?.identifier]?.currentState!.prepareForDisposal();
       WidgetsBinding.instance.addPostFrameCallback((_) => _setSelectedRoom(room));
     } else {
       _setSelectedRoom(room);
     }
   }
 
-  void _setSelectedRoom(Room room) {
+  void _setSelectedRoom(Room room) async {
     setState(() {
       selectedRoom = room;
+      WidgetsBinding.instance.addPostFrameCallback(
+        (timeStamp) {
+          timelines[selectedRoom?.identifier]?.currentState!.forceToBottom();
+        },
+      );
     });
 
-    timelines[room.identifier]!.currentState?.scrollToEndNextFrame(Duration.zero);
+    // Putting this here so we can see a bit of the animation when the room button is clicked
+    // feels better ^-^
+    await Future.delayed(Duration(milliseconds: 125));
     panelsKey.currentState!.reveal(RevealSide.main);
   }
 }

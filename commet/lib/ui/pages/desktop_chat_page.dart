@@ -92,7 +92,7 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
                       Expanded(
                           child: TimelineViewer(
                         key: timelines[selectedRoom!.identifier],
-                        room: selectedRoom!,
+                        timeline: selectedRoom!.timeline!,
                       )),
                       MessageInput()
                     ],
@@ -135,15 +135,15 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
 
   void roomSelected(index) {
     var room = selectedSpace!.rooms[index];
+    if (room == selectedRoom) return;
+
     if (!timelines.containsKey(room.identifier)) {
       timelines[room.identifier] = GlobalKey<TimelineViewerState>();
     }
 
     if (kDebugMode) {
-      //Hacky workaround for scroll controller issue mentioned in #2
-      if (selectedRoom != null) {
-        timelines[selectedRoom!.identifier]!.currentState!.prepareForDisposal();
-      }
+      // Weird hacky work around mentioned in #2
+      timelines[selectedRoom?.identifier]?.currentState!.prepareForDisposal();
       WidgetsBinding.instance.addPostFrameCallback((_) => _setSelectedRoom(room));
     } else {
       _setSelectedRoom(room);
@@ -153,10 +153,11 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
   void _setSelectedRoom(Room room) {
     setState(() {
       selectedRoom = room;
-    });
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      timelines[room.identifier]!.currentState!.scrollToEndNextFrame(Duration.zero);
+      WidgetsBinding.instance.addPostFrameCallback(
+        (timeStamp) {
+          timelines[selectedRoom?.identifier]?.currentState!.forceToBottom();
+        },
+      );
     });
   }
 }
