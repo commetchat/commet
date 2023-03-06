@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:commet/client/client.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -17,9 +19,14 @@ class TimelineViewer extends StatefulWidget {
 class TimelineViewerState extends State<TimelineViewer> {
   late ScrollController scrollController;
   late StreamSubscription eventAdded;
+  late List<TimelineEvent> _displayEvents;
+  int _displayStartIndex = 0;
+  int _initialDisplayMaxEvents = 20;
+
+  bool _aboutToDispose = false;
 
   int reverseIndex(int index) {
-    return widget.room.timeline!.events.length - index - 1;
+    return _displayEvents.length - index - 1;
   }
 
   @override
@@ -28,7 +35,17 @@ class TimelineViewerState extends State<TimelineViewer> {
     super.dispose();
   }
 
+  void prepareForDisposal() {
+    print("About to be disposed");
+    _aboutToDispose = true;
+    scrollController.position.hold(() {});
+  }
+
   void scrollToEnd(Duration duration) {
+    if (_aboutToDispose) {
+      print("Cancelling due to disposal");
+      return;
+    }
     if (!scrollController.hasClients || scrollController.positions.isEmpty) return;
     if (duration.inMilliseconds > 0) {
       scrollController
@@ -40,6 +57,12 @@ class TimelineViewerState extends State<TimelineViewer> {
   }
 
   scrollToEndNextFrame(Duration duration) {
+    print("Scrolling to end?");
+    if (_aboutToDispose) {
+      print("Cancelling due to disposal");
+      return;
+    }
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (scrollController.hasClients) {
         scrollToEnd(duration);
@@ -50,10 +73,15 @@ class TimelineViewerState extends State<TimelineViewer> {
   @override
   void initState() {
     scrollController = ScrollController();
+    var events = widget.room.timeline!.events;
+    _displayEvents = List.from(events.sublist(0, min(events.length - 1, _initialDisplayMaxEvents)));
+    _displayStartIndex = 0;
 
     if (widget.room.timeline != null) {
       eventAdded = widget.room.timeline!.onEventAdded.stream.listen((index) {
-        setState(() {});
+        setState(() {
+          _displayEvents.insert(index, widget.room.timeline!.events[index]);
+        });
 
         if (isScrolledToBottom()) {
           scrollToEndNextFrame(Duration(milliseconds: 500));
@@ -88,12 +116,12 @@ class TimelineViewerState extends State<TimelineViewer> {
               controller: scrollController,
               physics: BouncingScrollPhysics(),
               child: ListView.builder(
-                itemCount: widget.room.timeline!.events.length,
+                itemCount: _displayEvents.length,
                 physics: NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
-                  if (widget.room.timeline!.events[reverseIndex(index)].widget == null) return SizedBox();
-                  return widget.room.timeline!.events[reverseIndex(index)].widget!;
+                  if (_displayEvents[reverseIndex(index)].widget == null) return SizedBox();
+                  return _displayEvents[reverseIndex(index)].widget!;
                 },
               )),
           ElevatedButton(onPressed: () => scrollToEnd(Duration(milliseconds: 500)), child: Text("Scroll to end"))

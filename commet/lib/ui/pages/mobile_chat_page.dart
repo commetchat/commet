@@ -163,6 +163,7 @@ class _MobileChatPageState extends State<MobileChatPage> {
     }
 
     if (kDebugMode) {
+      //Hacky workaround for scroll controller issue mentioned in #2
       if (selectedRoom != null) {
         timelines[selectedRoom!.identifier]!.currentState!.prepareForDisposal();
       }

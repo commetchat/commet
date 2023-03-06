@@ -155,6 +155,8 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
       selectedRoom = room;
     });
 
-    timelines[room.identifier]!.currentState?.scrollToEndNextFrame(Duration.zero);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      timelines[room.identifier]!.currentState!.scrollToEndNextFrame(Duration.zero);
+    });
   }
 }
