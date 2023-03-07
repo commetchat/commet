@@ -8,6 +8,7 @@ class ThemeDarkColors {
   static const Color surfaceLow2 = Color.fromARGB(255, 30, 34, 37);
   static const Color surfaceLow3 = Color.fromARGB(255, 25, 28, 31);
   static const Color surfaceLowest = Color.fromARGB(255, 19, 21, 22);
+  static const Color highlightColor = Colors.white10;
 }
 
 class ThemeDark {
@@ -19,13 +20,14 @@ class ThemeDark {
             surfaceLow1: ThemeDarkColors.surfaceLow1,
             surfaceLow2: ThemeDarkColors.surfaceLow2,
             surfaceLow3: ThemeDarkColors.surfaceLow3,
-            surfaceLowest: ThemeDarkColors.surfaceLowest)
+            surfaceLowest: ThemeDarkColors.surfaceLowest,
+            highlight: ThemeDarkColors.highlightColor)
       ],
       colorScheme: ColorScheme(
         primary: Colors.blue,
         secondary: Colors.green,
         surface: ThemeDarkColors.surface,
-        background: Colors.grey.shade900,
+        background: ThemeDarkColors.surfaceLowest,
         error: Colors.red,
         onPrimary: Colors.white,
         onSecondary: Colors.white,
@@ -41,6 +43,8 @@ class ThemeDark {
           style: ButtonStyle(
         overlayColor: const MaterialStatePropertyAll<Color>(Colors.white10),
         foregroundColor: MaterialStatePropertyAll<Color>(Colors.grey.shade300),
+        shape:
+            MaterialStatePropertyAll<OutlinedBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
         textStyle: const MaterialStatePropertyAll<TextStyle>(
           TextStyle(color: Colors.white),
         ),

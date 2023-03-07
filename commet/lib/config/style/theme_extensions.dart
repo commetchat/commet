@@ -7,6 +7,7 @@ class ExtraColors extends ThemeExtension<ExtraColors> {
     required this.surfaceLow2,
     required this.surfaceLow3,
     required this.surfaceLowest,
+    required this.highlight,
   });
 
   final Color surfaceHigh1;
@@ -14,16 +15,19 @@ class ExtraColors extends ThemeExtension<ExtraColors> {
   final Color surfaceLow2;
   final Color surfaceLow3;
   final Color surfaceLowest;
+  final Color highlight;
 
   @override
   ThemeExtension<ExtraColors> copyWith(
           {Color? surfaceHigh1, Color? surfaceLow, Color? surfaceLow2, Color? surfaceLow3, Color? surfaceLowest}) =>
       ExtraColors(
-          surfaceHigh1: surfaceHigh1 ?? this.surfaceHigh1,
-          surfaceLow1: surfaceLow ?? this.surfaceLow1,
-          surfaceLow2: surfaceLow2 ?? this.surfaceLow2,
-          surfaceLow3: surfaceLow3 ?? this.surfaceLow3,
-          surfaceLowest: surfaceLowest ?? this.surfaceLowest);
+        surfaceHigh1: surfaceHigh1 ?? this.surfaceHigh1,
+        surfaceLow1: surfaceLow ?? this.surfaceLow1,
+        surfaceLow2: surfaceLow2 ?? this.surfaceLow2,
+        surfaceLow3: surfaceLow3 ?? this.surfaceLow3,
+        surfaceLowest: surfaceLowest ?? this.surfaceLowest,
+        highlight: highlight ?? this.highlight,
+      );
 
   @override
   ThemeExtension<ExtraColors> lerp(covariant ThemeExtension<ExtraColors>? other, double t) {
@@ -35,6 +39,7 @@ class ExtraColors extends ThemeExtension<ExtraColors> {
       surfaceLow2: Color.lerp(surfaceLow2, other.surfaceLow2, t)!,
       surfaceLow3: Color.lerp(surfaceLow3, other.surfaceLow3, t)!,
       surfaceLowest: Color.lerp(surfaceLowest, other.surfaceLowest, t)!,
+      highlight: Color.lerp(highlight, other.highlight, t)!,
     );
   }
 }

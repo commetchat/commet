@@ -1,6 +1,5 @@
 import 'dart:async';
-
-import 'package:commet/ui/atoms/room_button.dart';
+import 'package:commet/ui/atoms/simple_text_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -38,6 +37,7 @@ class _RoomListState extends State<RoomList> with SingleTickerProviderStateMixin
   AnimationController? controller;
   bool expanded = false;
   bool editMode = false;
+  int _selectedIndex = -1;
 
   @override
   void initState() {
@@ -71,7 +71,7 @@ class _RoomListState extends State<RoomList> with SingleTickerProviderStateMixin
         children: [
           if (widget.showHeader) header(),
           if (widget.expandable)
-            RoomButton(
+            SimpleTextButton(
               widget.expanderText!,
               onTap: toggleExpansion,
               icon: Icons.expand_circle_down,
@@ -124,7 +124,8 @@ class _RoomListState extends State<RoomList> with SingleTickerProviderStateMixin
     if (editMode) {
       return ReorderableListView.builder(
         itemBuilder: (context, index) {
-          return RoomButton(
+          return SimpleTextButton(
+            icon: Icons.tag,
             widget.rooms[index].displayName,
             key: widget.rooms[index].key,
           );
@@ -145,9 +146,16 @@ class _RoomListState extends State<RoomList> with SingleTickerProviderStateMixin
       shrinkWrap: true,
       itemBuilder: (context, i, animation) => ScaleTransition(
         scale: animation,
-        child: RoomButton(
+        child: SimpleTextButton(
           widget.rooms[i].displayName,
-          onTap: () => {widget.onRoomSelected?.call(i)},
+          highlighted: _selectedIndex == i,
+          icon: Icons.tag,
+          onTap: () {
+            widget.onRoomSelected?.call(i);
+            setState(() {
+              _selectedIndex = i;
+            });
+          },
         ),
       ),
     );
