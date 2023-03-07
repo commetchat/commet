@@ -39,7 +39,7 @@ class _LoadingPageState extends State<LoadingPage> {
     //dont let simulated client contribute to logged in status
     bool isLoggedIn = client.isLoggedIn();
 
-    if (kDebugMode) {
+    if (BuildConfig.DEBUG) {
       await SimulatedClient.loadFromDB(client);
     }
 

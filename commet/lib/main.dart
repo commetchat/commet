@@ -1,5 +1,6 @@
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/config/style/theme_changer.dart';
+import 'package:commet/config/style/theme_light.dart';
 import 'package:commet/ui/pages/chat/desktop_chat_page.dart';
 import 'package:commet/ui/pages/loading_page.dart';
 import 'package:commet/ui/pages/login_page.dart';
@@ -21,7 +22,7 @@ void main() async {
 
   runApp(MaterialApp(
       home: App(),
-      theme: ThemeDark().theme,
+      theme: ThemeLight().theme,
       builder: (context, child) => Provider<ClientManager>(create: (context) => clientManager, child: child)));
 }
 
@@ -31,14 +32,18 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Commet',
-      theme: ThemeDark().theme,
-      builder: (context, child) => Provider<ClientManager>(
-        create: (context) => clientManager,
-        child: child,
-      ),
-      home: LoadingPage(),
-    );
+    return ThemeChanger(
+        initialTheme: ThemeDark().theme,
+        materialAppBuilder: (context, theme) {
+          return MaterialApp(
+            title: 'Commet',
+            theme: theme,
+            builder: (context, child) => Provider<ClientManager>(
+              create: (context) => clientManager,
+              child: child,
+            ),
+            home: LoadingPage(),
+          );
+        });
   }
 }

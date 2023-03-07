@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 class ThemeDarkColors {
   static const Color surfaceHigh1 = Color.fromARGB(255, 47, 51, 55);
+  static const Color secondary = Color.fromARGB(255, 128, 128, 128);
   static const Color surface = Color.fromARGB(255, 43, 46, 49);
   static const Color surfaceLow1 = Color.fromARGB(255, 38, 41, 44);
   static const Color surfaceLow2 = Color.fromARGB(255, 30, 34, 37);
@@ -39,6 +40,7 @@ class ThemeDark {
       listTileTheme: const ListTileThemeData(
         tileColor: ThemeDarkColors.surface,
       ),
+      iconTheme: IconThemeData(color: ThemeDarkColors.secondary),
       textButtonTheme: TextButtonThemeData(
           style: ButtonStyle(
         overlayColor: const MaterialStatePropertyAll<Color>(Colors.white10),

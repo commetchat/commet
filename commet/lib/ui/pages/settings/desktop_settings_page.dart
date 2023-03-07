@@ -1,3 +1,6 @@
+import 'package:commet/config/style/theme_changer.dart';
+import 'package:commet/config/style/theme_dark.dart';
+import 'package:commet/config/style/theme_light.dart';
 import 'package:commet/ui/atoms/circle_button.dart';
 import 'package:commet/ui/atoms/seperator.dart';
 import 'package:commet/ui/pages/settings/settings_tab.dart';
@@ -21,7 +24,18 @@ class _DesktopSettingsPageState extends State<DesktopSettingsPage> {
   void initState() {
     tabs = List.empty(growable: true);
 
-    tabs.add(SettingsTab(label: "Settings 1", pageBuilder: (context) => Placeholder()));
+    tabs.add(SettingsTab(
+        label: "Settings 1",
+        pageBuilder: (context) => Column(children: [
+              SimpleTextButton(
+                "Light Theme",
+                onTap: () => ThemeChanger.setTheme(context, ThemeLight().theme),
+              ),
+              SimpleTextButton(
+                "Dark Theme",
+                onTap: () => ThemeChanger.setTheme(context, ThemeDark().theme),
+              ),
+            ])));
 
     tabs.add(SettingsTab(label: "Settings 2", pageBuilder: (context) => Placeholder()));
 
