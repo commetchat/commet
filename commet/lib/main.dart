@@ -1,6 +1,6 @@
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/config/style/theme_changer.dart';
-import 'package:commet/ui/pages/desktop_chat_page.dart';
+import 'package:commet/ui/pages/chat/desktop_chat_page.dart';
 import 'package:commet/ui/pages/loading_page.dart';
 import 'package:commet/ui/pages/login_page.dart';
 import 'package:flutter/material.dart';
@@ -18,14 +18,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final ClientManager clientManager = ClientManager();
-
-  if (BuildConfig.DEBUG) {
-    print("Is Debug Mode!");
-  } else if (BuildConfig.RELEASE) {
-    print("Is Release Mode");
-  } else {
-    print("Unknown build config");
-  }
 
   runApp(MaterialApp(
       home: App(),

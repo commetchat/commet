@@ -10,8 +10,9 @@ import 'package:just_the_tooltip/just_the_tooltip.dart';
 import '../../config/style/theme_extensions.dart';
 
 class UserPanel extends StatefulWidget {
-  const UserPanel(this.user, {super.key});
+  const UserPanel(this.user, {super.key, this.onClicked});
   final Peer user;
+  final Function? onClicked;
 
   @override
   State<UserPanel> createState() => _UserPanelState();
@@ -27,7 +28,7 @@ class _UserPanelState extends State<UserPanel> {
         child: Row(
           children: [
             TextButton(
-              onPressed: () => print("Clicked"),
+              onPressed: () => widget.onClicked?.call(),
               child: Row(
                 children: [
                   Avatar(

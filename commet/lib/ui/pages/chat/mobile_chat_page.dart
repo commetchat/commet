@@ -6,18 +6,18 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:provider/provider.dart';
 
-import '../../client/client_manager.dart';
-import '../../client/room.dart';
-import '../../client/space.dart';
-import '../atoms/room_header.dart';
-import '../atoms/side_panel_button.dart';
-import '../atoms/space_header.dart';
-import '../molecules/message_input.dart';
-import '../molecules/overlapping_panels.dart';
-import '../molecules/space_selector.dart';
-import '../molecules/space_viewer.dart';
-import '../molecules/user_list.dart';
-import '../organisms/add_space_dialog.dart';
+import '../../../client/client_manager.dart';
+import '../../../client/room.dart';
+import '../../../client/space.dart';
+import '../../atoms/room_header.dart';
+import '../../atoms/side_panel_button.dart';
+import '../../atoms/space_header.dart';
+import '../../molecules/message_input.dart';
+import '../../molecules/overlapping_panels.dart';
+import '../../molecules/space_selector.dart';
+import '../../molecules/space_viewer.dart';
+import '../../molecules/user_list.dart';
+import '../../organisms/add_space_dialog.dart';
 
 class MobileChatPage extends StatefulWidget {
   const MobileChatPage({super.key});
