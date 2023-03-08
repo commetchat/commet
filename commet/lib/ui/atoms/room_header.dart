@@ -4,6 +4,7 @@ import 'package:flutter/src/widgets/placeholder.dart';
 
 import '../../client/client.dart';
 import '../../config/style/theme_extensions.dart';
+import 'background.dart';
 
 class RoomHeader extends StatelessWidget {
   const RoomHeader(this.room, {super.key});
@@ -11,9 +12,8 @@ class RoomHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Theme.of(context).colorScheme.surface,
-      width: double.infinity,
+    return Background.surface(
+      context,
       child: DecoratedBox(
         decoration: BoxDecoration(
             border:

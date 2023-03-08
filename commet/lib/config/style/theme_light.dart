@@ -22,7 +22,8 @@ class ThemeLight {
             surfaceLow2: ThemeLightColors.surfaceLow2,
             surfaceLow3: ThemeLightColors.surfaceLow3,
             surfaceLowest: ThemeLightColors.surfaceLowest,
-            highlight: ThemeLightColors.highlightColor)
+            highlight: ThemeLightColors.highlightColor),
+        ThemeSettings(frosted: false)
       ],
       colorScheme: ColorScheme(
         primary: Colors.blue,

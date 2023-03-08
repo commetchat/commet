@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:commet/client/timeline.dart';
+import 'package:commet/ui/atoms/background.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -103,8 +104,8 @@ class TimelineViewerState extends State<TimelineViewer> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Theme.of(context).colorScheme.surface,
+    return Background.surface(
+      context,
       child: CustomScrollView(
         center: centerKey,
         controller: controller,

@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/ui/atoms/avatar.dart';
+import 'package:commet/ui/atoms/background.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -21,8 +22,8 @@ class UserPanel extends StatefulWidget {
 class _UserPanelState extends State<UserPanel> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+    return Background.low2(
+      context,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(0, 3, 0, 3),
         child: Row(

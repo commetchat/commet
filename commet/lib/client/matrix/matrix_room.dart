@@ -32,15 +32,6 @@ class MatrixRoom extends Room {
       }
     }
 
-    print("Listening to matrix room sync in room");
-    _matrixRoom.client.onSync.stream.listen((event) {
-      print("OnSync (Room)");
-    });
-
-    _matrixRoom.onUpdate.stream.listen((event) {
-      print("onUpdate");
-    });
-
     timeline = MatrixTimeline(client, this, room);
   }
 }

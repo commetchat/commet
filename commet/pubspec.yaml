@@ -33,3 +33,6 @@ flutter:
   assets:
     - assets/images/placeholder/avatars/
     - assets/images/placeholder/generic/
+
+  shaders:
+    - assets/shader/texture_coordinate.frag

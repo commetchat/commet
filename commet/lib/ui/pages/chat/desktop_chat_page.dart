@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../client/client.dart';
+import '../../atoms/background.dart';
 import '../../atoms/popup_dialog.dart';
 import '../../molecules/space_selector.dart';
 import '../../organisms/add_space_dialog.dart';
@@ -115,28 +116,29 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
   SizedBox spaceRoomSelector() {
     return SizedBox(
         width: 250,
-        child: Column(
-          children: [
-            Container(child: SizedBox(height: 50, child: Container(child: SpaceHeader(selectedSpace!)))),
-            Expanded(
-                child: SpaceViewer(
-              selectedSpace!,
-              key: selectedSpace!.key,
-              onRoomInsert: selectedSpace!.onRoomAdded.stream,
-              onRoomSelected: roomSelected,
-            )),
-            SizedBox(
-              height: 55,
-              child: Container(
-                  color: Colors.red,
-                  child: UserPanel(
-                    selectedSpace!.client.user!,
-                    onClicked: () {
-                      NavigationUtils.navigateTo(context, SettingsPage());
-                    },
-                  )),
-            )
-          ],
+        child: Background.low1(
+          context,
+          child: Column(
+            children: [
+              Container(child: SizedBox(height: 50, child: Container(child: SpaceHeader(selectedSpace!)))),
+              Expanded(
+                  child: SpaceViewer(
+                selectedSpace!,
+                key: selectedSpace!.key,
+                onRoomInsert: selectedSpace!.onRoomAdded.stream,
+                onRoomSelected: roomSelected,
+              )),
+              SizedBox(
+                height: 55,
+                child: UserPanel(
+                  selectedSpace!.client.user!,
+                  onClicked: () {
+                    NavigationUtils.navigateTo(context, SettingsPage());
+                  },
+                ),
+              )
+            ],
+          ),
         ));
   }
 

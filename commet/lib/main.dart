@@ -1,5 +1,6 @@
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/config/style/theme_changer.dart';
+import 'package:commet/config/style/theme_glass.dart';
 import 'package:commet/config/style/theme_light.dart';
 import 'package:commet/ui/pages/chat/desktop_chat_page.dart';
 import 'package:commet/ui/pages/loading_page.dart';
@@ -33,7 +34,7 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ThemeChanger(
-        initialTheme: ThemeDark().theme,
+        initialTheme: ThemeGlass().theme,
         materialAppBuilder: (context, theme) {
           return MaterialApp(
             title: 'Commet',

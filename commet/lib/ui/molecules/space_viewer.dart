@@ -6,6 +6,7 @@ import 'package:flutter/src/widgets/placeholder.dart';
 
 import '../../client/client.dart';
 import '../../config/style/theme_extensions.dart';
+import '../atoms/background.dart';
 import '../atoms/room_list.dart';
 
 class SpaceViewer extends StatefulWidget {
@@ -29,28 +30,19 @@ class _SpaceViewerState extends State<SpaceViewer> with TickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Theme.of(context).extension<ExtraColors>()!.surfaceLow1,
-      child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Flexible(
-                  child: RoomList(
-                widget.space.rooms,
-                expanderText: "Test Expander",
-                onInsertStream: widget.space.onRoomAdded.stream,
-                onUpdateStream: widget.space.onUpdate.stream,
-                onRoomSelected: widget.onRoomSelected,
-                expandable: false,
-                showHeader: true,
-                onRoomReordered: (oldIndex, newIndex) {
-                  widget.space.reorderRooms(oldIndex, newIndex);
-                },
-              )),
-            ],
-          )),
-    );
+    return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: RoomList(
+          widget.space.rooms,
+          expanderText: "Test Expander",
+          onInsertStream: widget.space.onRoomAdded.stream,
+          onUpdateStream: widget.space.onUpdate.stream,
+          onRoomSelected: widget.onRoomSelected,
+          expandable: false,
+          showHeader: true,
+          onRoomReordered: (oldIndex, newIndex) {
+            widget.space.reorderRooms(oldIndex, newIndex);
+          },
+        ));
   }
 }

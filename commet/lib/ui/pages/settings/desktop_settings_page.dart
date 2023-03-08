@@ -1,6 +1,8 @@
 import 'package:commet/config/style/theme_changer.dart';
 import 'package:commet/config/style/theme_dark.dart';
+import 'package:commet/config/style/theme_glass.dart';
 import 'package:commet/config/style/theme_light.dart';
+import 'package:commet/ui/atoms/background.dart';
 import 'package:commet/ui/atoms/circle_button.dart';
 import 'package:commet/ui/atoms/seperator.dart';
 import 'package:commet/ui/pages/settings/settings_tab.dart';
@@ -35,6 +37,10 @@ class _DesktopSettingsPageState extends State<DesktopSettingsPage> {
                 "Dark Theme",
                 onTap: () => ThemeChanger.setTheme(context, ThemeDark().theme),
               ),
+              SimpleTextButton(
+                "Glass Theme",
+                onTap: () => ThemeChanger.setTheme(context, ThemeGlass().theme),
+              ),
             ])));
 
     tabs.add(SettingsTab(label: "Settings 2", pageBuilder: (context) => Placeholder()));
@@ -56,8 +62,8 @@ class _DesktopSettingsPageState extends State<DesktopSettingsPage> {
       child: Row(
         mainAxisSize: MainAxisSize.max,
         children: [
-          Container(
-            color: Theme.of(context).extension<ExtraColors>()!.surfaceLow1,
+          Background.low1(
+            context,
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: SizedBox(
@@ -124,7 +130,8 @@ class _DesktopSettingsPageState extends State<DesktopSettingsPage> {
                   child: child,
                 );
               },
-              child: Container(key: ValueKey(selectedTabIndex), child: tabs[selectedTabIndex].pageBuilder!(context)),
+              child: Background.surface(context,
+                  key: ValueKey(selectedTabIndex), child: tabs[selectedTabIndex].pageBuilder!(context)),
             ),
           )
         ],

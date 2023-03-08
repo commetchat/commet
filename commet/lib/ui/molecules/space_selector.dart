@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/config/style/theme_extensions.dart';
+import 'package:commet/ui/atoms/background.dart';
 import 'package:commet/ui/atoms/seperator.dart';
 import 'package:commet/ui/atoms/side_panel_button.dart';
 import 'package:flutter/material.dart';
@@ -49,8 +50,8 @@ class _SpaceSelectorState extends State<SpaceSelector> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Theme.of(context).extension<ExtraColors>()!.surfaceLow3,
+    return Background.lowest(
+      context,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(7, 0, 7, 0),
         child: Column(

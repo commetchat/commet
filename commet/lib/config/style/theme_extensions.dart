@@ -43,3 +43,21 @@ class ExtraColors extends ThemeExtension<ExtraColors> {
     );
   }
 }
+
+class ThemeSettings extends ThemeExtension<ThemeSettings> {
+  const ThemeSettings({required this.frosted});
+
+  final bool frosted;
+
+  @override
+  ThemeExtension<ThemeSettings> copyWith({bool? frosted}) {
+    return ThemeSettings(frosted: frosted ?? this.frosted);
+  }
+
+  @override
+  ThemeExtension<ThemeSettings> lerp(covariant ThemeExtension<ThemeSettings>? other, double t) {
+    if (other is! ExtraColors) return this;
+
+    return ThemeSettings(frosted: frosted);
+  }
+}

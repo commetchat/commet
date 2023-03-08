@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import '../../../client/client_manager.dart';
 import '../../../client/room.dart';
 import '../../../client/space.dart';
+import '../../atoms/background.dart';
 import '../../atoms/room_header.dart';
 import '../../atoms/side_panel_button.dart';
 import '../../atoms/space_header.dart';
@@ -110,22 +111,25 @@ class _MobileChatPageState extends State<MobileChatPage> {
 
   Widget spaceRoomSelector(BuildContext newContext) {
     return Flexible(
-      child: Column(
-        children: [
-          Container(child: SizedBox(height: 50, child: Container(child: SpaceHeader(selectedSpace!)))),
-          Expanded(
-              child: Padding(
-            padding: const EdgeInsets.fromLTRB(0, 0, 50, 0),
-            child: SpaceViewer(
-              selectedSpace!,
-              key: selectedSpace!.key,
-              onRoomInsert: selectedSpace!.onRoomAdded.stream,
-              onRoomSelected: (index) async {
-                roomSelected(index);
-              },
-            ),
-          ))
-        ],
+      child: Background.low1(
+        context,
+        child: Column(
+          children: [
+            Container(child: SizedBox(height: 50, child: Container(child: SpaceHeader(selectedSpace!)))),
+            Expanded(
+                child: Padding(
+              padding: const EdgeInsets.fromLTRB(0, 0, 50, 0),
+              child: SpaceViewer(
+                selectedSpace!,
+                key: selectedSpace!.key,
+                onRoomInsert: selectedSpace!.onRoomAdded.stream,
+                onRoomSelected: (index) async {
+                  roomSelected(index);
+                },
+              ),
+            ))
+          ],
+        ),
       ),
     );
   }

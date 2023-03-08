@@ -92,23 +92,19 @@ class _RoomListState extends State<RoomList> with SingleTickerProviderStateMixin
   }
 
   Widget header() {
-    return Material(
-      child: Padding(
-        padding: const EdgeInsets.all(2.0),
-        child: SizedBox(
-          height: 40,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                "Rooms",
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-              Spacer(),
-              ElevatedButton.icon(onPressed: toggleEditMode, icon: Icon(Icons.edit), label: Text("ASASD"))
-            ],
-          ),
+    return Padding(
+      padding: const EdgeInsets.all(2.0),
+      child: SizedBox(
+        height: 40,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              "Rooms",
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ],
         ),
       ),
     );

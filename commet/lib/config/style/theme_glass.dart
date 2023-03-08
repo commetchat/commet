@@ -1,18 +1,9 @@
 import 'package:commet/config/style/theme_extensions.dart';
 import 'package:flutter/material.dart';
 
-class ThemeDarkColors {
-  static const Color surfaceHigh1 = Color.fromARGB(255, 47, 51, 55);
-  static const Color secondary = Color.fromARGB(255, 128, 128, 128);
-  static const Color surface = Color.fromARGB(255, 43, 46, 49);
-  static const Color surfaceLow1 = Color.fromARGB(255, 38, 41, 44);
-  static const Color surfaceLow2 = Color.fromARGB(255, 30, 34, 37);
-  static const Color surfaceLow3 = Color.fromARGB(255, 25, 28, 31);
-  static const Color surfaceLowest = Color.fromARGB(255, 19, 21, 22);
-  static const Color highlightColor = Colors.white10;
-}
+import 'theme_dark.dart';
 
-class ThemeDark {
+class ThemeGlass {
   ThemeData get theme => ThemeData(
       brightness: Brightness.dark,
       extensions: const <ThemeExtension<dynamic>>[
@@ -23,12 +14,12 @@ class ThemeDark {
             surfaceLow3: ThemeDarkColors.surfaceLow3,
             surfaceLowest: ThemeDarkColors.surfaceLowest,
             highlight: ThemeDarkColors.highlightColor),
-        ThemeSettings(frosted: false),
+        ThemeSettings(frosted: true),
       ],
       colorScheme: ColorScheme(
         primary: Colors.blue,
         secondary: Colors.green,
-        surface: ThemeDarkColors.surface,
+        surface: Colors.transparent,
         background: ThemeDarkColors.surfaceLowest,
         error: Colors.red,
         onPrimary: Colors.white,
@@ -44,6 +35,7 @@ class ThemeDark {
       iconTheme: IconThemeData(color: ThemeDarkColors.secondary),
       textButtonTheme: TextButtonThemeData(
           style: ButtonStyle(
+        backgroundColor: MaterialStatePropertyAll<Color>(Colors.transparent),
         overlayColor: const MaterialStatePropertyAll<Color>(Colors.white10),
         foregroundColor: MaterialStatePropertyAll<Color>(Colors.grey.shade300),
         shape:

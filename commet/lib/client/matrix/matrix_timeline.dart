@@ -48,15 +48,12 @@ class MatrixTimeline extends Timeline {
     e.originServerTs = event.originServerTs;
     event.status.isSent;
 
-    print(event.type);
-
     if (client.peerExists(event.senderId)) {
       e.sender = client.getPeer(event.senderId)!;
     }
 
     e.body = event.getDisplayEvent(timeline).body;
 
-    print(event.toJson());
     switch (event.type) {
       case matrix.EventTypes.Message:
         e.widget = Message(e);

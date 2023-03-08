@@ -1,3 +1,4 @@
+import 'package:commet/ui/atoms/background.dart';
 import 'package:commet/ui/atoms/user_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
@@ -29,8 +30,8 @@ class _PeerListState extends State<PeerList> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Theme.of(context).extension<ExtraColors>()!.surfaceLow1,
+    return Background.low1(
+      context,
       child: Padding(
         padding: const EdgeInsets.all(12.0),
         child: AnimatedList(
