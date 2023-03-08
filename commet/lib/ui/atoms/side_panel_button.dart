@@ -5,6 +5,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
 
+import '../../config/app_config.dart';
 import '../../config/style/theme_extensions.dart';
 
 class SidePanelButton extends StatefulWidget {
@@ -19,7 +20,7 @@ class SidePanelButton extends StatefulWidget {
 }
 
 class _SidePanelButtonState extends State<SidePanelButton> {
-  BorderRadiusGeometry _borderRadius = BorderRadius.circular(20);
+  BorderRadiusGeometry _borderRadius = BorderRadius.circular(20 * AppConfig.uiScale.value);
 
   @override
   Widget build(BuildContext context) {
@@ -29,19 +30,19 @@ class _SidePanelButtonState extends State<SidePanelButton> {
         child: Container(
           alignment: Alignment.topLeft,
           child: Padding(
-            padding: const EdgeInsets.all(3),
+            padding: EdgeInsets.all(3 * AppConfig.uiScale.value),
             child: GestureDetector(
               onTap: () => {widget.onTap?.call()},
               child: MouseRegion(
                   cursor: SystemMouseCursors.click,
                   onEnter: (event) {
                     setState(() {
-                      _borderRadius = BorderRadius.circular(8);
+                      _borderRadius = BorderRadius.circular(8 * AppConfig.uiScale.value);
                     });
                   },
                   onExit: (event) {
                     setState(() {
-                      _borderRadius = BorderRadius.circular(20);
+                      _borderRadius = BorderRadius.circular(20 * AppConfig.uiScale.value);
                     });
                   },
                   child: widget.tooltip != null
@@ -53,7 +54,7 @@ class _SidePanelButtonState extends State<SidePanelButton> {
                           //shadow: BoxShadow(blurRadius: 4, color: Colors.black, spreadRadius: 1),
                           backgroundColor: Theme.of(context).extension<ExtraColors>()!.surfaceLowest,
                           content: Padding(
-                            padding: const EdgeInsets.all(8.0),
+                            padding: EdgeInsets.all(8.0 * AppConfig.uiScale.value),
                             child: Text(widget.tooltip!),
                           ),
                           child: createImageContainer(),

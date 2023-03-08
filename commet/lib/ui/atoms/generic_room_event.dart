@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 
+import '../../config/app_config.dart';
 import '../../config/style/theme_extensions.dart';
 
 class GenericRoomEvent extends StatelessWidget {
@@ -14,18 +15,19 @@ class GenericRoomEvent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       child: Padding(
-        padding: const EdgeInsets.all(2.0),
+        padding: EdgeInsets.all(2.0 * AppConfig.uiScale.value),
         child: Align(
           alignment: Alignment.centerLeft,
           child: Flexible(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
+              padding: EdgeInsets.fromLTRB(20 * AppConfig.uiScale.value, 8 * AppConfig.uiScale.value,
+                  20 * AppConfig.uiScale.value, 8 * AppConfig.uiScale.value),
               child: Row(
                 children: [
                   Avatar.medium(image: null, isPadding: true),
                   Icon(icon),
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+                    padding: EdgeInsets.fromLTRB(10 * AppConfig.uiScale.value, 0, 0, 0),
                     child: Flexible(child: Text(text)),
                   )
                 ],

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 
+import '../../config/app_config.dart';
+
 class MessageAttachment extends StatefulWidget {
   MessageAttachment(this.attachment, {super.key});
   Attachment attachment;
@@ -19,7 +21,7 @@ class _MessageAttachmentState extends State<MessageAttachment> {
 
   Widget buildImage(BuildContext context) {
     return SizedBox(
-      height: 200,
+      height: 200 * AppConfig.uiScale.value,
       child: Image(image: AssetImage("assets/images/placeholder/generic/checker_red.png")),
     );
   }

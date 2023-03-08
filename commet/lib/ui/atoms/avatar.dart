@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 
+import '../../config/app_config.dart';
+
 class Avatar extends StatelessWidget {
   const Avatar({Key? key, this.image, required this.radius, this.placeholderText = null, this.isPadding = false})
       : super(key: key);
@@ -31,20 +33,21 @@ class Avatar extends StatelessWidget {
   Widget build(BuildContext context) {
     if (image != null) {
       return SizedBox(
-        width: radius * 2,
-        height: radius * 2,
+        width: radius * 2 * AppConfig.uiScale.value,
+        height: radius * 2 * AppConfig.uiScale.value,
         child: DecoratedBox(
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(radius * 0.8), image: DecorationImage(image: image!))),
+                borderRadius: BorderRadius.circular(radius * AppConfig.uiScale.value),
+                image: DecorationImage(image: image!))),
       );
     }
     return SizedBox(
-      width: radius * 2,
-      height: isPadding ? null : radius * 2,
+      width: radius * 2 * AppConfig.uiScale.value,
+      height: isPadding ? null : radius * 2 * AppConfig.uiScale.value,
       child: placeholderText != null
           ? DecoratedBox(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(radius * 0.8),
+                borderRadius: BorderRadius.circular(radius * AppConfig.uiScale.value),
                 color: Colors.green,
               ),
               child: Align(

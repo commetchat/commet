@@ -3,6 +3,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 
 import '../../client/client.dart';
+import '../../config/app_config.dart';
 import '../../config/style/theme_extensions.dart';
 import 'background.dart';
 
@@ -16,18 +17,19 @@ class RoomHeader extends StatelessWidget {
       context,
       child: DecoratedBox(
         decoration: BoxDecoration(
-            border:
-                Border(bottom: BorderSide(color: Theme.of(context).extension<ExtraColors>()!.surfaceLow2, width: 1.5))),
+            border: Border(
+                bottom: BorderSide(
+                    color: Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+                    width: 1.5 * AppConfig.uiScale.value))),
         child: Padding(
           padding: const EdgeInsets.all(10.0),
           child: Row(
             children: [
               SizedBox(
-                  width: 40,
-                  height: 40,
+                  width: 40 * AppConfig.uiScale.value,
+                  height: 40 * AppConfig.uiScale.value,
                   child: Icon(
                     Icons.tag,
-                    weight: 3,
                   )),
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,

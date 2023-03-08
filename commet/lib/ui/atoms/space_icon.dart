@@ -6,6 +6,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
 
+import '../../config/app_config.dart';
 import '../../config/style/theme_extensions.dart';
 
 class SpaceIcon extends StatefulWidget {
@@ -20,8 +21,6 @@ class SpaceIcon extends StatefulWidget {
 }
 
 class _SpaceIconState extends State<SpaceIcon> {
-  BorderRadiusGeometry _borderRadius = BorderRadius.circular(20);
-
   @override
   void initState() {
     widget.space.onUpdate.stream.listen((event) {
@@ -47,11 +46,11 @@ class _SpaceIconState extends State<SpaceIcon> {
       right: 0,
       bottom: 0,
       child: SizedBox(
-        width: 20,
-        height: 20,
+        width: 20 * AppConfig.uiScale.value,
+        height: 20 * AppConfig.uiScale.value,
         child: Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(10 * 2 * AppConfig.uiScale.value),
             boxShadow: [BoxShadow(color: Colors.black, blurRadius: 4)],
             image: DecorationImage(image: widget.space.client.user!.avatar!, fit: BoxFit.fitHeight),
             //border: Border.all(color: Colors.white, width: 1)),

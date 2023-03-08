@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../config/app_config.dart';
 import '../../config/style/theme_extensions.dart';
 
 class SimpleTextButton extends StatelessWidget {
@@ -22,17 +23,17 @@ class SimpleTextButton extends StatelessWidget {
               children: [
                 if (icon != null)
                   Padding(
-                    padding: EdgeInsets.all(2.0),
+                    padding: EdgeInsets.all(2.0 * AppConfig.uiScale.value),
                     child: SizedBox(
-                        width: 30,
-                        height: 30,
+                        width: 30 * AppConfig.uiScale.value,
+                        height: 30 * AppConfig.uiScale.value,
                         child: Icon(
                           icon!,
                           weight: 3,
                         )),
                   ),
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: EdgeInsets.all(8.0 * AppConfig.uiScale.value),
                   child: Align(alignment: Alignment.centerLeft, child: Text(text)),
                 ),
               ],

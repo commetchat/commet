@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 
+import '../../config/app_config.dart';
+
 class CircleButton extends StatelessWidget {
   const CircleButton({super.key, this.radius = 15, this.icon, this.onPressed});
   final double radius;
@@ -18,7 +20,10 @@ class CircleButton extends StatelessWidget {
           onTap: () {
             onPressed?.call();
           },
-          child: SizedBox(width: radius * 2, height: radius * 2, child: icon != null ? Icon(icon) : null),
+          child: SizedBox(
+              width: radius * 2 * AppConfig.uiScale.value,
+              height: radius * 2 * AppConfig.uiScale.value,
+              child: icon != null ? Icon(icon) : null),
         ),
       ),
     );
