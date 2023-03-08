@@ -55,7 +55,7 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
 
   SizedBox spaceSelector() {
     return SizedBox(
-        width: 70 * AppConfig.uiScale.value,
+        width: s(70.0),
         child: SpaceSelector(
           _clientManager.spaces,
           onSpaceInsert: _clientManager.onSpaceAdded.stream,
@@ -63,10 +63,10 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
             tooltip: "Home",
             onTap: () {
               setState(() {
-                if (AppConfig.uiScale.value == 2) {
-                  AppConfig.uiScale.value = 1;
+                if (getUiScale() == 1.25) {
+                  setUiScale(1);
                 } else {
-                  AppConfig.uiScale.value = 2;
+                  setUiScale(1.25);
                 }
               });
             },
@@ -91,7 +91,7 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
     return Flexible(
         child: Column(
       children: [
-        SizedBox(height: 50 * AppConfig.uiScale.value, child: RoomHeader(selectedRoom!)),
+        SizedBox(height: s(50), child: RoomHeader(selectedRoom!)),
         Flexible(
           child: Row(
             children: [
@@ -111,7 +111,7 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
                 ),
               ),
               SizedBox(
-                  width: 250 * AppConfig.uiScale.value,
+                  width: s(250),
                   child: PeerList(
                     selectedRoom!.members,
                     key: selectedRoom!.key,
@@ -125,14 +125,12 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
 
   SizedBox spaceRoomSelector() {
     return SizedBox(
-        width: 250 * AppConfig.uiScale.value,
+        width: s(250),
         child: Background.low1(
           context,
           child: Column(
             children: [
-              Container(
-                  child: SizedBox(
-                      height: 50 * AppConfig.uiScale.value, child: Container(child: SpaceHeader(selectedSpace!)))),
+              Container(child: SizedBox(height: s(50), child: Container(child: SpaceHeader(selectedSpace!)))),
               Expanded(
                   child: SpaceViewer(
                 selectedSpace!,
@@ -141,7 +139,7 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
                 onRoomSelected: roomSelected,
               )),
               SizedBox(
-                height: 55 * AppConfig.uiScale.value,
+                height: s(55),
                 child: UserPanel(
                   selectedSpace!.client.user!,
                   onClicked: () {

@@ -46,11 +46,11 @@ class _SpaceIconState extends State<SpaceIcon> {
       right: 0,
       bottom: 0,
       child: SizedBox(
-        width: 20 * AppConfig.uiScale.value,
-        height: 20 * AppConfig.uiScale.value,
+        width: s(20),
+        height: s(20),
         child: Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10 * 2 * AppConfig.uiScale.value),
+            borderRadius: BorderRadius.circular(s(20)),
             boxShadow: [BoxShadow(color: Colors.black, blurRadius: 4)],
             image: DecorationImage(image: widget.space.client.user!.avatar!, fit: BoxFit.fitHeight),
             //border: Border.all(color: Colors.white, width: 1)),

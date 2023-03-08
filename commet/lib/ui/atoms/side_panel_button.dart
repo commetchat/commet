@@ -1,9 +1,7 @@
-import 'package:commet/client/client.dart';
-import 'package:commet/ui/atoms/avatar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
+
+import './text.dart' as t;
 
 import '../../config/app_config.dart';
 import '../../config/style/theme_extensions.dart';
@@ -20,8 +18,7 @@ class SidePanelButton extends StatefulWidget {
 }
 
 class _SidePanelButtonState extends State<SidePanelButton> {
-  BorderRadiusGeometry _borderRadius = BorderRadius.circular(20 * AppConfig.uiScale.value);
-
+  double _borderRadius = 20;
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -30,19 +27,19 @@ class _SidePanelButtonState extends State<SidePanelButton> {
         child: Container(
           alignment: Alignment.topLeft,
           child: Padding(
-            padding: EdgeInsets.all(3 * AppConfig.uiScale.value),
+            padding: EdgeInsets.all(s(3)),
             child: GestureDetector(
               onTap: () => {widget.onTap?.call()},
               child: MouseRegion(
                   cursor: SystemMouseCursors.click,
                   onEnter: (event) {
                     setState(() {
-                      _borderRadius = BorderRadius.circular(8 * AppConfig.uiScale.value);
+                      _borderRadius = 8;
                     });
                   },
                   onExit: (event) {
                     setState(() {
-                      _borderRadius = BorderRadius.circular(20 * AppConfig.uiScale.value);
+                      _borderRadius = 20;
                     });
                   },
                   child: widget.tooltip != null
@@ -54,8 +51,8 @@ class _SidePanelButtonState extends State<SidePanelButton> {
                           //shadow: BoxShadow(blurRadius: 4, color: Colors.black, spreadRadius: 1),
                           backgroundColor: Theme.of(context).extension<ExtraColors>()!.surfaceLowest,
                           content: Padding(
-                            padding: EdgeInsets.all(8.0 * AppConfig.uiScale.value),
-                            child: Text(widget.tooltip!),
+                            padding: EdgeInsets.all(s(8.0)),
+                            child: t.Text.ui(widget.tooltip!, context),
                           ),
                           child: createImageContainer(),
                         )
@@ -72,7 +69,7 @@ class _SidePanelButtonState extends State<SidePanelButton> {
       duration: const Duration(milliseconds: 200),
       curve: Curves.easeInOut,
       decoration: BoxDecoration(
-          borderRadius: _borderRadius,
+          borderRadius: BorderRadius.circular(s(_borderRadius)),
           image: widget.image != null
               ? DecorationImage(image: widget.image!, fit: BoxFit.fitHeight)
               : const DecorationImage(

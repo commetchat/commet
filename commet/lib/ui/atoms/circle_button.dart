@@ -20,10 +20,7 @@ class CircleButton extends StatelessWidget {
           onTap: () {
             onPressed?.call();
           },
-          child: SizedBox(
-              width: radius * 2 * AppConfig.uiScale.value,
-              height: radius * 2 * AppConfig.uiScale.value,
-              child: icon != null ? Icon(icon) : null),
+          child: SizedBox(width: s(radius * 2), height: s(radius * 2), child: icon != null ? Icon(icon) : null),
         ),
       ),
     );

@@ -18,16 +18,14 @@ class RoomHeader extends StatelessWidget {
       child: DecoratedBox(
         decoration: BoxDecoration(
             border: Border(
-                bottom: BorderSide(
-                    color: Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
-                    width: 1.5 * AppConfig.uiScale.value))),
+                bottom: BorderSide(color: Theme.of(context).extension<ExtraColors>()!.surfaceLow2, width: s(1.5)))),
         child: Padding(
           padding: const EdgeInsets.all(10.0),
           child: Row(
             children: [
               SizedBox(
-                  width: 40 * AppConfig.uiScale.value,
-                  height: 40 * AppConfig.uiScale.value,
+                  width: s(40),
+                  height: s(40),
                   child: Icon(
                     Icons.tag,
                   )),

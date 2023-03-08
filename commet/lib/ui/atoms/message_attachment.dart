@@ -21,7 +21,7 @@ class _MessageAttachmentState extends State<MessageAttachment> {
 
   Widget buildImage(BuildContext context) {
     return SizedBox(
-      height: 200 * AppConfig.uiScale.value,
+      height: s(200),
       child: Image(image: AssetImage("assets/images/placeholder/generic/checker_red.png")),
     );
   }

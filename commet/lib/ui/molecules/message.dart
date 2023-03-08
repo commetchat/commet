@@ -1,9 +1,11 @@
 import 'package:commet/client/timeline.dart';
+import 'package:commet/config/app_config.dart';
 import 'package:commet/ui/atoms/avatar.dart';
 import 'package:commet/ui/atoms/message_attachment.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import '../atoms/text.dart' as t;
 
 class Message extends StatefulWidget {
   const Message(this.event, {super.key, this.showSender = true});
@@ -44,11 +46,12 @@ class _MessageState extends State<Message> {
                       child: Text(
                         widget.event.sender.displayName,
                         style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Colors.red, fontSize: 17),
+                        textScaleFactor: getUiScale(),
                       ),
                     ),
-                  Text(
+                  t.Text.body(
                     widget.event.body!,
-                    style: Theme.of(context).textTheme.bodyMedium,
+                    context,
                   ),
                   if (widget.event.attachments != null)
                     Wrap(

@@ -33,21 +33,20 @@ class Avatar extends StatelessWidget {
   Widget build(BuildContext context) {
     if (image != null) {
       return SizedBox(
-        width: radius * 2 * AppConfig.uiScale.value,
-        height: radius * 2 * AppConfig.uiScale.value,
+        width: s(radius * 2),
+        height: s(radius * 2),
         child: DecoratedBox(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(radius * AppConfig.uiScale.value),
-                image: DecorationImage(image: image!))),
+            decoration:
+                BoxDecoration(borderRadius: BorderRadius.circular(s(radius)), image: DecorationImage(image: image!))),
       );
     }
     return SizedBox(
-      width: radius * 2 * AppConfig.uiScale.value,
-      height: isPadding ? null : radius * 2 * AppConfig.uiScale.value,
+      width: s(radius * 2),
+      height: isPadding ? null : s(radius * 2),
       child: placeholderText != null
           ? DecoratedBox(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(radius * AppConfig.uiScale.value),
+                borderRadius: BorderRadius.circular(s(radius)),
                 color: Colors.green,
               ),
               child: Align(

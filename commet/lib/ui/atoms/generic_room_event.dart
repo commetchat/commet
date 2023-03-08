@@ -15,19 +15,18 @@ class GenericRoomEvent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       child: Padding(
-        padding: EdgeInsets.all(2.0 * AppConfig.uiScale.value),
+        padding: EdgeInsets.all(s(2.0)),
         child: Align(
           alignment: Alignment.centerLeft,
           child: Flexible(
             child: Padding(
-              padding: EdgeInsets.fromLTRB(20 * AppConfig.uiScale.value, 8 * AppConfig.uiScale.value,
-                  20 * AppConfig.uiScale.value, 8 * AppConfig.uiScale.value),
+              padding: EdgeInsets.fromLTRB(s(20), s(8), s(20), s(8)),
               child: Row(
                 children: [
                   Avatar.medium(image: null, isPadding: true),
                   Icon(icon),
                   Padding(
-                    padding: EdgeInsets.fromLTRB(10 * AppConfig.uiScale.value, 0, 0, 0),
+                    padding: EdgeInsets.fromLTRB(s(10), 0, 0, 0),
                     child: Flexible(child: Text(text)),
                   )
                 ],
