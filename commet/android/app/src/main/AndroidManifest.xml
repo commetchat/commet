@@ -1,5 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.commet">
+    <uses-permission android:name="android.permission.INTERNET"/>
    <application
         android:label="commet"
         android:name="${applicationName}"
