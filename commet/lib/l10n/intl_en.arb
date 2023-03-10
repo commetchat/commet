@@ -2,5 +2,9 @@
   "@@locale": "en",
   "loading": "Loading...",
   "createNewSpace": "Create New Space",
-  "joinExistingSpace": "Join Existing Space"
+  "joinExistingSpace": "Join Existing Space",
+  "settingsTabCustomization": "Customization",
+  "themeLight": "Light Theme",
+  "themeDark": "Dark Theme",
+  "themeGlass": "Glass Theme"
 }

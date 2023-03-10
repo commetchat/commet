@@ -6,7 +6,6 @@
     "configurations": [
         {
             "name": "commet (debug desktop)",
-            "cwd": "commet",
             "request": "launch",
             "type": "dart",
             "toolArgs": [
@@ -15,7 +14,6 @@
         },
         {
             "name": "commet (debug mobile)",
-            "cwd": "commet",
             "request": "launch",
             "type": "dart",
             "toolArgs": [
@@ -24,14 +22,12 @@
         },
         {
             "name": "commet (profile mode)",
-            "cwd": "commet",
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile"
         },
         {
             "name": "commet (release desktop)",
-            "cwd": "commet",
             "request": "launch",
             "type": "dart",
             "toolArgs": [

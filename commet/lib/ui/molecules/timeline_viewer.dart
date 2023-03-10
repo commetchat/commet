@@ -97,8 +97,6 @@ class TimelineViewerState extends State<TimelineViewer> {
   void handleBottomAttached() {
     setState(() {
       attachedToBottom = controller.position.pixels >= controller.position.maxScrollExtent;
-      print("Scroll view attached to bottom: ");
-      print(attachedToBottom);
     });
   }
 

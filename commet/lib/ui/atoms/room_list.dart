@@ -143,16 +143,22 @@ class _RoomListState extends State<RoomList> with SingleTickerProviderStateMixin
       shrinkWrap: true,
       itemBuilder: (context, i, animation) => ScaleTransition(
         scale: animation,
-        child: SimpleTextButton(
-          widget.rooms[i].displayName,
-          highlighted: _selectedIndex == i,
-          icon: Icons.tag,
-          onTap: () {
-            widget.onRoomSelected?.call(i);
-            setState(() {
-              _selectedIndex = i;
-            });
-          },
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(0, s(2), 0, 0),
+          child: SizedBox(
+            height: s(37),
+            child: SimpleTextButton(
+              widget.rooms[i].displayName,
+              highlighted: _selectedIndex == i,
+              icon: Icons.tag,
+              onTap: () {
+                widget.onRoomSelected?.call(i);
+                setState(() {
+                  _selectedIndex = i;
+                });
+              },
+            ),
+          ),
         ),
       ),
     );

@@ -1,4 +1,5 @@
 import 'package:commet/config/style/theme_light.dart';
+import 'package:commet/ui/pages/settings/settings_menu.dart';
 import 'package:commet/ui/pages/settings/settings_tab.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -27,36 +28,7 @@ class _MobileSettingsPageState extends State<MobileSettingsPage> {
 
   @override
   void initState() {
-    tabs = List.empty(growable: true);
-
-    tabs.add(SettingsTab(
-        label: "Settings 1",
-        pageBuilder: (context) => Column(children: [
-              SimpleTextButton("Light Theme",
-                  onTap: () => setState(() {
-                        ThemeChanger.setTheme(context, ThemeLight().theme);
-                      })),
-              SimpleTextButton("Dark Theme",
-                  onTap: () => setState(() {
-                        ThemeChanger.setTheme(context, ThemeDark().theme);
-                      })),
-              SimpleTextButton("Glass Theme",
-                  onTap: () => setState(() {
-                        ThemeChanger.setTheme(context, ThemeGlass().theme);
-                      })),
-            ])));
-
-    tabs.add(SettingsTab(label: "Settings 2", pageBuilder: (context) => Placeholder()));
-
-    tabs.add(SettingsTab(label: "More Settings", seperator: true));
-
-    tabs.add(SettingsTab(label: "Settings 3", pageBuilder: (context) => Placeholder()));
-
-    tabs.add(SettingsTab(label: "Settings 4", pageBuilder: (context) => Placeholder()));
-
-    tabs.add(SettingsTab(seperator: true));
-
-    tabs.add(SettingsTab(label: "Settings 5", pageBuilder: (context) => Placeholder()));
+    tabs = SettingsMenu().settings;
   }
 
   @override
@@ -64,10 +36,9 @@ class _MobileSettingsPageState extends State<MobileSettingsPage> {
     return Material(
       child: Background.low1(
         context,
-        child: Padding(
-          padding: EdgeInsets.all(s(8.0)),
-          child: SizedBox(
-            width: s(240),
+        child: SafeArea(
+          child: Padding(
+            padding: EdgeInsets.all(s(8.0)),
             child: Column(
               children: [
                 Padding(
@@ -82,6 +53,7 @@ class _MobileSettingsPageState extends State<MobileSettingsPage> {
                 ),
                 ListView.builder(
                   shrinkWrap: true,
+                  physics: BouncingScrollPhysics(),
                   itemBuilder: (context, index) {
                     if (tabs[index].seperator) {
                       if (tabs[index].label == null) return Seperator();
@@ -95,16 +67,14 @@ class _MobileSettingsPageState extends State<MobileSettingsPage> {
                       );
                     }
                     return SizedBox(
-                        height: s(40),
-                        width: s(200),
                         child: SimpleTextButton(
-                          tabs[index].label!,
-                          onTap: () {
-                            setState(() {
-                              NavigationUtils.navigateTo(context, SettingsSubPage(builder: tabs[index].pageBuilder!));
-                            });
-                          },
-                        ));
+                      tabs[index].label!,
+                      onTap: () {
+                        setState(() {
+                          NavigationUtils.navigateTo(context, SettingsSubPage(builder: tabs[index].pageBuilder!));
+                        });
+                      },
+                    ));
                   },
                   itemCount: tabs.length,
                 ),
@@ -124,16 +94,25 @@ class SettingsSubPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Background.low2(
       context,
-      child: Column(
-        children: [
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: Text("Back"),
+      child: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.all(s(8.0)),
+          child: Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.all(s(8.0)),
+                child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: CircleButton(
+                      radius: 25,
+                      icon: Icons.arrow_back,
+                      onPressed: () => Navigator.of(context).pop(),
+                    )),
+              ),
+              builder(context)
+            ],
           ),
-          builder(context)
-        ],
+        ),
       ),
     );
   }

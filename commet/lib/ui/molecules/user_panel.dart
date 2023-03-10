@@ -58,9 +58,6 @@ class _UserPanelState extends State<UserPanel> {
                 ],
               ),
             ),
-            Placeholder(
-              fallbackWidth: s(110),
-            )
           ],
         ),
       ),

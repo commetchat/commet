@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import '../../../client/client_manager.dart';
 import '../../../client/room.dart';
 import '../../../client/space.dart';
+import '../../../config/app_config.dart';
 import '../../atoms/background.dart';
 import '../../atoms/room_header.dart';
 import '../../atoms/side_panel_button.dart';
@@ -18,6 +19,7 @@ import '../../molecules/overlapping_panels.dart';
 import '../../molecules/space_selector.dart';
 import '../../molecules/space_viewer.dart';
 import '../../molecules/user_list.dart';
+import '../../molecules/user_panel.dart';
 import '../../organisms/add_space_dialog.dart';
 import '../../organisms/side_navigation_bar.dart';
 
@@ -105,10 +107,10 @@ class _MobileChatPageState extends State<MobileChatPage> {
         child: SafeArea(
           child: Column(
             children: [
-              Container(child: SizedBox(height: 50, child: Container(child: SpaceHeader(selectedSpace!)))),
+              Container(child: SizedBox(height: s(50), child: Container(child: SpaceHeader(selectedSpace!)))),
               Expanded(
                   child: Padding(
-                padding: const EdgeInsets.fromLTRB(0, 0, 50, 0),
+                padding: EdgeInsets.fromLTRB(0, 0, s(50), 0),
                 child: SpaceViewer(
                   selectedSpace!,
                   key: selectedSpace!.key,
@@ -117,7 +119,13 @@ class _MobileChatPageState extends State<MobileChatPage> {
                     roomSelected(index);
                   },
                 ),
-              ))
+              )),
+              SizedBox(
+                height: s(70),
+                child: UserPanel(
+                  selectedSpace!.client.user!,
+                ),
+              )
             ],
           ),
         ),
@@ -129,10 +137,11 @@ class _MobileChatPageState extends State<MobileChatPage> {
     return Background.surface(
       context,
       child: Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.surface,
         body: SafeArea(
           child: Column(
             children: [
-              SizedBox(height: 50, child: RoomHeader(selectedRoom!)),
+              SizedBox(height: s(50), child: RoomHeader(selectedRoom!)),
               Flexible(
                 child: Container(
                   child: Column(
@@ -143,7 +152,10 @@ class _MobileChatPageState extends State<MobileChatPage> {
                         key: timelines[selectedRoom!.identifier],
                         timeline: selectedRoom!.timeline!,
                       )),
-                      MessageInput()
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(0, 0, 0, s(8)),
+                        child: MessageInput(),
+                      )
                     ],
                   ),
                 ),

@@ -48,7 +48,6 @@ class _SidePanelButtonState extends State<SidePanelButton> {
                         offset: 40,
                         tailLength: 5,
                         tailBaseWidth: 5,
-                        //shadow: BoxShadow(blurRadius: 4, color: Colors.black, spreadRadius: 1),
                         backgroundColor: Theme.of(context).extension<ExtraColors>()!.surfaceLowest,
                         content: Padding(
                           padding: EdgeInsets.all(s(8.0)),
@@ -70,6 +69,7 @@ class _SidePanelButtonState extends State<SidePanelButton> {
       decoration: BoxDecoration(
           color: Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
           borderRadius: BorderRadius.circular(s(_borderRadius)),
+          boxShadow: [BoxShadow(color: Colors.black.withAlpha(32), blurRadius: 2)],
           image: widget.image != null ? DecorationImage(image: widget.image!, fit: BoxFit.fitHeight) : null),
       child: widget.icon != null
           ? Align(

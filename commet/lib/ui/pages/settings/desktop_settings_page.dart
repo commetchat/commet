@@ -5,6 +5,7 @@ import 'package:commet/config/style/theme_light.dart';
 import 'package:commet/ui/atoms/background.dart';
 import 'package:commet/ui/atoms/circle_button.dart';
 import 'package:commet/ui/atoms/seperator.dart';
+import 'package:commet/ui/pages/settings/settings_menu.dart';
 import 'package:commet/ui/pages/settings/settings_tab.dart';
 import 'package:flutter/material.dart';
 
@@ -25,36 +26,7 @@ class _DesktopSettingsPageState extends State<DesktopSettingsPage> {
 
   @override
   void initState() {
-    tabs = List.empty(growable: true);
-
-    tabs.add(SettingsTab(
-        label: "Settings 1",
-        pageBuilder: (context) => Column(children: [
-              SimpleTextButton(
-                "Light Theme",
-                onTap: () => ThemeChanger.setTheme(context, ThemeLight().theme),
-              ),
-              SimpleTextButton(
-                "Dark Theme",
-                onTap: () => ThemeChanger.setTheme(context, ThemeDark().theme),
-              ),
-              SimpleTextButton(
-                "Glass Theme",
-                onTap: () => ThemeChanger.setTheme(context, ThemeGlass().theme),
-              ),
-            ])));
-
-    tabs.add(SettingsTab(label: "Settings 2", pageBuilder: (context) => Placeholder()));
-
-    tabs.add(SettingsTab(label: "More Settings", seperator: true));
-
-    tabs.add(SettingsTab(label: "Settings 3", pageBuilder: (context) => Placeholder()));
-
-    tabs.add(SettingsTab(label: "Settings 4", pageBuilder: (context) => Placeholder()));
-
-    tabs.add(SettingsTab(seperator: true));
-
-    tabs.add(SettingsTab(label: "Settings 5", pageBuilder: (context) => Placeholder()));
+    tabs = SettingsMenu().settings;
   }
 
   @override
@@ -118,25 +90,34 @@ class _DesktopSettingsPageState extends State<DesktopSettingsPage> {
             ),
           ),
           Expanded(
-            child: AnimatedSwitcher(
-              duration: Duration(milliseconds: 300),
-              switchInCurve: Curves.easeInOutCubic,
-              //switchOutCurve: Curves.easeInExpo,
-              transitionBuilder: (Widget child, Animation<double> animation) {
-                return SlideTransition(
-                  position: Tween(
-                    begin: Offset(0.0, 1.5),
-                    end: Offset(0.0, 0.0),
-                  ).animate(animation),
-                  child: child,
-                );
-              },
-              child: Background.surface(context,
-                  key: ValueKey(selectedTabIndex), child: tabs[selectedTabIndex].pageBuilder!(context)),
+              child: AnimatedSwitcher(
+            duration: Duration(milliseconds: 300),
+            switchInCurve: Curves.easeInOutCubic,
+            //switchOutCurve: Curves.easeInExpo,
+            transitionBuilder: (Widget child, Animation<double> animation) {
+              return SlideTransition(
+                position: Tween(
+                  begin: Offset(0.0, 1.5),
+                  end: Offset(0.0, 0.0),
+                ).animate(animation),
+                child: child,
+              );
+            },
+            child: Background.surface(
+              context,
+              key: ValueKey(selectedTabIndex),
+              child: settingsTab(tabs[selectedTabIndex].pageBuilder!),
             ),
-          )
+          ))
         ],
       ),
+    );
+  }
+
+  Widget settingsTab(Widget Function(BuildContext context) builder) {
+    return Padding(
+      padding: EdgeInsets.all(s(20.0)),
+      child: builder(context),
     );
   }
 }

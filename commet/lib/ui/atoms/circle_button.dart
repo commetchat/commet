@@ -1,3 +1,4 @@
+import 'package:commet/config/style/theme_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -13,7 +14,7 @@ class CircleButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ClipOval(
       child: Material(
-        //color: Colors.blue, // Button color
+        color: Theme.of(context).extension<ExtraColors>()!.surfaceLow3,
         borderRadius: BorderRadius.circular(radius),
         child: InkWell(
           splashColor: Theme.of(context).highlightColor, // Splash color

@@ -175,7 +175,9 @@ class OverlappingPanelsState extends State<OverlappingPanels> with TickerProvide
       ),
       Transform.translate(
         offset: Offset(translate, 0),
-        child: widget.main,
+        child: DecoratedBox(
+            decoration: BoxDecoration(boxShadow: [BoxShadow(color: Colors.black.withAlpha(30), blurRadius: 20)]),
+            child: widget.main),
       ),
       GestureDetector(
         behavior: HitTestBehavior.translucent,
