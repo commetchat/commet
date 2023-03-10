@@ -104,26 +104,23 @@ class TimelineViewerState extends State<TimelineViewer> {
 
   @override
   Widget build(BuildContext context) {
-    return Background.surface(
-      context,
-      child: CustomScrollView(
-        center: centerKey,
-        controller: controller,
-        physics: physics,
-        slivers: <Widget>[
-          SliverList(
-              delegate: SliverChildBuilderDelegate((context, index) {
-            if (history[reverseIndexHistory(index)].widget == null) return SizedBox();
-            return history[reverseIndexHistory(index)].widget!;
-          }, childCount: history.length)),
-          SliverList(
-              key: centerKey,
-              delegate: SliverChildBuilderDelegate((context, index) {
-                if (newEvents[reverseIndexNew(index)].widget == null) return SizedBox();
-                return newEvents[reverseIndexNew(index)].widget!;
-              }, childCount: newEventsCount)),
-        ],
-      ),
+    return CustomScrollView(
+      center: centerKey,
+      controller: controller,
+      physics: physics,
+      slivers: <Widget>[
+        SliverList(
+            delegate: SliverChildBuilderDelegate((context, index) {
+          if (history[reverseIndexHistory(index)].widget == null) return SizedBox();
+          return history[reverseIndexHistory(index)].widget!;
+        }, childCount: history.length)),
+        SliverList(
+            key: centerKey,
+            delegate: SliverChildBuilderDelegate((context, index) {
+              if (newEvents[reverseIndexNew(index)].widget == null) return SizedBox();
+              return newEvents[reverseIndexNew(index)].widget!;
+            }, childCount: newEventsCount)),
+      ],
     );
   }
 }

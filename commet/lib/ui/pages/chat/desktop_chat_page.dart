@@ -69,7 +69,8 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
           child: Row(
             children: [
               Flexible(
-                child: Container(
+                child: Background.surface(
+                  context,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [

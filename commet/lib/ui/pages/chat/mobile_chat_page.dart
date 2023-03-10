@@ -47,12 +47,11 @@ class _MobileChatPageState extends State<MobileChatPage> {
 
   @override
   Widget build(BuildContext newContext) {
-    return SafeArea(
-        child: OverlappingPanels(
-            key: panelsKey,
-            left: navigation(newContext),
-            main: timelineView(),
-            right: selectedRoom != null ? userList() : null));
+    return OverlappingPanels(
+        key: panelsKey,
+        left: navigation(newContext),
+        main: timelineView(),
+        right: selectedRoom != null ? userList() : null);
   }
 
   Widget navigation(BuildContext newContext) {
@@ -72,11 +71,16 @@ class _MobileChatPageState extends State<MobileChatPage> {
 
   Widget userList() {
     if (selectedRoom != null) {
-      return Padding(
-        padding: const EdgeInsets.fromLTRB(50, 20, 0, 0),
-        child: PeerList(
-          selectedRoom!.members,
-          key: selectedRoom!.key,
+      return Background.low1(
+        context,
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(50, 20, 0, 0),
+            child: PeerList(
+              selectedRoom!.members,
+              key: selectedRoom!.key,
+            ),
+          ),
         ),
       );
     }
@@ -98,47 +102,56 @@ class _MobileChatPageState extends State<MobileChatPage> {
     return Flexible(
       child: Background.low1(
         context,
-        child: Column(
-          children: [
-            Container(child: SizedBox(height: 50, child: Container(child: SpaceHeader(selectedSpace!)))),
-            Expanded(
-                child: Padding(
-              padding: const EdgeInsets.fromLTRB(0, 0, 50, 0),
-              child: SpaceViewer(
-                selectedSpace!,
-                key: selectedSpace!.key,
-                onRoomInsert: selectedSpace!.onRoomAdded.stream,
-                onRoomSelected: (index) async {
-                  roomSelected(index);
-                },
-              ),
-            ))
-          ],
+        child: SafeArea(
+          child: Column(
+            children: [
+              Container(child: SizedBox(height: 50, child: Container(child: SpaceHeader(selectedSpace!)))),
+              Expanded(
+                  child: Padding(
+                padding: const EdgeInsets.fromLTRB(0, 0, 50, 0),
+                child: SpaceViewer(
+                  selectedSpace!,
+                  key: selectedSpace!.key,
+                  onRoomInsert: selectedSpace!.onRoomAdded.stream,
+                  onRoomSelected: (index) async {
+                    roomSelected(index);
+                  },
+                ),
+              ))
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget roomChatView() {
-    return Column(
-      children: [
-        SizedBox(height: 50, child: RoomHeader(selectedRoom!)),
-        Flexible(
-          child: Container(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Expanded(
-                    child: TimelineViewer(
-                  key: timelines[selectedRoom!.identifier],
-                  timeline: selectedRoom!.timeline!,
-                )),
-                MessageInput()
-              ],
-            ),
+    return Background.surface(
+      context,
+      child: Scaffold(
+        body: SafeArea(
+          child: Column(
+            children: [
+              SizedBox(height: 50, child: RoomHeader(selectedRoom!)),
+              Flexible(
+                child: Container(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Expanded(
+                          child: TimelineViewer(
+                        key: timelines[selectedRoom!.identifier],
+                        timeline: selectedRoom!.timeline!,
+                      )),
+                      MessageInput()
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
-      ],
+      ),
     );
   }
 

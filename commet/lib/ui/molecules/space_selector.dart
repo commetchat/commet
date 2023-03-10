@@ -53,46 +53,48 @@ class _SpaceSelectorState extends State<SpaceSelector> {
   Widget build(BuildContext context) {
     return Background.lowest(
       context,
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(s(7), 0, s(7), 0),
-        child: Column(
-          children: [
-            Flexible(
-              child: ScrollConfiguration(
-                behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
-                child: SingleChildScrollView(
-                  physics: BouncingScrollPhysics(),
-                  child: Padding(
-                    padding: EdgeInsets.fromLTRB(0, s(8), 0, s(8)),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (widget.header != null) widget.header!,
-                        if (widget.header != null) Seperator(),
-                        AnimatedList(
-                          key: _listKey,
-                          physics: NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          initialItemCount: _count,
-                          itemBuilder: (context, i, animation) => ScaleTransition(
-                            scale: animation,
-                            child: SpaceIcon(
-                              widget.spaces[i],
-                              onTap: () => widget.onSelected?.call(i),
-                              showUser: widget.showSpaceOwnerAvatar,
+      child: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(s(7), 0, s(7), 0),
+          child: Column(
+            children: [
+              Flexible(
+                child: ScrollConfiguration(
+                  behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
+                  child: SingleChildScrollView(
+                    physics: BouncingScrollPhysics(),
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(0, s(8), 0, s(8)),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (widget.header != null) widget.header!,
+                          if (widget.header != null) Seperator(),
+                          AnimatedList(
+                            key: _listKey,
+                            physics: NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            initialItemCount: _count,
+                            itemBuilder: (context, i, animation) => ScaleTransition(
+                              scale: animation,
+                              child: SpaceIcon(
+                                widget.spaces[i],
+                                onTap: () => widget.onSelected?.call(i),
+                                showUser: widget.showSpaceOwnerAvatar,
+                              ),
                             ),
                           ),
-                        ),
-                        if (widget.footer != null) Seperator(),
-                        if (widget.footer != null) widget.footer!,
-                      ],
+                          if (widget.footer != null) Seperator(),
+                          if (widget.footer != null) widget.footer!,
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
