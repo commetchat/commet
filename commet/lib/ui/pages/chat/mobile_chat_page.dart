@@ -1,4 +1,4 @@
-import 'package:commet/ui/atoms/popup_dialog.dart';
+import 'package:commet/ui/molecules/popup_dialog.dart';
 import 'package:commet/ui/molecules/timeline_viewer.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +19,7 @@ import '../../molecules/space_selector.dart';
 import '../../molecules/space_viewer.dart';
 import '../../molecules/user_list.dart';
 import '../../organisms/add_space_dialog.dart';
+import '../../organisms/side_navigation_bar.dart';
 
 class MobileChatPage extends StatefulWidget {
   const MobileChatPage({super.key});
@@ -56,33 +57,17 @@ class _MobileChatPageState extends State<MobileChatPage> {
 
   Widget navigation(BuildContext newContext) {
     return Row(
-      children: [spaceSelector(), if (selectedSpace != null) spaceRoomSelector(newContext)],
-    );
-  }
-
-  Widget spaceSelector() {
-    return SizedBox(
-        width: 70,
-        child: SpaceSelector(
-          _clientManager.spaces,
-          onSpaceInsert: _clientManager.onSpaceAdded.stream,
-          header: SidePanelButton(
-            tooltip: "Home",
-          ),
-          footer: SidePanelButton(
-            tooltip: "Add a Space",
-            onTap: () {
-              PopupDialog.Show(context, AddSpaceDialog(), title: "Add Space");
-            },
-          ),
-          showSpaceOwnerAvatar: true,
-          onSelected: (index) {
+      children: [
+        SideNavigationBar(
+          onSpaceSelected: (index) {
             setState(() {
               selectedSpace = _clientManager.spaces[index];
             });
-            print("Selected Space: " + selectedSpace!.displayName);
           },
-        ));
+        ),
+        if (selectedSpace != null) spaceRoomSelector(newContext)
+      ],
+    );
   }
 
   Widget userList() {

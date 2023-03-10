@@ -9,13 +9,14 @@ import 'package:commet/ui/molecules/space_viewer.dart';
 import 'package:commet/ui/molecules/user_list.dart';
 import 'package:commet/ui/molecules/user_panel.dart';
 import 'package:commet/ui/navigation/navigation_utils.dart';
+import 'package:commet/ui/organisms/side_navigation_bar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../client/client.dart';
 import '../../atoms/background.dart';
-import '../../atoms/popup_dialog.dart';
+import '../../molecules/popup_dialog.dart';
 import '../../molecules/space_selector.dart';
 import '../../organisms/add_space_dialog.dart';
 import '../settings/settings_page.dart';
@@ -46,45 +47,17 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        spaceSelector(),
+        SideNavigationBar(
+          onSpaceSelected: (index) {
+            setState(() {
+              selectedSpace = _clientManager.spaces[index];
+            });
+          },
+        ),
         if (selectedSpace != null) spaceRoomSelector(),
         if (selectedRoom != null) roomChatView(),
       ],
     );
-  }
-
-  SizedBox spaceSelector() {
-    return SizedBox(
-        width: s(70.0),
-        child: SpaceSelector(
-          _clientManager.spaces,
-          onSpaceInsert: _clientManager.onSpaceAdded.stream,
-          header: SidePanelButton(
-            tooltip: "Home",
-            onTap: () {
-              setState(() {
-                if (getUiScale() == 1.25) {
-                  setUiScale(1);
-                } else {
-                  setUiScale(1.25);
-                }
-              });
-            },
-          ),
-          footer: SidePanelButton(
-            tooltip: "Add a Space",
-            onTap: () {
-              PopupDialog.Show(context, AddSpaceDialog(), title: "Add Space");
-            },
-          ),
-          showSpaceOwnerAvatar: true,
-          onSelected: (index) {
-            setState(() {
-              selectedSpace = _clientManager.spaces[index];
-            });
-            print("Selected Space: " + selectedSpace!.displayName);
-          },
-        ));
   }
 
   Flexible roomChatView() {
@@ -142,9 +115,6 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
                 height: s(55),
                 child: UserPanel(
                   selectedSpace!.client.user!,
-                  onClicked: () {
-                    NavigationUtils.navigateTo(context, SettingsPage());
-                  },
                 ),
               )
             ],
