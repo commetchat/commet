@@ -15,16 +15,13 @@ import 'client/matrix/matrix_client.dart';
 import 'client/simulated/simulated_client.dart';
 import 'config/build_config.dart';
 import 'config/style/theme_dark.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+
+import 'generated/l10n.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  final ClientManager clientManager = ClientManager();
-
-  runApp(MaterialApp(
-      home: App(),
-      theme: ThemeLight().theme,
-      builder: (context, child) => Provider<ClientManager>(create: (context) => clientManager, child: child)));
+  runApp(App());
 }
 
 class App extends StatelessWidget {
@@ -39,6 +36,13 @@ class App extends StatelessWidget {
           return MaterialApp(
             title: 'Commet',
             theme: theme,
+            localizationsDelegates: const [
+              T.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: T.delegate.supportedLocales,
             builder: (context, child) => Provider<ClientManager>(
               create: (context) => clientManager,
               child: child,

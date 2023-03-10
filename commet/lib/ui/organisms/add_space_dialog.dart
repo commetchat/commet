@@ -1,3 +1,4 @@
+import 'package:commet/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -16,7 +17,7 @@ class _AddSpaceDialogState extends State<AddSpaceDialog> {
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: const [Text("Create New Space"), Seperator(), Text("Join Existing Space")],
+      children: [Text(T.of(context).createNewSpace), Seperator(), Text(T.of(context).joinExistingSpace)],
     );
   }
 }

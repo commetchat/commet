@@ -38,9 +38,13 @@ jobs:
           cd $PROJECT_PATH
           scripts/integration-prepare-homeserver.sh
 
-      
       - name: Configure Flutter (∩｀-´)⊃━☆ﾟ.*･｡ﾟ
         run: flutter config --enable-linux-desktop
+        
+      - name: Code Generation __φ(．．;)
+        run: |
+          cd $PROJECT_PATH
+          scripts/codegen.sh
 
       - name: Run Tests (っ ºДº)っ ︵ ⌨
         run: |
