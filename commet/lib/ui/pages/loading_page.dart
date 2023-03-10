@@ -2,6 +2,7 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/simulated/simulated_client.dart';
+import 'package:commet/config/app_config.dart';
 import 'package:commet/ui/navigation/navigation_utils.dart';
 import 'package:commet/ui/pages/chat/chat_page.dart';
 import 'package:commet/ui/pages/chat/desktop_chat_page.dart';
@@ -54,10 +55,10 @@ class _LoadingPageState extends State<LoadingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return Center(
       child: SizedBox(
-        width: 60,
-        height: 60,
+        width: s(60),
+        height: s(60),
         child: CircularProgressIndicator(),
       ),
     );

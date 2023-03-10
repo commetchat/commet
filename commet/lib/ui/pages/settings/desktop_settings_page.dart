@@ -8,6 +8,7 @@ import 'package:commet/ui/atoms/seperator.dart';
 import 'package:commet/ui/pages/settings/settings_tab.dart';
 import 'package:flutter/material.dart';
 
+import '../../../config/app_config.dart';
 import '../../../config/style/theme_extensions.dart';
 import '../../atoms/simple_text_button.dart';
 
@@ -65,13 +66,13 @@ class _DesktopSettingsPageState extends State<DesktopSettingsPage> {
           Background.low1(
             context,
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: EdgeInsets.all(s(8.0)),
               child: SizedBox(
-                width: 240,
+                width: s(240),
                 child: Column(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: EdgeInsets.all(s(8.0)),
                       child: Align(
                           alignment: Alignment.centerLeft,
                           child: CircleButton(
@@ -86,7 +87,7 @@ class _DesktopSettingsPageState extends State<DesktopSettingsPage> {
                         if (tabs[index].seperator) {
                           if (tabs[index].label == null) return Seperator();
                           return Padding(
-                            padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
+                            padding: EdgeInsets.fromLTRB(s(16), s(8), s(8), s(8)),
                             child: Text(
                               tabs[index].label!,
                               style: Theme.of(context)
@@ -97,8 +98,8 @@ class _DesktopSettingsPageState extends State<DesktopSettingsPage> {
                           );
                         }
                         return SizedBox(
-                            height: 40,
-                            width: 200,
+                            height: s(40),
+                            width: s(200),
                             child: SimpleTextButton(
                               tabs[index].label!,
                               highlighted: index == selectedTabIndex,

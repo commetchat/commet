@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:commet/client/client.dart';
+import 'package:commet/config/app_config.dart';
 import 'package:commet/ui/atoms/avatar.dart';
 import 'package:commet/ui/atoms/background.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +26,7 @@ class _UserPanelState extends State<UserPanel> {
     return Background.low2(
       context,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(0, 3, 0, 3),
+        padding: EdgeInsets.fromLTRB(0, s(3), 0, s(3)),
         child: Row(
           children: [
             TextButton(
@@ -37,7 +38,7 @@ class _UserPanelState extends State<UserPanel> {
                     radius: 20,
                   ),
                   Padding(
-                    padding: const EdgeInsets.all(8),
+                    padding: EdgeInsets.all(s(8)),
                     child: Container(
                       alignment: Alignment.centerLeft,
                       child: Column(
@@ -58,7 +59,7 @@ class _UserPanelState extends State<UserPanel> {
               ),
             ),
             Placeholder(
-              fallbackWidth: 110,
+              fallbackWidth: s(110),
             )
           ],
         ),

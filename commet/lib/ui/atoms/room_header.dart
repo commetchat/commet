@@ -20,7 +20,7 @@ class RoomHeader extends StatelessWidget {
             border: Border(
                 bottom: BorderSide(color: Theme.of(context).extension<ExtraColors>()!.surfaceLow2, width: s(1.5)))),
         child: Padding(
-          padding: const EdgeInsets.all(10.0),
+          padding: EdgeInsets.all(s(10.0)),
           child: Row(
             children: [
               SizedBox(

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:commet/client/client.dart';
+import 'package:commet/config/app_config.dart';
 import 'package:commet/config/style/theme_extensions.dart';
 import 'package:commet/ui/atoms/background.dart';
 import 'package:commet/ui/atoms/seperator.dart';
@@ -53,7 +54,7 @@ class _SpaceSelectorState extends State<SpaceSelector> {
     return Background.lowest(
       context,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(7, 0, 7, 0),
+        padding: EdgeInsets.fromLTRB(s(7), 0, s(7), 0),
         child: Column(
           children: [
             Flexible(
@@ -62,7 +63,7 @@ class _SpaceSelectorState extends State<SpaceSelector> {
                 child: SingleChildScrollView(
                   physics: BouncingScrollPhysics(),
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+                    padding: EdgeInsets.fromLTRB(0, s(8), 0, s(8)),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,

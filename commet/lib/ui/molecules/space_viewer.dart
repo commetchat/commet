@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:commet/config/app_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -31,7 +32,7 @@ class _SpaceViewerState extends State<SpaceViewer> with TickerProviderStateMixin
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: EdgeInsets.all(s(8.0)),
         child: RoomList(
           widget.space.rooms,
           expanderText: "Test Expander",

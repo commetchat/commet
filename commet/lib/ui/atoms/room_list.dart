@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:commet/config/app_config.dart';
 import 'package:commet/ui/atoms/simple_text_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -82,7 +83,7 @@ class _RoomListState extends State<RoomList> with SingleTickerProviderStateMixin
               sizeFactor: controller!,
               axisAlignment: -1.0,
               child: Padding(
-                padding: EdgeInsets.fromLTRB(8, 0, 0, 0),
+                padding: EdgeInsets.fromLTRB(s(8), 0, 0, 0),
                 child: listRooms(),
               ),
             ),

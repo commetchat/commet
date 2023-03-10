@@ -1,3 +1,4 @@
+import 'package:commet/config/app_config.dart';
 import 'package:commet/ui/atoms/background.dart';
 import 'package:commet/ui/atoms/user_card.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +34,7 @@ class _PeerListState extends State<PeerList> {
     return Background.low1(
       context,
       child: Padding(
-        padding: const EdgeInsets.all(12.0),
+        padding: EdgeInsets.all(s(12.0)),
         child: AnimatedList(
           key: _listKey,
           physics: BouncingScrollPhysics(),

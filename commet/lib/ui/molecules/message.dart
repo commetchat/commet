@@ -20,7 +20,7 @@ class _MessageState extends State<Message> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: widget.showSender ? EdgeInsets.fromLTRB(15, 20, 8, 4) : EdgeInsets.fromLTRB(15, 4, 8, 4),
+      padding: EdgeInsets.fromLTRB(s(15), widget.showSender ? s(20) : s(4), 8, 4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -35,14 +35,14 @@ class _MessageState extends State<Message> {
             ),
           Flexible(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(15, 0, 8, 0),
+              padding: EdgeInsets.fromLTRB(s(15), 0, s(8), 0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (widget.showSender)
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
+                      padding: EdgeInsets.fromLTRB(0, 0, 0, s(5)),
                       child: Text(
                         widget.event.sender.displayName,
                         style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Colors.red, fontSize: 17),
@@ -57,7 +57,7 @@ class _MessageState extends State<Message> {
                     Wrap(
                       children: widget.event.attachments!
                           .map((e) => Padding(
-                                padding: const EdgeInsets.fromLTRB(0, 8, 8, 8),
+                                padding: EdgeInsets.fromLTRB(0, s(8), s(8), s(8)),
                                 child: MessageAttachment(e),
                               ))
                           .toList(),
