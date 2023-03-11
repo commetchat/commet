@@ -14,6 +14,7 @@ class GenericRoomEvent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
+      color: Colors.transparent,
       child: Padding(
         padding: EdgeInsets.all(s(2.0)),
         child: Align(

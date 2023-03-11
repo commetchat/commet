@@ -7,22 +7,54 @@ import 'package:flutter/src/widgets/placeholder.dart';
 import '../../client/client.dart';
 
 class TimelineEventView extends StatefulWidget {
-  const TimelineEventView({required this.event, super.key, this.onDelete});
+  const TimelineEventView(
+      {required this.event, super.key, this.onDelete, this.hovered = false, this.showSender = true});
   final TimelineEvent event;
-
+  final bool hovered;
   final Function? onDelete;
+  final bool showSender;
 
   @override
   State<TimelineEventView> createState() => _TimelineEventState();
 }
 
+/*if (widget.hovered)
+            Positioned(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+                child: PopupIconMenu(
+                  icons: [
+                    MapEntry(Icons.edit, () {
+                      print("Editing");
+                    }),
+                    MapEntry(Icons.emoji_emotions, () {
+                      print("Emoji");
+                    }),
+                    MapEntry(Icons.reply, () {
+                      print("Reply");
+                    })
+                  ],
+                  height: 30,
+                ),
+              ),
+              right: 1,
+              top: 1,
+            )*/
 class _TimelineEventState extends State<TimelineEventView> {
   @override
   Widget build(BuildContext context) {
+    return AnimatedContainer(
+        duration: Duration(milliseconds: 100),
+        color: widget.hovered ? Colors.red : Colors.transparent,
+        child: eventToWidget(widget.event));
+  }
+
+  Widget eventToWidget(TimelineEvent event) {
     switch (widget.event.type) {
       case EventType.message:
         return Message(
           widget.event,
+          showSender: widget.showSender,
           onDelete: widget.onDelete,
         );
         break;

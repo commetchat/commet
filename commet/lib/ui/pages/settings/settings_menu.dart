@@ -27,7 +27,7 @@ class SettingsMenu {
         ThemeChanger.setTheme(context, ThemeLight().theme);
       }),
       SimpleTextButton(T.of(context).themeDark, onTap: () {
-        ThemeChanger.setTheme(context, ThemeDark().theme);
+        ThemeChanger.setTheme(context, ThemeDark.theme);
       }),
       SimpleTextButton(T.of(context).themeGlass, onTap: () {
         ThemeChanger.setTheme(context, ThemeGlass().theme);

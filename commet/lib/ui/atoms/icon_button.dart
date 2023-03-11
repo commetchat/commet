@@ -24,7 +24,7 @@ class _IconButtonState extends State<IconButton> {
         borderRadius: BorderRadius.circular(20),
         color: Colors.transparent,
         child: GestureDetector(
-          onTap: widget.onPressed?.call(),
+          onTap: () => widget.onPressed?.call(),
           child: MouseRegion(
             onEnter: (event) {
               setState(() {

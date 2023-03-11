@@ -13,7 +13,7 @@ class ThemeDarkColors {
 }
 
 class ThemeDark {
-  ThemeData get theme => ThemeData(
+  static ThemeData get theme => ThemeData(
       brightness: Brightness.dark,
       extensions: const <ThemeExtension<dynamic>>[
         ExtraColors(
@@ -42,6 +42,7 @@ class ThemeDark {
         tileColor: ThemeDarkColors.surface,
       ),
       iconTheme: IconThemeData(color: ThemeDarkColors.secondary),
+      shadowColor: Colors.black.withAlpha(100),
       textButtonTheme: TextButtonThemeData(
           style: ButtonStyle(
         overlayColor: const MaterialStatePropertyAll<Color>(Colors.white10),

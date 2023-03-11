@@ -31,7 +31,7 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ThemeChanger(
-        initialTheme: ThemeDark().theme,
+        initialTheme: ThemeDark.theme,
         materialAppBuilder: (context, theme) {
           return MaterialApp(
             title: 'Commet',

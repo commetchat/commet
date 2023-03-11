@@ -35,6 +35,12 @@ class TimelineViewerState extends State<TimelineViewer> {
   int historyEventsCount = 0;
   bool toBeDisposed = false;
   bool animatingToBottom = false;
+  int hoveredEvent = -1;
+
+  int displayListIndexToTimelineIndex(int index, bool history) {
+    if (history) return reverseIndexHistory(index) + newEvents.length;
+    return reverseIndexNew(index);
+  }
 
   void animateAndSnapToBottom() {
     if (toBeDisposed) {
@@ -148,14 +154,40 @@ class TimelineViewerState extends State<TimelineViewer> {
         SliverList(
             key: newEventsListKey,
             delegate: SliverChildBuilderDelegate((context, index) {
-              return TimelineEventView(
-                event: newEvents[reverseIndexNew(index)],
-                onDelete: () {
-                  widget.timeline.deleteEventByIndex(reverseIndexNew(index));
+              return MouseRegion(
+                onEnter: (_) {
+                  setState(() {
+                    hoveredEvent = reverseIndexNew(index);
+                  });
                 },
+                onExit: (_) {
+                  setState(() {
+                    hoveredEvent = -1;
+                  });
+                },
+                child: TimelineEventView(
+                  showSender: shouldShowSender(reverseIndexNew(index)),
+                  event: newEvents[reverseIndexNew(index)],
+                  onDelete: () {
+                    widget.timeline.deleteEventByIndex(displayListIndexToTimelineIndex(index, false));
+                  },
+                ),
               );
             }, childCount: newEventsCount)),
       ],
     );
+  }
+
+  bool shouldShowSender(int index) {
+    if (widget.timeline.events.length < index + 1) {
+      return true;
+    }
+
+    if (widget.timeline.events[index].originServerTs
+            .difference(widget.timeline.events[index + 1].originServerTs)
+            .inMinutes >
+        1) return true;
+
+    return widget.timeline.events[index].sender != widget.timeline.events[index + 1].sender;
   }
 }

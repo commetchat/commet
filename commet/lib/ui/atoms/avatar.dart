@@ -31,6 +31,13 @@ class Avatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (isPadding) {
+      return SizedBox(
+        width: s(radius * 2),
+        height: 1,
+      );
+    }
+
     if (image != null) {
       return SizedBox(
         width: s(radius * 2),
@@ -40,9 +47,10 @@ class Avatar extends StatelessWidget {
                 BoxDecoration(borderRadius: BorderRadius.circular(s(radius)), image: DecorationImage(image: image!))),
       );
     }
+
     return SizedBox(
       width: s(radius * 2),
-      height: isPadding ? null : s(radius * 2),
+      height: s(radius * 2),
       child: placeholderText != null
           ? DecoratedBox(
               decoration: BoxDecoration(
