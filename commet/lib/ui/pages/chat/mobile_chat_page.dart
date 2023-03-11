@@ -37,6 +37,8 @@ class _MobileChatPageState extends State<MobileChatPage> {
   late GlobalKey<OverlappingPanelsState> panelsKey;
   late GlobalKey<TimelineViewerState> timelineKey = GlobalKey<TimelineViewerState>();
   late Map<String, GlobalKey<TimelineViewerState>> timelines = Map();
+  late GlobalKey<MessageInputState> messageInput = GlobalKey();
+  bool shouldMainIgnoreInput = false;
 
   @override
   void initState() {
@@ -52,7 +54,19 @@ class _MobileChatPageState extends State<MobileChatPage> {
     return OverlappingPanels(
         key: panelsKey,
         left: navigation(newContext),
-        main: timelineView(),
+        main: shouldMainIgnoreInput
+            ? IgnorePointer(
+                child: timelineView(),
+              )
+            : timelineView(),
+        onDragStart: () {
+          messageInput.currentState?.unfocus();
+        },
+        onSideChange: (side) {
+          setState(() {
+            shouldMainIgnoreInput = side != RevealSide.main;
+          });
+        },
         right: selectedRoom != null ? userList() : null);
   }
 
@@ -154,7 +168,13 @@ class _MobileChatPageState extends State<MobileChatPage> {
                       )),
                       Padding(
                         padding: EdgeInsets.fromLTRB(0, 0, 0, s(8)),
-                        child: MessageInput(),
+                        child: MessageInput(
+                          key: messageInput,
+                          onSendMessage: (message) {
+                            selectedRoom!.sendMessage(message);
+                            return MessageInputSendResult.clearText;
+                          },
+                        ),
                       )
                     ],
                   ),

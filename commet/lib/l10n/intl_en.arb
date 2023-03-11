@@ -6,5 +6,9 @@
   "settingsTabCustomization": "Customization",
   "themeLight": "Light Theme",
   "themeDark": "Dark Theme",
-  "themeGlass": "Glass Theme"
+  "themeGlass": "Glass Theme",
+  "messageInputPlaceholder": "Send a message...",
+  "fileDragDropPrompt": "Drop file to upload...",
+  "messageFailedToSend": "Failed to send...",
+  "messageDeleted": "Message deleted"
 }

@@ -18,6 +18,7 @@ enum EventType {
   message,
   redaction,
   edit,
+  roomState,
   invalid;
 }
 
@@ -70,15 +71,19 @@ class TimelineEvent {
   late TimelineEventStatus status;
   late Peer sender;
   late DateTime originServerTs;
-  // todo: make this better
-  late String? body;
+  late String? body = null;
+  late String? source = null;
   late Widget? widget;
   List<Attachment>? attachments;
+
+  late StreamController onChange = StreamController.broadcast();
 }
 
 abstract class Timeline {
   late List<TimelineEvent> events = List.empty(growable: true);
   late StreamController<int> onEventAdded = StreamController.broadcast();
+  late StreamController<int> onChange = StreamController.broadcast();
+  late StreamController<int> onRemove = StreamController.broadcast();
   late Client client;
 
   Future<void> loadMoreHistory();
@@ -86,5 +91,19 @@ abstract class Timeline {
   void insertEvent(int index, TimelineEvent event) {
     events.insert(index, event);
     onEventAdded.add(index);
+  }
+
+  void notifyChanged(int index) {
+    print("Notifying of change");
+    onChange.add(index);
+    events[index].onChange.add(null);
+  }
+
+  void deleteEvent(String eventId) {
+    throw UnimplementedError();
+  }
+
+  void deleteEventByIndex(int index) {
+    throw UnimplementedError();
   }
 }

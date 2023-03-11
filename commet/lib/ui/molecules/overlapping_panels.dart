@@ -30,9 +30,12 @@ class OverlappingPanels extends StatefulWidget {
   /// A callback to notify when a panel reveal has completed.
   final ValueChanged<RevealSide>? onSideChange;
 
+  final Function? onDragStart;
+
   final double threshold = 0.2;
 
-  const OverlappingPanels({this.left, required this.main, this.right, this.restWidth = 40, this.onSideChange, Key? key})
+  const OverlappingPanels(
+      {this.left, required this.main, this.right, this.restWidth = 40, this.onSideChange, this.onDragStart, Key? key})
       : super(key: key);
 
   static OverlappingPanelsState? of(BuildContext context) {
@@ -181,6 +184,9 @@ class OverlappingPanelsState extends State<OverlappingPanels> with TickerProvide
       ),
       GestureDetector(
         behavior: HitTestBehavior.translucent,
+        onHorizontalDragStart: (details) {
+          widget.onDragStart?.call();
+        },
         onHorizontalDragUpdate: (details) {
           onTranslate(details.delta.dx);
         },

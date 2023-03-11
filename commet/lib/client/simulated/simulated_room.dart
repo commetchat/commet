@@ -28,9 +28,17 @@ class SimulatedRoom extends Room {
   }
 
   @override
-  Future<TimelineEvent?> sendMessage(String message, {TimelineEvent? inReplyTo}) {
-    // TODO: implement sendMessage
-    throw UnimplementedError();
+  Future<TimelineEvent?> sendMessage(String message, {TimelineEvent? inReplyTo}) async {
+    TimelineEvent e = TimelineEvent();
+    e.eventId = RandomUtils.getRandomString(20);
+    e.status = TimelineEventStatus.sent;
+    e.type = EventType.message;
+    e.originServerTs = DateTime.now();
+    e.sender = client.user!;
+    e.body = message;
+    e.widget = Message(e);
+    timeline!.insertEvent(0, e);
+    return e;
   }
 
   void addMessage() async {
@@ -39,7 +47,7 @@ class SimulatedRoom extends Room {
     await Future.delayed(const Duration(seconds: 1), () {
       TimelineEvent e = TimelineEvent();
       e.eventId = RandomUtils.getRandomString(20);
-      e.status = TimelineEventStatus.sent;
+      e.status = TimelineEventStatus.synced;
       e.type = EventType.message;
       e.originServerTs = DateTime.now();
       e.sender = sender;

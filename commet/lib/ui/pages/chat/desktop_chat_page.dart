@@ -1,5 +1,6 @@
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/config/app_config.dart';
+import 'package:commet/ui/atoms/drag_drop_file_target.dart';
 import 'package:commet/ui/atoms/room_header.dart';
 import 'package:commet/ui/atoms/side_panel_button.dart';
 import 'package:commet/ui/atoms/space_header.dart';
@@ -45,17 +46,29 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Stack(
       children: [
-        SideNavigationBar(
-          onSpaceSelected: (index) {
-            setState(() {
-              selectedSpace = _clientManager.spaces[index];
-            });
-          },
+        Row(
+          children: [
+            SideNavigationBar(
+              onSpaceSelected: (index) {
+                setState(() {
+                  selectedSpace = _clientManager.spaces[index];
+                });
+              },
+            ),
+            if (selectedSpace != null) spaceRoomSelector(),
+            if (selectedRoom != null) roomChatView(),
+          ],
         ),
-        if (selectedSpace != null) spaceRoomSelector(),
-        if (selectedRoom != null) roomChatView(),
+        if (selectedRoom != null)
+          DragDropFileTarget(
+            onDropComplete: (details) {
+              for (var file in details.files) {
+                print(file.path);
+              }
+            },
+          )
       ],
     );
   }
@@ -79,7 +92,12 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
                         key: timelines[selectedRoom!.identifier],
                         timeline: selectedRoom!.timeline!,
                       )),
-                      MessageInput()
+                      MessageInput(
+                        onSendMessage: (message) {
+                          selectedRoom!.sendMessage(message);
+                          return MessageInputSendResult.clearText;
+                        },
+                      )
                     ],
                   ),
                 ),

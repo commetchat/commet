@@ -25,7 +25,6 @@ class MatrixSpace extends Space {
 
     print("Listening to onsync stream in MatrixSpace");
     client.onSync.stream.listen((event) {
-      print("OnSync (Space)");
       refresh();
     });
 
@@ -39,7 +38,7 @@ class MatrixSpace extends Space {
       var url = _matrixRoom.avatar!.getThumbnail(_matrixClient, width: 56, height: 56).toString();
       avatar = NetworkImage(url);
     }
-    print("Space refreshing");
+
     updateRoomsList();
   }
 

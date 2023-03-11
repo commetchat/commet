@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:commet/client/timeline.dart';
 import 'package:commet/ui/atoms/background.dart';
+import 'package:commet/ui/molecules/timeline_event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -21,24 +22,41 @@ class TimelineViewerState extends State<TimelineViewer> {
   bool attachedToBottom = true;
   final ScrollController controller = ScrollController();
   final ScrollPhysics physics = BouncingScrollPhysics();
-  Key centerKey = ValueKey<String>('bottom-sliver-list');
   late StreamSubscription eventAdded;
+  late StreamSubscription eventChanged;
+  late StreamSubscription eventRemoved;
+
+  GlobalKey newEventsListKey = GlobalKey();
+  GlobalKey historyListKey = GlobalKey();
 
   List<TimelineEvent> history = <TimelineEvent>[];
   List<TimelineEvent> newEvents = <TimelineEvent>[];
   int newEventsCount = 0;
   int historyEventsCount = 0;
   bool toBeDisposed = false;
+  bool animatingToBottom = false;
 
   void animateAndSnapToBottom() {
     if (toBeDisposed) {
       print("Cancelling animation about to be disposed");
       return;
     }
+
+    controller.position.hold(() {});
+
+    var lastEvent = newEvents[0];
+
+    animatingToBottom = true;
+
     controller
         .animateTo(controller.position.maxScrollExtent,
             duration: Duration(milliseconds: 500), curve: Curves.easeOutExpo)
-        .then((value) => controller.jumpTo(controller.position.maxScrollExtent));
+        .then((value) {
+      if (newEvents[0] == lastEvent) {
+        controller.jumpTo(controller.position.maxScrollExtent);
+        animatingToBottom = false;
+      }
+    });
   }
 
   void forceToBottom() {
@@ -77,11 +95,22 @@ class TimelineViewerState extends State<TimelineViewer> {
       setState(() {
         newEventsCount++;
 
-        if (attachedToBottom) {
+        if (attachedToBottom || animatingToBottom) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             animateAndSnapToBottom();
           });
         }
+      });
+    });
+
+    eventChanged = widget.timeline.onChange.stream.listen((index) {
+      setState(() {});
+    });
+
+    eventRemoved = widget.timeline.onRemove.stream.listen((index) {
+      setState(() {
+        newEventsCount--;
+        newEvents.removeAt(index);
       });
     });
   }
@@ -103,20 +132,28 @@ class TimelineViewerState extends State<TimelineViewer> {
   @override
   Widget build(BuildContext context) {
     return CustomScrollView(
-      center: centerKey,
+      center: newEventsListKey,
       controller: controller,
       physics: physics,
       slivers: <Widget>[
         SliverList(
             delegate: SliverChildBuilderDelegate((context, index) {
-          if (history[reverseIndexHistory(index)].widget == null) return SizedBox();
-          return history[reverseIndexHistory(index)].widget!;
+          return TimelineEventView(
+            event: history[reverseIndexHistory(index)],
+            onDelete: () {
+              widget.timeline.deleteEventByIndex(reverseIndexHistory(index));
+            },
+          );
         }, childCount: history.length)),
         SliverList(
-            key: centerKey,
+            key: newEventsListKey,
             delegate: SliverChildBuilderDelegate((context, index) {
-              if (newEvents[reverseIndexNew(index)].widget == null) return SizedBox();
-              return newEvents[reverseIndexNew(index)].widget!;
+              return TimelineEventView(
+                event: newEvents[reverseIndexNew(index)],
+                onDelete: () {
+                  widget.timeline.deleteEventByIndex(reverseIndexNew(index));
+                },
+              );
             }, childCount: newEventsCount)),
       ],
     );

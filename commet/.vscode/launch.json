@@ -31,7 +31,8 @@
             "request": "launch",
             "type": "dart",
             "toolArgs": [
-                "--dart-define", "PLATFORM=desktop"
+                "--dart-define", "PLATFORM=desktop",
+                "--dart-define", "BUILD_MODE=release"
             ],
             "flutterMode": "release"
         }

@@ -21,7 +21,17 @@ class CircleButton extends StatelessWidget {
           onTap: () {
             onPressed?.call();
           },
-          child: SizedBox(width: s(radius * 2), height: s(radius * 2), child: icon != null ? Icon(icon) : null),
+          child: SizedBox(
+              width: s(radius * 2),
+              height: s(radius * 2),
+              child: icon != null
+                  ? Align(
+                      alignment: Alignment.center,
+                      child: Icon(
+                        icon,
+                        size: s(radius),
+                      ))
+                  : null),
         ),
       ),
     );

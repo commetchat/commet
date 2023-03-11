@@ -1,0 +1,54 @@
+import 'package:commet/config/style/theme_extensions.dart';
+import 'package:desktop_drop/desktop_drop.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:flutter/widgets.dart';
+import '../../generated/l10n.dart';
+import '../atoms/text.dart' as t;
+
+class DragDropFileTarget extends StatefulWidget {
+  const DragDropFileTarget({super.key, this.onDropComplete});
+  final Function(DropDoneDetails details)? onDropComplete;
+  @override
+  State<DragDropFileTarget> createState() => _DragDropFileTargetState();
+}
+
+class _DragDropFileTargetState extends State<DragDropFileTarget> {
+  bool isFileHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: DropTarget(
+          onDragEntered: (_) {
+            setState(() {
+              isFileHovered = true;
+            });
+          },
+          onDragExited: (_) {
+            setState(() {
+              isFileHovered = false;
+            });
+          },
+          onDragDone: (detail) => widget.onDropComplete?.call(detail),
+          child: Stack(
+            children: [
+              AnimatedOpacity(
+                duration: Duration(milliseconds: 500),
+                curve: Curves.easeOutExpo,
+                opacity: isFileHovered ? 0.5 : 0,
+                child: Container(color: Colors.black),
+              ),
+              AnimatedOpacity(
+                duration: Duration(milliseconds: 500),
+                curve: Curves.easeOutExpo,
+                opacity: isFileHovered ? 1 : 0,
+                child: Align(
+                    alignment: Alignment.center, child: t.Text.largeTitle(T.of(context).fileDragDropPrompt, context)),
+              ),
+            ],
+          )),
+    );
+  }
+}

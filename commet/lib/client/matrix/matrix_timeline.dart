@@ -31,58 +31,52 @@ class MatrixTimeline extends Timeline {
 
   void initTimeline() async {
     _matrixTimeline = await _matrixRoom.getTimeline(
-      onInsert: (index) async {
-        insertEvent(index, await convertEvent(_matrixTimeline!.events[index], _matrixTimeline!));
+      onInsert: (index) {
+        insertEvent(index, convertEvent(_matrixTimeline!.events[index]));
+      },
+      onChange: (index) {
+        events[index] = convertEvent(_matrixTimeline!.events[index], existing: events[index]);
+        notifyChanged(index);
+      },
+      onRemove: (index) {
+        events.removeAt(index);
+        onRemove.add(index);
       },
     );
+
+    // This could maybe make load times realllly slow if we have a ton of stuff in the cache?
+    // Might be better to only convert as many as we would need to display immediately and then convert the rest on demand
     for (int i = 0; i < _matrixTimeline!.events.length; i++) {
-      var converted = await convertEvent(_matrixTimeline!.events[i], _matrixTimeline!);
+      var converted = convertEvent(_matrixTimeline!.events[i]);
       insertEvent(i, converted);
     }
   }
 
-  Future<TimelineEvent> convertEvent(matrix.Event event, matrix.Timeline timeline) async {
-    TimelineEvent e = TimelineEvent();
+  TimelineEvent convertEvent(matrix.Event event, {TimelineEvent? existing = null}) {
+    TimelineEvent? e;
+    if (existing != null) {
+      e = existing;
+    } else {
+      e = TimelineEvent();
+    }
 
     e.eventId = event.eventId;
     e.originServerTs = event.originServerTs;
-    event.status.isSent;
+    e.source = event.toJson().toString();
 
     if (client.peerExists(event.senderId)) {
       e.sender = client.getPeer(event.senderId)!;
     }
 
-    e.body = event.getDisplayEvent(timeline).body;
+    e.body = event.getDisplayEvent(_matrixTimeline!).body;
 
     switch (event.type) {
       case matrix.EventTypes.Message:
-        e.widget = Message(e);
+        e.type = EventType.message;
         break;
-      case matrix.EventTypes.RoomCreate:
-        e.widget = RoomCreated(this._room);
-        break;
-      case matrix.EventTypes.RoomMember:
-        e.widget = GenericRoomEvent(event.content['displayname'] + " Joined the room", Icons.person_add_alt_1);
-        break;
-      case matrix.EventTypes.HistoryVisibility:
-        e.widget = GenericRoomEvent(
-            "${event.senderId} Set history visibility to: ${event.content['history_visibility']}",
-            Icons.bookmark_outline_rounded);
-        break;
-      case matrix.EventTypes.GuestAccess:
-        e.widget = GenericRoomEvent(
-            "${event.senderId} Set guest access to: ${event.content['guest_access']}", Icons.bookmark_outline_rounded);
-        break;
-      case matrix.EventTypes.RoomName:
-        e.widget = GenericRoomEvent(
-            "${event.senderId} Set room name to: ${event.content['name']}", Icons.bookmark_outline_rounded);
-        break;
-      case matrix.EventTypes.Encryption:
-        e.widget = GenericRoomEvent("${event.senderId} Enabled Encryption", Icons.lock);
-        break;
-      default:
-        e.widget = null;
-        break;
+      case matrix.EventTypes.Redaction:
+        e.type = EventType.roomState;
+        e.body = "${e.sender.identifier} Redacted a message";
     }
 
     switch (event.status) {
@@ -106,17 +100,30 @@ class MatrixTimeline extends Timeline {
         break;
     }
 
-    return e;
-  }
+    if (event.redacted) {
+      e.status = TimelineEventStatus.removed;
+    }
 
-  @override
-  Future<TimelineEvent?> sendMessage(String message, {TimelineEvent? inReplyTo}) {
-    // TODO: implement sendMessage
-    throw UnimplementedError();
+    return e;
   }
 
   @override
   Future<void> loadMoreHistory() async {
     if (_matrixTimeline!.canRequestHistory) return await _matrixTimeline!.requestHistory();
+  }
+
+  @override
+  void deleteEventByIndex(int index) async {
+    var event = _matrixTimeline!.events[index];
+    var status = event.status;
+
+    if (status == matrix.EventStatus.sent || status == matrix.EventStatus.synced && event.canRedact) {
+      events[index].status = TimelineEventStatus.removed;
+      await _matrixRoom.redactEvent(event.eventId);
+    } else {
+      events.removeAt(index);
+      _matrixTimeline!.events[index].remove();
+      onRemove.add(index);
+    }
   }
 }

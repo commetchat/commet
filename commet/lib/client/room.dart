@@ -14,6 +14,8 @@ abstract class Room {
 
   int notificationCount = 0;
 
+  Future<TimelineEvent?> sendMessage(String message, {TimelineEvent? inReplyTo});
+
   Room(this.identifier, this.client) {
     identifier = identifier;
     client = client;

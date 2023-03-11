@@ -9,7 +9,6 @@ import 'package:matrix/matrix.dart' as matrix;
 
 class MatrixRoom extends Room {
   late matrix.Room _matrixRoom;
-  late matrix.Timeline _matrixTimeline;
 
   MatrixRoom(client, matrix.Room room, matrix.Client matrixClient) : super(room.id, client) {
     _matrixRoom = room;
@@ -33,5 +32,14 @@ class MatrixRoom extends Room {
     }
 
     timeline = MatrixTimeline(client, this, room);
+  }
+
+  @override
+  Future<TimelineEvent?> sendMessage(String message, {TimelineEvent? inReplyTo}) async {
+    String? id = await _matrixRoom.sendTextEvent(message);
+    if (id != null) {
+      var event = await _matrixRoom.getEventById(id);
+      return (this.timeline as MatrixTimeline).convertEvent(event!);
+    }
   }
 }
