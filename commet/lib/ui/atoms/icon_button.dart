@@ -21,7 +21,6 @@ class _IconButtonState extends State<IconButton> {
   @override
   Widget build(BuildContext context) {
     return Material(
-        borderRadius: BorderRadius.circular(20),
         color: Colors.transparent,
         child: GestureDetector(
           onTap: () => widget.onPressed?.call(),
@@ -36,16 +35,19 @@ class _IconButtonState extends State<IconButton> {
                 hovered = false;
               });
             },
-            child: SizedBox(
-              width: widget.size,
-              height: widget.size,
-              child: Align(
-                  alignment: Alignment.center,
-                  child: Icon(
-                    widget.icon,
-                    size: s(widget.size),
-                    color: hovered ? Theme.of(context).colorScheme.onPrimary : null,
-                  )),
+            child: Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: SizedBox(
+                width: widget.size,
+                height: widget.size,
+                child: Align(
+                    alignment: Alignment.center,
+                    child: Icon(
+                      widget.icon,
+                      size: s(widget.size),
+                      color: hovered ? Theme.of(context).colorScheme.onPrimary : null,
+                    )),
+              ),
             ),
           ),
         ));
