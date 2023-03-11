@@ -6,9 +6,9 @@ class ThemeLightColors {
   static const Color surface = Color.fromARGB(255, 255, 255, 255);
   static const Color secondary = Color.fromARGB(255, 90, 90, 90);
   static const Color surfaceLow1 = Color.fromARGB(255, 245, 245, 245);
-  static const Color surfaceLow2 = Color.fromARGB(255, 245, 245, 245);
-  static const Color surfaceLow3 = Color.fromARGB(255, 245, 245, 245);
-  static const Color surfaceLowest = Color.fromARGB(255, 240, 240, 240);
+  static const Color surfaceLow2 = Color.fromARGB(255, 240, 240, 240);
+  static const Color surfaceLow3 = Color.fromARGB(255, 235, 235, 235);
+  static const Color surfaceLowest = Color.fromARGB(255, 230, 230, 230);
   static const Color highlightColor = Colors.white;
 }
 

@@ -11,7 +11,7 @@ class Text extends StatelessWidget {
   final String text;
 
   Text.ui(this.text, BuildContext context, {Key? key})
-      : style = material.Theme.of(context).textTheme.bodySmall!,
+      : style = material.Theme.of(context).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w400),
         super(key: key);
 
   Text.body(this.text, BuildContext context, {Key? key})

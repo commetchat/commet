@@ -28,7 +28,7 @@ class SimpleTextButton extends StatelessWidget {
                 child: Align(
                   alignment: Alignment.center,
                   child: Icon(
-                    size: s(15),
+                    size: s(20),
                     icon!,
                     weight: 0.5,
                   ),

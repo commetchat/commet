@@ -31,15 +31,18 @@ class _PeerListState extends State<PeerList> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.all(s(12.0)),
-      child: AnimatedList(
-        key: _listKey,
-        physics: BouncingScrollPhysics(),
-        initialItemCount: _count,
-        itemBuilder: (context, i, animation) => SizeTransition(
-            sizeFactor: animation.drive(CurveTween(curve: Curves.easeOutCubic)),
-            child: UserCard(widget.peers[i].displayName, avatar: widget.peers[i].avatar)),
+    return Background.low1(
+      context,
+      child: Padding(
+        padding: EdgeInsets.all(s(12.0)),
+        child: AnimatedList(
+          key: _listKey,
+          physics: BouncingScrollPhysics(),
+          initialItemCount: _count,
+          itemBuilder: (context, i, animation) => SizeTransition(
+              sizeFactor: animation.drive(CurveTween(curve: Curves.easeOutCubic)),
+              child: UserCard(widget.peers[i].displayName, avatar: widget.peers[i].avatar)),
+        ),
       ),
     );
   }
