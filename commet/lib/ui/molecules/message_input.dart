@@ -107,7 +107,8 @@ class MessageInputState extends State<MessageInput> {
                                 i.IconButton(size: s(24), icon: Icons.face),
                                 Padding(
                                   padding: EdgeInsets.fromLTRB(s(10), 0, 0, 0),
-                                  child: i.IconButton(onPressed: () => sendMessage, size: s(24), icon: Icons.send),
+                                  child:
+                                      i.IconButton(onPressed: () => sendMessage.call(), size: s(24), icon: Icons.send),
                                 ),
                               ])
                             ],
