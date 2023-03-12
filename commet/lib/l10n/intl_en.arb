@@ -10,5 +10,6 @@
   "messageInputPlaceholder": "Send a message...",
   "fileDragDropPrompt": "Drop file to upload...",
   "messageFailedToSend": "Failed to send...",
-  "messageDeleted": "Message deleted"
+  "messageDeleted": "Message deleted",
+  "settingsTabAppearance": "Appearance"
 }

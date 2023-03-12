@@ -26,6 +26,8 @@ dependencies:
   test: ^1.22.0
   tiamat:
     path: tiamat/tiamat/
+  scaled_app: ^1.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
