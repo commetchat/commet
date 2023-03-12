@@ -41,27 +41,35 @@ class SimulatedRoom extends Room {
     return e;
   }
 
-  void addMessage() async {
+  TimelineEvent generateRandomEvent() {
     Peer sender = Random().nextDouble() > 0.5 ? alice : bob;
-
-    await Future.delayed(const Duration(seconds: 1), () {
-      TimelineEvent e = TimelineEvent();
-      e.eventId = RandomUtils.getRandomString(20);
-      e.status = TimelineEventStatus.synced;
-      e.type = EventType.message;
-      e.originServerTs = DateTime.now();
-      e.sender = sender;
-      e.body = RandomUtils.getRandomSentence(Random().nextInt(10) + 10);
-      e.widget = Message(e);
-      if (Random().nextInt(10) > 7) {
-        e.attachments = List.empty(growable: true);
-        for (int i = 0; i < Random().nextInt(3) + 1; i++) {
-          e.attachments!.add(Attachment("https://picsum.photos/200/300", "image"));
-        }
+    TimelineEvent e = TimelineEvent();
+    e.eventId = RandomUtils.getRandomString(20);
+    e.status = TimelineEventStatus.synced;
+    e.type = EventType.message;
+    e.originServerTs = DateTime.now();
+    e.sender = sender;
+    e.body = RandomUtils.getRandomSentence(Random().nextInt(10) + 10);
+    e.widget = Message(e);
+    if (Random().nextInt(10) > 7) {
+      e.attachments = List.empty(growable: true);
+      for (int i = 0; i < Random().nextInt(3) + 1; i++) {
+        e.attachments!.add(Attachment("https://picsum.photos/200/300", "image"));
       }
-      timeline!.insertEvent(0, e);
-    });
+    }
+    return e;
+  }
 
-    addMessage();
+  void addRandomEvent(int index) {
+    var e = generateRandomEvent();
+    timeline!.insertEvent(index, e);
+  }
+
+  Future<void> addMessage() async {
+    // await Future.delayed(const Duration(seconds: 1), () {
+    //   addRandomEvent(0);
+    // });
+//
+    // addMessage();
   }
 }

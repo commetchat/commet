@@ -1,3 +1,4 @@
+import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/atoms/generic_room_event.dart';
 import 'package:commet/ui/molecules/message.dart';
 import 'package:flutter/material.dart';
@@ -5,14 +6,21 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 
 import '../../client/client.dart';
+import '../atoms/text.dart' as t;
 
 class TimelineEventView extends StatefulWidget {
   const TimelineEventView(
-      {required this.event, super.key, this.onDelete, this.hovered = false, this.showSender = true});
+      {required this.event,
+      super.key,
+      this.onDelete,
+      this.hovered = false,
+      this.showSender = true,
+      this.debugInfo = null});
   final TimelineEvent event;
   final bool hovered;
   final Function? onDelete;
   final bool showSender;
+  final String? debugInfo;
 
   @override
   State<TimelineEventView> createState() => _TimelineEventState();
@@ -46,7 +54,12 @@ class _TimelineEventState extends State<TimelineEventView> {
     return AnimatedContainer(
         duration: Duration(milliseconds: 100),
         color: widget.hovered ? Colors.red : Colors.transparent,
-        child: eventToWidget(widget.event));
+        child: Column(
+          children: [
+            eventToWidget(widget.event),
+            if (BuildConfig.DEBUG && widget.debugInfo != null) t.Text.tiny(widget.debugInfo!, context)
+          ],
+        ));
   }
 
   Widget eventToWidget(TimelineEvent event) {

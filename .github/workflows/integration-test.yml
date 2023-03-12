@@ -45,8 +45,13 @@ jobs:
         run: |
           cd $PROJECT_PATH
           scripts/codegen.sh
+          
+      - name: Run Unit Tests  ε=ε=┌( >_<)┘
+        run: |
+          cd $PROJECT_PATH
+          scripts/unit-test.sh
 
-      - name: Run Tests (っ ºДº)っ ︵ ⌨
+      - name: Run Integration Tests  ─=≡Σ((( つ＞＜)つ
         run: |
           cd $PROJECT_PATH
           export DISPLAY=:99
