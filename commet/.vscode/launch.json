@@ -35,6 +35,13 @@
                 "--dart-define", "BUILD_MODE=release"
             ],
             "flutterMode": "release"
-        }
+        },
+        {
+            "name": "tiamat widgetbook",
+            "request": "launch",
+            "type": "dart",
+            "program": "tiamat/tiamat/lib/tiamat.widgetbook.dart"
+
+        },
     ]
 }
