@@ -24,6 +24,7 @@ dependencies:
   intl_utils: ^2.8.2
   desktop_drop: ^0.4.1
   test: ^1.22.0
+  scaled_app: ^1.0.0
 
 dev_dependencies:
   flutter_test:

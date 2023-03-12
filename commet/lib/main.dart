@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:scaled_app/scaled_app.dart';
 
 import 'client/client.dart';
 import 'client/matrix/matrix_client.dart';
@@ -20,7 +21,11 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'generated/l10n.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  ScaledWidgetsFlutterBinding.ensureInitialized(
+    scaleFactor: (deviceSize) {
+      return 1;
+    },
+  );
   runApp(App());
 }
 

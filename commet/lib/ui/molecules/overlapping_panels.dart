@@ -4,6 +4,8 @@
 import 'package:flutter/material.dart';
 import 'dart:core';
 
+import 'package:scaled_app/scaled_app.dart';
+
 const double bleedWidth = 20;
 
 /// Display sections
@@ -125,7 +127,7 @@ class OverlappingPanelsState extends State<OverlappingPanels> with TickerProvide
   }
 
   void _setTranslateMultiplier(double mediaWidth, int multiplier, AnimationController animationController) {
-    final goal = _calculateGoal(mediaWidth, multiplier);
+    final goal = _calculateGoal(mediaWidth, multiplier) / ScaledWidgetsFlutterBinding.instance.scale;
     final Tween<double> tween = Tween(begin: translate, end: goal);
 
     final animation = tween.animate(CurvedAnimation(parent: animationController, curve: Curves.easeOutExpo));

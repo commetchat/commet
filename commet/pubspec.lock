@@ -628,6 +628,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.1"
+  scaled_app:
+    dependency: "direct main"
+    description:
+      name: scaled_app
+      sha256: "7118473968494664e7fa39a4083e32e8450957acf26856f51b2903127b6d58c5"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   sdp_transform:
     dependency: transitive
     description:
