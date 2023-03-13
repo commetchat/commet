@@ -61,7 +61,7 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                   size: 70,
                   icon: Icons.add,
                   onTap: () {
-                    PopupDialog.show(context, const AddSpaceDialog(), title: "Add Space");
+                    PopupDialog.show(context, content: const AddSpaceDialog(), title: "Add Space");
                   },
                 ),
               ),

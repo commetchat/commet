@@ -14,13 +14,17 @@ class AddSpaceDialog extends StatefulWidget {
 class _AddSpaceDialogState extends State<AddSpaceDialog> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        tiamat.Text.labelEmphasised(T.of(context).createNewSpace),
-        const Seperator(),
-        tiamat.Text.labelEmphasised(T.of(context).joinExistingSpace)
-      ],
+    return SizedBox(
+      height: 400,
+      width: 400,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          tiamat.Text.labelEmphasised(T.of(context).createNewSpace),
+          const Seperator(),
+          tiamat.Text.labelEmphasised(T.of(context).joinExistingSpace)
+        ],
+      ),
     );
   }
 }

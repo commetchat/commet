@@ -57,6 +57,7 @@ class ThemeDark {
       sliderTheme: SliderThemeData(
         inactiveTrackColor: ThemeDarkColors.primary.withAlpha(100),
       ),
+      dialogTheme: const DialogTheme(backgroundColor: ThemeDarkColors.surface, shadowColor: Colors.black),
       switchTheme: const SwitchThemeData(thumbColor: MaterialStatePropertyAll(ThemeDarkColors.secondary)),
       textButtonTheme: TextButtonThemeData(
           style: ButtonStyle(

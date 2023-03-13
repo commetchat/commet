@@ -52,6 +52,7 @@ class ThemeLight {
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ))),
       iconTheme: const IconThemeData(color: ThemeLightColors.secondary),
+      dialogTheme: const DialogTheme(backgroundColor: ThemeLightColors.surface, shadowColor: Colors.black),
       textButtonTheme: TextButtonThemeData(
           style: ButtonStyle(
         overlayColor: const MaterialStatePropertyAll<Color>(Colors.black12),

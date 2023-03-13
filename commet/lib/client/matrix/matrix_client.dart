@@ -76,9 +76,8 @@ class MatrixClient extends Client {
     _updateSpacesList();
 
     _matrixClient.onKeyVerificationRequest.stream.listen((event) {
-      PopupDialog.show(
-          navigator.currentContext!,
-          MatrixVerificationPage(
+      PopupDialog.show(navigator.currentContext!,
+          content: MatrixVerificationPage(
             request: event,
             client: _matrixClient,
           ),

@@ -5,42 +5,79 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 
 @WidgetbookUseCase(name: 'Default', type: PopupDialog)
 Widget wbpopupDialog(BuildContext context) {
-  return Center(
-      child: SizedBox(
-          width: 200,
-          height: 40,
-          child: Button(
-            text: "Click Me!",
-            onTap: () {
-              PopupDialog.show(context, const tiamat.Text.body("Hello!"));
-            },
-          )));
+  return Container(
+    child: Stack(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              tiamat.Text.largeTitle("Example Content"),
+              tiamat.Text.labelEmphasised("Random stuff here to put a dialog over"),
+              tiamat.Text.body(
+                  "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."),
+              tiamat.Text.body(
+                  "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."),
+            ],
+          ),
+        ),
+        Container(
+          color: PopupDialog.barrierColor,
+          child: Center(
+              child: PopupDialog(
+            title: "Hello!",
+            content: tiamat.Text.body(
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."),
+          )),
+        ),
+      ],
+    ),
+  );
 }
 
-class PopupDialog {
-  static void show(BuildContext context, Widget content, {String? title, double width = 400, double height = 400}) {
+class PopupDialog extends StatelessWidget {
+  const PopupDialog({super.key, required this.title, required this.content, this.width = null, this.height = null});
+  final String title;
+  final double? width;
+  final double? height;
+  final Widget content;
+
+  static Color barrierColor = Colors.black.withAlpha(128);
+
+  static void show(BuildContext context,
+      {required Widget content, required String title, double? width, double? height}) {
     showGeneralDialog(
-      context: context,
-      barrierDismissible: true,
-      barrierLabel: "POPUP_DIALOG",
-      barrierColor: Colors.black.withAlpha(128),
-      pageBuilder: (context, _, __) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          contentPadding: const EdgeInsets.all(8),
-          title: title != null ? Text(title) : null,
-          content: SizedBox(
-            height: height,
-            width: width,
-            child: content,
-          ),
-        );
-      },
-      transitionDuration: const Duration(milliseconds: 300),
-      transitionBuilder: (context, animation, secondaryAnimation, child) => SlideTransition(
-        position: Tween(begin: const Offset(0, 1), end: const Offset(0, 0))
-            .animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)),
-        child: child,
+        context: context,
+        barrierDismissible: true,
+        barrierLabel: "POPUP_DIALOG",
+        barrierColor: barrierColor,
+        pageBuilder: (context, _, __) {
+          return PopupDialog(title: title, content: content, width: width, height: height);
+        },
+        transitionDuration: const Duration(milliseconds: 300),
+        transitionBuilder: (context, animation, secondaryAnimation, child) => SlideTransition(
+              position: Tween(begin: const Offset(0, 1), end: const Offset(0, 0))
+                  .animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)),
+              child: child,
+            ));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      contentPadding: const EdgeInsets.all(8),
+      title: Row(
+        children: [
+          Text(title),
+        ],
+      ),
+      content: SizedBox(
+        height: height,
+        width: width,
+        child: content,
       ),
     );
   }
