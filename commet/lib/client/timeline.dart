@@ -71,7 +71,7 @@ class TimelineEvent {
   late Peer sender;
   late DateTime originServerTs;
   late String? body;
-  late String? source;
+  late String? source = "";
   late Widget? widget;
   List<Attachment>? attachments;
 

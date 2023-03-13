@@ -35,7 +35,11 @@ class _PeerListState extends State<PeerList> {
           initialItemCount: _count,
           itemBuilder: (context, i, animation) => SizeTransition(
               sizeFactor: animation.drive(CurveTween(curve: Curves.easeOutCubic)),
-              child: UserCard(widget.peers[i].displayName, avatar: widget.peers[i].avatar)),
+              child: UserCard(
+                widget.peers[i].displayName,
+                avatar: widget.peers[i].avatar,
+                color: widget.peers[i].color,
+              )),
         ),
       ),
     );

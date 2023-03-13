@@ -43,6 +43,19 @@ Widget wbtextTitleUseCase(BuildContext context) {
   );
 }
 
+@WidgetbookUseCase(name: 'Name', type: Text)
+Widget wbtextNameUseCase(BuildContext context) {
+  return const material.Center(
+    child: material.Padding(
+      padding: EdgeInsets.all(8.0),
+      child: Text.name(
+        exampleText,
+        color: Colors.amber,
+      ),
+    ),
+  );
+}
+
 @WidgetbookUseCase(name: 'All', type: Text)
 Widget wbtextAllUseCase(BuildContext context) {
   return material.Padding(
@@ -75,35 +88,48 @@ Widget wbtextAllUseCase(BuildContext context) {
   );
 }
 
-enum TextType { label, labelEmphasised, error, tiny, body, largeTitle }
+enum TextType { label, labelEmphasised, error, tiny, body, largeTitle, name }
 
 class Text extends StatelessWidget {
-  const Text(this.text, {super.key, this.type = TextType.label});
+  const Text(this.text, {super.key, this.type = TextType.label, this.color});
   final String text;
   final TextType type;
+  final Color? color;
 
   const Text.label(this.text, {Key? key})
       : type = TextType.label,
+        color = null,
         super(key: key);
 
-  const Text.labelEmphasised(this.text, {Key? key})
-      : type = TextType.labelEmphasised,
+  const Text.labelEmphasised(
+    this.text, {
+    Key? key,
+  })  : type = TextType.labelEmphasised,
+        color = null,
         super(key: key);
 
   const Text.error(this.text, {Key? key})
       : type = TextType.error,
+        color = null,
         super(key: key);
 
   const Text.tiny(this.text, {Key? key})
       : type = TextType.tiny,
+        color = null,
         super(key: key);
 
   const Text.body(this.text, {Key? key})
       : type = TextType.body,
+        color = null,
         super(key: key);
 
   const Text.largeTitle(this.text, {Key? key})
       : type = TextType.largeTitle,
+        color = null,
+        super(key: key);
+
+  const Text.name(this.text, {Key? key, this.color})
+      : type = TextType.name,
         super(key: key);
 
   @override
@@ -131,6 +157,12 @@ class Text extends StatelessWidget {
         break;
       case TextType.largeTitle:
         style = material.Theme.of(context).textTheme.titleLarge!;
+        break;
+      case TextType.name:
+        style = material.Theme.of(context)
+            .textTheme
+            .bodyMedium!
+            .copyWith(color: color, fontWeight: FontWeight.w400, fontSize: 15);
         break;
     }
 

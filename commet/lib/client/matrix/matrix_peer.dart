@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:commet/client/client.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart' as matrix;
@@ -20,6 +22,8 @@ class MatrixPeer extends Peer {
       var url = avatarUrl!.getThumbnail(_matrixClient, width: 56, height: 56).toString();
       userName = identifier.split('@').last.split(':').first;
       detail = identifier.split(':').last;
+      var generatedColor = Random().nextInt(Colors.primaries.length);
+      color = Colors.primaries[generatedColor];
 
       avatar = NetworkImage(url);
     } catch (_) {}

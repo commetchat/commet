@@ -5,9 +5,10 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 import '../../config/app_config.dart';
 
 class UserCard extends StatelessWidget {
-  const UserCard(this.name, {this.avatar, super.key, this.detail});
+  const UserCard(this.name, {this.avatar, this.color, super.key, this.detail});
   final ImageProvider? avatar;
   final String name;
+  final Color? color;
   final String? detail;
   @override
   Widget build(BuildContext context) {
@@ -20,8 +21,9 @@ class UserCard extends StatelessWidget {
           ),
           Padding(
             padding: EdgeInsets.fromLTRB(s(8), 0, s(8), 0),
-            child: tiamat.Text.label(
+            child: tiamat.Text.name(
               name,
+              color: color,
             ),
           )
         ],

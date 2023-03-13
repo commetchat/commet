@@ -20,28 +20,6 @@ class TimelineEventView extends StatefulWidget {
   State<TimelineEventView> createState() => _TimelineEventState();
 }
 
-/*if (widget.hovered)
-            Positioned(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
-                child: PopupIconMenu(
-                  icons: [
-                    MapEntry(Icons.edit, () {
-                      print("Editing");
-                    }),
-                    MapEntry(Icons.emoji_emotions, () {
-                      print("Emoji");
-                    }),
-                    MapEntry(Icons.reply, () {
-                      print("Reply");
-                    })
-                  ],
-                  height: 30,
-                ),
-              ),
-              right: 1,
-              top: 1,
-            )*/
 class _TimelineEventState extends State<TimelineEventView> {
   @override
   Widget build(BuildContext context) {

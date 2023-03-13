@@ -505,7 +505,7 @@ packages:
     source: hosted
     version: "2.3.0"
   widgetbook:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       name: widgetbook
       sha256: c42a3d414d19c008d90f0b6df669c18bb151c5f3012ed073498d96cf133e9caf
@@ -521,7 +521,7 @@ packages:
     source: hosted
     version: "2.1.0"
   widgetbook_generator:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       name: widgetbook_generator
       sha256: b6d00fef564fa5c0b98e26a72a27d52d03400c36409e56be25c0f09cfee3307b

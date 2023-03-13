@@ -138,6 +138,8 @@ class TimelineViewerState extends State<TimelineViewer> {
 
           return TimelineEventView(
             event: split.historical[split.getHistoryDisplayIndex(index)],
+            showSender: shouldShowSender(
+                split.getTimelineIndex(split.getHistoryDisplayIndex(index), SplitTimelinePart.historical)),
             debugInfo:
                 "Split Part: ${split.whichList(actualIndex)} history index: $index, actual index: $actualIndex, actual index id: ${widget.timeline.events[actualIndex].eventId}",
             onDelete: () {
@@ -150,6 +152,8 @@ class TimelineViewerState extends State<TimelineViewer> {
             delegate: SliverChildBuilderDelegate((context, index) {
               int actualIndex = split.getTimelineIndex(split.getRecentDisplayIndex(index), SplitTimelinePart.recent);
               return TimelineEventView(
+                showSender: shouldShowSender(
+                    split.getTimelineIndex(split.getRecentDisplayIndex(index), SplitTimelinePart.recent)),
                 event: split.recent[split.getRecentDisplayIndex(index)],
                 debugInfo:
                     "Split Part: ${split.whichList(actualIndex)} history index: $index, actual index: $actualIndex, actual index id: ${widget.timeline.events[actualIndex].eventId}",

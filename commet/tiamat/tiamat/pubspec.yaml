@@ -2,8 +2,6 @@ name: tiamat
 description: A new Flutter project.
 
 publish_to: 'none'
-
-
 version: 1.0.0+1
 
 environment:
@@ -15,11 +13,11 @@ dependencies:
 
   cupertino_icons: ^1.0.2
   widgetbook_annotation: ^2.1.0
+  widgetbook_generator:
+  widgetbook:
 
 dev_dependencies:
-  widgetbook:
   build_runner:
-  widgetbook_generator:
 
   flutter_lints: ^2.0.0
 

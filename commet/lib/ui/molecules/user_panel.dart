@@ -1,4 +1,3 @@
-
 import 'package:commet/client/client.dart';
 import 'package:commet/config/app_config.dart';
 
@@ -35,8 +34,9 @@ class _UserPanelState extends State<UserPanel> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    tiamat.Text.label(
+                    tiamat.Text.name(
                       widget.user.displayName,
+                      color: widget.user.color,
                     ),
                     tiamat.Text.tiny(widget.user.detail),
                   ],

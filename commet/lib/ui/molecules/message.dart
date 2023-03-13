@@ -1,4 +1,3 @@
-
 import 'package:commet/client/timeline.dart';
 import 'package:commet/config/app_config.dart';
 import 'package:commet/config/build_config.dart';
@@ -55,7 +54,7 @@ class _MessageState extends State<Message> {
                   ),
                 Flexible(
                   child: Padding(
-                    padding: EdgeInsets.fromLTRB(s(16), 0, s(8), 0),
+                    padding: EdgeInsets.fromLTRB(s(16), 0, s(0), 0),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -94,12 +93,10 @@ class _MessageState extends State<Message> {
     );
   }
 
-  Padding senderName(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(0, 0, 0, s(5)),
-      child: tiamat.Text.label(
-        widget.event.sender.displayName,
-      ),
+  Widget senderName(BuildContext context) {
+    return tiamat.Text.name(
+      widget.event.sender.displayName,
+      color: widget.event.sender.color,
     );
   }
 
@@ -115,8 +112,9 @@ class _MessageState extends State<Message> {
           Wrap(
             alignment: WrapAlignment.start,
             runAlignment: WrapAlignment.start,
-            children:
-                info.map((e) => Padding(padding: const EdgeInsets.fromLTRB(4, 0, 4, 0), child: tiamat.Text.tiny(e))).toList(),
+            children: info
+                .map((e) => Padding(padding: const EdgeInsets.fromLTRB(4, 0, 4, 0), child: tiamat.Text.tiny(e)))
+                .toList(),
           ),
         ],
       ),
