@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:io';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/main.dart';
+import 'package:commet/ui/pages/matrix/verification/matrix_verification_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -73,9 +75,14 @@ class MatrixClient extends Client {
     _updateRoomslist();
     _updateSpacesList();
 
-    print("Registering key verification");
     _matrixClient.onKeyVerificationRequest.stream.listen((event) {
-      print("Key verification requested");
+      PopupDialog.show(
+          navigator.currentContext!,
+          MatrixVerificationPage(
+            request: event,
+            client: _matrixClient,
+          ),
+          title: "Verification Request");
     });
   }
 

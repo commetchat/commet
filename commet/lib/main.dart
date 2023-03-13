@@ -20,6 +20,8 @@ void main() async {
   runApp(App());
 }
 
+final GlobalKey<NavigatorState> navigator = GlobalKey();
+
 class App extends StatelessWidget {
   App({Key? key}) : super(key: key);
   final clientManager = ClientManager();
@@ -32,6 +34,7 @@ class App extends StatelessWidget {
           return MaterialApp(
             title: 'Commet',
             theme: theme,
+            navigatorKey: navigator,
             localizationsDelegates: const [
               T.delegate,
               GlobalMaterialLocalizations.delegate,
