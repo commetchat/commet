@@ -93,7 +93,7 @@ class TimelineViewerState extends State<TimelineViewer> {
   @override
   void initState() {
     super.initState();
-    split = SplitTimeline(widget.timeline, chunkSize: 15);
+    split = SplitTimeline(widget.timeline, chunkSize: 50);
 
     controller.addListener(() {
       handleScrolling();

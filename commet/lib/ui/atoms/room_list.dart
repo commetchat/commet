@@ -136,8 +136,8 @@ class _RoomListState extends State<RoomList> with SingleTickerProviderStateMixin
       scrollDirection: Axis.vertical,
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
-      itemBuilder: (context, i, animation) => ScaleTransition(
-        scale: animation,
+      itemBuilder: (context, i, animation) => SizeTransition(
+        sizeFactor: animation,
         child: Padding(
           padding: EdgeInsets.fromLTRB(0, s(2), 0, 0),
           child: SizedBox(

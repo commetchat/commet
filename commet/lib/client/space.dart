@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 abstract class Space {
   late String identifier;
   late Client client;
-  late ImageProvider? avatar;
+  late ImageProvider? avatar = null;
   final Map<String, Room> _rooms = {};
   late List<Room> rooms = List.empty(growable: true);
   late Key key = UniqueKey();
