@@ -2,7 +2,6 @@ import 'package:flutter/material.dart' as material;
 import 'package:flutter/material.dart';
 import 'package:tiamat/atoms/seperator.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
-import '../../config/app_config.dart';
 import '../../config/style/theme_extensions.dart';
 import './text.dart' as tiamat;
 
@@ -56,19 +55,19 @@ class TextButton extends StatelessWidget {
           children: [
             if (icon != null)
               Padding(
-                padding: EdgeInsets.all(s(1.0)),
+                padding: EdgeInsets.all(1.0),
                 child: Align(
                   alignment: Alignment.center,
                   child: Icon(
-                    size: s(20),
+                    size: 20,
                     icon!,
                     weight: 0.5,
                   ),
                 ),
               ),
             Padding(
-              padding: EdgeInsets.fromLTRB(s(8), 0, 0, 0),
-              child: Align(alignment: Alignment.centerLeft, child: tiamat.Text.label(text)),
+              padding: EdgeInsets.fromLTRB(8, 0, 0, 0),
+              child: Align(alignment: Alignment.centerLeft, child: tiamat.Text.labelEmphasised(text)),
             ),
           ],
         ),

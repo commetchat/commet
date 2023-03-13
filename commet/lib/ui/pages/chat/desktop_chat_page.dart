@@ -2,25 +2,18 @@ import 'package:commet/client/client_manager.dart';
 import 'package:commet/config/app_config.dart';
 import 'package:commet/ui/atoms/drag_drop_file_target.dart';
 import 'package:commet/ui/atoms/room_header.dart';
-import 'package:commet/ui/atoms/side_panel_button.dart';
 import 'package:commet/ui/atoms/space_header.dart';
 import 'package:commet/ui/molecules/timeline_viewer.dart';
 import 'package:commet/ui/molecules/message_input.dart';
 import 'package:commet/ui/molecules/space_viewer.dart';
 import 'package:commet/ui/molecules/user_list.dart';
 import 'package:commet/ui/molecules/user_panel.dart';
-import 'package:commet/ui/navigation/navigation_utils.dart';
 import 'package:commet/ui/organisms/side_navigation_bar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
+import 'package:tiamat/tiamat.dart';
 import '../../../client/client.dart';
-import '../../atoms/background.dart';
-import '../../molecules/popup_dialog.dart';
-import '../../molecules/space_selector.dart';
-import '../../organisms/add_space_dialog.dart';
-import '../settings/settings_page.dart';
 
 class DesktopChatPage extends StatefulWidget {
   const DesktopChatPage({super.key});
@@ -82,8 +75,7 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
           child: Row(
             children: [
               Flexible(
-                child: Background.surface(
-                  context,
+                child: Tile(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
@@ -118,8 +110,7 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
   SizedBox spaceRoomSelector() {
     return SizedBox(
         width: s(250),
-        child: Background.low1(
-          context,
+        child: Tile.low1(
           child: Column(
             children: [
               Container(child: SizedBox(height: s(50), child: Container(child: SpaceHeader(selectedSpace!)))),
@@ -131,7 +122,7 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
                 onRoomSelected: roomSelected,
               )),
               SizedBox(
-                height: s(55),
+                height: s(58),
                 child: UserPanel(
                   selectedSpace!.client.user!,
                 ),

@@ -1,27 +1,25 @@
-import 'package:commet/ui/molecules/popup_dialog.dart';
 import 'package:commet/ui/molecules/timeline_viewer.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:flutter/widgets.dart';
+
 import 'package:provider/provider.dart';
+import 'package:tiamat/tiamat.dart';
 
 import '../../../client/client_manager.dart';
 import '../../../client/room.dart';
 import '../../../client/space.dart';
 import '../../../config/app_config.dart';
-import '../../atoms/background.dart';
+
 import '../../atoms/room_header.dart';
-import '../../atoms/side_panel_button.dart';
 import '../../atoms/space_header.dart';
 import '../../molecules/message_input.dart';
 import '../../molecules/overlapping_panels.dart';
-import '../../molecules/space_selector.dart';
 import '../../molecules/space_viewer.dart';
 import '../../molecules/user_list.dart';
 import '../../molecules/user_panel.dart';
-import '../../organisms/add_space_dialog.dart';
 import '../../organisms/side_navigation_bar.dart';
+
+import 'package:flutter/material.dart' as m;
 
 class MobileChatPage extends StatefulWidget {
   const MobileChatPage({super.key});
@@ -87,8 +85,7 @@ class _MobileChatPageState extends State<MobileChatPage> {
 
   Widget userList() {
     if (selectedRoom != null) {
-      return Background.low1(
-        context,
+      return Tile.low1(
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(50, 20, 0, 0),
@@ -109,15 +106,14 @@ class _MobileChatPageState extends State<MobileChatPage> {
     }
 
     return Container(
-      color: Colors.red,
+      color: m.Colors.red,
       child: Placeholder(),
     );
   }
 
   Widget spaceRoomSelector(BuildContext newContext) {
     return Flexible(
-      child: Background.low1(
-        context,
+      child: Tile.low1(
         child: SafeArea(
           child: Column(
             children: [
@@ -148,10 +144,9 @@ class _MobileChatPageState extends State<MobileChatPage> {
   }
 
   Widget roomChatView() {
-    return Background.surface(
-      context,
-      child: Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.surface,
+    return Tile(
+      child: m.Scaffold(
+        backgroundColor: m.Theme.of(context).colorScheme.surface,
         body: SafeArea(
           child: Column(
             children: [

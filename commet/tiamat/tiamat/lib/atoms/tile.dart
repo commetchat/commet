@@ -86,34 +86,41 @@ Widget tileAll(BuildContext context) {
 enum TileType { surface, surfaceLow1, surfaceLow2, surfaceLow3, surfaceLow4, surfaceHigh }
 
 class Tile extends StatelessWidget {
-  const Tile({Key? key, this.child, this.mode = TileType.surface, this.glassOpacity = 0.3, this.glassSigma = 5})
+  const Tile(
+      {Key? key,
+      this.child,
+      this.mode = TileType.surface,
+      this.glassOpacity = 0.3,
+      this.glassSigma = 5,
+      this.decoration})
       : super(key: key);
   final TileType mode;
   final Widget? child;
   final double glassOpacity;
   final double glassSigma;
+  final Decoration? decoration;
 
-  const Tile.low1({Key? key, this.child})
+  const Tile.low1({Key? key, this.child, this.decoration})
       : mode = TileType.surfaceLow1,
         glassOpacity = 0.4,
         glassSigma = 5,
         super(key: key);
-  const Tile.low2({Key? key, this.child})
+  const Tile.low2({Key? key, this.child, this.decoration})
       : mode = TileType.surfaceLow2,
         glassOpacity = 0.5,
         glassSigma = 7,
         super(key: key);
-  const Tile.low3({Key? key, this.child})
+  const Tile.low3({Key? key, this.child, this.decoration})
       : mode = TileType.surfaceLow3,
         glassOpacity = 0.6,
         glassSigma = 8,
         super(key: key);
-  const Tile.low4({Key? key, this.child})
+  const Tile.low4({Key? key, this.child, this.decoration})
       : mode = TileType.surfaceLow4,
         glassOpacity = 0.7,
         glassSigma = 10,
         super(key: key);
-  const Tile.high({Key? key, this.child})
+  const Tile.high({Key? key, this.child, this.decoration})
       : mode = TileType.surfaceHigh,
         glassOpacity = 0.2,
         glassSigma = 5,
@@ -147,7 +154,8 @@ class Tile extends StatelessWidget {
     bool frosted = Theme.of(context).extension<ThemeSettings>()!.frosted;
     if (!frosted)
       return Container(
-        color: color,
+        decoration: decoration,
+        color: decoration == null ? color : null,
         child: child,
       );
 

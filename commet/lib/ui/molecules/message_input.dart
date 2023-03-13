@@ -1,15 +1,14 @@
 import 'package:commet/config/app_config.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/generated/l10n.dart';
-import 'package:commet/ui/atoms/background.dart';
-import 'package:commet/ui/atoms/circle_button.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:tiamat/config/config.dart';
+import 'package:tiamat/tiamat.dart';
 
-import '../../config/style/theme_extensions.dart';
-import '../atoms/text.dart' as t;
 import '../atoms/icon_button.dart' as i;
 
 enum MessageInputSendResult { clearText, unhandled }
@@ -65,12 +64,10 @@ class MessageInputState extends State<MessageInput> {
 
   @override
   Widget build(BuildContext context) {
-    return Background.surface(
-      context,
+    return Tile(
       child: Padding(
         padding: EdgeInsets.all(s(8.0)),
-        child: Background.surface(
-          context,
+        child: Tile(
           decoration: BoxDecoration(
               boxShadow: [BoxShadow(color: Colors.black.withAlpha(50), blurRadius: 20)],
               color: Theme.of(context).extension<ExtraColors>()!.surfaceHigh1,

@@ -1,12 +1,11 @@
 import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/atoms/generic_room_event.dart';
 import 'package:commet/ui/molecules/message.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:flutter/material.dart' as m;
+import 'package:flutter/widgets.dart';
+import 'package:tiamat/tiamat.dart' as tiamat;
 
 import '../../client/client.dart';
-import '../atoms/text.dart' as t;
 
 class TimelineEventView extends StatefulWidget {
   const TimelineEventView(
@@ -53,11 +52,11 @@ class _TimelineEventState extends State<TimelineEventView> {
   Widget build(BuildContext context) {
     return AnimatedContainer(
         duration: Duration(milliseconds: 100),
-        color: widget.hovered ? Colors.red : Colors.transparent,
+        color: widget.hovered ? m.Colors.red : m.Colors.transparent,
         child: Column(
           children: [
             eventToWidget(widget.event),
-            if (BuildConfig.DEBUG && widget.debugInfo != null) t.Text.tiny(widget.debugInfo!, context)
+            if (BuildConfig.DEBUG && widget.debugInfo != null) tiamat.Text.tiny(widget.debugInfo!)
           ],
         ));
   }
@@ -81,7 +80,7 @@ class _TimelineEventState extends State<TimelineEventView> {
         // TODO: Handle this case.
         break;
       case EventType.roomState:
-        return GenericRoomEvent(widget.event.body!, Icons.delete);
+        return GenericRoomEvent(widget.event.body!, m.Icons.delete);
         break;
     }
 

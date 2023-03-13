@@ -1,11 +1,10 @@
-import 'package:commet/config/style/theme_extensions.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter/widgets.dart';
 import '../../generated/l10n.dart';
-import '../atoms/text.dart' as t;
+import 'package:tiamat/tiamat.dart' as tiamat;
 
 class DragDropFileTarget extends StatefulWidget {
   const DragDropFileTarget({super.key, this.onDropComplete});
@@ -44,8 +43,8 @@ class _DragDropFileTargetState extends State<DragDropFileTarget> {
                 duration: Duration(milliseconds: 500),
                 curve: Curves.easeOutExpo,
                 opacity: isFileHovered ? 1 : 0,
-                child: Align(
-                    alignment: Alignment.center, child: t.Text.largeTitle(T.of(context).fileDragDropPrompt, context)),
+                child:
+                    Align(alignment: Alignment.center, child: tiamat.Text.largeTitle(T.of(context).fileDragDropPrompt)),
               ),
             ],
           )),

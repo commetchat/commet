@@ -4,6 +4,7 @@ import 'package:tiamat/config/style/theme_extensions.dart';
 class ThemeDarkColors {
   static const Color surfaceHigh1 = Color.fromARGB(255, 47, 51, 55);
   static const Color secondary = Color.fromARGB(255, 128, 128, 128);
+  static const Color primary = Color.fromARGB(255, 106, 141, 255);
   static const Color surface = Color.fromARGB(255, 43, 46, 49);
   static const Color surfaceLow1 = Color.fromARGB(255, 38, 41, 44);
   static const Color surfaceLow2 = Color.fromARGB(255, 30, 34, 37);
@@ -16,6 +17,7 @@ class ThemeDarkColors {
 class ThemeDark {
   static ThemeData get theme => ThemeData(
       brightness: Brightness.dark,
+      useMaterial3: true,
       extensions: const <ThemeExtension<dynamic>>[
         ExtraColors(
             surfaceHigh1: ThemeDarkColors.surfaceHigh1,
@@ -27,18 +29,19 @@ class ThemeDark {
         ThemeSettings(frosted: false),
       ],
       colorScheme: ColorScheme(
-        primary: Color.fromARGB(255, 106, 141, 255),
-        secondary: Colors.green,
-        surface: ThemeDarkColors.surface,
-        background: ThemeDarkColors.surfaceLow4,
-        error: Color.fromARGB(255, 255, 63, 63),
-        onPrimary: Colors.white,
-        onSecondary: ThemeDarkColors.onSurface,
-        onSurface: Colors.white,
-        onBackground: Colors.black,
-        onError: Colors.white,
-        brightness: Brightness.dark,
-      ),
+          primary: Color.fromARGB(255, 106, 141, 255),
+          secondary: ThemeDarkColors.secondary,
+          surface: ThemeDarkColors.surface,
+          background: ThemeDarkColors.surfaceLow4,
+          error: Color.fromARGB(255, 255, 63, 63),
+          onPrimary: Colors.white,
+          onSecondary: ThemeDarkColors.onSurface,
+          onSurface: Colors.white,
+          onBackground: Colors.black,
+          onError: Colors.white,
+          brightness: Brightness.dark,
+          shadow: Colors.black.withAlpha(0),
+          outline: ThemeDarkColors.surfaceHigh1),
       listTileTheme: const ListTileThemeData(
         tileColor: ThemeDarkColors.surface,
       ),
@@ -48,9 +51,13 @@ class ThemeDark {
       elevatedButtonTheme: ElevatedButtonThemeData(
           style: ButtonStyle(
               shape: MaterialStatePropertyAll(
-        RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+        RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ))),
-      sliderTheme: SliderThemeData(thumbColor: ThemeDarkColors.onSurface),
+      dividerTheme: DividerThemeData(color: ThemeDarkColors.surfaceHigh1),
+      sliderTheme: SliderThemeData(
+        inactiveTrackColor: ThemeDarkColors.primary.withAlpha(100),
+      ),
+      switchTheme: SwitchThemeData(thumbColor: MaterialStatePropertyAll(ThemeDarkColors.secondary)),
       textButtonTheme: TextButtonThemeData(
           style: ButtonStyle(
         overlayColor: const MaterialStatePropertyAll<Color>(Colors.white10),

@@ -1,11 +1,10 @@
 import 'dart:async';
 import 'package:commet/config/app_config.dart';
-import 'package:commet/ui/atoms/simple_text_button.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 
+import 'package:flutter/widgets.dart';
+import 'package:tiamat/atoms/text_button.dart';
+import 'package:tiamat/tiamat.dart' as tiamat;
+import 'package:flutter/material.dart' as m;
 import '../../client/client.dart';
 
 class RoomList extends StatefulWidget {
@@ -72,10 +71,10 @@ class _RoomListState extends State<RoomList> with SingleTickerProviderStateMixin
         children: [
           if (widget.showHeader) header(),
           if (widget.expandable)
-            SimpleTextButton(
+            tiamat.TextButton(
               widget.expanderText!,
               onTap: toggleExpansion,
-              icon: Icons.expand_circle_down,
+              icon: m.Icons.expand_circle_down,
             ),
           if (!widget.expandable) listRooms(),
           if (widget.expandable)
@@ -101,10 +100,7 @@ class _RoomListState extends State<RoomList> with SingleTickerProviderStateMixin
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
-              "Rooms",
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
+            tiamat.Text.label("Rooms"),
           ],
         ),
       ),
@@ -119,10 +115,10 @@ class _RoomListState extends State<RoomList> with SingleTickerProviderStateMixin
 
   Widget listRooms() {
     if (editMode) {
-      return ReorderableListView.builder(
+      return m.ReorderableListView.builder(
         itemBuilder: (context, index) {
-          return SimpleTextButton(
-            icon: Icons.tag,
+          return TextButton(
+            icon: m.Icons.tag,
             widget.rooms[index].displayName,
             key: widget.rooms[index].key,
           );
@@ -147,10 +143,10 @@ class _RoomListState extends State<RoomList> with SingleTickerProviderStateMixin
           padding: EdgeInsets.fromLTRB(0, s(2), 0, 0),
           child: SizedBox(
             height: s(37),
-            child: SimpleTextButton(
+            child: TextButton(
               widget.rooms[i].displayName,
               highlighted: _selectedIndex == i,
-              icon: Icons.tag,
+              icon: m.Icons.tag,
               onTap: () {
                 widget.onRoomSelected?.call(i);
                 setState(() {

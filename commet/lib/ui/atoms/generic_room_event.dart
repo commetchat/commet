@@ -1,10 +1,9 @@
-import 'package:commet/ui/atoms/avatar.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:flutter/widgets.dart';
+import 'package:tiamat/tiamat.dart';
+import 'package:tiamat/tiamat.dart' as tiamat;
+import 'package:flutter/material.dart' as m;
 
 import '../../config/app_config.dart';
-import '../../config/style/theme_extensions.dart';
 
 class GenericRoomEvent extends StatelessWidget {
   const GenericRoomEvent(this.text, this.icon, {super.key});
@@ -13,8 +12,8 @@ class GenericRoomEvent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
+    return m.Material(
+      color: m.Colors.transparent,
       child: Padding(
         padding: EdgeInsets.all(s(2.0)),
         child: Align(
@@ -27,7 +26,7 @@ class GenericRoomEvent extends StatelessWidget {
                 Icon(icon),
                 Padding(
                   padding: EdgeInsets.fromLTRB(s(10), 0, 0, 0),
-                  child: Text(text),
+                  child: tiamat.Text.label(text),
                 )
               ],
             ),

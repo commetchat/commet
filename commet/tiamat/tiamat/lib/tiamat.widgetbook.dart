@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter/widgets.dart';
+import 'package:tiamat/atoms/avatar.dart';
 import 'package:tiamat/atoms/button.dart';
 import 'package:tiamat/atoms/circle_button.dart';
 import 'package:tiamat/atoms/glass_tile.dart';
@@ -18,10 +19,10 @@ import 'package:tiamat/atoms/popup_dialog.dart';
 import 'package:tiamat/atoms/seperator.dart';
 import 'package:tiamat/atoms/shader_background.dart';
 import 'package:tiamat/atoms/slider.dart';
+import 'package:tiamat/atoms/switch.dart';
 import 'package:tiamat/atoms/text.dart';
 import 'package:tiamat/atoms/text_button.dart';
 import 'package:tiamat/atoms/tile.dart';
-import 'package:tiamat/config/app_config.dart';
 import 'package:tiamat/config/style/theme_dark.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/config/style/theme_glass.dart';
@@ -97,6 +98,19 @@ class HotReload extends StatelessWidget {
                   ],
                 ),
                 WidgetbookComponent(
+                  name: 'Switch',
+                  useCases: [
+                    WidgetbookUseCase(
+                      name: 'Default',
+                      builder: (context) => wb_switch(context),
+                    ),
+                    WidgetbookUseCase(
+                      name: 'No Icons',
+                      builder: (context) => wb_switchNoIcons(context),
+                    ),
+                  ],
+                ),
+                WidgetbookComponent(
                   name: 'CircleButton',
                   useCases: [
                     WidgetbookUseCase(
@@ -149,6 +163,15 @@ class HotReload extends StatelessWidget {
                     WidgetbookUseCase(
                       name: 'Default',
                       builder: (context) => wb_imageButton(context),
+                    ),
+                    WidgetbookUseCase(
+                      name: 'Icon',
+                      builder: (context) => wb_imageButtonIcon(context),
+                    ),
+                    WidgetbookUseCase(
+                      name: 'Icon with Shadow',
+                      builder: (context) =>
+                          wb_imageButtonIconWithShadow(context),
                     ),
                   ],
                 ),
@@ -213,6 +236,27 @@ class HotReload extends StatelessWidget {
                     WidgetbookUseCase(
                       name: 'Default',
                       builder: (context) => wb_tileGlass(context),
+                    ),
+                  ],
+                ),
+                WidgetbookComponent(
+                  name: 'Avatar',
+                  useCases: [
+                    WidgetbookUseCase(
+                      name: 'Default',
+                      builder: (context) => wb_avatarDefault(context),
+                    ),
+                    WidgetbookUseCase(
+                      name: 'Large',
+                      builder: (context) => wb_avatarLarge(context),
+                    ),
+                    WidgetbookUseCase(
+                      name: 'Placeholder',
+                      builder: (context) => wb_avatarPlaceholder(context),
+                    ),
+                    WidgetbookUseCase(
+                      name: 'Placeholder Large',
+                      builder: (context) => wb_avatarPlaceholderLarge(context),
                     ),
                   ],
                 ),

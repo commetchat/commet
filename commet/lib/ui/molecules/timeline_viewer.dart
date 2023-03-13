@@ -3,11 +3,8 @@ import 'dart:math';
 
 import 'package:commet/client/split_timeline.dart';
 import 'package:commet/client/timeline.dart';
-import 'package:commet/ui/atoms/background.dart';
 import 'package:commet/ui/molecules/timeline_event.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 
 class TimelineViewer extends StatefulWidget {
   ///Child scrollable widget.
@@ -43,7 +40,7 @@ class TimelineViewerState extends State<TimelineViewer> {
 
     controller.position.hold(() {});
 
-    var lastEvent = split.recent[0];
+    TimelineEvent? lastEvent = split.recent.length > 0 ? split.recent[0] : null;
 
     animatingToBottom = true;
 
@@ -51,6 +48,7 @@ class TimelineViewerState extends State<TimelineViewer> {
         .animateTo(controller.position.maxScrollExtent,
             duration: Duration(milliseconds: 500), curve: Curves.easeOutExpo)
         .then((value) {
+      TimelineEvent? latest = split.recent.length > 0 ? split.recent[0] : null;
       if (split.recent[0] == lastEvent) {
         controller.jumpTo(controller.position.maxScrollExtent);
         animatingToBottom = false;

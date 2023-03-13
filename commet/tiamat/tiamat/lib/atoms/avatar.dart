@@ -1,11 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 
-import '../../config/app_config.dart';
+@WidgetbookUseCase(name: 'Default', type: Avatar)
+Widget wb_avatarDefault(BuildContext context) {
+  return Center(
+      child: Avatar(
+    image: AssetImage("assets/images/placeholder/generic/checker_purple.png"),
+  ));
+}
+
+@WidgetbookUseCase(name: 'Large', type: Avatar)
+Widget wb_avatarLarge(BuildContext context) {
+  return Center(
+      child: Avatar.large(
+    image: AssetImage("assets/images/placeholder/generic/checker_purple.png"),
+  ));
+}
+
+@WidgetbookUseCase(name: 'Placeholder', type: Avatar)
+Widget wb_avatarPlaceholder(BuildContext context) {
+  return Center(
+      child: Avatar(
+    placeholderText: "A",
+  ));
+}
+
+@WidgetbookUseCase(name: 'Placeholder Large', type: Avatar)
+Widget wb_avatarPlaceholderLarge(BuildContext context) {
+  return Center(
+      child: Avatar.large(
+    placeholderText: "A",
+  ));
+}
 
 class Avatar extends StatelessWidget {
-  const Avatar({Key? key, this.image, required this.radius, this.placeholderText = null, this.isPadding = false})
+  const Avatar({Key? key, this.image, this.radius = 22, this.placeholderText = null, this.isPadding = false})
       : super(key: key);
 
   const Avatar.small({
@@ -33,28 +64,28 @@ class Avatar extends StatelessWidget {
   Widget build(BuildContext context) {
     if (isPadding) {
       return SizedBox(
-        width: s(radius * 2),
+        width: radius * 2,
         height: 1,
       );
     }
 
     if (image != null) {
       return SizedBox(
-        width: s(radius * 2),
-        height: s(radius * 2),
+        width: radius * 2,
+        height: radius * 2,
         child: DecoratedBox(
             decoration:
-                BoxDecoration(borderRadius: BorderRadius.circular(s(radius)), image: DecorationImage(image: image!))),
+                BoxDecoration(borderRadius: BorderRadius.circular(radius), image: DecorationImage(image: image!))),
       );
     }
 
     return SizedBox(
-      width: s(radius * 2),
-      height: s(radius * 2),
+      width: radius * 2,
+      height: radius * 2,
       child: placeholderText != null
           ? DecoratedBox(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(s(radius)),
+                borderRadius: BorderRadius.circular(radius),
                 color: Colors.green,
               ),
               child: Align(
