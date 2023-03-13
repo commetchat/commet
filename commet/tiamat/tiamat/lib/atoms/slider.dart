@@ -30,6 +30,7 @@ class Slider extends StatefulWidget {
     this.onChangeStart,
     this.max = 1,
     this.min = 0,
+    this.value = 0.5,
     this.divisions,
   });
   final Function(double value)? onChanged;
@@ -38,13 +39,20 @@ class Slider extends StatefulWidget {
   final double min;
   final double max;
   final int? divisions;
+  final double value;
 
   @override
-  State<Slider> createState() => _SliderState();
+  State<Slider> createState() => SliderState();
 }
 
-class _SliderState extends State<Slider> {
+class SliderState extends State<Slider> {
   double value = 0;
+
+  @override
+  void initState() {
+    value = widget.value;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
