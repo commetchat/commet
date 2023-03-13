@@ -1,17 +1,11 @@
-import 'package:commet/config/style/theme_changer.dart';
-import 'package:commet/config/style/theme_dark.dart';
-import 'package:commet/config/style/theme_glass.dart';
-import 'package:commet/config/style/theme_light.dart';
-import 'package:commet/ui/atoms/background.dart';
-import 'package:commet/ui/atoms/circle_button.dart';
-import 'package:commet/ui/atoms/seperator.dart';
 import 'package:commet/ui/pages/settings/settings_menu.dart';
 import 'package:commet/ui/pages/settings/settings_tab.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart' as m;
 
+import 'package:tiamat/tiamat.dart';
+import 'package:tiamat/tiamat.dart' as tiamat;
 import '../../../config/app_config.dart';
-import '../../../config/style/theme_extensions.dart';
-import '../../atoms/simple_text_button.dart';
 
 class DesktopSettingsPage extends StatefulWidget {
   const DesktopSettingsPage({super.key});
@@ -31,12 +25,11 @@ class _DesktopSettingsPageState extends State<DesktopSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
+    return m.Material(
       child: Row(
         mainAxisSize: MainAxisSize.max,
         children: [
-          Background.low1(
-            context,
+          Tile.low1(
             child: Padding(
               padding: EdgeInsets.all(s(8.0)),
               child: SizedBox(
@@ -49,7 +42,7 @@ class _DesktopSettingsPageState extends State<DesktopSettingsPage> {
                           alignment: Alignment.centerLeft,
                           child: CircleButton(
                             radius: 25,
-                            icon: Icons.arrow_back,
+                            icon: m.Icons.arrow_back,
                             onPressed: () => Navigator.of(context).pop(),
                           )),
                     ),
@@ -60,19 +53,13 @@ class _DesktopSettingsPageState extends State<DesktopSettingsPage> {
                           if (tabs[index].label == null) return Seperator();
                           return Padding(
                             padding: EdgeInsets.fromLTRB(s(16), s(8), s(8), s(8)),
-                            child: Text(
-                              tabs[index].label!,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleSmall!
-                                  .copyWith(color: Theme.of(context).disabledColor),
-                            ),
+                            child: tiamat.Text.label(tabs[index].label!),
                           );
                         }
                         return SizedBox(
                             height: s(40),
                             width: s(200),
-                            child: SimpleTextButton(
+                            child: TextButton(
                               tabs[index].label!,
                               highlighted: index == selectedTabIndex,
                               onTap: () {
@@ -103,8 +90,7 @@ class _DesktopSettingsPageState extends State<DesktopSettingsPage> {
                 child: child,
               );
             },
-            child: Background.surface(
-              context,
+            child: Tile(
               key: ValueKey(selectedTabIndex),
               child: settingsTab(tabs[selectedTabIndex].pageBuilder!),
             ),

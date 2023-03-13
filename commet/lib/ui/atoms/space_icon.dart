@@ -1,13 +1,8 @@
 import 'package:commet/client/client.dart';
-import 'package:commet/ui/atoms/avatar.dart';
-import 'package:commet/ui/atoms/side_panel_button.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:just_the_tooltip/just_the_tooltip.dart';
+import 'package:tiamat/tiamat.dart';
 
 import '../../config/app_config.dart';
-import '../../config/style/theme_extensions.dart';
 
 class SpaceIcon extends StatefulWidget {
   SpaceIcon(this.space, {super.key, this.width = 44, this.onTap, this.showUser = false});
@@ -32,10 +27,11 @@ class _SpaceIconState extends State<SpaceIcon> {
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
-      SidePanelButton(
-        tooltip: widget.space.displayName,
+      ImageButton(
+        //tooltip: widget.space.displayName,
         image: widget.space.avatar,
         onTap: widget.onTap,
+        size: widget.width,
       ),
       if (widget.showUser && widget.space.client.user!.avatar != null) avatarOverlay()
     ]);

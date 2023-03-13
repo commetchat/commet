@@ -66,10 +66,10 @@ class SimulatedRoom extends Room {
   }
 
   Future<void> addMessage() async {
-    // await Future.delayed(const Duration(seconds: 1), () {
-    //   addRandomEvent(0);
-    // });
-//
-    // addMessage();
+    await Future.delayed(const Duration(seconds: 1), () {
+      addRandomEvent(0);
+    });
+
+    addMessage();
   }
 }

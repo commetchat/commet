@@ -3,17 +3,13 @@ import 'dart:async';
 import 'package:commet/client/timeline.dart';
 import 'package:commet/config/app_config.dart';
 import 'package:commet/config/build_config.dart';
-import 'package:commet/config/style/theme_extensions.dart';
-import 'package:commet/ui/atoms/avatar.dart';
+
 import 'package:commet/ui/atoms/message_attachment.dart';
-import 'package:commet/ui/atoms/seperator.dart';
-import 'package:commet/ui/atoms/simple_text_button.dart';
-import 'package:commet/ui/molecules/popup_icon_menu.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
+
+import 'package:flutter/widgets.dart';
+import 'package:tiamat/tiamat.dart' as tiamat;
+import 'package:tiamat/tiamat.dart';
 import '../../generated/l10n.dart';
-import '../atoms/text.dart' as t;
 
 class Message extends StatefulWidget {
   const Message(this.event, {super.key, this.showSender = true, this.onDelete});
@@ -67,14 +63,10 @@ class _MessageState extends State<Message> {
                       children: [
                         if (widget.showSender) senderName(context),
                         if (widget.event.status == TimelineEventStatus.removed)
-                          t.Text.error(
-                            T.of(context).messageDeleted,
-                            context,
-                          )
+                          tiamat.Text.error(T.of(context).messageDeleted)
                         else
-                          t.Text.body(
+                          tiamat.Text.body(
                             widget.event.body!,
-                            context,
                           ),
                         if (widget.event.attachments != null)
                           Wrap(
@@ -88,7 +80,7 @@ class _MessageState extends State<Message> {
                         if (widget.event.status == TimelineEventStatus.error)
                           Padding(
                             padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
-                            child: t.Text.error(T.of(context).messageFailedToSend, context),
+                            child: tiamat.Text.error(T.of(context).messageFailedToSend),
                           ),
                         if (BuildConfig.DEBUG) debugInfo()
                       ],
@@ -106,10 +98,8 @@ class _MessageState extends State<Message> {
   Padding senderName(BuildContext context) {
     return Padding(
       padding: EdgeInsets.fromLTRB(0, 0, 0, s(5)),
-      child: Text(
+      child: tiamat.Text.label(
         widget.event.sender.displayName,
-        style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Colors.red, fontSize: 17),
-        textScaleFactor: getUiScale(),
       ),
     );
   }
@@ -126,9 +116,8 @@ class _MessageState extends State<Message> {
           Wrap(
             alignment: WrapAlignment.start,
             runAlignment: WrapAlignment.start,
-            children: info
-                .map((e) => Padding(padding: EdgeInsets.fromLTRB(4, 0, 4, 0), child: t.Text.tiny(e, context)))
-                .toList(),
+            children:
+                info.map((e) => Padding(padding: EdgeInsets.fromLTRB(4, 0, 4, 0), child: tiamat.Text.tiny(e))).toList(),
           ),
         ],
       ),

@@ -13,6 +13,10 @@ class SplitTimeline {
   SplitTimeline(this.timeline, {this.chunkSize = 30}) {
     int recentEndIndex = min(timeline.events.length - 1, chunkSize);
     int historyEndIndex = min(timeline.events.length - 1, recentEndIndex + chunkSize);
+    if (timeline.events.length == 0) {
+      recentEndIndex = 0;
+      historyEndIndex = 0;
+    }
     recent = List.from(timeline.events.sublist(0, recentEndIndex), growable: true);
     historical = List.from(timeline.events.sublist(recentEndIndex, historyEndIndex), growable: true);
 

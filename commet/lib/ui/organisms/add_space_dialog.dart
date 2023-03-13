@@ -1,9 +1,8 @@
 import 'package:commet/generated/l10n.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:flutter/widgets.dart';
 
-import '../atoms/seperator.dart';
+import 'package:tiamat/tiamat.dart';
+import 'package:tiamat/tiamat.dart' as tiamat;
 
 class AddSpaceDialog extends StatefulWidget {
   const AddSpaceDialog({super.key});
@@ -17,7 +16,11 @@ class _AddSpaceDialogState extends State<AddSpaceDialog> {
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [Text(T.of(context).createNewSpace), Seperator(), Text(T.of(context).joinExistingSpace)],
+      children: [
+        tiamat.Text.labelEmphasised(T.of(context).createNewSpace),
+        Seperator(),
+        tiamat.Text.labelEmphasised(T.of(context).joinExistingSpace)
+      ],
     );
   }
 }

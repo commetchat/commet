@@ -1,11 +1,9 @@
-import 'package:commet/ui/atoms/background.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 
 import '../../client/client.dart';
 import '../../config/app_config.dart';
-import '../../config/style/theme_extensions.dart';
 
 class SpaceHeader extends StatelessWidget {
   const SpaceHeader(this.space, {super.key});

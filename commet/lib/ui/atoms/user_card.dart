@@ -1,7 +1,6 @@
-import 'package:commet/ui/atoms/avatar.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:flutter/widgets.dart';
+import 'package:tiamat/tiamat.dart';
+import 'package:tiamat/tiamat.dart' as tiamat;
 
 import '../../config/app_config.dart';
 
@@ -22,9 +21,8 @@ class UserCard extends StatelessWidget {
             ),
             Padding(
               padding: EdgeInsets.fromLTRB(s(8), 0, s(8), 0),
-              child: Text(
+              child: tiamat.Text.label(
                 this.name,
-                style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Colors.red, fontSize: 17),
               ),
             )
           ],

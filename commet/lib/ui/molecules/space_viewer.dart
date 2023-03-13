@@ -6,8 +6,6 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 
 import '../../client/client.dart';
-import '../../config/style/theme_extensions.dart';
-import '../atoms/background.dart';
 import '../atoms/room_list.dart';
 
 class SpaceViewer extends StatefulWidget {

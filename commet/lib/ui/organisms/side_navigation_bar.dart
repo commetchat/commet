@@ -7,9 +7,8 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
+import 'package:tiamat/tiamat.dart';
 
-import '../atoms/side_panel_button.dart';
-import '../molecules/popup_dialog.dart';
 import '../molecules/space_selector.dart';
 import '../molecules/timeline_viewer.dart';
 import '../navigation/navigation_utils.dart';
@@ -40,14 +39,17 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-        width: s(70.0),
+        width: 70.0,
         child: SpaceSelector(
           _clientManager.spaces,
+          width: 70,
           onSpaceInsert: _clientManager.onSpaceAdded.stream,
           header: Column(
             children: [
-              SidePanelButton(
-                tooltip: "Home",
+              ImageButton(
+                // tooltip: "Home",
+
+                size: 70,
                 icon: Icons.home,
                 onTap: () {
                   widget.onHomeSelected?.call();
@@ -57,19 +59,27 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
           ),
           footer: Column(
             children: [
-              SidePanelButton(
-                tooltip: "Add a Space",
-                icon: Icons.add,
-                onTap: () {
-                  PopupDialog.Show(context, AddSpaceDialog(), title: "Add Space");
-                },
+              Padding(
+                padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
+                child: ImageButton(
+                  // tooltip: "Add a Space",
+                  size: 70,
+                  icon: Icons.add,
+                  onTap: () {
+                    PopupDialog.Show(context, AddSpaceDialog(), title: "Add Space");
+                  },
+                ),
               ),
-              SidePanelButton(
-                tooltip: "Settings",
-                icon: Icons.settings,
-                onTap: () {
-                  NavigationUtils.navigateTo(context, SettingsPage());
-                },
+              Padding(
+                padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
+                child: ImageButton(
+                  // tooltip: "Settings",
+                  size: 70,
+                  icon: Icons.settings,
+                  onTap: () {
+                    NavigationUtils.navigateTo(context, SettingsPage());
+                  },
+                ),
               ),
             ],
           ),

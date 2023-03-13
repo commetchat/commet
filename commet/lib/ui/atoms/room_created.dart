@@ -1,8 +1,9 @@
-import 'package:commet/ui/atoms/avatar.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' as m;
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
-
+import 'package:flutter/widgets.dart';
+import 'package:tiamat/tiamat.dart';
+import 'package:tiamat/tiamat.dart' as tiamat;
 import '../../client/room.dart';
 
 class RoomCreated extends StatelessWidget {
@@ -10,7 +11,6 @@ class RoomCreated extends StatelessWidget {
   final Room room;
   @override
   Widget build(BuildContext context) {
-    print(room.avatar);
     return Padding(
       padding: const EdgeInsets.fromLTRB(8, 200, 0, 0),
       child: Row(
@@ -31,13 +31,11 @@ class RoomCreated extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    tiamat.Text.largeTitle(
                       "Welcome to ${room.displayName}!",
-                      style: Theme.of(context).textTheme.headlineMedium,
                     ),
-                    Text(
+                    tiamat.Text.labelEmphasised(
                       "This is the beginning of the end...",
-                      style: Theme.of(context).textTheme.titleMedium,
                     ),
                   ],
                 ),

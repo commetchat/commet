@@ -2,23 +2,24 @@ import 'dart:async';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/config/app_config.dart';
-import 'package:commet/config/style/theme_extensions.dart';
-import 'package:commet/ui/atoms/background.dart';
-import 'package:commet/ui/atoms/seperator.dart';
-import 'package:commet/ui/atoms/side_panel_button.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:provider/provider.dart';
 
+import 'package:flutter/material.dart';
+import 'package:tiamat/tiamat.dart';
 import '../atoms/space_icon.dart';
 
 class SpaceSelector extends StatefulWidget {
   SpaceSelector(this.spaces,
-      {super.key, this.onSelected, this.onSpaceInsert, this.showSpaceOwnerAvatar = false, this.header, this.footer});
+      {super.key,
+      this.onSelected,
+      this.onSpaceInsert,
+      required this.width,
+      this.showSpaceOwnerAvatar = false,
+      this.header,
+      this.footer});
   Stream<int>? onSpaceInsert;
   List<Space> spaces;
   bool showSpaceOwnerAvatar;
+  double width;
   @override
   State<SpaceSelector> createState() => _SpaceSelectorState();
   Widget? header;
@@ -51,8 +52,7 @@ class _SpaceSelectorState extends State<SpaceSelector> {
 
   @override
   Widget build(BuildContext context) {
-    return Background.lowest(
-      context,
+    return Tile.low4(
       child: SafeArea(
         child: Padding(
           padding: EdgeInsets.fromLTRB(s(7), 0, s(7), 0),
@@ -78,10 +78,14 @@ class _SpaceSelectorState extends State<SpaceSelector> {
                             initialItemCount: _count,
                             itemBuilder: (context, i, animation) => ScaleTransition(
                               scale: animation,
-                              child: SpaceIcon(
-                                widget.spaces[i],
-                                onTap: () => widget.onSelected?.call(i),
-                                showUser: widget.showSpaceOwnerAvatar,
+                              child: Padding(
+                                padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
+                                child: SpaceIcon(
+                                  widget.spaces[i],
+                                  width: widget.width,
+                                  onTap: () => widget.onSelected?.call(i),
+                                  showUser: widget.showSpaceOwnerAvatar,
+                                ),
                               ),
                             ),
                           ),

@@ -1,14 +1,10 @@
 import 'package:commet/generated/l10n.dart';
-import 'package:commet/ui/atoms/seperator.dart';
 import 'package:commet/ui/pages/settings/settings_tab.dart';
 import 'package:flutter/widgets.dart';
 import 'package:scaled_app/scaled_app.dart';
+import 'package:tiamat/tiamat.dart';
 
-import '../../../config/style/theme_changer.dart';
-import '../../../config/style/theme_dark.dart';
-import '../../../config/style/theme_glass.dart';
-import '../../../config/style/theme_light.dart';
-import '../../atoms/simple_text_button.dart';
+import 'package:tiamat/config/config.dart';
 
 class SettingsMenu {
   late List<SettingsTab> settings;
@@ -25,17 +21,17 @@ class SettingsMenu {
 
   Widget themeSettings(BuildContext context) {
     return Column(children: [
-      SimpleTextButton(T.of(context).themeLight, onTap: () {
-        ThemeChanger.setTheme(context, ThemeLight().theme);
+      TextButton(T.of(context).themeLight, onTap: () {
+        ThemeChanger.setTheme(context, ThemeLight.theme);
       }),
-      SimpleTextButton(T.of(context).themeDark, onTap: () {
+      TextButton(T.of(context).themeDark, onTap: () {
         ThemeChanger.setTheme(context, ThemeDark.theme);
       }),
-      SimpleTextButton(T.of(context).themeGlass, onTap: () {
-        ThemeChanger.setTheme(context, ThemeGlass().theme);
+      TextButton(T.of(context).themeGlass, onTap: () {
+        ThemeChanger.setTheme(context, ThemeGlass.theme);
       }),
       Seperator(),
-      SimpleTextButton(
+      TextButton(
         "Scale 1",
         onTap: () {
           ScaledWidgetsFlutterBinding.instance.scaleFactor = (deviceSize) {
@@ -43,7 +39,7 @@ class SettingsMenu {
           };
         },
       ),
-      SimpleTextButton(
+      TextButton(
         "Scale 1.25",
         onTap: () {
           ScaledWidgetsFlutterBinding.instance.scaleFactor = (deviceSize) {
@@ -51,7 +47,7 @@ class SettingsMenu {
           };
         },
       ),
-      SimpleTextButton(
+      TextButton(
         "Scale 1.5",
         onTap: () {
           ScaledWidgetsFlutterBinding.instance.scaleFactor = (deviceSize) {
@@ -59,7 +55,7 @@ class SettingsMenu {
           };
         },
       ),
-      SimpleTextButton(
+      TextButton(
         "Scale 1.75",
         onTap: () {
           ScaledWidgetsFlutterBinding.instance.scaleFactor = (deviceSize) {
