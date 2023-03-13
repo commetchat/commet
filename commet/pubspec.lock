@@ -185,6 +185,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.4.1"
+  device_frame:
+    dependency: transitive
+    description:
+      name: device_frame
+      sha256: afe76182aec178d171953d9b4a50a43c57c7cf3c77d8b09a48bf30c8fa04dd9d
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.0"
   enhanced_enum:
     dependency: transitive
     description:
@@ -303,6 +311,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
+  go_router:
+    dependency: transitive
+    description:
+      name: go_router
+      sha256: "25ae21384b758eb80daff113fe8bfb785c2dd17b69fe4885008fe764b26fd1ca"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.1.1"
   google_fonts:
     dependency: "direct main"
     description:
@@ -872,6 +888,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.11"
+  widgetbook:
+    dependency: "direct dev"
+    description:
+      name: widgetbook
+      sha256: c42a3d414d19c008d90f0b6df669c18bb151c5f3012ed073498d96cf133e9caf
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.4.1"
   widgetbook_annotation:
     dependency: transitive
     description:
