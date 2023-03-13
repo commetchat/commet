@@ -1,38 +1,37 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:tiamat/atoms/glass_tile.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 @WidgetbookUseCase(name: 'Default', type: Tile)
-Widget wb_tileSurface(BuildContext context) {
-  return Tile(child: Center(child: tiamat.Text.body("Hello, World!")));
+Widget wbtileSurface(BuildContext context) {
+  return const Tile(child: Center(child: tiamat.Text.body("Hello, World!")));
 }
 
 @WidgetbookUseCase(name: 'Low 1', type: Tile)
-Widget wb_tileSurfaceLow1(BuildContext context) {
-  return Tile.low1(child: Center(child: tiamat.Text.body("Hello, World!")));
+Widget wbtileSurfaceLow1(BuildContext context) {
+  return const Tile.low1(child: Center(child: tiamat.Text.body("Hello, World!")));
 }
 
 @WidgetbookUseCase(name: 'Low 2', type: Tile)
-Widget wb_tileSurfaceLow2(BuildContext context) {
-  return Tile.low2(child: Center(child: tiamat.Text.body("Hello, World!")));
+Widget wbtileSurfaceLow2(BuildContext context) {
+  return const Tile.low2(child: Center(child: tiamat.Text.body("Hello, World!")));
 }
 
 @WidgetbookUseCase(name: 'Low 3', type: Tile)
-Widget wb_tileSurfaceLow3(BuildContext context) {
-  return Tile.low3(child: Center(child: tiamat.Text.body("Hello, World!")));
+Widget wbtileSurfaceLow3(BuildContext context) {
+  return const Tile.low3(child: Center(child: tiamat.Text.body("Hello, World!")));
 }
 
 @WidgetbookUseCase(name: 'Low 4', type: Tile)
-Widget wb_tileSurfaceLow4(BuildContext context) {
-  return Tile.low4(child: Center(child: tiamat.Text.body("Hello, World!")));
+Widget wbtileSurfaceLow4(BuildContext context) {
+  return const Tile.low4(child: Center(child: tiamat.Text.body("Hello, World!")));
 }
 
 @WidgetbookUseCase(name: 'High', type: Tile)
-Widget wb_tileSurfaceHigh(BuildContext context) {
-  return Tile.high(child: Center(child: tiamat.Text.body("Hello, World!")));
+Widget wbtileSurfaceHigh(BuildContext context) {
+  return const Tile.high(child: Center(child: tiamat.Text.body("Hello, World!")));
 }
 
 @WidgetbookUseCase(name: 'All', type: Tile)
@@ -41,7 +40,7 @@ Widget tileAll(BuildContext context) {
     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
     crossAxisAlignment: CrossAxisAlignment.center,
     mainAxisSize: MainAxisSize.max,
-    children: [
+    children: const [
       Expanded(
           child: Tile.high(
         child: Center(
@@ -152,18 +151,19 @@ class Tile extends StatelessWidget {
     }
 
     bool frosted = Theme.of(context).extension<ThemeSettings>()!.frosted;
-    if (!frosted)
+    if (!frosted) {
       return Container(
         decoration: decoration,
         color: decoration == null ? color : null,
         child: child,
       );
+    }
 
     return GlassTile(
-      child: child,
       color: color,
       opacity: glassOpacity,
       sigma: glassSigma,
+      child: child,
     );
   }
 }

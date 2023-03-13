@@ -27,7 +27,7 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
   late Space? selectedSpace;
   late Room? selectedRoom;
   late GlobalKey<TimelineViewerState> timelineKey = GlobalKey<TimelineViewerState>();
-  late Map<String, GlobalKey<TimelineViewerState>> timelines = Map();
+  late Map<String, GlobalKey<TimelineViewerState>> timelines = {};
 
   @override
   void initState() {
@@ -58,7 +58,7 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
           DragDropFileTarget(
             onDropComplete: (details) {
               for (var file in details.files) {
-                print(file.path);
+                debugPrint(file.path);
               }
             },
           )
@@ -113,7 +113,7 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
         child: Tile.low1(
           child: Column(
             children: [
-              Container(child: SizedBox(height: s(50), child: Container(child: SpaceHeader(selectedSpace!)))),
+              SizedBox(height: s(50), child: SpaceHeader(selectedSpace!)),
               Expanded(
                   child: SpaceViewer(
                 selectedSpace!,

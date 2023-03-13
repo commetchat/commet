@@ -1,4 +1,3 @@
-import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/simulated/simulated_client.dart';
@@ -6,13 +5,8 @@ import 'package:commet/config/app_config.dart';
 import 'package:commet/generated/l10n.dart';
 import 'package:commet/ui/navigation/navigation_utils.dart';
 import 'package:commet/ui/pages/chat/chat_page.dart';
-import 'package:commet/ui/pages/chat/desktop_chat_page.dart';
 import 'package:commet/ui/pages/login_page.dart';
-import 'package:commet/ui/pages/chat/mobile_chat_page.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:provider/provider.dart';
 import '../../config/build_config.dart';
 
@@ -48,8 +42,9 @@ class _LoadingPageState extends State<LoadingPage> {
       isLoading = false;
     });
 
-    NavigationUtils.navigateTo(context, isLoggedIn ? ChatPage() : LoginPage());
-
+    if (context.mounted) {
+      NavigationUtils.navigateTo(context, isLoggedIn ? const ChatPage() : const LoginPage());
+    }
     return true;
   }
 
@@ -61,7 +56,7 @@ class _LoadingPageState extends State<LoadingPage> {
           child: SizedBox(
             width: s(60),
             height: s(60),
-            child: CircularProgressIndicator(),
+            child: const CircularProgressIndicator(),
           ),
         ),
         Text(T.of(context).loading)

@@ -1,5 +1,3 @@
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter/material.dart' as m;
 import 'package:flutter/widgets.dart';
 import 'package:tiamat/config/config.dart';
@@ -26,7 +24,7 @@ class RoomHeader extends StatelessWidget {
               SizedBox(
                   width: s(40),
                   height: s(40),
-                  child: Icon(
+                  child: const Icon(
                     m.Icons.tag,
                   )),
               Column(

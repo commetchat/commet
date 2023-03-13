@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 
 import '../config/style/theme_extensions.dart';
 
 @WidgetbookUseCase(name: 'Default', type: CircleButton)
-Widget wb_circleButton(BuildContext context) {
-  return Center(
+Widget wbcircleButton(BuildContext context) {
+  return const Center(
       child: CircleButton(
     radius: 25,
     icon: Icons.add,

@@ -2,8 +2,6 @@ import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/pages/chat/desktop_chat_page.dart';
 import 'package:commet/ui/pages/chat/mobile_chat_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 
 class ChatPage extends StatelessWidget {
   const ChatPage({super.key});
@@ -18,8 +16,8 @@ class ChatPage extends StatelessWidget {
   }
 
   Widget pickChatView() {
-    if (BuildConfig.DESKTOP) return DesktopChatPage();
-    if (BuildConfig.MOBILE) return MobileChatPage();
+    if (BuildConfig.DESKTOP) return const DesktopChatPage();
+    if (BuildConfig.MOBILE) return const MobileChatPage();
     throw Exception("Unknown build config");
   }
 }

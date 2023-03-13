@@ -1,13 +1,12 @@
 import 'dart:async';
 
 import 'package:commet/client/client.dart';
-import 'package:commet/client/room.dart';
 import 'package:flutter/material.dart';
 
 abstract class Space {
   late String identifier;
   late Client client;
-  late ImageProvider? avatar = null;
+  late ImageProvider? avatar;
   final Map<String, Room> _rooms = {};
   late List<Room> rooms = List.empty(growable: true);
   late Key key = UniqueKey();

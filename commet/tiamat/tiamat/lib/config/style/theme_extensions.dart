@@ -19,10 +19,15 @@ class ExtraColors extends ThemeExtension<ExtraColors> {
 
   @override
   ThemeExtension<ExtraColors> copyWith(
-          {Color? surfaceHigh1, Color? surfaceLow, Color? surfaceLow2, Color? surfaceLow3, Color? surfaceLow4}) =>
+          {Color? surfaceHigh1,
+          Color? surfaceLow,
+          Color? surfaceLow2,
+          Color? surfaceLow3,
+          Color? surfaceLow4,
+          Color? highlight}) =>
       ExtraColors(
         surfaceHigh1: surfaceHigh1 ?? this.surfaceHigh1,
-        surfaceLow1: surfaceLow ?? this.surfaceLow1,
+        surfaceLow1: surfaceLow ?? surfaceLow1,
         surfaceLow2: surfaceLow2 ?? this.surfaceLow2,
         surfaceLow3: surfaceLow3 ?? this.surfaceLow3,
         surfaceLow4: surfaceLow4 ?? this.surfaceLow4,

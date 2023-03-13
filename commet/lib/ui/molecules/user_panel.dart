@@ -1,9 +1,7 @@
-import 'dart:ui';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/config/app_config.dart';
 
-import 'package:flutter/material.dart' as m;
 import 'package:flutter/widgets.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;

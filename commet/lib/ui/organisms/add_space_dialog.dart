@@ -18,7 +18,7 @@ class _AddSpaceDialogState extends State<AddSpaceDialog> {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         tiamat.Text.labelEmphasised(T.of(context).createNewSpace),
-        Seperator(),
+        const Seperator(),
         tiamat.Text.labelEmphasised(T.of(context).joinExistingSpace)
       ],
     );

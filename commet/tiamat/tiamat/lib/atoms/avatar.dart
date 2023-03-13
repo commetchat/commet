@@ -1,57 +1,55 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 
 @WidgetbookUseCase(name: 'Default', type: Avatar)
-Widget wb_avatarDefault(BuildContext context) {
-  return Center(
+Widget wbavatarDefault(BuildContext context) {
+  return const Center(
       child: Avatar(
     image: AssetImage("assets/images/placeholder/generic/checker_purple.png"),
   ));
 }
 
 @WidgetbookUseCase(name: 'Large', type: Avatar)
-Widget wb_avatarLarge(BuildContext context) {
-  return Center(
+Widget wbavatarLarge(BuildContext context) {
+  return const Center(
       child: Avatar.large(
     image: AssetImage("assets/images/placeholder/generic/checker_purple.png"),
   ));
 }
 
 @WidgetbookUseCase(name: 'Placeholder', type: Avatar)
-Widget wb_avatarPlaceholder(BuildContext context) {
-  return Center(
+Widget wbavatarPlaceholder(BuildContext context) {
+  return const Center(
       child: Avatar(
     placeholderText: "A",
   ));
 }
 
 @WidgetbookUseCase(name: 'Placeholder Large', type: Avatar)
-Widget wb_avatarPlaceholderLarge(BuildContext context) {
-  return Center(
+Widget wbavatarPlaceholderLarge(BuildContext context) {
+  return const Center(
       child: Avatar.large(
     placeholderText: "A",
   ));
 }
 
 class Avatar extends StatelessWidget {
-  const Avatar({Key? key, this.image, this.radius = 22, this.placeholderText = null, this.isPadding = false})
+  const Avatar({Key? key, this.image, this.radius = 22, this.placeholderText, this.isPadding = false})
       : super(key: key);
 
   const Avatar.small({
     Key? key,
     this.image,
-    this.placeholderText = null,
+    this.placeholderText,
     this.isPadding = false,
   })  : radius = 15,
         super(key: key);
 
-  const Avatar.medium({Key? key, required this.image, this.placeholderText = null, this.isPadding = false})
+  const Avatar.medium({Key? key, required this.image, this.placeholderText, this.isPadding = false})
       : radius = 22,
         super(key: key);
 
-  const Avatar.large({Key? key, this.image, this.placeholderText = null, this.isPadding = false})
+  const Avatar.large({Key? key, this.image, this.placeholderText, this.isPadding = false})
       : radius = 44,
         super(key: key);
 

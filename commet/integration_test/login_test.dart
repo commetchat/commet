@@ -8,7 +8,6 @@
 import 'package:commet/ui/pages/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:integration_test/integration_test.dart';
 import 'package:commet/main.dart';
 
 import 'extensions/wait_for.dart';
@@ -39,7 +38,7 @@ void main() {
     await tester.tap(button);
     await tester.pumpAndSettle();
 
-    await tester.waitFor(() => find.text("Login Failed").evaluate().isNotEmpty, timeout: Duration(seconds: 5));
+    await tester.waitFor(() => find.text("Login Failed").evaluate().isNotEmpty, timeout: const Duration(seconds: 5));
 
     expect(app.clientManager.isLoggedIn(), equals(false));
 
@@ -62,7 +61,7 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    await tester.waitFor(() => app.clientManager.isLoggedIn(), timeout: Duration(seconds: 5), skipPumpAndSettle: true);
+    await tester.waitFor(() => app.clientManager.isLoggedIn(), timeout: const Duration(seconds: 5), skipPumpAndSettle: true);
     expect(app.clientManager.isLoggedIn(), equals(true));
   });
 }

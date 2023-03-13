@@ -1,23 +1,21 @@
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter/material.dart' as material;
 import 'package:flutter/widgets.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 
 @WidgetbookUseCase(name: 'Default', type: Switch)
-Widget wb_switch(BuildContext context) {
-  return Center(
+Widget wbswitch(BuildContext context) {
+  return const Center(
       child: material.Padding(
-    padding: const EdgeInsets.all(8.0),
+    padding: EdgeInsets.all(8.0),
     child: Switch(),
   ));
 }
 
 @WidgetbookUseCase(name: 'No Icons', type: Switch)
-Widget wb_switchNoIcons(BuildContext context) {
-  return Center(
+Widget wbswitchNoIcons(BuildContext context) {
+  return const Center(
       child: material.Padding(
-    padding: const EdgeInsets.all(8.0),
+    padding: EdgeInsets.all(8.0),
     child: Switch(
       offIcon: null,
       onIcon: null,

@@ -1,17 +1,14 @@
 import 'package:commet/config/app_config.dart';
 import 'package:commet/ui/atoms/user_card.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:tiamat/tiamat.dart';
 
 import '../../client/peer.dart';
 
 class PeerList extends StatefulWidget {
-  PeerList(this.peers, {super.key});
+  const PeerList(this.peers, {super.key});
 
-  List<Peer> peers;
+  final List<Peer> peers;
 
   @override
   State<PeerList> createState() => _PeerListState();
@@ -24,7 +21,6 @@ class _PeerListState extends State<PeerList> {
   @override
   void initState() {
     _count = widget.peers.length;
-    print(_count);
     super.initState();
   }
 
@@ -35,7 +31,7 @@ class _PeerListState extends State<PeerList> {
         padding: EdgeInsets.all(s(12.0)),
         child: AnimatedList(
           key: _listKey,
-          physics: BouncingScrollPhysics(),
+          physics: const BouncingScrollPhysics(),
           initialItemCount: _count,
           itemBuilder: (context, i, animation) => SizeTransition(
               sizeFactor: animation.drive(CurveTween(curve: Curves.easeOutCubic)),

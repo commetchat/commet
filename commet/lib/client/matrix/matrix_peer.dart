@@ -1,5 +1,4 @@
 import 'package:commet/client/client.dart';
-import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
@@ -22,9 +21,7 @@ class MatrixPeer extends Peer {
       userName = identifier.split('@').last.split(':').first;
       detail = identifier.split(':').last;
 
-      if (avatarUrl != null) avatar = NetworkImage(url);
-    } catch (_) {
-      print("Unable to retreive profile info for: " + identifier);
-    }
+      avatar = NetworkImage(url);
+    } catch (_) {}
   }
 }

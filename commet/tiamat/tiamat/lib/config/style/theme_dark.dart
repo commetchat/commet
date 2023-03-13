@@ -29,11 +29,11 @@ class ThemeDark {
         ThemeSettings(frosted: false),
       ],
       colorScheme: ColorScheme(
-          primary: Color.fromARGB(255, 106, 141, 255),
+          primary: const Color.fromARGB(255, 106, 141, 255),
           secondary: ThemeDarkColors.secondary,
           surface: ThemeDarkColors.surface,
           background: ThemeDarkColors.surfaceLow4,
-          error: Color.fromARGB(255, 255, 63, 63),
+          error: const Color.fromARGB(255, 255, 63, 63),
           onPrimary: Colors.white,
           onSecondary: ThemeDarkColors.onSurface,
           onSurface: Colors.white,
@@ -46,18 +46,18 @@ class ThemeDark {
         tileColor: ThemeDarkColors.surface,
       ),
       canvasColor: ThemeDarkColors.surface,
-      iconTheme: IconThemeData(color: ThemeDarkColors.secondary),
+      iconTheme: const IconThemeData(color: ThemeDarkColors.secondary),
       shadowColor: Colors.black.withAlpha(100),
       elevatedButtonTheme: ElevatedButtonThemeData(
           style: ButtonStyle(
               shape: MaterialStatePropertyAll(
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ))),
-      dividerTheme: DividerThemeData(color: ThemeDarkColors.surfaceHigh1),
+      dividerTheme: const DividerThemeData(color: ThemeDarkColors.surfaceHigh1),
       sliderTheme: SliderThemeData(
         inactiveTrackColor: ThemeDarkColors.primary.withAlpha(100),
       ),
-      switchTheme: SwitchThemeData(thumbColor: MaterialStatePropertyAll(ThemeDarkColors.secondary)),
+      switchTheme: const SwitchThemeData(thumbColor: MaterialStatePropertyAll(ThemeDarkColors.secondary)),
       textButtonTheme: TextButtonThemeData(
           style: ButtonStyle(
         overlayColor: const MaterialStatePropertyAll<Color>(Colors.white10),

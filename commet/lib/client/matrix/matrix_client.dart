@@ -16,14 +16,10 @@ import 'matrix_room.dart';
 import 'matrix_space.dart';
 
 class MatrixClient extends Client {
-  @override
-  late StreamController<void> onSync = StreamController.broadcast();
-
   late matrix.Client _matrixClient;
 
   MatrixClient({String? databasePath}) : super(RandomUtils.getRandomString(20)) {
     if (databasePath != null) {
-      print("Loading from database" + databasePath);
       _matrixClient = _createMatrixClient(databasePath);
     }
   }
@@ -56,20 +52,14 @@ class MatrixClient extends Client {
     }
   }
 
-  void log(String s) {
-    print('Matrix Client] $s');
-  }
-
   @override
   Future<void> init() async {
-    log("Initialising client");
     if (!_matrixClient.isLogged()) {
       await _matrixClient.init();
       if (_matrixClient.userID != null) user = MatrixPeer(_matrixClient, _matrixClient.userID!);
     }
 
-    _matrixClient.onSync.stream
-        .listen((event) => {log("On Sync Happened?"), onSync.add(null), _updateRoomslist(), _updateSpacesList()});
+    _matrixClient.onSync.stream.listen((event) => {onSync.add(null), _updateRoomslist(), _updateSpacesList()});
 
     _updateRoomslist();
     _updateSpacesList();
@@ -79,7 +69,6 @@ class MatrixClient extends Client {
   bool isLoggedIn() => _matrixClient.isLogged();
 
   matrix.Client _createMatrixClient(String databasePath) {
-    print("Creating matrix client at " + databasePath);
     return matrix.Client(
       'Commet',
       databaseBuilder: (_) async {
@@ -95,12 +84,8 @@ class MatrixClient extends Client {
       {String? password, String? token}) async {
     LoginResult loginResult = LoginResult.error;
 
-    log("Attempting to log in!");
-    print(type);
     switch (type) {
       case LoginType.loginPassword:
-        print("Checking homeserver");
-
         var uri = Uri.https(server);
         if (server == "localhost") uri = Uri.http(server);
 
@@ -116,20 +101,21 @@ class MatrixClient extends Client {
         try {
           var result = await _matrixClient.login(matrix.LoginType.mLoginPassword,
               password: password, identifier: matrix.AuthenticationUserIdentifier(user: userIdentifier));
-
-          loginResult = LoginResult.success;
+          if (result.accessToken != null) {
+            loginResult = LoginResult.success;
+          } else {
+            loginResult = LoginResult.failed;
+          }
         } catch (_) {
           loginResult = LoginResult.failed;
         }
 
         break;
       case LoginType.token:
-        // TODO: Handle this case.
         break;
     }
 
     if (loginResult == LoginResult.success) {
-      log("Login success!");
       _postLoginSuccess();
     } else {
       _matrixClient.clearArchivesFromCache();

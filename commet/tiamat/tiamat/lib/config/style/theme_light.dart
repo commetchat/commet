@@ -29,11 +29,11 @@ class ThemeLight {
         ThemeSettings(frosted: false)
       ],
       colorScheme: ColorScheme(
-          primary: Color.fromARGB(255, 106, 141, 255),
+          primary: const Color.fromARGB(255, 106, 141, 255),
           secondary: ThemeLightColors.secondary,
           surface: ThemeLightColors.surface,
           background: ThemeLightColors.surfaceLow4,
-          error: Color.fromARGB(255, 255, 91, 91),
+          error: const Color.fromARGB(255, 255, 91, 91),
           onPrimary: ThemeLightColors.onSurface,
           onSecondary: ThemeLightColors.onSurface,
           onSurface: ThemeLightColors.onSurface,
@@ -51,11 +51,11 @@ class ThemeLight {
               shape: MaterialStatePropertyAll(
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ))),
-      iconTheme: IconThemeData(color: ThemeLightColors.secondary),
+      iconTheme: const IconThemeData(color: ThemeLightColors.secondary),
       textButtonTheme: TextButtonThemeData(
           style: ButtonStyle(
         overlayColor: const MaterialStatePropertyAll<Color>(Colors.black12),
-        foregroundColor: MaterialStatePropertyAll<Color>(ThemeLightColors.secondary),
+        foregroundColor: const MaterialStatePropertyAll<Color>(ThemeLightColors.secondary),
         shape:
             MaterialStatePropertyAll<OutlinedBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
         textStyle: const MaterialStatePropertyAll<TextStyle>(

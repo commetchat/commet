@@ -8,7 +8,7 @@ import 'package:tiamat/tiamat.dart';
 import '../atoms/space_icon.dart';
 
 class SpaceSelector extends StatefulWidget {
-  SpaceSelector(this.spaces,
+  const SpaceSelector(this.spaces,
       {super.key,
       this.onSelected,
       this.onSpaceInsert,
@@ -16,15 +16,16 @@ class SpaceSelector extends StatefulWidget {
       this.showSpaceOwnerAvatar = false,
       this.header,
       this.footer});
-  Stream<int>? onSpaceInsert;
-  List<Space> spaces;
-  bool showSpaceOwnerAvatar;
-  double width;
+  final Stream<int>? onSpaceInsert;
+  final List<Space> spaces;
+  final bool showSpaceOwnerAvatar;
+  final double width;
+  final Widget? header;
+  final Widget? footer;
+  final void Function(int index)? onSelected;
+
   @override
   State<SpaceSelector> createState() => _SpaceSelectorState();
-  Widget? header;
-  Widget? footer;
-  void Function(int index)? onSelected;
 }
 
 class _SpaceSelectorState extends State<SpaceSelector> {
@@ -62,7 +63,7 @@ class _SpaceSelectorState extends State<SpaceSelector> {
                 child: ScrollConfiguration(
                   behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
                   child: SingleChildScrollView(
-                    physics: BouncingScrollPhysics(),
+                    physics: const BouncingScrollPhysics(),
                     child: Padding(
                       padding: EdgeInsets.fromLTRB(0, s(8), 0, s(8)),
                       child: Column(
@@ -70,10 +71,10 @@ class _SpaceSelectorState extends State<SpaceSelector> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           if (widget.header != null) widget.header!,
-                          if (widget.header != null) Seperator(),
+                          if (widget.header != null) const Seperator(),
                           AnimatedList(
                             key: _listKey,
-                            physics: NeverScrollableScrollPhysics(),
+                            physics: const NeverScrollableScrollPhysics(),
                             shrinkWrap: true,
                             initialItemCount: _count,
                             itemBuilder: (context, i, animation) => ScaleTransition(
@@ -89,7 +90,7 @@ class _SpaceSelectorState extends State<SpaceSelector> {
                               ),
                             ),
                           ),
-                          if (widget.footer != null) Seperator(),
+                          if (widget.footer != null) const Seperator(),
                           if (widget.footer != null) widget.footer!,
                         ],
                       ),

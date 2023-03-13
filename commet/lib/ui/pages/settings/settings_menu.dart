@@ -30,7 +30,7 @@ class SettingsMenu {
       TextButton(T.of(context).themeGlass, onTap: () {
         ThemeChanger.setTheme(context, ThemeGlass.theme);
       }),
-      Seperator(),
+      const Seperator(),
       TextButton(
         "Scale 1",
         onTap: () {

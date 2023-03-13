@@ -21,6 +21,7 @@ class _DesktopSettingsPageState extends State<DesktopSettingsPage> {
   @override
   void initState() {
     tabs = SettingsMenu().settings;
+    super.initState();
   }
 
   @override
@@ -50,7 +51,7 @@ class _DesktopSettingsPageState extends State<DesktopSettingsPage> {
                       shrinkWrap: true,
                       itemBuilder: (context, index) {
                         if (tabs[index].seperator) {
-                          if (tabs[index].label == null) return Seperator();
+                          if (tabs[index].label == null) return const Seperator();
                           return Padding(
                             padding: EdgeInsets.fromLTRB(s(16), s(8), s(8), s(8)),
                             child: tiamat.Text.label(tabs[index].label!),
@@ -78,14 +79,14 @@ class _DesktopSettingsPageState extends State<DesktopSettingsPage> {
           ),
           Expanded(
               child: AnimatedSwitcher(
-            duration: Duration(milliseconds: 300),
+            duration: const Duration(milliseconds: 300),
             switchInCurve: Curves.easeInOutCubic,
             //switchOutCurve: Curves.easeInExpo,
             transitionBuilder: (Widget child, Animation<double> animation) {
               return SlideTransition(
                 position: Tween(
-                  begin: Offset(0.0, 1.5),
-                  end: Offset(0.0, 0.0),
+                  begin: const Offset(0.0, 1.5),
+                  end: const Offset(0.0, 0.0),
                 ).animate(animation),
                 child: child,
               );

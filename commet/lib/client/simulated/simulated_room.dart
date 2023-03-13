@@ -11,9 +11,9 @@ import 'package:flutter/painting.dart';
 
 class SimulatedRoom extends Room {
   late Peer alice = SimulatedPeer(
-      client, "alice@commet.chat", "alice", AssetImage("assets/images/placeholder/generic/checker_green.png"));
+      client, "alice@commet.chat", "alice", const AssetImage("assets/images/placeholder/generic/checker_green.png"));
   late Peer bob = SimulatedPeer(
-      client, "bob@commet.chat", "bob", AssetImage("assets/images/placeholder/generic/checker_orange.png"));
+      client, "bob@commet.chat", "bob", const AssetImage("assets/images/placeholder/generic/checker_orange.png"));
 
   SimulatedRoom(displayName, client) : super(RandomUtils.getRandomString(20), client) {
     identifier = RandomUtils.getRandomString(20);

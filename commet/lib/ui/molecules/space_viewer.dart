@@ -2,31 +2,21 @@ import 'dart:async';
 
 import 'package:commet/config/app_config.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 
 import '../../client/client.dart';
 import '../atoms/room_list.dart';
 
 class SpaceViewer extends StatefulWidget {
-  SpaceViewer(this.space, {super.key, this.onRoomSelected, this.onRoomInsert});
-  Space space;
-  Stream<int>? onRoomInsert;
-
-  void Function(int)? onRoomSelected;
+  const SpaceViewer(this.space, {super.key, this.onRoomSelected, this.onRoomInsert});
+  final Space space;
+  final Stream<int>? onRoomInsert;
+  final void Function(int)? onRoomSelected;
 
   @override
   State<SpaceViewer> createState() => _SpaceViewerState();
 }
 
 class _SpaceViewerState extends State<SpaceViewer> with TickerProviderStateMixin {
-  @override
-  void setState(VoidCallback fn) {
-    // TODO: implement setState
-    print("Setting state");
-    super.setState(fn);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Padding(

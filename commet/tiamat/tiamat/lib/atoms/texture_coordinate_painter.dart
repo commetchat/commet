@@ -16,7 +16,7 @@ class TextureCoordinatePainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final paint = Paint();
 
-    shader.setImageSampler(0, image!);
+    shader.setImageSampler(0, image);
     shader.setFloat(0, offset.top);
     shader.setFloat(1, offset.left);
     shader.setFloat(2, offset.right);

@@ -7,8 +7,6 @@
 import 'dart:core';
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tiamat/atoms/avatar.dart';
 import 'package:tiamat/atoms/button.dart';
@@ -93,7 +91,7 @@ class HotReload extends StatelessWidget {
                   useCases: [
                     WidgetbookUseCase(
                       name: 'Default',
-                      builder: (context) => wb_popupDialog(context),
+                      builder: (context) => wbpopupDialog(context),
                     ),
                   ],
                 ),
@@ -102,11 +100,11 @@ class HotReload extends StatelessWidget {
                   useCases: [
                     WidgetbookUseCase(
                       name: 'Default',
-                      builder: (context) => wb_switch(context),
+                      builder: (context) => wbswitch(context),
                     ),
                     WidgetbookUseCase(
                       name: 'No Icons',
-                      builder: (context) => wb_switchNoIcons(context),
+                      builder: (context) => wbswitchNoIcons(context),
                     ),
                   ],
                 ),
@@ -115,7 +113,7 @@ class HotReload extends StatelessWidget {
                   useCases: [
                     WidgetbookUseCase(
                       name: 'Default',
-                      builder: (context) => wb_circleButton(context),
+                      builder: (context) => wbcircleButton(context),
                     ),
                   ],
                 ),
@@ -124,7 +122,7 @@ class HotReload extends StatelessWidget {
                   useCases: [
                     WidgetbookUseCase(
                       name: 'Default',
-                      builder: (context) => wb_iconUseCase(context),
+                      builder: (context) => wbiconUseCase(context),
                     ),
                   ],
                 ),
@@ -133,27 +131,27 @@ class HotReload extends StatelessWidget {
                   useCases: [
                     WidgetbookUseCase(
                       name: 'Label',
-                      builder: (context) => wb_textLabelUseCase(context),
+                      builder: (context) => wbtextLabelUseCase(context),
                     ),
                     WidgetbookUseCase(
                       name: 'Tiny',
-                      builder: (context) => wb_textTinyUseCase(context),
+                      builder: (context) => wbtextTinyUseCase(context),
                     ),
                     WidgetbookUseCase(
                       name: 'Body',
-                      builder: (context) => wb_textBodyUseCase(context),
+                      builder: (context) => wbtextBodyUseCase(context),
                     ),
                     WidgetbookUseCase(
                       name: 'Error',
-                      builder: (context) => wb_textErrorUseCase(context),
+                      builder: (context) => wbtextErrorUseCase(context),
                     ),
                     WidgetbookUseCase(
                       name: 'Title',
-                      builder: (context) => wb_textTitleUseCase(context),
+                      builder: (context) => wbtextTitleUseCase(context),
                     ),
                     WidgetbookUseCase(
                       name: 'All',
-                      builder: (context) => wb_textAllUseCase(context),
+                      builder: (context) => wbtextAllUseCase(context),
                     ),
                   ],
                 ),
@@ -162,16 +160,16 @@ class HotReload extends StatelessWidget {
                   useCases: [
                     WidgetbookUseCase(
                       name: 'Default',
-                      builder: (context) => wb_imageButton(context),
+                      builder: (context) => wbimageButton(context),
                     ),
                     WidgetbookUseCase(
                       name: 'Icon',
-                      builder: (context) => wb_imageButtonIcon(context),
+                      builder: (context) => wbimageButtonIcon(context),
                     ),
                     WidgetbookUseCase(
                       name: 'Icon with Shadow',
                       builder: (context) =>
-                          wb_imageButtonIconWithShadow(context),
+                          wbimageButtonIconWithShadow(context),
                     ),
                   ],
                 ),
@@ -180,7 +178,7 @@ class HotReload extends StatelessWidget {
                   useCases: [
                     WidgetbookUseCase(
                       name: 'Default',
-                      builder: (context) => wb_Button(context),
+                      builder: (context) => wbButton(context),
                     ),
                   ],
                 ),
@@ -189,11 +187,11 @@ class HotReload extends StatelessWidget {
                   useCases: [
                     WidgetbookUseCase(
                       name: 'Default',
-                      builder: (context) => wb_slider(context),
+                      builder: (context) => wbslider(context),
                     ),
                     WidgetbookUseCase(
                       name: 'Divided',
-                      builder: (context) => wb_sliderDivided(context),
+                      builder: (context) => wbsliderDivided(context),
                     ),
                   ],
                 ),
@@ -202,27 +200,27 @@ class HotReload extends StatelessWidget {
                   useCases: [
                     WidgetbookUseCase(
                       name: 'Default',
-                      builder: (context) => wb_tileSurface(context),
+                      builder: (context) => wbtileSurface(context),
                     ),
                     WidgetbookUseCase(
                       name: 'Low 1',
-                      builder: (context) => wb_tileSurfaceLow1(context),
+                      builder: (context) => wbtileSurfaceLow1(context),
                     ),
                     WidgetbookUseCase(
                       name: 'Low 2',
-                      builder: (context) => wb_tileSurfaceLow2(context),
+                      builder: (context) => wbtileSurfaceLow2(context),
                     ),
                     WidgetbookUseCase(
                       name: 'Low 3',
-                      builder: (context) => wb_tileSurfaceLow3(context),
+                      builder: (context) => wbtileSurfaceLow3(context),
                     ),
                     WidgetbookUseCase(
                       name: 'Low 4',
-                      builder: (context) => wb_tileSurfaceLow4(context),
+                      builder: (context) => wbtileSurfaceLow4(context),
                     ),
                     WidgetbookUseCase(
                       name: 'High',
-                      builder: (context) => wb_tileSurfaceHigh(context),
+                      builder: (context) => wbtileSurfaceHigh(context),
                     ),
                     WidgetbookUseCase(
                       name: 'All',
@@ -235,7 +233,7 @@ class HotReload extends StatelessWidget {
                   useCases: [
                     WidgetbookUseCase(
                       name: 'Default',
-                      builder: (context) => wb_tileGlass(context),
+                      builder: (context) => wbtileGlass(context),
                     ),
                   ],
                 ),
@@ -244,19 +242,19 @@ class HotReload extends StatelessWidget {
                   useCases: [
                     WidgetbookUseCase(
                       name: 'Default',
-                      builder: (context) => wb_avatarDefault(context),
+                      builder: (context) => wbavatarDefault(context),
                     ),
                     WidgetbookUseCase(
                       name: 'Large',
-                      builder: (context) => wb_avatarLarge(context),
+                      builder: (context) => wbavatarLarge(context),
                     ),
                     WidgetbookUseCase(
                       name: 'Placeholder',
-                      builder: (context) => wb_avatarPlaceholder(context),
+                      builder: (context) => wbavatarPlaceholder(context),
                     ),
                     WidgetbookUseCase(
                       name: 'Placeholder Large',
-                      builder: (context) => wb_avatarPlaceholderLarge(context),
+                      builder: (context) => wbavatarPlaceholderLarge(context),
                     ),
                   ],
                 ),
@@ -265,7 +263,7 @@ class HotReload extends StatelessWidget {
                   useCases: [
                     WidgetbookUseCase(
                       name: 'Default',
-                      builder: (context) => wb_seperatorUseCase(context),
+                      builder: (context) => wbseperatorUseCase(context),
                     ),
                   ],
                 ),

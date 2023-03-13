@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:math';
-import 'package:flutter/material.dart';
 
 import 'package:commet/client/room.dart';
 import 'package:commet/client/space.dart';
@@ -34,9 +32,9 @@ abstract class Client {
 
   Future<LoginResult> login(LoginType type, String userIdentifier, String server, {String? password, String? token});
 
-  Map<String, Room> _rooms = Map();
-  Map<String, Space> _spaces = Map();
-  Map<String, Peer> _peers = Map();
+  final Map<String, Room> _rooms = {};
+  final Map<String, Space> _spaces = {};
+  final Map<String, Peer> _peers = {};
 
   List<Room> rooms = List.empty(growable: true);
   List<Space> spaces = List.empty(growable: true);

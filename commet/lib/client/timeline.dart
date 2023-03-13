@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:commet/client/attachment.dart';
 import 'package:commet/client/client.dart';
-import 'package:commet/client/peer.dart';
 import 'package:flutter/material.dart';
 
 enum TimelineEventStatus {
@@ -71,8 +70,8 @@ class TimelineEvent {
   late TimelineEventStatus status;
   late Peer sender;
   late DateTime originServerTs;
-  late String? body = null;
-  late String? source = null;
+  late String? body;
+  late String? source;
   late Widget? widget;
   List<Attachment>? attachments;
 
@@ -94,7 +93,6 @@ abstract class Timeline {
   }
 
   void notifyChanged(int index) {
-    print("Notifying of change");
     onChange.add(index);
     events[index].onChange.add(null);
   }

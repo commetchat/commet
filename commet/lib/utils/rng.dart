@@ -7,8 +7,8 @@ class RandomUtils {
           .split(' ');
 
   static String getRandomString(int length) {
-    Random _rnd = Random();
-    return String.fromCharCodes(Iterable.generate(length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
+    Random rnd = Random();
+    return String.fromCharCodes(Iterable.generate(length, (_) => _chars.codeUnitAt(rnd.nextInt(_chars.length))));
   }
 
   static String getRandomSentence(int length) {

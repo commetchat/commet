@@ -21,7 +21,7 @@ class PopupIconMenu extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: icons
               .map((icon) => Padding(
-                    padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
+                    padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
                     child: i.IconButton(
                       icon: icon.key,
                       size: height / 1.5,

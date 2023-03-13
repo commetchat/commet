@@ -9,12 +9,7 @@ import '../../client/client.dart';
 
 class TimelineEventView extends StatefulWidget {
   const TimelineEventView(
-      {required this.event,
-      super.key,
-      this.onDelete,
-      this.hovered = false,
-      this.showSender = true,
-      this.debugInfo = null});
+      {required this.event, super.key, this.onDelete, this.hovered = false, this.showSender = true, this.debugInfo});
   final TimelineEvent event;
   final bool hovered;
   final Function? onDelete;
@@ -51,7 +46,7 @@ class _TimelineEventState extends State<TimelineEventView> {
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
-        duration: Duration(milliseconds: 100),
+        duration: const Duration(milliseconds: 100),
         color: widget.hovered ? m.Colors.red : m.Colors.transparent,
         child: Column(
           children: [
@@ -69,22 +64,19 @@ class _TimelineEventState extends State<TimelineEventView> {
           showSender: widget.showSender,
           onDelete: widget.onDelete,
         );
-        break;
       case EventType.redaction:
-        // TODO: Handle this case.
         break;
       case EventType.edit:
-        // TODO: Handle this case.
         break;
       case EventType.invalid:
-        // TODO: Handle this case.
         break;
       case EventType.roomState:
         return GenericRoomEvent(widget.event.body!, m.Icons.delete);
+      default:
         break;
     }
 
-    return Placeholder(
+    return const Placeholder(
       fallbackHeight: 20,
     );
   }

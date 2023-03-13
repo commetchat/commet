@@ -1,6 +1,3 @@
-import 'package:flutter/material.dart' as m;
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -26,19 +23,17 @@ class RoomCreated extends StatelessWidget {
           Flexible(
             child: Padding(
               padding: const EdgeInsets.all(12.0),
-              child: Container(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    tiamat.Text.largeTitle(
-                      "Welcome to ${room.displayName}!",
-                    ),
-                    tiamat.Text.labelEmphasised(
-                      "This is the beginning of the end...",
-                    ),
-                  ],
-                ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  tiamat.Text.largeTitle(
+                    "Welcome to ${room.displayName}!",
+                  ),
+                  const tiamat.Text.labelEmphasised(
+                    "This is the beginning of the end...",
+                  ),
+                ],
               ),
             ),
           )

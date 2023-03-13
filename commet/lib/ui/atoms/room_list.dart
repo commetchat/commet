@@ -8,7 +8,7 @@ import 'package:flutter/material.dart' as m;
 import '../../client/client.dart';
 
 class RoomList extends StatefulWidget {
-  RoomList(this.rooms,
+  const RoomList(this.rooms,
       {super.key,
       this.onInsertStream,
       this.onUpdateStream,
@@ -17,14 +17,14 @@ class RoomList extends StatefulWidget {
       this.expandable = false,
       this.showHeader = false,
       this.expanderText});
-  bool expandable;
-  bool showHeader;
-  List<Room> rooms;
-  Stream<void>? onUpdateStream;
-  Stream<int>? onInsertStream;
-  String? expanderText;
-  void Function(int)? onRoomSelected;
-  void Function(int oldIndex, int newIndex)? onRoomReordered;
+  final bool expandable;
+  final bool showHeader;
+  final List<Room> rooms;
+  final Stream<void>? onUpdateStream;
+  final Stream<int>? onInsertStream;
+  final String? expanderText;
+  final void Function(int)? onRoomSelected;
+  final void Function(int oldIndex, int newIndex)? onRoomReordered;
   @override
   State<RoomList> createState() => _RoomListState();
 }
@@ -51,7 +51,7 @@ class _RoomListState extends State<RoomList> with SingleTickerProviderStateMixin
     });
 
     _count = widget.rooms.length;
-    controller = AnimationController(vsync: this, duration: Duration(milliseconds: 100));
+    controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 100));
 
     super.initState();
   }
@@ -65,7 +65,6 @@ class _RoomListState extends State<RoomList> with SingleTickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
-    print("Building");
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -99,7 +98,7 @@ class _RoomListState extends State<RoomList> with SingleTickerProviderStateMixin
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
+          children: const [
             tiamat.Text.label("Rooms"),
           ],
         ),
@@ -135,7 +134,7 @@ class _RoomListState extends State<RoomList> with SingleTickerProviderStateMixin
       key: _listKey,
       initialItemCount: _count,
       scrollDirection: Axis.vertical,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       itemBuilder: (context, i, animation) => ScaleTransition(
         scale: animation,
@@ -163,8 +162,6 @@ class _RoomListState extends State<RoomList> with SingleTickerProviderStateMixin
   void toggleExpansion() {
     setState(() {
       expanded = !expanded;
-      print(expanded);
-
       if (expanded) controller?.forward(from: controller!.value);
       if (!expanded) controller?.reverse(from: controller!.value);
     });

@@ -1,6 +1,5 @@
 import 'package:commet/client/matrix/matrix_peer.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
-import 'package:commet/ui/molecules/message.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 
@@ -39,7 +38,8 @@ class MatrixRoom extends Room {
     String? id = await _matrixRoom.sendTextEvent(message);
     if (id != null) {
       var event = await _matrixRoom.getEventById(id);
-      return (this.timeline as MatrixTimeline).convertEvent(event!);
+      return (timeline as MatrixTimeline).convertEvent(event!);
     }
+    return null;
   }
 }

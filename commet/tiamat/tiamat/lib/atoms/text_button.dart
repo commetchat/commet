@@ -1,34 +1,32 @@
 import 'package:flutter/material.dart' as material;
 import 'package:flutter/material.dart';
-import 'package:tiamat/atoms/seperator.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
-import '../../config/style/theme_extensions.dart';
 import './text.dart' as tiamat;
 
 @WidgetbookUseCase(name: 'Default', type: TextButton)
-Widget wb_iconUseCase(BuildContext context) {
+Widget wbiconUseCase(BuildContext context) {
   return Center(
     child: Column(
       mainAxisSize: MainAxisSize.min,
-      children: [
+      children: const [
         material.Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(8.0),
           child: material.SizedBox(height: 30, child: TextButton("Height: 30", icon: Icons.tag)),
         ),
         material.Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(8.0),
           child: material.SizedBox(height: 35, child: TextButton("Height: 35", icon: Icons.tag)),
         ),
         material.Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(8.0),
           child: material.SizedBox(height: 40, child: TextButton("Height: 40", icon: Icons.tag)),
         ),
         material.Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(8.0),
           child: material.SizedBox(height: 45, child: TextButton("Height: 45", icon: Icons.tag)),
         ),
         material.Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(8.0),
           child: material.SizedBox(height: 50, child: TextButton("Height: 50", icon: Icons.tag)),
         )
       ],
@@ -55,7 +53,7 @@ class TextButton extends StatelessWidget {
           children: [
             if (icon != null)
               Padding(
-                padding: EdgeInsets.all(1.0),
+                padding: const EdgeInsets.all(1.0),
                 child: Align(
                   alignment: Alignment.center,
                   child: Icon(
@@ -66,7 +64,7 @@ class TextButton extends StatelessWidget {
                 ),
               ),
             Padding(
-              padding: EdgeInsets.fromLTRB(8, 0, 0, 0),
+              padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
               child: Align(alignment: Alignment.centerLeft, child: tiamat.Text.labelEmphasised(text)),
             ),
           ],

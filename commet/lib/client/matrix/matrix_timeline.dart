@@ -1,20 +1,10 @@
 import 'dart:async';
-import 'package:commet/client/matrix/matrix_room.dart';
-import 'package:commet/ui/atoms/generic_room_event.dart';
-import 'package:commet/ui/atoms/room_created.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/async.dart';
-import '../../ui/molecules/message.dart';
 import '../client.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
 class MatrixTimeline extends Timeline {
-  @override
-  late List<TimelineEvent> events;
-
   late matrix.Timeline? _matrixTimeline;
   late matrix.Room _matrixRoom;
-  late Room _room;
 
   MatrixTimeline(
     Client client,
@@ -22,9 +12,8 @@ class MatrixTimeline extends Timeline {
     matrix.Room matrixRoom,
   ) {
     events = List.empty(growable: true);
-    this._matrixRoom = matrixRoom;
+    _matrixRoom = matrixRoom;
     this.client = client;
-    this._room = room;
 
     initTimeline();
   }
@@ -52,7 +41,7 @@ class MatrixTimeline extends Timeline {
     }
   }
 
-  TimelineEvent convertEvent(matrix.Event event, {TimelineEvent? existing = null}) {
+  TimelineEvent convertEvent(matrix.Event event, {TimelineEvent? existing}) {
     TimelineEvent? e;
     if (existing != null) {
       e = existing;

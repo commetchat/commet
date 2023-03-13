@@ -1,14 +1,8 @@
-import 'dart:async';
-
 import 'package:commet/client/client.dart';
-import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
 class MatrixSpace extends Space {
-  @override
-  StreamController<void> onUpdate = StreamController.broadcast();
-
   late matrix.Room _matrixRoom;
   late matrix.Client _matrixClient;
 
@@ -23,7 +17,6 @@ class MatrixSpace extends Space {
       onUpdate.add(null);
     });
 
-    print("Listening to onsync stream in MatrixSpace");
     client.onSync.stream.listen((event) {
       refresh();
     });

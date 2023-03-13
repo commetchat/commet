@@ -34,7 +34,7 @@ class _MobileChatPageState extends State<MobileChatPage> {
   late Room? selectedRoom;
   late GlobalKey<OverlappingPanelsState> panelsKey;
   late GlobalKey<TimelineViewerState> timelineKey = GlobalKey<TimelineViewerState>();
-  late Map<String, GlobalKey<TimelineViewerState>> timelines = Map();
+  late Map<String, GlobalKey<TimelineViewerState>> timelines = {};
   late GlobalKey<MessageInputState> messageInput = GlobalKey();
   bool shouldMainIgnoreInput = false;
 
@@ -97,7 +97,7 @@ class _MobileChatPageState extends State<MobileChatPage> {
         ),
       );
     }
-    return Placeholder();
+    return const Placeholder();
   }
 
   Widget timelineView() {
@@ -107,7 +107,7 @@ class _MobileChatPageState extends State<MobileChatPage> {
 
     return Container(
       color: m.Colors.red,
-      child: Placeholder(),
+      child: const Placeholder(),
     );
   }
 
@@ -117,7 +117,7 @@ class _MobileChatPageState extends State<MobileChatPage> {
         child: SafeArea(
           child: Column(
             children: [
-              Container(child: SizedBox(height: s(50), child: Container(child: SpaceHeader(selectedSpace!)))),
+              SizedBox(height: s(50), child: SpaceHeader(selectedSpace!)),
               Expanded(
                   child: Padding(
                 padding: EdgeInsets.fromLTRB(0, 0, s(50), 0),
@@ -152,27 +152,25 @@ class _MobileChatPageState extends State<MobileChatPage> {
             children: [
               SizedBox(height: s(50), child: RoomHeader(selectedRoom!)),
               Flexible(
-                child: Container(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Expanded(
-                          child: TimelineViewer(
-                        key: timelines[selectedRoom!.identifier],
-                        timeline: selectedRoom!.timeline!,
-                      )),
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(0, 0, 0, s(8)),
-                        child: MessageInput(
-                          key: messageInput,
-                          onSendMessage: (message) {
-                            selectedRoom!.sendMessage(message);
-                            return MessageInputSendResult.clearText;
-                          },
-                        ),
-                      )
-                    ],
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Expanded(
+                        child: TimelineViewer(
+                      key: timelines[selectedRoom!.identifier],
+                      timeline: selectedRoom!.timeline!,
+                    )),
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(0, 0, 0, s(8)),
+                      child: MessageInput(
+                        key: messageInput,
+                        onSendMessage: (message) {
+                          selectedRoom!.sendMessage(message);
+                          return MessageInputSendResult.clearText;
+                        },
+                      ),
+                    )
+                  ],
                 ),
               ),
             ],
@@ -211,7 +209,7 @@ class _MobileChatPageState extends State<MobileChatPage> {
 
     // Putting this here so we can see a bit of the animation when the room button is clicked
     // feels better ^-^
-    await Future.delayed(Duration(milliseconds: 125));
+    await Future.delayed(const Duration(milliseconds: 125));
     panelsKey.currentState!.reveal(RevealSide.main);
   }
 }

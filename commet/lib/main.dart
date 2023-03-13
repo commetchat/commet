@@ -43,7 +43,7 @@ class App extends StatelessWidget {
               create: (context) => clientManager,
               child: child,
             ),
-            home: LoadingPage(),
+            home: const LoadingPage(),
           );
         });
   }

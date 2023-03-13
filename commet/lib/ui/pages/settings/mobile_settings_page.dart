@@ -22,6 +22,7 @@ class _MobileSettingsPageState extends State<MobileSettingsPage> {
   @override
   void initState() {
     tabs = SettingsMenu().settings;
+    super.initState();
   }
 
   @override
@@ -44,10 +45,10 @@ class _MobileSettingsPageState extends State<MobileSettingsPage> {
               ),
               ListView.builder(
                 shrinkWrap: true,
-                physics: BouncingScrollPhysics(),
+                physics: const BouncingScrollPhysics(),
                 itemBuilder: (context, index) {
                   if (tabs[index].seperator) {
-                    if (tabs[index].label == null) return Seperator();
+                    if (tabs[index].label == null) return const Seperator();
                     return Padding(
                       padding: EdgeInsets.fromLTRB(s(16), s(8), s(8), s(8)),
                       child: tiamat.Text.label(

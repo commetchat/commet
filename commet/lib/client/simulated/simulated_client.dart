@@ -13,14 +13,8 @@ class SimulatedClient extends Client {
 
   SimulatedClient() : super(RandomUtils.getRandomString(20));
 
-  void log(String s) {
-    print('Matrix Client] $s');
-  }
-
   @override
-  Future<void> init() async {
-    log("Initialising client");
-  }
+  Future<void> init() async {}
 
   @override
   bool isLoggedIn() => _isLogged;
@@ -48,8 +42,8 @@ class SimulatedClient extends Client {
   }
 
   void _postLoginSuccess() {
-    user = SimulatedPeer(
-        this, "simulated@example.com", "Simulated", AssetImage("assets/images/placeholder/generic/checker_red.png"));
+    user = SimulatedPeer(this, "simulated@example.com", "Simulated",
+        const AssetImage("assets/images/placeholder/generic/checker_red.png"));
     peers.add(user!);
 
     _updateRoomslist();
@@ -67,9 +61,8 @@ class SimulatedClient extends Client {
   }
 
   void _updateSpacesList() {
-    List<Space> _spaces = List.empty(growable: true);
     var space = SimulatedSpace("Simulated Space 1", this);
-    for (var room in this.rooms) {
+    for (var room in rooms) {
       space.addRoom(room);
     }
     addSpace(space);
@@ -84,7 +77,6 @@ class SimulatedClient extends Client {
     addSpace(SimulatedSpace("Simulated Space 10", this));
 
     Future.delayed(const Duration(seconds: 10), () {
-      List<Space> _spaces = List.empty(growable: true);
       addSpace(SimulatedSpace("Simulated Space 11", this));
       addSpace(SimulatedSpace("Simulated Space 12", this));
     });

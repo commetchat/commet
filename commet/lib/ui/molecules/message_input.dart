@@ -1,11 +1,8 @@
 import 'package:commet/config/app_config.dart';
 import 'package:commet/config/build_config.dart';
-import 'package:commet/generated/l10n.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:tiamat/config/config.dart';
 import 'package:tiamat/tiamat.dart';
 
@@ -53,6 +50,8 @@ class MessageInputState extends State<MessageInput> {
         return KeyEventResult.ignored;
       },
     );
+
+    super.initState();
   }
 
   void sendMessage() {

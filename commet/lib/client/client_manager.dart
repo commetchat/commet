@@ -3,9 +3,7 @@ import 'dart:async';
 import 'package:commet/client/client.dart';
 
 class ClientManager {
-  final Map<String, Room> _rooms = Map();
-  final Map<String, Space> _spaces = Map();
-  final Map<String, Client> _clients = Map();
+  final Map<String, Client> _clients = {};
 
   List<Room> rooms = List.empty(growable: true);
   List<Space> spaces = List.empty(growable: true);
@@ -34,17 +32,11 @@ class ClientManager {
     return _clients.values.toList();
   }
 
-  void log(Object s) {
-    print('Client Manager] $s');
-  }
-
   bool isLoggedIn() {
     return _clients.values.any((element) => element.isLoggedIn());
   }
 
   void _synced() {
-    log("Syncing");
-
     onSync.add(null);
   }
 }

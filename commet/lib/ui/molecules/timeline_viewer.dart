@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:commet/client/split_timeline.dart';
 import 'package:commet/client/timeline.dart';
@@ -10,7 +9,7 @@ class TimelineViewer extends StatefulWidget {
   ///Child scrollable widget.
   final Timeline timeline;
 
-  TimelineViewer({required this.timeline, Key? key}) : super(key: key);
+  const TimelineViewer({required this.timeline, Key? key}) : super(key: key);
 
   @override
   State<TimelineViewer> createState() => TimelineViewerState();
@@ -19,7 +18,7 @@ class TimelineViewer extends StatefulWidget {
 class TimelineViewerState extends State<TimelineViewer> {
   bool attachedToBottom = true;
   final ScrollController controller = ScrollController();
-  final ScrollPhysics physics = BouncingScrollPhysics();
+  final ScrollPhysics physics = const BouncingScrollPhysics();
   late StreamSubscription eventAdded;
   late StreamSubscription eventChanged;
   late StreamSubscription eventRemoved;
@@ -33,23 +32,20 @@ class TimelineViewerState extends State<TimelineViewer> {
   int hoveredEvent = -1;
 
   void animateAndSnapToBottom() {
-    if (toBeDisposed) {
-      print("Cancelling animation about to be disposed");
-      return;
-    }
+    if (toBeDisposed) return;
 
     controller.position.hold(() {});
 
-    TimelineEvent? lastEvent = split.recent.length > 0 ? split.recent[0] : null;
+    TimelineEvent? lastEvent = split.recent.isNotEmpty ? split.recent[0] : null;
 
     animatingToBottom = true;
 
     controller
         .animateTo(controller.position.maxScrollExtent,
-            duration: Duration(milliseconds: 500), curve: Curves.easeOutExpo)
+            duration: const Duration(milliseconds: 500), curve: Curves.easeOutExpo)
         .then((value) {
-      TimelineEvent? latest = split.recent.length > 0 ? split.recent[0] : null;
-      if (split.recent[0] == lastEvent) {
+      TimelineEvent? latest = split.recent.isNotEmpty ? split.recent[0] : null;
+      if (latest == lastEvent) {
         controller.jumpTo(controller.position.maxScrollExtent);
         animatingToBottom = false;
       }
@@ -59,10 +55,7 @@ class TimelineViewerState extends State<TimelineViewer> {
   bool historyLoading = false;
   void loadMore() async {
     if (historyLoading) return;
-    print("LOADING MORE");
-
     if (!split.isMoreHistoryAvailable()) {
-      print("asking timeline to load more history");
       historyLoading = true;
       await widget.timeline.loadMoreHistory();
       historyLoading = false;
@@ -81,7 +74,6 @@ class TimelineViewerState extends State<TimelineViewer> {
   }
 
   void prepareForDisposal() {
-    print("Preparing for disposal");
     toBeDisposed = true;
     controller.position.hold(() {});
   }
@@ -93,7 +85,6 @@ class TimelineViewerState extends State<TimelineViewer> {
   }
 
   void handleScrolling() {
-    print(controller.offset - controller.position.minScrollExtent);
     if (controller.offset < controller.position.minScrollExtent + 200) {
       loadMore();
     }
@@ -103,9 +94,6 @@ class TimelineViewerState extends State<TimelineViewer> {
   void initState() {
     super.initState();
     split = SplitTimeline(widget.timeline, chunkSize: 15);
-    print("Split Timeline:");
-    print(split.recent.length);
-    print(split.historical.length);
 
     controller.addListener(() {
       handleScrolling();
@@ -146,12 +134,12 @@ class TimelineViewerState extends State<TimelineViewer> {
       slivers: <Widget>[
         SliverList(
             delegate: SliverChildBuilderDelegate((context, index) {
-          int actualIndex = split.getTimelineIndex(split.getHistoryDisplayIndex(index), SplitTimelinePart.Historical);
+          int actualIndex = split.getTimelineIndex(split.getHistoryDisplayIndex(index), SplitTimelinePart.historical);
 
           return TimelineEventView(
             event: split.historical[split.getHistoryDisplayIndex(index)],
             debugInfo:
-                "Split Part: ${split.whichList(actualIndex)} history index: ${index}, actual index: ${actualIndex}, actual index id: ${widget.timeline.events[actualIndex].eventId}",
+                "Split Part: ${split.whichList(actualIndex)} history index: $index, actual index: $actualIndex, actual index id: ${widget.timeline.events[actualIndex].eventId}",
             onDelete: () {
               widget.timeline.deleteEventByIndex(index);
             },
@@ -160,13 +148,13 @@ class TimelineViewerState extends State<TimelineViewer> {
         SliverList(
             key: newEventsListKey,
             delegate: SliverChildBuilderDelegate((context, index) {
-              int actualIndex = split.getTimelineIndex(split.getRecentDisplayIndex(index), SplitTimelinePart.Recent);
+              int actualIndex = split.getTimelineIndex(split.getRecentDisplayIndex(index), SplitTimelinePart.recent);
               return TimelineEventView(
                 event: split.recent[split.getRecentDisplayIndex(index)],
                 debugInfo:
-                    "Split Part: ${split.whichList(actualIndex)} history index: ${index}, actual index: ${actualIndex}, actual index id: ${widget.timeline.events[actualIndex].eventId}",
+                    "Split Part: ${split.whichList(actualIndex)} history index: $index, actual index: $actualIndex, actual index id: ${widget.timeline.events[actualIndex].eventId}",
                 onDelete: () {
-                  widget.timeline.deleteEventByIndex(split.getTimelineIndex(index, SplitTimelinePart.Recent));
+                  widget.timeline.deleteEventByIndex(split.getTimelineIndex(index, SplitTimelinePart.recent));
                 },
               );
             }, childCount: split.recent.length)),

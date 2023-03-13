@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:math';
 
 import 'package:commet/client/client.dart';
@@ -20,11 +19,6 @@ class SimulatedSpace extends Space {
     var placeholderImageIndex = Random().nextInt(images.length);
 
     avatar = AssetImage(images[placeholderImageIndex]);
-  }
-
-  @override
-  void onRoomReorderedCallback(int oldIndex, int newIndex) {
-    print("REORDERED IN SIMULATED SPACE");
   }
 
   static const _chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';

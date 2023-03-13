@@ -1,4 +1,3 @@
-import 'dart:async';
 
 import 'package:commet/client/timeline.dart';
 import 'package:commet/config/app_config.dart';
@@ -50,7 +49,7 @@ class _MessageState extends State<Message> {
                     image: widget.event.sender.avatar,
                   ),
                 if (!widget.showSender)
-                  Avatar.medium(
+                  const Avatar.medium(
                     image: null,
                     isPadding: true,
                   ),
@@ -112,12 +111,12 @@ class _MessageState extends State<Message> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Seperator(),
+          const Seperator(),
           Wrap(
             alignment: WrapAlignment.start,
             runAlignment: WrapAlignment.start,
             children:
-                info.map((e) => Padding(padding: EdgeInsets.fromLTRB(4, 0, 4, 0), child: tiamat.Text.tiny(e))).toList(),
+                info.map((e) => Padding(padding: const EdgeInsets.fromLTRB(4, 0, 4, 0), child: tiamat.Text.tiny(e))).toList(),
           ),
         ],
       ),

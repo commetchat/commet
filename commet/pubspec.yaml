@@ -27,6 +27,9 @@ dependencies:
   tiamat:
     path: tiamat/tiamat/
   scaled_app: ^1.0.0
+  crypto: ^3.0.2
+  path: ^1.8.2
+  path_provider: ^2.0.13
 
 dev_dependencies:
   flutter_test:

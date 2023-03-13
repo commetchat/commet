@@ -1,12 +1,11 @@
 import 'package:commet/client/client.dart';
-import 'package:commet/client/timeline.dart';
 import 'package:flutter/material.dart';
 
 abstract class Room {
   late String identifier;
   late Client client;
   final Key key = UniqueKey();
-  Timeline? timeline = null;
+  Timeline? timeline;
   late ImageProvider? avatar;
   late List<Peer> members;
 

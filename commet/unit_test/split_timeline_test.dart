@@ -1,11 +1,7 @@
-import 'dart:math';
-
 import 'package:commet/client/client.dart';
 import 'package:commet/client/simulated/simulated_client.dart';
 import 'package:commet/client/simulated/simulated_room.dart';
-import 'package:commet/client/simulated/simulated_timeline.dart';
 import 'package:commet/client/split_timeline.dart';
-import 'package:commet/client/timeline.dart';
 import 'package:test/test.dart';
 
 void main() async {
@@ -27,19 +23,19 @@ void main() async {
     int chunkSize = 20;
     SplitTimeline split = SplitTimeline(room.timeline!, chunkSize: chunkSize);
 
-    expect(split.whichList(0), SplitTimelinePart.Recent);
-    expect(split.whichList(chunkSize - 1), SplitTimelinePart.Recent);
-    expect(split.whichList(chunkSize), SplitTimelinePart.Historical);
+    expect(split.whichList(0), SplitTimelinePart.recent);
+    expect(split.whichList(chunkSize - 1), SplitTimelinePart.recent);
+    expect(split.whichList(chunkSize), SplitTimelinePart.historical);
 
     int notYetLoadedIndex = (chunkSize * 2) + 5;
 
-    expect(split.whichList(notYetLoadedIndex), SplitTimelinePart.None);
+    expect(split.whichList(notYetLoadedIndex), SplitTimelinePart.none);
     expect(split.isMoreHistoryAvailable(), true);
 
     split.loadMoreHistory();
 
-    expect(split.whichList(notYetLoadedIndex), SplitTimelinePart.Historical);
-    expect(split.whichList(room.timeline!.events.length + 20), SplitTimelinePart.None);
+    expect(split.whichList(notYetLoadedIndex), SplitTimelinePart.historical);
+    expect(split.whichList(room.timeline!.events.length + 20), SplitTimelinePart.none);
   });
 
   test("SplitTimeline: Indexing", () async {
@@ -51,22 +47,22 @@ void main() async {
 
     void ensureIndices(int index) {
       switch (split.whichList(index)) {
-        case SplitTimelinePart.Historical:
+        case SplitTimelinePart.historical:
           int result = split.getHistoryIndex(index);
           expect(room.timeline!.events[index], split.historical[result]);
 
-          int reverse = split.getTimelineIndex(result, SplitTimelinePart.Historical);
+          int reverse = split.getTimelineIndex(result, SplitTimelinePart.historical);
           expect(index, reverse);
 
           break;
-        case SplitTimelinePart.Recent:
+        case SplitTimelinePart.recent:
           int result = split.getRecentIndex(index);
           expect(room.timeline!.events[index], split.recent[result]);
 
-          int reverse = split.getTimelineIndex(result, SplitTimelinePart.Recent);
+          int reverse = split.getTimelineIndex(result, SplitTimelinePart.recent);
           expect(index, reverse);
           break;
-        case SplitTimelinePart.None:
+        case SplitTimelinePart.none:
           break;
       }
     }
@@ -88,8 +84,8 @@ void main() async {
 
     int chunkSize = 20;
     SplitTimeline split = SplitTimeline(room.timeline!, chunkSize: chunkSize);
-    expect(split.whichListToInsert(0), SplitTimelinePart.Recent);
-    expect(split.whichListToInsert(chunkSize), SplitTimelinePart.Historical);
+    expect(split.whichListToInsert(0), SplitTimelinePart.recent);
+    expect(split.whichListToInsert(chunkSize), SplitTimelinePart.historical);
   });
 
   test("SplitTimeline: Insertion in to recent", () async {

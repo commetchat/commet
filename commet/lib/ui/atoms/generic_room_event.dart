@@ -22,7 +22,7 @@ class GenericRoomEvent extends StatelessWidget {
             padding: EdgeInsets.fromLTRB(s(20), s(8), s(20), s(8)),
             child: Row(
               children: [
-                Avatar.medium(image: null, isPadding: true),
+                const Avatar.medium(image: null, isPadding: true),
                 Icon(icon),
                 Padding(
                   padding: EdgeInsets.fromLTRB(s(10), 0, 0, 0),

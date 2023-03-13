@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:ui';
 import 'dart:ui' as ui;
 
@@ -10,9 +9,6 @@ extension GlobalKeyExtension on GlobalKey {
   Rect? get globalPaintBounds {
     final renderObject = currentContext?.findRenderObject();
     final translation = renderObject?.getTransformTo(null).getTranslation();
-
-    RenderBox? box = currentContext?.findRenderObject() as RenderBox?;
-    Offset? position = box?.localToGlobal(Offset.zero);
 
     if (translation != null && renderObject?.paintBounds != null) {
       final offset = Offset(translation.x, translation.y);

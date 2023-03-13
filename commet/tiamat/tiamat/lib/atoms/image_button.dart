@@ -3,11 +3,8 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 import 'package:flutter/material.dart' as m;
 import './text.dart' as tiamat;
 
-import '../../config/style/theme_extensions.dart';
-import 'circle_button.dart';
-
 @WidgetbookUseCase(name: 'Default', type: ImageButton)
-Widget wb_imageButton(BuildContext context) {
+Widget wbimageButton(BuildContext context) {
   return Center(
     child: Column(
       mainAxisSize: MainAxisSize.min,
@@ -17,7 +14,7 @@ Widget wb_imageButton(BuildContext context) {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
-            children: [
+            children: const [
               SizedBox(
                 width: 128,
                 height: 128,
@@ -27,7 +24,7 @@ Widget wb_imageButton(BuildContext context) {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: EdgeInsets.all(8.0),
                 child: tiamat.Text.body("128px"),
               )
             ],
@@ -36,7 +33,7 @@ Widget wb_imageButton(BuildContext context) {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
-            children: [
+            children: const [
               SizedBox(
                 width: 64,
                 height: 64,
@@ -46,7 +43,7 @@ Widget wb_imageButton(BuildContext context) {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: EdgeInsets.all(8.0),
                 child: tiamat.Text.body("64px"),
               )
             ],
@@ -58,7 +55,7 @@ Widget wb_imageButton(BuildContext context) {
 }
 
 @WidgetbookUseCase(name: 'Icon', type: ImageButton)
-Widget wb_imageButtonIcon(BuildContext context) {
+Widget wbimageButtonIcon(BuildContext context) {
   return Center(
     child: Column(
       mainAxisSize: MainAxisSize.min,
@@ -71,7 +68,7 @@ Widget wb_imageButtonIcon(BuildContext context) {
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
+                children: const [
                   SizedBox(
                     width: 128,
                     height: 128,
@@ -90,8 +87,8 @@ Widget wb_imageButtonIcon(BuildContext context) {
                   ),
                 ],
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
+              const Padding(
+                padding: EdgeInsets.all(8.0),
                 child: tiamat.Text.body("128px"),
               )
             ],
@@ -100,7 +97,7 @@ Widget wb_imageButtonIcon(BuildContext context) {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
-            children: [
+            children: const [
               SizedBox(
                 width: 64,
                 height: 64,
@@ -110,7 +107,7 @@ Widget wb_imageButtonIcon(BuildContext context) {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: EdgeInsets.all(8.0),
                 child: tiamat.Text.body("64px"),
               )
             ],
@@ -122,7 +119,7 @@ Widget wb_imageButtonIcon(BuildContext context) {
 }
 
 @WidgetbookUseCase(name: 'Icon with Shadow', type: ImageButton)
-Widget wb_imageButtonIconWithShadow(BuildContext context) {
+Widget wbimageButtonIconWithShadow(BuildContext context) {
   return Center(
     child: Column(
       mainAxisSize: MainAxisSize.min,
@@ -135,7 +132,7 @@ Widget wb_imageButtonIconWithShadow(BuildContext context) {
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
+                children: const [
                   SizedBox(
                     width: 128,
                     height: 128,
@@ -156,8 +153,8 @@ Widget wb_imageButtonIconWithShadow(BuildContext context) {
                   ),
                 ],
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
+              const Padding(
+                padding: EdgeInsets.all(8.0),
                 child: tiamat.Text.body("128px"),
               )
             ],
@@ -166,7 +163,7 @@ Widget wb_imageButtonIconWithShadow(BuildContext context) {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
-            children: [
+            children: const [
               SizedBox(
                 width: 64,
                 height: 64,
@@ -177,7 +174,7 @@ Widget wb_imageButtonIconWithShadow(BuildContext context) {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: EdgeInsets.all(8.0),
                 child: tiamat.Text.body("64px"),
               )
             ],
@@ -189,12 +186,12 @@ Widget wb_imageButtonIconWithShadow(BuildContext context) {
 }
 
 class ImageButton extends StatefulWidget {
-  ImageButton({super.key, this.onTap, this.image, this.doShadow = false, required this.size, this.icon});
-  void Function()? onTap;
-  ImageProvider? image;
-  double size;
-  IconData? icon;
-  bool doShadow;
+  const ImageButton({super.key, this.onTap, this.image, this.doShadow = false, required this.size, this.icon});
+  final void Function()? onTap;
+  final ImageProvider? image;
+  final double size;
+  final IconData? icon;
+  final bool doShadow;
 
   @override
   State<ImageButton> createState() => _ImageButtonState();

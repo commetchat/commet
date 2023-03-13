@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 @WidgetbookUseCase(name: 'Default', type: Button)
-Widget wb_Button(BuildContext context) {
+Widget wbButton(BuildContext context) {
   return Center(
     child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
-      children: [
+      children: const [
         SizedBox(
           width: 200,
           height: 50,
@@ -44,33 +42,33 @@ Widget wb_Button(BuildContext context) {
 }
 
 enum ButtonType {
-  Primary,
-  Secondary,
-  Success,
-  Danger,
-  Critical,
+  primary,
+  secondary,
+  success,
+  danger,
+  critical,
 }
 
 class Button extends StatelessWidget {
-  const Button({super.key, this.text = "Hello, World!", this.onTap, this.type = ButtonType.Primary});
+  const Button({super.key, this.text = "Hello, World!", this.onTap, this.type = ButtonType.primary});
   final ButtonType type;
   final String text;
   final Function? onTap;
 
   const Button.secondary({Key? key, this.text = "Hello, World!", this.onTap})
-      : type = ButtonType.Secondary,
+      : type = ButtonType.secondary,
         super(key: key);
 
   const Button.success({Key? key, this.text = "Hello, World!", this.onTap})
-      : type = ButtonType.Success,
+      : type = ButtonType.success,
         super(key: key);
 
   const Button.danger({Key? key, this.text = "Hello, World!", this.onTap})
-      : type = ButtonType.Danger,
+      : type = ButtonType.danger,
         super(key: key);
 
   const Button.critical({Key? key, this.text = "Hello, World!", this.onTap})
-      : type = ButtonType.Critical,
+      : type = ButtonType.critical,
         super(key: key);
 
   @override
@@ -78,29 +76,29 @@ class Button extends StatelessWidget {
     ButtonStyle style;
 
     switch (type) {
-      case ButtonType.Primary:
+      case ButtonType.primary:
         style = Theme.of(context).elevatedButtonTheme.style!;
         break;
-      case ButtonType.Secondary:
+      case ButtonType.secondary:
         style = Theme.of(context)
             .elevatedButtonTheme
             .style!
             .copyWith(backgroundColor: MaterialStatePropertyAll(Theme.of(context).extension<ExtraColors>()!.highlight));
         break;
-      case ButtonType.Success:
+      case ButtonType.success:
         style = Theme.of(context)
             .elevatedButtonTheme
             .style!
             .copyWith(backgroundColor: MaterialStatePropertyAll(Colors.green.shade400));
 
         break;
-      case ButtonType.Danger:
+      case ButtonType.danger:
         style = Theme.of(context).elevatedButtonTheme.style!.copyWith(
-            backgroundColor: MaterialStatePropertyAll(Colors.transparent),
-            shadowColor: MaterialStatePropertyAll(Colors.transparent),
+            backgroundColor: const MaterialStatePropertyAll(Colors.transparent),
+            shadowColor: const MaterialStatePropertyAll(Colors.transparent),
             side: MaterialStatePropertyAll(BorderSide(color: Theme.of(context).colorScheme.error, width: 1)));
         break;
-      case ButtonType.Critical:
+      case ButtonType.critical:
         style = Theme.of(context)
             .elevatedButtonTheme
             .style!
@@ -115,7 +113,7 @@ class Button extends StatelessWidget {
         },
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: tiamat.Text.label(text!),
+          child: tiamat.Text.label(text),
         ));
   }
 }

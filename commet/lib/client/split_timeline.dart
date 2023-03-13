@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:commet/client/timeline.dart';
 
-enum SplitTimelinePart { Historical, Recent, None }
+enum SplitTimelinePart { historical, recent, none }
 
 class SplitTimeline {
   Timeline timeline;
@@ -13,7 +13,7 @@ class SplitTimeline {
   SplitTimeline(this.timeline, {this.chunkSize = 30}) {
     int recentEndIndex = min(timeline.events.length - 1, chunkSize);
     int historyEndIndex = min(timeline.events.length - 1, recentEndIndex + chunkSize);
-    if (timeline.events.length == 0) {
+    if (timeline.events.isEmpty) {
       recentEndIndex = 0;
       historyEndIndex = 0;
     }
@@ -31,14 +31,14 @@ class SplitTimeline {
 
   SplitTimelinePart whichList(int index) {
     if (index < recent.length) {
-      return SplitTimelinePart.Recent;
+      return SplitTimelinePart.recent;
     }
 
     if (index < recent.length + historical.length) {
-      return SplitTimelinePart.Historical;
+      return SplitTimelinePart.historical;
     }
 
-    return SplitTimelinePart.None;
+    return SplitTimelinePart.none;
   }
 
   bool isMoreHistoryAvailable() {
@@ -48,8 +48,6 @@ class SplitTimeline {
   void loadMoreHistory() {
     int startIndex = recent.length + historical.length;
     int endIndex = min(startIndex + chunkSize, timeline.events.length);
-
-    print("Loading history from ${startIndex} -> ${endIndex}");
 
     List<TimelineEvent> eventsToAdd = timeline.events.sublist(startIndex, endIndex);
     historical.addAll(eventsToAdd);
@@ -79,36 +77,35 @@ class SplitTimeline {
 
   int getTimelineIndex(int splitIndex, SplitTimelinePart part) {
     switch (part) {
-      case SplitTimelinePart.Historical:
+      case SplitTimelinePart.historical:
         return splitIndex + recent.length;
-      case SplitTimelinePart.Recent:
+      case SplitTimelinePart.recent:
         return splitIndex;
-      case SplitTimelinePart.None:
+      case SplitTimelinePart.none:
         return -1;
     }
   }
 
   SplitTimelinePart whichListToInsert(int index) {
     if (index < recent.length) {
-      return SplitTimelinePart.Recent;
+      return SplitTimelinePart.recent;
     }
 
     if (index < recent.length + historical.length + 1) {
-      return SplitTimelinePart.Historical;
+      return SplitTimelinePart.historical;
     }
 
     throw Exception("Trying to insert in to list which is not sized appropriately");
   }
 
   void onEventAdded(int timelineIndex) {
-    print("SplitTimeline event added: ${timelineIndex}");
     var part = whichListToInsert(timelineIndex);
-    print("Inserting in to: ${part}");
+
     switch (part) {
-      case SplitTimelinePart.Historical:
+      case SplitTimelinePart.historical:
         historical.insert(getHistoryIndex(timelineIndex), timeline.events[timelineIndex]);
         break;
-      case SplitTimelinePart.Recent:
+      case SplitTimelinePart.recent:
         recent.insert(getRecentIndex(timelineIndex), timeline.events[timelineIndex]);
         break;
       default:
@@ -119,13 +116,13 @@ class SplitTimeline {
 
   void onEventRemoved(int timelineIndex) {
     switch (whichList(timelineIndex)) {
-      case SplitTimelinePart.Historical:
+      case SplitTimelinePart.historical:
         historical.removeAt(getHistoryIndex(timelineIndex));
         break;
-      case SplitTimelinePart.Recent:
+      case SplitTimelinePart.recent:
         recent.removeAt(getRecentIndex(timelineIndex));
         break;
-      case SplitTimelinePart.None:
+      case SplitTimelinePart.none:
         break;
     }
   }

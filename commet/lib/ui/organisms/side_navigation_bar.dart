@@ -1,11 +1,6 @@
-import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
-import 'package:commet/config/app_config.dart';
 import 'package:commet/ui/organisms/add_space_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:tiamat/tiamat.dart';
 
@@ -28,7 +23,7 @@ class SideNavigationBar extends StatefulWidget {
 class _SideNavigationBarState extends State<SideNavigationBar> {
   late ClientManager _clientManager;
   late GlobalKey<TimelineViewerState> timelineKey = GlobalKey<TimelineViewerState>();
-  late Map<String, GlobalKey<TimelineViewerState>> timelines = Map();
+  late Map<String, GlobalKey<TimelineViewerState>> timelines = {};
 
   @override
   void initState() {
@@ -66,7 +61,7 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                   size: 70,
                   icon: Icons.add,
                   onTap: () {
-                    PopupDialog.Show(context, AddSpaceDialog(), title: "Add Space");
+                    PopupDialog.show(context, const AddSpaceDialog(), title: "Add Space");
                   },
                 ),
               ),
@@ -77,7 +72,7 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                   size: 70,
                   icon: Icons.settings,
                   onTap: () {
-                    NavigationUtils.navigateTo(context, SettingsPage());
+                    NavigationUtils.navigateTo(context, const SettingsPage());
                   },
                 ),
               ),

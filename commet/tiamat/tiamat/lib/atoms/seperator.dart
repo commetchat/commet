@@ -5,14 +5,14 @@ import 'package:tiamat/atoms/text.dart' as tiamat;
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 
 @WidgetbookUseCase(name: 'Default', type: Seperator)
-Widget wb_seperatorUseCase(BuildContext context) {
+Widget wbseperatorUseCase(BuildContext context) {
   return Align(
     alignment: Alignment.center,
     child: SizedBox(
       width: 300,
       height: 500,
       child: Column(
-        children: [
+        children: const [
           tiamat.Text.body(
             "Hello!",
           ),
@@ -31,7 +31,7 @@ class Seperator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return const Padding(
       padding: EdgeInsets.all(8.0),
       child: material.Divider(
         height: 1,

@@ -1,23 +1,21 @@
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter/material.dart' as material;
 import 'package:flutter/widgets.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 
 @WidgetbookUseCase(name: 'Default', type: Slider)
-Widget wb_slider(BuildContext context) {
-  return Center(
+Widget wbslider(BuildContext context) {
+  return const Center(
       child: material.Padding(
-    padding: const EdgeInsets.all(8.0),
+    padding: EdgeInsets.all(8.0),
     child: Slider(),
   ));
 }
 
 @WidgetbookUseCase(name: 'Divided', type: Slider)
-Widget wb_sliderDivided(BuildContext context) {
-  return Center(
+Widget wbsliderDivided(BuildContext context) {
+  return const Center(
       child: material.Padding(
-    padding: const EdgeInsets.all(8.0),
+    padding: EdgeInsets.all(8.0),
     child: Slider(
       divisions: 5,
     ),

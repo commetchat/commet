@@ -1,8 +1,5 @@
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:flutter/widgets.dart';
 import '../../generated/l10n.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
@@ -34,13 +31,13 @@ class _DragDropFileTargetState extends State<DragDropFileTarget> {
           child: Stack(
             children: [
               AnimatedOpacity(
-                duration: Duration(milliseconds: 500),
+                duration: const Duration(milliseconds: 500),
                 curve: Curves.easeOutExpo,
                 opacity: isFileHovered ? 0.5 : 0,
                 child: Container(color: Colors.black),
               ),
               AnimatedOpacity(
-                duration: Duration(milliseconds: 500),
+                duration: const Duration(milliseconds: 500),
                 curve: Curves.easeOutExpo,
                 opacity: isFileHovered ? 1 : 0,
                 child:

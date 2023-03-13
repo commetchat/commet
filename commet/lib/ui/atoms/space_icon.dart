@@ -5,11 +5,11 @@ import 'package:tiamat/tiamat.dart';
 import '../../config/app_config.dart';
 
 class SpaceIcon extends StatefulWidget {
-  SpaceIcon(this.space, {super.key, this.width = 44, this.onTap, this.showUser = false});
+  const SpaceIcon(this.space, {super.key, this.width = 44, this.onTap, this.showUser = false});
   final Space space;
-  double width;
-  void Function()? onTap;
-  bool showUser;
+  final double width;
+  final void Function()? onTap;
+  final bool showUser;
 
   @override
   State<SpaceIcon> createState() => _SpaceIconState();
@@ -19,9 +19,10 @@ class _SpaceIconState extends State<SpaceIcon> {
   @override
   void initState() {
     widget.space.onUpdate.stream.listen((event) {
-      print("Space State Updated");
       setState(() {});
     });
+
+    super.initState();
   }
 
   @override
@@ -47,7 +48,7 @@ class _SpaceIconState extends State<SpaceIcon> {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(s(20)),
-            boxShadow: [BoxShadow(color: Colors.black, blurRadius: 4)],
+            boxShadow: const [BoxShadow(color: Colors.black, blurRadius: 4)],
             image: DecorationImage(image: widget.space.client.user!.avatar!, fit: BoxFit.fitHeight),
             //border: Border.all(color: Colors.white, width: 1)),
           ),
