@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class ThemeChanger extends StatefulWidget {
   final ThemeData initialTheme;
-  final MaterialApp Function(BuildContext context, ThemeData theme) materialAppBuilder;
+  final Widget Function(BuildContext context, ThemeData theme) materialAppBuilder;
 
   const ThemeChanger({Key? key, required this.initialTheme, required this.materialAppBuilder}) : super(key: key);
 

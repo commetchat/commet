@@ -1,6 +1,10 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:commet/client/client_manager.dart';
+import 'package:commet/config/build_config.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+
 import 'package:path/path.dart' as p;
 
 import 'package:crypto/crypto.dart';
@@ -10,7 +14,9 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/matrix/matrix_peer.dart';
 import 'package:commet/utils/rng.dart';
 import 'package:matrix/matrix.dart' as matrix;
+import 'package:matrix/encryption.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:tiamat/tiamat.dart';
 
 import 'matrix_room.dart';
 import 'matrix_space.dart';
@@ -52,6 +58,9 @@ class MatrixClient extends Client {
     }
   }
 
+  static matrix.NativeImplementations get nativeImplementations =>
+      BuildConfig.WEB ? const matrix.NativeImplementationsDummy() : matrix.NativeImplementationsIsolate(compute);
+
   @override
   Future<void> init() async {
     if (!_matrixClient.isLogged()) {
@@ -63,6 +72,11 @@ class MatrixClient extends Client {
 
     _updateRoomslist();
     _updateSpacesList();
+
+    print("Registering key verification");
+    _matrixClient.onKeyVerificationRequest.stream.listen((event) {
+      print("Key verification requested");
+    });
   }
 
   @override
@@ -71,6 +85,10 @@ class MatrixClient extends Client {
   matrix.Client _createMatrixClient(String databasePath) {
     return matrix.Client(
       'Commet',
+      verificationMethods: {KeyVerificationMethod.emoji, KeyVerificationMethod.numbers},
+      supportedLoginTypes: {matrix.AuthenticationTypes.password},
+      nativeImplementations: nativeImplementations,
+      logLevel: BuildConfig.RELEASE ? matrix.Level.warning : matrix.Level.verbose,
       databaseBuilder: (_) async {
         final db = matrix.HiveCollectionsDatabase('chat.commet.app', databasePath);
         await db.open();
@@ -96,11 +114,14 @@ class MatrixClient extends Client {
         final dir = await getDBPathWithName(name);
 
         _matrixClient = _createMatrixClient(dir);
+
         await _matrixClient.checkHomeserver(uri);
 
         try {
           var result = await _matrixClient.login(matrix.LoginType.mLoginPassword,
-              password: password, identifier: matrix.AuthenticationUserIdentifier(user: userIdentifier));
+              initialDeviceDisplayName: BuildConfig.appName,
+              password: password,
+              identifier: matrix.AuthenticationUserIdentifier(user: userIdentifier));
           if (result.accessToken != null) {
             loginResult = LoginResult.success;
           } else {

@@ -21,8 +21,8 @@ abstract class Room {
     client = client;
     members = List.empty(growable: true);
     avatar = null;
-    this.isDirectMessage = false;
-    this.directMessagePartnerID = null;
+    isDirectMessage = false;
+    directMessagePartnerID = null;
   }
 
   @override

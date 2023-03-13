@@ -24,8 +24,8 @@ class RoomHeader extends StatelessWidget {
               SizedBox(
                   width: s(40),
                   height: s(40),
-                  child: const Icon(
-                    m.Icons.tag,
+                  child: Icon(
+                    room.isDirectMessage ? m.Icons.alternate_email_rounded : m.Icons.tag,
                   )),
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
