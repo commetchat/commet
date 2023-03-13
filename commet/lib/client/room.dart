@@ -8,8 +8,9 @@ abstract class Room {
   Timeline? timeline;
   late ImageProvider? avatar;
   late List<Peer> members;
-
   late String displayName;
+  late bool isDirectMessage;
+  late String? directMessagePartnerID;
 
   int notificationCount = 0;
 
@@ -19,6 +20,9 @@ abstract class Room {
     identifier = identifier;
     client = client;
     members = List.empty(growable: true);
+    avatar = null;
+    this.isDirectMessage = false;
+    this.directMessagePartnerID = null;
   }
 
   @override

@@ -19,6 +19,12 @@ class MatrixRoom extends Room {
       avatar = null;
     }
 
+    isDirectMessage = _matrixRoom.isDirectChat;
+
+    if (isDirectMessage) {
+      directMessagePartnerID = _matrixRoom.directChatMatrixID!;
+    }
+
     displayName = room.getLocalizedDisplayname();
     notificationCount = room.notificationCount;
 
@@ -29,6 +35,8 @@ class MatrixRoom extends Room {
         this.client.addPeer(MatrixPeer(matrixClient, user.id));
       }
     }
+
+    members = List.from(users.map((e) => this.client.getPeer(e.id)), growable: true);
 
     timeline = MatrixTimeline(client, this, room);
   }

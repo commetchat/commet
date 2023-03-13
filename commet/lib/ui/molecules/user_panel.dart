@@ -1,13 +1,16 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/config/app_config.dart';
-
+import 'package:flutter/material.dart' as material;
 import 'package:flutter/widgets.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class UserPanel extends StatefulWidget {
-  const UserPanel(this.user, {super.key, this.onClicked});
-  final Peer user;
+  const UserPanel({super.key, this.avatar, required this.displayName, this.color, this.detail, this.onClicked});
+  final ImageProvider? avatar;
+  final String displayName;
+  final Color? color;
+  final String? detail;
   final Function? onClicked;
 
   @override
@@ -17,33 +20,43 @@ class UserPanel extends StatefulWidget {
 class _UserPanelState extends State<UserPanel> {
   @override
   Widget build(BuildContext context) {
-    return Tile.low2(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(8, 3, 0, 3),
-        child: Row(
-          children: [
-            Avatar(
-              image: widget.user.avatar!,
-              radius: 20,
-            ),
-            Padding(
-              padding: EdgeInsets.all(s(8)),
-              child: Container(
-                alignment: Alignment.centerLeft,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    tiamat.Text.name(
-                      widget.user.displayName,
-                      color: widget.user.color,
-                    ),
-                    tiamat.Text.tiny(widget.user.detail),
-                  ],
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(5),
+      child: material.Material(
+        color: material.Colors.transparent,
+        child: material.InkWell(
+          splashColor: material.Theme.of(context).highlightColor,
+          onTap: () {
+            widget.onClicked?.call();
+          },
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(8, 3, 0, 3),
+            child: Row(
+              children: [
+                Avatar.medium(
+                  image: widget.avatar,
+                  placeholderText: widget.displayName,
                 ),
-              ),
-            )
-          ],
+                Padding(
+                  padding: EdgeInsets.all(s(8)),
+                  child: Container(
+                    alignment: Alignment.centerLeft,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        tiamat.Text.name(
+                          widget.displayName,
+                          color: widget.color,
+                        ),
+                        if (widget.detail != null) tiamat.Text.tiny(widget.detail!),
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
         ),
       ),
     );

@@ -36,6 +36,10 @@ abstract class Client {
   final Map<String, Space> _spaces = {};
   final Map<String, Peer> _peers = {};
 
+  //Key is user ID
+  final Map<String, Room> _directMessages = {};
+
+  List<Room> directMessages = List.empty(growable: true);
   List<Room> rooms = List.empty(growable: true);
   List<Space> spaces = List.empty(growable: true);
   List<Peer> peers = List.empty(growable: true);
@@ -75,6 +79,14 @@ abstract class Client {
       _rooms[room.identifier] = room;
       rooms.add(room);
       int index = rooms.length - 1;
+
+      if (room.isDirectMessage) {
+        if (!_directMessages.containsKey(room.directMessagePartnerID!)) {
+          _directMessages[room.directMessagePartnerID!] = room;
+          directMessages.add(room);
+        }
+      }
+
       onRoomAdded.add(index);
     }
   }

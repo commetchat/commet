@@ -10,6 +10,7 @@ class MatrixPeer extends Peer {
   MatrixPeer(matrix.Client matrixClient, String userId) {
     _matrixClient = matrixClient;
     identifier = userId;
+    displayName = userId;
     init();
   }
 

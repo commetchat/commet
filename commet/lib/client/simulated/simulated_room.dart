@@ -15,16 +15,24 @@ class SimulatedRoom extends Room {
   late Peer bob = SimulatedPeer(
       client, "bob@commet.chat", "bob", const AssetImage("assets/images/placeholder/generic/checker_orange.png"));
 
-  SimulatedRoom(displayName, client) : super(RandomUtils.getRandomString(20), client) {
+  SimulatedRoom(displayName, client, {bool isDm = false}) : super(RandomUtils.getRandomString(20), client) {
     identifier = RandomUtils.getRandomString(20);
     notificationCount = 1;
-    this.displayName = displayName;
+
+    if (isDm) {
+      isDirectMessage = true;
+      directMessagePartnerID = bob.identifier;
+      members.add(bob);
+      this.displayName = bob.displayName;
+    } else {
+      members.add(alice);
+      members.add(bob);
+      members.add((client as Client).user!);
+      this.displayName = displayName;
+    }
+
     timeline = SimulatedTimeline();
     addMessage();
-
-    members.add(alice);
-    members.add(bob);
-    members.add((client as Client).user!);
   }
 
   @override
@@ -43,6 +51,8 @@ class SimulatedRoom extends Room {
 
   TimelineEvent generateRandomEvent() {
     Peer sender = Random().nextDouble() > 0.5 ? alice : bob;
+
+    if (isDirectMessage) sender = bob;
     TimelineEvent e = TimelineEvent();
     e.eventId = RandomUtils.getRandomString(20);
     e.status = TimelineEventStatus.synced;

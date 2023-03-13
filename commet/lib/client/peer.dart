@@ -6,7 +6,7 @@ abstract class Peer {
   late String detail;
   late String userName;
   late String displayName;
-  late ImageProvider? avatar;
+  late ImageProvider? avatar = null;
   late Client client;
-  late Color? color;
+  late Color? color = null;
 }

@@ -56,23 +56,26 @@ class SliderState extends State<Slider> {
 
   @override
   Widget build(BuildContext context) {
-    return material.Slider(
-      value: value,
-      min: widget.min,
-      max: widget.max,
-      divisions: widget.divisions,
-      onChanged: (value) {
-        setState(() {
-          this.value = value;
-        });
-        widget.onChanged?.call(value);
-      },
-      onChangeEnd: (value) {
-        widget.onChangeEnd?.call(value);
-      },
-      onChangeStart: (value) {
-        widget.onChangeStart?.call(value);
-      },
+    return material.Material(
+      color: material.Colors.transparent,
+      child: material.Slider(
+        value: value,
+        min: widget.min,
+        max: widget.max,
+        divisions: widget.divisions,
+        onChanged: (value) {
+          setState(() {
+            this.value = value;
+          });
+          widget.onChanged?.call(value);
+        },
+        onChangeEnd: (value) {
+          widget.onChangeEnd?.call(value);
+        },
+        onChangeStart: (value) {
+          widget.onChangeStart?.call(value);
+        },
+      ),
     );
   }
 }

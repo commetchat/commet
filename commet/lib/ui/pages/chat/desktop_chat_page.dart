@@ -3,6 +3,7 @@ import 'package:commet/config/app_config.dart';
 import 'package:commet/ui/atoms/drag_drop_file_target.dart';
 import 'package:commet/ui/atoms/room_header.dart';
 import 'package:commet/ui/atoms/space_header.dart';
+import 'package:commet/ui/molecules/direct_message_list.dart';
 import 'package:commet/ui/molecules/timeline_viewer.dart';
 import 'package:commet/ui/molecules/message_input.dart';
 import 'package:commet/ui/molecules/space_viewer.dart';
@@ -29,6 +30,8 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
   late GlobalKey<TimelineViewerState> timelineKey = GlobalKey<TimelineViewerState>();
   late Map<String, GlobalKey<TimelineViewerState>> timelines = {};
 
+  late bool homePageSelected = false;
+
   @override
   void initState() {
     _clientManager = Provider.of<ClientManager>(context, listen: false);
@@ -46,11 +49,18 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
             SideNavigationBar(
               onSpaceSelected: (index) {
                 setState(() {
+                  homePageSelected = false;
                   selectedSpace = _clientManager.spaces[index];
                 });
               },
+              onHomeSelected: () {
+                setState(() {
+                  homePageSelected = true;
+                });
+              },
             ),
-            if (selectedSpace != null) spaceRoomSelector(),
+            if (homePageSelected) homePageView(),
+            if (!homePageSelected && selectedSpace != null) spaceRoomSelector(),
             if (selectedRoom != null) roomChatView(),
           ],
         ),
@@ -63,6 +73,22 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
             },
           )
       ],
+    );
+  }
+
+  Widget homePageView() {
+    return Tile.low1(
+      child: SizedBox(
+        width: 250,
+        child: DirectMessageList(
+          directMessages: _clientManager.directMessages,
+          onSelected: (index) {
+            setState(() {
+              selectRoom(_clientManager.directMessages[index]);
+            });
+          },
+        ),
+      ),
     );
   }
 
@@ -119,12 +145,22 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
                 selectedSpace!,
                 key: selectedSpace!.key,
                 onRoomInsert: selectedSpace!.onRoomAdded.stream,
-                onRoomSelected: roomSelected,
+                onRoomSelected: (index) {
+                  selectRoom(selectedSpace!.rooms[index]);
+                },
               )),
-              SizedBox(
-                height: s(58),
-                child: UserPanel(
-                  selectedSpace!.client.user!,
+              Tile.low2(
+                child: SizedBox(
+                  height: s(65),
+                  child: Padding(
+                    padding: const EdgeInsets.all(3.0),
+                    child: UserPanel(
+                      displayName: selectedSpace!.client.user!.displayName,
+                      avatar: selectedSpace!.client.user!.avatar,
+                      detail: selectedSpace!.client.user!.detail,
+                      color: selectedSpace!.client.user!.color,
+                    ),
+                  ),
                 ),
               )
             ],
@@ -132,8 +168,7 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
         ));
   }
 
-  void roomSelected(index) {
-    var room = selectedSpace!.rooms[index];
+  void selectRoom(Room room) {
     if (room == selectedRoom) return;
 
     if (!timelines.containsKey(room.identifier)) {

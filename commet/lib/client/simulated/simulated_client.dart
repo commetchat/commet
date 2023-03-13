@@ -48,6 +48,7 @@ class SimulatedClient extends Client {
 
     _updateRoomslist();
     _updateSpacesList();
+    addRoom(SimulatedRoom("DM with Bob", this, isDm: true));
   }
 
   void _updateRoomslist() {

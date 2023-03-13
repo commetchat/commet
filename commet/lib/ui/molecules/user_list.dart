@@ -1,5 +1,5 @@
 import 'package:commet/config/app_config.dart';
-import 'package:commet/ui/atoms/user_card.dart';
+import 'package:commet/ui/molecules/user_panel.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart';
 
@@ -28,15 +28,15 @@ class _PeerListState extends State<PeerList> {
   Widget build(BuildContext context) {
     return Tile.low1(
       child: Padding(
-        padding: EdgeInsets.all(s(12.0)),
+        padding: EdgeInsets.fromLTRB(8, 4, 8, 4),
         child: AnimatedList(
           key: _listKey,
           physics: const BouncingScrollPhysics(),
           initialItemCount: _count,
           itemBuilder: (context, i, animation) => SizeTransition(
               sizeFactor: animation.drive(CurveTween(curve: Curves.easeOutCubic)),
-              child: UserCard(
-                widget.peers[i].displayName,
+              child: UserPanel(
+                displayName: widget.peers[i].displayName,
                 avatar: widget.peers[i].avatar,
                 color: widget.peers[i].color,
               )),

@@ -1,3 +1,4 @@
+import 'package:commet/ui/molecules/direct_message_list.dart';
 import 'package:commet/ui/molecules/timeline_viewer.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
@@ -37,6 +38,7 @@ class _MobileChatPageState extends State<MobileChatPage> {
   late Map<String, GlobalKey<TimelineViewerState>> timelines = {};
   late GlobalKey<MessageInputState> messageInput = GlobalKey();
   bool shouldMainIgnoreInput = false;
+  bool homeSelected = false;
 
   @override
   void initState() {
@@ -72,13 +74,20 @@ class _MobileChatPageState extends State<MobileChatPage> {
     return Row(
       children: [
         SideNavigationBar(
+          onHomeSelected: () {
+            setState(() {
+              homeSelected = true;
+            });
+          },
           onSpaceSelected: (index) {
             setState(() {
+              homeSelected = false;
               selectedSpace = _clientManager.spaces[index];
             });
           },
         ),
-        if (selectedSpace != null) spaceRoomSelector(newContext)
+        if (homeSelected) homePageView(),
+        if (homeSelected == false && selectedSpace != null) spaceRoomSelector(newContext)
       ],
     );
   }
@@ -98,6 +107,26 @@ class _MobileChatPageState extends State<MobileChatPage> {
       );
     }
     return const Placeholder();
+  }
+
+  Widget homePageView() {
+    return Flexible(
+      child: Tile.low1(
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(0, 0, 50, 0),
+            child: DirectMessageList(
+              directMessages: _clientManager.directMessages,
+              onSelected: (index) {
+                setState(() {
+                  selectRoom(_clientManager.directMessages[index]);
+                });
+              },
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   Widget timelineView() {
@@ -126,14 +155,19 @@ class _MobileChatPageState extends State<MobileChatPage> {
                   key: selectedSpace!.key,
                   onRoomInsert: selectedSpace!.onRoomAdded.stream,
                   onRoomSelected: (index) async {
-                    roomSelected(index);
+                    selectRoom(selectedSpace!.rooms[index]);
                   },
                 ),
               )),
-              SizedBox(
-                height: s(70),
-                child: UserPanel(
-                  selectedSpace!.client.user!,
+              Tile.low2(
+                child: SizedBox(
+                  height: s(70),
+                  child: UserPanel(
+                    displayName: selectedSpace!.client.user!.displayName,
+                    avatar: selectedSpace!.client.user!.avatar,
+                    detail: selectedSpace!.client.user!.detail,
+                    color: selectedSpace!.client.user!.color,
+                  ),
                 ),
               )
             ],
@@ -180,8 +214,16 @@ class _MobileChatPageState extends State<MobileChatPage> {
     );
   }
 
-  void roomSelected(index) {
-    var room = selectedSpace!.rooms[index];
+  void selectRoom(Room room) async {
+    // Putting this here so we can see a bit of the animation when the room button is clicked
+    // feels better ^-^
+    Future.delayed(const Duration(milliseconds: 125)).then((value) {
+      panelsKey.currentState!.reveal(RevealSide.main);
+      setState(() {
+        shouldMainIgnoreInput = false;
+      });
+    });
+
     if (room == selectedRoom) return;
 
     if (!timelines.containsKey(room.identifier)) {
@@ -206,10 +248,5 @@ class _MobileChatPageState extends State<MobileChatPage> {
         },
       );
     });
-
-    // Putting this here so we can see a bit of the animation when the room button is clicked
-    // feels better ^-^
-    await Future.delayed(const Duration(milliseconds: 125));
-    panelsKey.currentState!.reveal(RevealSide.main);
   }
 }
