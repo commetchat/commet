@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:commet/client/matrix/matrix_client.dart';
+import 'package:commet/generated/l10n.dart';
 import 'package:commet/ui/pages/login_page.dart';
 import 'package:commet/ui/pages/matrix/verification/matrix_verification_page.dart';
 import 'package:flutter/material.dart';
@@ -69,18 +70,20 @@ void main() {
 
     await tester.waitFor(() => find.byType(MatrixVerificationPage).evaluate().isNotEmpty);
 
-    var button = find.widgetWithText(ElevatedButton, "Accept");
+    var button = find.widgetWithText(ElevatedButton, T.current.genericAcceptButton);
     await tester.tap(button);
 
-    await tester.waitFor(() => find.widgetWithText(ElevatedButton, "They Match").evaluate().isNotEmpty);
+    await tester.waitFor(
+        () => find.widgetWithText(ElevatedButton, T.current.sasEmojiVerificationMatches).evaluate().isNotEmpty);
 
-    button = find.widgetWithText(ElevatedButton, "They Match");
+    button = find.widgetWithText(ElevatedButton, T.current.sasEmojiVerificationMatches);
 
     await tester.tap(button);
 
     await verification.acceptSas();
 
-    await tester.waitFor(() => find.widgetWithText(ElevatedButton, "Done!").evaluate().isNotEmpty);
+    await tester
+        .waitFor(() => find.widgetWithText(ElevatedButton, T.current.sasVerificationDone).evaluate().isNotEmpty);
 
     expect(verification.isDone, equals(true));
     expect(verification.state, equals(KeyVerificationState.done));

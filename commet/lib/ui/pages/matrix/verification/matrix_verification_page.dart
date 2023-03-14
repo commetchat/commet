@@ -1,3 +1,4 @@
+import 'package:commet/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -49,7 +50,7 @@ class _MatrixVerificationPageState extends State<MatrixVerificationPage> {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         Button(
-          text: "Accept",
+          text: T.of(context).genericAcceptButton,
           onTap: acceptRequest,
         ),
         Button.danger(
@@ -74,11 +75,11 @@ class _MatrixVerificationPageState extends State<MatrixVerificationPage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Button(
-                  text: "They Match",
+                  text: T.of(context).sasEmojiVerificationMatches,
                   onTap: acceptSas,
                 ),
                 Button.danger(
-                  text: "They Don't Match",
+                  text: T.of(context).sasEmojiVerificationDoesntMatch,
                   onTap: rejectSas,
                 )
               ],
@@ -93,7 +94,7 @@ class _MatrixVerificationPageState extends State<MatrixVerificationPage> {
   Widget done() {
     return Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
       Button.success(
-        text: "Done!",
+        text: T.of(context).sasVerificationDone,
       )
     ]);
   }

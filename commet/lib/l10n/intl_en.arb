@@ -11,5 +11,9 @@
   "fileDragDropPrompt": "Drop file to upload...",
   "messageFailedToSend": "Failed to send...",
   "messageDeleted": "Message deleted",
-  "settingsTabAppearance": "Appearance"
+  "settingsTabAppearance": "Appearance",
+  "genericAcceptButton": "Accept",
+  "sasEmojiVerificationMatches": "They Match",
+  "sasEmojiVerificationDoesntMatch": "They Don't Match",
+  "sasVerificationDone": "Done!"
 }
