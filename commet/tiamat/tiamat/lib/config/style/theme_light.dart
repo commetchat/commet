@@ -41,8 +41,7 @@ class ThemeLight {
           onError: Colors.white,
           brightness: Brightness.light,
           shadow: Colors.black.withAlpha(52)),
-      sliderTheme: SliderThemeData(
-          inactiveTrackColor: ThemeLightColors.primary.withAlpha(100), thumbColor: ThemeLightColors.secondary),
+      sliderTheme: SliderThemeData(inactiveTrackColor: ThemeLightColors.primary.withAlpha(100)),
       listTileTheme: const ListTileThemeData(
         tileColor: ThemeLightColors.surface,
       ),
