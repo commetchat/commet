@@ -1,22 +1,17 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:commet/ui/pages/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:commet/main.dart';
 
-import 'extensions/wait_for.dart';
+import '../extensions/wait_for.dart';
+import '../extensions/common_flows.dart';
 
 void main() {
   testWidgets('Test Matrix Login', (WidgetTester tester) async {
     var hs = const String.fromEnvironment('HOMESERVER');
     var username = "invalidUser";
     var password = "InvalidPassword!";
+    await tester.clearUserData();
     // Build our app and trigger a frame.
     var app = App();
     await tester.pumpWidget(app);
@@ -61,7 +56,8 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    await tester.waitFor(() => app.clientManager.isLoggedIn(), timeout: const Duration(seconds: 5), skipPumpAndSettle: true);
+    await tester.waitFor(() => app.clientManager.isLoggedIn(),
+        timeout: const Duration(seconds: 5), skipPumpAndSettle: true);
     expect(app.clientManager.isLoggedIn(), equals(true));
   });
 }

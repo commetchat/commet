@@ -103,6 +103,10 @@ class MatrixClient extends Client {
     );
   }
 
+  matrix.Client getMatrixClient() {
+    return _matrixClient;
+  }
+
   @override
   Future<LoginResult> login(LoginType type, String userIdentifier, String server,
       {String? password, String? token}) async {
