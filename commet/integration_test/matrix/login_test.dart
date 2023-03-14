@@ -2,11 +2,14 @@ import 'package:commet/ui/pages/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:commet/main.dart';
+import 'package:integration_test/integration_test.dart';
 
 import '../extensions/wait_for.dart';
 import '../extensions/common_flows.dart';
 
 void main() {
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+
   testWidgets('Test Matrix Login', (WidgetTester tester) async {
     var hs = const String.fromEnvironment('HOMESERVER');
     var username = "invalidUser";

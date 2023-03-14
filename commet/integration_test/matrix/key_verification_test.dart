@@ -6,6 +6,7 @@ import 'package:commet/ui/pages/matrix/verification/matrix_verification_page.dar
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:commet/main.dart';
+import 'package:integration_test/integration_test.dart';
 import 'package:matrix/encryption/utils/key_verification.dart';
 import 'package:matrix/matrix.dart';
 import 'package:path/path.dart' as p;
@@ -19,9 +20,18 @@ void main() {
     var username = const String.fromEnvironment('USER1_NAME');
     var password = const String.fromEnvironment('USER1_PW');
 
+    // Adding a bunch of delays to not trigger M_LIMIT_EXCEEDED: Too Many Requests
+    // Also helps avoid some errors with lock files when cleaning user data;
+    await Future.delayed(Duration(seconds: 5));
     await tester.clearUserData();
+
     var app = App();
+
+    await tester.pumpAndSettle();
+
     await tester.login(app);
+
+    await tester.pumpAndSettle();
 
     final dir = await getApplicationSupportDirectory();
     var path = p.join(dir.path, "matrix") + p.separator;
@@ -50,6 +60,7 @@ void main() {
     var matrixClient = (app.clientManager.getClients()[0] as MatrixClient);
     var currentDeviceId = matrixClient.getMatrixClient().deviceID!;
     var devices = await otherClient.getDevices();
+
     var device = devices!.where((element) => (element.deviceId == currentDeviceId)).first;
     var verification =
         await otherClient.userDeviceKeys[otherClient.userID]!.deviceKeys[device.deviceId]!.startVerification();
@@ -66,6 +77,7 @@ void main() {
     button = find.widgetWithText(ElevatedButton, "They Match");
 
     await tester.tap(button);
+
     await verification.acceptSas();
 
     await tester.waitFor(() => find.widgetWithText(ElevatedButton, "Done!").evaluate().isNotEmpty);
