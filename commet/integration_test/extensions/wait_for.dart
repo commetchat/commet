@@ -9,15 +9,16 @@ extension WaitForExtension on WidgetTester {
   }) async {
     final end = DateTime.now().add(timeout);
 
-    do {
+    while (finder.call() != true) {
       if (DateTime.now().isAfter(end)) {
         throw Exception('Timed out waiting for $finder');
       }
 
       if (!skipPumpAndSettle) {
-        await pumpAndSettle();
+        await pump();
       }
+
       await Future.delayed(const Duration(milliseconds: 100));
-    } while (finder.call() != true);
+    }
   }
 }

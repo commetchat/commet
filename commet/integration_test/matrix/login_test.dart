@@ -47,10 +47,9 @@ void main() {
     var button = find.widgetWithText(ElevatedButton, "Login");
 
     await tester.tap(button);
-    await tester.pumpAndSettle();
-
-    await tester.waitFor(() => find.text("Login Failed").evaluate().isNotEmpty, timeout: const Duration(seconds: 5));
-
+    await tester.waitFor(() => find.text("Login Failed").evaluate().isNotEmpty,
+        skipPumpAndSettle: false, timeout: const Duration(seconds: 5));
+    print("Found test!");
     expect(app.clientManager.isLoggedIn(), equals(false));
   });
 }

@@ -64,11 +64,15 @@ void main() {
 
     await tester.waitFor(() => find.byType(MatrixVerificationPage).evaluate().isNotEmpty);
 
+    await tester.pumpAndSettle();
+
     var button = find.widgetWithText(ElevatedButton, T.current.genericAcceptButton);
     await tester.tap(button);
 
     await tester.waitFor(
         () => find.widgetWithText(ElevatedButton, T.current.sasEmojiVerificationMatches).evaluate().isNotEmpty);
+
+    await tester.pumpAndSettle();
 
     button = find.widgetWithText(ElevatedButton, T.current.sasEmojiVerificationMatches);
 
@@ -78,6 +82,8 @@ void main() {
 
     await tester
         .waitFor(() => find.widgetWithText(ElevatedButton, T.current.sasVerificationDone).evaluate().isNotEmpty);
+
+    await tester.pumpAndSettle();
 
     expect(verification.isDone, equals(true));
     expect(verification.state, equals(KeyVerificationState.done));
