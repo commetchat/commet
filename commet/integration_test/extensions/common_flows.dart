@@ -33,11 +33,11 @@ extension CommonFlows on WidgetTester {
     await waitFor(() => find.byType(LoginPage).evaluate().isNotEmpty);
 
     // Test Login Successful
-    var hs = const String.fromEnvironment('HOMESERVER');
+    var hs = const String.fromEnvironment('HOMESERVER', defaultValue: "localhost");
 
-    var username = const String.fromEnvironment('USER1_NAME');
+    var username = const String.fromEnvironment('USER1_NAME', defaultValue: "alice");
 
-    var password = const String.fromEnvironment('USER1_PW');
+    var password = const String.fromEnvironment('USER1_PW', defaultValue: "AliceInWonderland");
 
     var button = find.widgetWithText(ElevatedButton, "Login");
 

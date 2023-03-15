@@ -13,9 +13,9 @@ import '../extensions/common_flows.dart';
 
 void main() {
   testWidgets('Test emoji verification started from another device', (WidgetTester tester) async {
-    var hs = const String.fromEnvironment('HOMESERVER');
-    var username = const String.fromEnvironment('USER1_NAME');
-    var password = const String.fromEnvironment('USER1_PW');
+    var hs = const String.fromEnvironment('HOMESERVER', defaultValue: "localhost");
+    var username = const String.fromEnvironment('USER1_NAME', defaultValue: "alice");
+    var password = const String.fromEnvironment('USER1_PW', defaultValue: "AliceInWonderland");
 
     // Adding a bunch of delays to not trigger M_LIMIT_EXCEEDED: Too Many Requests
     // Also helps avoid some errors with lock files when cleaning user data;
@@ -98,9 +98,9 @@ void main() {
   });
 
   testWidgets('Test Rejecting emoji verification started from another device', (WidgetTester tester) async {
-    var hs = const String.fromEnvironment('HOMESERVER');
-    var username = const String.fromEnvironment('USER1_NAME');
-    var password = const String.fromEnvironment('USER1_PW');
+    var hs = const String.fromEnvironment('HOMESERVER', defaultValue: "localhost");
+    var username = const String.fromEnvironment('USER1_NAME', defaultValue: "alice");
+    var password = const String.fromEnvironment('USER1_PW', defaultValue: "AliceInWonderland");
 
     // Adding a bunch of delays to not trigger M_LIMIT_EXCEEDED: Too Many Requests
     // Also helps avoid some errors with lock files when cleaning user data;
@@ -168,9 +168,9 @@ void main() {
   });
 
   testWidgets('Test emoji dont match started from another device', (WidgetTester tester) async {
-    var hs = const String.fromEnvironment('HOMESERVER');
-    var username = const String.fromEnvironment('USER1_NAME');
-    var password = const String.fromEnvironment('USER1_PW');
+    var hs = const String.fromEnvironment('HOMESERVER', defaultValue: "localhost");
+    var username = const String.fromEnvironment('USER1_NAME', defaultValue: "alice");
+    var password = const String.fromEnvironment('USER1_PW', defaultValue: "AliceInWonderland");
 
     // Adding a bunch of delays to not trigger M_LIMIT_EXCEEDED: Too Many Requests
     // Also helps avoid some errors with lock files when cleaning user data;
