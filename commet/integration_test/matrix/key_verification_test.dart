@@ -19,7 +19,7 @@ void main() {
 
     // Adding a bunch of delays to not trigger M_LIMIT_EXCEEDED: Too Many Requests
     // Also helps avoid some errors with lock files when cleaning user data;
-    await Future.delayed(const Duration(seconds: 5));
+    await Future.delayed(const Duration(seconds: 1));
     await tester.clearUserData();
 
     var app = App();

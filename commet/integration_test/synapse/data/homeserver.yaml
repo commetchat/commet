@@ -863,56 +863,56 @@ log_config: "/data/localhost.log.config"
 #
 # The defaults are as shown below.
 #
-#rc_message:
-#  per_second: 0.2
-#  burst_count: 10
-#
-#rc_registration:
-#  per_second: 0.17
-#  burst_count: 3
-#
-#rc_registration_token_validity:
-#  per_second: 0.1
-#  burst_count: 5
-#
-#rc_login:
-#  address:
-#    per_second: 0.17
-#    burst_count: 3
-#  account:
-#    per_second: 0.17
-#    burst_count: 3
-#  failed_attempts:
-#    per_second: 0.17
-#    burst_count: 3
-#
-#rc_admin_redaction:
-#  per_second: 1
-#  burst_count: 50
-#
-#rc_joins:
-#  local:
-#    per_second: 0.1
-#    burst_count: 10
-#  remote:
-#    per_second: 0.01
-#    burst_count: 10
-#
-#rc_3pid_validation:
-#  per_second: 0.003
-#  burst_count: 5
-#
-#rc_invites:
-#  per_room:
-#    per_second: 0.3
-#    burst_count: 10
-#  per_user:
-#    per_second: 0.003
-#    burst_count: 5
-#
-#rc_third_party_invite:
-#  per_second: 0.2
-#  burst_count: 10
+rc_message:
+  per_second: 10
+  burst_count: 100
+
+rc_registration:
+  per_second: 10
+  burst_count: 300
+
+rc_registration_token_validity:
+  per_second: 10
+  burst_count: 200
+
+rc_login:
+  address:
+    per_second: 10
+    burst_count: 200
+  account:
+    per_second: 10
+    burst_count: 200
+  failed_attempts:
+    per_second: 10
+    burst_count: 200
+
+rc_admin_redaction:
+  per_second: 1
+  burst_count: 500
+
+rc_joins:
+  local:
+    per_second: 10
+    burst_count: 200
+  remote:
+    per_second: 10
+    burst_count: 200
+
+rc_3pid_validation:
+  per_second: 10
+  burst_count: 200
+
+rc_invites:
+  per_room:
+    per_second: 10
+    burst_count: 200
+  per_user:
+    per_second: 10
+    burst_count: 200
+
+rc_third_party_invite:
+  per_second: 10
+  burst_count: 200
 
 # Ratelimiting settings for incoming federation
 #
