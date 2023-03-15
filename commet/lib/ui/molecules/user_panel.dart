@@ -1,9 +1,26 @@
-import 'package:commet/client/client.dart';
 import 'package:commet/config/app_config.dart';
 import 'package:flutter/material.dart' as material;
 import 'package:flutter/widgets.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
+
+import 'package:widgetbook_annotation/widgetbook_annotation.dart';
+
+@WidgetbookUseCase(name: 'No Avatar', type: UserPanel)
+@Deprecated("widgetbook")
+Widget wbUserPanelDefault(BuildContext context) {
+  return const Center(child: UserPanel(displayName: "User"));
+}
+
+@WidgetbookUseCase(name: 'With Avatar', type: UserPanel)
+@Deprecated("widgetbook")
+Widget wbUserPanelWithAvatar(BuildContext context) {
+  return const Center(
+      child: UserPanel(
+    displayName: "User",
+    avatar: AssetImage("assets/images/placeholder/generic/checker_purple.png"),
+  ));
+}
 
 class UserPanel extends StatefulWidget {
   const UserPanel({super.key, this.avatar, required this.displayName, this.color, this.detail, this.onClicked});

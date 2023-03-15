@@ -1,10 +1,6 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/ui/molecules/user_panel.dart';
-
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter/widgets.dart';
-import 'package:tiamat/tiamat.dart';
 
 class DirectMessageList extends StatefulWidget {
   const DirectMessageList({required this.directMessages, this.onSelected, super.key});
@@ -21,6 +17,7 @@ class _DirectMessageListState extends State<DirectMessageList> {
   @override
   void initState() {
     numDMs = widget.directMessages.length;
+    super.initState();
   }
 
   @override

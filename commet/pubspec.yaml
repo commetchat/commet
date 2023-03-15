@@ -21,17 +21,20 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   intl: any
-  intl_utils: ^2.8.2
+  intl_utils:
   desktop_drop: ^0.4.1
   test: ^1.22.0
   tiamat:
-    path: tiamat/tiamat/
+    path: ../tiamat/
   scaled_app: ^1.0.0
   crypto: ^3.0.2
   path: ^1.8.2
   path_provider: ^2.0.13
+  widgetbook_annotation:
 
 dev_dependencies:
+  build_runner:
+  widgetbook_generator:
   widgetbook:
   flutter_test:
     sdk: flutter

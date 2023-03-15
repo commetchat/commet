@@ -1,4 +1,4 @@
-import 'package:commet/ui/pages/login_page.dart';
+import 'package:commet/ui/pages/login/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:commet/main.dart';
@@ -11,9 +11,6 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets('Test Matrix Login Success', (WidgetTester tester) async {
-    var hs = const String.fromEnvironment('HOMESERVER');
-    var username = "invalidUser";
-    var password = "InvalidPassword!";
     await tester.clearUserData();
     // Build our app and trigger a frame.
     var app = App();

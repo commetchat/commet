@@ -37,10 +37,17 @@
             "flutterMode": "release"
         },
         {
+            "name": "commet widgetbook",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/widgetbook_runner.dart"
+
+        },
+        {
             "name": "tiamat widgetbook",
             "request": "launch",
             "type": "dart",
-            "program": "tiamat/tiamat/lib/tiamat.widgetbook.dart"
+            "program": "../tiamat/lib/tiamat.widgetbook.dart"
 
         },
     ]

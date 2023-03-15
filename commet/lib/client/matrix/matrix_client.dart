@@ -5,7 +5,6 @@ import 'package:commet/config/build_config.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/matrix/verification/matrix_verification_page.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 
 import 'package:path/path.dart' as p;
 

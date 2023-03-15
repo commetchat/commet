@@ -1,13 +1,9 @@
-import 'dart:math';
-
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/generated/l10n.dart';
-import 'package:commet/ui/pages/login_page.dart';
 import 'package:commet/ui/pages/matrix/verification/matrix_verification_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:commet/main.dart';
-import 'package:integration_test/integration_test.dart';
 import 'package:matrix/encryption/utils/key_verification.dart';
 import 'package:matrix/matrix.dart';
 import 'package:path/path.dart' as p;
@@ -23,7 +19,7 @@ void main() {
 
     // Adding a bunch of delays to not trigger M_LIMIT_EXCEEDED: Too Many Requests
     // Also helps avoid some errors with lock files when cleaning user data;
-    await Future.delayed(Duration(seconds: 5));
+    await Future.delayed(const Duration(seconds: 5));
     await tester.clearUserData();
 
     var app = App();
@@ -57,14 +53,12 @@ void main() {
 
     expect(result.accessToken, isNotNull);
 
-    print("Starting other client to begin verification process");
     var matrixClient = (app.clientManager.getClients()[0] as MatrixClient);
     var currentDeviceId = matrixClient.getMatrixClient().deviceID!;
     var devices = await otherClient.getDevices();
 
     var device = devices!.where((element) => (element.deviceId == currentDeviceId)).first;
-    var verification =
-        await otherClient.userDeviceKeys[otherClient.userID]!.deviceKeys[device.deviceId]!.startVerification();
+    var verification = otherClient.userDeviceKeys[otherClient.userID]!.deviceKeys[device.deviceId]!.startVerification();
 
     verification.onUpdate = () {};
 
