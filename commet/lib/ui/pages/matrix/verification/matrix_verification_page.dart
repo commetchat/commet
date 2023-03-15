@@ -1,30 +1,28 @@
-import 'package:commet/generated/l10n.dart';
-import 'package:flutter/material.dart';
+import 'package:commet/ui/pages/matrix/verification/matrix_verification_view.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:matrix/encryption.dart';
-import 'package:matrix/matrix.dart';
-import 'package:tiamat/tiamat.dart';
-import 'package:tiamat/tiamat.dart' as tiamat;
+import 'package:matrix/encryption/utils/key_verification.dart';
 
 class MatrixVerificationPage extends StatefulWidget {
-  const MatrixVerificationPage({required this.request, required this.client, super.key});
   final KeyVerification request;
-  final Client client;
+  const MatrixVerificationPage({required this.request, super.key});
+
   @override
-  State<MatrixVerificationPage> createState() => _MatrixVerificationPageState();
+  State<MatrixVerificationPage> createState() => MatrixVerificationPageState();
 }
 
-class _MatrixVerificationPageState extends State<MatrixVerificationPage> {
+class MatrixVerificationPageState extends State<MatrixVerificationPage> {
   void Function()? originalOnUpdate;
-  late final List<dynamic> sasEmoji;
 
   @override
   void initState() {
     originalOnUpdate = widget.request.onUpdate;
+
     widget.request.onUpdate = () {
       originalOnUpdate?.call();
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     };
 
     super.initState();
@@ -32,71 +30,17 @@ class _MatrixVerificationPageState extends State<MatrixVerificationPage> {
 
   @override
   Widget build(BuildContext context) {
-    switch (widget.request.state) {
-      case KeyVerificationState.askAccept:
-        return promptAcceptRequest();
-      case KeyVerificationState.askSas:
-        return promptAskSas();
-
-      case KeyVerificationState.done:
-        return done();
-      default:
-        return tiamat.Text.label(widget.request.state.toString());
-    }
-  }
-
-  Widget promptAcceptRequest() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        Button(
-          text: T.of(context).genericAcceptButton,
-          onTap: acceptRequest,
-        ),
-        Button.danger(
-          text: "Reject",
-          onTap: rejectRequest,
-        )
-      ],
+    return MatrixVerificationPageView(
+      state: widget.request.state,
+      // Have to do this because the sasNumber are freed after verification finishes
+      sasTypes: widget.request.state == KeyVerificationState.askSas ? widget.request.sasTypes : [],
+      sasEmoji: widget.request.state == KeyVerificationState.askSas ? widget.request.sasEmojis : [],
+      sasNumbers: widget.request.state == KeyVerificationState.askSas ? widget.request.sasNumbers : [],
+      onSasAccepted: acceptSas,
+      onSasRejected: rejectSas,
+      onVerificationRequestAccepted: acceptRequest,
+      onVerificationRequestRejected: rejectRequest,
     );
-  }
-
-  Widget promptAskSas() {
-    if (widget.request.sasTypes.contains('emoji')) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: widget.request.sasEmojis.map((e) => tiamat.Text.largeTitle(e.emoji)).toList(),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Button(
-                  text: T.of(context).sasEmojiVerificationMatches,
-                  onTap: acceptSas,
-                ),
-                Button.danger(
-                  text: T.of(context).sasEmojiVerificationDoesntMatch,
-                  onTap: rejectSas,
-                )
-              ],
-            )
-          ],
-        ),
-      );
-    }
-    return Placeholder();
-  }
-
-  Widget done() {
-    return Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-      Button.success(
-        text: T.of(context).sasVerificationDone,
-      )
-    ]);
   }
 
   void acceptRequest() async {
@@ -104,7 +48,7 @@ class _MatrixVerificationPageState extends State<MatrixVerificationPage> {
   }
 
   void rejectRequest() async {
-    await widget.request.acceptVerification();
+    await widget.request.rejectVerification();
   }
 
   void acceptSas() async {

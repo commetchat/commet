@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/main.dart';
-import 'package:commet/ui/pages/matrix/verification/matrix_verification_page.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:path/path.dart' as p;
@@ -19,6 +18,7 @@ import 'package:matrix/encryption.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:tiamat/tiamat.dart';
 
+import '../../ui/pages/matrix/verification/matrix_verification_page.dart';
 import 'matrix_room.dart';
 import 'matrix_space.dart';
 
@@ -76,11 +76,7 @@ class MatrixClient extends Client {
 
     _matrixClient.onKeyVerificationRequest.stream.listen((event) {
       PopupDialog.show(navigator.currentContext!,
-          content: MatrixVerificationPage(
-            request: event,
-            client: _matrixClient,
-          ),
-          title: "Verification Request");
+          content: MatrixVerificationPage(request: event), title: "Verification Request");
     });
   }
 

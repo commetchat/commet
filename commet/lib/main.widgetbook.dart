@@ -16,11 +16,14 @@ import 'package:commet/ui/pages/loading/loading_page.dart';
 import 'package:commet/ui/pages/loading/loading_page_view.dart';
 import 'package:commet/ui/pages/login/login_page.dart';
 import 'package:commet/ui/pages/login/login_page_view.dart';
+import 'package:commet/ui/pages/matrix/verification/matrix_verification_page.dart';
+import 'package:commet/ui/pages/matrix/verification/matrix_verification_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:matrix/encryption/utils/key_verification.dart';
 import 'package:provider/provider.dart';
 import 'package:scaled_app/scaled_app.dart';
 import 'package:tiamat/atoms/tile.dart';
@@ -127,6 +130,31 @@ class HotReload extends StatelessWidget {
                         ),
                       ],
                       folders: [],
+                    ),
+                    WidgetbookFolder(
+                      name: 'matrix',
+                      widgets: [],
+                      folders: [
+                        WidgetbookFolder(
+                          name: 'verification',
+                          widgets: [
+                            WidgetbookComponent(
+                              name: 'MatrixVerificationPageView',
+                              useCases: [
+                                WidgetbookUseCase(
+                                  name: 'Check Emojis',
+                                  builder: (context) => wbSASCheckEmojis(context),
+                                ),
+                                WidgetbookUseCase(
+                                  name: 'Request Received',
+                                  builder: (context) => wbSASRequestReceived(context),
+                                ),
+                              ],
+                            ),
+                          ],
+                          folders: [],
+                        ),
+                      ],
                     ),
                     WidgetbookFolder(
                       name: 'login',

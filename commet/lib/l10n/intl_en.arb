@@ -15,5 +15,6 @@
   "genericAcceptButton": "Accept",
   "sasEmojiVerificationMatches": "They Match",
   "sasEmojiVerificationDoesntMatch": "They Don't Match",
-  "sasVerificationDone": "Done!"
+  "sasVerificationDone": "Done!",
+  "genericRejectButton": "Reject"
 }

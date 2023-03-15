@@ -5,12 +5,23 @@ import 'package:commet/ui/pages/login/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:commet/main.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'wait_for.dart';
+
+import 'package:path/path.dart' as p;
 
 extension CommonFlows on WidgetTester {
   Future<void> clearUserData() async {
     var dir = Directory(await MatrixClient.getDBPath());
+    if (await dir.exists()) {
+      await dir.delete(recursive: true);
+    }
+
+    dir = await getApplicationSupportDirectory();
+    var path = p.join(dir.path, "matrix") + p.separator;
+    dir = Directory(path);
+    print("Clearning" + dir.path);
     if (await dir.exists()) {
       await dir.delete(recursive: true);
     }
