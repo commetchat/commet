@@ -1,4 +1,5 @@
 import * as sdk from 'matrix-js-sdk';
+import { isConditionalExpression } from 'typescript';
 import { verifyMyDeviceEmoji } from './cases/verify_device_emoji';
 
 
@@ -47,10 +48,19 @@ async function main(){
         return
     }
 
-    const client = await login();
-    console.log(client);
+    if(!options.test_case){
+        console.log("No test case provided");
+        return
+    }
+    else{
+        console.log("Received test case: " + options.test_case);
+    }
 
+    const client = await login();
+    
     if(options.test_case == "verify_my_device_emoji") {
+        console.log("Running test case: Verify Emoji")
+        console.log("Received Device ID: "  + options.device_id)
         await verifyMyDeviceEmoji(client, options.device_id);
     }
 }

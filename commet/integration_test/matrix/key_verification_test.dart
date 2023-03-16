@@ -24,6 +24,7 @@ void main() {
     // Also helps avoid some errors with lock files when cleaning user data;
     await Future.delayed(const Duration(seconds: 1));
     await tester.clearUserData();
+    await Future.delayed(const Duration(seconds: 1));
 
     var app = App();
 
@@ -33,24 +34,24 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    print(Directory.current);
-
     var matrixClient = (app.clientManager.getClients()[0] as MatrixClient);
 
-    var proc = await Process.start("npx", [
-      "ts-node",
+    await Future.delayed(const Duration(seconds: 1));
+
+    var proc = await Process.start("ts-node", [
       'integration_test/external_device/src/main.ts',
       '--homeserver',
-      'http://localhost',
+      'http://' + hs,
       '--username',
-      'alice',
+      username,
       '--password',
-      'AliceInWonderland',
+      password,
       '--test_case',
       'verify_my_device_emoji',
       '--device_id',
       matrixClient.getMatrixClient().deviceID!
     ]);
+
     proc.stdout.transform(utf8.decoder).forEach(print);
     await tester.waitFor(() => find.byType(MatrixVerificationPage).evaluate().isNotEmpty);
 

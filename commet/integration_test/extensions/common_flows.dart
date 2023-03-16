@@ -21,7 +21,7 @@ extension CommonFlows on WidgetTester {
     dir = await getApplicationSupportDirectory();
     var path = p.join(dir.path, "matrix") + p.separator;
     dir = Directory(path);
-    print("Clearning" + dir.path);
+    print("Cleaning ${dir.path}");
     if (await dir.exists()) {
       await dir.delete(recursive: true);
     }

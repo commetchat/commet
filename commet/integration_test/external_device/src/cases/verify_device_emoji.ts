@@ -6,8 +6,12 @@ function delay(ms: number) {
 
 
 export async function verifyMyDeviceEmoji(client: MatrixClient, deviceID: string): Promise<void> {
+    console.log("Running test case");
     var request = await client.requestVerification(client.getUserId()!, [deviceID]);
+    console.log("Request sent");
     request.on(VerificationRequestEvent.Change, async () => {
+        console.log("Request changed");
+        console.log(request.phase);
 
         if(request.done || request.cancelled){
             return;
@@ -16,13 +20,15 @@ export async function verifyMyDeviceEmoji(client: MatrixClient, deviceID: string
         await request.accept();
 
         if(request.ready){
-
+            console.log("Request ready");
             const verifier = request.beginKeyVerification('m.sas.v1', {userId: client.getUserId()!, deviceId: deviceID});
-
+            console.log("Created verifier")
             verifier.on('show_sas', async (sas_data : any)=>{
+                console.log("Show sas, confirming");
                 await sas_data.confirm();
             })
 
+            console.log("Verifying")
             await verifier.verify();
         }
 
