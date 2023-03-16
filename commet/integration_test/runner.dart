@@ -8,5 +8,5 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   login_test.main();
-  key_verification_test.main();
+  //key_verification_test.main(); Removing these until can figure out a better way to handle multi-device testing
 }

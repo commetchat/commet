@@ -1,6 +1,13 @@
 {
   "dependencies": {
     "commander": "^10.0.0",
-    "matrix-js-sdk": "^23.5.0"
+    "matrix-js-sdk": "^23.5.0",
+    "olm": "https://packages.matrix.org/npm/olm/olm-3.1.4.tgz",
+    "typescript": "^4.9.5"
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.3",
+    "nodemon": "^2.0.21",
+    "ts-node": "^10.9.1"
   }
 }
