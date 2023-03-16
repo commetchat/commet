@@ -1,6 +1,6 @@
 import * as sdk from 'matrix-js-sdk';
 import { isConditionalExpression } from 'typescript';
-import { verifyMyDeviceEmoji } from './cases/verify_device_emoji';
+import { verify_me_with_emoji } from './cases/verify_me_with_emoji';
 
 
 var olm = require('@matrix-org/olm');
@@ -57,11 +57,10 @@ async function main(){
     }
 
     const client = await login();
-    
-    if(options.test_case == "verify_my_device_emoji") {
-        console.log("Running test case: Verify Emoji")
-        console.log("Received Device ID: "  + options.device_id)
-        await verifyMyDeviceEmoji(client, options.device_id);
+
+    switch(options.test_case){
+        case "verify_me_with_emoji": 
+            return await verify_me_with_emoji(client, options.device_id);
     }
 }
 

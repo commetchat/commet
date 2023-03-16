@@ -11,6 +11,7 @@ import 'package:matrix/encryption/utils/key_verification.dart';
 import 'package:matrix/matrix.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import '../extensions/subprocess.dart';
 import '../extensions/wait_for.dart';
 import '../extensions/common_flows.dart';
 
@@ -36,23 +37,10 @@ void main() {
 
     var matrixClient = (app.clientManager.getClients()[0] as MatrixClient);
 
+    var proc = await IntegrationTestSubprocess.verifyMeWithEmoji(matrixClient.getMatrixClient().deviceID!);
+
     await Future.delayed(const Duration(seconds: 1));
 
-    var proc = await Process.start("ts-node", [
-      'integration_test/external_device/src/main.ts',
-      '--homeserver',
-      'http://' + hs,
-      '--username',
-      username,
-      '--password',
-      password,
-      '--test_case',
-      'verify_my_device_emoji',
-      '--device_id',
-      matrixClient.getMatrixClient().deviceID!
-    ]);
-
-    proc.stdout.transform(utf8.decoder).forEach(print);
     await tester.waitFor(() => find.byType(MatrixVerificationPage).evaluate().isNotEmpty);
 
     await tester.pumpAndSettle();
@@ -76,7 +64,6 @@ void main() {
 
     var client = matrixClient.getMatrixClient();
 
-    // need to figure out a way to get the other client's device id here
-    // expect(client.userDeviceKeys[client.userID]!.deviceKeys[otherClient.deviceID!]!.verified, equals(true));
+    proc.kill();
   });
 }

@@ -4,8 +4,7 @@ function delay(ms: number) {
     return new Promise( resolve => setTimeout(resolve, ms) );
 }
 
-
-export async function verifyMyDeviceEmoji(client: MatrixClient, deviceID: string): Promise<void> {
+export async function verify_me_with_emoji(client: MatrixClient, deviceID: string): Promise<void> {
     console.log("Running test case");
     var request = await client.requestVerification(client.getUserId()!, [deviceID]);
     console.log("Request sent");
@@ -31,7 +30,6 @@ export async function verifyMyDeviceEmoji(client: MatrixClient, deviceID: string
             console.log("Verifying")
             await verifier.verify();
         }
-
     });
 }
   
