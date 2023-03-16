@@ -143,11 +143,23 @@ class HotReload extends StatelessWidget {
                               useCases: [
                                 WidgetbookUseCase(
                                   name: 'Check Emojis',
-                                  builder: (context) => wbSASCheckEmojis(context),
+                                  builder: (context) =>
+                                      wbSASCheckEmojis(context),
+                                ),
+                                WidgetbookUseCase(
+                                  name: 'Loading',
+                                  builder: (context) =>
+                                      sbVerificationLoading(context),
                                 ),
                                 WidgetbookUseCase(
                                   name: 'Request Received',
-                                  builder: (context) => wbSASRequestReceived(context),
+                                  builder: (context) =>
+                                      wbSASRequestReceived(context),
+                                ),
+                                WidgetbookUseCase(
+                                  name: 'Done',
+                                  builder: (context) =>
+                                      wbVerificationSuccess(context),
                                 ),
                               ],
                             ),

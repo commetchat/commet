@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:matrix/encryption/utils/key_verification.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -17,10 +18,35 @@ Widget wbSASCheckEmojis(BuildContext context) {
     body: PopupDialog(
       title: "Verification Request",
       content: MatrixVerificationPageView(
+        userID: "alice@example.com",
         state: KeyVerificationState.askSas,
         sasTypes: ['emoji'],
         sasEmoji: [
-          KeyVerificationEmoji(1),
+          KeyVerificationEmoji(7),
+          KeyVerificationEmoji(2),
+          KeyVerificationEmoji(3),
+          KeyVerificationEmoji(4),
+          KeyVerificationEmoji(5),
+          KeyVerificationEmoji(6),
+        ],
+        sasNumbers: [1, 2, 3, 4, 5, 6],
+      ),
+    ),
+  );
+}
+
+@WidgetbookUseCase(name: 'Loading', type: MatrixVerificationPageView)
+@Deprecated("widgetbook")
+Widget sbVerificationLoading(BuildContext context) {
+  return Scaffold(
+    body: PopupDialog(
+      title: "Verification Request",
+      content: MatrixVerificationPageView(
+        userID: "alice@example.com",
+        state: KeyVerificationState.waitingAccept,
+        sasTypes: ['emoji'],
+        sasEmoji: [
+          KeyVerificationEmoji(7),
           KeyVerificationEmoji(2),
           KeyVerificationEmoji(3),
           KeyVerificationEmoji(4),
@@ -40,7 +66,32 @@ Widget wbSASRequestReceived(BuildContext context) {
     body: PopupDialog(
       title: "Verification Request",
       content: MatrixVerificationPageView(
+        userID: "alice@example.com",
         state: KeyVerificationState.askAccept,
+        sasTypes: ['emoji'],
+        sasEmoji: [
+          KeyVerificationEmoji(1),
+          KeyVerificationEmoji(2),
+          KeyVerificationEmoji(3),
+          KeyVerificationEmoji(4),
+          KeyVerificationEmoji(5),
+          KeyVerificationEmoji(6),
+        ],
+        sasNumbers: [1, 2, 3, 4, 5, 6],
+      ),
+    ),
+  );
+}
+
+@WidgetbookUseCase(name: 'Done', type: MatrixVerificationPageView)
+@Deprecated("widgetbook")
+Widget wbVerificationSuccess(BuildContext context) {
+  return Scaffold(
+    body: PopupDialog(
+      title: "Verification Request",
+      content: MatrixVerificationPageView(
+        userID: "alice@example.com",
+        state: KeyVerificationState.done,
         sasTypes: ['emoji'],
         sasEmoji: [
           KeyVerificationEmoji(1),
@@ -62,6 +113,7 @@ class MatrixVerificationPageView extends StatelessWidget {
       required this.sasTypes,
       required this.sasNumbers,
       required this.sasEmoji,
+      required this.userID,
       super.key,
       this.onVerificationRequestAccepted,
       this.onVerificationRequestRejected,
@@ -75,14 +127,13 @@ class MatrixVerificationPageView extends StatelessWidget {
   final List<String> sasTypes;
   final List<KeyVerificationEmoji> sasEmoji;
   final List<int> sasNumbers;
+  final String userID;
 
   final KeyVerificationState state;
 
   @override
   Widget build(BuildContext context) {
-    return ConstrainedBox(
-        constraints: const BoxConstraints(maxHeight: 300, maxWidth: 300),
-        child: AspectRatio(aspectRatio: 1, child: determineStage(context)));
+    return SizedBox(height: 300, width: 300, child: determineStage(context));
   }
 
   Widget determineStage(BuildContext context) {
@@ -93,62 +144,113 @@ class MatrixVerificationPageView extends StatelessWidget {
         return promptAskSas(context);
       case KeyVerificationState.done:
         return done(context);
+      case KeyVerificationState.waitingAccept:
+      case KeyVerificationState.waitingSas:
+        return loading(context);
       default:
         return tiamat.Text.label(state.toString());
     }
   }
 
   Widget promptAcceptRequest(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Button(
-          text: T.current.genericAcceptButton,
-          onTap: onVerificationRequestAccepted?.call,
+        Expanded(child: Markdown(data: T.current.verificationRequestPrompt(userID))),
+        Column(
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Button.success(text: T.current.genericAcceptButton, onTap: onVerificationRequestAccepted?.call),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Button.danger(
+                text: T.current.genericRejectButton,
+                onTap: onVerificationRequestRejected?.call,
+              ),
+            )
+          ],
         ),
-        Button.danger(
-          text: T.current.genericRejectButton,
-          onTap: onVerificationRequestRejected?.call,
-        )
       ],
     );
   }
 
   Widget promptAskSas(BuildContext context) {
     if (sasTypes.contains('emoji')) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: sasEmoji.map((e) => tiamat.Text.largeTitle(e.emoji)).toList(),
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Align(
+            alignment: Alignment.topCenter,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: tiamat.Text.label(T.current.sasEmojiVerificationPrompt),
             ),
-            Row(
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Row(
+                children: sasEmoji
+                    .map((e) => Padding(
+                          padding: const EdgeInsets.all(3.0),
+                          child: tiamat.Text.largeTitle(e.emoji),
+                        ))
+                    .toList(),
+              ),
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Button(
-                  text: T.current.sasEmojiVerificationMatches,
-                  onTap: onSasAccepted?.call,
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Button.success(text: T.current.sasEmojiVerificationMatches, onTap: onSasAccepted?.call),
                 ),
-                Button.danger(
-                  text: T.current.sasEmojiVerificationDoesntMatch,
-                  onTap: onSasRejected?.call,
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Button.danger(
+                    text: T.current.sasEmojiVerificationDoesntMatch,
+                    onTap: onSasRejected?.call,
+                  ),
                 )
               ],
-            )
-          ],
-        ),
+            ),
+          )
+        ],
       );
     }
     return Placeholder();
   }
 
   Widget done(BuildContext context) {
-    return Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-      Button.success(
-        text: T.current.sasVerificationDone,
-      )
-    ]);
+    return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+              child: Center(
+                  child: Icon(
+            Icons.verified_user_rounded,
+            color: Colors.green,
+            size: 100,
+          ))),
+          Button.success(
+            text: T.current.sasVerificationDone,
+          )
+        ]);
+  }
+
+  Widget loading(BuildContext context) {
+    return Center(child: CircularProgressIndicator());
   }
 }

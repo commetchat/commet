@@ -1,10 +1,8 @@
-declare global {
-    var Olm: any;
-}
-
 import * as sdk from 'matrix-js-sdk';
 import { verifyMyDeviceEmoji } from './cases/verify_device_emoji';
-var olm = require('olm');
+
+
+var olm = require('@matrix-org/olm');
 var commander = require('commander');
 
 global.Olm = olm;

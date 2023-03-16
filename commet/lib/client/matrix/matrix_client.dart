@@ -74,6 +74,8 @@ class MatrixClient extends Client {
     _updateRoomslist();
     _updateSpacesList();
 
+    print(_matrixClient.deviceID);
+
     _matrixClient.onKeyVerificationRequest.stream.listen((event) {
       PopupDialog.show(navigator.currentContext!,
           content: MatrixVerificationPage(request: event), title: "Verification Request");

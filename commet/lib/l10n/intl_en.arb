@@ -16,5 +16,7 @@
   "sasEmojiVerificationMatches": "They Match",
   "sasEmojiVerificationDoesntMatch": "They Don't Match",
   "sasVerificationDone": "Done!",
-  "genericRejectButton": "Reject"
+  "genericRejectButton": "Reject",
+  "sasEmojiVerificationPrompt": "Check that the emoji are the same, and in the same order as the other device",
+  "verificationRequestPrompt": "**{username}** has requested to verify your session"
 }

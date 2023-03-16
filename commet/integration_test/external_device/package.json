@@ -1,8 +1,8 @@
 {
   "dependencies": {
+    "@matrix-org/olm": "^3.2.14",
     "commander": "^10.0.0",
     "matrix-js-sdk": "^23.5.0",
-    "olm": "https://packages.matrix.org/npm/olm/olm-3.1.4.tgz",
     "typescript": "^4.9.5"
   },
   "devDependencies": {
