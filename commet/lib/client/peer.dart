@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 abstract class Peer {
   late String identifier;
-  late String detail;
+  late String? detail = null;
   late String userName;
   late String displayName;
   late ImageProvider? avatar = null;

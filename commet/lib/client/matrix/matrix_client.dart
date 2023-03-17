@@ -66,7 +66,8 @@ class MatrixClient extends Client {
   Future<void> init() async {
     if (!_matrixClient.isLogged()) {
       await _matrixClient.init();
-      if (_matrixClient.userID != null) user = MatrixPeer(_matrixClient, _matrixClient.userID!);
+      user = MatrixPeer(_matrixClient, _matrixClient.userID!);
+      addPeer(user!);
     }
 
     _matrixClient.onSync.stream.listen((event) => {onSync.add(null), _updateRoomslist(), _updateSpacesList()});
@@ -182,5 +183,29 @@ class MatrixClient extends Client {
 
       addSpace(MatrixSpace(this, space, _matrixClient));
     }
+  }
+
+  @override
+  Future<Room> createRoom(String name, RoomVisibility visibility) async {
+    var id = await _matrixClient.createRoom(
+        name: name,
+        visibility: visibility == RoomVisibility.private ? matrix.Visibility.private : matrix.Visibility.public);
+    if (roomExists(id)) return getRoom(id)!;
+    var room = MatrixRoom(this, _matrixClient.getRoomById(id)!, _matrixClient);
+    addRoom(room);
+    return room;
+  }
+
+  @override
+  Future<Space> createSpace(String name, RoomVisibility visibility) async {
+    var id = await _matrixClient.createSpace(
+        name: name,
+        waitForSync: true,
+        visibility: visibility == RoomVisibility.private ? matrix.Visibility.private : matrix.Visibility.public);
+
+    if (spaceExists(id)) return getSpace(id)!;
+    var space = MatrixSpace(this, _matrixClient.getRoomById(id)!, _matrixClient);
+    addSpace(space);
+    return space;
   }
 }

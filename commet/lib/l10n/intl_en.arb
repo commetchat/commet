@@ -18,5 +18,15 @@
   "sasVerificationDone": "Done!",
   "genericRejectButton": "Reject",
   "sasEmojiVerificationPrompt": "Check that the emoji are the same, and in the same order as the other device",
-  "verificationRequestPrompt": "**{username}** has requested to verify your session"
+  "verificationRequestPrompt": "**{username}** has requested to verify your session",
+  "home": "Home",
+  "addSpace": "Add Space",
+  "settings": "Settings",
+  "addSpaceViewCreateSpaceButton": "Create Space!",
+  "roomVisibilityPublic": "Public",
+  "roomVisibilityPrivate": "Private",
+  "roomVisibilityPublicExplanation": "This space will be publically accessible by anyone on the internet",
+  "roomVisibilityPrivateExplanation": "This space will be only be accessible by invitation",
+  "spaceNamePrompt": "Space name",
+  "spaceTopicPrompt": "Topic (Optional)"
 }

@@ -1,7 +1,8 @@
 import 'package:commet/client/client.dart';
+import 'package:commet/ui/organisms/side_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart';
-
+import '../molecules/space_selector.dart';
 import '../../config/app_config.dart';
 
 class SpaceIcon extends StatefulWidget {
@@ -28,12 +29,15 @@ class _SpaceIconState extends State<SpaceIcon> {
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
-      ImageButton(
-        //tooltip: widget.space.displayName,
-        image: widget.space.avatar,
-        onTap: widget.onTap,
-        size: widget.width,
-      ),
+      SideNavigationBar.tooltip(
+          widget.space.displayName,
+          ImageButton(
+            //tooltip: widget.space.displayName,
+            image: widget.space.avatar,
+            onTap: widget.onTap,
+            size: widget.width,
+          ),
+          context),
       if (widget.showUser && widget.space.client.user!.avatar != null) avatarOverlay()
     ]);
   }

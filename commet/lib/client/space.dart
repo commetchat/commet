@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:commet/client/client.dart';
+import 'package:commet/client/permissions.dart';
 import 'package:flutter/material.dart';
 
 abstract class Space {
@@ -10,6 +11,7 @@ abstract class Space {
   final Map<String, Room> _rooms = {};
   late List<Room> rooms = List.empty(growable: true);
   late Key key = UniqueKey();
+  late Permissions permissions;
 
   late String displayName;
   int notificationCount = 0;
@@ -52,6 +54,5 @@ abstract class Space {
 
   void onRoomReorderedCallback(int oldIndex, int newIndex) {}
 
-  @override
-  int get hashCode => identifier.hashCode;
+  Future<Room> createSpaceChild(String name, RoomVisibility visibility);
 }

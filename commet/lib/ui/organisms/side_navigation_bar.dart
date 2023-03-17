@@ -1,9 +1,12 @@
 import 'package:commet/client/client_manager.dart';
-import 'package:commet/ui/organisms/add_space_dialog.dart';
+import 'package:commet/ui/pages/add_space/add_space.dart';
 import 'package:flutter/material.dart';
+import 'package:just_the_tooltip/just_the_tooltip.dart';
 import 'package:provider/provider.dart';
+import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart';
-
+import 'package:tiamat/tiamat.dart' as tiamat;
+import '../../generated/l10n.dart';
 import '../molecules/space_selector.dart';
 import '../molecules/timeline_viewer.dart';
 import '../navigation/navigation_utils.dart';
@@ -18,6 +21,23 @@ class SideNavigationBar extends StatefulWidget {
 
   @override
   State<SideNavigationBar> createState() => _SideNavigationBarState();
+
+  static Widget tooltip(String text, Widget child, BuildContext context) {
+    return AspectRatio(
+      aspectRatio: 1,
+      child: JustTheTooltip(
+          content: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: tiamat.Text(text),
+          ),
+          preferredDirection: AxisDirection.right,
+          offset: 5,
+          tailLength: 5,
+          tailBaseWidth: 5,
+          backgroundColor: Theme.of(context).extension<ExtraColors>()!.surfaceLow4,
+          child: child),
+    );
+  }
 }
 
 class _SideNavigationBarState extends State<SideNavigationBar> {
@@ -41,39 +61,48 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
           onSpaceInsert: _clientManager.onSpaceAdded.stream,
           header: Column(
             children: [
-              ImageButton(
-                // tooltip: "Home",
-
-                size: 70,
-                icon: Icons.home,
-                onTap: () {
-                  widget.onHomeSelected?.call();
-                },
-              ),
+              SideNavigationBar.tooltip(
+                  T.of(context).home,
+                  ImageButton(
+                    size: 70,
+                    icon: Icons.home,
+                    onTap: () {
+                      widget.onHomeSelected?.call();
+                    },
+                  ),
+                  context)
             ],
           ),
           footer: Column(
             children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
-                child: ImageButton(
-                  // tooltip: "Add a Space",
-                  size: 70,
-                  icon: Icons.add,
-                  onTap: () {
-                    PopupDialog.show(context, content: const AddSpaceDialog(), title: "Add Space");
-                  },
-                ),
+                child: SideNavigationBar.tooltip(
+                    T.of(context).addSpace,
+                    ImageButton(
+                      // tooltip: "Add a Space",
+                      size: 70,
+                      icon: Icons.add,
+                      onTap: () {
+                        PopupDialog.show(context,
+                            content: AddSpace(clientManager: _clientManager), title: T.of(context).addSpace);
+                      },
+                    ),
+                    context),
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
-                child: ImageButton(
-                  // tooltip: "Settings",
-                  size: 70,
-                  icon: Icons.settings,
-                  onTap: () {
-                    NavigationUtils.navigateTo(context, const SettingsPage());
-                  },
+                child: SideNavigationBar.tooltip(
+                  T.of(context).settings,
+                  ImageButton(
+                    // tooltip: "Settings",
+                    size: 70,
+                    icon: Icons.settings,
+                    onTap: () {
+                      NavigationUtils.navigateTo(context, const SettingsPage());
+                    },
+                  ),
+                  context,
                 ),
               ),
             ],

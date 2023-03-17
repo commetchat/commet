@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:commet/client/attachment.dart';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/simulated/simulated_peer.dart';
+import 'package:commet/client/simulated/simulated_room_permissions.dart';
 import 'package:commet/client/simulated/simulated_timeline.dart';
 import 'package:commet/ui/molecules/message.dart';
 import 'package:commet/utils/rng.dart';
@@ -18,6 +19,8 @@ class SimulatedRoom extends Room {
   SimulatedRoom(displayName, client, {bool isDm = false}) : super(RandomUtils.getRandomString(20), client) {
     identifier = RandomUtils.getRandomString(20);
     notificationCount = 1;
+
+    permissions = SimulatedRoomPermissions();
 
     if (isDm) {
       isDirectMessage = true;

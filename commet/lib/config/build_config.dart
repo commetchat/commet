@@ -1,7 +1,7 @@
 // ignore_for_file: constant_identifier_names
 
 class BuildConfig {
-  static const String _buildMode = String.fromEnvironment('BUILD_MODE', defaultValue: "release");
+  static const String _buildMode = String.fromEnvironment('BUILD_MODE', defaultValue: "debug");
 
   static const String _platform = String.fromEnvironment('PLATFORM', defaultValue: "desktop");
 

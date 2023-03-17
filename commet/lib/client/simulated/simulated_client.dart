@@ -82,4 +82,17 @@ class SimulatedClient extends Client {
       addSpace(SimulatedSpace("Simulated Space 12", this));
     });
   }
+
+  @override
+  Future<Room> createRoom(String name, RoomVisibility visibility) {
+    // TODO: implement createRoom
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Space> createSpace(String name, RoomVisibility visibility) async {
+    var space = SimulatedSpace(name, this);
+    addSpace(space);
+    return space;
+  }
 }

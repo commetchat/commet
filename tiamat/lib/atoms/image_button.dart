@@ -210,8 +210,9 @@ class _ImageButtonState extends State<ImageButton> {
 
   @override
   Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: 1,
+    return SizedBox(
+      width: widget.size,
+      height: widget.size,
       child: MouseRegion(
           cursor: SystemMouseCursors.click,
           onEnter: (event) {

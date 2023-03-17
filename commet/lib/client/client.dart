@@ -108,4 +108,8 @@ abstract class Client {
       onPeerAdded.add(index);
     }
   }
+
+  Future<Room> createRoom(String name, RoomVisibility visibility);
+
+  Future<Space> createSpace(String name, RoomVisibility visibility);
 }

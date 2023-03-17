@@ -1,6 +1,13 @@
 import 'package:commet/client/client.dart';
 import 'package:flutter/material.dart';
 
+import 'permissions.dart';
+
+enum RoomVisibility {
+  public,
+  private,
+}
+
 abstract class Room {
   late String identifier;
   late Client client;
@@ -11,6 +18,7 @@ abstract class Room {
   late String displayName;
   late bool isDirectMessage;
   late String? directMessagePartnerID;
+  late Permissions permissions;
 
   int notificationCount = 0;
 

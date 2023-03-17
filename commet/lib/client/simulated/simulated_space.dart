@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:commet/client/client.dart';
+import 'package:commet/client/simulated/simulated_room_permissions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 
@@ -19,6 +20,8 @@ class SimulatedSpace extends Space {
     var placeholderImageIndex = Random().nextInt(images.length);
 
     avatar = AssetImage(images[placeholderImageIndex]);
+
+    permissions = SimulatedRoomPermissions();
   }
 
   static const _chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
@@ -26,4 +29,10 @@ class SimulatedSpace extends Space {
 
   String getRandomString(int length) =>
       String.fromCharCodes(Iterable.generate(length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
+
+  @override
+  Future<Room> createSpaceChild(String name, RoomVisibility visibility) {
+    // TODO: implement createSpaceChild
+    throw UnimplementedError();
+  }
 }

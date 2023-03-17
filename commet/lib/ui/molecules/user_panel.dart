@@ -28,7 +28,7 @@ class UserPanel extends StatefulWidget {
   final String displayName;
   final Color? color;
   final String? detail;
-  final Function? onClicked;
+  final void Function()? onClicked;
 
   @override
   State<UserPanel> createState() => _UserPanelState();
@@ -43,9 +43,7 @@ class _UserPanelState extends State<UserPanel> {
         color: material.Colors.transparent,
         child: material.InkWell(
           splashColor: material.Theme.of(context).highlightColor,
-          onTap: () {
-            widget.onClicked?.call();
-          },
+          onTap: widget.onClicked,
           child: Padding(
             padding: const EdgeInsets.fromLTRB(8, 3, 0, 3),
             child: Row(

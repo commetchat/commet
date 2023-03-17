@@ -1,4 +1,5 @@
 import 'package:commet/client/client.dart';
+import 'package:commet/client/matrix/matrix_room_permissions.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
@@ -21,6 +22,7 @@ class MatrixSpace extends Space {
       refresh();
     });
 
+    permissions = MatrixRoomPermissions(_matrixRoom);
     refresh();
   }
 
@@ -48,13 +50,9 @@ class MatrixSpace extends Space {
   }
 
   @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    if (other is! Space) return false;
-
-    return identifier == other.identifier;
+  Future<Room> createSpaceChild(String name, RoomVisibility visibility) async {
+    var room = await client.createRoom(name, visibility);
+    _matrixRoom.setSpaceChild(room.identifier);
+    return room;
   }
-
-  @override
-  int get hashCode => identifier.hashCode;
 }
