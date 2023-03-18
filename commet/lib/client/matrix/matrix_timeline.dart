@@ -102,12 +102,27 @@ class MatrixTimeline extends Timeline {
     e.type = EventType.message;
 
     if (matrixEvent.hasAttachment) {
+      double? width;
+      double? height;
+      var info = matrixEvent.content.tryGet<Map<String, dynamic>>("info");
+      if (info != null) {
+        int? w = info.tryGet("w");
+        int? h = info.tryGet("h");
+
+        if (w != null) width = w.toDouble();
+        if (h != null) height = h.toDouble();
+        print("W: $width, H: $height");
+      }
+
       Attachment file = Attachment(
           matrixEvent.attachmentMxcUrl!.getDownloadLink(_matrixRoom.client).toString(), matrixEvent.body,
           mimeType: matrixEvent.attachmentMimetype,
+          height: height,
+          width: width,
           thumbnail: matrixEvent.thumbnailMxcUrl != null
               ? NetworkImage(matrixEvent.thumbnailMxcUrl!.getDownloadLink(_matrixRoom.client).toString())
               : null);
+
       e.body = null;
       e.attachments = List.from([file]);
     }

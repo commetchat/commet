@@ -10,4 +10,6 @@ class Attachment {
   ImageProvider? thumbnail;
   double? width;
   double? height;
+
+  double? get aspectRatio => (width != null && height != null) ? (width! / height!) : null;
 }

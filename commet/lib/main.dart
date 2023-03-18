@@ -1,5 +1,7 @@
 import 'package:commet/client/client_manager.dart';
+import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/pages/loading/loading_page.dart';
+import 'package:dart_vlc/dart_vlc.dart';
 
 import 'package:flutter/material.dart';
 
@@ -20,6 +22,9 @@ void main() async {
       return 1;
     },
   );
+
+  if (BuildConfig.DESKTOP) DartVLC.initialize();
+
   runApp(App());
 }
 
