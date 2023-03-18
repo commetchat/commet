@@ -10,10 +10,12 @@ import 'package:commet/ui/molecules/space_viewer.dart';
 import 'package:commet/ui/molecules/user_list.dart';
 import 'package:commet/ui/molecules/user_panel.dart';
 import 'package:commet/ui/organisms/side_navigation_bar.dart';
+import 'package:commet/ui/organisms/space_summary.dart';
 import 'package:commet/ui/pages/chat/chat_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart';
 import '../../../client/client.dart';
 
@@ -42,6 +44,8 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
             if (widget.state.homePageSelected) homePageView(),
             if (!widget.state.homePageSelected && widget.state.selectedSpace != null) spaceRoomSelector(),
             if (widget.state.selectedRoom != null) roomChatView(),
+            if (widget.state.selectedSpace != null && widget.state.selectedRoom == null)
+              Expanded(child: SpaceSummary(key: widget.state.selectedSpace!.key, space: widget.state.selectedSpace!)),
           ],
         ),
         if (widget.state.selectedRoom != null)
@@ -119,7 +123,13 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
         child: Tile.low1(
           child: Column(
             children: [
-              SizedBox(height: s(50), child: SpaceHeader(widget.state.selectedSpace!)),
+              SizedBox(
+                  height: s(80),
+                  child: SpaceHeader(
+                    widget.state.selectedSpace!,
+                    onTap: widget.state.clearRoomSelection,
+                    backgroundColor: Theme.of(context).extension<ExtraColors>()!.surfaceLow1,
+                  )),
               Expanded(
                   child: SpaceViewer(
                 widget.state.selectedSpace!,

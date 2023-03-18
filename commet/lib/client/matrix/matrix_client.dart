@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:commet/client/client_manager.dart';
+import 'package:commet/client/matrix/matrix_room_preview.dart';
 import 'package:commet/client/preview_data.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/main.dart';
@@ -227,36 +228,27 @@ class MatrixClient extends Client {
   }
 
   @override
-  Future<PreviewData?> getRoomPreview(String address) async {
-    try {
-      var response = await _matrixClient.getRoomIdByAlias(address);
-      var state = await _matrixClient.getRoomState(response.roomId!);
-
-      String? name;
-      String? topic;
-      ImageProvider? avatar;
-
-      var nameState = state.where((element) => element.type == "m.room.name");
-      if (nameState.isNotEmpty) name = nameState.first.content['name'];
-
-      var avatarState = state.where((element) => element.type == "m.room.avatar");
-      if (avatarState.isNotEmpty) {
-        var mxc = Uri.parse(avatarState.first.content['url']);
-        var thumbnail = mxc.getDownloadLink(_matrixClient);
-        avatar = NetworkImage(thumbnail.toString());
-      }
-
-      var topicState = state.where((element) => element.type == "m.room.topic");
-      if (topicState.isNotEmpty) topic = topicState.first.content['topic'];
-
-      return PreviewData(avatar: avatar, displayName: name, topic: topic);
-    } catch (e) {
-      return null;
+  Future<PreviewData?> getRoomPreviewInternal(String address) async {
+    MatrixRoomPreview preview = MatrixRoomPreview(roomId: address, matrixClient: _matrixClient);
+    if (preview.exists) {
+      return preview;
     }
+    return null;
   }
 
   @override
-  Future<PreviewData?> getSpacePreview(String address) {
-    return getRoomPreview(address);
+  Future<PreviewData?> getSpacePreviewInternal(String address) {
+    return getRoomPreviewInternal(address);
+  }
+
+  @override
+  Future<Room> joinRoom(String address) async {
+    var id = await _matrixClient.joinRoom(address);
+    _matrixClient.waitForRoomInSync(id);
+    if (roomExists(id)) return getRoom(id)!;
+
+    var room = MatrixRoom(this, _matrixClient.getRoomById(id)!, _matrixClient);
+    addRoom(room);
+    return room;
   }
 }

@@ -19,6 +19,7 @@ abstract class Room {
   late bool isDirectMessage;
   late String? directMessagePartnerID;
   late Permissions permissions;
+  bool get isMember => false;
 
   int notificationCount = 0;
 

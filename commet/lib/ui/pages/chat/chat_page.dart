@@ -36,6 +36,12 @@ class ChatPageState extends State<ChatPage> {
     });
   }
 
+  void clearRoomSelection() {
+    setState(() {
+      selectedRoom = null;
+    });
+  }
+
   void selectHome() {
     setState(() {
       homePageSelected = true;

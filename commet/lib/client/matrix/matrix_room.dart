@@ -10,6 +10,9 @@ import 'package:matrix/matrix.dart' as matrix;
 class MatrixRoom extends Room {
   late matrix.Room _matrixRoom;
 
+  @override
+  bool get isMember => _matrixRoom.membership == matrix.Membership.join;
+
   MatrixRoom(client, matrix.Room room, matrix.Client matrixClient) : super(room.id, client) {
     _matrixRoom = room;
 

@@ -1,10 +1,12 @@
 import 'package:commet/ui/molecules/direct_message_list.dart';
 import 'package:commet/ui/molecules/timeline_viewer.dart';
+import 'package:commet/ui/organisms/space_summary.dart';
 import 'package:commet/ui/pages/chat/chat_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-
+import 'package:flutter/material.dart' as material;
 import 'package:provider/provider.dart';
+import 'package:tiamat/config/config.dart';
 import 'package:tiamat/tiamat.dart';
 
 import '../../../client/client_manager.dart';
@@ -49,9 +51,9 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
         left: navigation(newContext),
         main: shouldMainIgnoreInput
             ? IgnorePointer(
-                child: timelineView(),
+                child: mainPanel(),
               )
-            : timelineView(),
+            : mainPanel(),
         onDragStart: () {
           messageInput.currentState?.unfocus();
         },
@@ -75,9 +77,17 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
           },
         ),
         if (widget.state.homePageSelected) homePageView(),
-        if (widget.state.homePageSelected == false && widget.state.selectedSpace != null) spaceRoomSelector(newContext)
+        if (widget.state.homePageSelected == false && widget.state.selectedSpace != null) spaceRoomSelector(newContext),
       ],
     );
+  }
+
+  Widget mainPanel() {
+    if (widget.state.selectedSpace != null && widget.state.selectedRoom == null) {
+      return SpaceSummary(space: widget.state.selectedSpace!);
+    }
+
+    return timelineView();
   }
 
   Widget userList() {
@@ -131,35 +141,40 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
   Widget spaceRoomSelector(BuildContext newContext) {
     return Flexible(
       child: Tile.low1(
-        child: SafeArea(
-          child: Column(
-            children: [
-              SizedBox(height: s(50), child: SpaceHeader(widget.state.selectedSpace!)),
-              Expanded(
-                  child: Padding(
-                padding: EdgeInsets.fromLTRB(0, 0, s(50), 0),
-                child: SpaceViewer(
-                  widget.state.selectedSpace!,
-                  key: widget.state.selectedSpace!.key,
-                  onRoomInsert: widget.state.selectedSpace!.onRoomAdded.stream,
-                  onRoomSelected: (index) async {
-                    selectRoom(widget.state.selectedSpace!.rooms[index]);
-                  },
+        child: Column(
+          children: [
+            SizedBox(
+              height: 100.1,
+              child: SpaceHeader(
+                widget.state.selectedSpace!,
+                backgroundColor: material.Theme.of(context).extension<ExtraColors>()!.surfaceLow1,
+                onTap: clearSelectedRoom,
+              ),
+            ),
+            Expanded(
+                child: Padding(
+              padding: EdgeInsets.fromLTRB(0, 0, s(50), 0),
+              child: SpaceViewer(
+                widget.state.selectedSpace!,
+                key: widget.state.selectedSpace!.key,
+                onRoomInsert: widget.state.selectedSpace!.onRoomAdded.stream,
+                onRoomSelected: (index) async {
+                  selectRoom(widget.state.selectedSpace!.rooms[index]);
+                },
+              ),
+            )),
+            Tile.low2(
+              child: SizedBox(
+                height: s(70),
+                child: UserPanel(
+                  displayName: widget.state.selectedSpace!.client.user!.displayName,
+                  avatar: widget.state.selectedSpace!.client.user!.avatar,
+                  detail: widget.state.selectedSpace!.client.user!.detail,
+                  color: widget.state.selectedSpace!.client.user!.color,
                 ),
-              )),
-              Tile.low2(
-                child: SizedBox(
-                  height: s(70),
-                  child: UserPanel(
-                    displayName: widget.state.selectedSpace!.client.user!.displayName,
-                    avatar: widget.state.selectedSpace!.client.user!.avatar,
-                    detail: widget.state.selectedSpace!.client.user!.detail,
-                    color: widget.state.selectedSpace!.client.user!.color,
-                  ),
-                ),
-              )
-            ],
-          ),
+              ),
+            )
+          ],
         ),
       ),
     );
@@ -200,6 +215,16 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
         ),
       ),
     );
+  }
+
+  void clearSelectedRoom() {
+    Future.delayed(const Duration(milliseconds: 125)).then((value) {
+      panelsKey.currentState!.reveal(RevealSide.main);
+      setState(() {
+        shouldMainIgnoreInput = false;
+      });
+    });
+    widget.state.clearRoomSelection();
   }
 
   void selectRoom(Room room) {

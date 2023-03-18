@@ -16,6 +16,9 @@ class SimulatedRoom extends Room {
   late Peer bob = SimulatedPeer(
       client, "bob@commet.chat", "bob", const AssetImage("assets/images/placeholder/generic/checker_orange.png"));
 
+  @override
+  bool get isMember => true;
+
   SimulatedRoom(displayName, client, {bool isDm = false}) : super(RandomUtils.getRandomString(20), client) {
     identifier = RandomUtils.getRandomString(20);
     notificationCount = 1;
