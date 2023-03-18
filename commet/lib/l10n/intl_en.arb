@@ -28,5 +28,8 @@
   "roomVisibilityPublicExplanation": "This space will be publically accessible by anyone on the internet",
   "roomVisibilityPrivateExplanation": "This space will be only be accessible by invitation",
   "spaceNamePrompt": "Space name",
-  "spaceTopicPrompt": "Topic (Optional)"
+  "spaceTopicPrompt": "Topic (Optional)",
+  "joinSpacePrompt": "Join Space!",
+  "spaceAddressPrompt": "Space Address:",
+  "couldNotLoadRoomPreview": "Could not load room preview"
 }

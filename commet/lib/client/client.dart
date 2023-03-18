@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:commet/client/preview_data.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/client/space.dart';
 
@@ -112,4 +113,10 @@ abstract class Client {
   Future<Room> createRoom(String name, RoomVisibility visibility);
 
   Future<Space> createSpace(String name, RoomVisibility visibility);
+
+  Future<Space> joinSpace(String address);
+
+  Future<PreviewData?> getRoomPreview(String address);
+
+  Future<PreviewData?> getSpacePreview(String address);
 }

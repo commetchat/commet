@@ -7,10 +7,13 @@
 import 'dart:core';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
+import 'package:commet/client/simulated/simulated_client.dart';
 import 'package:commet/config/app_config.dart';
 import 'package:commet/generated/l10n.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/molecules/user_panel.dart';
+import 'package:commet/ui/pages/add_space/add_space.dart';
+import 'package:commet/ui/pages/add_space/add_space_view.dart';
 import 'package:commet/ui/pages/chat/chat_page.dart';
 import 'package:commet/ui/pages/loading/loading_page.dart';
 import 'package:commet/ui/pages/loading/loading_page_view.dart';
@@ -23,6 +26,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:matrix/encryption/utils/key_verification.dart';
 import 'package:provider/provider.dart';
 import 'package:scaled_app/scaled_app.dart';
@@ -167,6 +171,27 @@ class HotReload extends StatelessWidget {
                           folders: [],
                         ),
                       ],
+                    ),
+                    WidgetbookFolder(
+                      name: 'add_space',
+                      widgets: [
+                        WidgetbookComponent(
+                          name: 'AddSpaceView',
+                          useCases: [
+                            WidgetbookUseCase(
+                              name: 'Multiple Accounts',
+                              builder: (context) =>
+                                  wbAddSpacePageMultiAccount(context),
+                            ),
+                            WidgetbookUseCase(
+                              name: 'Single Account',
+                              builder: (context) =>
+                                  wbAddSpacePageSingleAccount(context),
+                            ),
+                          ],
+                        ),
+                      ],
+                      folders: [],
                     ),
                     WidgetbookFolder(
                       name: 'login',

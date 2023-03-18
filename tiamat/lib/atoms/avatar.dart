@@ -72,8 +72,9 @@ class Avatar extends StatelessWidget {
         width: radius * 2,
         height: radius * 2,
         child: DecoratedBox(
-            decoration:
-                BoxDecoration(borderRadius: BorderRadius.circular(radius), image: DecorationImage(image: image!))),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(radius),
+                image: DecorationImage(image: image!, filterQuality: FilterQuality.high, fit: BoxFit.cover))),
       );
     }
 

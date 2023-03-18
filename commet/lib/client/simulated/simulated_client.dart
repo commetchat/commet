@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:commet/client/client.dart';
+import 'package:commet/client/preview_data.dart';
 import 'package:commet/client/simulated/simulated_peer.dart';
 import 'package:commet/client/simulated/simulated_room.dart';
 import 'package:commet/client/simulated/simulated_space.dart';
@@ -94,5 +95,22 @@ class SimulatedClient extends Client {
     var space = SimulatedSpace(name, this);
     addSpace(space);
     return space;
+  }
+
+  @override
+  Future<Space> joinSpace(String address) async {
+    return await createSpace(address, RoomVisibility.public);
+  }
+
+  @override
+  Future<PreviewData> getRoomPreview(String address) {
+    // TODO: implement getRoomPreview
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<PreviewData> getSpacePreview(String address) {
+    // TODO: implement getSpacePreview
+    throw UnimplementedError();
   }
 }

@@ -1,6 +1,8 @@
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:tiamat/atoms/text.dart';
+import 'package:tiamat/config/config.dart';
+
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
@@ -33,6 +35,36 @@ Widget wbDropdownSelector(BuildContext context) {
   );
 }
 
+@WidgetbookUseCase(name: 'Multi Line Text', type: DropdownSelector)
+Widget wbDropdownSelectorMultiLine(BuildContext context) {
+  return tiamat.Tile.low2(
+    child: Padding(
+      padding: EdgeInsets.all(10.0),
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: EdgeInsets.all(8.0),
+              child: DropdownSelector<String>(
+                itemHeight: 80,
+                items: [loremIpsum, "Bravo", loremIpsum + " ", "Delta"],
+                itemBuilder: (item) {
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: tiamat.Text(item),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
 @WidgetbookUseCase(name: 'Avatar Selector', type: DropdownSelector)
 Widget wbDropdownAvatarSelector(BuildContext context) {
   return tiamat.Tile(
@@ -46,6 +78,7 @@ Widget wbDropdownAvatarSelector(BuildContext context) {
               padding: EdgeInsets.all(8.0),
               child: SizedBox(
                 child: DropdownSelector<ImageProvider>(
+                  itemHeight: 70,
                   items: [
                     AssetImage("assets/images/placeholder/generic/checker_purple.png"),
                     AssetImage("assets/images/placeholder/generic/checker_red.png"),
@@ -77,7 +110,7 @@ class DropdownSelector<T> extends StatefulWidget {
   const DropdownSelector(
       {required this.items,
       required this.itemBuilder,
-      this.itemHeight,
+      this.itemHeight = 50,
       this.onItemSelected,
       this.defaultIndex = 0,
       super.key});
@@ -85,7 +118,7 @@ class DropdownSelector<T> extends StatefulWidget {
   final Widget Function(T item) itemBuilder;
   final void Function(T item)? onItemSelected;
   final int defaultIndex;
-  final double? itemHeight;
+  final double itemHeight;
 
   @override
   State<DropdownSelector<T>> createState() => _DropdownSelectorState<T>();
@@ -110,16 +143,20 @@ class _DropdownSelectorState<T> extends State<DropdownSelector<T>> {
           side: BorderSide(color: Theme.of(context).highlightColor, width: 1.4),
         ),
         color: Colors.transparent,
-        child: DropdownButtonHideUnderline(
-          child: DropdownButton(
-            itemHeight: widget.itemHeight,
-            focusColor: Colors.transparent,
+        child: LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
+          return DropdownButtonHideUnderline(
+              child: DropdownButton2(
+            menuItemStyleData: MenuItemStyleData(height: widget.itemHeight),
             value: value,
+            dropdownStyleData: DropdownStyleData(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(bottomRight: Radius.circular(10), bottomLeft: Radius.circular(10)),
+                    color: Theme.of(context).extension<ExtraColors>()!.surfaceHigh1)),
             items: widget.items.map((value) {
               return DropdownMenuItem(
                 alignment: Alignment.centerLeft,
                 value: value,
-                child: widget.itemBuilder(value),
+                child: SizedBox(width: constraints.maxWidth - 60, child: widget.itemBuilder(value)),
               );
             }).toList(),
             onChanged: (newValue) {
@@ -128,8 +165,8 @@ class _DropdownSelectorState<T> extends State<DropdownSelector<T>> {
               });
               widget.onItemSelected?.call(newValue!);
             },
-          ),
-        ),
+          ));
+        }),
       ),
     );
   }

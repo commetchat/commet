@@ -4,6 +4,8 @@ import 'package:tiamat/atoms/seperator.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 
 const String exampleText = "The quick brown fox jumped over the lazy dog";
+const String loremIpsum =
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua";
 
 @WidgetbookUseCase(name: 'Label', type: Text)
 Widget wbtextLabelUseCase(BuildContext context) {
@@ -91,44 +93,43 @@ Widget wbtextAllUseCase(BuildContext context) {
 enum TextType { label, labelEmphasised, error, tiny, body, largeTitle, name }
 
 class Text extends StatelessWidget {
-  const Text(this.text, {super.key, this.type = TextType.label, this.color});
+  const Text(this.text, {super.key, this.type = TextType.label, this.overflow, this.color});
   final String text;
   final TextType type;
   final Color? color;
+  final TextOverflow? overflow;
 
-  const Text.label(this.text, {Key? key})
+  const Text.label(this.text, {Key? key, this.overflow})
       : type = TextType.label,
         color = null,
         super(key: key);
 
-  const Text.labelEmphasised(
-    this.text, {
-    Key? key,
-  })  : type = TextType.labelEmphasised,
+  const Text.labelEmphasised(this.text, {Key? key, this.overflow})
+      : type = TextType.labelEmphasised,
         color = null,
         super(key: key);
 
-  const Text.error(this.text, {Key? key})
+  const Text.error(this.text, {Key? key, this.overflow})
       : type = TextType.error,
         color = null,
         super(key: key);
 
-  const Text.tiny(this.text, {Key? key})
+  const Text.tiny(this.text, {Key? key, this.overflow})
       : type = TextType.tiny,
         color = null,
         super(key: key);
 
-  const Text.body(this.text, {Key? key})
+  const Text.body(this.text, {Key? key, this.overflow})
       : type = TextType.body,
         color = null,
         super(key: key);
 
-  const Text.largeTitle(this.text, {Key? key})
+  const Text.largeTitle(this.text, {Key? key, this.overflow})
       : type = TextType.largeTitle,
         color = null,
         super(key: key);
 
-  const Text.name(this.text, {Key? key, this.color})
+  const Text.name(this.text, {Key? key, this.color, this.overflow})
       : type = TextType.name,
         super(key: key);
 
@@ -169,6 +170,7 @@ class Text extends StatelessWidget {
     return material.Text(
       text,
       style: style,
+      overflow: overflow,
     );
   }
 }

@@ -1,6 +1,10 @@
 import 'package:commet/client/client.dart';
+import 'package:commet/client/preview_data.dart';
+import 'package:commet/client/simulated/simulated_client.dart';
+import 'package:commet/ui/atoms/room_preview.dart';
 import 'package:commet/ui/molecules/user_panel.dart';
 import 'package:commet/ui/pages/add_space/add_space.dart';
+import 'package:commet/utils/debounce.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter/material.dart';
@@ -8,13 +12,50 @@ import 'package:flutter/widgets.dart';
 
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
+import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 
 import '../../../generated/l10n.dart';
 
+@WidgetbookUseCase(name: 'Multiple Accounts', type: AddSpaceView)
+@Deprecated("widgetbook")
+Widget wbAddSpacePageMultiAccount(BuildContext context) {
+  var clients = [SimulatedClient(), SimulatedClient(), SimulatedClient()];
+  int index = 0;
+  for (var client in clients) {
+    client.login(LoginType.loginPassword, "simulatedClient${index++}", "");
+  }
+  return Scaffold(
+      body: PopupDialog(
+          title: "Add Space",
+          content: AddSpaceView(
+            clients: clients,
+            initialPhase: _AddSpacePhase.create,
+          )));
+}
+
+@WidgetbookUseCase(name: 'Single Account', type: AddSpaceView)
+@Deprecated("widgetbook")
+Widget wbAddSpacePageSingleAccount(BuildContext context) {
+  var clients = [SimulatedClient()];
+  int index = 0;
+  for (var client in clients) {
+    client.login(LoginType.loginPassword, "simulatedClient${index++}", "");
+  }
+  return Scaffold(
+      body: PopupDialog(
+          title: "Add Space",
+          content: AddSpaceView(
+            clients: clients,
+            initialPhase: _AddSpacePhase.create,
+          )));
+}
+
 class AddSpaceView extends StatefulWidget {
-  const AddSpaceView({super.key, required this.clients, this.onCreateSpace});
+  const AddSpaceView({super.key, required this.clients, this.onCreateSpace, this.onJoinSpace, this.initialPhase});
   final List<Client> clients;
   final Function(Client client, String spaceName, RoomVisibility visibility)? onCreateSpace;
+  final Function(Client client, String address)? onJoinSpace;
+  final _AddSpacePhase? initialPhase;
 
   @override
   State<AddSpaceView> createState() => _AddSpaceViewState();
@@ -28,10 +69,37 @@ class _AddSpaceViewState extends State<AddSpaceView> {
   RoomVisibility visibility = RoomVisibility.private;
   TextEditingController nameController = TextEditingController();
   TextEditingController topicController = TextEditingController();
+  TextEditingController spaceAddressController = TextEditingController();
+
+  PreviewData? spacePreview;
+  bool loadingSpacePreview = false;
+
+  Debouncer spacePreviewDebounce = Debouncer(delay: Duration(milliseconds: 500));
+
+  void getSpacePreview() async {
+    var preview = await selectedClient.getSpacePreview(spaceAddressController.text);
+
+    setState(() {
+      print("Got Preview");
+      spacePreview = preview;
+      loadingSpacePreview = false;
+    });
+  }
 
   @override
   void initState() {
     selectedClient = widget.clients[0];
+
+    if (widget.initialPhase != null) phase = widget.initialPhase!;
+
+    spaceAddressController.addListener(() {
+      setState(() {
+        loadingSpacePreview = true;
+      });
+
+      spacePreviewDebounce.run(getSpacePreview);
+    });
+
     super.initState();
   }
 
@@ -51,6 +119,28 @@ class _AddSpaceViewState extends State<AddSpaceView> {
     );
   }
 
+  Widget userSelector() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+      child: tiamat.DropdownSelector<Client>(
+        items: widget.clients,
+        itemHeight: 58,
+        onItemSelected: (item) {
+          setState(() {
+            selectedClient = item;
+          });
+        },
+        itemBuilder: (item) {
+          return UserPanel(
+            displayName: item.user!.displayName,
+            detail: item.user!.detail,
+            avatar: item.user!.avatar,
+          );
+        },
+      ),
+    );
+  }
+
   Widget createSpace(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -59,43 +149,26 @@ class _AddSpaceViewState extends State<AddSpaceView> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (widget.clients.length > 1)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
-              child: tiamat.DropdownSelector<Client>(
-                items: widget.clients,
-                onItemSelected: (item) {
-                  setState(() {
-                    selectedClient = item;
-                  });
-                },
-                itemBuilder: (item) {
-                  return UserPanel(
-                    displayName: item.user!.displayName,
-                    detail: item.user!.detail,
-                    avatar: item.user!.avatar,
-                  );
-                },
-              ),
-            ),
+          if (widget.clients.length > 1) userSelector(),
           tiamat.TextInput(
             controller: nameController,
-            placeholder: T.of(context).spaceNamePrompt,
+            placeholder: T.current.spaceNamePrompt,
           ),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
               child: tiamat.TextInput(
                 controller: topicController,
-                label: T.of(context).spaceTopicPrompt,
+                placeholder: T.current.spaceTopicPrompt,
                 maxLines: 100,
               ),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+            padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
             child: tiamat.DropdownSelector<RoomVisibility>(
               items: [RoomVisibility.private, RoomVisibility.public],
+              itemHeight: 104,
               onItemSelected: (item) {
                 setState(() {
                   visibility = item;
@@ -107,21 +180,21 @@ class _AddSpaceViewState extends State<AddSpaceView> {
                 String subtitle;
                 switch (item) {
                   case RoomVisibility.public:
-                    title = T.of(context).roomVisibilityPublic;
+                    title = T.current.roomVisibilityPublic;
                     icon = Icons.public;
-                    subtitle = T.of(context).roomVisibilityPublicExplanation;
+                    subtitle = T.current.roomVisibilityPublicExplanation;
                     break;
                   case RoomVisibility.private:
-                    title = T.of(context).roomVisibilityPrivate;
+                    title = T.current.roomVisibilityPrivate;
                     icon = Icons.lock;
-                    subtitle = T.of(context).roomVisibilityPrivateExplanation;
+                    subtitle = T.current.roomVisibilityPrivateExplanation;
                     break;
                 }
 
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
@@ -135,10 +208,10 @@ class _AddSpaceViewState extends State<AddSpaceView> {
                           tiamat.Text.labelEmphasised(title),
                         ],
                       ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
-                        child: SizedBox(width: 340, child: tiamat.Text.label(subtitle)),
-                      )
+                      tiamat.Text.label(
+                        subtitle,
+                        overflow: TextOverflow.fade,
+                      ),
                     ],
                   ),
                 );
@@ -146,9 +219,9 @@ class _AddSpaceViewState extends State<AddSpaceView> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(0, 8, 0, 4),
+            padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
             child: tiamat.Button.success(
-              text: T.of(context).addSpaceViewCreateSpaceButton,
+              text: T.current.addSpaceViewCreateSpaceButton,
               onTap: () => widget.onCreateSpace?.call(selectedClient, nameController.text, visibility),
             ),
           )
@@ -158,7 +231,48 @@ class _AddSpaceViewState extends State<AddSpaceView> {
   }
 
   Widget joinSpace(BuildContext context) {
-    return Placeholder();
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          if (widget.clients.length > 1) userSelector(),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              tiamat.Text.label(T.of(context).spaceAddressPrompt),
+              TextInput(
+                controller: spaceAddressController,
+                placeholder: "#awesome-space:example.com",
+              ),
+            ],
+          ),
+          Container(
+            height: 100,
+            child: loadingSpacePreview
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CircularProgressIndicator(),
+                    ],
+                  )
+                : spacePreview != null
+                    ? RoomPreview(previewData: spacePreview!)
+                    : Center(child: tiamat.Text.label(T.of(context).couldNotLoadRoomPreview)),
+          ),
+          tiamat.Button.success(
+            text: T.of(context).joinSpacePrompt,
+            onTap: () {
+              widget.onJoinSpace?.call(selectedClient, spaceAddressController.text);
+            },
+          ),
+        ],
+      ),
+    );
   }
 
   Widget promptJoinOrCreate(BuildContext context) {
