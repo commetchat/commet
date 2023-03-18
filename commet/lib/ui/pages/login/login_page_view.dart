@@ -1,6 +1,8 @@
 import 'package:commet/client/client.dart';
+import 'package:commet/client/client_manager.dart';
 import 'package:commet/ui/pages/login/login_page.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:tiamat/atoms/tile.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 
@@ -39,7 +41,7 @@ class _LoginPageViewState extends State<LoginPageView> {
     if (result == LoginResult.success) {
       if (context.mounted) {
         Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (_) => const ChatPage()),
+          MaterialPageRoute(builder: (_) => ChatPage(clientManager: Provider.of<ClientManager>(context))),
           (route) => false,
         );
       }

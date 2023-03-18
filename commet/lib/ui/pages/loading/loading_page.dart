@@ -44,7 +44,7 @@ class LoadingPageState extends State<LoadingPage> {
     });
 
     if (context.mounted) {
-      NavigationUtils.navigateTo(context, isLoggedIn ? const ChatPage() : const LoginPage());
+      NavigationUtils.navigateTo(context, isLoggedIn ? ChatPage(clientManager: client) : const LoginPage());
     }
     return true;
   }

@@ -10,36 +10,21 @@ import 'package:commet/ui/molecules/space_viewer.dart';
 import 'package:commet/ui/molecules/user_list.dart';
 import 'package:commet/ui/molecules/user_panel.dart';
 import 'package:commet/ui/organisms/side_navigation_bar.dart';
+import 'package:commet/ui/pages/chat/chat_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tiamat/tiamat.dart';
 import '../../../client/client.dart';
 
-class DesktopChatPage extends StatefulWidget {
-  const DesktopChatPage({super.key});
-
+class DesktopChatPageView extends StatefulWidget {
+  const DesktopChatPageView({required this.state, super.key});
+  final ChatPageState state;
   @override
-  State<DesktopChatPage> createState() => _DesktopChatPageState();
+  State<DesktopChatPageView> createState() => _DesktopChatPageViewState();
 }
 
-class _DesktopChatPageState extends State<DesktopChatPage> {
-  late ClientManager _clientManager;
-  late Space? selectedSpace;
-  late Room? selectedRoom;
-  late GlobalKey<TimelineViewerState> timelineKey = GlobalKey<TimelineViewerState>();
-  late Map<String, GlobalKey<TimelineViewerState>> timelines = {};
-
-  late bool homePageSelected = false;
-
-  @override
-  void initState() {
-    _clientManager = Provider.of<ClientManager>(context, listen: false);
-    selectedRoom = null;
-    selectedSpace = null;
-    super.initState();
-  }
-
+class _DesktopChatPageViewState extends State<DesktopChatPageView> {
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -48,23 +33,18 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
           children: [
             SideNavigationBar(
               onSpaceSelected: (index) {
-                setState(() {
-                  homePageSelected = false;
-                  selectedSpace = _clientManager.spaces[index];
-                });
+                widget.state.selectSpace(widget.state.clientManager.spaces[index]);
               },
               onHomeSelected: () {
-                setState(() {
-                  homePageSelected = true;
-                });
+                widget.state.selectHome();
               },
             ),
-            if (homePageSelected) homePageView(),
-            if (!homePageSelected && selectedSpace != null) spaceRoomSelector(),
-            if (selectedRoom != null) roomChatView(),
+            if (widget.state.homePageSelected) homePageView(),
+            if (!widget.state.homePageSelected && widget.state.selectedSpace != null) spaceRoomSelector(),
+            if (widget.state.selectedRoom != null) roomChatView(),
           ],
         ),
-        if (selectedRoom != null)
+        if (widget.state.selectedRoom != null)
           DragDropFileTarget(
             onDropComplete: (details) {
               for (var file in details.files) {
@@ -81,10 +61,10 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
       child: SizedBox(
         width: 250,
         child: DirectMessageList(
-          directMessages: _clientManager.directMessages,
+          directMessages: widget.state.clientManager.directMessages,
           onSelected: (index) {
             setState(() {
-              selectRoom(_clientManager.directMessages[index]);
+              widget.state.selectRoom(widget.state.clientManager.directMessages[index]);
             });
           },
         ),
@@ -96,7 +76,7 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
     return Flexible(
         child: Column(
       children: [
-        SizedBox(height: s(50), child: RoomHeader(selectedRoom!)),
+        SizedBox(height: s(50), child: RoomHeader(widget.state.selectedRoom!)),
         Flexible(
           child: Row(
             children: [
@@ -107,12 +87,12 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
                     children: [
                       Expanded(
                           child: TimelineViewer(
-                        key: timelines[selectedRoom!.identifier],
-                        timeline: selectedRoom!.timeline!,
+                        key: widget.state.timelines[widget.state.selectedRoom!.identifier],
+                        timeline: widget.state.selectedRoom!.timeline!,
                       )),
                       MessageInput(
                         onSendMessage: (message) {
-                          selectedRoom!.sendMessage(message);
+                          widget.state.selectedRoom!.sendMessage(message);
                           return MessageInputSendResult.clearText;
                         },
                       )
@@ -123,8 +103,8 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
               SizedBox(
                   width: s(250),
                   child: PeerList(
-                    selectedRoom!.members,
-                    key: selectedRoom!.key,
+                    widget.state.selectedRoom!.members,
+                    key: widget.state.selectedRoom!.key,
                   )),
             ],
           ),
@@ -139,14 +119,14 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
         child: Tile.low1(
           child: Column(
             children: [
-              SizedBox(height: s(50), child: SpaceHeader(selectedSpace!)),
+              SizedBox(height: s(50), child: SpaceHeader(widget.state.selectedSpace!)),
               Expanded(
                   child: SpaceViewer(
-                selectedSpace!,
-                key: selectedSpace!.key,
-                onRoomInsert: selectedSpace!.onRoomAdded.stream,
+                widget.state.selectedSpace!,
+                key: widget.state.selectedSpace!.key,
+                onRoomInsert: widget.state.selectedSpace!.onRoomAdded.stream,
                 onRoomSelected: (index) {
-                  selectRoom(selectedSpace!.rooms[index]);
+                  widget.state.selectRoom(widget.state.selectedSpace!.rooms[index]);
                 },
               )),
               Tile.low2(
@@ -155,10 +135,10 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
                   child: Padding(
                     padding: const EdgeInsets.all(3.0),
                     child: UserPanel(
-                      displayName: selectedSpace!.client.user!.displayName,
-                      avatar: selectedSpace!.client.user!.avatar,
-                      detail: selectedSpace!.client.user!.detail,
-                      color: selectedSpace!.client.user!.color,
+                      displayName: widget.state.selectedSpace!.client.user!.displayName,
+                      avatar: widget.state.selectedSpace!.client.user!.avatar,
+                      detail: widget.state.selectedSpace!.client.user!.detail,
+                      color: widget.state.selectedSpace!.client.user!.color,
                     ),
                   ),
                 ),
@@ -166,32 +146,5 @@ class _DesktopChatPageState extends State<DesktopChatPage> {
             ],
           ),
         ));
-  }
-
-  void selectRoom(Room room) {
-    if (room == selectedRoom) return;
-
-    if (!timelines.containsKey(room.identifier)) {
-      timelines[room.identifier] = GlobalKey<TimelineViewerState>();
-    }
-
-    if (kDebugMode) {
-      // Weird hacky work around mentioned in #2
-      timelines[selectedRoom?.identifier]?.currentState!.prepareForDisposal();
-      WidgetsBinding.instance.addPostFrameCallback((_) => _setSelectedRoom(room));
-    } else {
-      _setSelectedRoom(room);
-    }
-  }
-
-  void _setSelectedRoom(Room room) {
-    setState(() {
-      selectedRoom = room;
-      WidgetsBinding.instance.addPostFrameCallback(
-        (timeStamp) {
-          timelines[selectedRoom?.identifier]?.currentState!.forceToBottom();
-        },
-      );
-    });
   }
 }

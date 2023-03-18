@@ -1,6 +1,5 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
-import 'package:commet/ui/pages/chat/chat_page.dart';
 import 'package:commet/ui/pages/login/login_page_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
