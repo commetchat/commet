@@ -94,6 +94,7 @@ class TimelineViewerState extends State<TimelineViewer> {
   void initState() {
     super.initState();
     split = SplitTimeline(widget.timeline, chunkSize: 50);
+    if (widget.timeline.events.length < 50) loadMore();
 
     controller.addListener(() {
       handleScrolling();
@@ -127,6 +128,8 @@ class TimelineViewerState extends State<TimelineViewer> {
 
   @override
   Widget build(BuildContext context) {
+    if (controller.positions.isNotEmpty) print(controller.position.maxScrollExtent);
+
     return CustomScrollView(
       center: newEventsListKey,
       controller: controller,

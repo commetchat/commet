@@ -17,8 +17,10 @@ enum EventType {
   message,
   redaction,
   edit,
-  roomState,
-  invalid;
+  invalid,
+  setRoomName,
+  setRoomAvatar,
+  roomCreated,
 }
 
 TimelineEventStatus eventStatusFromInt(int intValue) => TimelineEventStatus.values[intValue + 2];

@@ -62,7 +62,7 @@ class _MessageState extends State<Message> {
                         if (widget.showSender) senderName(context),
                         if (widget.event.status == TimelineEventStatus.removed)
                           tiamat.Text.error(T.of(context).messageDeleted)
-                        else
+                        else if (widget.event.body != null)
                           tiamat.Text.body(
                             widget.event.body!,
                           ),

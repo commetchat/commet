@@ -23,18 +23,14 @@ class TimelineEventView extends StatefulWidget {
 class _TimelineEventState extends State<TimelineEventView> {
   @override
   Widget build(BuildContext context) {
+    var display = eventToWidget(widget.event);
     return AnimatedContainer(
         duration: const Duration(milliseconds: 100),
         color: widget.hovered ? m.Colors.red : m.Colors.transparent,
-        child: Column(
-          children: [
-            eventToWidget(widget.event),
-            if (BuildConfig.DEBUG && widget.debugInfo != null) tiamat.Text.tiny(widget.debugInfo!)
-          ],
-        ));
+        child: display != null ? display! : null);
   }
 
-  Widget eventToWidget(TimelineEvent event) {
+  Widget? eventToWidget(TimelineEvent event) {
     switch (widget.event.type) {
       case EventType.message:
         return Message(
@@ -42,20 +38,19 @@ class _TimelineEventState extends State<TimelineEventView> {
           showSender: widget.showSender,
           onDelete: widget.onDelete,
         );
-      case EventType.redaction:
-        break;
-      case EventType.edit:
-        break;
-      case EventType.invalid:
-        break;
-      case EventType.roomState:
-        return GenericRoomEvent(widget.event.body!, m.Icons.delete);
       default:
         break;
     }
 
-    return const Placeholder(
-      fallbackHeight: 20,
-    );
+    if (BuildConfig.DEBUG)
+      return m.Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Placeholder(
+            child: event.source != null
+                ? tiamat.Text.tiny(event.source!)
+                : Placeholder(
+                    fallbackHeight: 20,
+                  )),
+      );
   }
 }

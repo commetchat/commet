@@ -1,4 +1,7 @@
 import 'dart:async';
+import 'package:commet/client/attachment.dart';
+import 'package:flutter/material.dart';
+
 import '../client.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
@@ -61,11 +64,10 @@ class MatrixTimeline extends Timeline {
 
     switch (event.type) {
       case matrix.EventTypes.Message:
-        e.type = EventType.message;
+        e = parseMessage(e, event);
         break;
       case matrix.EventTypes.Redaction:
-        e.type = EventType.roomState;
-        e.body = "${e.sender.identifier} Redacted a message";
+        e.type = EventType.redaction;
     }
 
     switch (event.status) {
@@ -91,6 +93,23 @@ class MatrixTimeline extends Timeline {
 
     if (event.redacted) {
       e.status = TimelineEventStatus.removed;
+    }
+
+    return e;
+  }
+
+  TimelineEvent parseMessage(TimelineEvent e, matrix.Event matrixEvent) {
+    e.type = EventType.message;
+
+    if (matrixEvent.hasAttachment) {
+      Attachment file = Attachment(
+          matrixEvent.attachmentMxcUrl!.getDownloadLink(_matrixRoom.client).toString(), matrixEvent.body,
+          mimeType: matrixEvent.attachmentMimetype,
+          thumbnail: matrixEvent.thumbnailMxcUrl != null
+              ? NetworkImage(matrixEvent.thumbnailMxcUrl!.getDownloadLink(_matrixRoom.client).toString())
+              : null);
+      e.body = null;
+      e.attachments = List.from([file]);
     }
 
     return e;
