@@ -1,7 +1,11 @@
+import 'dart:async';
+
+import 'package:commet/config/build_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:tiamat/atoms/popup_dialog.dart';
+import 'dart:ui' as ui;
 
 class Lightbox extends StatefulWidget {
   const Lightbox({required this.image, super.key});
@@ -30,26 +34,38 @@ class Lightbox extends StatefulWidget {
 }
 
 class _LightboxState extends State<Lightbox> {
+  double aspectRatio = 1;
+
   @override
   void initState() {
     super.initState();
+    getImageInfo();
   }
 
-  // void getImageInfo() async {
-  //   widget.image.resolve(new ImageConfiguration()).addListener(ImageStreamListener((image, synchronousCall) {
-  //     image.image
-  //   }));
-  // }
+  void getImageInfo() async {
+    var image = await getImage();
+    setState(() {
+      aspectRatio = image.width / image.height;
+    });
+  }
+
+  Future<ui.Image> getImage() {
+    Completer<ui.Image> completer = new Completer<ui.Image>();
+    widget.image.resolve(new ImageConfiguration()).addListener(ImageStreamListener((info, synchronousCall) {
+      completer.complete(info.image);
+    }));
+    return completer.future;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(50.0),
+      padding: const EdgeInsets.all(BuildConfig.MOBILE ? 10 : 100.0),
       child: Container(
-        color: Colors.red,
-        child: Image(
-          image: widget.image,
-          filterQuality: FilterQuality.high,
+        alignment: Alignment.center,
+        child: AspectRatio(
+          aspectRatio: aspectRatio,
+          child: Image(image: widget.image),
         ),
       ),
     );
