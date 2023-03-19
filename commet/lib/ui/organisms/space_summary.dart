@@ -39,8 +39,8 @@ class _SpaceSummaryState extends State<SpaceSummary> {
     print(previews);
     setState(() {
       _roomPreviews = previews;
+      if (_roomPreviews != null) count = _roomPreviews!.length;
       loadingPreviews = false;
-      count = _roomPreviews!.length;
     });
   }
 
@@ -53,13 +53,14 @@ class _SpaceSummaryState extends State<SpaceSummary> {
     return tiamat.Tile(
       child: Stack(
         children: [
-          SizedBox(
-              height: 300,
-              child: BlurredImageBackground(
-                widget.space.avatar!,
-                sigma: 15,
-                backgroundColor: Theme.of(context).colorScheme.surface,
-              )),
+          if (widget.space.avatar != null)
+            SizedBox(
+                height: 300,
+                child: BlurredImageBackground(
+                  widget.space.avatar!,
+                  sigma: 15,
+                  backgroundColor: Theme.of(context).colorScheme.surface,
+                )),
           Padding(
             padding: const EdgeInsets.fromLTRB(BuildConfig.MOBILE ? 20 : 50, 150, BuildConfig.MOBILE ? 20 : 50, 0),
             child: SafeArea(

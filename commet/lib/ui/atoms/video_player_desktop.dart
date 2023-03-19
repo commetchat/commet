@@ -4,29 +4,33 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 
 class VideoPlayerDesktop extends StatefulWidget {
-  const VideoPlayerDesktop({required this.controller, required this.videoUrl, super.key});
+  const VideoPlayerDesktop(
+      {required this.controller, required this.videoUrl, this.width = 640, this.height = 340, super.key});
   final String videoUrl;
+  final int width;
+  final int height;
   final VideoPlayerController controller;
   @override
   State<VideoPlayerDesktop> createState() => _VideoPlayerDesktopState();
 }
 
 class _VideoPlayerDesktopState extends State<VideoPlayerDesktop> {
-  Player player = Player(id: 0, videoDimensions: const VideoDimensions(640, 340));
+  late Player player;
   MediaType mediaType = MediaType.network;
   CurrentState current = CurrentState();
   PositionState position = PositionState();
   PlaybackState playback = PlaybackState();
   GeneralState general = GeneralState();
-  VideoDimensions videoDimensions = VideoDimensions(0, 0);
   late Media media;
+  static int id = 0;
 
   @override
   void initState() {
+    player = Player(id: id++, videoDimensions: VideoDimensions(widget.width, widget.height));
     media = Media.network(widget.videoUrl);
     widget.controller.onPlay = play;
     widget.controller.onPause = pause;
-    player.open(media, autoStart: false);
+    player.open(media, autoStart: true);
     super.initState();
   }
 

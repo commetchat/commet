@@ -2,6 +2,7 @@ import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/atoms/video_player_desktop.dart';
 import 'package:commet/ui/atoms/video_player_mobile.dart';
 import 'package:dart_vlc/dart_vlc.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/basic.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -22,8 +23,9 @@ class VideoPlayerController {
 }
 
 class VideoPlayer extends StatefulWidget {
-  const VideoPlayer(this.videoUrl, {super.key});
+  const VideoPlayer(this.videoUrl, {this.thumbnail, super.key});
   final String videoUrl;
+  final ImageProvider? thumbnail;
 
   @override
   State<VideoPlayer> createState() => _VideoPlayerState();
@@ -31,6 +33,8 @@ class VideoPlayer extends StatefulWidget {
 
 class _VideoPlayerState extends State<VideoPlayer> {
   VideoPlayerController controller = VideoPlayerController();
+  bool playing = false;
+  bool loaded = false;
 
   @override
   Widget build(BuildContext context) {
@@ -38,17 +42,30 @@ class _VideoPlayerState extends State<VideoPlayer> {
       child: Stack(
         fit: StackFit.loose,
         children: [
-          SizedBox(child: pickPlayer()),
+          SizedBox(
+              child: loaded
+                  ? pickPlayer()
+                  : widget.thumbnail != null
+                      ? Image(
+                          image: widget.thumbnail!,
+                        )
+                      : null),
           Row(
             children: [
               Button.secondary(
                 text: "Play",
-                onTap: controller.play,
+                onTap: play,
               ),
               Button.secondary(
                 text: "Pause",
-                onTap: controller.pause,
+                onTap: pause,
               ),
+              Flexible(
+                child: SelectableText(
+                  widget.videoUrl,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              )
             ],
           )
         ],
@@ -56,12 +73,29 @@ class _VideoPlayerState extends State<VideoPlayer> {
     );
   }
 
+  void pause() {
+    setState(() {
+      playing = false;
+    });
+
+    controller.pause();
+  }
+
+  void play() {
+    setState(() {
+      playing = true;
+      loaded = true;
+      controller.play();
+    });
+  }
+
   Widget pickPlayer() {
-    if (BuildConfig.ANDROID || BuildConfig.IOS || BuildConfig.WEB)
+    if (BuildConfig.ANDROID || BuildConfig.IOS || BuildConfig.WEB) {
       return VideoPlayerMobile(
         controller: controller,
         videoUrl: widget.videoUrl,
       );
+    }
     return VideoPlayerDesktop(controller: controller, videoUrl: widget.videoUrl);
   }
 }
