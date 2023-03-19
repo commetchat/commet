@@ -1,7 +1,8 @@
 import 'package:commet/ui/atoms/video_player.dart';
-import 'package:dart_vlc/dart_vlc.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:media_kit/media_kit.dart';
+import 'package:media_kit_video/media_kit_video.dart';
 
 class VideoPlayerDesktop extends StatefulWidget {
   const VideoPlayerDesktop(
@@ -15,38 +16,39 @@ class VideoPlayerDesktop extends StatefulWidget {
 }
 
 class _VideoPlayerDesktopState extends State<VideoPlayerDesktop> {
-  late Player player;
-  MediaType mediaType = MediaType.network;
-  CurrentState current = CurrentState();
-  PositionState position = PositionState();
-  PlaybackState playback = PlaybackState();
-  GeneralState general = GeneralState();
-  late Media media;
-  static int id = 0;
+  final Player player = Player();
+  VideoController? controller;
 
   @override
   void initState() {
-    player = Player(id: id++, videoDimensions: VideoDimensions(widget.width, widget.height));
-    media = Media.network(widget.videoUrl);
-    widget.controller.onPlay = play;
-    widget.controller.onPause = pause;
-    player.open(media, autoStart: true);
     super.initState();
-  }
 
-  void play() {
-    player.play();
+    widget.controller.onPause = pause;
+    widget.controller.onPlay = play;
+
+    Future.microtask(() async {
+      controller = await VideoController.create(player.handle);
+      player.open(Playlist([Media(widget.videoUrl)]));
+      player.streams.error.listen(
+        (event) {
+          print("THERE WAS AN ERRORR BIATCH");
+        },
+      );
+    });
   }
 
   void pause() {
     player.pause();
   }
 
+  void play() {
+    player.play();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Video(
-      player: player,
-      showControls: false,
+      controller: controller,
     );
   }
 }

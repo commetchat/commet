@@ -1,7 +1,6 @@
 import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/atoms/video_player_desktop.dart';
 import 'package:commet/ui/atoms/video_player_mobile.dart';
-import 'package:dart_vlc/dart_vlc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/basic.dart';
 import 'package:flutter/src/widgets/framework.dart';

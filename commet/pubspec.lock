@@ -41,14 +41,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.10.0"
-  audio_video_progress_bar:
-    dependency: transitive
-    description:
-      name: audio_video_progress_bar
-      sha256: "7be62917604e19e3873e12c8025bbc6dbee5876e1fa4cd7772ea1d0eb0e88d99"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.11.0"
   base58check:
     dependency: transitive
     description:
@@ -257,22 +249,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.4"
-  dart_vlc:
-    dependency: "direct main"
-    description:
-      name: dart_vlc
-      sha256: f93499b938fbb6ce9eb3fb0368878cd18eac4e18ed45956731a0d6e758d75a34
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.4.0"
-  dart_vlc_ffi:
-    dependency: transitive
-    description:
-      name: dart_vlc_ffi
-      sha256: "670d4b27296935e4e4b8d903d6833c222fc94133bbd3e9fa36d8a2e7751a63d0"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.2.0+1"
   desktop_drop:
     dependency: "direct main"
     description:

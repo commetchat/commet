@@ -32,7 +32,6 @@ dependencies:
   path_provider: ^2.0.13
   widgetbook_annotation:
   flutter_markdown: ^0.6.9+1
-  dart_vlc: ^0.4.0
   video_player: ^2.6.0
 
   media_kit: ^0.0.1
