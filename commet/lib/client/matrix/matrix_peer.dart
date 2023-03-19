@@ -1,6 +1,8 @@
 import 'dart:math';
 
+import 'package:commet/cache/cache_file_provider.dart';
 import 'package:commet/client/client.dart';
+import 'package:commet/cache/file_image.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
@@ -25,9 +27,12 @@ class MatrixPeer extends Peer {
     color = Colors.primaries[generatedColor];
 
     var avatarUrl = await _matrixClient.getAvatarUrl(identifier);
+
     if (avatarUrl != null) {
-      var url = avatarUrl!.getThumbnail(_matrixClient, width: 56, height: 56).toString();
-      avatar = NetworkImage(url);
+      avatar = FileImageProvider(CacheFileProvider.thumbnail(avatarUrl.toString(), () async {
+        return (await _matrixClient.httpClient.get(avatarUrl.getThumbnail(_matrixClient, width: 64, height: 64)))
+            .bodyBytes;
+      }));
     }
   }
 }

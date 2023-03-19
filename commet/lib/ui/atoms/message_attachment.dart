@@ -1,3 +1,4 @@
+import 'package:commet/cache/file_image.dart';
 import 'package:commet/client/attachment.dart';
 import 'package:commet/ui/atoms/lightbox.dart';
 import 'package:commet/ui/atoms/video_player.dart';
@@ -39,19 +40,14 @@ class _MessageAttachmentState extends State<MessageAttachment> {
           child: AspectRatio(
             aspectRatio: widget.attachment.aspectRatio != null ? widget.attachment.aspectRatio! : 16 / 9,
             child: VideoPlayer(
-              widget.attachment.url,
-              thumbnail: widget.attachment.thumbnail,
+              widget.attachment.fileProvider,
+              thumbnail: widget.attachment.thumbnail != null ? FileImageProvider(widget.attachment.thumbnail!) : null,
             ),
           ),
         ));
   }
 
   Widget buildImage(BuildContext context) {
-    //return SizedBox(
-    //    height: 200,
-    //    child: ClipRRect(
-    //        borderRadius: BorderRadius.circular(10), child: Image(image: NetworkImage(widget.attachment.url))));
-
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: Material(
@@ -61,10 +57,10 @@ class _MessageAttachmentState extends State<MessageAttachment> {
             child: AspectRatio(
               aspectRatio: widget.attachment.aspectRatio!,
               child: Ink.image(
-                image: NetworkImage(widget.attachment.url),
+                image: FileImageProvider(widget.attachment.fileProvider),
                 child: InkWell(
                   onTap: () {
-                    Lightbox.show(context, image: NetworkImage(widget.attachment.url));
+                    Lightbox.show(context, image: FileImageProvider(widget.attachment.fileProvider));
                   },
                 ),
               ),

@@ -3,8 +3,10 @@ import 'dart:io';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/matrix/matrix_room_preview.dart';
 import 'package:commet/client/preview_data.dart';
+import 'package:commet/config/app_config.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/main.dart';
+import 'package:commet/ui/pages/loading/loading_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -28,37 +30,27 @@ import 'matrix_space.dart';
 class MatrixClient extends Client {
   late matrix.Client _matrixClient;
 
-  MatrixClient({String? databasePath}) : super(RandomUtils.getRandomString(20)) {
-    if (databasePath != null) {
-      _matrixClient = _createMatrixClient(databasePath);
+  MatrixClient({String? name}) : super(RandomUtils.getRandomString(20)) {
+    if (name != null) {
+      _matrixClient = _createMatrixClient(name);
     }
   }
 
-  static Future<String> getDBPath() async {
-    final dir = await getApplicationSupportDirectory();
-    var path = p.join(dir.path, "matrix") + p.separator;
-    return path;
-  }
-
-  static Future<String> getDBPathWithName(String userName) async {
-    final dir = await getDBPath();
-    var path = p.join(dir, userName, "data");
-    path += p.separator;
-    return path;
+  static String hash(String name) {
+    var bytes = utf8.encode(name);
+    var hash = sha256.convert(bytes);
+    return hash.toString();
   }
 
   static Future<void> loadFromDB(ClientManager manager) async {
-    var dir = Directory(await getDBPath());
+    var clients = preferences.getRegisteredMatrixClients();
 
-    if (!await dir.exists()) return;
-
-    var subdirs = await dir.list().toList();
-
-    for (var subdir in subdirs) {
-      var databasePath = await getDBPathWithName(p.basename(subdir.absolute.path));
-      var client = MatrixClient(databasePath: databasePath);
-      manager.addClient(client);
-      await client.init();
+    if (clients != null) {
+      for (var clientName in clients) {
+        var client = MatrixClient(name: clientName);
+        manager.addClient(client);
+        await client.init();
+      }
     }
   }
 
@@ -89,15 +81,16 @@ class MatrixClient extends Client {
   @override
   bool isLoggedIn() => _matrixClient.isLogged();
 
-  matrix.Client _createMatrixClient(String databasePath) {
+  matrix.Client _createMatrixClient(String name) {
     return matrix.Client(
-      'Commet',
+      name,
       verificationMethods: {KeyVerificationMethod.emoji, KeyVerificationMethod.numbers},
       supportedLoginTypes: {matrix.AuthenticationTypes.password},
       nativeImplementations: nativeImplementations,
       logLevel: BuildConfig.RELEASE ? matrix.Level.warning : matrix.Level.verbose,
-      databaseBuilder: (_) async {
-        final db = matrix.HiveCollectionsDatabase('chat.commet.app', databasePath);
+      databaseBuilder: (client) async {
+        print(await AppConfig.getDatabasePath());
+        final db = matrix.HiveCollectionsDatabase(client.clientName, await AppConfig.getDatabasePath());
         await db.open();
         return db;
       },
@@ -113,18 +106,14 @@ class MatrixClient extends Client {
       {String? password, String? token}) async {
     LoginResult loginResult = LoginResult.error;
 
+    String name = hash("matrix_client-${DateTime.now().millisecondsSinceEpoch}");
+
     switch (type) {
       case LoginType.loginPassword:
         var uri = Uri.https(server);
         if (server == "localhost") uri = Uri.http(server);
 
-        var name = 'matrix_$userIdentifier@$server';
-        var bytes = utf8.encode(name);
-        var hash = sha256.convert(bytes);
-        name = hash.toString();
-        final dir = await getDBPathWithName(name);
-
-        _matrixClient = _createMatrixClient(dir);
+        _matrixClient = _createMatrixClient(name);
 
         await _matrixClient.checkHomeserver(uri);
 
@@ -148,6 +137,7 @@ class MatrixClient extends Client {
     }
 
     if (loginResult == LoginResult.success) {
+      preferences.addRegisteredMatrixClient(name);
       _postLoginSuccess();
     } else {
       _matrixClient.clearArchivesFromCache();

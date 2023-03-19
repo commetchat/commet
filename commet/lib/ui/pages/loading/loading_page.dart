@@ -1,6 +1,13 @@
+import 'package:commet/cache/cached_file.dart';
+import 'package:commet/config/app_config.dart';
+import 'package:commet/main.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:path/path.dart' as p;
 
 import '../../../client/client_manager.dart';
 import '../../../client/matrix/matrix_client.dart';
@@ -28,8 +35,9 @@ class LoadingPageState extends State<LoadingPage> {
   }
 
   Future<bool> load() async {
-    var client = Provider.of<ClientManager>(context, listen: false);
+    await fileCache.init();
 
+    var client = Provider.of<ClientManager>(context, listen: false);
     await MatrixClient.loadFromDB(client);
 
     //dont let simulated client contribute to logged in status

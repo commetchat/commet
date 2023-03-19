@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'package:commet/cache/cache_file_provider.dart';
 import 'package:commet/client/attachment.dart';
+import 'package:commet/cache/file_image.dart';
 import 'package:flutter/material.dart';
 
 import '../client.dart';
@@ -114,13 +116,21 @@ class MatrixTimeline extends Timeline {
         print("W: $width, H: $height");
       }
 
+      print(matrixEvent.thumbnailMxcUrl);
       Attachment file = Attachment(
-          matrixEvent.attachmentMxcUrl!.getDownloadLink(_matrixRoom.client).toString(), matrixEvent.body,
+          fileProvider: CacheFileProvider(matrixEvent.attachmentMxcUrl.toString(), () async {
+            var file = await matrixEvent.downloadAndDecryptAttachment();
+            return file.bytes;
+          }),
+          name: matrixEvent.body,
           mimeType: matrixEvent.attachmentMimetype,
           height: height,
           width: width,
           thumbnail: matrixEvent.thumbnailMxcUrl != null
-              ? NetworkImage(matrixEvent.thumbnailMxcUrl!.getDownloadLink(_matrixRoom.client).toString())
+              ? CacheFileProvider.thumbnail(matrixEvent.attachmentMxcUrl.toString(), () async {
+                  var file = await matrixEvent.downloadAndDecryptAttachment(getThumbnail: true);
+                  return file.bytes;
+                })
               : null);
 
       e.body = null;

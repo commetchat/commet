@@ -1,3 +1,5 @@
+import 'package:commet/cache/cache_file_provider.dart';
+import 'package:commet/cache/file_provider.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/atoms/video_player_desktop.dart';
 import 'package:commet/ui/atoms/video_player_mobile.dart';
@@ -22,8 +24,8 @@ class VideoPlayerController {
 }
 
 class VideoPlayer extends StatefulWidget {
-  const VideoPlayer(this.videoUrl, {this.thumbnail, super.key});
-  final String videoUrl;
+  const VideoPlayer(this.videoFile, {this.thumbnail, super.key});
+  final FileProvider videoFile;
   final ImageProvider? thumbnail;
 
   @override
@@ -59,12 +61,6 @@ class _VideoPlayerState extends State<VideoPlayer> {
                 text: "Pause",
                 onTap: pause,
               ),
-              Flexible(
-                child: SelectableText(
-                  widget.videoUrl,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-              )
             ],
           )
         ],
@@ -92,9 +88,9 @@ class _VideoPlayerState extends State<VideoPlayer> {
     if (BuildConfig.ANDROID || BuildConfig.IOS || BuildConfig.WEB) {
       return VideoPlayerMobile(
         controller: controller,
-        videoUrl: widget.videoUrl,
+        videoFile: widget.videoFile,
       );
     }
-    return VideoPlayerDesktop(controller: controller, videoUrl: widget.videoUrl);
+    return VideoPlayerDesktop(controller: controller, videoFile: widget.videoFile);
   }
 }

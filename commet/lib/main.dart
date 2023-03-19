@@ -1,8 +1,13 @@
+import 'package:commet/cache/cached_file.dart';
+import 'package:commet/cache/file_cache.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/config/preferences.dart';
 import 'package:commet/ui/pages/loading/loading_page.dart';
 
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import 'package:provider/provider.dart';
 import 'package:scaled_app/scaled_app.dart';
@@ -13,7 +18,12 @@ import 'package:tiamat/config/style/theme_glass.dart';
 import 'package:tiamat/config/style/theme_light.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 
+import 'config/app_config.dart';
 import 'generated/l10n.dart';
+
+final GlobalKey<NavigatorState> navigator = GlobalKey();
+FileCacheInstance fileCache = FileCacheInstance();
+Preferences preferences = Preferences();
 
 void main() async {
   ScaledWidgetsFlutterBinding.ensureInitialized(
@@ -22,10 +32,17 @@ void main() async {
     },
   );
 
+  await preferences.init();
+  if (BuildConfig.LINUX) {
+    Hive.init(await AppConfig.getDatabasePath());
+  } else {
+    Hive.initFlutter(await AppConfig.getDatabasePath());
+  }
+
+  Hive.registerAdapter(CachedFileAdapter());
+
   runApp(App());
 }
-
-final GlobalKey<NavigatorState> navigator = GlobalKey();
 
 @WidgetbookTheme(name: 'Dark')
 ThemeData commetDarkTheme() => ThemeDark.theme;

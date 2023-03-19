@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:commet/client/matrix/matrix_client.dart';
+import 'package:commet/config/app_config.dart';
 import 'package:commet/ui/pages/login/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -13,7 +14,7 @@ import 'package:path/path.dart' as p;
 
 extension CommonFlows on WidgetTester {
   Future<void> clearUserData() async {
-    var dir = Directory(await MatrixClient.getDBPath());
+    var dir = Directory(await AppConfig.getDatabasePath());
     if (await dir.exists()) {
       await dir.delete(recursive: true);
     }

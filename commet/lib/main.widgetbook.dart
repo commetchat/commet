@@ -5,21 +5,28 @@
 // **************************************************************************
 
 import 'dart:core';
+import 'package:commet/cache/file_cache.dart';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
+import 'package:commet/client/preview_data.dart';
 import 'package:commet/client/simulated/simulated_client.dart';
 import 'package:commet/config/app_config.dart';
+import 'package:commet/config/build_config.dart';
+import 'package:commet/config/preferences.dart';
 import 'package:commet/generated/l10n.dart';
 import 'package:commet/main.dart';
+import 'package:commet/ui/atoms/room_preview.dart';
 import 'package:commet/ui/molecules/user_panel.dart';
 import 'package:commet/ui/pages/add_space/add_space.dart';
 import 'package:commet/ui/pages/add_space/add_space_view.dart';
+import 'package:commet/ui/pages/chat/chat_page.dart';
 import 'package:commet/ui/pages/loading/loading_page.dart';
 import 'package:commet/ui/pages/loading/loading_page_view.dart';
 import 'package:commet/ui/pages/login/login_page.dart';
 import 'package:commet/ui/pages/login/login_page_view.dart';
 import 'package:commet/ui/pages/matrix/verification/matrix_verification_page.dart';
 import 'package:commet/ui/pages/matrix/verification/matrix_verification_view.dart';
+import 'package:commet/utils/debounce.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -146,19 +153,23 @@ class HotReload extends StatelessWidget {
                               useCases: [
                                 WidgetbookUseCase(
                                   name: 'Check Emojis',
-                                  builder: (context) => wbSASCheckEmojis(context),
+                                  builder: (context) =>
+                                      wbSASCheckEmojis(context),
                                 ),
                                 WidgetbookUseCase(
                                   name: 'Loading',
-                                  builder: (context) => sbVerificationLoading(context),
+                                  builder: (context) =>
+                                      sbVerificationLoading(context),
                                 ),
                                 WidgetbookUseCase(
                                   name: 'Request Received',
-                                  builder: (context) => wbSASRequestReceived(context),
+                                  builder: (context) =>
+                                      wbSASRequestReceived(context),
                                 ),
                                 WidgetbookUseCase(
                                   name: 'Done',
-                                  builder: (context) => wbVerificationSuccess(context),
+                                  builder: (context) =>
+                                      wbVerificationSuccess(context),
                                 ),
                               ],
                             ),
@@ -175,11 +186,13 @@ class HotReload extends StatelessWidget {
                           useCases: [
                             WidgetbookUseCase(
                               name: 'Multiple Accounts',
-                              builder: (context) => wbAddSpacePageMultiAccount(context),
+                              builder: (context) =>
+                                  wbAddSpacePageMultiAccount(context),
                             ),
                             WidgetbookUseCase(
                               name: 'Single Account',
-                              builder: (context) => wbAddSpacePageSingleAccount(context),
+                              builder: (context) =>
+                                  wbAddSpacePageSingleAccount(context),
                             ),
                           ],
                         ),

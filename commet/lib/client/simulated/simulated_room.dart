@@ -69,9 +69,9 @@ class SimulatedRoom extends Room {
     e.widget = Message(e);
     if (Random().nextInt(10) > 7) {
       e.attachments = List.empty(growable: true);
-      for (int i = 0; i < Random().nextInt(3) + 1; i++) {
-        e.attachments!.add(Attachment("https://picsum.photos/200/300", "image"));
-      }
+      // for (int i = 0; i < Random().nextInt(3) + 1; i++) {
+      //   e.attachments!.add(Attachment("https://picsum.photos/200/300", "image"));
+      // }
     }
     return e;
   }
