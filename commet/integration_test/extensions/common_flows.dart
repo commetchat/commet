@@ -6,6 +6,7 @@ import 'package:commet/ui/pages/login/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:commet/main.dart';
+import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'wait_for.dart';
@@ -20,17 +21,19 @@ extension CommonFlows on WidgetTester {
     }
 
     dir = await getApplicationSupportDirectory();
-    var path = p.join(dir.path, "matrix") + p.separator;
-    dir = Directory(path);
     print("Cleaning ${dir.path}");
     if (await dir.exists()) {
       await dir.delete(recursive: true);
     }
   }
 
-  Future<void> login(App app) async {
-    await pumpWidget(app);
+  Future<void> clean() async {
+    await Hive.close();
+    await Hive.deleteFromDisk();
+    await preferences.clear();
+  }
 
+  Future<void> login(App app) async {
     await waitFor(() => find.byType(LoginPage).evaluate().isNotEmpty);
 
     // Test Login Successful

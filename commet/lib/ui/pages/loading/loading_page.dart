@@ -35,6 +35,7 @@ class LoadingPageState extends State<LoadingPage> {
   }
 
   Future<bool> load() async {
+    await preferences.init();
     await fileCache.init();
 
     var client = Provider.of<ClientManager>(context, listen: false);

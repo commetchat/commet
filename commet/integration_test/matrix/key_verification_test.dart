@@ -23,17 +23,11 @@ void main() {
 
     // Adding a bunch of delays to not trigger M_LIMIT_EXCEEDED: Too Many Requests
     // Also helps avoid some errors with lock files when cleaning user data;
-    await Future.delayed(const Duration(seconds: 1));
     await tester.clearUserData();
-    await Future.delayed(const Duration(seconds: 1));
 
     var app = App();
-
-    await tester.pumpAndSettle();
-
+    await tester.pumpWidget(app);
     await tester.login(app);
-
-    await tester.pumpAndSettle();
 
     var matrixClient = (app.clientManager.getClients()[0] as MatrixClient);
 
@@ -65,5 +59,6 @@ void main() {
     var client = matrixClient.getMatrixClient();
 
     proc.kill();
+    await tester.clean();
   });
 }

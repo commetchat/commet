@@ -29,4 +29,8 @@ class Preferences {
 
     print("Name added!");
   }
+
+  Future<void> clear() async {
+    await _preferences!.clear();
+  }
 }

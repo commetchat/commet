@@ -32,15 +32,6 @@ void main() async {
     },
   );
 
-  await preferences.init();
-  if (BuildConfig.LINUX) {
-    Hive.init(await AppConfig.getDatabasePath());
-  } else {
-    Hive.initFlutter(await AppConfig.getDatabasePath());
-  }
-
-  Hive.registerAdapter(CachedFileAdapter());
-
   runApp(App());
 }
 

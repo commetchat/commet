@@ -2,6 +2,7 @@ import 'package:commet/ui/pages/login/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:commet/main.dart';
+import 'package:hive/hive.dart';
 import 'package:integration_test/integration_test.dart';
 
 import '../extensions/wait_for.dart';
@@ -21,6 +22,8 @@ void main() {
     await tester.waitFor(() => app.clientManager.isLoggedIn(),
         timeout: const Duration(seconds: 5), skipPumpAndSettle: true);
     expect(app.clientManager.isLoggedIn(), equals(true));
+
+    await tester.clean();
   });
 
   testWidgets('Test Matrix Login Invalid', (WidgetTester tester) async {
@@ -51,5 +54,7 @@ void main() {
         skipPumpAndSettle: false, timeout: const Duration(seconds: 5));
     print("Found test!");
     expect(app.clientManager.isLoggedIn(), equals(false));
+
+    await tester.clean();
   });
 }
