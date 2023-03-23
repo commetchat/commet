@@ -128,8 +128,6 @@ class TimelineViewerState extends State<TimelineViewer> {
 
   @override
   Widget build(BuildContext context) {
-    if (controller.positions.isNotEmpty) print(controller.position.maxScrollExtent);
-
     return CustomScrollView(
       center: newEventsListKey,
       controller: controller,
