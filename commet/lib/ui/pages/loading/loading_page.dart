@@ -44,8 +44,6 @@ class LoadingPageState extends State<LoadingPage> {
       Hive.initFlutter(await AppConfig.getDatabasePath());
     }
 
-    Hive.registerAdapter(CachedFileAdapter());
-
     var client = Provider.of<ClientManager>(context, listen: false);
     await MatrixClient.loadFromDB(client);
 
