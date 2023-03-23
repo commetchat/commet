@@ -12,8 +12,8 @@ class MessageAttachment extends StatefulWidget {
   const MessageAttachment(this.attachment, {super.key});
   final Attachment attachment;
 
-  static const displayableTypes = {"image/jpeg", "image/png"};
-  static const imageTypes = {"image/jpeg", "image/png"};
+  static const displayableTypes = {"image/jpeg", "image/png", "image/gif"};
+  static const imageTypes = {"image/jpeg", "image/png", "image/gif"};
   static const videoTypes = {"video/mp4", "image/png"};
 
   @override
@@ -60,6 +60,7 @@ class _MessageAttachmentState extends State<MessageAttachment> {
             child: AspectRatio(
               aspectRatio: widget.attachment.aspectRatio!,
               child: Ink.image(
+                fit: BoxFit.cover,
                 image: FileImageProvider(widget.attachment.fileProvider),
                 child: InkWell(
                   onTap: () {
