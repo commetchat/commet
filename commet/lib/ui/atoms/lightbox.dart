@@ -63,9 +63,16 @@ class _LightboxState extends State<Lightbox> {
       padding: const EdgeInsets.all(BuildConfig.MOBILE ? 10 : 100.0),
       child: Container(
         alignment: Alignment.center,
-        child: AspectRatio(
-          aspectRatio: aspectRatio,
-          child: Image(image: widget.image),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: AspectRatio(
+            aspectRatio: aspectRatio,
+            child: Image(
+              image: widget.image,
+              isAntiAlias: true,
+              filterQuality: FilterQuality.high,
+            ),
+          ),
         ),
       ),
     );

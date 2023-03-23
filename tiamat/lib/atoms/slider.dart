@@ -46,27 +46,16 @@ class Slider extends StatefulWidget {
 }
 
 class SliderState extends State<Slider> {
-  double value = 0;
-
-  @override
-  void initState() {
-    value = widget.value;
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     return material.Material(
       color: material.Colors.transparent,
       child: material.Slider(
-        value: value,
+        value: widget.value,
         min: widget.min,
         max: widget.max,
         divisions: widget.divisions,
         onChanged: (value) {
-          setState(() {
-            this.value = value;
-          });
           widget.onChanged?.call(value);
         },
         onChangeEnd: (value) {

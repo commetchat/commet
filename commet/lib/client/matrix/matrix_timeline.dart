@@ -116,13 +116,12 @@ class MatrixTimeline extends Timeline {
         print("W: $width, H: $height");
       }
 
-      print(matrixEvent.thumbnailMxcUrl);
       Attachment file = Attachment(
           fileProvider: CacheFileProvider(matrixEvent.attachmentMxcUrl.toString(), () async {
             var file = await matrixEvent.downloadAndDecryptAttachment();
             return file.bytes;
           }),
-          name: matrixEvent.body,
+          name: matrixEvent.content.tryGet<String>("filename") ?? matrixEvent.body,
           mimeType: matrixEvent.attachmentMimetype,
           height: height,
           width: width,

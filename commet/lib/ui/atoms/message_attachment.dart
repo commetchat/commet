@@ -1,7 +1,8 @@
 import 'package:commet/cache/file_image.dart';
 import 'package:commet/client/attachment.dart';
+import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/atoms/lightbox.dart';
-import 'package:commet/ui/atoms/video_player.dart';
+import 'package:commet/ui/molecules/video_player/video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/atoms/image_button.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -41,7 +42,9 @@ class _MessageAttachmentState extends State<MessageAttachment> {
             aspectRatio: widget.attachment.aspectRatio != null ? widget.attachment.aspectRatio! : 16 / 9,
             child: VideoPlayer(
               widget.attachment.fileProvider,
+              fileName: widget.attachment.name,
               thumbnail: widget.attachment.thumbnail != null ? FileImageProvider(widget.attachment.thumbnail!) : null,
+              showProgressBar: BuildConfig.DESKTOP,
             ),
           ),
         ));
