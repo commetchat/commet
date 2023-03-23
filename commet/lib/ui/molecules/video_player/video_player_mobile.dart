@@ -61,6 +61,7 @@ class _VideoPlayerMobileState extends State<VideoPlayerMobile> {
       if (!finished) {
         finished = true;
         widget.controller.setCompleted(true);
+        _controller!.removeListener(onUpdate);
       }
     } else {
       if (finished) {
@@ -85,10 +86,17 @@ class _VideoPlayerMobileState extends State<VideoPlayerMobile> {
 
   Future<void> play() async {
     _controller?.play();
+    if (!_controller!.hasListeners) {
+      _controller!.addListener(onUpdate);
+    }
   }
 
   Future<void> replay() async {
     _controller?.seekTo(Duration.zero);
+    if (!_controller!.hasListeners) {
+      _controller!.addListener(onUpdate);
+    }
+    widget.controller.setCompleted(false);
     play();
   }
 
