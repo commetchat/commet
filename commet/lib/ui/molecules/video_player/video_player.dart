@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/basic.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import '../../atoms/gradient_background.dart';
@@ -117,8 +118,8 @@ class _VideoPlayerState extends State<VideoPlayer> {
               widget.fileName != null
                   ? GradientBackground(
                       begin: Alignment.bottomCenter,
-                      end: Alignment.topCenter,
-                      backgroundColor: Colors.black.withAlpha(200),
+                      end: Alignment.center,
+                      backgroundColor: Theme.of(context).extension<ExtraColors>()!.surfaceLow1.withAlpha(200),
                       child: Padding(
                         padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
                         child: tiamat.Text.body(widget.fileName!),
@@ -151,7 +152,7 @@ class _VideoPlayerState extends State<VideoPlayer> {
                   ? GradientBackground(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
-                      backgroundColor: Colors.black.withAlpha(200),
+                      backgroundColor: Theme.of(context).extension<ExtraColors>()!.surfaceLow4.withAlpha(200),
                       child: tiamat.Slider(
                         value: videoProgress,
                         min: 0,
