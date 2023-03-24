@@ -39,12 +39,20 @@ class _MessageAttachmentState extends State<MessageAttachment> {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(10),
           child: AspectRatio(
-            aspectRatio: widget.attachment.aspectRatio != null ? widget.attachment.aspectRatio! : 16 / 9,
+            aspectRatio: getAspectRatio(),
             child: VideoPlayer(
               widget.attachment.fileProvider,
               fileName: widget.attachment.name,
               thumbnail: widget.attachment.thumbnail != null ? FileImageProvider(widget.attachment.thumbnail!) : null,
               showProgressBar: BuildConfig.DESKTOP,
+              canGoFullscreen: true,
+              onFullscreen: () {
+                Lightbox.show(context,
+                    video: widget.attachment.fileProvider,
+                    aspectRatio: getAspectRatio(),
+                    thumbnail:
+                        widget.attachment.thumbnail != null ? FileImageProvider(widget.attachment.thumbnail!) : null);
+              },
             ),
           ),
         ));
@@ -73,5 +81,9 @@ class _MessageAttachmentState extends State<MessageAttachment> {
         ),
       ),
     );
+  }
+
+  double getAspectRatio() {
+    return widget.attachment.aspectRatio != null ? widget.attachment.aspectRatio! : 16 / 9;
   }
 }

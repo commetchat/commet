@@ -32,6 +32,7 @@ class _IconButtonState extends State<IconButton> {
                 hovered = false;
               });
             },
+            cursor: MaterialStateMouseCursor.clickable,
             child: Padding(
               padding: const EdgeInsets.all(4.0),
               child: SizedBox(
@@ -41,7 +42,7 @@ class _IconButtonState extends State<IconButton> {
                     alignment: Alignment.center,
                     child: Icon(
                       widget.icon,
-                      size: s(widget.size),
+                      size: widget.size,
                       color: hovered ? Theme.of(context).colorScheme.onPrimary : null,
                     )),
               ),

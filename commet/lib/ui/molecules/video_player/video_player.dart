@@ -17,18 +17,28 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 import '../../atoms/gradient_background.dart';
 import 'video_player_controller.dart';
 
+import '../../atoms/icon_button.dart' as i;
+
 class VideoPlayer extends StatefulWidget {
-  const VideoPlayer(this.videoFile, {this.thumbnail, this.fileName, super.key, this.showProgressBar = true});
+  const VideoPlayer(this.videoFile,
+      {this.thumbnail,
+      this.fileName,
+      super.key,
+      this.canGoFullscreen = false,
+      this.onFullscreen,
+      this.showProgressBar = true});
   final FileProvider videoFile;
   final ImageProvider? thumbnail;
   final bool showProgressBar;
+  final bool canGoFullscreen;
   final String? fileName;
+  final Function? onFullscreen;
 
   @override
-  State<VideoPlayer> createState() => _VideoPlayerState();
+  State<VideoPlayer> createState() => VideoPlayerState();
 }
 
-class _VideoPlayerState extends State<VideoPlayer> {
+class VideoPlayerState extends State<VideoPlayer> {
   VideoPlayerController controller = VideoPlayerController();
   bool playing = false;
   bool inited = false;
@@ -92,10 +102,14 @@ class _VideoPlayerState extends State<VideoPlayer> {
   }
 
   Widget thumbnail() {
-    return Image(
-      fit: BoxFit.cover,
-      image: widget.thumbnail!,
-    );
+    return widget.thumbnail != null
+        ? Image(
+            fit: BoxFit.cover,
+            image: widget.thumbnail!,
+          )
+        : Container(
+            color: Colors.black,
+          );
   }
 
   Widget controls() {
@@ -148,32 +162,50 @@ class _VideoPlayerState extends State<VideoPlayer> {
                   ),
                 ],
               ),
-              widget.showProgressBar
-                  ? GradientBackground(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      backgroundColor: Theme.of(context).extension<ExtraColors>()!.surfaceLow4.withAlpha(200),
-                      child: tiamat.Slider(
-                        value: videoProgress,
-                        min: 0,
-                        max: 1,
-                        onChangeEnd: (value) {
-                          updateSlider = true;
-                          seekPercent(value);
-                        },
-                        onChanged: (value) {
-                          setState(() {
-                            videoProgress = value;
-                          });
-                        },
-                        onChangeStart: (value) {
-                          updateSlider = false;
-                        },
-                      ),
-                    )
-                  : const SizedBox(
-                      height: 30,
-                    ),
+              if (widget.canGoFullscreen || widget.showProgressBar)
+                GradientBackground(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  backgroundColor: Theme.of(context).extension<ExtraColors>()!.surfaceLow4.withAlpha(200),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      if (widget.showProgressBar)
+                        Expanded(
+                          child: tiamat.Slider(
+                            value: videoProgress,
+                            min: 0,
+                            max: 1,
+                            onChangeEnd: (value) {
+                              updateSlider = true;
+                              seekPercent(value);
+                            },
+                            onChanged: (value) {
+                              setState(() {
+                                videoProgress = value;
+                              });
+                            },
+                            onChangeStart: (value) {
+                              updateSlider = false;
+                            },
+                          ),
+                        ),
+                      if (widget.canGoFullscreen)
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+                          child: i.IconButton(
+                            icon: Icons.fullscreen_rounded,
+                            size: 24,
+                            onPressed: () {
+                              pause();
+                              widget.onFullscreen?.call();
+                            },
+                          ),
+                        )
+                    ],
+                  ),
+                )
             ],
           ),
         ),

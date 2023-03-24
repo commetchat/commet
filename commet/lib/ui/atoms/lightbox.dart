@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:commet/cache/file_provider.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/ui/molecules/video_player/video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -8,20 +10,28 @@ import 'package:tiamat/atoms/popup_dialog.dart';
 import 'dart:ui' as ui;
 
 class Lightbox extends StatefulWidget {
-  const Lightbox({required this.image, super.key});
-  final ImageProvider image;
+  const Lightbox({this.image, this.video, this.thumbnail, this.aspectRatio, super.key});
+  final ImageProvider? image;
+  final FileProvider? video;
+  final ImageProvider? thumbnail;
+  final double? aspectRatio;
+
   @override
   State<Lightbox> createState() => _LightboxState();
 
-  static void show(BuildContext context, {required ImageProvider image}) {
+  static void show(BuildContext context,
+      {ImageProvider? image, ImageProvider? thumbnail, FileProvider? video, double? aspectRatio}) {
     showGeneralDialog(
         context: context,
-        barrierDismissible: true,
+        barrierDismissible: false,
         barrierLabel: "LIGHTBOX",
         barrierColor: PopupDialog.barrierColor,
         pageBuilder: (context, _, __) {
           return Lightbox(
             image: image,
+            video: video,
+            aspectRatio: aspectRatio,
+            thumbnail: thumbnail,
           );
         },
         transitionDuration: const Duration(milliseconds: 300),
@@ -35,11 +45,17 @@ class Lightbox extends StatefulWidget {
 
 class _LightboxState extends State<Lightbox> {
   double aspectRatio = 1;
-
+  GlobalKey<VideoPlayerState>? videoPlayer;
   @override
   void initState() {
     super.initState();
-    getImageInfo();
+    if (widget.aspectRatio == null) {
+      getImageInfo();
+    } else {
+      aspectRatio = widget.aspectRatio!;
+    }
+
+    videoPlayer = GlobalKey(debugLabel: "Lightbox video player");
   }
 
   void getImageInfo() async {
@@ -51,26 +67,51 @@ class _LightboxState extends State<Lightbox> {
 
   Future<ui.Image> getImage() {
     Completer<ui.Image> completer = new Completer<ui.Image>();
-    widget.image.resolve(new ImageConfiguration()).addListener(ImageStreamListener((info, synchronousCall) {
+    widget.image!.resolve(new ImageConfiguration()).addListener(ImageStreamListener((info, synchronousCall) {
       completer.complete(info.image);
     }));
     return completer.future;
   }
 
+  void dismiss() {
+    videoPlayer?.currentState?.pause();
+    Navigator.of(context).pop();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(BuildConfig.MOBILE ? 10 : 100.0),
+    return GestureDetector(
+      onTap: () {
+        dismiss();
+      },
       child: Container(
-        alignment: Alignment.center,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: AspectRatio(
-            aspectRatio: aspectRatio,
-            child: Image(
-              image: widget.image,
-              isAntiAlias: true,
-              filterQuality: FilterQuality.high,
+        color: Colors.transparent,
+        child: Padding(
+          padding: const EdgeInsets.all(BuildConfig.MOBILE ? 10 : 100.0),
+          child: SafeArea(
+            child: Container(
+              alignment: Alignment.center,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: AspectRatio(
+                    aspectRatio: aspectRatio,
+                    child: widget.image != null
+                        ? Image(
+                            fit: BoxFit.cover,
+                            image: widget.image!,
+                            isAntiAlias: true,
+                            filterQuality: FilterQuality.high,
+                          )
+                        : widget.video != null
+                            ? VideoPlayer(
+                                widget.video!,
+                                showProgressBar: true,
+                                canGoFullscreen: false,
+                                thumbnail: widget.thumbnail,
+                                key: videoPlayer,
+                              )
+                            : Placeholder()),
+              ),
             ),
           ),
         ),
