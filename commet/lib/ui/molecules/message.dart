@@ -35,64 +35,66 @@ class _MessageState extends State<Message> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(s(15), widget.showSender ? s(20) : s(4), 8, 4),
-      child: Stack(
-        children: [
-          Opacity(
-            opacity: widget.event.status == TimelineEventStatus.sending ? 0.5 : 1,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (widget.showSender)
-                  Avatar.medium(
-                    image: widget.event.sender.avatar,
-                  ),
-                if (!widget.showSender)
-                  const Avatar.medium(
-                    image: null,
-                    isPadding: true,
-                  ),
-                Flexible(
-                  child: Padding(
-                    padding: EdgeInsets.fromLTRB(s(16), 0, s(0), 0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (widget.showSender) senderName(context),
-                        if (widget.event.status == TimelineEventStatus.removed)
-                          tiamat.Text.error(T.of(context).messageDeleted)
-                        else if (widget.event.bodyFormat != null)
-                          formattedBody()
-                        else if (widget.event.body != null)
-                          tiamat.Text.body(
-                            widget.event.body!,
-                          ),
-                        if (widget.event.attachments != null)
-                          Wrap(
-                            children: widget.event.attachments!
-                                .map((e) => Padding(
-                                      padding: EdgeInsets.fromLTRB(0, s(8), s(8), s(8)),
-                                      child: MessageAttachment(e),
-                                    ))
-                                .toList(),
-                          ),
-                        if (widget.event.status == TimelineEventStatus.error)
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
-                            child: tiamat.Text.error(T.of(context).messageFailedToSend),
-                          ),
-                        if (BuildConfig.DEBUG) debugInfo()
-                      ],
+    return material.Material(
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(s(15), widget.showSender ? s(20) : s(4), 8, 4),
+        child: Stack(
+          children: [
+            Opacity(
+              opacity: widget.event.status == TimelineEventStatus.sending ? 0.5 : 1,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (widget.showSender)
+                    Avatar.medium(
+                      image: widget.event.sender.avatar,
                     ),
-                  ),
-                )
-              ],
+                  if (!widget.showSender)
+                    const Avatar.medium(
+                      image: null,
+                      isPadding: true,
+                    ),
+                  Flexible(
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(s(16), 0, s(0), 0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (widget.showSender) senderName(context),
+                          if (widget.event.status == TimelineEventStatus.removed)
+                            tiamat.Text.error(T.of(context).messageDeleted)
+                          else if (widget.event.bodyFormat != null)
+                            formattedBody()
+                          else if (widget.event.body != null)
+                            tiamat.Text.body(
+                              widget.event.body!,
+                            ),
+                          if (widget.event.attachments != null)
+                            Wrap(
+                              children: widget.event.attachments!
+                                  .map((e) => Padding(
+                                        padding: EdgeInsets.fromLTRB(0, s(8), s(8), s(8)),
+                                        child: MessageAttachment(e),
+                                      ))
+                                  .toList(),
+                            ),
+                          if (widget.event.status == TimelineEventStatus.error)
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
+                              child: tiamat.Text.error(T.of(context).messageFailedToSend),
+                            ),
+                          if (BuildConfig.DEBUG) debugInfo()
+                        ],
+                      ),
+                    ),
+                  )
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

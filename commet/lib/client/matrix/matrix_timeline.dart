@@ -2,9 +2,12 @@ import 'dart:async';
 import 'package:commet/cache/cache_file_provider.dart';
 import 'package:commet/client/attachment.dart';
 import 'package:commet/cache/file_image.dart';
+import 'package:commet/client/matrix/matrix_client_extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
+import '../../ui/atoms/pill.dart';
 import '../client.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
@@ -110,7 +113,20 @@ class MatrixTimeline extends Timeline {
     if (format != null) {
       e.bodyFormat = format;
       e.formattedBody = matrixEvent.formattedText;
-      e.formattedContent = tiamat.Text(e.formattedBody!);
+      e.formattedContent = Html(
+        emoteSize: 20,
+        getMxcImage: (mxc, width, height, {animated}) {
+          return _matrixRoom.client.getMxcImage(mxc);
+        },
+        pillBuilder: (identifier) {
+          return Pill(
+            identifier: identifier,
+            displayText: identifier,
+            url: identifier,
+          );
+        },
+        data: e.formattedBody!,
+      );
     }
 
     return e;
