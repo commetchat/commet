@@ -9,6 +9,8 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:tiamat/tiamat.dart';
 import '../../generated/l10n.dart';
 
+import 'package:flutter/material.dart' as material;
+
 class Message extends StatefulWidget {
   const Message(this.event, {super.key, this.showSender = true, this.onDelete});
 
@@ -62,6 +64,8 @@ class _MessageState extends State<Message> {
                         if (widget.showSender) senderName(context),
                         if (widget.event.status == TimelineEventStatus.removed)
                           tiamat.Text.error(T.of(context).messageDeleted)
+                        else if (widget.event.bodyFormat != null)
+                          formattedBody()
                         else if (widget.event.body != null)
                           tiamat.Text.body(
                             widget.event.body!,
@@ -91,6 +95,10 @@ class _MessageState extends State<Message> {
         ],
       ),
     );
+  }
+
+  Widget formattedBody() {
+    return widget.event.formattedContent!;
   }
 
   Widget senderName(BuildContext context) {

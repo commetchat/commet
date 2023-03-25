@@ -3,6 +3,7 @@ import 'package:commet/cache/cache_file_provider.dart';
 import 'package:commet/client/attachment.dart';
 import 'package:commet/cache/file_image.dart';
 import 'package:flutter/material.dart';
+import 'package:tiamat/tiamat.dart' as tiamat;
 
 import '../client.dart';
 import 'package:matrix/matrix.dart' as matrix;
@@ -103,6 +104,19 @@ class MatrixTimeline extends Timeline {
   TimelineEvent parseMessage(TimelineEvent e, matrix.Event matrixEvent) {
     e.type = EventType.message;
 
+    parseAnyAttachments(matrixEvent, e);
+
+    var format = matrixEvent.content.tryGet<String>("format");
+    if (format != null) {
+      e.bodyFormat = format;
+      e.formattedBody = matrixEvent.formattedText;
+      e.formattedContent = tiamat.Text(e.formattedBody!);
+    }
+
+    return e;
+  }
+
+  void parseAnyAttachments(matrix.Event matrixEvent, TimelineEvent e) {
     if (matrixEvent.hasAttachment) {
       double? width;
       double? height;
@@ -135,8 +149,6 @@ class MatrixTimeline extends Timeline {
       e.body = null;
       e.attachments = List.from([file]);
     }
-
-    return e;
   }
 
   @override
