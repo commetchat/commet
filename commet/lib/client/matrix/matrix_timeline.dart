@@ -5,11 +5,13 @@ import 'package:commet/cache/file_image.dart';
 import 'package:commet/client/matrix/matrix_client_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
+import 'package:flutter_matrix_html/image_properties.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 import '../../ui/atoms/pill.dart';
 import '../client.dart';
 import 'package:matrix/matrix.dart' as matrix;
+import 'package:html/parser.dart' as htmlParser;
 
 class MatrixTimeline extends Timeline {
   late matrix.Timeline? _matrixTimeline;
@@ -109,12 +111,31 @@ class MatrixTimeline extends Timeline {
 
     parseAnyAttachments(matrixEvent, e);
 
+    handleFormatting(matrixEvent, e);
+
+    return e;
+  }
+
+  void handleFormatting(matrix.Event matrixEvent, TimelineEvent e) {
     var format = matrixEvent.content.tryGet<String>("format");
+
     if (format != null) {
       e.bodyFormat = format;
       e.formattedBody = matrixEvent.formattedText;
+
+      var document = htmlParser.parseFragment(
+        e.formattedBody,
+      );
+
+      double emoteSize = 64;
+
+      if (document.nodes.any((element) => !element.attributes.containsKey("data-mx-emoticon"))) {
+        emoteSize = 24;
+      }
+
       e.formattedContent = Html(
-        emoteSize: 20,
+        emoteSize: emoteSize,
+        imageProperties: ImageProperties(filterQuality: FilterQuality.high),
         getMxcImage: (mxc, width, height, {animated}) {
           return _matrixRoom.client.getMxcImage(mxc);
         },
@@ -128,8 +149,6 @@ class MatrixTimeline extends Timeline {
         data: e.formattedBody!,
       );
     }
-
-    return e;
   }
 
   void parseAnyAttachments(matrix.Event matrixEvent, TimelineEvent e) {
