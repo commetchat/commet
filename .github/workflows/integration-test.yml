@@ -16,6 +16,8 @@ jobs:
     steps:
       - name: Checkout  ┏━┓ ︵ /(^.^/)
         uses: actions/checkout@v2
+        with:
+          submodules: 'true'
         
       - name: Setup Flutter  ╰(✿˙ᗜ˙)੭━☆ﾟ.*･｡ﾟ
         uses: subosito/flutter-action@v2.8.0
@@ -64,5 +66,5 @@ jobs:
         run: |
           cd $PROJECT_PATH
           export DISPLAY=:99
-          sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 &
+          sudo Xvfb -ac :99 -screen 0 1920x1080x24 > /dev/null 2>&1 &
           scripts/integration-test.sh

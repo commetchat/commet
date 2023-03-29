@@ -2,10 +2,19 @@ import 'dart:async';
 import 'package:commet/cache/cache_file_provider.dart';
 import 'package:commet/client/attachment.dart';
 import 'package:commet/cache/file_image.dart';
+import 'package:commet/client/matrix/matrix_client_extensions.dart';
+import 'package:commet/utils/emoji/emoji_matcher.dart';
+import 'package:commet/utils/text_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_matrix_html/flutter_html.dart';
+import 'package:flutter_matrix_html/image_properties.dart';
+import 'package:tiamat/tiamat.dart' as tiamat;
 
+import '../../ui/atoms/pill.dart';
+import '../../utils/emoji/emoji.dart';
 import '../client.dart';
 import 'package:matrix/matrix.dart' as matrix;
+import 'package:html/parser.dart' as htmlParser;
 
 class MatrixTimeline extends Timeline {
   late matrix.Timeline? _matrixTimeline;
@@ -103,6 +112,53 @@ class MatrixTimeline extends Timeline {
   TimelineEvent parseMessage(TimelineEvent e, matrix.Event matrixEvent) {
     e.type = EventType.message;
 
+    parseAnyAttachments(matrixEvent, e);
+
+    handleFormatting(matrixEvent, e);
+
+    return e;
+  }
+
+  void handleFormatting(matrix.Event matrixEvent, TimelineEvent e) {
+    var format = matrixEvent.content.tryGet<String>("format");
+
+    if (format != null) {
+      e.bodyFormat = format;
+      e.formattedBody = matrixEvent.formattedText;
+
+      var document = htmlParser.parseFragment(
+        e.formattedBody,
+      );
+
+      double emoteSize = 64;
+
+      if (document.nodes.any((element) => !element.attributes.containsKey("data-mx-emoticon"))) {
+        emoteSize = 24;
+      }
+
+      e.formattedContent = Html(
+        emoteSize: emoteSize,
+        imageProperties: ImageProperties(filterQuality: FilterQuality.high),
+        getMxcImage: (mxc, width, height, {animated}) {
+          return _matrixRoom.client.getMxcImage(mxc);
+        },
+        pillBuilder: (identifier) {
+          return Pill(
+            identifier: identifier,
+            displayText: identifier,
+            url: identifier,
+          );
+        },
+        data: e.formattedBody!,
+      );
+    } else {
+      e.bodyFormat = "chat.commet.default";
+
+      e.formattedContent = Text.rich(TextSpan(children: TextUtils.formatString(matrixEvent.body, allowBigEmoji: true)));
+    }
+  }
+
+  void parseAnyAttachments(matrix.Event matrixEvent, TimelineEvent e) {
     if (matrixEvent.hasAttachment) {
       double? width;
       double? height;
@@ -135,8 +191,6 @@ class MatrixTimeline extends Timeline {
       e.body = null;
       e.attachments = List.from([file]);
     }
-
-    return e;
   }
 
   @override

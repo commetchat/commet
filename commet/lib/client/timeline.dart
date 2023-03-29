@@ -74,8 +74,10 @@ class TimelineEvent {
   late DateTime originServerTs;
   late String? body;
   late String? source = "";
-  late Widget? widget;
   List<Attachment>? attachments;
+  String? bodyFormat;
+  String? formattedBody;
+  Widget? formattedContent;
 
   late StreamController onChange = StreamController.broadcast();
 }

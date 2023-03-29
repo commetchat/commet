@@ -1,6 +1,7 @@
 import 'package:commet/cache/cached_file.dart';
 import 'package:commet/config/app_config.dart';
 import 'package:commet/main.dart';
+import 'package:commet/utils/emoji/emoji_pack.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:hive/hive.dart';
@@ -37,6 +38,7 @@ class LoadingPageState extends State<LoadingPage> {
   Future<bool> load() async {
     await preferences.init();
     await fileCache.init();
+    await EmojiPack.defaults();
 
     if (BuildConfig.LINUX) {
       Hive.init(await AppConfig.getDatabasePath());

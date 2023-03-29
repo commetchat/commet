@@ -50,7 +50,6 @@ class SimulatedRoom extends Room {
     e.originServerTs = DateTime.now();
     e.sender = client.user!;
     e.body = message;
-    e.widget = Message(e);
     timeline!.insertEvent(0, e);
     return e;
   }
@@ -66,7 +65,6 @@ class SimulatedRoom extends Room {
     e.originServerTs = DateTime.now();
     e.sender = sender;
     e.body = RandomUtils.getRandomSentence(Random().nextInt(10) + 10);
-    e.widget = Message(e);
     if (Random().nextInt(10) > 7) {
       e.attachments = List.empty(growable: true);
       // for (int i = 0; i < Random().nextInt(3) + 1; i++) {

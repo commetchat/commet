@@ -46,7 +46,11 @@ ThemeData commetLightTheme() => ThemeLight.theme;
 @WidgetbookTheme(name: 'Glass')
 ThemeData commetGlassTheme() => ThemeGlass.theme;
 
-@WidgetbookApp.material(name: 'Commet', devices: [Apple.iPhone12, Apple.macBook13Inch])
+@WidgetbookApp.material(name: 'Commet', devices: [
+  Apple.iPhone12,
+  Apple.macBook13Inch,
+  Device.desktop(name: "720p", resolution: Resolution(nativeSize: DeviceSize(width: 1280, height: 720), scaleFactor: 1))
+])
 class App extends StatelessWidget {
   App({Key? key}) : super(key: key);
   final clientManager = ClientManager();

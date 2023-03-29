@@ -1,0 +1,1 @@
+This data is from https://github.com/milesj/emojibase
