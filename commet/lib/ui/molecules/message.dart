@@ -100,7 +100,9 @@ class _MessageState extends State<Message> {
   }
 
   Widget formattedBody() {
-    return widget.event.formattedContent!;
+    return material.SelectionArea(
+      child: widget.event.formattedContent!,
+    );
   }
 
   Widget senderName(BuildContext context) {

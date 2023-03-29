@@ -1,4 +1,5 @@
 import 'package:commet/generated/l10n.dart';
+import 'package:commet/ui/atoms/emoji_widget.dart';
 import 'package:commet/ui/pages/matrix/verification/matrix_verification_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -191,19 +192,27 @@ class MatrixVerificationPageView extends StatelessWidget {
               child: tiamat.Text.label(T.current.sasEmojiVerificationPrompt),
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Row(
-                children: sasEmoji
-                    .map((e) => Padding(
-                          padding: const EdgeInsets.all(3.0),
-                          child: tiamat.Text.largeTitle(e.emoji),
-                        ))
-                    .toList(),
-              ),
-            ],
+          Padding(
+            padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+            child: Wrap(
+              spacing: 30,
+              runSpacing: 10,
+              alignment: WrapAlignment.center,
+              children: sasEmoji
+                  .map((e) => Padding(
+                        padding: const EdgeInsets.all(1.0),
+                        child: Column(
+                          children: [
+                            EmojiWidget(
+                              e.emoji,
+                              height: 30,
+                            ),
+                            tiamat.Text(e.name)
+                          ],
+                        ),
+                      ))
+                  .toList(),
+            ),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),

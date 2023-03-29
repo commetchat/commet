@@ -3,12 +3,15 @@ import 'package:commet/cache/cache_file_provider.dart';
 import 'package:commet/client/attachment.dart';
 import 'package:commet/cache/file_image.dart';
 import 'package:commet/client/matrix/matrix_client_extensions.dart';
+import 'package:commet/utils/emoji/emoji_matcher.dart';
+import 'package:commet/utils/text_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_matrix_html/image_properties.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 import '../../ui/atoms/pill.dart';
+import '../../utils/emoji/emoji.dart';
 import '../client.dart';
 import 'package:matrix/matrix.dart' as matrix;
 import 'package:html/parser.dart' as htmlParser;
@@ -148,6 +151,10 @@ class MatrixTimeline extends Timeline {
         },
         data: e.formattedBody!,
       );
+    } else {
+      e.bodyFormat = "chat.commet.default";
+
+      e.formattedContent = Text.rich(TextSpan(children: TextUtils.formatString(matrixEvent.body, allowBigEmoji: true)));
     }
   }
 

@@ -95,6 +95,9 @@ flutter:
   assets:
     - assets/images/placeholder/avatars/
     - assets/images/placeholder/generic/
+    - assets/twemoji/assets/72x72/
+    - assets/emoji_data/
+    - assets/emoji_data/shortcodes/
 
   shaders:
     - assets/shader/texture_coordinate.frag
