@@ -17,8 +17,13 @@ class MatrixPeer extends Peer {
   }
 
   void init() async {
-    var name = await _matrixClient.getDisplayName(identifier);
+    String? name;
+
+    try {
+      name = await _matrixClient.getDisplayName(identifier);
+    } catch (_) {}
     if (name != null) displayName = name;
+
     print(identifier);
 
     userName = identifier.split('@').last.split(':').first;
@@ -26,11 +31,14 @@ class MatrixPeer extends Peer {
     var generatedColor = Random().nextInt(Colors.primaries.length);
     color = Colors.primaries[generatedColor];
 
-    var avatarUrl = await _matrixClient.getAvatarUrl(identifier);
+    Uri? avatarUrl;
+    try {
+      avatarUrl = await _matrixClient.getAvatarUrl(identifier);
+    } catch (_) {}
 
     if (avatarUrl != null) {
       avatar = FileImageProvider(CacheFileProvider.thumbnail(avatarUrl.toString(), () async {
-        return (await _matrixClient.httpClient.get(avatarUrl.getThumbnail(_matrixClient, width: 64, height: 64)))
+        return (await _matrixClient.httpClient.get(avatarUrl!.getThumbnail(_matrixClient, width: 64, height: 64)))
             .bodyBytes;
       }));
     }
