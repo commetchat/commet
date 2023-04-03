@@ -3,11 +3,11 @@ import 'package:commet/cache/cache_file_provider.dart';
 import 'package:commet/client/attachment.dart';
 import 'package:commet/cache/file_image.dart';
 import 'package:commet/client/matrix/matrix_client_extensions.dart';
+import 'package:commet/ui/atoms/rich_text/matrix_html_parser.dart';
 import 'package:commet/utils/emoji/emoji_matcher.dart';
 import 'package:commet/utils/text_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_matrix_html/flutter_html.dart';
-import 'package:flutter_matrix_html/image_properties.dart';
+import 'package:path/path.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 import '../../ui/atoms/pill.dart';
@@ -126,31 +126,7 @@ class MatrixTimeline extends Timeline {
       e.bodyFormat = format;
       e.formattedBody = matrixEvent.formattedText;
 
-      var document = htmlParser.parseFragment(
-        e.formattedBody,
-      );
-
-      double emoteSize = 64;
-
-      if (document.nodes.any((element) => !element.attributes.containsKey("data-mx-emoticon"))) {
-        emoteSize = 24;
-      }
-
-      e.formattedContent = Html(
-        emoteSize: emoteSize,
-        imageProperties: ImageProperties(filterQuality: FilterQuality.high),
-        getMxcImage: (mxc, width, height, {animated}) {
-          return _matrixRoom.client.getMxcImage(mxc);
-        },
-        pillBuilder: (identifier) {
-          return Pill(
-            identifier: identifier,
-            displayText: identifier,
-            url: identifier,
-          );
-        },
-        data: e.formattedBody!,
-      );
+      if (format == "org.matrix.custom.html") e.formattedContent = MatrixHtmlParser.parse(e.formattedBody!);
     } else {
       e.bodyFormat = "chat.commet.default";
 
