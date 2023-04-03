@@ -36,6 +36,7 @@ class _MessageState extends State<Message> {
   @override
   Widget build(BuildContext context) {
     return material.Material(
+      color: material.Colors.transparent,
       child: Padding(
         padding: EdgeInsets.fromLTRB(s(15), widget.showSender ? s(20) : s(4), 8, 4),
         child: Stack(
