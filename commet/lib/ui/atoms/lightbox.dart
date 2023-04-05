@@ -10,7 +10,8 @@ import 'package:tiamat/atoms/popup_dialog.dart';
 import 'dart:ui' as ui;
 
 class Lightbox extends StatefulWidget {
-  const Lightbox({this.image, this.video, this.thumbnail, this.aspectRatio, super.key});
+  const Lightbox(
+      {this.image, this.video, this.thumbnail, this.aspectRatio, super.key});
   final ImageProvider? image;
   final FileProvider? video;
   final ImageProvider? thumbnail;
@@ -20,7 +21,10 @@ class Lightbox extends StatefulWidget {
   State<Lightbox> createState() => _LightboxState();
 
   static void show(BuildContext context,
-      {ImageProvider? image, ImageProvider? thumbnail, FileProvider? video, double? aspectRatio}) {
+      {ImageProvider? image,
+      ImageProvider? thumbnail,
+      FileProvider? video,
+      double? aspectRatio}) {
     showGeneralDialog(
         context: context,
         barrierDismissible: false,
@@ -35,9 +39,12 @@ class Lightbox extends StatefulWidget {
           );
         },
         transitionDuration: const Duration(milliseconds: 300),
-        transitionBuilder: (context, animation, secondaryAnimation, child) => SlideTransition(
-              position: Tween(begin: const Offset(0, 1), end: const Offset(0, 0))
-                  .animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)),
+        transitionBuilder: (context, animation, secondaryAnimation, child) =>
+            SlideTransition(
+              position:
+                  Tween(begin: const Offset(0, 1), end: const Offset(0, 0))
+                      .animate(CurvedAnimation(
+                          parent: animation, curve: Curves.easeOutCubic)),
               child: child,
             ));
   }
@@ -67,8 +74,13 @@ class _LightboxState extends State<Lightbox> {
 
   Future<ui.Image> getImage() {
     Completer<ui.Image> completer = new Completer<ui.Image>();
-    widget.image!.resolve(new ImageConfiguration()).addListener(ImageStreamListener((info, synchronousCall) {
-      completer.complete(info.image);
+
+    widget.image!
+        .resolve(new ImageConfiguration())
+        .addListener(ImageStreamListener((info, synchronousCall) {
+      if (!completer.isCompleted) {
+        completer.complete(info.image);
+      }
     }));
     return completer.future;
   }
