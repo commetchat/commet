@@ -13,11 +13,8 @@ class RoomHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Tile(
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-            border: Border(
-                bottom: BorderSide(color: m.Theme.of(context).extension<ExtraColors>()!.surfaceLow2, width: s(1.5)))),
-        child: Padding(
+      borderBottom: true,
+      child: Padding(
           padding: EdgeInsets.all(s(10.0)),
           child: Row(
             children: [
@@ -37,7 +34,6 @@ class RoomHeader extends StatelessWidget {
             ],
           ),
         ),
-      ),
     );
   }
 }

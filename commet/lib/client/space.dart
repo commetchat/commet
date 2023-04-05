@@ -9,6 +9,7 @@ abstract class Space {
   late String identifier;
   late Client client;
   late ImageProvider? avatar = null;
+  late ImageProvider? avatarThumbnail = null;
   final Map<String, Room> _rooms = {};
   final Map<String, PreviewData> _unjoinedRooms = {};
   late List<Room> rooms = List.empty(growable: true);

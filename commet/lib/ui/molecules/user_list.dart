@@ -26,6 +26,7 @@ class _PeerListState extends State<PeerList> {
   @override
   Widget build(BuildContext context) {
     return Tile.low1(
+      borderLeft: true,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
         child: AnimatedList(

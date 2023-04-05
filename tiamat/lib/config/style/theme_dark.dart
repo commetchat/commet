@@ -12,6 +12,7 @@ class ThemeDarkColors {
   static const Color surfaceLow4 = Color.fromARGB(255, 19, 21, 22);
   static const Color onSurface = Colors.white;
   static const Color highlightColor = Colors.white10;
+  static const Color outlineColor = Color.fromARGB(255, 30, 34, 37);
 }
 
 class ThemeDark {
@@ -25,7 +26,8 @@ class ThemeDark {
             surfaceLow2: ThemeDarkColors.surfaceLow2,
             surfaceLow3: ThemeDarkColors.surfaceLow3,
             surfaceLow4: ThemeDarkColors.surfaceLow4,
-            highlight: ThemeDarkColors.highlightColor),
+            highlight: ThemeDarkColors.highlightColor,
+            outline: ThemeDarkColors.outlineColor),
         ThemeSettings(frosted: false),
       ],
       colorScheme: ColorScheme(
@@ -57,14 +59,17 @@ class ThemeDark {
       sliderTheme: SliderThemeData(
         inactiveTrackColor: ThemeDarkColors.primary.withAlpha(100),
       ),
-      dialogTheme: const DialogTheme(backgroundColor: ThemeDarkColors.surface, shadowColor: Colors.black),
-      switchTheme: const SwitchThemeData(thumbColor: MaterialStatePropertyAll(ThemeDarkColors.secondary)),
+      dialogTheme: const DialogTheme(
+          backgroundColor: ThemeDarkColors.surface, shadowColor: Colors.black),
+      switchTheme: const SwitchThemeData(
+          thumbColor: MaterialStatePropertyAll(ThemeDarkColors.secondary)),
+      dividerColor: ThemeDarkColors.outlineColor,
       textButtonTheme: TextButtonThemeData(
           style: ButtonStyle(
         overlayColor: const MaterialStatePropertyAll<Color>(Colors.white10),
         foregroundColor: MaterialStatePropertyAll<Color>(Colors.grey.shade300),
-        shape:
-            MaterialStatePropertyAll<OutlinedBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+        shape: MaterialStatePropertyAll<OutlinedBorder>(
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
         textStyle: const MaterialStatePropertyAll<TextStyle>(
           TextStyle(color: Colors.white),
         ),

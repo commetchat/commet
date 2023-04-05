@@ -6,7 +6,8 @@ import '../molecules/space_selector.dart';
 import '../../config/app_config.dart';
 
 class SpaceIcon extends StatefulWidget {
-  const SpaceIcon(this.space, {super.key, this.width = 44, this.onTap, this.showUser = false});
+  const SpaceIcon(this.space,
+      {super.key, this.width = 44, this.onTap, this.showUser = false});
   final Space space;
   final double width;
   final void Function()? onTap;
@@ -33,12 +34,13 @@ class _SpaceIconState extends State<SpaceIcon> {
           widget.space.displayName,
           ImageButton(
             //tooltip: widget.space.displayName,
-            image: widget.space.avatar,
+            image: widget.space.avatarThumbnail,
             onTap: widget.onTap,
             size: widget.width,
           ),
           context),
-      if (widget.showUser && widget.space.client.user!.avatar != null) avatarOverlay()
+      if (widget.showUser && widget.space.client.user!.avatar != null)
+        avatarOverlay()
     ]);
   }
 
@@ -53,7 +55,9 @@ class _SpaceIconState extends State<SpaceIcon> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(s(20)),
             boxShadow: const [BoxShadow(color: Colors.black, blurRadius: 4)],
-            image: DecorationImage(image: widget.space.client.user!.avatar!, fit: BoxFit.fitHeight),
+            image: DecorationImage(
+                image: widget.space.client.user!.avatar!,
+                fit: BoxFit.fitHeight),
             //border: Border.all(color: Colors.white, width: 1)),
           ),
         ),
