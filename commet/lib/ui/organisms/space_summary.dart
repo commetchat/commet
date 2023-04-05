@@ -58,11 +58,12 @@ class _SpaceSummaryState extends State<SpaceSummary> {
                 height: 300,
                 child: BlurredImageBackground(
                   widget.space.avatar!,
-                  sigma: 15,
+                  sigma: 5,
                   backgroundColor: Theme.of(context).colorScheme.surface,
                 )),
           Padding(
-            padding: const EdgeInsets.fromLTRB(BuildConfig.MOBILE ? 20 : 50, 150, BuildConfig.MOBILE ? 20 : 50, 0),
+            padding: const EdgeInsets.fromLTRB(BuildConfig.MOBILE ? 20 : 50,
+                150, BuildConfig.MOBILE ? 20 : 50, 0),
             child: SafeArea(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -71,13 +72,14 @@ class _SpaceSummaryState extends State<SpaceSummary> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Avatar.large(
-                      image: widget.space.avatar,
+                      image: widget.space.avatarThumbnail,
                       placeholderText: widget.space.displayName,
                     ),
                   ),
                   tiamat.Text.label("Welcome to"),
                   tiamat.Text.largeTitle(widget.space.displayName),
-                  if (widget.space.topic != null) tiamat.Text.label(widget.space.topic!),
+                  if (widget.space.topic != null)
+                    tiamat.Text.label(widget.space.topic!),
                   Container(
                     height: 20,
                   ),
@@ -108,7 +110,8 @@ class _SpaceSummaryState extends State<SpaceSummary> {
                                           topic: data.topic,
                                           showJoinButton: true,
                                           onJoinButtonPressed: () {
-                                            joinRoom(_roomPreviews![index].roomId);
+                                            joinRoom(
+                                                _roomPreviews![index].roomId);
                                           },
                                         )),
                                   ),
@@ -129,8 +132,12 @@ class _SpaceSummaryState extends State<SpaceSummary> {
   }
 
   Widget spaceVisibility() {
-    IconData data = widget.space.visibility == RoomVisibility.public ? Icons.public : Icons.lock;
-    String text = widget.space.visibility == RoomVisibility.public ? "Public space" : "Private space";
+    IconData data = widget.space.visibility == RoomVisibility.public
+        ? Icons.public
+        : Icons.lock;
+    String text = widget.space.visibility == RoomVisibility.public
+        ? "Public space"
+        : "Private space";
     return Row(
       children: [
         Icon(data),

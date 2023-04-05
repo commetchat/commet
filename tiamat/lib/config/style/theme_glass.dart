@@ -13,7 +13,8 @@ class ThemeGlass {
             surfaceLow2: ThemeDarkColors.surfaceLow2,
             surfaceLow3: ThemeDarkColors.surfaceLow3,
             surfaceLow4: ThemeDarkColors.surfaceLow4,
-            highlight: ThemeDarkColors.highlightColor),
+            highlight: ThemeDarkColors.highlightColor,
+            outline: ThemeDarkColors.outlineColor),
         ThemeSettings(frosted: true),
       ],
     );

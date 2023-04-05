@@ -40,10 +40,6 @@ class MessageInputState extends State<MessageInput> {
             return KeyEventResult.ignored;
           }
 
-          if (controller.text.isEmpty) {
-            return KeyEventResult.handled;
-          }
-
           sendMessage();
           return KeyEventResult.handled;
         }
@@ -55,7 +51,10 @@ class MessageInputState extends State<MessageInput> {
   }
 
   void sendMessage() {
-    MessageInputSendResult? result = widget.onSendMessage?.call(controller.text);
+    if (controller.text.isEmpty) return;
+
+    MessageInputSendResult? result =
+        widget.onSendMessage?.call(controller.text);
     if (result == MessageInputSendResult.clearText) {
       controller.clear();
     }
@@ -68,7 +67,9 @@ class MessageInputState extends State<MessageInput> {
         padding: EdgeInsets.all(s(8.0)),
         child: Tile(
           decoration: BoxDecoration(
-              boxShadow: [BoxShadow(color: Colors.black.withAlpha(50), blurRadius: 20)],
+              boxShadow: [
+                BoxShadow(color: Colors.black.withAlpha(50), blurRadius: 20)
+              ],
               color: Theme.of(context).extension<ExtraColors>()!.surfaceHigh1,
               borderRadius: BorderRadius.circular(s(5))),
           child: Padding(
@@ -77,7 +78,8 @@ class MessageInputState extends State<MessageInput> {
               children: [
                 Flexible(
                   child: ConstrainedBox(
-                      constraints: BoxConstraints.loose(Size.fromHeight(widget.maxHeight)),
+                      constraints: BoxConstraints.loose(
+                          Size.fromHeight(widget.maxHeight)),
                       child: Padding(
                         padding: EdgeInsets.fromLTRB(s(8), s(9), s(8), s(9)),
                         child: Material(
@@ -91,7 +93,8 @@ class MessageInputState extends State<MessageInput> {
                                     controller: controller,
                                     decoration: null,
                                     maxLines: null,
-                                    cursorColor: Theme.of(context).colorScheme.onPrimary,
+                                    cursorColor:
+                                        Theme.of(context).colorScheme.onPrimary,
                                     cursorWidth: 1,
                                     onChanged: (value) {
                                       setState(() {});
@@ -103,8 +106,10 @@ class MessageInputState extends State<MessageInput> {
                                 i.IconButton(size: s(24), icon: Icons.face),
                                 Padding(
                                   padding: EdgeInsets.fromLTRB(s(10), 0, 0, 0),
-                                  child:
-                                      i.IconButton(onPressed: () => sendMessage.call(), size: s(24), icon: Icons.send),
+                                  child: i.IconButton(
+                                      onPressed: sendMessage,
+                                      size: s(24),
+                                      icon: Icons.send),
                                 ),
                               ])
                             ],

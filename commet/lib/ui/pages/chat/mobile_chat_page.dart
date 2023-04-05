@@ -68,22 +68,28 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
   Widget navigation(BuildContext newContext) {
     return Row(
       children: [
-        SideNavigationBar(
-          onHomeSelected: () {
-            widget.state.selectHome();
-          },
-          onSpaceSelected: (index) {
-            widget.state.selectSpace(widget.state.clientManager.spaces[index]);
-          },
+        Tile.low4(
+          child: SideNavigationBar(
+            onHomeSelected: () {
+              widget.state.selectHome();
+            },
+            onSpaceSelected: (index) {
+              widget.state
+                  .selectSpace(widget.state.clientManager.spaces[index]);
+            },
+          ),
         ),
         if (widget.state.homePageSelected) homePageView(),
-        if (widget.state.homePageSelected == false && widget.state.selectedSpace != null) spaceRoomSelector(newContext),
+        if (widget.state.homePageSelected == false &&
+            widget.state.selectedSpace != null)
+          spaceRoomSelector(newContext),
       ],
     );
   }
 
   Widget mainPanel() {
-    if (widget.state.selectedSpace != null && widget.state.selectedRoom == null) {
+    if (widget.state.selectedSpace != null &&
+        widget.state.selectedRoom == null) {
       return SpaceSummary(space: widget.state.selectedSpace!);
     }
 
@@ -147,7 +153,9 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
               height: 100.1,
               child: SpaceHeader(
                 widget.state.selectedSpace!,
-                backgroundColor: material.Theme.of(context).extension<ExtraColors>()!.surfaceLow1,
+                backgroundColor: material.Theme.of(context)
+                    .extension<ExtraColors>()!
+                    .surfaceLow1,
                 onTap: clearSelectedRoom,
               ),
             ),
@@ -167,7 +175,8 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
               child: SizedBox(
                 height: s(70),
                 child: UserPanel(
-                  displayName: widget.state.selectedSpace!.client.user!.displayName,
+                  displayName:
+                      widget.state.selectedSpace!.client.user!.displayName,
                   avatar: widget.state.selectedSpace!.client.user!.avatar,
                   detail: widget.state.selectedSpace!.client.user!.detail,
                   color: widget.state.selectedSpace!.client.user!.color,
@@ -187,14 +196,16 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
         body: SafeArea(
           child: Column(
             children: [
-              SizedBox(height: s(50), child: RoomHeader(widget.state.selectedRoom!)),
+              SizedBox(
+                  height: s(50), child: RoomHeader(widget.state.selectedRoom!)),
               Flexible(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Expanded(
                         child: TimelineViewer(
-                      key: widget.state.timelines[widget.state.selectedRoom!.identifier],
+                      key: widget.state
+                          .timelines[widget.state.selectedRoom!.identifier],
                       timeline: widget.state.selectedRoom!.timeline!,
                     )),
                     Padding(
