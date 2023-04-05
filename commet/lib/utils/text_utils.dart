@@ -5,6 +5,7 @@ import 'package:tiamat/tiamat.dart';
 import '../ui/atoms/rich_text/spans/link.dart';
 import 'emoji/emoji_matcher.dart';
 import 'package:intl/intl.dart' as intl;
+import 'package:flutter/material.dart' as material;
 
 final _urlRegex = RegExp(
   r'([\w+]+\:\/\/)?([\w\d-]+\.)*[\w-]+[\.\:]\w+([\/\?\=\&\#.]?[\w-]+)*\/?',
@@ -39,8 +40,8 @@ class TextUtils {
     bool rtl = isRtl(text, isHtml: isHtml);
     return Container(
         width: double.infinity,
-        child: RichText(
-          text: TextSpan(children: spans),
+        child: material.Text.rich(
+          material.TextSpan(children: spans),
           textAlign: rtl ? TextAlign.right : TextAlign.left,
           textDirection: rtl ? TextDirection.rtl : TextDirection.ltr,
         ));
