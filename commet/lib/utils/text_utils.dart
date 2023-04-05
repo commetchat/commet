@@ -2,7 +2,9 @@ import 'package:commet/utils/emoji/emoji.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart';
 
+import '../ui/atoms/rich_text/spans/link.dart';
 import 'emoji/emoji_matcher.dart';
+import 'package:intl/intl.dart' as intl;
 
 final _urlRegex = RegExp(
   r'([\w+]+\:\/\/)?([\w\d-]+\.)*[\w-]+[\.\:]\w+([\/\?\=\&\#.]?[\w-]+)*\/?',
@@ -29,6 +31,21 @@ class TextUtils {
     return formatSpan(span, (text, _) => linkifyString(text, style));
   }
 
+  static bool isRtl(String text, {bool isHtml = false}) {
+    return intl.Bidi.detectRtlDirectionality(text, isHtml: isHtml);
+  }
+
+  static Widget manageRtlSpan(String text, List<InlineSpan> spans, {bool isHtml = false}) {
+    bool rtl = isRtl(text, isHtml: isHtml);
+    return Container(
+        width: double.infinity,
+        child: RichText(
+          text: TextSpan(children: spans),
+          textAlign: rtl ? TextAlign.right : TextAlign.left,
+          textDirection: rtl ? TextDirection.rtl : TextDirection.ltr,
+        ));
+  }
+
   static List<InlineSpan> linkifyString(String text, TextStyle? style) {
     var matches = _urlRegex.allMatches(text);
     return formatMatches(
@@ -36,9 +53,7 @@ class TextUtils {
       text,
       style: style,
       builder: (matchedText, _) {
-        return Button(
-          text: matchedText,
-        );
+        return LinkSpan.create(matchedText, destination: Uri.tryParse(matchedText), style: style);
       },
     );
   }
@@ -57,7 +72,7 @@ class TextUtils {
   }
 
   static List<InlineSpan> formatMatches(Iterable<RegExpMatch> matches, String text,
-      {required Widget Function(String matchedText, TextStyle? theme) builder, TextStyle? style}) {
+      {required InlineSpan Function(String matchedText, TextStyle? theme) builder, TextStyle? style}) {
     if (matches.isEmpty) return [TextSpan(text: text, style: style)];
 
     List<InlineSpan> span = List.empty(growable: true);
@@ -82,13 +97,7 @@ class TextUtils {
         span.add(TextSpan(text: pre, style: style));
       }
 
-      span.add(WidgetSpan(
-          alignment: PlaceholderAlignment.middle,
-          baseline: TextBaseline.alphabetic,
-          style: style,
-          child: Padding(
-              padding: const EdgeInsets.fromLTRB(1, 0, 1, 0),
-              child: builder(text.substring(match.start, match.end), style))));
+      span.add(builder(text.substring(match.start, match.end), style));
     }
 
     if (matches.last.end != text.length) {

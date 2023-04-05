@@ -1,7 +1,11 @@
+import 'package:commet/ui/atoms/rich_text/spans/link.dart';
 import 'package:commet/utils/text_utils.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:html/parser.dart' as htmlParser;
 import 'package:html/dom.dart' as dom;
+import 'package:tiamat/atoms/button.dart';
+import 'package:tiamat/config/style/theme_dark.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class MatrixHtmlParser {
@@ -16,7 +20,8 @@ class MatrixHtmlParser {
         spans.addAll(_parseChild(element, TextStyle()));
       },
     );
-    return Text.rich(TextSpan(children: spans));
+
+    return TextUtils.manageRtlSpan(text, spans, isHtml: true);
   }
 
   static List<InlineSpan> _parseChild(dom.Node element, TextStyle currentStyle) {
@@ -25,17 +30,31 @@ class MatrixHtmlParser {
       return TextUtils.formatString(element.data, allowBigEmoji: true, style: theme);
     }
 
+    List<InlineSpan> parsedText = List.empty(growable: true);
+
     if (element is dom.Element) {
       theme = updateStyle(theme, element.localName!);
-    }
+      var span = parseSpecial(element, theme);
 
-    List<InlineSpan> parsedText = List.empty(growable: true);
+      if (span != null) {
+        return [span];
+      }
+    }
 
     for (var child in element.nodes) {
       parsedText.addAll(_parseChild(child, theme));
     }
 
     return parsedText;
+  }
+
+  static InlineSpan? parseSpecial(dom.Element element, TextStyle style) {
+    switch (element.localName) {
+      case "a":
+        return LinkSpan.create((element.nodes.first as dom.Text).data,
+            destination: element.attributes.containsKey('href') ? Uri.tryParse(element.attributes['href']!) : null,
+            style: style);
+    }
   }
 
   static TextStyle updateStyle(TextStyle style, String type) {

@@ -130,7 +130,8 @@ class MatrixTimeline extends Timeline {
     } else {
       e.bodyFormat = "chat.commet.default";
 
-      e.formattedContent = Text.rich(TextSpan(children: TextUtils.formatString(matrixEvent.body, allowBigEmoji: true)));
+      e.formattedContent =
+          TextUtils.manageRtlSpan(matrixEvent.body, TextUtils.formatString(matrixEvent.body, allowBigEmoji: true));
     }
   }
 

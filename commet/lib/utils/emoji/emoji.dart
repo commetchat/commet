@@ -21,10 +21,11 @@ class Emoji {
     var emojis = EmojiMatcher.find(text);
 
     return TextUtils.formatMatches(emojis, text, style: style, builder: ((matchedText, style) {
-      return EmojiWidget(
+      return WidgetSpan(
+          child: EmojiWidget(
         matchedText,
         height: style != null && style.fontSize != null ? style.fontSize : emojiHeight,
-      );
+      ));
     }));
   }
 }
