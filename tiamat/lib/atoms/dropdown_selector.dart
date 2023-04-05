@@ -140,7 +140,7 @@ class _DropdownSelectorState<T> extends State<DropdownSelector<T>> {
       child: Material(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
-          side: BorderSide(color: Theme.of(context).highlightColor, width: 1.4),
+          side: BorderSide(color: Theme.of(context).extension<ExtraColors>()!.outline, width: 1.4),
         ),
         color: Colors.transparent,
         child: LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {

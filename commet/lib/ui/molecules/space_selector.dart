@@ -53,53 +53,53 @@ class _SpaceSelectorState extends State<SpaceSelector> {
 
   @override
   Widget build(BuildContext context) {
-    return Tile.low4(
-      child: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.fromLTRB(s(7), 0, s(7), 0),
-          child: Column(
-            children: [
-              Flexible(
-                child: ScrollConfiguration(
-                  behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
-                  child: SingleChildScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    child: Padding(
-                      padding: EdgeInsets.fromLTRB(0, s(8), 0, s(8)),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (widget.header != null) widget.header!,
-                          if (widget.header != null) const Seperator(),
-                          AnimatedList(
-                            key: _listKey,
-                            physics: const NeverScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            initialItemCount: _count,
-                            itemBuilder: (context, i, animation) => ScaleTransition(
-                              scale: animation,
-                              child: Padding(
-                                padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
-                                child: SpaceIcon(
-                                  widget.spaces[i],
-                                  width: widget.width,
-                                  onTap: () => widget.onSelected?.call(i),
-                                  showUser: widget.showSpaceOwnerAvatar,
-                                ),
+    return SafeArea(
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(s(7), 0, s(7), 0),
+        child: Column(
+          children: [
+            Flexible(
+              child: ScrollConfiguration(
+                behavior:
+                    ScrollConfiguration.of(context).copyWith(scrollbars: false),
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(0, s(8), 0, s(8)),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (widget.header != null) widget.header!,
+                        if (widget.header != null) const Seperator(),
+                        AnimatedList(
+                          key: _listKey,
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          initialItemCount: _count,
+                          itemBuilder: (context, i, animation) =>
+                              ScaleTransition(
+                            scale: animation,
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
+                              child: SpaceIcon(
+                                widget.spaces[i],
+                                width: widget.width,
+                                onTap: () => widget.onSelected?.call(i),
+                                showUser: widget.showSpaceOwnerAvatar,
                               ),
                             ),
                           ),
-                          if (widget.footer != null) const Seperator(),
-                          if (widget.footer != null) widget.footer!,
-                        ],
-                      ),
+                        ),
+                        if (widget.footer != null) const Seperator(),
+                        if (widget.footer != null) widget.footer!,
+                      ],
                     ),
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

@@ -41,7 +41,7 @@ class VideoPlayerController {
   }
 
   Future<void> play() async {
-    await _onPlay!.call();
+    await _onPlay?.call();
   }
 
   Future<void> replay() async {

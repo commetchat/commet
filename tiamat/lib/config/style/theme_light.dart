@@ -12,6 +12,7 @@ class ThemeLightColors {
   static const Color surfaceLow4 = Color.fromARGB(255, 230, 230, 230);
   static const Color highlightColor = Colors.white;
   static const Color onSurface = Colors.black;
+  static const Color outlineColor = Color.fromARGB(48, 92, 92, 92);
 }
 
 class ThemeLight {
@@ -25,7 +26,8 @@ class ThemeLight {
             surfaceLow2: ThemeLightColors.surfaceLow2,
             surfaceLow3: ThemeLightColors.surfaceLow3,
             surfaceLow4: ThemeLightColors.surfaceLow4,
-            highlight: ThemeLightColors.highlightColor),
+            highlight: ThemeLightColors.highlightColor,
+            outline: ThemeLightColors.outlineColor),
         ThemeSettings(frosted: false)
       ],
       colorScheme: ColorScheme(
@@ -41,7 +43,8 @@ class ThemeLight {
           onError: Colors.white,
           brightness: Brightness.light,
           shadow: Colors.black.withAlpha(52)),
-      sliderTheme: SliderThemeData(inactiveTrackColor: ThemeLightColors.primary.withAlpha(100)),
+      sliderTheme: SliderThemeData(
+          inactiveTrackColor: ThemeLightColors.primary.withAlpha(100)),
       listTileTheme: const ListTileThemeData(
         tileColor: ThemeLightColors.surface,
       ),
@@ -51,13 +54,18 @@ class ThemeLight {
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ))),
       iconTheme: const IconThemeData(color: ThemeLightColors.secondary),
-      dialogTheme: const DialogTheme(backgroundColor: ThemeLightColors.surface, shadowColor: Colors.black),
+      dividerColor: ThemeLightColors.outlineColor,
+      dividerTheme:
+          const DividerThemeData(color: ThemeLightColors.outlineColor),
+      dialogTheme: const DialogTheme(
+          backgroundColor: ThemeLightColors.surface, shadowColor: Colors.black),
       textButtonTheme: TextButtonThemeData(
           style: ButtonStyle(
         overlayColor: const MaterialStatePropertyAll<Color>(Colors.black12),
-        foregroundColor: const MaterialStatePropertyAll<Color>(ThemeLightColors.secondary),
-        shape:
-            MaterialStatePropertyAll<OutlinedBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+        foregroundColor:
+            const MaterialStatePropertyAll<Color>(ThemeLightColors.secondary),
+        shape: MaterialStatePropertyAll<OutlinedBorder>(
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
         textStyle: const MaterialStatePropertyAll<TextStyle>(
           TextStyle(color: Colors.white),
         ),

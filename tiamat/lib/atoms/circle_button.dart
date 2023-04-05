@@ -21,7 +21,7 @@ class CircleButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-          shape: BoxShape.circle, boxShadow: [BoxShadow(blurRadius: 10, color: Theme.of(context).colorScheme.shadow)]),
+          shape: BoxShape.circle, border: Border.all(color: Theme.of(context).extension<ExtraColors>()!.outline, width: 1.2),),
       child: ClipOval(
         child: Material(
           color: Theme.of(context).extension<ExtraColors>()!.surfaceLow3,

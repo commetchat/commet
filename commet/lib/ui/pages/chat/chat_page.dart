@@ -22,7 +22,8 @@ class ChatPageState extends State<ChatPage> {
   late Space? selectedSpace = null;
   late Room? selectedRoom = null;
   late bool homePageSelected = false;
-  late GlobalKey<TimelineViewerState> timelineKey = GlobalKey<TimelineViewerState>();
+  late GlobalKey<TimelineViewerState> timelineKey =
+      GlobalKey<TimelineViewerState>();
   late Map<String, GlobalKey<TimelineViewerState>> timelines = {};
 
   void selectHomePage() {
@@ -30,16 +31,25 @@ class ChatPageState extends State<ChatPage> {
   }
 
   void selectSpace(Space space) {
-    setState(() {
-      selectedSpace = space;
-      homePageSelected = false;
-    });
+    if (kDebugMode) {
+      // Weird hacky work around mentioned in #2
+      timelines[selectedRoom?.identifier]?.currentState!.prepareForDisposal();
+      WidgetsBinding.instance
+          .addPostFrameCallback((_) => _setSelectedSpace(space));
+    } else {
+      _setSelectedSpace(space);
+    }
   }
 
   void clearRoomSelection() {
-    setState(() {
-      selectedRoom = null;
-    });
+    if (kDebugMode) {
+      // Weird hacky work around mentioned in #2
+      timelines[selectedRoom?.identifier]?.currentState!.prepareForDisposal();
+      WidgetsBinding.instance
+          .addPostFrameCallback((_) => _clearRoomSelection());
+    } else {
+      _clearRoomSelection();
+    }
   }
 
   void selectHome() {
@@ -58,7 +68,8 @@ class ChatPageState extends State<ChatPage> {
     if (kDebugMode) {
       // Weird hacky work around mentioned in #2
       timelines[selectedRoom?.identifier]?.currentState!.prepareForDisposal();
-      WidgetsBinding.instance.addPostFrameCallback((_) => _setSelectedRoom(room));
+      WidgetsBinding.instance
+          .addPostFrameCallback((_) => _setSelectedRoom(room));
     } else {
       _setSelectedRoom(room);
     }
@@ -72,6 +83,19 @@ class ChatPageState extends State<ChatPage> {
           timelines[selectedRoom?.identifier]?.currentState!.forceToBottom();
         },
       );
+    });
+  }
+
+  void _setSelectedSpace(Space space) {
+    setState(() {
+      selectedSpace = space;
+      homePageSelected = false;
+    });
+  }
+
+  void _clearRoomSelection() {
+    setState(() {
+      selectedRoom = null;
     });
   }
 
