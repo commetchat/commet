@@ -1,7 +1,9 @@
+import 'package:commet/ui/atoms/code_block.dart';
 import 'package:commet/ui/atoms/rich_text/spans/link.dart';
 import 'package:commet/utils/text_utils.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:html/parser.dart' as htmlParser;
 import 'package:html/dom.dart' as dom;
 import 'package:tiamat/atoms/button.dart';
@@ -54,6 +56,25 @@ class MatrixHtmlParser {
         return LinkSpan.create((element.nodes.first as dom.Text).data,
             destination: element.attributes.containsKey('href') ? Uri.tryParse(element.attributes['href']!) : null,
             style: style);
+      case "pre":
+        if (element.children.isEmpty) break;
+        if (element.children.first.localName != "code") break;
+
+        var child = element.children.first;
+        String? langauge;
+
+        if (child.attributes.containsKey('class')) {
+          var className = child.attributes['class']!;
+          if (className.startsWith('language-')) {
+            langauge = className.replaceAll('language-', '');
+          }
+        }
+
+        return WidgetSpan(
+            child: Codeblock(
+          language: langauge,
+          text: child.innerHtml,
+        ));
     }
   }
 
@@ -74,7 +95,8 @@ class MatrixHtmlParser {
       case "strong":
         return style.copyWith(fontWeight: FontWeight.bold);
       case "code":
-        return style.copyWith(backgroundColor: Colors.black);
+        return style.copyWith(
+            fontFamily: GoogleFonts.robotoMono().fontFamily, backgroundColor: Colors.black.withAlpha(32));
       default:
     }
 
