@@ -58,10 +58,9 @@ jobs:
           cd $PROJECT_PATH
           export DISPLAY=:99
           sudo Xvfb -ac :99 -screen 0 1920x1080x24 > /dev/null 2>&1 &
-          scripts/integration-test.sh &
-          ffmpeg -f x11grab -video_size 1920x1080 -framerate 15 -i :99 -vcodec libx264 -preset ultrafast -qp 0 -pix_fmt yuv444p video.mkv
+          ffmpeg -f x11grab -video_size 1920x1080 -framerate 15 -i :99 -vcodec libx264 -preset ultrafast -qp 0 -nostdin -loglevel quiet -pix_fmt yuv444p video.mkv &
+          scripts/integration-test.sh && kill $(pgrep ffmpeg)
           wait
-          kill $(pgrep ffmpeg)
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
