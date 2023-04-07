@@ -100,13 +100,11 @@ class Codeblock extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: language != null
-              ? SelectionArea(
-                  child: HighlightView(
-                    text.trim(),
-                    language: language,
-                    textStyle: GoogleFonts.robotoMono(),
-                    theme: theme,
-                  ),
+              ? HighlightView(
+                  text.trim(),
+                  language: language,
+                  textStyle: GoogleFonts.robotoMono(),
+                  theme: theme,
                 )
               : Text(
                   text.trim(),

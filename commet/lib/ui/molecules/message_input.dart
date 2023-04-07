@@ -12,9 +12,10 @@ import '../atoms/icon_button.dart' as i;
 enum MessageInputSendResult { clearText, unhandled }
 
 class MessageInput extends StatefulWidget {
-  const MessageInput({super.key, this.maxHeight = 200, this.onSendMessage});
+  const MessageInput({super.key, this.maxHeight = 200, this.onSendMessage, this.onFocusChanged});
   final double maxHeight;
   final MessageInputSendResult Function(String message)? onSendMessage;
+  final void Function(bool focused)? onFocusChanged;
 
   @override
   State<MessageInput> createState() => MessageInputState();
@@ -89,15 +90,20 @@ class MessageInputState extends State<MessageInput> {
                                   focusNode: textFocus,
                                   child: Stack(
                                     children: [
-                                      TextField(
-                                        controller: controller,
-                                        decoration: null,
-                                        maxLines: null,
-                                        cursorColor: Theme.of(context).colorScheme.onPrimary,
-                                        cursorWidth: 1,
-                                        onChanged: (value) {
-                                          setState(() {});
+                                      Focus(
+                                        onFocusChange: (value) {
+                                          widget.onFocusChanged?.call(value);
                                         },
+                                        child: TextField(
+                                          controller: controller,
+                                          decoration: null,
+                                          maxLines: null,
+                                          cursorColor: Theme.of(context).colorScheme.onPrimary,
+                                          cursorWidth: 1,
+                                          onChanged: (value) {
+                                            setState(() {});
+                                          },
+                                        ),
                                       ),
                                       if (controller.text.isEmpty)
                                         Padding(
