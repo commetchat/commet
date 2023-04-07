@@ -1,9 +1,11 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
+import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/pages/login/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tiamat/atoms/tile.dart';
+import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 
 import '../chat/chat_page.dart';
@@ -70,77 +72,71 @@ class _LoginPageViewState extends State<LoginPageView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Align(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(50.0),
-              child: AspectRatio(
-                aspectRatio: 1 / 1.3,
-                child: Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(13),
-                      boxShadow: [BoxShadow(blurRadius: 10, color: Theme.of(context).shadowColor)]),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(13),
-                    child: Tile.low2(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const SizedBox(height: 16),
-                              TextField(
-                                autocorrect: false,
-                                controller: _homeserverTextField,
-                                readOnly: _loading,
-                                decoration: const InputDecoration(
-                                  prefixText: 'https://',
-                                  border: OutlineInputBorder(),
-                                  labelText: 'Homeserver',
-                                ),
-                              ),
-                              const SizedBox(height: 16),
-                              TextField(
-                                autocorrect: false,
-                                controller: _usernameTextField,
-                                readOnly: _loading,
-                                decoration: const InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  labelText: 'Username',
-                                ),
-                              ),
-                              const SizedBox(height: 16),
-                              TextField(
-                                autocorrect: false,
-                                controller: _passwordTextField,
-                                obscureText: true,
-                                readOnly: _loading,
-                                decoration: const InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  labelText: 'Password',
-                                ),
-                              ),
-                              const SizedBox(height: 16),
-                              SizedBox(
-                                width: double.infinity,
-                                height: 50,
-                                child: ElevatedButton(
-                                  onPressed: doLogin,
-                                  child: _loading ? const LinearProgressIndicator() : const Text('Login'),
-                                ),
-                              ),
-                            ]),
+    return Material(
+      color: Theme.of(context).extension<ExtraColors>()!.surfaceLow4,
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: 500),
+            child: Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(13),
+                  border: Border.all(color: Theme.of(context).extension<ExtraColors>()!.outline, width: 1),
+                  boxShadow: [BoxShadow(blurRadius: 50, color: Theme.of(context).shadowColor.withAlpha(50))]),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(13),
+                child: Tile.low2(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(mainAxisSize: MainAxisSize.min, children: [
+                      const SizedBox(height: 16),
+                      TextField(
+                        autocorrect: false,
+                        controller: _homeserverTextField,
+                        readOnly: _loading,
+                        decoration: const InputDecoration(
+                          prefixText: 'https://',
+                          border: OutlineInputBorder(),
+                          labelText: 'Homeserver',
+                        ),
                       ),
-                    ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        autocorrect: false,
+                        controller: _usernameTextField,
+                        readOnly: _loading,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Username',
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        autocorrect: false,
+                        controller: _passwordTextField,
+                        obscureText: true,
+                        readOnly: _loading,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Password',
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 50,
+                        child: ElevatedButton(
+                          onPressed: doLogin,
+                          child: _loading ? const LinearProgressIndicator() : const Text('Login'),
+                        ),
+                      ),
+                    ]),
                   ),
                 ),
               ),
             ),
-          ],
+          ),
         ),
       ),
     );
