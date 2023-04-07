@@ -96,7 +96,7 @@ class MatrixHtmlParser {
         return style.copyWith(fontWeight: FontWeight.bold);
       case "code":
         return style.copyWith(
-            fontFamily: GoogleFonts.robotoMono().fontFamily, backgroundColor: Colors.black.withAlpha(32));
+            fontFamily: GoogleFonts.robotoMono().fontFamily, backgroundColor: Colors.black.withAlpha(60));
       default:
     }
 

@@ -31,5 +31,6 @@
   "spaceTopicPrompt": "Topic (Optional)",
   "joinSpacePrompt": "Join Space!",
   "spaceAddressPrompt": "Space Address:",
-  "couldNotLoadRoomPreview": "Could not load room preview"
+  "couldNotLoadRoomPreview": "Could not load room preview",
+  "sendAMessagePrompt": "Send a message..."
 }
