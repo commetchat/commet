@@ -106,10 +106,13 @@ class MessageInputState extends State<MessageInput> {
                                         ),
                                       ),
                                       if (controller.text.isEmpty)
-                                        Padding(
-                                          padding: const EdgeInsets.all(2.0),
-                                          child: tiamat.Text(T.of(context).sendAMessagePrompt,
-                                              type: TextType.label, color: Theme.of(context).iconTheme.color),
+                                        IgnorePointer(
+                                          ignoring: true,
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(2.0),
+                                            child: tiamat.Text(T.of(context).sendAMessagePrompt,
+                                                type: TextType.label, color: Theme.of(context).iconTheme.color),
+                                          ),
                                         )
                                     ],
                                   ),
