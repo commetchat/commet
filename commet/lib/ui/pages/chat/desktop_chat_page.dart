@@ -36,8 +36,7 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
             Tile.low4(
               child: SideNavigationBar(
                 onSpaceSelected: (index) {
-                  widget.state
-                      .selectSpace(widget.state.clientManager.spaces[index]);
+                  widget.state.selectSpace(widget.state.clientManager.spaces[index]);
                 },
                 onHomeSelected: () {
                   widget.state.selectHome();
@@ -45,16 +44,10 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
               ),
             ),
             if (widget.state.homePageSelected) homePageView(),
-            if (!widget.state.homePageSelected &&
-                widget.state.selectedSpace != null)
-              spaceRoomSelector(),
+            if (!widget.state.homePageSelected && widget.state.selectedSpace != null) spaceRoomSelector(),
             if (widget.state.selectedRoom != null) roomChatView(),
-            if (widget.state.selectedSpace != null &&
-                widget.state.selectedRoom == null)
-              Expanded(
-                  child: SpaceSummary(
-                      key: widget.state.selectedSpace!.key,
-                      space: widget.state.selectedSpace!)),
+            if (widget.state.selectedSpace != null && widget.state.selectedRoom == null)
+              Expanded(child: SpaceSummary(key: widget.state.selectedSpace!.key, space: widget.state.selectedSpace!)),
           ],
         ),
         if (widget.state.selectedRoom != null)
@@ -77,8 +70,7 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
           directMessages: widget.state.clientManager.directMessages,
           onSelected: (index) {
             setState(() {
-              widget.state
-                  .selectRoom(widget.state.clientManager.directMessages[index]);
+              widget.state.selectRoom(widget.state.clientManager.directMessages[index]);
             });
           },
         ),
@@ -90,11 +82,9 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
     return Flexible(
         child: Tile(
       borderLeft: true,
-      borderRight: true,
       child: Column(
         children: [
-          SizedBox(
-              height: s(50), child: RoomHeader(widget.state.selectedRoom!)),
+          SizedBox(height: s(50), child: RoomHeader(widget.state.selectedRoom!)),
           Flexible(
             child: Row(
               children: [
@@ -104,8 +94,7 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
                     children: [
                       Expanded(
                           child: TimelineViewer(
-                        key: widget.state
-                            .timelines[widget.state.selectedRoom!.identifier],
+                        key: widget.state.timelines[widget.state.selectedRoom!.identifier],
                         timeline: widget.state.selectedRoom!.timeline!,
                       )),
                       Tile(
@@ -147,9 +136,7 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
                     child: SpaceHeader(
                       widget.state.selectedSpace!,
                       onTap: widget.state.clearRoomSelection,
-                      backgroundColor: Theme.of(context)
-                          .extension<ExtraColors>()!
-                          .surfaceLow1,
+                      backgroundColor: Theme.of(context).extension<ExtraColors>()!.surfaceLow1,
                     ),
                   )),
               Expanded(
@@ -158,8 +145,7 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
                 key: widget.state.selectedSpace!.key,
                 onRoomInsert: widget.state.selectedSpace!.onRoomAdded.stream,
                 onRoomSelected: (index) {
-                  widget.state
-                      .selectRoom(widget.state.selectedSpace!.rooms[index]);
+                  widget.state.selectRoom(widget.state.selectedSpace!.rooms[index]);
                 },
               )),
               Tile.low2(
@@ -168,8 +154,7 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
                   child: Padding(
                     padding: const EdgeInsets.all(3.0),
                     child: UserPanel(
-                      displayName:
-                          widget.state.selectedSpace!.client.user!.displayName,
+                      displayName: widget.state.selectedSpace!.client.user!.displayName,
                       avatar: widget.state.selectedSpace!.client.user!.avatar,
                       detail: widget.state.selectedSpace!.client.user!.detail,
                       color: widget.state.selectedSpace!.client.user!.color,

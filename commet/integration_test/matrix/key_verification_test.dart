@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:commet/client/matrix/matrix_client.dart';
+import 'package:commet/config/app_config.dart';
 import 'package:commet/generated/l10n.dart';
 import 'package:commet/ui/pages/matrix/verification/matrix_verification_page.dart';
 import 'package:flutter/material.dart';
@@ -21,8 +22,6 @@ void main() {
     var username = const String.fromEnvironment('USER1_NAME', defaultValue: "alice");
     var password = const String.fromEnvironment('USER1_PW', defaultValue: "AliceInWonderland");
 
-    // Adding a bunch of delays to not trigger M_LIMIT_EXCEEDED: Too Many Requests
-    // Also helps avoid some errors with lock files when cleaning user data;
     await tester.clearUserData();
 
     var app = App();
@@ -31,9 +30,16 @@ void main() {
 
     var matrixClient = (app.clientManager.getClients()[0] as MatrixClient);
 
-    var proc = await IntegrationTestSubprocess.verifyMeWithEmoji(matrixClient.getMatrixClient().deviceID!);
+    var otherClient = await tester.createTestClient();
 
-    await Future.delayed(const Duration(seconds: 1));
+    var client = matrixClient.getMatrixClient();
+
+    var devices = await otherClient.getDevices();
+    var device = devices!.firstWhere((element) => element.deviceId == client.deviceID);
+    expect(device, isNotNull);
+
+    var verification = otherClient.userDeviceKeys[otherClient.userID]!.deviceKeys[device.deviceId]!.startVerification();
+    verification.onUpdate = () {};
 
     await tester.waitFor(() => find.byType(MatrixVerificationPage).evaluate().isNotEmpty);
 
@@ -51,14 +57,19 @@ void main() {
 
     await tester.tap(button);
 
+    await verification.acceptSas();
+
     await tester
         .waitFor(() => find.widgetWithText(ElevatedButton, T.current.sasVerificationDone).evaluate().isNotEmpty);
 
     await tester.pumpAndSettle();
 
-    var client = matrixClient.getMatrixClient();
+    expect(verification.isDone, equals(true));
+    expect(verification.state, equals(KeyVerificationState.done));
 
-    proc.kill();
     await tester.clean();
+
+    expect(client.userDeviceKeys[client.userID]!.deviceKeys[otherClient.deviceID!], isNotNull);
+    expect(otherClient.userDeviceKeys[otherClient.userID]!.deviceKeys[client.deviceID!], isNotNull);
   });
 }

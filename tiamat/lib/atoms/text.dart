@@ -139,25 +139,28 @@ class Text extends StatelessWidget {
 
     switch (type) {
       case TextType.label:
-        style = material.Theme.of(context).textTheme.labelLarge!.copyWith(fontWeight: FontWeight.w300);
+        style = material.Theme.of(context).textTheme.labelLarge!.copyWith(fontWeight: FontWeight.w300, color: color);
         break;
       case TextType.labelEmphasised:
-        style = material.Theme.of(context).textTheme.labelLarge!.copyWith(fontWeight: FontWeight.w400);
+        style = material.Theme.of(context).textTheme.labelLarge!.copyWith(fontWeight: FontWeight.w400, color: color);
         break;
       case TextType.error:
         style = material.Theme.of(context)
             .textTheme
             .bodyMedium!
-            .copyWith(fontWeight: FontWeight.w500, color: Theme.of(context).colorScheme.error);
+            .copyWith(fontWeight: FontWeight.w500, color: color ?? Theme.of(context).colorScheme.error);
         break;
       case TextType.tiny:
-        style = material.Theme.of(context).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w300, fontSize: 10);
+        style = material.Theme.of(context)
+            .textTheme
+            .bodyMedium!
+            .copyWith(fontWeight: FontWeight.w300, fontSize: 10, color: color);
         break;
       case TextType.body:
-        style = material.Theme.of(context).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w300);
+        style = material.Theme.of(context).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w300, color: color);
         break;
       case TextType.largeTitle:
-        style = material.Theme.of(context).textTheme.titleLarge!;
+        style = material.Theme.of(context).textTheme.titleLarge!.copyWith(color: color);
         break;
       case TextType.name:
         style = material.Theme.of(context)

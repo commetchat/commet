@@ -41,6 +41,8 @@ class EmojiWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Image(
+      filterQuality: FilterQuality.high,
+      isAntiAlias: true,
       width: height,
       height: height,
       image: AssetImage("assets/twemoji/assets/72x72/$unicode.png"),

@@ -23,6 +23,8 @@ class Message extends StatefulWidget {
 }
 
 class _MessageState extends State<Message> {
+  bool hovered = false;
+
   @override
   void initState() {
     super.initState();
@@ -37,6 +39,32 @@ class _MessageState extends State<Message> {
   Widget build(BuildContext context) {
     return material.Material(
       color: material.Colors.transparent,
+      child: BuildConfig.MOBILE
+          ? material.InkWell(
+              child: buildContent(context),
+              onLongPress: () {
+                print("Message was long pressed");
+              },
+            )
+          : MouseRegion(
+              child: buildContent(context),
+              onEnter: (_) {
+                setState(() {
+                  hovered = true;
+                });
+              },
+              onExit: (_) {
+                setState(() {
+                  hovered = false;
+                });
+              },
+            ),
+    );
+  }
+
+  Widget buildContent(BuildContext context) {
+    return Container(
+      color: hovered ? material.Theme.of(context).hoverColor : material.Colors.transparent,
       child: Padding(
         padding: EdgeInsets.fromLTRB(s(15), widget.showSender ? s(20) : s(4), 8, 4),
         child: Stack(
@@ -56,41 +84,7 @@ class _MessageState extends State<Message> {
                       image: null,
                       isPadding: true,
                     ),
-                  Flexible(
-                    child: Padding(
-                      padding: EdgeInsets.fromLTRB(s(16), 0, s(0), 0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (widget.showSender) senderName(context),
-                          if (widget.event.status == TimelineEventStatus.removed)
-                            tiamat.Text.error(T.of(context).messageDeleted)
-                          else if (widget.event.bodyFormat != null)
-                            formattedBody()
-                          else if (widget.event.body != null)
-                            tiamat.Text.body(
-                              widget.event.body!,
-                            ),
-                          if (widget.event.attachments != null)
-                            Wrap(
-                              children: widget.event.attachments!
-                                  .map((e) => Padding(
-                                        padding: EdgeInsets.fromLTRB(0, s(8), s(8), s(8)),
-                                        child: MessageAttachment(e),
-                                      ))
-                                  .toList(),
-                            ),
-                          if (widget.event.status == TimelineEventStatus.error)
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
-                              child: tiamat.Text.error(T.of(context).messageFailedToSend),
-                            ),
-                          if (BuildConfig.DEBUG) debugInfo()
-                        ],
-                      ),
-                    ),
-                  )
+                  messageBody(context, selectableText: !BuildConfig.MOBILE)
                 ],
               ),
             ),
@@ -100,9 +94,43 @@ class _MessageState extends State<Message> {
     );
   }
 
-  Widget formattedBody() {
-    return material.SelectionArea(
-      child: widget.event.formattedContent!,
+  Widget messageBody(BuildContext context, {bool selectableText = true}) {
+    return Flexible(
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(s(16), 0, s(0), 0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (widget.showSender) senderName(context),
+            if (widget.event.status == TimelineEventStatus.removed)
+              tiamat.Text.error(T.of(context).messageDeleted)
+            else if (widget.event.bodyFormat != null)
+              selectableText
+                  ? material.SelectionArea(child: widget.event.formattedContent!)
+                  : widget.event.formattedContent!
+            else if (widget.event.body != null)
+              selectableText
+                  ? material.SelectionArea(child: tiamat.Text.body(widget.event.body!))
+                  : tiamat.Text.body(widget.event.body!),
+            if (widget.event.attachments != null)
+              Wrap(
+                children: widget.event.attachments!
+                    .map((e) => Padding(
+                          padding: EdgeInsets.fromLTRB(0, s(8), s(8), s(8)),
+                          child: MessageAttachment(e),
+                        ))
+                    .toList(),
+              ),
+            if (widget.event.status == TimelineEventStatus.error)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
+                child: tiamat.Text.error(T.of(context).messageFailedToSend),
+              ),
+            if (BuildConfig.DEBUG) debugInfo()
+          ],
+        ),
+      ),
     );
   }
 

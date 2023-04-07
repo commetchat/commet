@@ -42,8 +42,7 @@ class TimelineViewerState extends State<TimelineViewer> {
 
     controller
         .animateTo(controller.position.maxScrollExtent,
-            duration: const Duration(milliseconds: 500),
-            curve: Curves.easeOutExpo)
+            duration: const Duration(milliseconds: 500), curve: Curves.easeOutExpo)
         .then((value) {
       TimelineEvent? latest = split.recent.isNotEmpty ? split.recent[0] : null;
       if (latest == lastEvent) {
@@ -70,8 +69,7 @@ class TimelineViewerState extends State<TimelineViewer> {
   void forceToBottom() {
     controller.jumpTo(controller.position.maxScrollExtent);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!(controller.position.pixels >= controller.position.maxScrollExtent))
-        forceToBottom();
+      if (!(controller.position.pixels >= controller.position.maxScrollExtent)) forceToBottom();
     });
   }
 
@@ -125,8 +123,7 @@ class TimelineViewerState extends State<TimelineViewer> {
 
   void handleBottomAttached() {
     setState(() {
-      attachedToBottom =
-          controller.position.pixels >= controller.position.maxScrollExtent;
+      attachedToBottom = controller.position.pixels >= controller.position.maxScrollExtent - 20;
     });
   }
 
@@ -139,15 +136,12 @@ class TimelineViewerState extends State<TimelineViewer> {
       slivers: <Widget>[
         SliverList(
             delegate: SliverChildBuilderDelegate((context, index) {
-          int actualIndex = split.getTimelineIndex(
-              split.getHistoryDisplayIndex(index),
-              SplitTimelinePart.historical);
+          int actualIndex = split.getTimelineIndex(split.getHistoryDisplayIndex(index), SplitTimelinePart.historical);
 
           return TimelineEventView(
             event: split.historical[split.getHistoryDisplayIndex(index)],
-            showSender: shouldShowSender(split.getTimelineIndex(
-                split.getHistoryDisplayIndex(index),
-                SplitTimelinePart.historical)),
+            showSender: shouldShowSender(
+                split.getTimelineIndex(split.getHistoryDisplayIndex(index), SplitTimelinePart.historical)),
             debugInfo:
                 "Split Part: ${split.whichList(actualIndex)} history index: $index, actual index: $actualIndex, actual index id: ${widget.timeline.events[actualIndex].eventId}",
             onDelete: () {
@@ -158,18 +152,15 @@ class TimelineViewerState extends State<TimelineViewer> {
         SliverList(
             key: newEventsListKey,
             delegate: SliverChildBuilderDelegate((context, index) {
-              int actualIndex = split.getTimelineIndex(
-                  split.getRecentDisplayIndex(index), SplitTimelinePart.recent);
+              int actualIndex = split.getTimelineIndex(split.getRecentDisplayIndex(index), SplitTimelinePart.recent);
               return TimelineEventView(
-                showSender: shouldShowSender(split.getTimelineIndex(
-                    split.getRecentDisplayIndex(index),
-                    SplitTimelinePart.recent)),
+                showSender: shouldShowSender(
+                    split.getTimelineIndex(split.getRecentDisplayIndex(index), SplitTimelinePart.recent)),
                 event: split.recent[split.getRecentDisplayIndex(index)],
                 debugInfo:
                     "Split Part: ${split.whichList(actualIndex)} history index: $index, actual index: $actualIndex, actual index id: ${widget.timeline.events[actualIndex].eventId}",
                 onDelete: () {
-                  widget.timeline.deleteEventByIndex(
-                      split.getTimelineIndex(index, SplitTimelinePart.recent));
+                  widget.timeline.deleteEventByIndex(split.getTimelineIndex(index, SplitTimelinePart.recent));
                 },
               );
             }, childCount: split.recent.length)),
@@ -187,7 +178,6 @@ class TimelineViewerState extends State<TimelineViewer> {
             .inMinutes >
         1) return true;
 
-    return widget.timeline.events[index].sender !=
-        widget.timeline.events[index + 1].sender;
+    return widget.timeline.events[index].sender != widget.timeline.events[index + 1].sender;
   }
 }
