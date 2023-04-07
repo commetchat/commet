@@ -23,14 +23,14 @@ Widget wbSASCheckEmojis(BuildContext context) {
         state: KeyVerificationState.askSas,
         sasTypes: ['emoji'],
         sasEmoji: [
-          KeyVerificationEmoji(7),
-          KeyVerificationEmoji(2),
-          KeyVerificationEmoji(3),
+          KeyVerificationEmoji(25),
+          KeyVerificationEmoji(41),
+          KeyVerificationEmoji(61),
+          KeyVerificationEmoji(53),
+          KeyVerificationEmoji(49),
           KeyVerificationEmoji(4),
-          KeyVerificationEmoji(5),
-          KeyVerificationEmoji(6),
         ],
-        sasNumbers: [1, 2, 3, 4, 5, 6],
+        sasNumbers: [25, 41, 61, 53, 49, 4],
       ),
     ),
   );
@@ -47,14 +47,14 @@ Widget sbVerificationLoading(BuildContext context) {
         state: KeyVerificationState.waitingAccept,
         sasTypes: ['emoji'],
         sasEmoji: [
-          KeyVerificationEmoji(7),
-          KeyVerificationEmoji(2),
-          KeyVerificationEmoji(3),
+          KeyVerificationEmoji(25),
+          KeyVerificationEmoji(41),
+          KeyVerificationEmoji(61),
+          KeyVerificationEmoji(53),
+          KeyVerificationEmoji(49),
           KeyVerificationEmoji(4),
-          KeyVerificationEmoji(5),
-          KeyVerificationEmoji(6),
         ],
-        sasNumbers: [1, 2, 3, 4, 5, 6],
+        sasNumbers: [25, 41, 61, 53, 49, 4],
       ),
     ),
   );
@@ -71,14 +71,14 @@ Widget wbSASRequestReceived(BuildContext context) {
         state: KeyVerificationState.askAccept,
         sasTypes: ['emoji'],
         sasEmoji: [
-          KeyVerificationEmoji(1),
-          KeyVerificationEmoji(2),
-          KeyVerificationEmoji(3),
+          KeyVerificationEmoji(25),
+          KeyVerificationEmoji(41),
+          KeyVerificationEmoji(61),
+          KeyVerificationEmoji(53),
+          KeyVerificationEmoji(49),
           KeyVerificationEmoji(4),
-          KeyVerificationEmoji(5),
-          KeyVerificationEmoji(6),
         ],
-        sasNumbers: [1, 2, 3, 4, 5, 6],
+        sasNumbers: [25, 41, 61, 53, 49, 4],
       ),
     ),
   );
@@ -95,14 +95,14 @@ Widget wbVerificationSuccess(BuildContext context) {
         state: KeyVerificationState.done,
         sasTypes: ['emoji'],
         sasEmoji: [
-          KeyVerificationEmoji(1),
-          KeyVerificationEmoji(2),
-          KeyVerificationEmoji(3),
+          KeyVerificationEmoji(25),
+          KeyVerificationEmoji(41),
+          KeyVerificationEmoji(61),
+          KeyVerificationEmoji(53),
+          KeyVerificationEmoji(49),
           KeyVerificationEmoji(4),
-          KeyVerificationEmoji(5),
-          KeyVerificationEmoji(6),
         ],
-        sasNumbers: [1, 2, 3, 4, 5, 6],
+        sasNumbers: [25, 41, 61, 53, 49, 4],
       ),
     ),
   );
@@ -134,7 +134,7 @@ class MatrixVerificationPageView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(height: 300, width: 300, child: determineStage(context));
+    return SizedBox(height: 350, width: 500, child: determineStage(context));
   }
 
   Widget determineStage(BuildContext context) {
@@ -195,19 +195,25 @@ class MatrixVerificationPageView extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
             child: Wrap(
-              spacing: 30,
-              runSpacing: 10,
+              spacing: 15,
+              runSpacing: 5,
               alignment: WrapAlignment.center,
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: sasEmoji
                   .map((e) => Padding(
                         padding: const EdgeInsets.all(1.0),
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             EmojiWidget(
                               e.emoji,
                               height: 30,
                             ),
-                            tiamat.Text(e.name)
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: tiamat.Text.tiny(e.name),
+                            )
                           ],
                         ),
                       ))
