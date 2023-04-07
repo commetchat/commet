@@ -328,7 +328,7 @@ packages:
     description:
       path: flutter_highlighter
       ref: HEAD
-      resolved-ref: "1c652a299126d52bca2e6b90f5ad7d1516d1a9fe"
+      resolved-ref: "4de60d39c9fe4b828f90a019d0afc89e713c704e"
       url: "https://github.com/commetchat/highlight.git"
     source: git
     version: "0.1.1"
