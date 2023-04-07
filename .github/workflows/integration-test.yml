@@ -63,8 +63,8 @@ jobs:
           kill $(pgrep ffmpeg)
 
       - name: Upload Artifact
-        - uses: actions/upload-artifact@v3
-          with:
+        uses: actions/upload-artifact@v3
+        with:
           name: result.mkv
           path: $PROJECT_PATH/video.mkv
           
