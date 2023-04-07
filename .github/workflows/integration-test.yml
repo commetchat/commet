@@ -24,11 +24,6 @@ jobs:
         with:
           flutter-version: '3.7.3'
           channel: 'stable'
-          
-      - name: Setup node  (ㅠ﹏ㅠ)
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
 
       - name: Setup Tools  ᕙ|” ◉ ◡ ◉ ”|ᕗ
         run: |

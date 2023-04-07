@@ -9,7 +9,8 @@
             "request": "launch",
             "type": "dart",
             "toolArgs": [
-                "--dart-define", "PLATFORM=desktop"
+                "--dart-define", "PLATFORM=desktop",
+                "--dart-define", "BUILD_MODE=debug"
             ],
         },
         {
@@ -17,7 +18,8 @@
             "request": "launch",
             "type": "dart",
             "toolArgs": [
-                "--dart-define", "PLATFORM=mobile"
+                "--dart-define", "PLATFORM=mobile",
+                "--dart-define", "BUILD_MODE=debug"
             ],
         },
         {
@@ -25,7 +27,8 @@
             "request": "launch",
             "type": "dart",
             "toolArgs": [
-                "--dart-define", "PLATFORM=android"
+                "--dart-define", "PLATFORM=android",
+                "--dart-define", "BUILD_MODE=debug"
             ],
         },
         {

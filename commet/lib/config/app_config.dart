@@ -26,7 +26,6 @@ double getUiScale() {
 class AppConfig {
   static Future<String> getDatabasePath() async {
     final dir = await getApplicationSupportDirectory();
-    var path = join(dir.path, "hive");
-    return path;
+    return join(dir.path, "hive");
   }
 }

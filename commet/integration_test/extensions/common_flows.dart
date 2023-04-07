@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:commet/main.dart';
 import 'package:hive/hive.dart';
+import 'package:matrix/encryption/utils/key_verification.dart';
+import 'package:matrix/matrix.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'wait_for.dart';
@@ -63,5 +65,33 @@ extension CommonFlows on WidgetTester {
 
     await waitFor(() => app.clientManager.isLoggedIn(), timeout: const Duration(seconds: 5), skipPumpAndSettle: true);
     expect(app.clientManager.isLoggedIn(), equals(true));
+  }
+
+  Future<Client> createTestClient() async {
+    var hs = const String.fromEnvironment('HOMESERVER', defaultValue: "localhost");
+
+    var username = const String.fromEnvironment('USER1_NAME', defaultValue: "alice");
+
+    var password = const String.fromEnvironment('USER1_PW', defaultValue: "AliceInWonderland");
+
+    var otherClient = Client(
+      "Commet Integration Tester",
+      verificationMethods: {KeyVerificationMethod.emoji, KeyVerificationMethod.numbers},
+      nativeImplementations: MatrixClient.nativeImplementations,
+      logLevel: Level.verbose,
+      databaseBuilder: (client) async {
+        print(await AppConfig.getDatabasePath());
+        final db = HiveCollectionsDatabase(client.clientName, await AppConfig.getDatabasePath());
+        await db.open();
+        return db;
+      },
+    );
+
+    await otherClient.checkHomeserver(Uri.http(hs));
+
+    await otherClient.login(LoginType.mLoginPassword,
+        identifier: AuthenticationUserIdentifier(user: username), password: password);
+
+    return otherClient;
   }
 }
