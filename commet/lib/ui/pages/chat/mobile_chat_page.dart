@@ -37,6 +37,7 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
   late GlobalKey<OverlappingPanelsState> panelsKey;
   late GlobalKey<MessageInputState> messageInput = GlobalKey();
   bool shouldMainIgnoreInput = false;
+  double height = -1;
 
   @override
   void initState() {
@@ -74,22 +75,18 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
               widget.state.selectHome();
             },
             onSpaceSelected: (index) {
-              widget.state
-                  .selectSpace(widget.state.clientManager.spaces[index]);
+              widget.state.selectSpace(widget.state.clientManager.spaces[index]);
             },
           ),
         ),
         if (widget.state.homePageSelected) homePageView(),
-        if (widget.state.homePageSelected == false &&
-            widget.state.selectedSpace != null)
-          spaceRoomSelector(newContext),
+        if (widget.state.homePageSelected == false && widget.state.selectedSpace != null) spaceRoomSelector(newContext),
       ],
     );
   }
 
   Widget mainPanel() {
-    if (widget.state.selectedSpace != null &&
-        widget.state.selectedRoom == null) {
+    if (widget.state.selectedSpace != null && widget.state.selectedRoom == null) {
       return SpaceSummary(space: widget.state.selectedSpace!);
     }
 
@@ -153,9 +150,7 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
               height: 100.1,
               child: SpaceHeader(
                 widget.state.selectedSpace!,
-                backgroundColor: material.Theme.of(context)
-                    .extension<ExtraColors>()!
-                    .surfaceLow1,
+                backgroundColor: material.Theme.of(context).extension<ExtraColors>()!.surfaceLow1,
                 onTap: clearSelectedRoom,
               ),
             ),
@@ -175,8 +170,7 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
               child: SizedBox(
                 height: s(70),
                 child: UserPanel(
-                  displayName:
-                      widget.state.selectedSpace!.client.user!.displayName,
+                  displayName: widget.state.selectedSpace!.client.user!.displayName,
                   avatar: widget.state.selectedSpace!.client.user!.avatar,
                   detail: widget.state.selectedSpace!.client.user!.detail,
                   color: widget.state.selectedSpace!.client.user!.color,
@@ -196,29 +190,48 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
         body: SafeArea(
           child: Column(
             children: [
-              SizedBox(
-                  height: s(50), child: RoomHeader(widget.state.selectedRoom!)),
+              SizedBox(height: s(50), child: RoomHeader(widget.state.selectedRoom!)),
               Flexible(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Expanded(
-                        child: TimelineViewer(
-                      key: widget.state
-                          .timelines[widget.state.selectedRoom!.identifier],
-                      timeline: widget.state.selectedRoom!.timeline!,
-                    )),
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(0, 0, 0, s(8)),
-                      child: MessageInput(
-                        key: messageInput,
-                        onSendMessage: (message) {
-                          widget.state.selectedRoom!.sendMessage(message);
-                          return MessageInputSendResult.clearText;
-                        },
-                      ),
-                    )
-                  ],
+                child: NotificationListener(
+                  onNotification: (notification) {
+                    var prevHeight = height;
+                    height = MediaQuery.of(context).viewInsets.bottom;
+                    if (prevHeight == -1) return true;
+
+                    var diff = height - prevHeight;
+                    if (diff <= 0) return true;
+
+                    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                      var state = widget.state.timelines[widget.state.selectedRoom?.identifier]?.currentState;
+                      if (state != null) {
+                        state.controller.jumpTo(state.controller.offset + diff);
+                      }
+                    });
+
+                    return true;
+                  },
+                  child: SizeChangedLayoutNotifier(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Expanded(
+                            child: TimelineViewer(
+                          key: widget.state.timelines[widget.state.selectedRoom!.identifier],
+                          timeline: widget.state.selectedRoom!.timeline!,
+                        )),
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(0, 0, 0, s(8)),
+                          child: MessageInput(
+                            key: messageInput,
+                            onSendMessage: (message) {
+                              widget.state.selectedRoom!.sendMessage(message);
+                              return MessageInputSendResult.clearText;
+                            },
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ],

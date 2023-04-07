@@ -22,9 +22,9 @@ class ChatPageState extends State<ChatPage> {
   late Space? selectedSpace = null;
   late Room? selectedRoom = null;
   late bool homePageSelected = false;
-  late GlobalKey<TimelineViewerState> timelineKey =
-      GlobalKey<TimelineViewerState>();
+  late GlobalKey<TimelineViewerState> timelineKey = GlobalKey<TimelineViewerState>();
   late Map<String, GlobalKey<TimelineViewerState>> timelines = {};
+  double height = -1;
 
   void selectHomePage() {
     homePageSelected = true;
@@ -34,8 +34,7 @@ class ChatPageState extends State<ChatPage> {
     if (kDebugMode) {
       // Weird hacky work around mentioned in #2
       timelines[selectedRoom?.identifier]?.currentState!.prepareForDisposal();
-      WidgetsBinding.instance
-          .addPostFrameCallback((_) => _setSelectedSpace(space));
+      WidgetsBinding.instance.addPostFrameCallback((_) => _setSelectedSpace(space));
     } else {
       _setSelectedSpace(space);
     }
@@ -45,8 +44,7 @@ class ChatPageState extends State<ChatPage> {
     if (kDebugMode) {
       // Weird hacky work around mentioned in #2
       timelines[selectedRoom?.identifier]?.currentState!.prepareForDisposal();
-      WidgetsBinding.instance
-          .addPostFrameCallback((_) => _clearRoomSelection());
+      WidgetsBinding.instance.addPostFrameCallback((_) => _clearRoomSelection());
     } else {
       _clearRoomSelection();
     }
@@ -68,8 +66,7 @@ class ChatPageState extends State<ChatPage> {
     if (kDebugMode) {
       // Weird hacky work around mentioned in #2
       timelines[selectedRoom?.identifier]?.currentState!.prepareForDisposal();
-      WidgetsBinding.instance
-          .addPostFrameCallback((_) => _setSelectedRoom(room));
+      WidgetsBinding.instance.addPostFrameCallback((_) => _setSelectedRoom(room));
     } else {
       _setSelectedRoom(room);
     }
@@ -110,7 +107,24 @@ class ChatPageState extends State<ChatPage> {
         onWillPop: () async {
           return false;
         },
-        child: pickChatView());
+        child: NotificationListener(
+            onNotification: (SizeChangedLayoutNotification notification) {
+              print("Size Changed");
+              var prevHeight = height;
+              height = MediaQuery.of(context).size.height;
+              if (prevHeight == -1) return true;
+
+              var diff = prevHeight - height;
+              WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                var state = timelines[selectedRoom?.identifier]?.currentState;
+                if (state != null) {
+                  state.controller.jumpTo(state.controller.offset + diff);
+                }
+              });
+
+              return true;
+            },
+            child: SizeChangedLayoutNotifier(child: pickChatView())));
   }
 
   Widget pickChatView() {
