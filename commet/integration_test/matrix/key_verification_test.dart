@@ -28,6 +28,8 @@ void main() {
     await tester.pumpWidget(app);
     await tester.login(app);
 
+    expect(true, isFalse);
+
     var matrixClient = (app.clientManager.getClients()[0] as MatrixClient);
 
     var otherClient = await tester.createTestClient();
