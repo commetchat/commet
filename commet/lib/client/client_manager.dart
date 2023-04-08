@@ -43,6 +43,12 @@ class ClientManager {
     return _clients.values.any((element) => element.isLoggedIn());
   }
 
+  Future<void> close() async {
+    for (var client in _clients.values) {
+      client.close();
+    }
+  }
+
   void _synced() {
     onSync.add(null);
   }

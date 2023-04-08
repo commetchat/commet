@@ -31,8 +31,8 @@ extension CommonFlows on WidgetTester {
 
   Future<void> clean() async {
     await Hive.close();
-    await Hive.deleteFromDisk();
     await preferences.clear();
+    await clearUserData();
   }
 
   Future<void> login(App app) async {

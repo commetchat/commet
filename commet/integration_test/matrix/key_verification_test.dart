@@ -22,8 +22,6 @@ void main() {
     var username = const String.fromEnvironment('USER1_NAME', defaultValue: "alice");
     var password = const String.fromEnvironment('USER1_PW', defaultValue: "AliceInWonderland");
 
-    await tester.clearUserData();
-
     var app = App();
     await tester.pumpWidget(app);
     await tester.login(app);
@@ -67,9 +65,11 @@ void main() {
     expect(verification.isDone, equals(true));
     expect(verification.state, equals(KeyVerificationState.done));
 
-    await tester.clean();
-
     expect(client.userDeviceKeys[client.userID]!.deviceKeys[otherClient.deviceID!], isNotNull);
     expect(otherClient.userDeviceKeys[otherClient.userID]!.deviceKeys[client.deviceID!], isNotNull);
+
+    await app.clientManager.close();
+    await otherClient.dispose();
+    await tester.clean();
   });
 }

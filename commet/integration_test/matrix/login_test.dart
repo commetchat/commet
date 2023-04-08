@@ -23,14 +23,15 @@ void main() {
         timeout: const Duration(seconds: 5), skipPumpAndSettle: true);
     expect(app.clientManager.isLoggedIn(), equals(true));
 
+    await app.clientManager.close();
     await tester.clean();
   });
 
   testWidgets('Test Matrix Login Invalid', (WidgetTester tester) async {
-    var hs = const String.fromEnvironment('HOMESERVER');
+    var hs = const String.fromEnvironment('HOMESERVER', defaultValue: "localhost");
     var username = "invalidUser";
     var password = "InvalidPassword!";
-    await tester.clearUserData();
+
     // Build our app and trigger a frame.
     var app = App();
     await tester.pumpWidget(app);
@@ -52,9 +53,10 @@ void main() {
     await tester.tap(button);
     await tester.waitFor(() => find.text("Login Failed").evaluate().isNotEmpty,
         skipPumpAndSettle: false, timeout: const Duration(seconds: 5));
-    print("Found test!");
+    await tester.pumpFrames(app, Duration(seconds: 1));
     expect(app.clientManager.isLoggedIn(), equals(false));
 
+    await app.clientManager.close();
     await tester.clean();
   });
 }
