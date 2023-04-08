@@ -241,4 +241,10 @@ class MatrixClient extends Client {
     addRoom(room);
     return room;
   }
+
+  @override
+  Future<void> close() async {
+    await _matrixClient.dispose();
+    await super.close();
+  }
 }

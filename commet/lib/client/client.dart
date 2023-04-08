@@ -151,4 +151,6 @@ abstract class Client {
   Future<PreviewData?> getRoomPreviewInternal(String address);
 
   Future<PreviewData?> getSpacePreviewInternal(String address);
+
+  Future<void> close() async {}
 }
