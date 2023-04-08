@@ -8,12 +8,16 @@ import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import '../../generated/l10n.dart';
 import '../molecules/space_selector.dart';
-import '../molecules/timeline_viewer.dart';
+import '../molecules/split_timeline_viewer.dart';
 import '../navigation/navigation_utils.dart';
 import '../pages/settings/settings_page.dart';
 
 class SideNavigationBar extends StatefulWidget {
-  const SideNavigationBar({super.key, this.onSpaceSelected, this.onHomeSelected, this.onSettingsSelected});
+  const SideNavigationBar(
+      {super.key,
+      this.onSpaceSelected,
+      this.onHomeSelected,
+      this.onSettingsSelected});
 
   final void Function(int index)? onSpaceSelected;
   final void Function()? onHomeSelected;
@@ -34,7 +38,8 @@ class SideNavigationBar extends StatefulWidget {
           offset: 5,
           tailLength: 5,
           tailBaseWidth: 5,
-          backgroundColor: Theme.of(context).extension<ExtraColors>()!.surfaceLow4,
+          backgroundColor:
+              Theme.of(context).extension<ExtraColors>()!.surfaceLow4,
           child: child),
     );
   }
@@ -42,8 +47,9 @@ class SideNavigationBar extends StatefulWidget {
 
 class _SideNavigationBarState extends State<SideNavigationBar> {
   late ClientManager _clientManager;
-  late GlobalKey<TimelineViewerState> timelineKey = GlobalKey<TimelineViewerState>();
-  late Map<String, GlobalKey<TimelineViewerState>> timelines = {};
+  late GlobalKey<SplitTimelineViewerState> timelineKey =
+      GlobalKey<SplitTimelineViewerState>();
+  late Map<String, GlobalKey<SplitTimelineViewerState>> timelines = {};
 
   @override
   void initState() {
@@ -85,7 +91,8 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                       icon: Icons.add,
                       onTap: () {
                         PopupDialog.show(context,
-                            content: AddSpace(clientManager: _clientManager), title: T.of(context).addSpace);
+                            content: AddSpace(clientManager: _clientManager),
+                            title: T.of(context).addSpace);
                       },
                     ),
                     context),
