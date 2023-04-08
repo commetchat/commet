@@ -4,9 +4,14 @@ import 'package:commet/client/split_timeline.dart';
 import 'package:commet/client/timeline.dart';
 import 'package:commet/ui/molecules/timeline_event.dart';
 import 'package:flutter/material.dart';
+/*
+ This contains a weird hack to bring the scroll view down to the bottom
+ On the first frame we render offstage, with an initial scroll offset of 999999
+ Then on the next frame we can measure the max scroll extent, create a new scroll controller which
+ initializes at that max scroll extent, then we actually render on stage the following frame
+*/
 
 class SplitTimelineViewer extends StatefulWidget {
-  ///Child scrollable widget.
   final Timeline timeline;
 
   const SplitTimelineViewer({required this.timeline, Key? key})
@@ -119,11 +124,9 @@ class SplitTimelineViewerState extends State<SplitTimelineViewer> {
     eventRemoved = widget.timeline.onRemove.stream.listen((index) {
       setState(() {});
     });
-
     WidgetsBinding.instance.addPostFrameCallback(
       (timeStamp) {
         double extent = controller.position.maxScrollExtent;
-        print("Initial scroll extent: $extent");
         controller = ScrollController(initialScrollOffset: extent);
         controller.addListener(() {
           handleScrolling();
