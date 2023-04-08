@@ -64,13 +64,16 @@ class _MessageState extends State<Message> {
 
   Widget buildContent(BuildContext context) {
     return Container(
-      color: hovered ? material.Theme.of(context).hoverColor : material.Colors.transparent,
+      color: hovered
+          ? material.Theme.of(context).hoverColor
+          : material.Colors.transparent,
       child: Padding(
-        padding: EdgeInsets.fromLTRB(s(15), widget.showSender ? s(20) : s(4), 8, 4),
+        padding: EdgeInsets.fromLTRB(15, widget.showSender ? 10 : 4, 8, 4),
         child: Stack(
           children: [
             Opacity(
-              opacity: widget.event.status == TimelineEventStatus.sending ? 0.5 : 1,
+              opacity:
+                  widget.event.status == TimelineEventStatus.sending ? 0.5 : 1,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -107,11 +110,13 @@ class _MessageState extends State<Message> {
               tiamat.Text.error(T.of(context).messageDeleted)
             else if (widget.event.bodyFormat != null)
               selectableText
-                  ? material.SelectionArea(child: widget.event.formattedContent!)
+                  ? material.SelectionArea(
+                      child: widget.event.formattedContent!)
                   : widget.event.formattedContent!
             else if (widget.event.body != null)
               selectableText
-                  ? material.SelectionArea(child: tiamat.Text.body(widget.event.body!))
+                  ? material.SelectionArea(
+                      child: tiamat.Text.body(widget.event.body!))
                   : tiamat.Text.body(widget.event.body!),
             if (widget.event.attachments != null)
               Wrap(
@@ -142,7 +147,9 @@ class _MessageState extends State<Message> {
   }
 
   Widget debugInfo() {
-    var info = List.from([widget.event.type.toString(), widget.event.status.toString()], growable: true);
+    var info = List.from(
+        [widget.event.type.toString(), widget.event.status.toString()],
+        growable: true);
     if (widget.event.source != null) info.add(widget.event.source);
     return Opacity(
       opacity: 0.5,
@@ -154,7 +161,9 @@ class _MessageState extends State<Message> {
             alignment: WrapAlignment.start,
             runAlignment: WrapAlignment.start,
             children: info
-                .map((e) => Padding(padding: const EdgeInsets.fromLTRB(4, 0, 4, 0), child: tiamat.Text.tiny(e)))
+                .map((e) => Padding(
+                    padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
+                    child: tiamat.Text.tiny(e)))
                 .toList(),
           ),
         ],
