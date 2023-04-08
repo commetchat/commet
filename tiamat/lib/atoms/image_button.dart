@@ -272,15 +272,7 @@ class _ImageButtonState extends State<ImageButton> {
       duration: const Duration(milliseconds: 200),
       curve: Curves.easeInOut,
       child: widget.image != null
-          ? Container(
-              decoration: BoxDecoration(
-                  image: DecorationImage(
-                filterQuality: FilterQuality.high,
-                isAntiAlias: true,
-                image: widget.image!,
-                fit: BoxFit.cover,
-              )),
-              child: createInkwell())
+          ? Ink.image(image: widget.image!, child: createInkwell())
           : createInkwell(),
     );
   }
