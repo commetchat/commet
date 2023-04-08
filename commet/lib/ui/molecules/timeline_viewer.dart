@@ -16,7 +16,8 @@ class TimelineViewer extends StatefulWidget {
 class _TimelineViewerState extends State<TimelineViewer> {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
 
-  final ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController =
+      ScrollController(initialScrollOffset: 9999);
   int _count = 0;
 
   double scrollExtent = 0;

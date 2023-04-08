@@ -81,7 +81,7 @@ class ChatPageState extends State<ChatPage> {
       selectedRoom = room;
       WidgetsBinding.instance.addPostFrameCallback(
         (timeStamp) {
-          timelines[selectedRoom?.identifier]?.currentState?.forceToBottom();
+          // timelines[selectedRoom?.identifier]?.currentState?.forceToBottom();
         },
       );
     });
@@ -111,6 +111,7 @@ class ChatPageState extends State<ChatPage> {
         onWillPop: () async {
           return false;
         },
+        // Listen to size change and offset the scroll view, so that we maintain timeline position when window changes size
         child: NotificationListener(
             onNotification: (SizeChangedLayoutNotification notification) {
               print("Size Changed");

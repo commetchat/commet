@@ -200,6 +200,7 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
               SizedBox(
                   height: s(50), child: RoomHeader(widget.state.selectedRoom!)),
               Flexible(
+                // We listen to this so that when the onscreen keyboard changes the size of view inset, we can offset the scroll position
                 child: NotificationListener(
                   onNotification: (notification) {
                     var prevHeight = height;

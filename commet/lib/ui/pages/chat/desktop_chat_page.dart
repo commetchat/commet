@@ -103,7 +103,7 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Expanded(
-                          child: TimelineViewer(
+                          child: SplitTimelineViewer(
                         key: widget.state
                             .timelines[widget.state.selectedRoom!.identifier],
                         timeline: widget.state.selectedRoom!.timeline!,

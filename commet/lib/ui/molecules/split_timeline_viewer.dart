@@ -18,7 +18,9 @@ class SplitTimelineViewer extends StatefulWidget {
 
 class SplitTimelineViewerState extends State<SplitTimelineViewer> {
   bool attachedToBottom = true;
-  final ScrollController controller = ScrollController();
+  ScrollController controller = ScrollController(initialScrollOffset: 999999);
+
+  bool firstFrame = true;
   final ScrollPhysics physics = const BouncingScrollPhysics();
   late StreamSubscription eventAdded;
   late StreamSubscription eventChanged;
@@ -34,7 +36,6 @@ class SplitTimelineViewerState extends State<SplitTimelineViewer> {
 
   void animateAndSnapToBottom() {
     if (toBeDisposed) return;
-
     controller.position.hold(() {});
 
     TimelineEvent? lastEvent = split.recent.isNotEmpty ? split.recent[0] : null;
@@ -89,6 +90,7 @@ class SplitTimelineViewerState extends State<SplitTimelineViewer> {
   }
 
   void handleScrolling() {
+    if (controller == null) return;
     if (controller.offset < controller.position.minScrollExtent + 200) {
       loadMore();
     }
@@ -99,11 +101,6 @@ class SplitTimelineViewerState extends State<SplitTimelineViewer> {
     super.initState();
     split = SplitTimeline(widget.timeline, chunkSize: 50);
     if (widget.timeline.events.length < 50) loadMore();
-
-    controller.addListener(() {
-      handleScrolling();
-      handleBottomAttached();
-    });
 
     eventAdded = widget.timeline.onEventAdded.stream.listen((index) {
       setState(() {
@@ -122,6 +119,21 @@ class SplitTimelineViewerState extends State<SplitTimelineViewer> {
     eventRemoved = widget.timeline.onRemove.stream.listen((index) {
       setState(() {});
     });
+
+    WidgetsBinding.instance.addPostFrameCallback(
+      (timeStamp) {
+        double extent = controller.position.maxScrollExtent;
+        print("Initial scroll extent: $extent");
+        controller = ScrollController(initialScrollOffset: extent);
+        controller.addListener(() {
+          handleScrolling();
+          handleBottomAttached();
+        });
+        setState(() {
+          firstFrame = false;
+        });
+      },
+    );
   }
 
   void handleBottomAttached() {
@@ -133,6 +145,13 @@ class SplitTimelineViewerState extends State<SplitTimelineViewer> {
 
   @override
   Widget build(BuildContext context) {
+    if (firstFrame) {
+      return Offstage(child: buildListView());
+    }
+    return buildListView();
+  }
+
+  CustomScrollView buildListView() {
     return CustomScrollView(
       center: newEventsListKey,
       controller: controller,
