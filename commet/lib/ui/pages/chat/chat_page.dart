@@ -32,6 +32,9 @@ class ChatPageState extends State<ChatPage> {
   }
 
   void selectSpace(Space space) {
+    if (space == selectedSpace) return;
+
+    clearRoomSelection();
     if (kDebugMode) {
       // Weird hacky work around mentioned in #2
       timelines[selectedRoom?.identifier]?.currentState?.prepareForDisposal();
