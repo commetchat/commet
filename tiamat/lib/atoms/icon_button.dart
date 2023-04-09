@@ -28,10 +28,15 @@ Widget wbIconButton(BuildContext context) {
 
 class IconButton extends StatefulWidget {
   const IconButton(
-      {super.key, this.size = 15, required this.icon, this.onPressed});
+      {super.key,
+      this.size = 15,
+      required this.icon,
+      this.onPressed,
+      this.backgroundColor = material.Colors.transparent});
   final double size;
   final Function? onPressed;
   final IconData icon;
+  final Color backgroundColor;
 
   @override
   State<IconButton> createState() => _IconButtonState();
@@ -44,7 +49,7 @@ class _IconButtonState extends State<IconButton> {
   Widget build(BuildContext context) {
     return material.ClipOval(
       child: material.Material(
-          color: material.Colors.transparent,
+          color: widget.backgroundColor,
           child: material.InkWell(
             onTap: () => widget.onPressed?.call(),
             child: MouseRegion(
