@@ -3,10 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'permissions.dart';
 
-enum RoomVisibility {
-  public,
-  private,
-}
+enum RoomVisibility { public, private, invite, knock }
 
 abstract class Room {
   late String identifier;
@@ -23,7 +20,8 @@ abstract class Room {
 
   int notificationCount = 0;
 
-  Future<TimelineEvent?> sendMessage(String message, {TimelineEvent? inReplyTo});
+  Future<TimelineEvent?> sendMessage(String message,
+      {TimelineEvent? inReplyTo});
 
   Room(this.identifier, this.client) {
     identifier = identifier;

@@ -17,16 +17,28 @@ class MatrixSpace extends Space {
   String get topic => _matrixRoom.topic;
 
   @override
-  RoomVisibility get visibility =>
-      _matrixRoom.joinRules == matrix.JoinRules.public
-          ? RoomVisibility.public
-          : RoomVisibility.private;
+  RoomVisibility get visibility {
+    switch (_matrixRoom.joinRules) {
+      case matrix.JoinRules.public:
+        return RoomVisibility.public;
+      case matrix.JoinRules.knock:
+        return RoomVisibility.knock;
+      case matrix.JoinRules.invite:
+        return RoomVisibility.invite;
+      case matrix.JoinRules.private:
+        return RoomVisibility.private;
+      default:
+        return RoomVisibility.private;
+    }
+  }
 
   MatrixSpace(client, matrix.Room room, matrix.Client matrixClient)
       : super(room.id, client) {
     _matrixRoom = room;
     _matrixClient = matrixClient;
     displayName = room.getLocalizedDisplayname();
+
+    _matrixRoom.postLoad();
 
     room.onUpdate.stream.listen((event) {
       refresh();

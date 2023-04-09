@@ -51,9 +51,15 @@ Widget wbAddSpacePageSingleAccount(BuildContext context) {
 }
 
 class AddSpaceView extends StatefulWidget {
-  const AddSpaceView({super.key, required this.clients, this.onCreateSpace, this.onJoinSpace, this.initialPhase});
+  const AddSpaceView(
+      {super.key,
+      required this.clients,
+      this.onCreateSpace,
+      this.onJoinSpace,
+      this.initialPhase});
   final List<Client> clients;
-  final Function(Client client, String spaceName, RoomVisibility visibility)? onCreateSpace;
+  final Function(Client client, String spaceName, RoomVisibility visibility)?
+      onCreateSpace;
   final Function(Client client, String address)? onJoinSpace;
   final _AddSpacePhase? initialPhase;
 
@@ -74,10 +80,12 @@ class _AddSpaceViewState extends State<AddSpaceView> {
   PreviewData? spacePreview;
   bool loadingSpacePreview = false;
 
-  Debouncer spacePreviewDebounce = Debouncer(delay: Duration(milliseconds: 500));
+  Debouncer spacePreviewDebounce =
+      Debouncer(delay: Duration(milliseconds: 500));
 
   void getSpacePreview() async {
-    var preview = await selectedClient.getSpacePreview(spaceAddressController.text);
+    var preview =
+        await selectedClient.getSpacePreview(spaceAddressController.text);
 
     setState(() {
       print("Got Preview");
@@ -185,6 +193,8 @@ class _AddSpaceViewState extends State<AddSpaceView> {
                     subtitle = T.current.roomVisibilityPublicExplanation;
                     break;
                   case RoomVisibility.private:
+                  case RoomVisibility.invite:
+                  case RoomVisibility.knock:
                     title = T.current.roomVisibilityPrivate;
                     icon = Icons.lock;
                     subtitle = T.current.roomVisibilityPrivateExplanation;
@@ -222,7 +232,8 @@ class _AddSpaceViewState extends State<AddSpaceView> {
             padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
             child: tiamat.Button.success(
               text: T.current.addSpaceViewCreateSpaceButton,
-              onTap: () => widget.onCreateSpace?.call(selectedClient, nameController.text, visibility),
+              onTap: () => widget.onCreateSpace
+                  ?.call(selectedClient, nameController.text, visibility),
             ),
           )
         ],
@@ -262,12 +273,15 @@ class _AddSpaceViewState extends State<AddSpaceView> {
                   )
                 : spacePreview != null
                     ? RoomPreview(previewData: spacePreview!)
-                    : Center(child: tiamat.Text.label(T.of(context).couldNotLoadRoomPreview)),
+                    : Center(
+                        child: tiamat.Text.label(
+                            T.of(context).couldNotLoadRoomPreview)),
           ),
           tiamat.Button.success(
             text: T.of(context).joinSpacePrompt,
             onTap: () {
-              widget.onJoinSpace?.call(selectedClient, spaceAddressController.text);
+              widget.onJoinSpace
+                  ?.call(selectedClient, spaceAddressController.text);
             },
           ),
         ],
@@ -284,7 +298,8 @@ class _AddSpaceViewState extends State<AddSpaceView> {
           child: InkWell(
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Center(child: tiamat.Text.labelEmphasised(T.current.createNewSpace)),
+              child: Center(
+                  child: tiamat.Text.labelEmphasised(T.current.createNewSpace)),
             ),
             onTap: () {
               setState(() {
@@ -303,7 +318,9 @@ class _AddSpaceViewState extends State<AddSpaceView> {
             },
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Center(child: tiamat.Text.labelEmphasised(T.current.joinExistingSpace)),
+              child: Center(
+                  child:
+                      tiamat.Text.labelEmphasised(T.current.joinExistingSpace)),
             ),
           ),
         )
