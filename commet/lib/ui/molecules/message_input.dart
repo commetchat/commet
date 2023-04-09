@@ -12,7 +12,11 @@ import '../atoms/icon_button.dart' as i;
 enum MessageInputSendResult { clearText, unhandled }
 
 class MessageInput extends StatefulWidget {
-  const MessageInput({super.key, this.maxHeight = 200, this.onSendMessage, this.onFocusChanged});
+  const MessageInput(
+      {super.key,
+      this.maxHeight = 200,
+      this.onSendMessage,
+      this.onFocusChanged});
   final double maxHeight;
   final MessageInputSendResult Function(String message)? onSendMessage;
   final void Function(bool focused)? onFocusChanged;
@@ -56,7 +60,8 @@ class MessageInputState extends State<MessageInput> {
     if (controller.text.isEmpty) return;
     if (controller.text.trim().isEmpty) return;
 
-    MessageInputSendResult? result = widget.onSendMessage?.call(controller.text.trim());
+    MessageInputSendResult? result =
+        widget.onSendMessage?.call(controller.text.trim());
     if (result == MessageInputSendResult.clearText) {
       controller.clear();
     }
@@ -66,10 +71,9 @@ class MessageInputState extends State<MessageInput> {
   Widget build(BuildContext context) {
     return Tile(
       child: Padding(
-        padding: EdgeInsets.all(s(8.0)),
-        child: Tile(
+        padding: EdgeInsets.all(8.0),
+        child: Tile.low2(
           decoration: BoxDecoration(
-              //boxShadow: [BoxShadow(color: Colors.black.withAlpha(50), blurRadius: 20)],
               color: Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
               borderRadius: BorderRadius.circular(8)),
           child: Padding(
@@ -78,12 +82,15 @@ class MessageInputState extends State<MessageInput> {
               children: [
                 Flexible(
                   child: ConstrainedBox(
-                      constraints: BoxConstraints.loose(Size.fromHeight(widget.maxHeight)),
+                      constraints: BoxConstraints.loose(
+                          Size.fromHeight(widget.maxHeight)),
                       child: Padding(
-                        padding: EdgeInsets.fromLTRB(8, 9, 8, 9),
+                        padding: EdgeInsets.fromLTRB(8, 2, 8, 2),
                         child: Material(
                           color: Colors.transparent,
                           child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Expanded(
                                 child: RawKeyboardListener(
@@ -94,24 +101,37 @@ class MessageInputState extends State<MessageInput> {
                                         onFocusChange: (value) {
                                           widget.onFocusChanged?.call(value);
                                         },
-                                        child: TextField(
-                                          controller: controller,
-                                          decoration: null,
-                                          maxLines: null,
-                                          cursorColor: Theme.of(context).colorScheme.onPrimary,
-                                          cursorWidth: 1,
-                                          onChanged: (value) {
-                                            setState(() {});
-                                          },
+                                        child: Padding(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              0, 7, 0, 0),
+                                          child: TextField(
+                                            controller: controller,
+                                            decoration: null,
+                                            maxLines: null,
+                                            cursorColor: Theme.of(context)
+                                                .colorScheme
+                                                .onPrimary,
+                                            cursorWidth: 1,
+                                            onChanged: (value) {
+                                              setState(() {});
+                                            },
+                                          ),
                                         ),
                                       ),
                                       if (controller.text.isEmpty)
                                         IgnorePointer(
                                           ignoring: true,
                                           child: Padding(
-                                            padding: const EdgeInsets.all(2.0),
-                                            child: tiamat.Text(T.of(context).sendAMessagePrompt,
-                                                type: TextType.label, color: Theme.of(context).iconTheme.color),
+                                            padding: const EdgeInsets.fromLTRB(
+                                                0, 10, 0, 0),
+                                            child: tiamat.Text(
+                                                T
+                                                    .of(context)
+                                                    .sendAMessagePrompt,
+                                                type: TextType.label,
+                                                color: Theme.of(context)
+                                                    .iconTheme
+                                                    .color),
                                           ),
                                         )
                                     ],
@@ -119,11 +139,21 @@ class MessageInputState extends State<MessageInput> {
                                 ),
                               ),
                               Row(children: [
-                                const i.IconButton(size: 24, icon: Icons.face),
-                                Padding(
-                                  padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-                                  child: i.IconButton(onPressed: sendMessage, size: 24, icon: Icons.send),
-                                ),
+                                SizedBox(
+                                    width: 40,
+                                    height: 40,
+                                    child: tiamat.IconButton(
+                                      icon: Icons.face,
+                                      size: 24,
+                                    )),
+                                SizedBox(
+                                    width: 40,
+                                    height: 40,
+                                    child: tiamat.IconButton(
+                                      icon: Icons.send,
+                                      size: 24,
+                                      onPressed: sendMessage,
+                                    ))
                               ])
                             ],
                           ),

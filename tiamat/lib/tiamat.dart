@@ -17,6 +17,7 @@ export './atoms/switch.dart';
 export './atoms/tile.dart';
 export './atoms/text_input.dart';
 export './atoms/dropdown_selector.dart';
+export './atoms/icon_button.dart';
 
 @WidgetbookTheme(name: 'Dark')
 ThemeData darkTheme() => ThemeDark.theme;
