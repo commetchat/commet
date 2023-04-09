@@ -23,7 +23,8 @@ class SpaceHeader extends StatelessWidget {
         child: layout(context),
       ));
     }
-    return Material(child: layout(context));
+    return Material(
+        color: Theme.of(context).colorScheme.surface, child: layout(context));
   }
 
   Widget layout(BuildContext context) {
