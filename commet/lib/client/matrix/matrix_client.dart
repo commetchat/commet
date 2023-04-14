@@ -30,7 +30,7 @@ import 'matrix_space.dart';
 class MatrixClient extends Client {
   late matrix.Client _matrixClient;
 
-  MatrixClient({String? name}) : super(RandomUtils.getRandomString(20)) {
+  MatrixClient({String? name, String? identifier}) : super(identifier ?? RandomUtils.getRandomString(20)) {
     if (name != null) {
       _matrixClient = _createMatrixClient(name);
     }
@@ -47,7 +47,7 @@ class MatrixClient extends Client {
 
     if (clients != null) {
       for (var clientName in clients) {
-        var client = MatrixClient(name: clientName);
+        var client = MatrixClient(name: clientName, identifier: clientName);
         try {
           manager.addClient(client);
           await client.init();

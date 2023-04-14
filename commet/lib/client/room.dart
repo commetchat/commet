@@ -20,8 +20,9 @@ abstract class Room {
 
   int notificationCount = 0;
 
-  Future<TimelineEvent?> sendMessage(String message,
-      {TimelineEvent? inReplyTo});
+  Future<TimelineEvent?> sendMessage(String message, {TimelineEvent? inReplyTo});
+
+  String get localId => "${this.client.identifier}:${identifier}";
 
   Room(this.identifier, this.client) {
     identifier = identifier;
@@ -36,6 +37,7 @@ abstract class Room {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other is! Room) return false;
+    if (other.client != client) return false;
 
     return identifier == other.identifier;
   }

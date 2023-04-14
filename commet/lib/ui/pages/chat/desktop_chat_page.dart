@@ -98,7 +98,7 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
                     children: [
                       Expanded(
                           child: SplitTimelineViewer(
-                        key: widget.state.timelines[widget.state.selectedRoom!.identifier],
+                        key: widget.state.timelines[widget.state.selectedRoom!.localId],
                         timeline: widget.state.selectedRoom!.timeline!,
                       )),
                       Tile(

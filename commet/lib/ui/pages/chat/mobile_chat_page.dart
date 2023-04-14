@@ -206,7 +206,7 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
                     if (diff <= 0) return true;
 
                     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                      var state = widget.state.timelines[widget.state.selectedRoom?.identifier]?.currentState;
+                      var state = widget.state.timelines[widget.state.selectedRoom?.localId]?.currentState;
                       if (state != null) {
                         state.controller.jumpTo(state.controller.offset + diff);
                       }
@@ -220,7 +220,7 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
                       children: [
                         Expanded(
                             child: SplitTimelineViewer(
-                          key: widget.state.timelines[widget.state.selectedRoom!.identifier],
+                          key: widget.state.timelines[widget.state.selectedRoom!.localId],
                           timeline: widget.state.selectedRoom!.timeline!,
                         )),
                         Padding(
