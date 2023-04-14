@@ -68,6 +68,10 @@ class _LoginPageViewState extends State<LoginPageView> {
         );
       }
     }
+
+    setState(() {
+      _loading = false;
+    });
   }
 
   @override

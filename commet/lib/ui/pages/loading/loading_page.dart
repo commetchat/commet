@@ -2,8 +2,10 @@ import 'package:commet/cache/cached_file.dart';
 import 'package:commet/config/app_config.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/emoji/emoji_pack.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:flutter/widgets.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
@@ -61,9 +63,22 @@ class LoadingPageState extends State<LoadingPage> {
     });
 
     if (context.mounted) {
-      NavigationUtils.navigateTo(context, isLoggedIn ? ChatPage(clientManager: client) : const LoginPage());
+      NavigationUtils.navigateTo(context, isLoggedIn ? ChatPage(clientManager: client) : initialLoginPage());
     }
     return true;
+  }
+
+  LoginPage initialLoginPage() {
+    return LoginPage(
+      onSuccess: (_) {
+        if (context.mounted) {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (_) => ChatPage(clientManager: Provider.of<ClientManager>(context))),
+            (route) => false,
+          );
+        }
+      },
+    );
   }
 
   @override

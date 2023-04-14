@@ -30,6 +30,20 @@ class Preferences {
     print("Name added!");
   }
 
+  void removeRegisteredMatrixClient(String name) {
+    List<String>? names;
+    if (_preferences!.containsKey(registeredMatrixClients)) {
+      names = _preferences!.getStringList(registeredMatrixClients)!;
+    }
+
+    if (names != null) {
+      if (names.contains(name)) {
+        names.remove(name);
+      }
+      _preferences!.setStringList(registeredMatrixClients, names);
+    }
+  }
+
   Future<void> clear() async {
     await _preferences!.clear();
   }

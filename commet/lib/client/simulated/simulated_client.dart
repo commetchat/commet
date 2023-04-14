@@ -79,8 +79,10 @@ class SimulatedClient extends Client {
     addSpace(SimulatedSpace("Simulated Space 10", this));
 
     Future.delayed(const Duration(seconds: 10), () {
-      addSpace(SimulatedSpace("Simulated Space 11", this));
-      addSpace(SimulatedSpace("Simulated Space 12", this));
+      if (_isLogged) {
+        addSpace(SimulatedSpace("Simulated Space 11", this));
+        addSpace(SimulatedSpace("Simulated Space 12", this));
+      }
     });
   }
 

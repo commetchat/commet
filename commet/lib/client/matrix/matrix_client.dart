@@ -48,8 +48,14 @@ class MatrixClient extends Client {
     if (clients != null) {
       for (var clientName in clients) {
         var client = MatrixClient(name: clientName);
-        manager.addClient(client);
-        await client.init();
+        try {
+          manager.addClient(client);
+          await client.init();
+        } catch (_) {
+          manager.removeClient(client);
+          preferences.removeRegisteredMatrixClient(clientName);
+          print("Unable to init client: $clientName");
+        }
       }
     }
   }
@@ -151,6 +157,7 @@ class MatrixClient extends Client {
 
   @override
   Future<void> logout() {
+    preferences.removeRegisteredMatrixClient(_matrixClient.clientName);
     return _matrixClient.logout();
   }
 

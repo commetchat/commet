@@ -1,3 +1,4 @@
+import 'package:commet/ui/pages/settings/settings_category.dart';
 import 'package:commet/ui/pages/settings/settings_menu.dart';
 import 'package:commet/ui/pages/settings/settings_tab.dart';
 import 'package:flutter/widgets.dart';
@@ -15,12 +16,13 @@ class DesktopSettingsPage extends StatefulWidget {
 }
 
 class _DesktopSettingsPageState extends State<DesktopSettingsPage> {
-  late List<SettingsTab> tabs;
+  late List<SettingsCategory> categories;
+  int selectedCategoryIndex = 0;
   int selectedTabIndex = 0;
 
   @override
   void initState() {
-    tabs = SettingsMenu().settings;
+    categories = SettingsMenu().settings;
     super.initState();
   }
 
@@ -30,53 +32,7 @@ class _DesktopSettingsPageState extends State<DesktopSettingsPage> {
       child: Row(
         mainAxisSize: MainAxisSize.max,
         children: [
-          Tile.low1(
-            child: Padding(
-              padding: EdgeInsets.all(s(8.0)),
-              child: SizedBox(
-                width: s(240),
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.all(s(8.0)),
-                      child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: CircleButton(
-                            radius: 25,
-                            icon: m.Icons.arrow_back,
-                            onPressed: () => Navigator.of(context).pop(),
-                          )),
-                    ),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) {
-                        if (tabs[index].seperator) {
-                          if (tabs[index].label == null) return const Seperator();
-                          return Padding(
-                            padding: EdgeInsets.fromLTRB(s(16), s(8), s(8), s(8)),
-                            child: tiamat.Text.label(tabs[index].label!),
-                          );
-                        }
-                        return SizedBox(
-                            height: s(40),
-                            width: s(200),
-                            child: TextButton(
-                              tabs[index].label!,
-                              highlighted: index == selectedTabIndex,
-                              onTap: () {
-                                setState(() {
-                                  selectedTabIndex = index;
-                                });
-                              },
-                            ));
-                      },
-                      itemCount: tabs.length,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
+          tabSelector(context),
           Expanded(
               child: AnimatedSwitcher(
             duration: const Duration(milliseconds: 300),
@@ -93,11 +49,80 @@ class _DesktopSettingsPageState extends State<DesktopSettingsPage> {
             },
             child: Tile(
               key: ValueKey(selectedTabIndex),
-              child: settingsTab(tabs[selectedTabIndex].pageBuilder!),
+              child: settingsTab(categories[selectedCategoryIndex].tabs[selectedTabIndex].pageBuilder!),
             ),
           ))
         ],
       ),
+    );
+  }
+
+  Widget tabSelector(BuildContext context) {
+    return Tile.low1(
+      child: Padding(
+        padding: EdgeInsets.all(s(8.0)),
+        child: SizedBox(
+          width: s(240),
+          child: Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.all(s(8.0)),
+                child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: CircleButton(
+                      radius: 25,
+                      icon: m.Icons.arrow_back,
+                      onPressed: () => Navigator.of(context).pop(),
+                    )),
+              ),
+              Flexible(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ListView.builder(
+                    itemBuilder: (context, categoryIndex) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          if (categoryIndex != 0) tiamat.Seperator(),
+                          tiamat.Text.label(categories[categoryIndex].title!),
+                          tabListBuilder(categoryIndex)
+                        ],
+                      );
+                    },
+                    itemCount: categories.length,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  ListView tabListBuilder(int categoryIndex) {
+    return ListView.builder(
+      shrinkWrap: true,
+      itemBuilder: (context, tabIndex) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
+          child: SizedBox(
+              height: 40,
+              width: 200,
+              child: TextButton(
+                categories[categoryIndex].tabs[tabIndex].label!,
+                highlighted: categoryIndex == selectedCategoryIndex && tabIndex == selectedTabIndex,
+                onTap: () {
+                  setState(() {
+                    selectedCategoryIndex = categoryIndex;
+                    selectedTabIndex = tabIndex;
+                  });
+                },
+              )),
+        );
+      },
+      itemCount: categories[categoryIndex].tabs.length,
     );
   }
 

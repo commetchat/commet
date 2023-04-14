@@ -32,5 +32,8 @@
   "joinSpacePrompt": "Join Space!",
   "spaceAddressPrompt": "Space Address:",
   "couldNotLoadRoomPreview": "Could not load room preview",
-  "sendAMessagePrompt": "Send a message..."
+  "sendAMessagePrompt": "Send a message...",
+  "settingsCategoryApp": "App Settings",
+  "settingsCategoryAccount": "Account Settings",
+  "settingsTabManageAccounts": "Manage Accounts"
 }

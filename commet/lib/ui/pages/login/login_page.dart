@@ -7,7 +7,8 @@ import 'package:provider/provider.dart';
 import '../../../client/client_manager.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  const LoginPage({super.key, this.onSuccess});
+  final Function(Client loggedInClient)? onSuccess;
 
   @override
   State<LoginPage> createState() => LoginPageState();
@@ -25,6 +26,7 @@ class LoginPageState extends State<LoginPage> {
       if (result == LoginResult.success) {
         manager.addClient(client);
         await client.init();
+        widget.onSuccess?.call(client);
         return LoginResult.success;
       } else {
         return LoginResult.failed;

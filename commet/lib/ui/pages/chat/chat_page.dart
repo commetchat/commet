@@ -22,8 +22,7 @@ class ChatPageState extends State<ChatPage> {
   late Space? selectedSpace = null;
   late Room? selectedRoom = null;
   late bool homePageSelected = false;
-  late GlobalKey<SplitTimelineViewerState> timelineKey =
-      GlobalKey<SplitTimelineViewerState>();
+  late GlobalKey<SplitTimelineViewerState> timelineKey = GlobalKey<SplitTimelineViewerState>();
   late Map<String, GlobalKey<SplitTimelineViewerState>> timelines = {};
   double height = -1;
 
@@ -31,26 +30,29 @@ class ChatPageState extends State<ChatPage> {
     homePageSelected = true;
   }
 
-  void selectSpace(Space space) {
+  void selectSpace(Space? space) {
     if (space == selectedSpace) return;
 
     clearRoomSelection();
     if (kDebugMode) {
       // Weird hacky work around mentioned in #2
       timelines[selectedRoom?.identifier]?.currentState?.prepareForDisposal();
-      WidgetsBinding.instance
-          .addPostFrameCallback((_) => _setSelectedSpace(space));
+      WidgetsBinding.instance.addPostFrameCallback((_) => _setSelectedSpace(space));
     } else {
       _setSelectedSpace(space);
     }
+  }
+
+  void clearSpaceSelection() {
+    clearRoomSelection();
+    selectSpace(null);
   }
 
   void clearRoomSelection() {
     if (kDebugMode) {
       // Weird hacky work around mentioned in #2
       timelines[selectedRoom?.identifier]?.currentState!.prepareForDisposal();
-      WidgetsBinding.instance
-          .addPostFrameCallback((_) => _clearRoomSelection());
+      WidgetsBinding.instance.addPostFrameCallback((_) => _clearRoomSelection());
     } else {
       _clearRoomSelection();
     }
@@ -72,8 +74,7 @@ class ChatPageState extends State<ChatPage> {
     if (kDebugMode) {
       // Weird hacky work around mentioned in #2
       timelines[selectedRoom?.identifier]?.currentState?.prepareForDisposal();
-      WidgetsBinding.instance
-          .addPostFrameCallback((_) => _setSelectedRoom(room));
+      WidgetsBinding.instance.addPostFrameCallback((_) => _setSelectedRoom(room));
     } else {
       _setSelectedRoom(room);
     }
@@ -90,7 +91,7 @@ class ChatPageState extends State<ChatPage> {
     });
   }
 
-  void _setSelectedSpace(Space space) {
+  void _setSelectedSpace(Space? space) {
     setState(() {
       selectedSpace = space;
       homePageSelected = false;
