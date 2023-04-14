@@ -35,6 +35,7 @@ class SettingsCategoryAccount implements SettingsCategory {
 
 class AccountManagementSettingsTab extends StatefulWidget {
   const AccountManagementSettingsTab({super.key, required this.clientManager});
+  static ValueKey addAccountKey = ValueKey("ACCOUNT_MANAGEMENT_SETTINGS_ADD_ACCOUNT_BUTTON");
   final ClientManager clientManager;
   @override
   State<AccountManagementSettingsTab> createState() => _AccountManagementSettingsTabState();
@@ -165,18 +166,16 @@ class _AccountManagementSettingsTabState extends State<AccountManagementSettings
             tailBaseWidth: 5,
             backgroundColor: Theme.of(context).extension<ExtraColors>()!.surfaceLow4,
             child: tiamat.CircleButton(
+              key: AccountManagementSettingsTab.addAccountKey,
               icon: Icons.add,
               radius: 20,
               onPressed: () {
-                Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(
-                      builder: (_) => LoginPage(
-                            onSuccess: (_) {
-                              Navigator.of(context).pop();
-                            },
-                          )),
-                  (route) => false,
-                );
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (_) => LoginPage(
+                          onSuccess: (_, newContext) {
+                            Navigator.of(newContext).pop();
+                          },
+                        )));
               },
             ),
           )),

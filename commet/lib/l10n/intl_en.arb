@@ -35,5 +35,8 @@
   "sendAMessagePrompt": "Send a message...",
   "settingsCategoryApp": "App Settings",
   "settingsCategoryAccount": "Account Settings",
-  "settingsTabManageAccounts": "Manage Accounts"
+  "settingsTabManageAccounts": "Manage Accounts",
+  "loginResultFailedMessage": "Login Failed",
+  "loginResultErrorMessage": "There was an error logging in",
+  "loginResultAlreadyLoggedInMessage": "This account is already logged in"
 }

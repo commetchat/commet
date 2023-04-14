@@ -16,6 +16,8 @@ class SideNavigationBar extends StatefulWidget {
   const SideNavigationBar(
       {super.key, this.onSpaceSelected, this.onHomeSelected, this.onSettingsSelected, this.clearSpaceSelection});
 
+  static ValueKey settingsKey = ValueKey("SIDE_NAVIGATION_SETTINGS_BUTTON");
+
   final void Function(int index)? onSpaceSelected;
   final void Function()? clearSpaceSelection;
   final void Function()? onHomeSelected;
@@ -100,6 +102,7 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                   T.of(context).settings,
                   ImageButton(
                     // tooltip: "Settings",
+                    key: SideNavigationBar.settingsKey,
                     size: 70,
                     icon: Icons.settings,
                     onTap: () {

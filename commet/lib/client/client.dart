@@ -16,7 +16,7 @@ enum LoginType {
   token,
 }
 
-enum LoginResult { success, failed, error }
+enum LoginResult { success, failed, error, alreadyLoggedIn }
 
 abstract class Client {
   Future<void> init();

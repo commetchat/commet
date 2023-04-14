@@ -8,7 +8,7 @@ import '../../../client/client_manager.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key, this.onSuccess});
-  final Function(Client loggedInClient)? onSuccess;
+  final Function(Client loggedInClient, BuildContext context)? onSuccess;
 
   @override
   State<LoginPage> createState() => LoginPageState();
@@ -18,6 +18,17 @@ class LoginPageState extends State<LoginPage> {
   Future<LoginResult> login(String homeserverInput, String userNameInput, String passwordInput) async {
     try {
       final manager = Provider.of<ClientManager>(context, listen: false);
+
+      for (var client in manager.clients) {
+        print(client.user?.identifier);
+      }
+
+      if (manager.clients
+          .where((element) => element.user?.identifier == "@$userNameInput:$homeserverInput")
+          .isNotEmpty) {
+        return LoginResult.alreadyLoggedIn;
+      }
+
       var client = MatrixClient();
 
       var result =
@@ -26,7 +37,7 @@ class LoginPageState extends State<LoginPage> {
       if (result == LoginResult.success) {
         manager.addClient(client);
         await client.init();
-        widget.onSuccess?.call(client);
+        widget.onSuccess?.call(client, context);
         return LoginResult.success;
       } else {
         return LoginResult.failed;

@@ -38,6 +38,11 @@ class LoadingPageState extends State<LoadingPage> {
   }
 
   Future<bool> load() async {
+    var adapter = CachedFileAdapter();
+    if (!Hive.isAdapterRegistered(adapter.typeId)) {
+      Hive.registerAdapter(adapter);
+    }
+
     await preferences.init();
     await fileCache.init();
     await EmojiPack.defaults();
@@ -45,7 +50,7 @@ class LoadingPageState extends State<LoadingPage> {
     if (BuildConfig.LINUX) {
       Hive.init(await AppConfig.getDatabasePath());
     } else {
-      Hive.initFlutter(await AppConfig.getDatabasePath());
+      await Hive.initFlutter(await AppConfig.getDatabasePath());
     }
 
     var client = Provider.of<ClientManager>(context, listen: false);
@@ -70,10 +75,10 @@ class LoadingPageState extends State<LoadingPage> {
 
   LoginPage initialLoginPage() {
     return LoginPage(
-      onSuccess: (_) {
-        if (context.mounted) {
-          Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (_) => ChatPage(clientManager: Provider.of<ClientManager>(context))),
+      onSuccess: (_, newContext) {
+        if (newContext.mounted) {
+          Navigator.of(newContext).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (_) => ChatPage(clientManager: Provider.of<ClientManager>(newContext))),
             (route) => false,
           );
         }
