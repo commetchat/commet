@@ -13,16 +13,21 @@ final _urlRegex = RegExp(
   dotAll: true,
 );
 
+enum NewPasswordResult { valid, tooShort, noNumbers, noSymbols, noMixedCase }
+
 class TextUtils {
-  static List<InlineSpan> formatString(String text, {bool allowBigEmoji = false, TextStyle? style}) {
+  static List<InlineSpan> formatString(String text,
+      {bool allowBigEmoji = false, TextStyle? style}) {
     bool bigEmoji = allowBigEmoji && shouldDoBigEmoji(text);
-    List<InlineSpan> span = Emoji.emojifyString(text, emojiHeight: bigEmoji ? 48 : 20, style: style);
+    List<InlineSpan> span = Emoji.emojifyString(text,
+        emojiHeight: bigEmoji ? 48 : 20, style: style);
     span = linkifySpan(span, style);
 
     return span;
   }
 
-  static List<InlineSpan> formatRichText(List<InlineSpan> spans, {TextStyle? style}) {
+  static List<InlineSpan> formatRichText(List<InlineSpan> spans,
+      {TextStyle? style}) {
     spans = Emoji.emojify(spans);
     spans = linkifySpan(spans, style);
     return spans;
@@ -36,7 +41,8 @@ class TextUtils {
     return intl.Bidi.detectRtlDirectionality(text, isHtml: isHtml);
   }
 
-  static Widget manageRtlSpan(String text, List<InlineSpan> spans, {bool isHtml = false}) {
+  static Widget manageRtlSpan(String text, List<InlineSpan> spans,
+      {bool isHtml = false}) {
     bool rtl = isRtl(text, isHtml: isHtml);
     return Container(
         width: double.infinity,
@@ -54,13 +60,14 @@ class TextUtils {
       text,
       style: style,
       builder: (matchedText, _) {
-        return LinkSpan.create(matchedText, destination: Uri.tryParse(matchedText), style: style);
+        return LinkSpan.create(matchedText,
+            destination: Uri.tryParse(matchedText), style: style);
       },
     );
   }
 
-  static List<InlineSpan> formatSpan(
-      List<InlineSpan> span, List<InlineSpan> Function(String text, TextStyle? style) formatter) {
+  static List<InlineSpan> formatSpan(List<InlineSpan> span,
+      List<InlineSpan> Function(String text, TextStyle? style) formatter) {
     for (int i = span.length - 1; i >= 0; i--) {
       var item = span[i];
       if (item is TextSpan) {
@@ -72,8 +79,11 @@ class TextUtils {
     return span;
   }
 
-  static List<InlineSpan> formatMatches(Iterable<RegExpMatch> matches, String text,
-      {required InlineSpan Function(String matchedText, TextStyle? theme) builder, TextStyle? style}) {
+  static List<InlineSpan> formatMatches(
+      Iterable<RegExpMatch> matches, String text,
+      {required InlineSpan Function(String matchedText, TextStyle? theme)
+          builder,
+      TextStyle? style}) {
     if (matches.isEmpty) return [TextSpan(text: text, style: style)];
 
     List<InlineSpan> span = List.empty(growable: true);
@@ -116,5 +126,31 @@ class TextUtils {
     }
 
     return true;
+  }
+
+  static NewPasswordResult isValidPassword(
+    String password, {
+    bool forceDigits = false,
+    int? forceLength,
+    bool forceSpecialCharacter = false,
+  }) {
+    if (forceLength != null) {
+      if (password.length < forceLength) return NewPasswordResult.tooShort;
+    }
+
+    if (forceDigits) {
+      if (!password.characters.any((char) => int.tryParse(char) != null)) {
+        return NewPasswordResult.noNumbers;
+      }
+    }
+
+    if (forceSpecialCharacter) {
+      if (!password.characters.any(
+          (char) => ("!@#\$%^&*()_+`{}|:\"<>?/.,';][=-\\").contains(char))) {
+        return NewPasswordResult.noSymbols;
+      }
+    }
+
+    return NewPasswordResult.valid;
   }
 }

@@ -38,5 +38,6 @@
   "settingsTabManageAccounts": "Manage Accounts",
   "loginResultFailedMessage": "Login Failed",
   "loginResultErrorMessage": "There was an error logging in",
-  "loginResultAlreadyLoggedInMessage": "This account is already logged in"
+  "loginResultAlreadyLoggedInMessage": "This account is already logged in",
+  "settingsTabAccountSecurity": "Security"
 }

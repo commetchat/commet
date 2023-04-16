@@ -15,7 +15,8 @@ Widget wbpopupDialog(BuildContext context) {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               tiamat.Text.largeTitle("Example Content"),
-              tiamat.Text.labelEmphasised("Random stuff here to put a dialog over"),
+              tiamat.Text.labelEmphasised(
+                  "Random stuff here to put a dialog over"),
               tiamat.Text.body(
                   "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."),
               tiamat.Text.body(
@@ -38,7 +39,12 @@ Widget wbpopupDialog(BuildContext context) {
 }
 
 class PopupDialog extends StatelessWidget {
-  const PopupDialog({super.key, required this.title, required this.content, this.width = null, this.height = null});
+  const PopupDialog(
+      {super.key,
+      required this.title,
+      required this.content,
+      this.width = null,
+      this.height = null});
   final String title;
   final double? width;
   final double? height;
@@ -47,19 +53,27 @@ class PopupDialog extends StatelessWidget {
   static Color barrierColor = Colors.black.withAlpha(128);
 
   static void show(BuildContext context,
-      {required Widget content, required String title, double? width, double? height}) {
+      {required Widget content,
+      required String title,
+      double? width,
+      double? height,
+      bool barrierDismissible = true}) {
     showGeneralDialog(
         context: context,
-        barrierDismissible: true,
+        barrierDismissible: barrierDismissible,
         barrierLabel: "POPUP_DIALOG",
         barrierColor: barrierColor,
         pageBuilder: (context, _, __) {
-          return PopupDialog(title: title, content: content, width: width, height: height);
+          return PopupDialog(
+              title: title, content: content, width: width, height: height);
         },
         transitionDuration: const Duration(milliseconds: 300),
-        transitionBuilder: (context, animation, secondaryAnimation, child) => SlideTransition(
-              position: Tween(begin: const Offset(0, 1), end: const Offset(0, 0))
-                  .animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)),
+        transitionBuilder: (context, animation, secondaryAnimation, child) =>
+            SlideTransition(
+              position:
+                  Tween(begin: const Offset(0, 1), end: const Offset(0, 0))
+                      .animate(CurvedAnimation(
+                          parent: animation, curve: Curves.easeOutCubic)),
               child: child,
             ));
   }

@@ -57,7 +57,7 @@ class _MobileSettingsPageState extends State<MobileSettingsPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           if (categoryIndex != 0) tiamat.Seperator(),
-                          tiamat.Text.label(
+                          tiamat.Text.labelLow(
                             tabs[categoryIndex].title!,
                           ),
                           ListView.builder(
@@ -68,10 +68,16 @@ class _MobileSettingsPageState extends State<MobileSettingsPage> {
                                   height: 40,
                                   child: TextButton(
                                     tabs[categoryIndex].tabs[tabIndex].label!,
+                                    icon:
+                                        tabs[categoryIndex].tabs[tabIndex].icon,
                                     onTap: () {
                                       setState(() {
-                                        NavigationUtils.navigateTo(context,
-                                            SettingsSubPage(builder: tabs[categoryIndex].tabs[tabIndex].pageBuilder!));
+                                        NavigationUtils.navigateTo(
+                                            context,
+                                            SettingsSubPage(
+                                                builder: tabs[categoryIndex]
+                                                    .tabs[tabIndex]
+                                                    .pageBuilder!));
                                       });
                                     },
                                   ));

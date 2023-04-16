@@ -3,7 +3,8 @@ import 'package:commet/ui/molecules/user_panel.dart';
 import 'package:flutter/widgets.dart';
 
 class DirectMessageList extends StatefulWidget {
-  const DirectMessageList({required this.directMessages, this.onSelected, super.key});
+  const DirectMessageList(
+      {required this.directMessages, this.onSelected, super.key});
   final List<Room> directMessages;
   @override
   State<DirectMessageList> createState() => _DirectMessageListState();
@@ -27,7 +28,7 @@ class _DirectMessageListState extends State<DirectMessageList> {
       itemBuilder: (context, index, animation) {
         var room = widget.directMessages[index];
         return Padding(
-          padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
+          padding: const EdgeInsets.fromLTRB(8, 2, 0, 2),
           child: UserPanel(
             displayName: room.displayName,
             avatar: room.avatar,

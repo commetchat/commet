@@ -15,6 +15,7 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 
 import '../../../generated/l10n.dart';
+import '../../molecules/account_selector.dart';
 
 @WidgetbookUseCase(name: 'Multiple Accounts', type: AddSpaceView)
 @Deprecated("widgetbook")
@@ -42,12 +43,14 @@ Widget wbAddSpacePageSingleAccount(BuildContext context) {
     client.login(LoginType.loginPassword, "simulatedClient${index++}", "");
   }
   return Scaffold(
-      body: PopupDialog(
-          title: "Add Space",
-          content: AddSpaceView(
-            clients: clients,
-            initialPhase: _AddSpacePhase.create,
-          )));
+      body: Tile(
+    child: PopupDialog(
+        title: "Add Space",
+        content: AddSpaceView(
+          clients: clients,
+          initialPhase: _AddSpacePhase.create,
+        )),
+  ));
 }
 
 class AddSpaceView extends StatefulWidget {
@@ -129,24 +132,15 @@ class _AddSpaceViewState extends State<AddSpaceView> {
 
   Widget userSelector() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
-      child: tiamat.DropdownSelector<Client>(
-        items: widget.clients,
-        itemHeight: 58,
-        onItemSelected: (item) {
-          setState(() {
-            selectedClient = item;
-          });
-        },
-        itemBuilder: (item) {
-          return UserPanel(
-            displayName: item.user!.displayName,
-            detail: item.user!.detail,
-            avatar: item.user!.avatar,
-          );
-        },
-      ),
-    );
+        padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+        child: AccountSelector(
+          widget.clients,
+          onClientSelected: (client) {
+            setState(() {
+              selectedClient = client;
+            });
+          },
+        ));
   }
 
   Widget createSpace(BuildContext context) {
@@ -215,10 +209,10 @@ class _AddSpaceViewState extends State<AddSpaceView> {
                             padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
                             child: Icon(icon),
                           ),
-                          tiamat.Text.labelEmphasised(title),
+                          tiamat.Text.label(title),
                         ],
                       ),
-                      tiamat.Text.label(
+                      tiamat.Text.labelLow(
                         subtitle,
                         overflow: TextOverflow.fade,
                       ),

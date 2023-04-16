@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:commet/client/preview_data.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/client/space.dart';
+import 'package:flutter/material.dart';
 
 import 'peer.dart';
 
@@ -31,7 +32,11 @@ abstract class Client {
 
   bool isLoggedIn();
 
-  Future<LoginResult> login(LoginType type, String userIdentifier, String server, {String? password, String? token});
+  ValueKey get key => ValueKey(identifier);
+
+  Future<LoginResult> login(
+      LoginType type, String userIdentifier, String server,
+      {String? password, String? token});
 
   final Map<String, Room> _rooms = {};
   final Map<String, Space> _spaces = {};

@@ -17,31 +17,18 @@ import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/config/config.dart';
 import 'package:scaled_app/scaled_app.dart';
 
-class SettingsCategoryAccount implements SettingsCategory {
-  @override
-  List<SettingsTab> get tabs => List.from([
-        SettingsTab(
-            label: T.current.settingsTabManageAccounts,
-            pageBuilder: (context) {
-              return AccountManagementSettingsTab(
-                clientManager: Provider.of<ClientManager>(context),
-              );
-            }),
-      ]);
-
-  @override
-  String get title => T.current.settingsCategoryAccount;
-}
-
 class AccountManagementSettingsTab extends StatefulWidget {
   const AccountManagementSettingsTab({super.key, required this.clientManager});
-  static ValueKey addAccountKey = ValueKey("ACCOUNT_MANAGEMENT_SETTINGS_ADD_ACCOUNT_BUTTON");
+  static ValueKey addAccountKey =
+      ValueKey("ACCOUNT_MANAGEMENT_SETTINGS_ADD_ACCOUNT_BUTTON");
   final ClientManager clientManager;
   @override
-  State<AccountManagementSettingsTab> createState() => _AccountManagementSettingsTabState();
+  State<AccountManagementSettingsTab> createState() =>
+      _AccountManagementSettingsTabState();
 }
 
-class _AccountManagementSettingsTabState extends State<AccountManagementSettingsTab> {
+class _AccountManagementSettingsTabState
+    extends State<AccountManagementSettingsTab> {
   StreamSubscription<int>? onClientAddedListener;
   StreamSubscription<StalePeerInfo>? onClientRemovedListener;
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
@@ -54,19 +41,24 @@ class _AccountManagementSettingsTabState extends State<AccountManagementSettings
 
   @override
   void initState() {
-    onClientAddedListener = widget.clientManager.onClientAdded?.stream.listen((index) {
+    onClientAddedListener =
+        widget.clientManager.onClientAdded?.stream.listen((index) {
       _listKey.currentState?.insertItem(index);
       setState(() {
         _numClients++;
       });
     });
 
-    onClientRemovedListener = widget.clientManager.onClientRemoved?.stream.listen((info) {
+    onClientRemovedListener =
+        widget.clientManager.onClientRemoved?.stream.listen((info) {
       _listKey.currentState?.removeItem(
           info.index,
           (context, animation) => SizeTransition(
                 sizeFactor: animation,
-                child: accountListItem(displayName: info.displayName!, avatar: info.avatar, detail: info.identifier),
+                child: accountListItem(
+                    displayName: info.displayName!,
+                    avatar: info.avatar,
+                    detail: info.identifier),
               ));
     });
 
@@ -91,14 +83,16 @@ class _AccountManagementSettingsTabState extends State<AccountManagementSettings
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Tile(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: Theme.of(context).extension<ExtraColors>()!.surfaceLow2),
+            Panel(
+              header: "Current accounts",
+              mode: TileType.surfaceLow2,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [accountListBuilder(context, clientManager), addAccountButton(context)],
+                children: [
+                  accountListBuilder(context, clientManager),
+                  addAccountButton(context)
+                ],
               ),
             ),
           ],
@@ -121,14 +115,18 @@ class _AccountManagementSettingsTabState extends State<AccountManagementSettings
               displayName: clients[index].user!.displayName,
               avatar: clients[index].user!.avatar,
               detail: clients[index].user!.identifier,
-              onLogoutClicked: () => clientmanager.logoutClient(clients[index])),
+              onLogoutClicked: () =>
+                  clientmanager.logoutClient(clients[index])),
         );
       },
     );
   }
 
   Widget accountListItem(
-      {required String displayName, ImageProvider? avatar, String? detail, Function? onLogoutClicked}) {
+      {required String displayName,
+      ImageProvider? avatar,
+      String? detail,
+      Function? onLogoutClicked}) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(8.0, 4, 12, 4),
       child: Row(
@@ -164,7 +162,8 @@ class _AccountManagementSettingsTabState extends State<AccountManagementSettings
             offset: 5,
             tailLength: 5,
             tailBaseWidth: 5,
-            backgroundColor: Theme.of(context).extension<ExtraColors>()!.surfaceLow4,
+            backgroundColor:
+                Theme.of(context).extension<ExtraColors>()!.surfaceLow4,
             child: tiamat.CircleButton(
               key: AccountManagementSettingsTab.addAccountKey,
               icon: Icons.add,

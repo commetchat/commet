@@ -49,7 +49,9 @@ class _DesktopSettingsPageState extends State<DesktopSettingsPage> {
             },
             child: Tile(
               key: ValueKey(selectedTabIndex),
-              child: settingsTab(categories[selectedCategoryIndex].tabs[selectedTabIndex].pageBuilder!),
+              child: settingsTab(categories[selectedCategoryIndex]
+                  .tabs[selectedTabIndex]
+                  .pageBuilder!),
             ),
           ))
         ],
@@ -85,7 +87,7 @@ class _DesktopSettingsPageState extends State<DesktopSettingsPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           if (categoryIndex != 0) tiamat.Seperator(),
-                          tiamat.Text.label(categories[categoryIndex].title!),
+                          tiamat.Text.labelLow(categories[categoryIndex].title),
                           tabListBuilder(categoryIndex)
                         ],
                       );
@@ -112,7 +114,9 @@ class _DesktopSettingsPageState extends State<DesktopSettingsPage> {
               width: 200,
               child: TextButton(
                 categories[categoryIndex].tabs[tabIndex].label!,
-                highlighted: categoryIndex == selectedCategoryIndex && tabIndex == selectedTabIndex,
+                icon: categories[categoryIndex].tabs[tabIndex].icon,
+                highlighted: categoryIndex == selectedCategoryIndex &&
+                    tabIndex == selectedTabIndex,
                 onTap: () {
                   setState(() {
                     selectedCategoryIndex = categoryIndex;
@@ -129,7 +133,7 @@ class _DesktopSettingsPageState extends State<DesktopSettingsPage> {
   Widget settingsTab(Widget Function(BuildContext context) builder) {
     return Padding(
       padding: EdgeInsets.all(s(20.0)),
-      child: builder(context),
+      child: Align(alignment: Alignment.topLeft, child: builder(context)),
     );
   }
 }

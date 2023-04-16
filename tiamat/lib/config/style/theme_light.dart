@@ -50,9 +50,11 @@ class ThemeLight {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
           style: ButtonStyle(
+              backgroundColor:
+                  MaterialStatePropertyAll(ThemeLightColors.primary),
               shape: MaterialStatePropertyAll(
-        RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ))),
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ))),
       iconTheme: const IconThemeData(color: ThemeLightColors.secondary),
       dividerColor: ThemeLightColors.outlineColor,
       dividerTheme:
