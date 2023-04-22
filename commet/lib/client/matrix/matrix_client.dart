@@ -31,8 +31,7 @@ import 'matrix_space.dart';
 class MatrixClient extends Client {
   late matrix.Client _matrixClient;
 
-  MatrixClient({String? name, String? identifier})
-      : super(identifier ?? RandomUtils.getRandomString(20)) {
+  MatrixClient({String? name, String? identifier}) : super(identifier ?? RandomUtils.getRandomString(20)) {
     if (name != null) {
       _matrixClient = _createMatrixClient(name);
     }
@@ -63,9 +62,7 @@ class MatrixClient extends Client {
   }
 
   static matrix.NativeImplementations get nativeImplementations =>
-      BuildConfig.WEB
-          ? const matrix.NativeImplementationsDummy()
-          : matrix.NativeImplementationsIsolate(compute);
+      BuildConfig.WEB ? const matrix.NativeImplementationsDummy() : matrix.NativeImplementationsIsolate(compute);
 
   @override
   Future<void> init() async {
@@ -75,8 +72,7 @@ class MatrixClient extends Client {
       addPeer(user!);
     }
 
-    _matrixClient.onSync.stream.listen(
-        (event) => {onSync.add(null), _updateRoomslist(), _updateSpacesList()});
+    _matrixClient.onSync.stream.listen((event) => {onSync.add(null), _updateRoomslist(), _updateSpacesList()});
 
     _updateRoomslist();
     _updateSpacesList();
@@ -85,14 +81,14 @@ class MatrixClient extends Client {
 
     _matrixClient.onKeyVerificationRequest.stream.listen((event) {
       PopupDialog.show(navigator.currentContext!,
-          content: MatrixVerificationPage(request: event),
-          title: "Verification Request");
+          content: MatrixVerificationPage(request: event), title: "Verification Request");
     });
 
     _matrixClient.onUiaRequest.stream.listen((event) {
-      PopupDialog.show(navigator.currentContext!,
-          content: MatrixUIARequest(event, this),
-          title: "Authentication Request");
+      if (event.state == matrix.UiaRequestState.waitForUser) {
+        PopupDialog.show(navigator.currentContext!,
+            content: MatrixUIARequest(event, this), title: "Authentication Request");
+      }
     });
   }
 
@@ -102,18 +98,13 @@ class MatrixClient extends Client {
   matrix.Client _createMatrixClient(String name) {
     return matrix.Client(
       name,
-      verificationMethods: {
-        KeyVerificationMethod.emoji,
-        KeyVerificationMethod.numbers
-      },
+      verificationMethods: {KeyVerificationMethod.emoji, KeyVerificationMethod.numbers},
       supportedLoginTypes: {matrix.AuthenticationTypes.password},
       nativeImplementations: nativeImplementations,
-      logLevel:
-          BuildConfig.RELEASE ? matrix.Level.warning : matrix.Level.verbose,
+      logLevel: BuildConfig.RELEASE ? matrix.Level.warning : matrix.Level.verbose,
       databaseBuilder: (client) async {
         print(await AppConfig.getDatabasePath());
-        final db = matrix.HiveCollectionsDatabase(
-            client.clientName, await AppConfig.getDatabasePath());
+        final db = matrix.HiveCollectionsDatabase(client.clientName, await AppConfig.getDatabasePath());
         await db.open();
         return db;
       },
@@ -125,13 +116,11 @@ class MatrixClient extends Client {
   }
 
   @override
-  Future<LoginResult> login(
-      LoginType type, String userIdentifier, String server,
+  Future<LoginResult> login(LoginType type, String userIdentifier, String server,
       {String? password, String? token}) async {
     LoginResult loginResult = LoginResult.error;
 
-    String name =
-        hash("matrix_client-${DateTime.now().millisecondsSinceEpoch}");
+    String name = hash("matrix_client-${DateTime.now().millisecondsSinceEpoch}");
 
     switch (type) {
       case LoginType.loginPassword:
@@ -143,12 +132,10 @@ class MatrixClient extends Client {
         await _matrixClient.checkHomeserver(uri);
 
         try {
-          var result = await _matrixClient.login(
-              matrix.LoginType.mLoginPassword,
+          var result = await _matrixClient.login(matrix.LoginType.mLoginPassword,
               initialDeviceDisplayName: BuildConfig.appName,
               password: password,
-              identifier:
-                  matrix.AuthenticationUserIdentifier(user: userIdentifier));
+              identifier: matrix.AuthenticationUserIdentifier(user: userIdentifier));
           if (result.accessToken != null) {
             loginResult = LoginResult.success;
           } else {
@@ -183,8 +170,7 @@ class MatrixClient extends Client {
   }
 
   void _postLoginSuccess() {
-    if (_matrixClient.userID != null)
-      user = MatrixPeer(_matrixClient, _matrixClient.userID!);
+    if (_matrixClient.userID != null) user = MatrixPeer(_matrixClient, _matrixClient.userID!);
   }
 
   void _updateRoomslist() {
@@ -211,9 +197,7 @@ class MatrixClient extends Client {
   Future<Room> createRoom(String name, RoomVisibility visibility) async {
     var id = await _matrixClient.createRoom(
         name: name,
-        visibility: visibility == RoomVisibility.private
-            ? matrix.Visibility.private
-            : matrix.Visibility.public);
+        visibility: visibility == RoomVisibility.private ? matrix.Visibility.private : matrix.Visibility.public);
     if (roomExists(id)) return getRoom(id)!;
     var room = MatrixRoom(this, _matrixClient.getRoomById(id)!, _matrixClient);
     addRoom(room);
@@ -225,13 +209,10 @@ class MatrixClient extends Client {
     var id = await _matrixClient.createSpace(
         name: name,
         waitForSync: true,
-        visibility: visibility == RoomVisibility.private
-            ? matrix.Visibility.private
-            : matrix.Visibility.public);
+        visibility: visibility == RoomVisibility.private ? matrix.Visibility.private : matrix.Visibility.public);
 
     if (spaceExists(id)) return getSpace(id)!;
-    var space =
-        MatrixSpace(this, _matrixClient.getRoomById(id)!, _matrixClient);
+    var space = MatrixSpace(this, _matrixClient.getRoomById(id)!, _matrixClient);
     addSpace(space);
     return space;
   }
@@ -246,16 +227,14 @@ class MatrixClient extends Client {
     await _matrixClient.waitForRoomInSync(id);
     if (spaceExists(id)) return getSpace(id)!;
 
-    var space =
-        MatrixSpace(this, _matrixClient.getRoomById(id)!, _matrixClient);
+    var space = MatrixSpace(this, _matrixClient.getRoomById(id)!, _matrixClient);
     addSpace(space);
     return space;
   }
 
   @override
   Future<PreviewData?> getRoomPreviewInternal(String address) async {
-    MatrixRoomPreview preview =
-        MatrixRoomPreview(roomId: address, matrixClient: _matrixClient);
+    MatrixRoomPreview preview = MatrixRoomPreview(roomId: address, matrixClient: _matrixClient);
     if (preview.exists) {
       return preview;
     }

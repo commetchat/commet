@@ -4,9 +4,15 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:matrix/encryption.dart';
 
+enum MatrixCrossSigningMode { standard, enableBackup, restoreBackup, resetCrossSigning, crossSigningOnly }
+
 class MatrixCrossSigningPage extends StatefulWidget {
-  const MatrixCrossSigningPage({required this.client, super.key});
+  const MatrixCrossSigningPage(
+      {required this.client, this.mode = MatrixCrossSigningMode.standard, super.key, this.onComplete});
   final MatrixClient client;
+  final MatrixCrossSigningMode mode;
+  final Function()? onComplete;
+
   @override
   State<MatrixCrossSigningPage> createState() => MatrixCrossSigningPageState();
 }
@@ -18,6 +24,7 @@ class MatrixCrossSigningPageState extends State<MatrixCrossSigningPage> {
   void initState() {
     var mx = widget.client.getMatrixClient();
     bootstrapper = mx.encryption?.bootstrap(onUpdate: onBootstrapperUdate);
+    onBootstrapperUdate(bootstrapper!);
     super.initState();
   }
 
@@ -32,12 +39,63 @@ class MatrixCrossSigningPageState extends State<MatrixCrossSigningPage> {
       onAskSetupCrossSigning: () {
         bootstrapper?.askSetupCrossSigning(
           setupMasterKey: true,
+          setupSelfSigningKey: true,
+          setupUserSigningKey: true,
         );
+      },
+      onAskSetupOnlineBackup: (enable) {
+        bootstrapper?.askSetupOnlineKeyBackup(enable);
+      },
+      useExistingKeys: (use) {
+        bootstrapper?.useExistingSsss(use);
+      },
+      wipeSsss: (wipe) {
+        bootstrapper?.wipeSsss(wipe);
+        if (!wipe) {
+          bootstrapper?.useExistingSsss(true);
+          bootstrapper?.openExistingSsss();
+        }
+      },
+      wipeExistingBackup: (wipe) {
+        bootstrapper?.wipeOnlineKeyBackup(wipe);
+      },
+      openExistingSsss: (key) async {
+        await bootstrapper?.newSsssKey!.unlock(keyOrPassphrase: key);
+        await bootstrapper?.client.encryption!.crossSigning.selfSign(keyOrPassphrase: key);
+        await bootstrapper?.openExistingSsss();
+        await bootstrapper?.askSetupCrossSigning(setupMasterKey: true);
+        bootstrapper?.wipeOnlineKeyBackup(false);
+      },
+      wipeCrossSigning: (wipe) {
+        bootstrapper?.wipeCrossSigning(wipe);
       },
     );
   }
 
-  void onBootstrapperUdate(Bootstrap bootstrapper) {
+  void onBootstrapperUdate(Bootstrap bootstrapper) async {
+    if (bootstrapper.state == BootstrapState.done) {
+      widget.onComplete?.call();
+    }
+
+    if (widget.mode == MatrixCrossSigningMode.enableBackup || widget.mode == MatrixCrossSigningMode.restoreBackup) {
+      switch (bootstrapper.state) {
+        case BootstrapState.askUseExistingSsss:
+          bootstrapper.useExistingSsss(true);
+          break;
+        case BootstrapState.askWipeSsss:
+          bootstrapper.wipeSsss(false);
+          break;
+        case BootstrapState.askWipeCrossSigning:
+          bootstrapper.wipeCrossSigning(false);
+          break;
+        case BootstrapState.askWipeOnlineKeyBackup:
+          bootstrapper.wipeOnlineKeyBackup(false);
+          break;
+        default:
+          break;
+      }
+    }
+
     setState(() {
       state = bootstrapper.state;
     });

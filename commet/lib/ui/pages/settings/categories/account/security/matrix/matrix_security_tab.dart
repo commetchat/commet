@@ -16,14 +16,21 @@ class MatrixSecurityTab extends StatefulWidget {
 
 class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
   bool crossSigningEnabled = false;
+  bool? messageBackupEnabled = null;
 
   @override
   void initState() {
-    crossSigningEnabled =
-        widget.client.getMatrixClient().encryption?.crossSigning.enabled ??
-            false;
+    checkState();
 
     super.initState();
+  }
+
+  void checkState() {
+    setState(() {
+      var encryption = widget.client.getMatrixClient().encryption;
+      crossSigningEnabled = encryption?.crossSigning.enabled ?? false;
+      messageBackupEnabled = encryption?.keyManager.enabled ?? false;
+    });
   }
 
   @override
@@ -63,19 +70,29 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               tiamat.Text.label("Cross Signing"),
-              tiamat.Text.labelLow(
-                  "Setup to verify and keep track of all your sessions")
+              tiamat.Text.labelLow("Setup to verify and keep track of all your sessions")
             ],
           ),
         ),
         crossSigningEnabled
             ? tiamat.Button.danger(
                 text: "Reset",
+                onTap: () => PopupDialog.show(context,
+                    content: MatrixCrossSigningPage(
+                      client: widget.client,
+                      mode: MatrixCrossSigningMode.resetCrossSigning,
+                      onComplete: checkState,
+                    ),
+                    barrierDismissible: true,
+                    title: "Reset Cross Signing"),
               )
             : tiamat.Button.secondary(
                 text: "Enable",
                 onTap: () => PopupDialog.show(context,
-                    content: MatrixCrossSigningPage(client: widget.client),
+                    content: MatrixCrossSigningPage(
+                      client: widget.client,
+                      onComplete: checkState,
+                    ),
                     barrierDismissible: true,
                     title: "Cross Signing"),
               )
@@ -98,9 +115,31 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
             ],
           ),
         ),
-        tiamat.Button.secondary(
-          text: "Enable",
-        )
+        messageBackupEnabled == true
+            ? tiamat.Button.secondary(
+                text: "Restore",
+                onTap: () => PopupDialog.show(context,
+                    content: MatrixCrossSigningPage(
+                      client: widget.client,
+                      onComplete: checkState,
+                      mode: MatrixCrossSigningMode.restoreBackup,
+                    ),
+                    barrierDismissible: true,
+                    title: "Restore Backup"),
+              )
+            : messageBackupEnabled == false
+                ? tiamat.Button.secondary(
+                    text: "Enable",
+                    onTap: () => PopupDialog.show(context,
+                        content: MatrixCrossSigningPage(
+                          client: widget.client,
+                          onComplete: checkState,
+                          mode: MatrixCrossSigningMode.enableBackup,
+                        ),
+                        barrierDismissible: true,
+                        title: "Setup Backup"),
+                  )
+                : CircularProgressIndicator()
       ],
     );
   }
