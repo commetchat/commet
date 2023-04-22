@@ -1,7 +1,9 @@
 import 'package:commet/client/matrix/matrix_client.dart';
+import 'package:commet/ui/pages/settings/categories/account/security/matrix/session/matrix_session.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:matrix/matrix.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
@@ -17,11 +19,12 @@ class MatrixSecurityTab extends StatefulWidget {
 class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
   bool crossSigningEnabled = false;
   bool? messageBackupEnabled = null;
+  List<Device>? devices;
 
   @override
   void initState() {
     checkState();
-
+    getDevices();
     super.initState();
   }
 
@@ -30,6 +33,14 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
       var encryption = widget.client.getMatrixClient().encryption;
       crossSigningEnabled = encryption?.crossSigning.enabled ?? false;
       messageBackupEnabled = encryption?.keyManager.enabled ?? false;
+    });
+  }
+
+  void getDevices() async {
+    var gotDevices = await widget.client.getMatrixClient().getDevices();
+
+    setState(() {
+      devices = gotDevices;
     });
   }
 
@@ -44,7 +55,36 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
           padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
           child: crossSigningPanel(),
         ),
+        sessionsPanel()
       ],
+    );
+  }
+
+  Panel sessionsPanel() {
+    return Panel(
+      header: "Sessions",
+      mode: TileType.surfaceLow2,
+      child: devices == null
+          ? CircularProgressIndicator()
+          : ListView.builder(
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.all(2.0),
+                  child: MatrixSession(
+                    devices![index],
+                    widget.client.getMatrixClient(),
+                    onUpdated: () {
+                      print("ON UPDATE AHAHAHHAHA");
+                      setState(() {
+                        getDevices();
+                      });
+                    },
+                  ),
+                );
+              },
+              itemCount: devices!.length,
+            ),
     );
   }
 
