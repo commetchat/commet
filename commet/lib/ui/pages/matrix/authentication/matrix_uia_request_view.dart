@@ -1,5 +1,7 @@
 import 'package:flutter/widgets.dart';
-import 'package:matrix/matrix.dart';
+// have to do it this way to avoid some widgetbook codegen issue
+// ignore: implementation_imports
+import 'package:matrix/src/utils/uia_request.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:flutter/material.dart' as material;
