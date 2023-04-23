@@ -17,8 +17,8 @@ class ChatPage extends StatefulWidget {
 
 class ChatPageState extends State<ChatPage> {
   ClientManager get clientManager => widget.clientManager;
-  late Space? selectedSpace;
-  late Room? selectedRoom;
+  Space? selectedSpace;
+  Room? selectedRoom;
   late bool homePageSelected = false;
   late GlobalKey<SplitTimelineViewerState> timelineKey =
       GlobalKey<SplitTimelineViewerState>();

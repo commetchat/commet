@@ -37,8 +37,8 @@ class _SpaceSelectorState extends State<SpaceSelector> {
   int _count = 0;
   int _selectedIndex = -1;
 
-  late StreamSubscription<int>? onInsertListener;
-  late StreamSubscription<StaleSpaceInfo>? onRemovedListener;
+  StreamSubscription<int>? onInsertListener;
+  StreamSubscription<StaleSpaceInfo>? onRemovedListener;
 
   @override
   void initState() {

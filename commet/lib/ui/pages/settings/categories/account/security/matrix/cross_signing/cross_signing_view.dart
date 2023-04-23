@@ -165,9 +165,11 @@ class _MatrixCrossSigningViewState extends State<MatrixCrossSigningView> {
       case BootstrapState.askUseExistingSsss:
         return askUseExistingSsss();
       case BootstrapState.askUnlockSsss:
+        // ignore: todo
         // TODO: Handle this case.
         break;
       case BootstrapState.askBadSsss:
+        // ignore: todo
         // TODO: Handle this case.
         break;
       case BootstrapState.askNewSsss:

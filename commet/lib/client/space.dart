@@ -8,8 +8,8 @@ import 'package:flutter/material.dart';
 abstract class Space {
   late String identifier;
   late Client client;
-  late ImageProvider? avatar;
-  late ImageProvider? avatarThumbnail;
+  ImageProvider? avatar;
+  ImageProvider? avatarThumbnail;
   final Map<String, Room> _rooms = {};
   final Map<String, PreviewData> _unjoinedRooms = {};
   late List<Room> rooms = List.empty(growable: true);
