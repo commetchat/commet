@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 
 class Pill extends StatelessWidget {
   final String identifier;
@@ -26,8 +25,9 @@ class Pill extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(5),
         child: Container(
-          padding: EdgeInsets.all(2),
-          decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary.withAlpha(200)),
+          padding: const EdgeInsets.all(2),
+          decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primary.withAlpha(200)),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,

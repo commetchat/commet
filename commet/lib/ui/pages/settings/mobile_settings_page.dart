@@ -1,11 +1,9 @@
 import 'package:commet/ui/pages/settings/settings_category.dart';
 import 'package:commet/ui/pages/settings/settings_menu.dart';
-import 'package:commet/ui/pages/settings/settings_tab.dart';
 import 'package:flutter/material.dart' as m;
 import 'package:flutter/widgets.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
-import '../../../config/app_config.dart';
 
 import '../../navigation/navigation_utils.dart';
 
@@ -32,11 +30,11 @@ class _MobileSettingsPageState extends State<MobileSettingsPage> {
     return m.Material(
       child: SafeArea(
         child: Padding(
-          padding: EdgeInsets.all(s(8.0)),
+          padding: const EdgeInsets.all(8.0),
           child: Column(
             children: [
               Padding(
-                padding: EdgeInsets.all(s(8.0)),
+                padding: const EdgeInsets.all(8.0),
                 child: Align(
                     alignment: Alignment.centerLeft,
                     child: CircleButton(
@@ -56,9 +54,9 @@ class _MobileSettingsPageState extends State<MobileSettingsPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          if (categoryIndex != 0) tiamat.Seperator(),
+                          if (categoryIndex != 0) const tiamat.Seperator(),
                           tiamat.Text.labelLow(
-                            tabs[categoryIndex].title!,
+                            tabs[categoryIndex].title,
                           ),
                           ListView.builder(
                             shrinkWrap: true,
@@ -105,11 +103,11 @@ class SettingsSubPage extends StatelessWidget {
     return Tile.low1(
       child: SafeArea(
         child: Padding(
-          padding: EdgeInsets.all(s(8.0)),
+          padding: const EdgeInsets.all(8.0),
           child: Column(
             children: [
               Padding(
-                padding: EdgeInsets.all(s(8.0)),
+                padding: const EdgeInsets.all(8.0),
                 child: Align(
                     alignment: Alignment.centerLeft,
                     child: CircleButton(

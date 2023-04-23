@@ -1,19 +1,14 @@
 import 'dart:io';
 
-import 'package:commet/cache/cache_file_provider.dart';
 import 'package:commet/cache/file_provider.dart';
-import 'package:commet/ui/molecules/video_player/video_player.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:tiamat/tiamat.dart';
-import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:video_player/video_player.dart' as video_player;
 
 import 'video_player_controller.dart';
 
 class VideoPlayerMobile extends StatefulWidget {
-  const VideoPlayerMobile({required this.videoFile, required this.controller, super.key});
+  const VideoPlayerMobile(
+      {required this.videoFile, required this.controller, super.key});
   final FileProvider videoFile;
   final VideoPlayerController controller;
 
@@ -30,7 +25,12 @@ class _VideoPlayerMobileState extends State<VideoPlayerMobile> {
   void initState() {
     super.initState();
 
-    widget.controller.attach(pause: pause, play: play, replay: replay, seekTo: seekTo, getLength: getLength);
+    widget.controller.attach(
+        pause: pause,
+        play: play,
+        replay: replay,
+        seekTo: seekTo,
+        getLength: getLength);
     loadVideo();
   }
 
@@ -41,7 +41,8 @@ class _VideoPlayerMobileState extends State<VideoPlayerMobile> {
   }
 
   void loadVideo() async {
-    _controller = video_player.VideoPlayerController.file(File.fromUri(await widget.videoFile.resolve()))
+    _controller = video_player.VideoPlayerController.file(
+        File.fromUri(await widget.videoFile.resolve()))
       ..initialize().then((value) {
         widget.controller.setBuffering(false);
         _controller!.play();
@@ -77,7 +78,7 @@ class _VideoPlayerMobileState extends State<VideoPlayerMobile> {
   Widget build(BuildContext context) {
     return _controller != null && _controller!.value.isInitialized && loaded
         ? video_player.VideoPlayer(_controller!)
-        : Placeholder();
+        : const Placeholder();
   }
 
   Future<void> pause() async {
@@ -86,16 +87,13 @@ class _VideoPlayerMobileState extends State<VideoPlayerMobile> {
 
   Future<void> play() async {
     _controller?.play();
-    if (!_controller!.hasListeners) {
-      _controller!.addListener(onUpdate);
-    }
+    _controller!.addListener(onUpdate);
   }
 
   Future<void> replay() async {
     _controller?.seekTo(Duration.zero);
-    if (!_controller!.hasListeners) {
-      _controller!.addListener(onUpdate);
-    }
+    _controller!.addListener(onUpdate);
+
     widget.controller.setCompleted(false);
     play();
   }

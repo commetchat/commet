@@ -23,11 +23,13 @@ enum EventType {
   roomCreated,
 }
 
-TimelineEventStatus eventStatusFromInt(int intValue) => TimelineEventStatus.values[intValue + 2];
+TimelineEventStatus eventStatusFromInt(int intValue) =>
+    TimelineEventStatus.values[intValue + 2];
 
 /// Takes two [EventStatus] values and returns the one with higher
 /// (better in terms of message sending) status.
-TimelineEventStatus latestEventStatus(TimelineEventStatus status1, TimelineEventStatus status2) =>
+TimelineEventStatus latestEventStatus(
+        TimelineEventStatus status1, TimelineEventStatus status2) =>
     status1.intValue > status2.intValue ? status1 : status2;
 
 extension EventStatusExtension on TimelineEventStatus {
@@ -55,8 +57,11 @@ extension EventStatusExtension on TimelineEventStatus {
 
   /// Returns `true` if the status is sent or later:
   /// [EventStatus.sent], [EventStatus.synced] or [EventStatus.roomState].
-  bool get isSent =>
-      [TimelineEventStatus.sent, TimelineEventStatus.synced, TimelineEventStatus.roomState].contains(this);
+  bool get isSent => [
+        TimelineEventStatus.sent,
+        TimelineEventStatus.synced,
+        TimelineEventStatus.roomState
+      ].contains(this);
 
   /// Returns `true` if the status is `synced` or `roomState`:
   /// [EventStatus.synced] or [EventStatus.roomState].

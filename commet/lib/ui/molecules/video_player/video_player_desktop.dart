@@ -1,8 +1,5 @@
-import 'package:commet/cache/cache_file_provider.dart';
 import 'package:commet/cache/file_provider.dart';
-import 'package:commet/ui/molecules/video_player/video_player.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:flutter/widgets.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 
@@ -10,7 +7,11 @@ import 'video_player_controller.dart';
 
 class VideoPlayerDesktop extends StatefulWidget {
   const VideoPlayerDesktop(
-      {required this.controller, required this.videoFile, this.width = 640, this.height = 340, super.key});
+      {required this.controller,
+      required this.videoFile,
+      this.width = 640,
+      this.height = 340,
+      super.key});
   final FileProvider videoFile;
   final int width;
   final int height;
@@ -29,7 +30,12 @@ class _VideoPlayerDesktopState extends State<VideoPlayerDesktop> {
   void initState() {
     super.initState();
 
-    widget.controller.attach(pause: pause, play: play, replay: replay, seekTo: seekTo, getLength: getLength);
+    widget.controller.attach(
+        pause: pause,
+        play: play,
+        replay: replay,
+        seekTo: seekTo,
+        getLength: getLength);
 
     player.streams.position.listen((event) {
       widget.controller.setProgress(event);
@@ -57,11 +63,12 @@ class _VideoPlayerDesktopState extends State<VideoPlayerDesktop> {
 
   @override
   Widget build(BuildContext context) {
-    if (loaded)
+    if (loaded) {
       return Video(
         controller: controller,
       );
-    return Placeholder();
+    }
+    return const Placeholder();
   }
 
   Future<void> pause() async {

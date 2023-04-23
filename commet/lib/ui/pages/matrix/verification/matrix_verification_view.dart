@@ -1,10 +1,6 @@
 import 'package:commet/generated/l10n.dart';
 import 'package:commet/ui/atoms/emoji_widget.dart';
-import 'package:commet/ui/pages/matrix/verification/matrix_verification_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:matrix/encryption/utils/key_verification.dart';
 
@@ -21,7 +17,7 @@ Widget wbSASCheckEmojis(BuildContext context) {
       content: MatrixVerificationPageView(
         userID: "alice@example.com",
         state: KeyVerificationState.askSas,
-        sasTypes: ['emoji'],
+        sasTypes: const ['emoji'],
         sasEmoji: [
           KeyVerificationEmoji(25),
           KeyVerificationEmoji(41),
@@ -30,7 +26,7 @@ Widget wbSASCheckEmojis(BuildContext context) {
           KeyVerificationEmoji(49),
           KeyVerificationEmoji(4),
         ],
-        sasNumbers: [25, 41, 61, 53, 49, 4],
+        sasNumbers: const [25, 41, 61, 53, 49, 4],
       ),
     ),
   );
@@ -45,7 +41,7 @@ Widget sbVerificationLoading(BuildContext context) {
       content: MatrixVerificationPageView(
         userID: "alice@example.com",
         state: KeyVerificationState.waitingAccept,
-        sasTypes: ['emoji'],
+        sasTypes: const ['emoji'],
         sasEmoji: [
           KeyVerificationEmoji(25),
           KeyVerificationEmoji(41),
@@ -54,7 +50,7 @@ Widget sbVerificationLoading(BuildContext context) {
           KeyVerificationEmoji(49),
           KeyVerificationEmoji(4),
         ],
-        sasNumbers: [25, 41, 61, 53, 49, 4],
+        sasNumbers: const [25, 41, 61, 53, 49, 4],
       ),
     ),
   );
@@ -69,7 +65,7 @@ Widget wbSASRequestReceived(BuildContext context) {
       content: MatrixVerificationPageView(
         userID: "alice@example.com",
         state: KeyVerificationState.askAccept,
-        sasTypes: ['emoji'],
+        sasTypes: const ['emoji'],
         sasEmoji: [
           KeyVerificationEmoji(25),
           KeyVerificationEmoji(41),
@@ -78,7 +74,7 @@ Widget wbSASRequestReceived(BuildContext context) {
           KeyVerificationEmoji(49),
           KeyVerificationEmoji(4),
         ],
-        sasNumbers: [25, 41, 61, 53, 49, 4],
+        sasNumbers: const [25, 41, 61, 53, 49, 4],
       ),
     ),
   );
@@ -93,7 +89,7 @@ Widget wbVerificationSuccess(BuildContext context) {
       content: MatrixVerificationPageView(
         userID: "alice@example.com",
         state: KeyVerificationState.done,
-        sasTypes: ['emoji'],
+        sasTypes: const ['emoji'],
         sasEmoji: [
           KeyVerificationEmoji(25),
           KeyVerificationEmoji(41),
@@ -102,7 +98,7 @@ Widget wbVerificationSuccess(BuildContext context) {
           KeyVerificationEmoji(49),
           KeyVerificationEmoji(4),
         ],
-        sasNumbers: [25, 41, 61, 53, 49, 4],
+        sasNumbers: const [25, 41, 61, 53, 49, 4],
       ),
     ),
   );
@@ -147,7 +143,11 @@ class MatrixVerificationPageView extends StatelessWidget {
         return done(context);
       case KeyVerificationState.waitingAccept:
         return Column(
-          children: [tiamat.Text.label("Waiting for other device to accept request"), loading(context)],
+          children: [
+            const tiamat.Text.label(
+                "Waiting for other device to accept request"),
+            loading(context)
+          ],
         );
       case KeyVerificationState.waitingSas:
         return loading(context);
@@ -160,7 +160,8 @@ class MatrixVerificationPageView extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Expanded(child: Markdown(data: T.current.verificationRequestPrompt(userID))),
+        Expanded(
+            child: Markdown(data: T.current.verificationRequestPrompt(userID))),
         Column(
           mainAxisSize: MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -168,7 +169,9 @@ class MatrixVerificationPageView extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Button.success(text: T.current.genericAcceptButton, onTap: onVerificationRequestAccepted?.call),
+              child: Button.success(
+                  text: T.current.genericAcceptButton,
+                  onTap: onVerificationRequestAccepted?.call),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
@@ -232,7 +235,9 @@ class MatrixVerificationPageView extends StatelessWidget {
               children: [
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Button.success(text: T.current.sasEmojiVerificationMatches, onTap: onSasAccepted?.call),
+                  child: Button.success(
+                      text: T.current.sasEmojiVerificationMatches,
+                      onTap: onSasAccepted?.call),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -247,7 +252,7 @@ class MatrixVerificationPageView extends StatelessWidget {
         ],
       );
     }
-    return Placeholder();
+    return const Placeholder();
   }
 
   Widget done(BuildContext context) {
@@ -255,7 +260,7 @@ class MatrixVerificationPageView extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Expanded(
+          const Expanded(
               child: Center(
                   child: Icon(
             Icons.verified_user_rounded,
@@ -270,6 +275,6 @@ class MatrixVerificationPageView extends StatelessWidget {
   }
 
   Widget loading(BuildContext context) {
-    return Center(child: CircularProgressIndicator());
+    return const Center(child: CircularProgressIndicator());
   }
 }

@@ -1,15 +1,10 @@
 import 'package:commet/client/client.dart';
-import 'package:commet/client/client_manager.dart';
-import 'package:commet/config/build_config.dart';
 import 'package:commet/generated/l10n.dart';
 import 'package:commet/ui/pages/login/login_page.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:tiamat/atoms/tile.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
-
-import '../chat/chat_page.dart';
 
 @WidgetbookUseCase(name: 'Login Page', type: LoginPageView)
 @Deprecated("widgetbook")
@@ -39,8 +34,8 @@ class _LoginPageViewState extends State<LoginPageView> {
       _loading = true;
     });
 
-    LoginResult result =
-        await widget.state!.login(_homeserverTextField.text, _usernameTextField.text, _passwordTextField.text);
+    LoginResult result = await widget.state!.login(_homeserverTextField.text,
+        _usernameTextField.text, _passwordTextField.text);
 
     setState(() {
       _loading = false;
@@ -66,7 +61,7 @@ class _LoginPageViewState extends State<LoginPageView> {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(message!),
+            content: Text(message),
           ),
         );
       }
@@ -82,12 +77,19 @@ class _LoginPageViewState extends State<LoginPageView> {
           padding: const EdgeInsets.all(8),
           child: Center(
             child: ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: 500),
+              constraints: const BoxConstraints(maxWidth: 500),
               child: Container(
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(13),
-                    border: Border.all(color: Theme.of(context).extension<ExtraColors>()!.outline, width: 1),
-                    boxShadow: [BoxShadow(blurRadius: 50, color: Theme.of(context).shadowColor.withAlpha(50))]),
+                    border: Border.all(
+                        color:
+                            Theme.of(context).extension<ExtraColors>()!.outline,
+                        width: 1),
+                    boxShadow: [
+                      BoxShadow(
+                          blurRadius: 50,
+                          color: Theme.of(context).shadowColor.withAlpha(50))
+                    ]),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(13),
                   child: Tile.low2(
@@ -132,7 +134,9 @@ class _LoginPageViewState extends State<LoginPageView> {
                           height: 50,
                           child: ElevatedButton(
                             onPressed: doLogin,
-                            child: _loading ? const LinearProgressIndicator() : const Text('Login'),
+                            child: _loading
+                                ? const LinearProgressIndicator()
+                                : const Text('Login'),
                           ),
                         ),
                       ]),

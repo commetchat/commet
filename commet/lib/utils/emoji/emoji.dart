@@ -13,18 +13,26 @@ class Emoji {
 
   Emoji(this.image, {this.shortcode, this.unicode});
 
-  static List<InlineSpan> emojify(List<InlineSpan> span, {double? emojiHeight}) {
-    return TextUtils.formatSpan(span, (text, style) => emojifyString(text, emojiHeight: emojiHeight, style: style));
+  static List<InlineSpan> emojify(List<InlineSpan> span,
+      {double? emojiHeight}) {
+    return TextUtils.formatSpan(
+        span,
+        (text, style) =>
+            emojifyString(text, emojiHeight: emojiHeight, style: style));
   }
 
-  static List<InlineSpan> emojifyString(String text, {double? emojiHeight, TextStyle? style}) {
+  static List<InlineSpan> emojifyString(String text,
+      {double? emojiHeight, TextStyle? style}) {
     var emojis = EmojiMatcher.find(text);
 
-    return TextUtils.formatMatches(emojis, text, style: style, builder: ((matchedText, style) {
+    return TextUtils.formatMatches(emojis, text, style: style,
+        builder: ((matchedText, style) {
       return WidgetSpan(
           child: EmojiWidget(
         matchedText,
-        height: style != null && style.fontSize != null ? style.fontSize : emojiHeight,
+        height: style != null && style.fontSize != null
+            ? style.fontSize
+            : emojiHeight,
       ));
     }));
   }

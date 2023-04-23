@@ -12,13 +12,17 @@ class SplitTimeline {
 
   SplitTimeline(this.timeline, {this.chunkSize = 30}) {
     int recentEndIndex = min(timeline.events.length - 1, chunkSize);
-    int historyEndIndex = min(timeline.events.length - 1, recentEndIndex + chunkSize);
+    int historyEndIndex =
+        min(timeline.events.length - 1, recentEndIndex + chunkSize);
     if (timeline.events.isEmpty) {
       recentEndIndex = 0;
       historyEndIndex = 0;
     }
-    recent = List.from(timeline.events.sublist(0, recentEndIndex), growable: true);
-    historical = List.from(timeline.events.sublist(recentEndIndex, historyEndIndex), growable: true);
+    recent =
+        List.from(timeline.events.sublist(0, recentEndIndex), growable: true);
+    historical = List.from(
+        timeline.events.sublist(recentEndIndex, historyEndIndex),
+        growable: true);
 
     timeline.onEventAdded.stream.listen((index) {
       onEventAdded(index);
@@ -49,7 +53,8 @@ class SplitTimeline {
     int startIndex = recent.length + historical.length;
     int endIndex = min(startIndex + chunkSize, timeline.events.length);
 
-    List<TimelineEvent> eventsToAdd = timeline.events.sublist(startIndex, endIndex);
+    List<TimelineEvent> eventsToAdd =
+        timeline.events.sublist(startIndex, endIndex);
     historical.addAll(eventsToAdd);
   }
 
@@ -95,7 +100,8 @@ class SplitTimeline {
       return SplitTimelinePart.historical;
     }
 
-    throw Exception("Trying to insert in to list which is not sized appropriately");
+    throw Exception(
+        "Trying to insert in to list which is not sized appropriately");
   }
 
   void onEventAdded(int timelineIndex) {
@@ -103,10 +109,12 @@ class SplitTimeline {
 
     switch (part) {
       case SplitTimelinePart.historical:
-        historical.insert(getHistoryIndex(timelineIndex), timeline.events[timelineIndex]);
+        historical.insert(
+            getHistoryIndex(timelineIndex), timeline.events[timelineIndex]);
         break;
       case SplitTimelinePart.recent:
-        recent.insert(getRecentIndex(timelineIndex), timeline.events[timelineIndex]);
+        recent.insert(
+            getRecentIndex(timelineIndex), timeline.events[timelineIndex]);
         break;
       default:
         throw Exception(

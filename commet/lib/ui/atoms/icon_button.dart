@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../config/app_config.dart';
-
 class IconButton extends StatefulWidget {
-  const IconButton({super.key, this.size = 15, required this.icon, this.onPressed});
+  const IconButton(
+      {super.key, this.size = 15, required this.icon, this.onPressed});
   final double size;
   final Function? onPressed;
   final IconData icon;
@@ -43,7 +42,9 @@ class _IconButtonState extends State<IconButton> {
                     child: Icon(
                       widget.icon,
                       size: widget.size,
-                      color: hovered ? Theme.of(context).colorScheme.onPrimary : null,
+                      color: hovered
+                          ? Theme.of(context).colorScheme.onPrimary
+                          : null,
                     )),
               ),
             ),

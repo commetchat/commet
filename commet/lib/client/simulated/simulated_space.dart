@@ -35,13 +35,15 @@ class SimulatedSpace extends Space {
 
   @override
   Future<Room> createSpaceChild(String name, RoomVisibility visibility) {
-    // TODO: implement createSpaceChild
+    // ignore: todo
+// TODO: implement createSpaceChild
     throw UnimplementedError();
   }
 
   @override
   Future<List<PreviewData>> fetchUnjoinedRoomsInternal() async {
-    // TODO: implement fetchUnjoinedRoomsInternal
+    // ignore: todo
+// TODO: implement fetchUnjoinedRoomsInternal
     return List.empty();
   }
 }

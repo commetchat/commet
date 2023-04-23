@@ -1,8 +1,6 @@
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/ui/pages/settings/categories/account/security/matrix/session/matrix_session.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:matrix/matrix.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -18,7 +16,7 @@ class MatrixSecurityTab extends StatefulWidget {
 
 class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
   bool crossSigningEnabled = false;
-  bool? messageBackupEnabled = null;
+  bool? messageBackupEnabled;
   List<Device>? devices;
 
   @override
@@ -65,10 +63,10 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
       header: "Sessions",
       mode: TileType.surfaceLow2,
       child: devices == null
-          ? CircularProgressIndicator()
+          ? const CircularProgressIndicator()
           : ListView.builder(
               shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               itemBuilder: (context, index) {
                 return Padding(
                   padding: const EdgeInsets.all(2.0),
@@ -95,7 +93,11 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
         child: Padding(
           padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
           child: Column(
-            children: [crossSigning(), tiamat.Seperator(), messageBackup()],
+            children: [
+              crossSigning(),
+              const tiamat.Seperator(),
+              messageBackup()
+            ],
           ),
         ));
   }
@@ -108,14 +110,15 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+            children: const [
               tiamat.Text.label("Cross Signing"),
-              tiamat.Text.labelLow("Setup to verify and keep track of all your sessions")
+              tiamat.Text.labelLow(
+                  "Setup to verify and keep track of all your sessions")
             ],
           ),
         ),
         Padding(
-            padding: EdgeInsets.fromLTRB(16, 0, 0, 0),
+            padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),
             child: crossSigningEnabled
                 ? tiamat.Button.danger(
                     text: "Reset",
@@ -150,7 +153,7 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+            children: const [
               tiamat.Text.label("Message Backup"),
               tiamat.Text.labelLow(
                   "Maintains a backup of your message history, in case you lose all your sessions. Your messages will be encrypted before uploading")
@@ -158,7 +161,7 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
           ),
         ),
         Padding(
-            padding: EdgeInsets.fromLTRB(16, 0, 0, 0),
+            padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),
             child: messageBackupEnabled == true
                 ? tiamat.Button.secondary(
                     text: "Restore",
@@ -183,7 +186,7 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
                             barrierDismissible: true,
                             title: "Setup Backup"),
                       )
-                    : CircularProgressIndicator())
+                    : const CircularProgressIndicator())
       ],
     );
   }

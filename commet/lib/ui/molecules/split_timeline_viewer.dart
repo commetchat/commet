@@ -77,13 +77,14 @@ class SplitTimelineViewerState extends State<SplitTimelineViewer> {
   void forceToBottom() {
     controller.jumpTo(controller.position.maxScrollExtent);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!(controller.position.pixels >= controller.position.maxScrollExtent))
+      if (!(controller.position.pixels >=
+          controller.position.maxScrollExtent)) {
         forceToBottom();
+      }
     });
   }
 
   void prepareForDisposal() {
-    print("Preparing for disposal");
     toBeDisposed = true;
     controller.position.hold(() {});
   }
@@ -95,7 +96,6 @@ class SplitTimelineViewerState extends State<SplitTimelineViewer> {
   }
 
   void handleScrolling() {
-    if (controller == null) return;
     if (controller.offset < controller.position.minScrollExtent + 200) {
       loadMore();
     }

@@ -6,10 +6,9 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tiamat/tiamat.dart';
 
-import '../../../../../molecules/account_selector.dart';
-
 class ProfileEditTab extends StatefulWidget {
-  const ProfileEditTab({required this.clientManager, this.selectedClientIndex = 0, super.key});
+  const ProfileEditTab(
+      {required this.clientManager, this.selectedClientIndex = 0, super.key});
   final ClientManager clientManager;
   final int selectedClientIndex;
   @override
@@ -42,7 +41,7 @@ class _ProfileEditTabState extends State<ProfileEditTab> {
                   pickAvatar: () => pickAvatar(client),
                   setDisplayName: (name) => setDisplayName(client, name),
                 ),
-                Seperator()
+                const Seperator()
               ],
             );
           },
@@ -53,7 +52,8 @@ class _ProfileEditTabState extends State<ProfileEditTab> {
   }
 
   void pickAvatar(Client client) async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.image, withData: true);
+    FilePickerResult? result = await FilePicker.platform
+        .pickFiles(type: FileType.image, withData: true);
     if (result == null || result.count != 1) return;
 
     var type = Mime.fromExtenstion(result.files.first.extension!);

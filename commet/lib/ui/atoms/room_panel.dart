@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
@@ -44,7 +42,7 @@ class _RoomPanelState extends State<RoomPanel> {
                   padding: const EdgeInsets.all(8.0),
                   child: tiamat.Text.labelEmphasised(widget.displayName),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 20,
                   child: Seperator(),
                 ),

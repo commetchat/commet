@@ -22,7 +22,8 @@ class SimulatedClient extends Client {
   bool isLoggedIn() => _isLogged;
 
   @override
-  Future<LoginResult> login(LoginType type, String userIdentifier, String server,
+  Future<LoginResult> login(
+      LoginType type, String userIdentifier, String server,
       {String? password, String? token}) async {
     LoginResult loginResult = LoginResult.success;
     _isLogged = true;
@@ -89,7 +90,8 @@ class SimulatedClient extends Client {
 
   @override
   Future<Room> createRoom(String name, RoomVisibility visibility) {
-    // TODO: implement createRoom
+    // ignore: todo
+// TODO: implement createRoom
     throw UnimplementedError();
   }
 
@@ -107,18 +109,21 @@ class SimulatedClient extends Client {
 
   @override
   Future<PreviewData?> getRoomPreviewInternal(String address) {
-    // TODO: implement getRoomPreviewInternal
+    // ignore: todo
+// TODO: implement getRoomPreviewInternal
     throw UnimplementedError();
   }
 
   @override
   Future<PreviewData?> getSpacePreviewInternal(String address) {
-    // TODO: implement getSpacePreviewInternal
+    // ignore: todo
+// TODO: implement getSpacePreviewInternal
     throw UnimplementedError();
   }
 
   @override
   Future<Room> joinRoom(String address) {
+    // ignore: todo
     // TODO: implement joinRoom
     throw UnimplementedError();
   }

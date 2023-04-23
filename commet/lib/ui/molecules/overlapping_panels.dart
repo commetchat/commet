@@ -37,7 +37,13 @@ class OverlappingPanels extends StatefulWidget {
   final double threshold = 0.2;
 
   const OverlappingPanels(
-      {this.left, required this.main, this.right, this.restWidth = 40, this.onSideChange, this.onDragStart, Key? key})
+      {this.left,
+      required this.main,
+      this.right,
+      this.restWidth = 40,
+      this.onSideChange,
+      this.onDragStart,
+      Key? key})
       : super(key: key);
 
   static OverlappingPanelsState? of(BuildContext context) {
@@ -50,7 +56,8 @@ class OverlappingPanels extends StatefulWidget {
   }
 }
 
-class OverlappingPanelsState extends State<OverlappingPanels> with TickerProviderStateMixin {
+class OverlappingPanelsState extends State<OverlappingPanels>
+    with TickerProviderStateMixin {
   AnimationController? controller;
   double translate = 0;
   RevealSide currentSide = RevealSide.main;
@@ -61,19 +68,23 @@ class OverlappingPanelsState extends State<OverlappingPanels> with TickerProvide
 
   void _onApplyTranslation() {
     final mediaWidth = MediaQuery.of(context).size.width;
-    final animationController = AnimationController(vsync: this, duration: const Duration(milliseconds: 300));
+    final animationController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 300));
 
     animationController.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         if (widget.onSideChange != null) {
-          widget.onSideChange!(translate == 0 ? RevealSide.main : (translate > 0 ? RevealSide.left : RevealSide.right));
+          widget.onSideChange!(translate == 0
+              ? RevealSide.main
+              : (translate > 0 ? RevealSide.left : RevealSide.right));
         }
         animationController.dispose();
       }
     });
 
     var percent = -translate / mediaWidth;
-    bool crossedThreshold = percent.abs() > widget.threshold && percent.abs() < 1 - widget.threshold;
+    bool crossedThreshold = percent.abs() > widget.threshold &&
+        percent.abs() < 1 - widget.threshold;
 
     if (crossedThreshold) {
       switch (currentSide) {
@@ -104,20 +115,23 @@ class OverlappingPanelsState extends State<OverlappingPanels> with TickerProvide
     animationController.forward();
   }
 
-  void revealLeftPanel(double mediaWidth, AnimationController animationController) {
+  void revealLeftPanel(
+      double mediaWidth, AnimationController animationController) {
     currentSide = RevealSide.left;
     _setTranslateMultiplier(mediaWidth, 1, animationController);
   }
 
-  void revealRightPanel(double mediaWidth, AnimationController animationController) {
+  void revealRightPanel(
+      double mediaWidth, AnimationController animationController) {
     currentSide = RevealSide.right;
     _setTranslateMultiplier(mediaWidth, -1, animationController);
   }
 
   void revealMainPanel(AnimationController animationController) {
     currentSide = RevealSide.main;
-    final animation = Tween<double>(begin: translate, end: 0)
-        .animate(CurvedAnimation(parent: animationController, curve: Curves.easeOutExpo));
+    final animation = Tween<double>(begin: translate, end: 0).animate(
+        CurvedAnimation(
+            parent: animationController, curve: Curves.easeOutExpo));
 
     animation.addListener(() {
       setState(() {
@@ -126,11 +140,14 @@ class OverlappingPanelsState extends State<OverlappingPanels> with TickerProvide
     });
   }
 
-  void _setTranslateMultiplier(double mediaWidth, int multiplier, AnimationController animationController) {
-    final goal = _calculateGoal(mediaWidth, multiplier) / ScaledWidgetsFlutterBinding.instance.scale;
+  void _setTranslateMultiplier(double mediaWidth, int multiplier,
+      AnimationController animationController) {
+    final goal = _calculateGoal(mediaWidth, multiplier) /
+        ScaledWidgetsFlutterBinding.instance.scale;
     final Tween<double> tween = Tween(begin: translate, end: goal);
 
-    final animation = tween.animate(CurvedAnimation(parent: animationController, curve: Curves.easeOutExpo));
+    final animation = tween.animate(CurvedAnimation(
+        parent: animationController, curve: Curves.easeOutExpo));
 
     animation.addListener(() {
       setState(() {
@@ -141,7 +158,8 @@ class OverlappingPanelsState extends State<OverlappingPanels> with TickerProvide
 
   void reveal(RevealSide direction) {
     final mediaWidth = MediaQuery.of(context).size.width;
-    final animationController = AnimationController(vsync: this, duration: const Duration(milliseconds: 300));
+    final animationController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 300));
 
     switch (direction) {
       case RevealSide.left:
@@ -161,7 +179,8 @@ class OverlappingPanelsState extends State<OverlappingPanels> with TickerProvide
   void onTranslate(double delta) {
     setState(() {
       final translate = this.translate + delta;
-      if (translate < 0 && widget.right != null || translate > 0 && widget.left != null) {
+      if (translate < 0 && widget.right != null ||
+          translate > 0 && widget.left != null) {
         this.translate = translate;
       }
     });
@@ -181,7 +200,9 @@ class OverlappingPanelsState extends State<OverlappingPanels> with TickerProvide
       Transform.translate(
         offset: Offset(translate, 0),
         child: DecoratedBox(
-            decoration: BoxDecoration(boxShadow: [BoxShadow(color: Colors.black.withAlpha(30), blurRadius: 20)]),
+            decoration: BoxDecoration(boxShadow: [
+              BoxShadow(color: Colors.black.withAlpha(30), blurRadius: 20)
+            ]),
             child: widget.main),
       ),
       GestureDetector(

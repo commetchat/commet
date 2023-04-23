@@ -1,6 +1,4 @@
-import 'package:commet/cache/cache_file_provider.dart';
 import 'package:commet/cache/file_provider.dart';
-import 'package:flutter/material.dart';
 
 class Attachment {
   Attachment(
@@ -20,5 +18,6 @@ class Attachment {
   double? width;
   double? height;
 
-  double? get aspectRatio => (width != null && height != null) ? (width! / height!) : null;
+  double? get aspectRatio =>
+      (width != null && height != null) ? (width! / height!) : null;
 }

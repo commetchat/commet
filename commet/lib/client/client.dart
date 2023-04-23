@@ -35,7 +35,9 @@ abstract class Client {
 
   ValueKey get key => ValueKey(identifier);
 
-  Future<LoginResult> login(LoginType type, String userIdentifier, String server, {String? password, String? token});
+  Future<LoginResult> login(
+      LoginType type, String userIdentifier, String server,
+      {String? password, String? token});
 
   final Map<String, Room> _rooms = {};
   final Map<String, Space> _spaces = {};

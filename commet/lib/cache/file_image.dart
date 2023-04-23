@@ -2,7 +2,6 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:commet/cache/file_provider.dart';
-import 'package:commet/main.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -18,14 +17,16 @@ class FileImageProvider extends ImageProvider<FileImageProvider> {
   }
 
   @override
-  ImageStreamCompleter loadBuffer(FileImageProvider key, DecoderBufferCallback decode) {
+  ImageStreamCompleter loadBuffer(
+      FileImageProvider key, DecoderBufferCallback decode) {
     return MultiFrameImageStreamCompleter(
       codec: _loadAsync(key, decode),
       scale: key.scale,
     );
   }
 
-  Future<Codec> _loadAsync(FileImageProvider key, DecoderBufferCallback decode) async {
+  Future<Codec> _loadAsync(
+      FileImageProvider key, DecoderBufferCallback decode) async {
     var path = await this.file.resolve();
     var file = File.fromUri(path);
     final Uint8List bytes = await file.readAsBytes();
@@ -37,7 +38,8 @@ class FileImageProvider extends ImageProvider<FileImageProvider> {
   @override
   bool operator ==(Object other) {
     if (other.runtimeType != runtimeType) return false;
-    bool res = other is FileImageProvider && other.file.fileIdentifier == file.fileIdentifier;
+    bool res = other is FileImageProvider &&
+        other.file.fileIdentifier == file.fileIdentifier;
     return res;
   }
 
@@ -45,5 +47,6 @@ class FileImageProvider extends ImageProvider<FileImageProvider> {
   int get hashCode => file.fileIdentifier.hashCode;
 
   @override
-  String toString() => '${objectRuntimeType(this, 'FileImageProvider')}("${file.fileIdentifier}")';
+  String toString() =>
+      '${objectRuntimeType(this, 'FileImageProvider')}("${file.fileIdentifier}")';
 }

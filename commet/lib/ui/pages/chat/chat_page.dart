@@ -2,8 +2,6 @@ import 'package:commet/client/client_manager.dart';
 import 'package:commet/ui/pages/chat/desktop_chat_page.dart';
 import 'package:commet/ui/pages/chat/mobile_chat_page.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter/widgets.dart';
 
 import '../../../client/client.dart';
@@ -19,10 +17,11 @@ class ChatPage extends StatefulWidget {
 
 class ChatPageState extends State<ChatPage> {
   ClientManager get clientManager => widget.clientManager;
-  late Space? selectedSpace = null;
-  late Room? selectedRoom = null;
+  Space? selectedSpace;
+  Room? selectedRoom;
   late bool homePageSelected = false;
-  late GlobalKey<SplitTimelineViewerState> timelineKey = GlobalKey<SplitTimelineViewerState>();
+  late GlobalKey<SplitTimelineViewerState> timelineKey =
+      GlobalKey<SplitTimelineViewerState>();
   late Map<String, GlobalKey<SplitTimelineViewerState>> timelines = {};
   double height = -1;
 
@@ -37,7 +36,8 @@ class ChatPageState extends State<ChatPage> {
     if (kDebugMode) {
       // Weird hacky work around mentioned in #2
       timelines[selectedRoom?.localId]?.currentState?.prepareForDisposal();
-      WidgetsBinding.instance.addPostFrameCallback((_) => _setSelectedSpace(space));
+      WidgetsBinding.instance
+          .addPostFrameCallback((_) => _setSelectedSpace(space));
     } else {
       _setSelectedSpace(space);
     }
@@ -52,7 +52,8 @@ class ChatPageState extends State<ChatPage> {
     if (kDebugMode) {
       // Weird hacky work around mentioned in #2
       timelines[selectedRoom?.localId]?.currentState!.prepareForDisposal();
-      WidgetsBinding.instance.addPostFrameCallback((_) => _clearRoomSelection());
+      WidgetsBinding.instance
+          .addPostFrameCallback((_) => _clearRoomSelection());
     } else {
       _clearRoomSelection();
     }
@@ -74,7 +75,8 @@ class ChatPageState extends State<ChatPage> {
     if (kDebugMode) {
       // Weird hacky work around mentioned in #2
       timelines[selectedRoom?.localId]?.currentState?.prepareForDisposal();
-      WidgetsBinding.instance.addPostFrameCallback((_) => _setSelectedRoom(room));
+      WidgetsBinding.instance
+          .addPostFrameCallback((_) => _setSelectedRoom(room));
     } else {
       _setSelectedRoom(room);
     }

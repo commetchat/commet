@@ -40,8 +40,10 @@ class _DragDropFileTargetState extends State<DragDropFileTarget> {
                 duration: const Duration(milliseconds: 500),
                 curve: Curves.easeOutExpo,
                 opacity: isFileHovered ? 1 : 0,
-                child:
-                    Align(alignment: Alignment.center, child: tiamat.Text.largeTitle(T.of(context).fileDragDropPrompt)),
+                child: Align(
+                    alignment: Alignment.center,
+                    child: tiamat.Text.largeTitle(
+                        T.of(context).fileDragDropPrompt)),
               ),
             ],
           )),

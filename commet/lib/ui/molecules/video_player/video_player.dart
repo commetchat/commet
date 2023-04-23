@@ -1,18 +1,12 @@
 import 'dart:async';
-import 'dart:math';
 
-import 'package:commet/cache/cache_file_provider.dart';
 import 'package:commet/cache/file_provider.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/molecules/video_player/video_player_desktop.dart';
 import 'package:commet/ui/molecules/video_player/video_player_mobile.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/basic.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
-import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import '../../atoms/gradient_background.dart';
 import 'video_player_controller.dart';
@@ -77,7 +71,11 @@ class VideoPlayerState extends State<VideoPlayer> {
       var length = await controller.getLength();
       if (updateSlider) {
         setState(() {
-          videoProgress = clampDouble(event.inMilliseconds.toDouble() / length.inMilliseconds.toDouble(), 0, 1);
+          videoProgress = clampDouble(
+              event.inMilliseconds.toDouble() /
+                  length.inMilliseconds.toDouble(),
+              0,
+              1);
         });
       }
     });
@@ -97,7 +95,11 @@ class VideoPlayerState extends State<VideoPlayer> {
   Widget build(BuildContext context) {
     return Stack(
       fit: StackFit.expand,
-      children: [if (inited) pickPlayer(), if (showThumbnail) thumbnail(), controls()],
+      children: [
+        if (inited) pickPlayer(),
+        if (showThumbnail) thumbnail(),
+        controls()
+      ],
     );
   }
 
@@ -124,7 +126,7 @@ class VideoPlayerState extends State<VideoPlayer> {
         },
         child: AnimatedOpacity(
           opacity: shouldShowControls ? 1.0 : 0.0,
-          duration: Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 300),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -133,7 +135,10 @@ class VideoPlayerState extends State<VideoPlayer> {
                   ? GradientBackground(
                       begin: Alignment.bottomCenter,
                       end: Alignment.center,
-                      backgroundColor: Theme.of(context).extension<ExtraColors>()!.surfaceLow1.withAlpha(200),
+                      backgroundColor: Theme.of(context)
+                          .extension<ExtraColors>()!
+                          .surfaceLow1
+                          .withAlpha(200),
                       child: Padding(
                         padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
                         child: tiamat.Text.body(widget.fileName!),
@@ -166,7 +171,10 @@ class VideoPlayerState extends State<VideoPlayer> {
                 GradientBackground(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  backgroundColor: Theme.of(context).extension<ExtraColors>()!.surfaceLow4.withAlpha(200),
+                  backgroundColor: Theme.of(context)
+                      .extension<ExtraColors>()!
+                      .surfaceLow4
+                      .withAlpha(200),
                   child: Row(
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.end,
@@ -245,7 +253,7 @@ class VideoPlayerState extends State<VideoPlayer> {
 
     if (BuildConfig.MOBILE) {
       uiHideTimer?.cancel();
-      uiHideTimer = Timer(Duration(seconds: 3), hideControls);
+      uiHideTimer = Timer(const Duration(seconds: 3), hideControls);
     }
   }
 
@@ -257,7 +265,6 @@ class VideoPlayerState extends State<VideoPlayer> {
   }
 
   void seekPercent(double percent) async {
-    print("Trying to seek percent");
     controller.seekTo(await controller.getLength() * percent);
     setState(() {
       videoProgress = percent;
@@ -271,6 +278,7 @@ class VideoPlayerState extends State<VideoPlayer> {
         videoFile: widget.videoFile,
       );
     }
-    return VideoPlayerDesktop(controller: controller, videoFile: widget.videoFile);
+    return VideoPlayerDesktop(
+        controller: controller, videoFile: widget.videoFile);
   }
 }

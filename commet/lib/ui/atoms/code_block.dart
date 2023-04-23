@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_highlighter/flutter_highlighter.dart';
-import 'package:flutter_highlighter/themes/atom-one-dark.dart';
-import 'package:flutter_highlighter/themes/atom-one-light.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:matrix/matrix.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 
 const _darkTheme = {
-  'root': TextStyle(color: Color(0xffabb2bf), backgroundColor: Colors.transparent),
+  'root':
+      TextStyle(color: Color(0xffabb2bf), backgroundColor: Colors.transparent),
   'comment': TextStyle(color: Color(0xff5c6370), fontStyle: FontStyle.italic),
   'quote': TextStyle(color: Color(0xff5c6370), fontStyle: FontStyle.italic),
   'doctag': TextStyle(color: Color(0xffc678dd)),
@@ -46,7 +42,8 @@ const _darkTheme = {
 };
 
 const _lightTheme = {
-  'root': TextStyle(color: Color(0xff383a42), backgroundColor: Colors.transparent),
+  'root':
+      TextStyle(color: Color(0xff383a42), backgroundColor: Colors.transparent),
   'comment': TextStyle(color: Color(0xffa0a1a7), fontStyle: FontStyle.italic),
   'quote': TextStyle(color: Color(0xffa0a1a7), fontStyle: FontStyle.italic),
   'doctag': TextStyle(color: Color(0xffa626a4)),
@@ -90,13 +87,17 @@ class Codeblock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var theme = Theme.of(context).brightness == Brightness.dark ? _darkTheme : _lightTheme;
+    var theme = Theme.of(context).brightness == Brightness.dark
+        ? _darkTheme
+        : _lightTheme;
 
     return Container(
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
             color: Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
-            border: Border.all(color: Theme.of(context).extension<ExtraColors>()!.surfaceHigh1, width: 2)),
+            border: Border.all(
+                color: Theme.of(context).extension<ExtraColors>()!.surfaceHigh1,
+                width: 2)),
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: language != null

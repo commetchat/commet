@@ -2,13 +2,8 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/preview_data.dart';
 import 'package:commet/client/simulated/simulated_client.dart';
 import 'package:commet/ui/atoms/room_preview.dart';
-import 'package:commet/ui/molecules/user_panel.dart';
-import 'package:commet/ui/pages/add_space/add_space.dart';
 import 'package:commet/utils/debounce.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -30,7 +25,7 @@ Widget wbAddSpacePageMultiAccount(BuildContext context) {
           title: "Add Space",
           content: AddSpaceView(
             clients: clients,
-            initialPhase: _AddSpacePhase.create,
+            initialPhase: AddSpacePhase.create,
           )));
 }
 
@@ -48,7 +43,7 @@ Widget wbAddSpacePageSingleAccount(BuildContext context) {
         title: "Add Space",
         content: AddSpaceView(
           clients: clients,
-          initialPhase: _AddSpacePhase.create,
+          initialPhase: AddSpacePhase.create,
         )),
   ));
 }
@@ -64,16 +59,16 @@ class AddSpaceView extends StatefulWidget {
   final Function(Client client, String spaceName, RoomVisibility visibility)?
       onCreateSpace;
   final Function(Client client, String address)? onJoinSpace;
-  final _AddSpacePhase? initialPhase;
+  final AddSpacePhase? initialPhase;
 
   @override
   State<AddSpaceView> createState() => _AddSpaceViewState();
 }
 
-enum _AddSpacePhase { askJoinOrCreate, create, join }
+enum AddSpacePhase { askJoinOrCreate, create, join }
 
 class _AddSpaceViewState extends State<AddSpaceView> {
-  _AddSpacePhase phase = _AddSpacePhase.askJoinOrCreate;
+  AddSpacePhase phase = AddSpacePhase.askJoinOrCreate;
   late Client selectedClient;
   RoomVisibility visibility = RoomVisibility.private;
   TextEditingController nameController = TextEditingController();
@@ -84,14 +79,13 @@ class _AddSpaceViewState extends State<AddSpaceView> {
   bool loadingSpacePreview = false;
 
   Debouncer spacePreviewDebounce =
-      Debouncer(delay: Duration(milliseconds: 500));
+      Debouncer(delay: const Duration(milliseconds: 500));
 
   void getSpacePreview() async {
     var preview =
         await selectedClient.getSpacePreview(spaceAddressController.text);
 
     setState(() {
-      print("Got Preview");
       spacePreview = preview;
       loadingSpacePreview = false;
     });
@@ -120,11 +114,11 @@ class _AddSpaceViewState extends State<AddSpaceView> {
       height: 400,
       width: 400,
       child: Container(
-          child: phase == _AddSpacePhase.askJoinOrCreate
+          child: phase == AddSpacePhase.askJoinOrCreate
               ? promptJoinOrCreate(context)
-              : phase == _AddSpacePhase.join
+              : phase == AddSpacePhase.join
                   ? joinSpace(context)
-                  : phase == _AddSpacePhase.create
+                  : phase == AddSpacePhase.create
                       ? createSpace(context)
                       : throw Exception("Impossible branch reached")),
     );
@@ -169,7 +163,7 @@ class _AddSpaceViewState extends State<AddSpaceView> {
           Padding(
             padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
             child: tiamat.DropdownSelector<RoomVisibility>(
-              items: [RoomVisibility.private, RoomVisibility.public],
+              items: const [RoomVisibility.private, RoomVisibility.public],
               itemHeight: 104,
               onItemSelected: (item) {
                 setState(() {
@@ -254,14 +248,14 @@ class _AddSpaceViewState extends State<AddSpaceView> {
               ),
             ],
           ),
-          Container(
+          SizedBox(
             height: 100,
             child: loadingSpacePreview
                 ? Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
-                    children: [
+                    children: const [
                       CircularProgressIndicator(),
                     ],
                   )
@@ -297,7 +291,7 @@ class _AddSpaceViewState extends State<AddSpaceView> {
             ),
             onTap: () {
               setState(() {
-                phase = _AddSpacePhase.create;
+                phase = AddSpacePhase.create;
               });
             },
           ),
@@ -307,7 +301,7 @@ class _AddSpaceViewState extends State<AddSpaceView> {
           child: InkWell(
             onTap: () {
               setState(() {
-                phase = _AddSpacePhase.join;
+                phase = AddSpacePhase.join;
               });
             },
             child: Padding(

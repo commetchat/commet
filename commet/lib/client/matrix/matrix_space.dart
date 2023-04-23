@@ -2,12 +2,10 @@ import 'package:commet/cache/file_image.dart';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/matrix/matrix_room_permissions.dart';
 import 'package:commet/client/matrix/matrix_room_preview.dart';
-import 'package:commet/client/preview_data.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
 import '../../cache/cache_file_provider.dart';
-import 'matrix_room.dart';
 
 class MatrixSpace extends Space {
   late matrix.Room _matrixRoom;
@@ -85,7 +83,6 @@ class MatrixSpace extends Space {
 
   void updateRoomsList() {
     for (var child in _matrixRoom.spaceChildren) {
-      print(child.roomId);
       // reuse the existing room object
       var room = client.getRoom(child.roomId!);
       if (room != null) {

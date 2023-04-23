@@ -1,5 +1,4 @@
 import 'package:commet/client/timeline.dart';
-import 'package:commet/config/app_config.dart';
 import 'package:commet/config/build_config.dart';
 
 import 'package:commet/ui/atoms/message_attachment.dart';
@@ -42,9 +41,7 @@ class _MessageState extends State<Message> {
       child: BuildConfig.MOBILE
           ? material.InkWell(
               child: buildContent(context),
-              onLongPress: () {
-                print("Message was long pressed");
-              },
+              onLongPress: () {},
             )
           : MouseRegion(
               child: buildContent(context),
@@ -100,7 +97,7 @@ class _MessageState extends State<Message> {
   Widget messageBody(BuildContext context, {bool selectableText = true}) {
     return Flexible(
       child: Padding(
-        padding: EdgeInsets.fromLTRB(s(16), 0, s(0), 0),
+        padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -122,7 +119,7 @@ class _MessageState extends State<Message> {
               Wrap(
                 children: widget.event.attachments!
                     .map((e) => Padding(
-                          padding: EdgeInsets.fromLTRB(0, s(8), s(8), s(8)),
+                          padding: const EdgeInsets.fromLTRB(0, 8, 8, 8),
                           child: MessageAttachment(e),
                         ))
                     .toList(),

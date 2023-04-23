@@ -2,8 +2,6 @@ import 'dart:io';
 
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/config/app_config.dart';
-import 'package:commet/generated/l10n.dart';
-import 'package:commet/ui/molecules/space_selector.dart';
 import 'package:commet/ui/organisms/side_navigation_bar.dart';
 import 'package:commet/ui/pages/login/login_page.dart';
 import 'package:flutter/material.dart';
@@ -13,19 +11,21 @@ import 'package:hive/hive.dart';
 import 'package:matrix/encryption/utils/key_verification.dart';
 import 'package:matrix/matrix.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:tiamat/tiamat.dart' as tiamat;
 
 import 'wait_for.dart';
 
-import 'package:path/path.dart' as p;
-
 extension CommonFlows on WidgetTester {
-  String get homeserver => const String.fromEnvironment('HOMESERVER', defaultValue: "localhost");
-  String get username => const String.fromEnvironment('USER1_NAME', defaultValue: "alice");
-  String get password => const String.fromEnvironment('USER1_PW', defaultValue: "AliceInWonderland");
+  String get homeserver =>
+      const String.fromEnvironment('HOMESERVER', defaultValue: "localhost");
+  String get username =>
+      const String.fromEnvironment('USER1_NAME', defaultValue: "alice");
+  String get password => const String.fromEnvironment('USER1_PW',
+      defaultValue: "AliceInWonderland");
 
-  String get userTwoName => const String.fromEnvironment('USER2_NAME', defaultValue: "bob");
-  String get userTwoPassword => const String.fromEnvironment('USER2_PW', defaultValue: "CanWeFixIt");
+  String get userTwoName =>
+      const String.fromEnvironment('USER2_NAME', defaultValue: "bob");
+  String get userTwoPassword =>
+      const String.fromEnvironment('USER2_PW', defaultValue: "CanWeFixIt");
 
   Future<void> clearUserData() async {
     var dir = Directory(await AppConfig.getDatabasePath());
@@ -34,7 +34,6 @@ extension CommonFlows on WidgetTester {
     }
 
     dir = await getApplicationSupportDirectory();
-    print("Cleaning ${dir.path}");
     if (await dir.exists()) {
       await dir.delete(recursive: true);
     }
@@ -67,7 +66,8 @@ extension CommonFlows on WidgetTester {
 
     await pumpAndSettle();
 
-    await waitFor(() => app.clientManager.isLoggedIn(), timeout: const Duration(seconds: 5), skipPumpAndSettle: true);
+    await waitFor(() => app.clientManager.isLoggedIn(),
+        timeout: const Duration(seconds: 5), skipPumpAndSettle: true);
     expect(app.clientManager.isLoggedIn(), equals(true));
   }
 
@@ -89,19 +89,23 @@ extension CommonFlows on WidgetTester {
 
     await pumpAndSettle();
 
-    await waitFor(() => app.clientManager.isLoggedIn(), timeout: const Duration(seconds: 5), skipPumpAndSettle: true);
+    await waitFor(() => app.clientManager.isLoggedIn(),
+        timeout: const Duration(seconds: 5), skipPumpAndSettle: true);
     expect(app.clientManager.isLoggedIn(), equals(true));
   }
 
   Future<Client> createTestClient() async {
     var otherClient = Client(
       "Commet Integration Tester",
-      verificationMethods: {KeyVerificationMethod.emoji, KeyVerificationMethod.numbers},
+      verificationMethods: {
+        KeyVerificationMethod.emoji,
+        KeyVerificationMethod.numbers
+      },
       nativeImplementations: MatrixClient.nativeImplementations,
       logLevel: Level.verbose,
       databaseBuilder: (client) async {
-        print(await AppConfig.getDatabasePath());
-        final db = HiveCollectionsDatabase(client.clientName, await AppConfig.getDatabasePath());
+        final db = HiveCollectionsDatabase(
+            client.clientName, await AppConfig.getDatabasePath());
         await db.open();
         return db;
       },
@@ -110,13 +114,15 @@ extension CommonFlows on WidgetTester {
     await otherClient.checkHomeserver(Uri.http(homeserver));
 
     await otherClient.login(LoginType.mLoginPassword,
-        identifier: AuthenticationUserIdentifier(user: username), password: password);
+        identifier: AuthenticationUserIdentifier(user: username),
+        password: password);
 
     return otherClient;
   }
 
   Future<void> openSettings(App app) async {
-    await dragUntilVisible(find.byKey(SideNavigationBar.settingsKey), find.byType(SideNavigationBar), Offset(0, 20));
+    await dragUntilVisible(find.byKey(SideNavigationBar.settingsKey),
+        find.byType(SideNavigationBar), const Offset(0, 20));
 
     await tap(find.byKey(SideNavigationBar.settingsKey));
 

@@ -1,6 +1,5 @@
 import 'package:commet/utils/emoji/emoji.dart';
 import 'package:flutter/material.dart';
-import 'package:tiamat/tiamat.dart';
 
 import '../ui/atoms/rich_text/spans/link.dart';
 import 'emoji/emoji_matcher.dart';
@@ -44,7 +43,7 @@ class TextUtils {
   static Widget manageRtlSpan(String text, List<InlineSpan> spans,
       {bool isHtml = false}) {
     bool rtl = isRtl(text, isHtml: isHtml);
-    return Container(
+    return SizedBox(
         width: double.infinity,
         child: material.Text.rich(
           material.TextSpan(children: spans),

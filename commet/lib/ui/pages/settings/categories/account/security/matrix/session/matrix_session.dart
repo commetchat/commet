@@ -1,13 +1,14 @@
 import 'package:commet/ui/pages/settings/categories/account/security/matrix/session/matrix_session_view.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:flutter/widgets.dart';
+
 import 'package:matrix/matrix.dart';
 import 'package:tiamat/tiamat.dart';
 
 import '../../../../../../matrix/verification/matrix_verification_page.dart';
 
 class MatrixSession extends StatefulWidget {
-  const MatrixSession(this.device, this.matrixClient, {super.key, this.onUpdated});
+  const MatrixSession(this.device, this.matrixClient,
+      {super.key, this.onUpdated});
   final Device device;
   final Client matrixClient;
   final Function? onUpdated;
@@ -34,7 +35,8 @@ class _MatrixSessionState extends State<MatrixSession> {
   }
 
   bool isVerified() {
-    var keys = widget.matrixClient.userDeviceKeys[widget.matrixClient.userID]?.deviceKeys[widget.device.deviceId];
+    var keys = widget.matrixClient.userDeviceKeys[widget.matrixClient.userID]
+        ?.deviceKeys[widget.device.deviceId];
     return keys?.verified ?? false;
   }
 
@@ -43,12 +45,15 @@ class _MatrixSessionState extends State<MatrixSession> {
   }
 
   void beginVerification() {
-    var keys = widget.matrixClient.userDeviceKeys[widget.matrixClient.userID]?.deviceKeys[widget.device.deviceId];
+    var keys = widget.matrixClient.userDeviceKeys[widget.matrixClient.userID]
+        ?.deviceKeys[widget.device.deviceId];
     var request = keys!.startVerification();
     previousOnUpdate = request.onUpdate;
     request.onUpdate = onRequestUpdate;
 
-    PopupDialog.show(context, content: MatrixVerificationPage(request: request), title: "Verification Request");
+    PopupDialog.show(context,
+        content: MatrixVerificationPage(request: request),
+        title: "Verification Request");
   }
 
   void onRequestUpdate() {
@@ -58,7 +63,8 @@ class _MatrixSessionState extends State<MatrixSession> {
 
   void removeSession() async {
     await widget.matrixClient.uiaRequestBackground((auth) async {
-      await widget.matrixClient.deleteDevice(widget.device.deviceId, auth: auth);
+      await widget.matrixClient
+          .deleteDevice(widget.device.deviceId, auth: auth);
       widget.onUpdated?.call();
     });
   }

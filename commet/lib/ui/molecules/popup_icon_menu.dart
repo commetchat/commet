@@ -13,7 +13,9 @@ class PopupIconMenu extends StatelessWidget {
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
           color: m.Theme.of(context).colorScheme.surface,
-          boxShadow: [BoxShadow(blurRadius: 4, color: m.Theme.of(context).shadowColor)]),
+          boxShadow: [
+            BoxShadow(blurRadius: 4, color: m.Theme.of(context).shadowColor)
+          ]),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Row(

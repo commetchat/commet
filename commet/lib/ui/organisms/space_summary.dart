@@ -2,11 +2,7 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/preview_data.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/atoms/blurred_image_background.dart';
-import 'package:commet/ui/atoms/room_preview.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/basic.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
@@ -36,7 +32,6 @@ class _SpaceSummaryState extends State<SpaceSummary> {
     });
 
     var previews = await widget.space.getUnjoinedRooms();
-    print(previews);
     setState(() {
       _roomPreviews = previews;
       if (_roomPreviews != null) count = _roomPreviews!.length;
@@ -76,20 +71,19 @@ class _SpaceSummaryState extends State<SpaceSummary> {
                       placeholderText: widget.space.displayName,
                     ),
                   ),
-                  tiamat.Text.label("Welcome to"),
+                  const tiamat.Text.label("Welcome to"),
                   tiamat.Text.largeTitle(widget.space.displayName),
-                  if (widget.space.topic != null)
-                    tiamat.Text.label(widget.space.topic!),
+                  tiamat.Text.label(widget.space.topic),
                   Container(
                     height: 20,
                   ),
                   spaceVisibility(),
-                  tiamat.Seperator(),
+                  const tiamat.Seperator(),
                   if (_roomPreviews != null)
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        tiamat.Text.labelEmphasised("Unjoined rooms:"),
+                        const tiamat.Text.labelEmphasised("Unjoined rooms:"),
                         ListView.builder(
                           shrinkWrap: true,
                           itemCount: count,

@@ -1,7 +1,5 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter/widgets.dart';
 
 import 'add_space_view.dart';
@@ -14,7 +12,8 @@ class AddSpace extends StatefulWidget {
 }
 
 class AddSpaceState extends State<AddSpace> {
-  void createSpace(Client client, String name, RoomVisibility visibility) async {
+  void createSpace(
+      Client client, String name, RoomVisibility visibility) async {
     await client.createSpace(name, visibility);
     if (mounted) {
       Navigator.of(context).pop();
@@ -30,6 +29,9 @@ class AddSpaceState extends State<AddSpace> {
 
   @override
   Widget build(BuildContext context) {
-    return AddSpaceView(clients: widget.clientManager.clients, onCreateSpace: createSpace, onJoinSpace: joinSpace);
+    return AddSpaceView(
+        clients: widget.clientManager.clients,
+        onCreateSpace: createSpace,
+        onJoinSpace: joinSpace);
   }
 }
