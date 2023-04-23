@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:commet/client/preview_data.dart';
 import 'package:commet/client/room.dart';
@@ -34,9 +35,7 @@ abstract class Client {
 
   ValueKey get key => ValueKey(identifier);
 
-  Future<LoginResult> login(
-      LoginType type, String userIdentifier, String server,
-      {String? password, String? token});
+  Future<LoginResult> login(LoginType type, String userIdentifier, String server, {String? password, String? token});
 
   final Map<String, Room> _rooms = {};
   final Map<String, Space> _spaces = {};
@@ -156,6 +155,10 @@ abstract class Client {
   Future<PreviewData?> getRoomPreviewInternal(String address);
 
   Future<PreviewData?> getSpacePreviewInternal(String address);
+
+  Future<void> setAvatar(Uint8List bytes, String mimeType);
+
+  Future<void> setDisplayName(String name);
 
   Future<void> close() async {}
 }

@@ -39,70 +39,50 @@ class MatrixSessionView extends StatelessWidget {
             Row(
               children: [
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(4, 0, 8, 0),
+                  padding: const EdgeInsets.fromLTRB(8.0, 16, 16, 16),
                   child: Icon(
                     getIcon(),
                     color: verified ? Colors.green : Colors.redAccent,
                   ),
                 ),
                 Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          if (displayName != null) tiamat.Text.labelEmphasised(displayName!),
-                          if (displayName != null)
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                              child: SizedBox(
-                                width: 10,
-                                child: tiamat.Seperator(
-                                  padding: 0,
-                                ),
-                              ),
-                            ),
-                          tiamat.Text.labelLow(deviceId),
-                          if (isThisDevice)
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                              child: SizedBox(
-                                width: 10,
-                                child: tiamat.Seperator(
-                                  padding: 0,
-                                ),
-                              ),
-                            ),
-                          if (isThisDevice)
-                            Container(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (displayName != null) tiamat.Text.labelEmphasised(displayName!),
+                    Row(
+                      children: [
+                        if (isThisDevice)
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+                            child: Container(
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(5), color: Theme.of(context).colorScheme.primary),
                               child: Padding(
                                 padding: const EdgeInsets.all(2.0),
                                 child: tiamat.Text.tiny("This Device"),
                               ),
-                            )
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          if (lastSeenTimestamp != null)
-                            tiamat.Text.tiny(
-                                "Last Seen: ${DateFormat(DateFormat.YEAR_MONTH_WEEKDAY_DAY).format(DateTime.fromMillisecondsSinceEpoch(lastSeenTimestamp!))}"),
-                          if (lastSeenIp != null)
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                              child: SizedBox(
-                                width: 10,
-                                child: tiamat.Seperator(
-                                  padding: 0,
-                                ),
-                              ),
                             ),
-                          if (lastSeenIp != null) tiamat.Text.tiny(lastSeenIp!),
-                        ],
-                      )
-                    ]),
+                          ),
+                        tiamat.Text.labelLow(deviceId),
+                      ],
+                    ),
+                    if (lastSeenTimestamp != null)
+                      tiamat.Text.tiny(
+                          "Last Seen: ${DateFormat(DateFormat.YEAR_MONTH_WEEKDAY_DAY).format(DateTime.fromMillisecondsSinceEpoch(lastSeenTimestamp!))}"),
+                    if (lastSeenIp != null)
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                        child: SizedBox(
+                          width: 10,
+                          child: tiamat.Seperator(
+                            padding: 0,
+                          ),
+                        ),
+                      ),
+                    if (lastSeenIp != null) tiamat.Text.tiny(lastSeenIp!),
+                  ],
+                ),
               ],
             ),
             Row(

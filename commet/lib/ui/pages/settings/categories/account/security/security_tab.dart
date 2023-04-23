@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 
-import 'security/matrix/matrix_security_tab.dart';
+import 'matrix/matrix_security_tab.dart';
 
 class SecuritySettingsTab extends StatefulWidget {
   const SecuritySettingsTab({required this.clientManager, super.key});
@@ -28,20 +28,22 @@ class _SecuritySettingsTabState extends State<SecuritySettingsTab> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          if (widget.clientManager.clients.length > 1)
-            AccountSelector(
-              widget.clientManager.clients,
-              onClientSelected: (client) {
-                setState(() {
-                  selectedClient = client;
-                });
-              },
-            ),
-          pickSecurityPage(selectedClient)
-        ],
+    return Flexible(
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            if (widget.clientManager.clients.length > 1)
+              AccountSelector(
+                widget.clientManager.clients,
+                onClientSelected: (client) {
+                  setState(() {
+                    selectedClient = client;
+                  });
+                },
+              ),
+            pickSecurityPage(selectedClient)
+          ],
+        ),
       ),
     );
   }

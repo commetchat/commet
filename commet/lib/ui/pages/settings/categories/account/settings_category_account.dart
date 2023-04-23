@@ -6,6 +6,7 @@ import 'package:commet/client/stale_info.dart';
 import 'package:commet/generated/l10n.dart';
 import 'package:commet/ui/molecules/user_panel.dart';
 import 'package:commet/ui/pages/login/login_page.dart';
+import 'package:commet/ui/pages/settings/categories/account/profile/profile_edit_tab.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
 import 'package:commet/ui/pages/settings/settings_tab.dart';
 import 'package:flutter/material.dart';
@@ -17,8 +18,8 @@ import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/config/config.dart';
 import 'package:scaled_app/scaled_app.dart';
 
-import 'account_management_tab.dart';
-import 'security_tab.dart';
+import 'account_management/account_management_tab.dart';
+import 'security/security_tab.dart';
 
 class SettingsCategoryAccount implements SettingsCategory {
   @override
@@ -28,6 +29,14 @@ class SettingsCategoryAccount implements SettingsCategory {
             icon: Icons.person,
             pageBuilder: (context) {
               return AccountManagementSettingsTab(
+                clientManager: Provider.of<ClientManager>(context),
+              );
+            }),
+        SettingsTab(
+            label: "Profile",
+            icon: Icons.account_circle,
+            pageBuilder: (context) {
+              return ProfileEditTab(
                 clientManager: Provider.of<ClientManager>(context),
               );
             }),

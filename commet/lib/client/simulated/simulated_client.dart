@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/preview_data.dart';
 import 'package:commet/client/simulated/simulated_peer.dart';
@@ -120,5 +121,15 @@ class SimulatedClient extends Client {
   Future<Room> joinRoom(String address) {
     // TODO: implement joinRoom
     throw UnimplementedError();
+  }
+
+  @override
+  Future<void> setAvatar(Uint8List bytes, String mimeType) async {
+    user!.avatar = MemoryImage(bytes);
+  }
+
+  @override
+  Future<void> setDisplayName(String name) async {
+    (user as SimulatedPeer).displayName = name;
   }
 }

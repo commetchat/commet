@@ -262,4 +262,15 @@ class MatrixClient extends Client {
     await _matrixClient.dispose();
     await super.close();
   }
+
+  Future<void> setAvatar(Uint8List bytes, String mimeType) async {
+    await _matrixClient.setAvatar(matrix.MatrixImageFile(bytes: bytes, name: "avatar", mimeType: mimeType));
+    await (user as MatrixPeer).refreshAvatar();
+  }
+
+  @override
+  Future<void> setDisplayName(String name) async {
+    await _matrixClient.setDisplayName(_matrixClient.userID!, name);
+    user!.displayName = name;
+  }
 }
