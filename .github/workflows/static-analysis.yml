@@ -1,6 +1,9 @@
 on: push
 name: static-analysis
 
+env:
+  PROJECT_PATH: commet
+
 jobs:
   static-analysis:
     name: Static Analysis
