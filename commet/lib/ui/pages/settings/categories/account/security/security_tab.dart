@@ -4,8 +4,6 @@ import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/simulated/simulated_client.dart';
 import 'package:commet/ui/molecules/account_selector.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 
 import 'matrix/matrix_security_tab.dart';
 
@@ -60,6 +58,6 @@ class _SecuritySettingsTabState extends State<SecuritySettingsTab> {
       return Container(color: Colors.blue);
     }
 
-    return Placeholder();
+    return const Placeholder();
   }
 }

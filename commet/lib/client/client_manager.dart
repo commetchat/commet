@@ -9,7 +9,7 @@ class ClientManager {
   List<Room> rooms = List.empty(growable: true);
   List<Room> directMessages = List.empty(growable: true);
   List<Space> spaces = List.empty(growable: true);
-  List<Client> _clientsList = List.empty(growable: true);
+  final List<Client> _clientsList = List.empty(growable: true);
 
   List<Client> get clients => _clientsList;
 
@@ -18,13 +18,16 @@ class ClientManager {
   late StreamController<int> onRoomAdded = StreamController.broadcast();
   late StreamController<int> onRoomRemoved = StreamController.broadcast();
 
-  late StreamController<int> onDirectMessageRoomAdded = StreamController.broadcast();
+  late StreamController<int> onDirectMessageRoomAdded =
+      StreamController.broadcast();
 
   late StreamController<int> onSpaceAdded = StreamController.broadcast();
-  late StreamController<StaleSpaceInfo> onSpaceRemoved = StreamController.broadcast();
+  late StreamController<StaleSpaceInfo> onSpaceRemoved =
+      StreamController.broadcast();
 
   late StreamController<int> onClientAdded = StreamController.broadcast();
-  late StreamController<StalePeerInfo> onClientRemoved = StreamController.broadcast();
+  late StreamController<StalePeerInfo> onClientRemoved =
+      StreamController.broadcast();
 
   void addClient(Client client) {
     _clients[client.identifier] = client;

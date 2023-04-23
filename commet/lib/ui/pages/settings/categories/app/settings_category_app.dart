@@ -40,13 +40,13 @@ class SettingsCategoryAppearence implements SettingsCategory {
             }),
           ]),
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
-        Panel(
+        const Panel(
           header: "UI Scale",
-          child: UIScaleSelector(),
           mode: TileType.surfaceLow2,
+          child: UIScaleSelector(),
         )
       ],
     );

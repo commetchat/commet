@@ -1,4 +1,4 @@
-late RegExp regex = RegExp(EmojiMatcher._regex);
+RegExp regex = RegExp(EmojiMatcher._regex);
 
 class EmojiMatcher {
   // https://github.com/mathiasbynens/emoji-test-regex-pattern/tree/main/dist/latest

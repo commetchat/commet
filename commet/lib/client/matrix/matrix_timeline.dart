@@ -1,20 +1,11 @@
 import 'dart:async';
 import 'package:commet/cache/cache_file_provider.dart';
 import 'package:commet/client/attachment.dart';
-import 'package:commet/cache/file_image.dart';
-import 'package:commet/client/matrix/matrix_client_extensions.dart';
 import 'package:commet/ui/atoms/rich_text/matrix_html_parser.dart';
-import 'package:commet/utils/emoji/emoji_matcher.dart';
 import 'package:commet/utils/text_utils.dart';
-import 'package:flutter/material.dart';
-import 'package:path/path.dart';
-import 'package:tiamat/tiamat.dart' as tiamat;
 
-import '../../ui/atoms/pill.dart';
-import '../../utils/emoji/emoji.dart';
 import '../client.dart';
 import 'package:matrix/matrix.dart' as matrix;
-import 'package:html/parser.dart' as htmlParser;
 
 class MatrixTimeline extends Timeline {
   matrix.Timeline? _matrixTimeline;
@@ -40,7 +31,8 @@ class MatrixTimeline extends Timeline {
       },
       onChange: (index) {
         if (_matrixTimeline == null) return;
-        events[index] = convertEvent(_matrixTimeline!.events[index], existing: events[index]);
+        events[index] = convertEvent(_matrixTimeline!.events[index],
+            existing: events[index]);
         notifyChanged(index);
       },
       onRemove: (index) {
@@ -128,12 +120,14 @@ class MatrixTimeline extends Timeline {
       e.bodyFormat = format;
       e.formattedBody = matrixEvent.formattedText;
 
-      if (format == "org.matrix.custom.html") e.formattedContent = MatrixHtmlParser.parse(e.formattedBody!);
+      if (format == "org.matrix.custom.html") {
+        e.formattedContent = MatrixHtmlParser.parse(e.formattedBody!);
+      }
     } else {
       e.bodyFormat = "chat.commet.default";
 
-      e.formattedContent =
-          TextUtils.manageRtlSpan(matrixEvent.body, TextUtils.formatString(matrixEvent.body, allowBigEmoji: true));
+      e.formattedContent = TextUtils.manageRtlSpan(matrixEvent.body,
+          TextUtils.formatString(matrixEvent.body, allowBigEmoji: true));
     }
   }
 
@@ -148,21 +142,24 @@ class MatrixTimeline extends Timeline {
 
         if (w != null) width = w.toDouble();
         if (h != null) height = h.toDouble();
-        print("W: $width, H: $height");
       }
 
       Attachment file = Attachment(
-          fileProvider: CacheFileProvider(matrixEvent.attachmentMxcUrl.toString(), () async {
+          fileProvider: CacheFileProvider(
+              matrixEvent.attachmentMxcUrl.toString(), () async {
             var file = await matrixEvent.downloadAndDecryptAttachment();
             return file.bytes;
           }),
-          name: matrixEvent.content.tryGet<String>("filename") ?? matrixEvent.body,
+          name: matrixEvent.content.tryGet<String>("filename") ??
+              matrixEvent.body,
           mimeType: matrixEvent.attachmentMimetype,
           height: height,
           width: width,
           thumbnail: matrixEvent.thumbnailMxcUrl != null
-              ? CacheFileProvider.thumbnail(matrixEvent.attachmentMxcUrl.toString(), () async {
-                  var file = await matrixEvent.downloadAndDecryptAttachment(getThumbnail: true);
+              ? CacheFileProvider.thumbnail(
+                  matrixEvent.attachmentMxcUrl.toString(), () async {
+                  var file = await matrixEvent.downloadAndDecryptAttachment(
+                      getThumbnail: true);
                   return file.bytes;
                 })
               : null);
@@ -174,7 +171,9 @@ class MatrixTimeline extends Timeline {
 
   @override
   Future<void> loadMoreHistory() async {
-    if (_matrixTimeline!.canRequestHistory) return await _matrixTimeline!.requestHistory();
+    if (_matrixTimeline!.canRequestHistory) {
+      return await _matrixTimeline!.requestHistory();
+    }
   }
 
   @override
@@ -182,7 +181,8 @@ class MatrixTimeline extends Timeline {
     var event = _matrixTimeline!.events[index];
     var status = event.status;
 
-    if (status == matrix.EventStatus.sent || status == matrix.EventStatus.synced && event.canRedact) {
+    if (status == matrix.EventStatus.sent ||
+        status == matrix.EventStatus.synced && event.canRedact) {
       events[index].status = TimelineEventStatus.removed;
       await _matrixRoom.redactEvent(event.eventId);
     } else {

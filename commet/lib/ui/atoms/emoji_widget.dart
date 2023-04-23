@@ -1,5 +1,3 @@
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter/widgets.dart';
 
 final _u200D = String.fromCharCode(0x200D);
@@ -20,7 +18,8 @@ class EmojiWidget extends StatelessWidget {
     while (i < input.length) {
       c = input.codeUnitAt(i++);
       if (p != 0) {
-        r.add((0x10000 + ((p - 0xD800) << 10) + (c - 0xDC00)).toRadixString(16));
+        r.add(
+            (0x10000 + ((p - 0xD800) << 10) + (c - 0xDC00)).toRadixString(16));
         p = 0;
       } else if (0xD800 <= c && c <= 0xDBFF) {
         p = c;
@@ -31,8 +30,8 @@ class EmojiWidget extends StatelessWidget {
     return r.join(sep);
   }
 
-  late String unicode;
-  double? height;
+  late final String unicode;
+  late final double? height;
 
   EmojiWidget(String emoji, {super.key, this.height = 24}) {
     unicode = toUnicode(emoji);

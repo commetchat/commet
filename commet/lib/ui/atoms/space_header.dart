@@ -1,10 +1,6 @@
-import 'dart:ui';
-
-import 'package:commet/ui/atoms/blurred_image_background.dart';
 import 'package:flutter/material.dart';
 
 import '../../client/client.dart';
-import '../../config/app_config.dart';
 
 class SpaceHeader extends StatelessWidget {
   const SpaceHeader(this.space,
@@ -31,7 +27,7 @@ class SpaceHeader extends StatelessWidget {
     return InkWell(
       onTap: () => onTap?.call(),
       child: Padding(
-        padding: EdgeInsets.all(s(10.0)),
+        padding: const EdgeInsets.all(10.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -44,7 +40,7 @@ class SpaceHeader extends StatelessWidget {
                         ? [
                             BoxShadow(
                                 color: Theme.of(context).shadowColor,
-                                offset: Offset(2, 2))
+                                offset: const Offset(2, 2))
                           ]
                         : null)),
           ],

@@ -35,7 +35,8 @@ void main() async {
     split.loadMoreHistory();
 
     expect(split.whichList(notYetLoadedIndex), SplitTimelinePart.historical);
-    expect(split.whichList(room.timeline!.events.length + 20), SplitTimelinePart.none);
+    expect(split.whichList(room.timeline!.events.length + 20),
+        SplitTimelinePart.none);
   });
 
   test("SplitTimeline: Indexing", () async {
@@ -51,7 +52,8 @@ void main() async {
           int result = split.getHistoryIndex(index);
           expect(room.timeline!.events[index], split.historical[result]);
 
-          int reverse = split.getTimelineIndex(result, SplitTimelinePart.historical);
+          int reverse =
+              split.getTimelineIndex(result, SplitTimelinePart.historical);
           expect(index, reverse);
 
           break;
@@ -59,7 +61,8 @@ void main() async {
           int result = split.getRecentIndex(index);
           expect(room.timeline!.events[index], split.recent[result]);
 
-          int reverse = split.getTimelineIndex(result, SplitTimelinePart.recent);
+          int reverse =
+              split.getTimelineIndex(result, SplitTimelinePart.recent);
           expect(index, reverse);
           break;
         case SplitTimelinePart.none:

@@ -1,12 +1,10 @@
 import 'package:commet/ui/pages/settings/settings_category.dart';
 import 'package:commet/ui/pages/settings/settings_menu.dart';
-import 'package:commet/ui/pages/settings/settings_tab.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart' as m;
 
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
-import '../../../config/app_config.dart';
 
 class DesktopSettingsPage extends StatefulWidget {
   const DesktopSettingsPage({super.key});
@@ -62,13 +60,13 @@ class _DesktopSettingsPageState extends State<DesktopSettingsPage> {
   Widget tabSelector(BuildContext context) {
     return Tile.low1(
       child: Padding(
-        padding: EdgeInsets.all(s(8.0)),
+        padding: const EdgeInsets.all(8.0),
         child: SizedBox(
-          width: s(240),
+          width: 240,
           child: Column(
             children: [
               Padding(
-                padding: EdgeInsets.all(s(8.0)),
+                padding: const EdgeInsets.all(8.0),
                 child: Align(
                     alignment: Alignment.centerLeft,
                     child: CircleButton(
@@ -86,7 +84,7 @@ class _DesktopSettingsPageState extends State<DesktopSettingsPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          if (categoryIndex != 0) tiamat.Seperator(),
+                          if (categoryIndex != 0) const tiamat.Seperator(),
                           tiamat.Text.labelLow(categories[categoryIndex].title),
                           tabListBuilder(categoryIndex)
                         ],
@@ -132,7 +130,7 @@ class _DesktopSettingsPageState extends State<DesktopSettingsPage> {
 
   Widget settingsTab(Widget Function(BuildContext context) builder) {
     return Padding(
-      padding: EdgeInsets.all(s(20.0)),
+      padding: const EdgeInsets.all(20.0),
       child: Align(alignment: Alignment.topLeft, child: builder(context)),
     );
   }

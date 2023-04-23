@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:intl/intl.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -30,7 +28,8 @@ class MatrixSessionView extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-          color: Theme.of(context).extension<ExtraColors>()!.surfaceLow1, borderRadius: BorderRadius.circular(5)),
+          color: Theme.of(context).extension<ExtraColors>()!.surfaceLow1,
+          borderRadius: BorderRadius.circular(5)),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Row(
@@ -49,7 +48,8 @@ class MatrixSessionView extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (displayName != null) tiamat.Text.labelEmphasised(displayName!),
+                    if (displayName != null)
+                      tiamat.Text.labelEmphasised(displayName!),
                     Row(
                       children: [
                         if (isThisDevice)
@@ -57,9 +57,10 @@ class MatrixSessionView extends StatelessWidget {
                             padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
                             child: Container(
                               decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(5), color: Theme.of(context).colorScheme.primary),
-                              child: Padding(
-                                padding: const EdgeInsets.all(2.0),
+                                  borderRadius: BorderRadius.circular(5),
+                                  color: Theme.of(context).colorScheme.primary),
+                              child: const Padding(
+                                padding: EdgeInsets.all(2.0),
                                 child: tiamat.Text.tiny("This Device"),
                               ),
                             ),
@@ -71,8 +72,8 @@ class MatrixSessionView extends StatelessWidget {
                       tiamat.Text.tiny(
                           "Last Seen: ${DateFormat(DateFormat.YEAR_MONTH_WEEKDAY_DAY).format(DateTime.fromMillisecondsSinceEpoch(lastSeenTimestamp!))}"),
                     if (lastSeenIp != null)
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                      const Padding(
+                        padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
                         child: SizedBox(
                           width: 10,
                           child: tiamat.Seperator(
@@ -112,7 +113,8 @@ class MatrixSessionView extends StatelessWidget {
   IconData getIcon() {
     if (displayName == null) return Icons.device_unknown;
 
-    if (["ios", "android", "mobile"].any((element) => displayName!.toLowerCase().contains(element))) {
+    if (["ios", "android", "mobile"]
+        .any((element) => displayName!.toLowerCase().contains(element))) {
       return Icons.smartphone;
     }
 

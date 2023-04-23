@@ -1,4 +1,3 @@
-import 'package:commet/config/app_config.dart';
 import 'package:flutter/material.dart' as material;
 import 'package:flutter/widgets.dart';
 import 'package:tiamat/tiamat.dart';
@@ -59,7 +58,7 @@ class _UserPanelState extends State<UserPanel> {
                   placeholderText: widget.displayName,
                 ),
                 Padding(
-                  padding: EdgeInsets.all(s(8)),
+                  padding: const EdgeInsets.all(8),
                   child: Container(
                     alignment: Alignment.centerLeft,
                     child: Column(

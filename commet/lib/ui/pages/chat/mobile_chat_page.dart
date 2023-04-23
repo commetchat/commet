@@ -1,18 +1,15 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:commet/ui/molecules/direct_message_list.dart';
 import 'package:commet/ui/molecules/split_timeline_viewer.dart';
 import 'package:commet/ui/organisms/space_summary.dart';
 import 'package:commet/ui/pages/chat/chat_page.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart' as material;
-import 'package:provider/provider.dart';
 import 'package:tiamat/config/config.dart';
 import 'package:tiamat/tiamat.dart';
 
-import '../../../client/client_manager.dart';
 import '../../../client/room.dart';
-import '../../../client/space.dart';
-import '../../../config/app_config.dart';
 
 import '../../atoms/room_header.dart';
 import '../../atoms/space_header.dart';
@@ -75,7 +72,8 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
               widget.state.selectHome();
             },
             onSpaceSelected: (index) {
-              widget.state.selectSpace(widget.state.clientManager.spaces[index]);
+              widget.state
+                  .selectSpace(widget.state.clientManager.spaces[index]);
             },
             clearSpaceSelection: () {
               widget.state.clearSpaceSelection();
@@ -83,13 +81,16 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
           ),
         ),
         if (widget.state.homePageSelected) homePageView(),
-        if (widget.state.homePageSelected == false && widget.state.selectedSpace != null) spaceRoomSelector(newContext),
+        if (widget.state.homePageSelected == false &&
+            widget.state.selectedSpace != null)
+          spaceRoomSelector(newContext),
       ],
     );
   }
 
   Widget mainPanel() {
-    if (widget.state.selectedSpace != null && widget.state.selectedRoom == null) {
+    if (widget.state.selectedSpace != null &&
+        widget.state.selectedRoom == null) {
       return SpaceSummary(space: widget.state.selectedSpace!);
     }
 
@@ -153,13 +154,15 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
               height: 100.1,
               child: SpaceHeader(
                 widget.state.selectedSpace!,
-                backgroundColor: material.Theme.of(context).extension<ExtraColors>()!.surfaceLow1,
+                backgroundColor: material.Theme.of(context)
+                    .extension<ExtraColors>()!
+                    .surfaceLow1,
                 onTap: clearSelectedRoom,
               ),
             ),
             Expanded(
                 child: Padding(
-              padding: EdgeInsets.fromLTRB(0, 0, s(50), 0),
+              padding: const EdgeInsets.fromLTRB(0, 0, 50, 0),
               child: SpaceViewer(
                 widget.state.selectedSpace!,
                 key: widget.state.selectedSpace!.key,
@@ -171,9 +174,10 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
             )),
             Tile.low2(
               child: SizedBox(
-                height: s(70),
+                height: 70,
                 child: UserPanel(
-                  displayName: widget.state.selectedSpace!.client.user!.displayName,
+                  displayName:
+                      widget.state.selectedSpace!.client.user!.displayName,
                   avatar: widget.state.selectedSpace!.client.user!.avatar,
                   detail: widget.state.selectedSpace!.client.user!.detail,
                   color: widget.state.selectedSpace!.client.user!.color,
@@ -193,7 +197,8 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
         body: SafeArea(
           child: Column(
             children: [
-              SizedBox(height: s(50), child: RoomHeader(widget.state.selectedRoom!)),
+              SizedBox(
+                  height: 50, child: RoomHeader(widget.state.selectedRoom!)),
               Flexible(
                 // We listen to this so that when the onscreen keyboard changes the size of view inset, we can offset the scroll position
                 child: NotificationListener(
@@ -206,7 +211,10 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
                     if (diff <= 0) return true;
 
                     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                      var state = widget.state.timelines[widget.state.selectedRoom?.localId]?.currentState;
+                      var state = widget
+                          .state
+                          .timelines[widget.state.selectedRoom?.localId]
+                          ?.currentState;
                       if (state != null) {
                         state.controller.jumpTo(state.controller.offset + diff);
                       }
@@ -220,11 +228,12 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
                       children: [
                         Expanded(
                             child: SplitTimelineViewer(
-                          key: widget.state.timelines[widget.state.selectedRoom!.localId],
+                          key: widget.state
+                              .timelines[widget.state.selectedRoom!.localId],
                           timeline: widget.state.selectedRoom!.timeline!,
                         )),
                         Padding(
-                          padding: EdgeInsets.fromLTRB(0, 0, 0, s(8)),
+                          padding: EdgeInsets.fromLTRB(0, 0, 0, 8),
                           child: MessageInput(
                             key: messageInput,
                             onSendMessage: (message) {

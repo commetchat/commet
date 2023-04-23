@@ -1,13 +1,9 @@
-import 'package:commet/cache/cached_file.dart';
 import 'package:commet/cache/file_cache.dart';
 import 'package:commet/client/client_manager.dart';
-import 'package:commet/config/build_config.dart';
 import 'package:commet/config/preferences.dart';
 import 'package:commet/ui/pages/loading/loading_page.dart';
 
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 
 import 'package:provider/provider.dart';
 import 'package:scaled_app/scaled_app.dart';
@@ -18,7 +14,6 @@ import 'package:tiamat/config/style/theme_glass.dart';
 import 'package:tiamat/config/style/theme_light.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 
-import 'config/app_config.dart';
 import 'generated/l10n.dart';
 
 final GlobalKey<NavigatorState> navigator = GlobalKey();
@@ -47,7 +42,10 @@ ThemeData commetGlassTheme() => ThemeGlass.theme;
 @WidgetbookApp.material(name: 'Commet', devices: [
   Apple.iPhone12,
   Apple.macBook13Inch,
-  Device.desktop(name: "720p", resolution: Resolution(nativeSize: DeviceSize(width: 1280, height: 720), scaleFactor: 1))
+  Device.desktop(
+      name: "720p",
+      resolution: Resolution(
+          nativeSize: DeviceSize(width: 1280, height: 720), scaleFactor: 1))
 ])
 class App extends StatelessWidget {
   App({Key? key}) : super(key: key);
@@ -73,7 +71,9 @@ class App extends StatelessWidget {
               create: (context) => clientManager,
               child: child,
             ),
-            home: const LoadingPage(),
+            home: LoadingPage(
+              clientManager: clientManager,
+            ),
           );
         });
   }

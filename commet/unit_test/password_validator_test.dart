@@ -1,14 +1,4 @@
-import 'dart:math';
-
-import 'package:commet/client/client.dart';
-import 'package:commet/client/matrix/matrix_timeline.dart';
-import 'package:commet/client/simulated/simulated_client.dart';
-import 'package:commet/client/simulated/simulated_room.dart';
-import 'package:commet/client/split_timeline.dart';
-import 'package:commet/ui/atoms/emoji_widget.dart';
-import 'package:commet/utils/emoji/emoji.dart';
 import 'package:commet/utils/text_utils.dart';
-import 'package:flutter/material.dart';
 import 'package:test/test.dart';
 
 void main() async {

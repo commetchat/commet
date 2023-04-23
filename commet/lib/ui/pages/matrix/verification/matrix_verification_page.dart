@@ -1,8 +1,7 @@
 import 'package:commet/ui/pages/matrix/verification/matrix_verification_view.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:flutter/widgets.dart';
+
 import 'package:matrix/encryption/utils/key_verification.dart';
-import 'package:matrix/matrix.dart';
 
 class MatrixVerificationPage extends StatefulWidget {
   final KeyVerification request;
@@ -33,9 +32,15 @@ class MatrixVerificationPageState extends State<MatrixVerificationPage> {
     return MatrixVerificationPageView(
       state: widget.request.state,
       // Have to do this because the sasNumber are freed after verification finishes
-      sasTypes: widget.request.state == KeyVerificationState.askSas ? widget.request.sasTypes : [],
-      sasEmoji: widget.request.state == KeyVerificationState.askSas ? widget.request.sasEmojis : [],
-      sasNumbers: widget.request.state == KeyVerificationState.askSas ? widget.request.sasNumbers : [],
+      sasTypes: widget.request.state == KeyVerificationState.askSas
+          ? widget.request.sasTypes
+          : [],
+      sasEmoji: widget.request.state == KeyVerificationState.askSas
+          ? widget.request.sasEmojis
+          : [],
+      sasNumbers: widget.request.state == KeyVerificationState.askSas
+          ? widget.request.sasNumbers
+          : [],
       userID: userId,
       onSasAccepted: acceptSas,
       onSasRejected: rejectSas,

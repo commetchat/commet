@@ -1,5 +1,4 @@
 import 'package:commet/config/build_config.dart';
-import 'package:commet/ui/atoms/generic_room_event.dart';
 import 'package:commet/ui/molecules/message.dart';
 import 'package:flutter/material.dart' as m;
 import 'package:flutter/widgets.dart';
@@ -9,7 +8,12 @@ import '../../client/client.dart';
 
 class TimelineEventView extends StatefulWidget {
   const TimelineEventView(
-      {required this.event, super.key, this.onDelete, this.hovered = false, this.showSender = true, this.debugInfo});
+      {required this.event,
+      super.key,
+      this.onDelete,
+      this.hovered = false,
+      this.showSender = true,
+      this.debugInfo});
   final TimelineEvent event;
   final bool hovered;
   final Function? onDelete;
@@ -27,7 +31,7 @@ class _TimelineEventState extends State<TimelineEventView> {
     return AnimatedContainer(
         duration: const Duration(milliseconds: 100),
         color: widget.hovered ? m.Colors.red : m.Colors.transparent,
-        child: display != null ? display! : null);
+        child: display);
   }
 
   Widget? eventToWidget(TimelineEvent event) {
@@ -42,15 +46,17 @@ class _TimelineEventState extends State<TimelineEventView> {
         break;
     }
 
-    if (BuildConfig.DEBUG)
+    if (BuildConfig.DEBUG) {
       return m.Padding(
         padding: const EdgeInsets.all(8.0),
         child: Placeholder(
             child: event.source != null
                 ? tiamat.Text.tiny(event.source!)
-                : Placeholder(
+                : const Placeholder(
                     fallbackHeight: 20,
                   )),
       );
+    }
+    return null;
   }
 }

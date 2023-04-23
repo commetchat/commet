@@ -18,16 +18,14 @@ class Preferences {
   }
 
   void addRegisteredMatrixClient(String name) {
-    print("Attempting to add account name to list");
     List<String> names = List.empty(growable: true);
     if (_preferences!.containsKey(registeredMatrixClients)) {
-      names = List.from(_preferences!.getStringList(registeredMatrixClients)!, growable: true);
+      names = List.from(_preferences!.getStringList(registeredMatrixClients)!,
+          growable: true);
     }
 
     names.add(name);
     _preferences!.setStringList(registeredMatrixClients, names);
-
-    print("Name added!");
   }
 
   void removeRegisteredMatrixClient(String name) {

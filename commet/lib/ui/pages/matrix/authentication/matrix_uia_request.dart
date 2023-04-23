@@ -1,6 +1,4 @@
 import 'package:commet/ui/pages/matrix/authentication/matrix_uia_request_view.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter/widgets.dart';
 import 'package:matrix/matrix.dart';
 
@@ -47,10 +45,8 @@ class _MatrixUIARequestState extends State<MatrixUIARequest> {
   }
 
   void submitAuthentication(String password) {
-    var mx = widget.client.getMatrixClient();
-    print(mx.userID);
-
-    widget.request.completeStage(
-        AuthenticationPassword(password: password, identifier: AuthenticationUserIdentifier(user: "alice")));
+    widget.request.completeStage(AuthenticationPassword(
+        password: password,
+        identifier: AuthenticationUserIdentifier(user: "alice")));
   }
 }

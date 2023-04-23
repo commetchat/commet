@@ -33,7 +33,8 @@ class _PeerListState extends State<PeerList> {
           physics: const BouncingScrollPhysics(),
           initialItemCount: _count,
           itemBuilder: (context, i, animation) => SizeTransition(
-              sizeFactor: animation.drive(CurveTween(curve: Curves.easeOutCubic)),
+              sizeFactor:
+                  animation.drive(CurveTween(curve: Curves.easeOutCubic)),
               child: UserPanel(
                 displayName: widget.peers[i].displayName,
                 avatar: widget.peers[i].avatar,

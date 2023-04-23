@@ -1,26 +1,20 @@
 import 'dart:async';
 
-import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/stale_info.dart';
-import 'package:commet/generated/l10n.dart';
 import 'package:commet/ui/molecules/user_panel.dart';
 import 'package:commet/ui/pages/login/login_page.dart';
-import 'package:commet/ui/pages/settings/settings_category.dart';
-import 'package:commet/ui/pages/settings/settings_tab.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
 import 'package:provider/provider.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/config/config.dart';
-import 'package:scaled_app/scaled_app.dart';
 
 class AccountManagementSettingsTab extends StatefulWidget {
   const AccountManagementSettingsTab({super.key, required this.clientManager});
   static ValueKey addAccountKey =
-      ValueKey("ACCOUNT_MANAGEMENT_SETTINGS_ADD_ACCOUNT_BUTTON");
+      const ValueKey("ACCOUNT_MANAGEMENT_SETTINGS_ADD_ACCOUNT_BUTTON");
   final ClientManager clientManager;
   @override
   State<AccountManagementSettingsTab> createState() =>
@@ -42,7 +36,7 @@ class _AccountManagementSettingsTabState
   @override
   void initState() {
     onClientAddedListener =
-        widget.clientManager.onClientAdded?.stream.listen((index) {
+        widget.clientManager.onClientAdded.stream.listen((index) {
       _listKey.currentState?.insertItem(index);
       setState(() {
         _numClients++;
@@ -50,7 +44,7 @@ class _AccountManagementSettingsTabState
     });
 
     onClientRemovedListener =
-        widget.clientManager.onClientRemoved?.stream.listen((info) {
+        widget.clientManager.onClientRemoved.stream.listen((info) {
       _listKey.currentState?.removeItem(
           info.index,
           (context, animation) => SizeTransition(
@@ -154,8 +148,8 @@ class _AccountManagementSettingsTabState
       child: Align(
           alignment: Alignment.centerRight,
           child: JustTheTooltip(
-            content: Padding(
-              padding: const EdgeInsets.all(8.0),
+            content: const Padding(
+              padding: EdgeInsets.all(8.0),
               child: tiamat.Text("Add Account"),
             ),
             preferredDirection: AxisDirection.down,
@@ -171,8 +165,10 @@ class _AccountManagementSettingsTabState
               onPressed: () {
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (_) => LoginPage(
-                          onSuccess: (_, newContext) {
-                            Navigator.of(newContext).pop();
+                          onSuccess: (
+                            _,
+                          ) {
+                            Navigator.of(context).pop();
                           },
                         )));
               },

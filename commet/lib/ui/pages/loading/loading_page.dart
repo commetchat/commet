@@ -3,14 +3,8 @@ import 'package:commet/config/app_config.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/emoji/emoji_pack.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:flutter/widgets.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:path/path.dart' as p;
 
 import '../../../client/client_manager.dart';
 import '../../../client/matrix/matrix_client.dart';
@@ -22,8 +16,8 @@ import '../login/login_page.dart';
 import 'loading_page_view.dart';
 
 class LoadingPage extends StatefulWidget {
-  const LoadingPage({super.key});
-
+  const LoadingPage({required this.clientManager, super.key});
+  final ClientManager clientManager;
   @override
   State<LoadingPage> createState() => LoadingPageState();
 }
@@ -34,10 +28,10 @@ class LoadingPageState extends State<LoadingPage> {
   @override
   void initState() {
     super.initState();
-    load();
+    load(widget.clientManager);
   }
 
-  Future<bool> load() async {
+  Future<bool> load(ClientManager clientManager) async {
     var adapter = CachedFileAdapter();
     if (!Hive.isAdapterRegistered(adapter.typeId)) {
       Hive.registerAdapter(adapter);
@@ -52,15 +46,13 @@ class LoadingPageState extends State<LoadingPage> {
     } else {
       await Hive.initFlutter(await AppConfig.getDatabasePath());
     }
-
-    var client = Provider.of<ClientManager>(context, listen: false);
-    await MatrixClient.loadFromDB(client);
+    await MatrixClient.loadFromDB(clientManager);
 
     //dont let simulated client contribute to logged in status
-    bool isLoggedIn = client.isLoggedIn();
+    bool isLoggedIn = clientManager.isLoggedIn();
 
     if (BuildConfig.DEBUG) {
-      await SimulatedClient.loadFromDB(client);
+      await SimulatedClient.loadFromDB(clientManager);
     }
 
     setState(() {
@@ -68,22 +60,24 @@ class LoadingPageState extends State<LoadingPage> {
     });
 
     if (context.mounted) {
-      NavigationUtils.navigateTo(context, isLoggedIn ? ChatPage(clientManager: client) : initialLoginPage());
+      NavigationUtils.navigateTo(
+          context,
+          isLoggedIn
+              ? ChatPage(clientManager: clientManager)
+              : initialLoginPage());
     }
     return true;
   }
 
   LoginPage initialLoginPage() {
-    return LoginPage(
-      onSuccess: (_, newContext) {
-        if (newContext.mounted) {
-          Navigator.of(newContext).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (_) => ChatPage(clientManager: Provider.of<ClientManager>(newContext))),
-            (route) => false,
-          );
-        }
-      },
-    );
+    return LoginPage(onSuccess: (_) {
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(
+            builder: (_) =>
+                ChatPage(clientManager: Provider.of<ClientManager>(context))),
+        (route) => false,
+      );
+    });
   }
 
   @override

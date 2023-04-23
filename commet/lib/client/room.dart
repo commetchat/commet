@@ -20,9 +20,10 @@ abstract class Room {
 
   int notificationCount = 0;
 
-  Future<TimelineEvent?> sendMessage(String message, {TimelineEvent? inReplyTo});
+  Future<TimelineEvent?> sendMessage(String message,
+      {TimelineEvent? inReplyTo});
 
-  String get localId => "${this.client.identifier}:${identifier}";
+  String get localId => "${client.identifier}:$identifier";
 
   Room(this.identifier, this.client) {
     identifier = identifier;

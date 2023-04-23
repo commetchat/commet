@@ -3,7 +3,6 @@ import 'dart:typed_data';
 
 import 'package:commet/cache/cached_file.dart';
 import 'package:commet/config/app_config.dart';
-import 'package:commet/ui/pages/loading/loading_page.dart';
 import 'package:commet/utils/rng.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
@@ -20,16 +19,17 @@ class FileCacheInstance {
   }
 
   Future<String> generateTempFilePath() async {
-    final dir = await getTemporaryDirectory();
-
     var path = "";
-    for (path = await newPath(); await File(path).exists(); path = await newPath()) {}
+    for (path = await newPath();
+        await File(path).exists();
+        path = await newPath()) {}
 
     return path;
   }
 
   Future<void> init() async {
-    db = await BoxCollection.open("file_cache", {"files"}, path: await AppConfig.getDatabasePath());
+    db = await BoxCollection.open("file_cache", {"files"},
+        path: await AppConfig.getDatabasePath());
     filesBox = await db!.openBox("files");
   }
 
@@ -48,11 +48,10 @@ class FileCacheInstance {
     if (!await hasFile(identifier)) return null;
 
     var entry = await filesBox!.get(identifier);
-    var lastAccess = DateTime.fromMillisecondsSinceEpoch(entry!.lastAccessedTimestamp).toLocal().toString();
+    if (entry == null) return null;
+    //var lastAccess = DateTime.fromMillisecondsSinceEpoch(entry!.lastAccessedTimestamp).toLocal().toString();
 
-    print("Accessing file: $identifier from cache, last accessed: $lastAccess");
-
-    entry!.lastAccessedTimestamp = DateTime.now().millisecondsSinceEpoch;
+    entry.lastAccessedTimestamp = DateTime.now().millisecondsSinceEpoch;
     entry.save();
 
     var file = File(entry.filePath);
@@ -60,11 +59,10 @@ class FileCacheInstance {
     return file.uri;
   }
 
-  Future<Uri> fetchFile(String identifier, Future<Uint8List> Function() getter) async {
+  Future<Uri> fetchFile(
+      String identifier, Future<Uint8List> Function() getter) async {
     var existing = await getFile(identifier);
     if (existing != null) return existing;
-
-    print("File did not exist in cache, calling getter");
 
     var bytes = await getter();
     var path = await generateTempFilePath();
@@ -73,10 +71,8 @@ class FileCacheInstance {
     await file.create(recursive: true);
     await file.writeAsBytes(bytes);
 
-    print("wrote file to cache");
-    print(path);
-
-    CachedFile entry = CachedFile(file.path, DateTime.now().millisecondsSinceEpoch);
+    CachedFile entry =
+        CachedFile(file.path, DateTime.now().millisecondsSinceEpoch);
     filesBox!.put(identifier, entry);
 
     return file.uri;

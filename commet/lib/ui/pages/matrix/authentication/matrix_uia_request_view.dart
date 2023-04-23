@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:matrix/src/utils/uia_request.dart';
+import 'package:matrix/matrix.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:flutter/material.dart' as material;
@@ -8,7 +8,7 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 @WidgetbookUseCase(name: 'Wait for user', type: MatrixUIARequestView)
 @Deprecated("widgetbook")
 Widget wbUIARequestView(BuildContext context) {
-  return material.Scaffold(
+  return const material.Scaffold(
     body: PopupDialog(
       title: "Authentication Request",
       content: MatrixUIARequestView(UiaRequestState.waitForUser),
@@ -19,7 +19,7 @@ Widget wbUIARequestView(BuildContext context) {
 @WidgetbookUseCase(name: 'Loading', type: MatrixUIARequestView)
 @Deprecated("widgetbook")
 Widget wbUIARequestViewLoading(BuildContext context) {
-  return material.Scaffold(
+  return const material.Scaffold(
     body: PopupDialog(
       title: "Authentication Request",
       content: MatrixUIARequestView(UiaRequestState.loading),
@@ -30,7 +30,7 @@ Widget wbUIARequestViewLoading(BuildContext context) {
 @WidgetbookUseCase(name: 'Done', type: MatrixUIARequestView)
 @Deprecated("widgetbook")
 Widget wbUIARequestViewDone(BuildContext context) {
-  return material.Scaffold(
+  return const material.Scaffold(
     body: PopupDialog(
       title: "Authentication Request",
       content: MatrixUIARequestView(UiaRequestState.done),
@@ -41,7 +41,7 @@ Widget wbUIARequestViewDone(BuildContext context) {
 @WidgetbookUseCase(name: 'Fail', type: MatrixUIARequestView)
 @Deprecated("widgetbook")
 Widget wbUIARequestViewError(BuildContext context) {
-  return material.Scaffold(
+  return const material.Scaffold(
     body: PopupDialog(
       title: "Authentication Request",
       content: MatrixUIARequestView(UiaRequestState.fail),
@@ -50,7 +50,8 @@ Widget wbUIARequestViewError(BuildContext context) {
 }
 
 class MatrixUIARequestView extends StatefulWidget {
-  const MatrixUIARequestView(this.state, {this.onSubmitAuthentication, super.key, this.onFail, this.onSuccess});
+  const MatrixUIARequestView(this.state,
+      {this.onSubmitAuthentication, super.key, this.onFail, this.onSuccess});
   final UiaRequestState state;
   final Function(String password)? onSubmitAuthentication;
   final Function()? onSuccess;
@@ -102,7 +103,8 @@ class _MatrixUIARequestViewState extends State<MatrixUIARequestView> {
                   height: 40,
                   child: Button(
                     text: "Submit",
-                    onTap: () => this.widget.onSubmitAuthentication?.call(passwordFieldController.text),
+                    onTap: () => widget.onSubmitAuthentication
+                        ?.call(passwordFieldController.text),
                   )),
             ))
       ],
@@ -131,7 +133,7 @@ class _MatrixUIARequestViewState extends State<MatrixUIARequestView> {
                 size: 40,
               ),
             ),
-            tiamat.Text.largeTitle("Success!")
+            const tiamat.Text.largeTitle("Success!")
           ],
         ),
         SizedBox(
@@ -161,7 +163,7 @@ class _MatrixUIARequestViewState extends State<MatrixUIARequestView> {
                 size: 40,
               ),
             ),
-            tiamat.Text.largeTitle("Login failed...")
+            const tiamat.Text.largeTitle("Login failed...")
           ],
         ),
         SizedBox(

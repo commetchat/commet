@@ -1,9 +1,6 @@
-import 'package:commet/client/client.dart';
 import 'package:commet/ui/organisms/side_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart';
-import '../molecules/space_selector.dart';
-import '../../config/app_config.dart';
 
 class SpaceIcon extends StatefulWidget {
   const SpaceIcon(
@@ -58,13 +55,14 @@ class _SpaceIconState extends State<SpaceIcon> {
       right: 0,
       bottom: 0,
       child: SizedBox(
-        width: s(20),
-        height: s(20),
+        width: 20,
+        height: 20,
         child: Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(s(20)),
+            borderRadius: BorderRadius.circular(20),
             boxShadow: const [BoxShadow(color: Colors.black, blurRadius: 4)],
-            image: DecorationImage(image: widget.userAvatar!, fit: BoxFit.fitHeight),
+            image: DecorationImage(
+                image: widget.userAvatar!, fit: BoxFit.fitHeight),
             //border: Border.all(color: Colors.white, width: 1)),
           ),
         ),

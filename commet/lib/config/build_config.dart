@@ -1,9 +1,11 @@
 // ignore_for_file: constant_identifier_names
 
 class BuildConfig {
-  static const String _buildMode = String.fromEnvironment('BUILD_MODE', defaultValue: _Constants.release);
+  static const String _buildMode =
+      String.fromEnvironment('BUILD_MODE', defaultValue: _Constants.release);
 
-  static const String _platform = String.fromEnvironment('PLATFORM', defaultValue: _Constants._desktop);
+  static const String _platform =
+      String.fromEnvironment('PLATFORM', defaultValue: _Constants._desktop);
 
   static const bool DEBUG = _buildMode == _Constants._debug;
 
@@ -16,8 +18,9 @@ class BuildConfig {
 
   static const bool WEB = _platform == _Constants._web;
 
-  static const bool MOBILE =
-      _platform == _Constants._mobile || _platform == _Constants._android || _platform == _Constants._ios;
+  static const bool MOBILE = _platform == _Constants._mobile ||
+      _platform == _Constants._android ||
+      _platform == _Constants._ios;
 
   static const bool ANDROID = _platform == _Constants._android;
 
@@ -33,7 +36,9 @@ class BuildConfig {
 
   // IM SO SORRY
   static const String appName = MOBILE
-      ? (ANDROID ? "$app for Android" : (IOS ? "$app for iOS" : "$app for Mobile"))
+      ? (ANDROID
+          ? "$app for Android"
+          : (IOS ? "$app for iOS" : "$app for Mobile"))
       : (DESKTOP
           ? (WINDOWS
               ? "$app for Windows"

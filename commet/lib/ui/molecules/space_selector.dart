@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/stale_info.dart';
-import 'package:commet/config/app_config.dart';
 
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart';
@@ -53,8 +52,10 @@ class _SpaceSelectorState extends State<SpaceSelector> {
         if (info.index == _selectedIndex) widget.clearSelection?.call();
         _listKey.currentState?.removeItem(
             info.index,
-            (context, animation) =>
-                buildSpaceIcon(animation, displayName: info.name!, avatar: info.avatar, userAvatar: info.userAvatar));
+            (context, animation) => buildSpaceIcon(animation,
+                displayName: info.name!,
+                avatar: info.avatar,
+                userAvatar: info.userAvatar));
       });
     });
 
@@ -72,16 +73,17 @@ class _SpaceSelectorState extends State<SpaceSelector> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Padding(
-        padding: EdgeInsets.fromLTRB(s(7), 0, s(7), 0),
+        padding: const EdgeInsets.fromLTRB(7, 0, 7, 0),
         child: Column(
           children: [
             Flexible(
               child: ScrollConfiguration(
-                behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
+                behavior:
+                    ScrollConfiguration.of(context).copyWith(scrollbars: false),
                 child: SingleChildScrollView(
                   physics: const BouncingScrollPhysics(),
                   child: Padding(
-                    padding: EdgeInsets.fromLTRB(0, s(8), 0, s(8)),
+                    padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -93,12 +95,14 @@ class _SpaceSelectorState extends State<SpaceSelector> {
                             physics: const NeverScrollableScrollPhysics(),
                             shrinkWrap: true,
                             initialItemCount: _count,
-                            itemBuilder: (context, i, animation) => buildSpaceIcon(
+                            itemBuilder: (context, i, animation) =>
+                                buildSpaceIcon(
                                   animation,
                                   displayName: widget.spaces[i].displayName,
                                   onUpdate: widget.spaces[i].onUpdate.stream,
                                   avatar: widget.spaces[i].avatarThumbnail,
-                                  userAvatar: widget.spaces[i].client.user!.avatar,
+                                  userAvatar:
+                                      widget.spaces[i].client.user!.avatar,
                                   index: i,
                                 )),
                         if (widget.footer != null) const Seperator(),

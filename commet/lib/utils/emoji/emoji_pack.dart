@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:commet/generated/l10n.dart';
 import 'package:commet/utils/emoji/emoji.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -39,10 +38,12 @@ class EmojiPack {
       9: flags
     };
 
-    String jsonString = await rootBundle.loadString("assets/emoji_data/data.json");
+    String jsonString =
+        await rootBundle.loadString("assets/emoji_data/data.json");
     List<dynamic> data = jsonDecode(jsonString);
 
-    String shortcodesString = await rootBundle.loadString("assets/emoji_data/shortcodes/en.json");
+    String shortcodesString =
+        await rootBundle.loadString("assets/emoji_data/shortcodes/en.json");
     Map<String, dynamic> shortCodes = jsonDecode(shortcodesString);
 
     for (var emoji in data) {
@@ -58,7 +59,8 @@ class EmojiPack {
 
       if (emojiData.containsKey('group')) {
         int groupId = emojiData['group'];
-        var e = Emoji(AssetImage("assets/twemoji/assets/72x72/$hexcode.png"), shortcode: shortcode, unicode: hexcode);
+        var e = Emoji(AssetImage("assets/twemoji/assets/72x72/$hexcode.png"),
+            shortcode: shortcode, unicode: hexcode);
 
         if (groupToPack.containsKey(groupId)) {
           groupToPack[groupId]!.add(e);
@@ -68,7 +70,16 @@ class EmojiPack {
       }
     }
 
-    var result = [people, nature, food, places, activities, objects, symbols, flags];
+    var result = [
+      people,
+      nature,
+      food,
+      places,
+      activities,
+      objects,
+      symbols,
+      flags
+    ];
 
     return result;
   }

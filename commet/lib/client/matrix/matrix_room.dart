@@ -13,11 +13,14 @@ class MatrixRoom extends Room {
   @override
   bool get isMember => _matrixRoom.membership == matrix.Membership.join;
 
-  MatrixRoom(client, matrix.Room room, matrix.Client matrixClient) : super(room.id, client) {
+  MatrixRoom(client, matrix.Room room, matrix.Client matrixClient)
+      : super(room.id, client) {
     _matrixRoom = room;
 
     if (room.avatar != null) {
-      var url = room.avatar!.getThumbnail(matrixClient, width: 56, height: 56).toString();
+      var url = room.avatar!
+          .getThumbnail(matrixClient, width: 56, height: 56)
+          .toString();
       avatar = NetworkImage(url);
     } else {
       avatar = null;
@@ -40,7 +43,8 @@ class MatrixRoom extends Room {
       }
     }
 
-    members = List.from(users.map((e) => this.client.getPeer(e.id)), growable: true);
+    members =
+        List.from(users.map((e) => this.client.getPeer(e.id)), growable: true);
 
     timeline = MatrixTimeline(client, this, room);
 
@@ -48,7 +52,8 @@ class MatrixRoom extends Room {
   }
 
   @override
-  Future<TimelineEvent?> sendMessage(String message, {TimelineEvent? inReplyTo}) async {
+  Future<TimelineEvent?> sendMessage(String message,
+      {TimelineEvent? inReplyTo}) async {
     String? id = await _matrixRoom.sendTextEvent(message);
     if (id != null) {
       var event = await _matrixRoom.getEventById(id);

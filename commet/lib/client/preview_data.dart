@@ -7,5 +7,6 @@ class PreviewData {
   String? displayName;
   String? topic;
 
-  PreviewData({required this.roomId, this.avatar, this.displayName, this.topic});
+  PreviewData(
+      {required this.roomId, this.avatar, this.displayName, this.topic});
 }

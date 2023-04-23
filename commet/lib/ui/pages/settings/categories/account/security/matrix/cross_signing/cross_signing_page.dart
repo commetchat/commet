@@ -1,14 +1,23 @@
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/ui/pages/settings/categories/account/security/matrix/cross_signing/cross_signing_view.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:flutter/widgets.dart';
+
 import 'package:matrix/encryption.dart';
 
-enum MatrixCrossSigningMode { standard, enableBackup, restoreBackup, resetCrossSigning, crossSigningOnly }
+enum MatrixCrossSigningMode {
+  standard,
+  enableBackup,
+  restoreBackup,
+  resetCrossSigning,
+  crossSigningOnly
+}
 
 class MatrixCrossSigningPage extends StatefulWidget {
   const MatrixCrossSigningPage(
-      {required this.client, this.mode = MatrixCrossSigningMode.standard, super.key, this.onComplete});
+      {required this.client,
+      this.mode = MatrixCrossSigningMode.standard,
+      super.key,
+      this.onComplete});
   final MatrixClient client;
   final MatrixCrossSigningMode mode;
   final Function()? onComplete;
@@ -61,7 +70,8 @@ class MatrixCrossSigningPageState extends State<MatrixCrossSigningPage> {
       },
       openExistingSsss: (key) async {
         await bootstrapper?.newSsssKey!.unlock(keyOrPassphrase: key);
-        await bootstrapper?.client.encryption!.crossSigning.selfSign(keyOrPassphrase: key);
+        await bootstrapper?.client.encryption!.crossSigning
+            .selfSign(keyOrPassphrase: key);
         await bootstrapper?.openExistingSsss();
         await bootstrapper?.askSetupCrossSigning(setupMasterKey: true);
         bootstrapper?.wipeOnlineKeyBackup(false);
@@ -77,7 +87,8 @@ class MatrixCrossSigningPageState extends State<MatrixCrossSigningPage> {
       widget.onComplete?.call();
     }
 
-    if (widget.mode == MatrixCrossSigningMode.enableBackup || widget.mode == MatrixCrossSigningMode.restoreBackup) {
+    if (widget.mode == MatrixCrossSigningMode.enableBackup ||
+        widget.mode == MatrixCrossSigningMode.restoreBackup) {
       switch (bootstrapper.state) {
         case BootstrapState.askUseExistingSsss:
           bootstrapper.useExistingSsss(true);

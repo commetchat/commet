@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:commet/config/app_config.dart';
 
 import 'package:flutter/widgets.dart';
 import 'package:tiamat/atoms/text_button.dart';
@@ -29,7 +28,8 @@ class RoomList extends StatefulWidget {
   State<RoomList> createState() => _RoomListState();
 }
 
-class _RoomListState extends State<RoomList> with SingleTickerProviderStateMixin {
+class _RoomListState extends State<RoomList>
+    with SingleTickerProviderStateMixin {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
   int _count = 0;
   StreamSubscription<int>? onInsertListener;
@@ -51,7 +51,8 @@ class _RoomListState extends State<RoomList> with SingleTickerProviderStateMixin
     });
 
     _count = widget.rooms.length;
-    controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 100));
+    controller = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 100));
 
     super.initState();
   }
@@ -81,7 +82,7 @@ class _RoomListState extends State<RoomList> with SingleTickerProviderStateMixin
               sizeFactor: controller!,
               axisAlignment: -1.0,
               child: Padding(
-                padding: EdgeInsets.fromLTRB(s(8), 0, 0, 0),
+                padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
                 child: listRooms(),
               ),
             ),
@@ -139,9 +140,9 @@ class _RoomListState extends State<RoomList> with SingleTickerProviderStateMixin
       itemBuilder: (context, i, animation) => SizeTransition(
         sizeFactor: animation,
         child: Padding(
-          padding: EdgeInsets.fromLTRB(0, s(2), 0, 0),
+          padding: const EdgeInsets.fromLTRB(0, 2, 0, 0),
           child: SizedBox(
-            height: s(37),
+            height: 37,
             child: TextButton(
               widget.rooms[i].displayName,
               highlighted: _selectedIndex == i,

@@ -4,8 +4,6 @@ import 'package:commet/cache/file_provider.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/molecules/video_player/video_player.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:tiamat/atoms/popup_dialog.dart';
 import 'dart:ui' as ui;
 
@@ -73,10 +71,10 @@ class _LightboxState extends State<Lightbox> {
   }
 
   Future<ui.Image> getImage() {
-    Completer<ui.Image> completer = new Completer<ui.Image>();
+    Completer<ui.Image> completer = Completer<ui.Image>();
 
     widget.image!
-        .resolve(new ImageConfiguration())
+        .resolve(const ImageConfiguration())
         .addListener(ImageStreamListener((info, synchronousCall) {
       if (!completer.isCompleted) {
         completer.complete(info.image);
@@ -122,7 +120,7 @@ class _LightboxState extends State<Lightbox> {
                                 thumbnail: widget.thumbnail,
                                 key: videoPlayer,
                               )
-                            : Placeholder()),
+                            : const Placeholder()),
               ),
             ),
           ),

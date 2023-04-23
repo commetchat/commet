@@ -4,9 +4,10 @@ import 'package:matrix/matrix.dart' as matrix;
 
 class MatrixRoomPreview extends PreviewData {
   late matrix.Client _matrixClient;
-  late String roomId;
 
-  MatrixRoomPreview({required this.roomId, required matrix.Client matrixClient}) : super(roomId: roomId) {
+  MatrixRoomPreview(
+      {required String roomId, required matrix.Client matrixClient})
+      : super(roomId: roomId) {
     _matrixClient = matrixClient;
   }
 
@@ -15,7 +16,6 @@ class MatrixRoomPreview extends PreviewData {
 
     var nameState = state.where((element) => element.type == "m.room.name");
     if (nameState.isNotEmpty) displayName = nameState.first.content['name'];
-    print("Getting preview for: $roomId");
 
     var avatarState = state.where((element) => element.type == "m.room.avatar");
     if (avatarState.isNotEmpty) {
