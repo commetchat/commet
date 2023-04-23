@@ -1,3 +1,4 @@
+import 'package:commet/ui/pages/settings/settings_category.dart';
 import 'package:commet/ui/pages/settings/settings_menu.dart';
 import 'package:commet/ui/pages/settings/settings_tab.dart';
 import 'package:flutter/material.dart' as m;
@@ -16,8 +17,9 @@ class MobileSettingsPage extends StatefulWidget {
 }
 
 class _MobileSettingsPageState extends State<MobileSettingsPage> {
-  late List<SettingsTab> tabs;
+  late List<SettingsCategory> tabs;
   int selectedTabIndex = 0;
+  int selectedCategoryIndex = 0;
 
   @override
   void initState() {
@@ -43,32 +45,49 @@ class _MobileSettingsPageState extends State<MobileSettingsPage> {
                       onPressed: () => Navigator.of(context).pop(),
                     )),
               ),
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const BouncingScrollPhysics(),
-                itemBuilder: (context, index) {
-                  if (tabs[index].seperator) {
-                    if (tabs[index].label == null) return const Seperator();
-                    return Padding(
-                      padding: EdgeInsets.fromLTRB(s(16), s(8), s(8), s(8)),
-                      child: tiamat.Text.label(
-                        tabs[index].label!,
-                        // style:
-                        //     Theme.of(context).textTheme.titleSmall!.copyWith(color: Theme.of(context).disabledColor),
+              Flexible(
+                child: ListView.builder(
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: tabs.length,
+                  itemBuilder: (context, categoryIndex) {
+                    return m.Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: m.Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          if (categoryIndex != 0) tiamat.Seperator(),
+                          tiamat.Text.labelLow(
+                            tabs[categoryIndex].title!,
+                          ),
+                          ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: tabs[categoryIndex].tabs.length,
+                            itemBuilder: (context, tabIndex) {
+                              return SizedBox(
+                                  height: 40,
+                                  child: TextButton(
+                                    tabs[categoryIndex].tabs[tabIndex].label!,
+                                    icon:
+                                        tabs[categoryIndex].tabs[tabIndex].icon,
+                                    onTap: () {
+                                      setState(() {
+                                        NavigationUtils.navigateTo(
+                                            context,
+                                            SettingsSubPage(
+                                                builder: tabs[categoryIndex]
+                                                    .tabs[tabIndex]
+                                                    .pageBuilder!));
+                                      });
+                                    },
+                                  ));
+                            },
+                          )
+                        ],
                       ),
                     );
-                  }
-                  return SizedBox(
-                      child: TextButton(
-                    tabs[index].label!,
-                    onTap: () {
-                      setState(() {
-                        NavigationUtils.navigateTo(context, SettingsSubPage(builder: tabs[index].pageBuilder!));
-                      });
-                    },
-                  ));
-                },
-                itemCount: tabs.length,
+                  },
+                ),
               ),
             ],
           ),
@@ -83,7 +102,7 @@ class SettingsSubPage extends StatelessWidget {
   final Widget Function(BuildContext) builder;
   @override
   Widget build(BuildContext context) {
-    return Tile.low2(
+    return Tile.low1(
       child: SafeArea(
         child: Padding(
           padding: EdgeInsets.all(s(8.0)),

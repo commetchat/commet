@@ -2,8 +2,10 @@ import 'package:commet/cache/cached_file.dart';
 import 'package:commet/config/app_config.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/emoji/emoji_pack.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:flutter/widgets.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
@@ -36,6 +38,11 @@ class LoadingPageState extends State<LoadingPage> {
   }
 
   Future<bool> load() async {
+    var adapter = CachedFileAdapter();
+    if (!Hive.isAdapterRegistered(adapter.typeId)) {
+      Hive.registerAdapter(adapter);
+    }
+
     await preferences.init();
     await fileCache.init();
     await EmojiPack.defaults();
@@ -43,7 +50,7 @@ class LoadingPageState extends State<LoadingPage> {
     if (BuildConfig.LINUX) {
       Hive.init(await AppConfig.getDatabasePath());
     } else {
-      Hive.initFlutter(await AppConfig.getDatabasePath());
+      await Hive.initFlutter(await AppConfig.getDatabasePath());
     }
 
     var client = Provider.of<ClientManager>(context, listen: false);
@@ -61,9 +68,22 @@ class LoadingPageState extends State<LoadingPage> {
     });
 
     if (context.mounted) {
-      NavigationUtils.navigateTo(context, isLoggedIn ? ChatPage(clientManager: client) : const LoginPage());
+      NavigationUtils.navigateTo(context, isLoggedIn ? ChatPage(clientManager: client) : initialLoginPage());
     }
     return true;
+  }
+
+  LoginPage initialLoginPage() {
+    return LoginPage(
+      onSuccess: (_, newContext) {
+        if (newContext.mounted) {
+          Navigator.of(newContext).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (_) => ChatPage(clientManager: Provider.of<ClientManager>(newContext))),
+            (route) => false,
+          );
+        }
+      },
+    );
   }
 
   @override

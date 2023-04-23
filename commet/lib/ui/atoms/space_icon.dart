@@ -6,12 +6,22 @@ import '../molecules/space_selector.dart';
 import '../../config/app_config.dart';
 
 class SpaceIcon extends StatefulWidget {
-  const SpaceIcon(this.space,
-      {super.key, this.width = 44, this.onTap, this.showUser = false});
-  final Space space;
+  const SpaceIcon(
+      {super.key,
+      this.width = 44,
+      this.onTap,
+      this.showUser = false,
+      this.onUpdate,
+      this.avatar,
+      required this.displayName,
+      this.userAvatar});
   final double width;
   final void Function()? onTap;
   final bool showUser;
+  final Stream<void>? onUpdate;
+  final String displayName;
+  final ImageProvider? avatar;
+  final ImageProvider? userAvatar;
 
   @override
   State<SpaceIcon> createState() => _SpaceIconState();
@@ -20,7 +30,7 @@ class SpaceIcon extends StatefulWidget {
 class _SpaceIconState extends State<SpaceIcon> {
   @override
   void initState() {
-    widget.space.onUpdate.stream.listen((event) {
+    widget.onUpdate?.listen((event) {
       setState(() {});
     });
 
@@ -31,16 +41,15 @@ class _SpaceIconState extends State<SpaceIcon> {
   Widget build(BuildContext context) {
     return Stack(children: [
       SideNavigationBar.tooltip(
-          widget.space.displayName,
+          widget.displayName,
           ImageButton(
             //tooltip: widget.space.displayName,
-            image: widget.space.avatarThumbnail,
+            image: widget.avatar,
             onTap: widget.onTap,
             size: widget.width,
           ),
           context),
-      if (widget.showUser && widget.space.client.user!.avatar != null)
-        avatarOverlay()
+      if (widget.showUser && widget.userAvatar != null) avatarOverlay()
     ]);
   }
 
@@ -55,9 +64,7 @@ class _SpaceIconState extends State<SpaceIcon> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(s(20)),
             boxShadow: const [BoxShadow(color: Colors.black, blurRadius: 4)],
-            image: DecorationImage(
-                image: widget.space.client.user!.avatar!,
-                fit: BoxFit.fitHeight),
+            image: DecorationImage(image: widget.userAvatar!, fit: BoxFit.fitHeight),
             //border: Border.all(color: Colors.white, width: 1)),
           ),
         ),

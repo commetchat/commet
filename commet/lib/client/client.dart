@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:commet/client/preview_data.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/client/space.dart';
+import 'package:flutter/material.dart';
 
 import 'peer.dart';
 
@@ -16,7 +18,7 @@ enum LoginType {
   token,
 }
 
-enum LoginResult { success, failed, error }
+enum LoginResult { success, failed, error, alreadyLoggedIn }
 
 abstract class Client {
   Future<void> init();
@@ -30,6 +32,8 @@ abstract class Client {
   Client(this.identifier);
 
   bool isLoggedIn();
+
+  ValueKey get key => ValueKey(identifier);
 
   Future<LoginResult> login(LoginType type, String userIdentifier, String server, {String? password, String? token});
 
@@ -151,6 +155,10 @@ abstract class Client {
   Future<PreviewData?> getRoomPreviewInternal(String address);
 
   Future<PreviewData?> getSpacePreviewInternal(String address);
+
+  Future<void> setAvatar(Uint8List bytes, String mimeType);
+
+  Future<void> setDisplayName(String name);
 
   Future<void> close() async {}
 }

@@ -22,8 +22,7 @@ class ChatPageState extends State<ChatPage> {
   late Space? selectedSpace = null;
   late Room? selectedRoom = null;
   late bool homePageSelected = false;
-  late GlobalKey<SplitTimelineViewerState> timelineKey =
-      GlobalKey<SplitTimelineViewerState>();
+  late GlobalKey<SplitTimelineViewerState> timelineKey = GlobalKey<SplitTimelineViewerState>();
   late Map<String, GlobalKey<SplitTimelineViewerState>> timelines = {};
   double height = -1;
 
@@ -31,26 +30,29 @@ class ChatPageState extends State<ChatPage> {
     homePageSelected = true;
   }
 
-  void selectSpace(Space space) {
+  void selectSpace(Space? space) {
     if (space == selectedSpace) return;
 
     clearRoomSelection();
     if (kDebugMode) {
       // Weird hacky work around mentioned in #2
-      timelines[selectedRoom?.identifier]?.currentState?.prepareForDisposal();
-      WidgetsBinding.instance
-          .addPostFrameCallback((_) => _setSelectedSpace(space));
+      timelines[selectedRoom?.localId]?.currentState?.prepareForDisposal();
+      WidgetsBinding.instance.addPostFrameCallback((_) => _setSelectedSpace(space));
     } else {
       _setSelectedSpace(space);
     }
   }
 
+  void clearSpaceSelection() {
+    clearRoomSelection();
+    selectSpace(null);
+  }
+
   void clearRoomSelection() {
     if (kDebugMode) {
       // Weird hacky work around mentioned in #2
-      timelines[selectedRoom?.identifier]?.currentState!.prepareForDisposal();
-      WidgetsBinding.instance
-          .addPostFrameCallback((_) => _clearRoomSelection());
+      timelines[selectedRoom?.localId]?.currentState!.prepareForDisposal();
+      WidgetsBinding.instance.addPostFrameCallback((_) => _clearRoomSelection());
     } else {
       _clearRoomSelection();
     }
@@ -65,15 +67,14 @@ class ChatPageState extends State<ChatPage> {
   void selectRoom(Room room) {
     if (room == selectedRoom) return;
 
-    if (!timelines.containsKey(room.identifier)) {
-      timelines[room.identifier] = GlobalKey<SplitTimelineViewerState>();
+    if (!timelines.containsKey(room.localId)) {
+      timelines[room.localId] = GlobalKey<SplitTimelineViewerState>();
     }
 
     if (kDebugMode) {
       // Weird hacky work around mentioned in #2
-      timelines[selectedRoom?.identifier]?.currentState?.prepareForDisposal();
-      WidgetsBinding.instance
-          .addPostFrameCallback((_) => _setSelectedRoom(room));
+      timelines[selectedRoom?.localId]?.currentState?.prepareForDisposal();
+      WidgetsBinding.instance.addPostFrameCallback((_) => _setSelectedRoom(room));
     } else {
       _setSelectedRoom(room);
     }
@@ -82,15 +83,10 @@ class ChatPageState extends State<ChatPage> {
   void _setSelectedRoom(Room room) {
     setState(() {
       selectedRoom = room;
-      WidgetsBinding.instance.addPostFrameCallback(
-        (timeStamp) {
-          // timelines[selectedRoom?.identifier]?.currentState?.forceToBottom();
-        },
-      );
     });
   }
 
-  void _setSelectedSpace(Space space) {
+  void _setSelectedSpace(Space? space) {
     setState(() {
       selectedSpace = space;
       homePageSelected = false;
@@ -117,14 +113,13 @@ class ChatPageState extends State<ChatPage> {
         // Listen to size change and offset the scroll view, so that we maintain timeline position when window changes size
         child: NotificationListener(
             onNotification: (SizeChangedLayoutNotification notification) {
-              print("Size Changed");
               var prevHeight = height;
               height = MediaQuery.of(context).size.height;
               if (prevHeight == -1) return true;
 
               var diff = prevHeight - height;
               WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                var state = timelines[selectedRoom?.identifier]?.currentState;
+                var state = timelines[selectedRoom?.localId]?.currentState;
                 if (state != null) {
                   state.controller.jumpTo(state.controller.offset + diff);
                 }

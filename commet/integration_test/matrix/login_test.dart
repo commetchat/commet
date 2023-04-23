@@ -1,3 +1,4 @@
+import 'package:commet/generated/l10n.dart';
 import 'package:commet/ui/pages/login/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -51,7 +52,7 @@ void main() {
     var button = find.widgetWithText(ElevatedButton, "Login");
 
     await tester.tap(button);
-    await tester.waitFor(() => find.text("Login Failed").evaluate().isNotEmpty,
+    await tester.waitFor(() => find.text(T.current.loginResultFailedMessage).evaluate().isNotEmpty,
         skipPumpAndSettle: false, timeout: const Duration(seconds: 5));
     await tester.pumpFrames(app, Duration(seconds: 1));
     expect(app.clientManager.isLoggedIn(), equals(false));

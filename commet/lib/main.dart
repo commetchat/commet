@@ -32,8 +32,6 @@ void main() async {
     },
   );
 
-  Hive.registerAdapter(CachedFileAdapter());
-
   runApp(App());
 }
 

@@ -31,6 +31,10 @@ class MatrixPeer extends Peer {
     var generatedColor = Random().nextInt(Colors.primaries.length);
     color = Colors.primaries[generatedColor];
 
+    refreshAvatar();
+  }
+
+  Future<void> refreshAvatar() async {
     Uri? avatarUrl;
     try {
       avatarUrl = await _matrixClient.getAvatarUrl(identifier);

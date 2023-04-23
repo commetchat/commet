@@ -146,6 +146,9 @@ class MatrixVerificationPageView extends StatelessWidget {
       case KeyVerificationState.done:
         return done(context);
       case KeyVerificationState.waitingAccept:
+        return Column(
+          children: [tiamat.Text.label("Waiting for other device to accept request"), loading(context)],
+        );
       case KeyVerificationState.waitingSas:
         return loading(context);
       default:
@@ -261,6 +264,7 @@ class MatrixVerificationPageView extends StatelessWidget {
           ))),
           Button.success(
             text: T.current.sasVerificationDone,
+            onTap: () => Navigator.pop(context),
           )
         ]);
   }

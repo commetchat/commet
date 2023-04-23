@@ -17,7 +17,7 @@ import 'package:matrix/matrix.dart' as matrix;
 import 'package:html/parser.dart' as htmlParser;
 
 class MatrixTimeline extends Timeline {
-  late matrix.Timeline? _matrixTimeline;
+  matrix.Timeline? _matrixTimeline;
   late matrix.Room _matrixRoom;
 
   MatrixTimeline(
@@ -35,9 +35,11 @@ class MatrixTimeline extends Timeline {
   void initTimeline() async {
     _matrixTimeline = await _matrixRoom.getTimeline(
       onInsert: (index) {
+        if (_matrixTimeline == null) return;
         insertEvent(index, convertEvent(_matrixTimeline!.events[index]));
       },
       onChange: (index) {
+        if (_matrixTimeline == null) return;
         events[index] = convertEvent(_matrixTimeline!.events[index], existing: events[index]);
         notifyChanged(index);
       },

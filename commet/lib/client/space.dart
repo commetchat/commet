@@ -29,12 +29,15 @@ abstract class Space {
 
   bool get isMember => false;
 
+  String get localId => "${client.identifier}:$identifier";
+
   late StreamController<int> onRoomAdded = StreamController.broadcast();
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other is! Space) return false;
+    if (other.client != client) return false;
 
     return identifier == other.identifier;
   }

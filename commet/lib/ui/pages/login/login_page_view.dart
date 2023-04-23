@@ -1,6 +1,7 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/generated/l10n.dart';
 import 'package:commet/ui/pages/login/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -38,32 +39,34 @@ class _LoginPageViewState extends State<LoginPageView> {
       _loading = true;
     });
 
-    var result = await widget.state?.login(_homeserverTextField.text, _usernameTextField.text, _passwordTextField.text);
+    LoginResult result =
+        await widget.state!.login(_homeserverTextField.text, _usernameTextField.text, _passwordTextField.text);
 
-    if (result == LoginResult.success) {
-      if (context.mounted) {
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (_) => ChatPage(clientManager: Provider.of<ClientManager>(context))),
-          (route) => false,
-        );
-      }
+    setState(() {
+      _loading = false;
+    });
+
+    String? message;
+
+    switch (result) {
+      case LoginResult.success:
+        break;
+      case LoginResult.failed:
+        message = T.current.loginResultFailedMessage;
+        break;
+      case LoginResult.error:
+        message = T.current.loginResultErrorMessage;
+        break;
+      case LoginResult.alreadyLoggedIn:
+        message = T.current.loginResultAlreadyLoggedInMessage;
+        break;
     }
 
-    if (result == LoginResult.failed) {
+    if (message != null) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Login Failed"),
-          ),
-        );
-      }
-    }
-
-    if (result == LoginResult.error) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("There was an error logging in"),
+          SnackBar(
+            content: Text(message!),
           ),
         );
       }
