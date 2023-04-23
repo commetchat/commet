@@ -1,4 +1,7 @@
 include: package:flutter_lints/flutter.yaml
 
 analyzer:
-  exclude: ['tiamat/*']
+  exclude:
+    - lib/*.g.dart
+    - lib/generated/*.dart
+    - lib/main.widgetbook.dart
