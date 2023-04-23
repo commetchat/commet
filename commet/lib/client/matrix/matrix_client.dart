@@ -7,6 +7,7 @@ import 'package:commet/config/app_config.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/loading/loading_page.dart';
+import 'package:commet/ui/pages/matrix/authentication/matrix_uia_request.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -30,7 +31,7 @@ import 'matrix_space.dart';
 class MatrixClient extends Client {
   late matrix.Client _matrixClient;
 
-  MatrixClient({String? name}) : super(RandomUtils.getRandomString(20)) {
+  MatrixClient({String? name, String? identifier}) : super(identifier ?? RandomUtils.getRandomString(20)) {
     if (name != null) {
       _matrixClient = _createMatrixClient(name);
     }
@@ -47,9 +48,15 @@ class MatrixClient extends Client {
 
     if (clients != null) {
       for (var clientName in clients) {
-        var client = MatrixClient(name: clientName);
-        manager.addClient(client);
-        await client.init();
+        var client = MatrixClient(name: clientName, identifier: clientName);
+        try {
+          manager.addClient(client);
+          await client.init();
+        } catch (_) {
+          manager.removeClient(client);
+          preferences.removeRegisteredMatrixClient(clientName);
+          print("Unable to init client: $clientName");
+        }
       }
     }
   }
@@ -75,6 +82,13 @@ class MatrixClient extends Client {
     _matrixClient.onKeyVerificationRequest.stream.listen((event) {
       PopupDialog.show(navigator.currentContext!,
           content: MatrixVerificationPage(request: event), title: "Verification Request");
+    });
+
+    _matrixClient.onUiaRequest.stream.listen((event) {
+      if (event.state == matrix.UiaRequestState.waitForUser) {
+        PopupDialog.show(navigator.currentContext!,
+            content: MatrixUIARequest(event, this), title: "Authentication Request");
+      }
     });
   }
 
@@ -151,6 +165,7 @@ class MatrixClient extends Client {
 
   @override
   Future<void> logout() {
+    preferences.removeRegisteredMatrixClient(_matrixClient.clientName);
     return _matrixClient.logout();
   }
 
@@ -246,5 +261,16 @@ class MatrixClient extends Client {
   Future<void> close() async {
     await _matrixClient.dispose();
     await super.close();
+  }
+
+  Future<void> setAvatar(Uint8List bytes, String mimeType) async {
+    await _matrixClient.setAvatar(matrix.MatrixImageFile(bytes: bytes, name: "avatar", mimeType: mimeType));
+    await (user as MatrixPeer).refreshAvatar();
+  }
+
+  @override
+  Future<void> setDisplayName(String name) async {
+    await _matrixClient.setDisplayName(_matrixClient.userID!, name);
+    user!.displayName = name;
   }
 }

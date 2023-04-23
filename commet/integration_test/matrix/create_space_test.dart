@@ -27,14 +27,10 @@ void main() {
     await _setSpaceName(tester, spaceName);
     await _confirmCreateSpace(tester);
 
-    var client = app.clientManager.getClients().first;
+    var client = app.clientManager.clients.first;
 
-    expect(client.spaces.any((element) => element.displayName == spaceName),
-        isTrue);
-    expect(
-        client.spaces
-            .firstWhere((element) => element.displayName == spaceName)
-            .visibility,
+    expect(client.spaces.any((element) => element.displayName == spaceName), isTrue);
+    expect(client.spaces.firstWhere((element) => element.displayName == spaceName).visibility,
         equals(RoomVisibility.invite));
 
     await app.clientManager.close();
@@ -52,14 +48,10 @@ void main() {
     await _setSpaceName(tester, spaceName);
     await _confirmCreateSpace(tester);
 
-    var client = app.clientManager.getClients().first;
+    var client = app.clientManager.clients.first;
 
-    expect(client.spaces.any((element) => element.displayName == spaceName),
-        isTrue);
-    expect(
-        client.spaces
-            .firstWhere((element) => element.displayName == spaceName)
-            .visibility,
+    expect(client.spaces.any((element) => element.displayName == spaceName), isTrue);
+    expect(client.spaces.firstWhere((element) => element.displayName == spaceName).visibility,
         equals(RoomVisibility.public));
 
     await app.clientManager.close();
@@ -68,9 +60,7 @@ void main() {
 }
 
 Future<void> _confirmCreateSpace(WidgetTester tester) async {
-  await tester.tap(find
-      .widgetWithText(tiamat.Button, T.current.addSpaceViewCreateSpaceButton)
-      .first);
+  await tester.tap(find.widgetWithText(tiamat.Button, T.current.addSpaceViewCreateSpaceButton).first);
 
   await tester.pumpAndSettle();
 }
@@ -89,9 +79,7 @@ Future<void> _setPrivate(WidgetTester tester) async {
 
   await tester.pumpAndSettle();
 
-  await tester.tap(find
-      .widgetWithText(tiamat.Text, T.current.roomVisibilityPrivateExplanation)
-      .last);
+  await tester.tap(find.widgetWithText(tiamat.Text, T.current.roomVisibilityPrivateExplanation).last);
 
   await tester.pumpAndSettle();
 }
@@ -101,9 +89,7 @@ Future<void> _setPublic(WidgetTester tester) async {
 
   await tester.pumpAndSettle();
 
-  await tester.tap(find
-      .widgetWithText(tiamat.Text, T.current.roomVisibilityPublicExplanation)
-      .last);
+  await tester.tap(find.widgetWithText(tiamat.Text, T.current.roomVisibilityPublicExplanation).last);
 
   await tester.pumpAndSettle();
 }
@@ -116,9 +102,7 @@ Future<void> _openMenu(WidgetTester tester, App app) async {
   await tester.pumpAndSettle();
 
   await tester.dragUntilVisible(
-      find.widgetWithIcon(tiamat.ImageButton, Icons.add),
-      find.byType(SpaceSelector),
-      Offset(0, 50));
+      find.widgetWithIcon(tiamat.ImageButton, Icons.add), find.byType(SpaceSelector), Offset(0, 50));
 
   await tester.tap(find.widgetWithIcon(tiamat.ImageButton, Icons.add));
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' as material;
 import 'package:flutter/material.dart';
 import 'package:tiamat/atoms/seperator.dart';
+import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 
 const String exampleText = "The quick brown fox jumped over the lazy dog";
@@ -70,8 +71,11 @@ Widget wbtextAllUseCase(BuildContext context) {
         children: const [
           Text.largeTitle(exampleText),
           Seperator(),
-          Align(alignment: Alignment.centerRight, child: Text.labelEmphasised(exampleText)),
-          Align(alignment: Alignment.centerRight, child: Text.label(exampleText)),
+          Align(
+              alignment: Alignment.centerRight,
+              child: Text.labelEmphasised(exampleText)),
+          Align(
+              alignment: Alignment.centerRight, child: Text.label(exampleText)),
           material.Padding(
             padding: EdgeInsets.fromLTRB(0, 8, 0, 8),
             child: Text.body(
@@ -83,17 +87,28 @@ Widget wbtextAllUseCase(BuildContext context) {
                 "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua"),
           ),
           Seperator(),
-          Align(alignment: Alignment.centerRight, child: Text.error(exampleText)),
+          Align(
+              alignment: Alignment.centerRight, child: Text.error(exampleText)),
         ],
       ),
     ),
   );
 }
 
-enum TextType { label, labelEmphasised, error, tiny, body, largeTitle, name }
+enum TextType {
+  label,
+  labelEmphasised,
+  labelLow,
+  error,
+  tiny,
+  body,
+  largeTitle,
+  name
+}
 
 class Text extends StatelessWidget {
-  const Text(this.text, {super.key, this.type = TextType.label, this.overflow, this.color});
+  const Text(this.text,
+      {super.key, this.type = TextType.label, this.overflow, this.color});
   final String text;
   final TextType type;
   final Color? color;
@@ -133,22 +148,31 @@ class Text extends StatelessWidget {
       : type = TextType.name,
         super(key: key);
 
+  const Text.labelLow(this.text, {Key? key, this.color, this.overflow})
+      : type = TextType.labelLow,
+        super(key: key);
+
   @override
   Widget build(BuildContext context) {
     TextStyle style;
 
     switch (type) {
       case TextType.label:
-        style = material.Theme.of(context).textTheme.labelLarge!.copyWith(fontWeight: FontWeight.w300, color: color);
-        break;
-      case TextType.labelEmphasised:
-        style = material.Theme.of(context).textTheme.labelLarge!.copyWith(fontWeight: FontWeight.w400, color: color);
-        break;
-      case TextType.error:
         style = material.Theme.of(context)
             .textTheme
-            .bodyMedium!
-            .copyWith(fontWeight: FontWeight.w500, color: color ?? Theme.of(context).colorScheme.error);
+            .labelLarge!
+            .copyWith(fontWeight: FontWeight.w300, color: color);
+        break;
+      case TextType.labelEmphasised:
+        style = material.Theme.of(context)
+            .textTheme
+            .labelLarge!
+            .copyWith(fontWeight: FontWeight.w400, color: color);
+        break;
+      case TextType.error:
+        style = material.Theme.of(context).textTheme.bodyMedium!.copyWith(
+            fontWeight: FontWeight.w500,
+            color: color ?? Theme.of(context).colorScheme.error);
         break;
       case TextType.tiny:
         style = material.Theme.of(context)
@@ -157,16 +181,28 @@ class Text extends StatelessWidget {
             .copyWith(fontWeight: FontWeight.w300, fontSize: 10, color: color);
         break;
       case TextType.body:
-        style = material.Theme.of(context).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w300, color: color);
+        style = material.Theme.of(context)
+            .textTheme
+            .bodyMedium!
+            .copyWith(fontWeight: FontWeight.w300, color: color);
         break;
       case TextType.largeTitle:
-        style = material.Theme.of(context).textTheme.titleLarge!.copyWith(color: color);
+        style = material.Theme.of(context)
+            .textTheme
+            .titleLarge!
+            .copyWith(color: color);
         break;
       case TextType.name:
         style = material.Theme.of(context)
             .textTheme
             .bodyMedium!
             .copyWith(color: color, fontWeight: FontWeight.w400, fontSize: 15);
+        break;
+      case TextType.labelLow:
+        style = material.Theme.of(context).textTheme.bodyMedium!.copyWith(
+            color: color ?? Theme.of(context).colorScheme.secondary,
+            fontWeight: FontWeight.w400,
+            fontSize: 12);
         break;
     }
 

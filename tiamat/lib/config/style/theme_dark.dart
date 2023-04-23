@@ -52,9 +52,11 @@ class ThemeDark {
       shadowColor: Colors.black.withAlpha(100),
       elevatedButtonTheme: ElevatedButtonThemeData(
           style: ButtonStyle(
+              backgroundColor:
+                  MaterialStatePropertyAll(ThemeDarkColors.primary),
               shape: MaterialStatePropertyAll(
-        RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ))),
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ))),
       dividerTheme: const DividerThemeData(color: ThemeDarkColors.surfaceHigh1),
       sliderTheme: SliderThemeData(
         inactiveTrackColor: ThemeDarkColors.primary.withAlpha(100),

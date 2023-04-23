@@ -85,6 +85,7 @@ class TextInput extends StatefulWidget {
       this.label,
       this.minLines,
       this.maxLength,
+      this.obscureText = false,
       super.key});
   final String? placeholder;
   final Widget? icon;
@@ -93,6 +94,7 @@ class TextInput extends StatefulWidget {
   final int? minLines;
   final int? maxLength;
   final String? label;
+  final bool obscureText;
   @override
   State<TextInput> createState() => _TextInputState();
 }
@@ -102,8 +104,9 @@ class _TextInputState extends State<TextInput> {
   Widget build(BuildContext context) {
     return material.TextField(
       controller: widget.controller,
-      maxLines: widget.maxLines,
+      maxLines: widget.obscureText ? 1 : widget.maxLines,
       minLines: widget.minLines,
+      obscureText: widget.obscureText,
       maxLength: widget.maxLength,
       cursorColor: material.Theme.of(context).highlightColor,
       decoration: material.InputDecoration(

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:commet/client/client.dart';
+import 'package:commet/client/stale_info.dart';
 
 class ClientManager {
   final Map<String, Client> _clients = {};
@@ -8,14 +9,28 @@ class ClientManager {
   List<Room> rooms = List.empty(growable: true);
   List<Room> directMessages = List.empty(growable: true);
   List<Space> spaces = List.empty(growable: true);
+  List<Client> _clientsList = List.empty(growable: true);
+
+  List<Client> get clients => _clientsList;
 
   late StreamController<void> onSync = StreamController.broadcast();
+
   late StreamController<int> onRoomAdded = StreamController.broadcast();
+  late StreamController<int> onRoomRemoved = StreamController.broadcast();
+
   late StreamController<int> onDirectMessageRoomAdded = StreamController.broadcast();
+
   late StreamController<int> onSpaceAdded = StreamController.broadcast();
+  late StreamController<StaleSpaceInfo> onSpaceRemoved = StreamController.broadcast();
+
+  late StreamController<int> onClientAdded = StreamController.broadcast();
+  late StreamController<StalePeerInfo> onClientRemoved = StreamController.broadcast();
 
   void addClient(Client client) {
     _clients[client.identifier] = client;
+
+    _clientsList.add(client);
+    onClientAdded.add(_clients.length - 1);
 
     client.onSync.stream.listen((_) => _synced());
 
@@ -35,8 +50,48 @@ class ClientManager {
     });
   }
 
-  List<Client> getClients() {
-    return _clients.values.toList();
+  Future<void> logoutClient(Client client) async {
+    int clientIndex = _clientsList.indexOf(client);
+
+    var clientInfo = StalePeerInfo(
+        index: clientIndex,
+        displayName: client.user!.displayName,
+        identifier: client.user!.identifier,
+        avatar: client.user!.avatar);
+
+    for (int i = rooms.length - 1; i >= 0; i--) {
+      if (rooms[i].client == client) {
+        rooms.removeAt(i);
+        onRoomRemoved.add(i);
+      }
+    }
+
+    for (int i = spaces.length - 1; i >= 0; i--) {
+      if (spaces[i].client == client) {
+        var info = StaleSpaceInfo(
+            index: i,
+            name: spaces[i].displayName,
+            avatar: spaces[i].avatarThumbnail,
+            userAvatar: spaces[i].client.user!.avatar);
+        spaces.removeAt(i);
+        onSpaceRemoved.add(info);
+      }
+    }
+
+    await client.logout();
+    onClientRemoved.add(clientInfo);
+    _clients.remove(client.identifier);
+    _clientsList.removeAt(clientIndex);
+  }
+
+  void removeClient(Client client) {
+    if (_clients.containsKey(client.identifier)) {
+      _clients.remove(client.identifier);
+    }
+
+    if (_clientsList.contains(client)) {
+      _clientsList.remove(client);
+    }
   }
 
   bool isLoggedIn() {

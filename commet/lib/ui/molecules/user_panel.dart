@@ -23,7 +23,13 @@ Widget wbUserPanelWithAvatar(BuildContext context) {
 }
 
 class UserPanel extends StatefulWidget {
-  const UserPanel({super.key, this.avatar, required this.displayName, this.color, this.detail, this.onClicked});
+  const UserPanel(
+      {super.key,
+      this.avatar,
+      required this.displayName,
+      this.color,
+      this.detail,
+      this.onClicked});
   final ImageProvider? avatar;
   final String displayName;
   final Color? color;
@@ -45,7 +51,7 @@ class _UserPanelState extends State<UserPanel> {
           splashColor: material.Theme.of(context).highlightColor,
           onTap: widget.onClicked,
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(8, 3, 0, 3),
+            padding: const EdgeInsets.fromLTRB(0, 3, 0, 3),
             child: Row(
               children: [
                 Avatar.medium(
@@ -64,7 +70,8 @@ class _UserPanelState extends State<UserPanel> {
                           widget.displayName,
                           color: widget.color,
                         ),
-                        if (widget.detail != null) tiamat.Text.tiny(widget.detail!),
+                        if (widget.detail != null)
+                          tiamat.Text.tiny(widget.detail!),
                       ],
                     ),
                   ),

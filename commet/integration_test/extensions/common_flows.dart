@@ -2,6 +2,9 @@ import 'dart:io';
 
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/config/app_config.dart';
+import 'package:commet/generated/l10n.dart';
+import 'package:commet/ui/molecules/space_selector.dart';
+import 'package:commet/ui/organisms/side_navigation_bar.dart';
 import 'package:commet/ui/pages/login/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -10,12 +13,20 @@ import 'package:hive/hive.dart';
 import 'package:matrix/encryption/utils/key_verification.dart';
 import 'package:matrix/matrix.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:tiamat/tiamat.dart' as tiamat;
 
 import 'wait_for.dart';
 
 import 'package:path/path.dart' as p;
 
 extension CommonFlows on WidgetTester {
+  String get homeserver => const String.fromEnvironment('HOMESERVER', defaultValue: "localhost");
+  String get username => const String.fromEnvironment('USER1_NAME', defaultValue: "alice");
+  String get password => const String.fromEnvironment('USER1_PW', defaultValue: "AliceInWonderland");
+
+  String get userTwoName => const String.fromEnvironment('USER2_NAME', defaultValue: "bob");
+  String get userTwoPassword => const String.fromEnvironment('USER2_PW', defaultValue: "CanWeFixIt");
+
   Future<void> clearUserData() async {
     var dir = Directory(await AppConfig.getDatabasePath());
     if (await dir.exists()) {
@@ -38,13 +49,6 @@ extension CommonFlows on WidgetTester {
   Future<void> login(App app) async {
     await waitFor(() => find.byType(LoginPage).evaluate().isNotEmpty);
 
-    // Test Login Successful
-    var hs = const String.fromEnvironment('HOMESERVER', defaultValue: "localhost");
-
-    var username = const String.fromEnvironment('USER1_NAME', defaultValue: "alice");
-
-    var password = const String.fromEnvironment('USER1_PW', defaultValue: "AliceInWonderland");
-
     var button = find.widgetWithText(ElevatedButton, "Login");
 
     var inputs = find.byType(TextField);
@@ -52,7 +56,7 @@ extension CommonFlows on WidgetTester {
 
     // Build our app and trigger a frame.
 
-    await enterText(inputs.at(0), hs);
+    await enterText(inputs.at(0), homeserver);
     await pumpAndSettle();
     await enterText(inputs.at(1), username);
     await pumpAndSettle();
@@ -67,13 +71,29 @@ extension CommonFlows on WidgetTester {
     expect(app.clientManager.isLoggedIn(), equals(true));
   }
 
+  Future<void> loginUser2(App app) async {
+    await waitFor(() => find.byType(LoginPage).evaluate().isNotEmpty);
+    var button = find.widgetWithText(ElevatedButton, "Login");
+
+    var inputs = find.byType(TextField);
+    expect(inputs, findsWidgets);
+
+    await enterText(inputs.at(0), homeserver);
+    await pumpAndSettle();
+    await enterText(inputs.at(1), userTwoName);
+    await pumpAndSettle();
+    await enterText(inputs.at(2), userTwoPassword);
+    await pumpAndSettle();
+
+    await tap(button);
+
+    await pumpAndSettle();
+
+    await waitFor(() => app.clientManager.isLoggedIn(), timeout: const Duration(seconds: 5), skipPumpAndSettle: true);
+    expect(app.clientManager.isLoggedIn(), equals(true));
+  }
+
   Future<Client> createTestClient() async {
-    var hs = const String.fromEnvironment('HOMESERVER', defaultValue: "localhost");
-
-    var username = const String.fromEnvironment('USER1_NAME', defaultValue: "alice");
-
-    var password = const String.fromEnvironment('USER1_PW', defaultValue: "AliceInWonderland");
-
     var otherClient = Client(
       "Commet Integration Tester",
       verificationMethods: {KeyVerificationMethod.emoji, KeyVerificationMethod.numbers},
@@ -87,11 +107,19 @@ extension CommonFlows on WidgetTester {
       },
     );
 
-    await otherClient.checkHomeserver(Uri.http(hs));
+    await otherClient.checkHomeserver(Uri.http(homeserver));
 
     await otherClient.login(LoginType.mLoginPassword,
         identifier: AuthenticationUserIdentifier(user: username), password: password);
 
     return otherClient;
+  }
+
+  Future<void> openSettings(App app) async {
+    await dragUntilVisible(find.byKey(SideNavigationBar.settingsKey), find.byType(SideNavigationBar), Offset(0, 20));
+
+    await tap(find.byKey(SideNavigationBar.settingsKey));
+
+    await pumpAndSettle();
   }
 }

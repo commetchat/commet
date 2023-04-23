@@ -26,7 +26,7 @@ void main() {
     await tester.pumpWidget(app);
     await tester.login(app);
 
-    var matrixClient = (app.clientManager.getClients()[0] as MatrixClient);
+    var matrixClient = (app.clientManager.clients[0] as MatrixClient);
 
     var otherClient = await tester.createTestClient();
 

@@ -30,6 +30,6 @@ class AddSpaceState extends State<AddSpace> {
 
   @override
   Widget build(BuildContext context) {
-    return AddSpaceView(clients: widget.clientManager.getClients(), onCreateSpace: createSpace, onJoinSpace: joinSpace);
+    return AddSpaceView(clients: widget.clientManager.clients, onCreateSpace: createSpace, onJoinSpace: joinSpace);
   }
 }

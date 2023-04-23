@@ -21,8 +21,7 @@ Widget wbimageButton(BuildContext context) {
                 height: 128,
                 child: ImageButton(
                   size: 128,
-                  image: AssetImage(
-                      "assets/images/placeholder/generic/checker_purple.png"),
+                  image: AssetImage("assets/images/placeholder/generic/checker_purple.png"),
                 ),
               ),
               Padding(
@@ -41,8 +40,7 @@ Widget wbimageButton(BuildContext context) {
                 height: 64,
                 child: ImageButton(
                   size: 64,
-                  image: AssetImage(
-                      "assets/images/placeholder/generic/checker_purple.png"),
+                  image: AssetImage("assets/images/placeholder/generic/checker_purple.png"),
                 ),
               ),
               Padding(
@@ -189,13 +187,7 @@ Widget wbimageButtonIconWithShadow(BuildContext context) {
 }
 
 class ImageButton extends StatefulWidget {
-  const ImageButton(
-      {super.key,
-      this.onTap,
-      this.image,
-      this.doShadow = false,
-      required this.size,
-      this.icon});
+  const ImageButton({super.key, this.onTap, this.image, this.doShadow = false, required this.size, this.icon});
   final void Function()? onTap;
   final ImageProvider? image;
   final double size;
@@ -240,25 +232,17 @@ class _ImageButtonState extends State<ImageButton> {
 
   Widget createImageContainer(BuildContext context) {
     return TweenAnimationBuilder<BorderRadius>(
-      tween: Tween(
-          begin: BorderRadius.circular(_borderRadius),
-          end: BorderRadius.circular(_borderRadius)),
+      tween: Tween(begin: BorderRadius.circular(_borderRadius), end: BorderRadius.circular(_borderRadius)),
       builder: (context, value, child) {
         return Container(
           decoration: widget.doShadow
-              ? BoxDecoration(borderRadius: value, boxShadow: [
-                  BoxShadow(
-                      color: Theme.of(context).colorScheme.shadow,
-                      blurRadius: 10)
-                ])
+              ? BoxDecoration(
+                  borderRadius: value,
+                  boxShadow: [BoxShadow(color: Theme.of(context).colorScheme.shadow, blurRadius: 10)])
               : widget.image == null
                   ? BoxDecoration(
                       borderRadius: value.add(BorderRadius.circular(2)),
-                      border: Border.all(
-                          color: Theme.of(context)
-                              .extension<ExtraColors>()!
-                              .outline,
-                          width: 1),
+                      border: Border.all(color: Theme.of(context).extension<ExtraColors>()!.outline, width: 1),
                     )
                   : null,
           child: ClipRRect(
@@ -272,7 +256,7 @@ class _ImageButtonState extends State<ImageButton> {
       duration: const Duration(milliseconds: 200),
       curve: Curves.easeInOut,
       child: widget.image != null
-          ? Ink.image(image: widget.image!, child: createInkwell())
+          ? Ink.image(image: widget.image!, fit: BoxFit.cover, child: createInkwell())
           : createInkwell(),
     );
   }

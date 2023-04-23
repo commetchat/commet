@@ -27,13 +27,13 @@ Widget wbseperatorUseCase(BuildContext context) {
 }
 
 class Seperator extends StatelessWidget {
-  const Seperator({super.key});
-
+  const Seperator({super.key, this.padding = 8});
+  final double padding;
   @override
   Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.all(8.0),
-      child: material.Divider(
+    return Padding(
+      padding: EdgeInsets.all(padding),
+      child: const material.Divider(
         height: 1,
       ),
     );
