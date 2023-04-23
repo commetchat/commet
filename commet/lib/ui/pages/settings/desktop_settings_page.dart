@@ -29,6 +29,7 @@ class _DesktopSettingsPageState extends State<DesktopSettingsPage> {
     return m.Material(
       child: Row(
         mainAxisSize: MainAxisSize.max,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           tabSelector(context),
           Expanded(
@@ -45,11 +46,13 @@ class _DesktopSettingsPageState extends State<DesktopSettingsPage> {
                 child: child,
               );
             },
-            child: Tile(
-              key: ValueKey(selectedTabIndex),
-              child: settingsTab(categories[selectedCategoryIndex]
-                  .tabs[selectedTabIndex]
-                  .pageBuilder!),
+            child: SingleChildScrollView(
+              child: Tile(
+                key: ValueKey(selectedTabIndex),
+                child: settingsTab(categories[selectedCategoryIndex]
+                    .tabs[selectedTabIndex]
+                    .pageBuilder!),
+              ),
             ),
           ))
         ],
@@ -131,7 +134,7 @@ class _DesktopSettingsPageState extends State<DesktopSettingsPage> {
   Widget settingsTab(Widget Function(BuildContext context) builder) {
     return Padding(
       padding: const EdgeInsets.all(20.0),
-      child: Align(alignment: Alignment.topLeft, child: builder(context)),
+      child: builder(context),
     );
   }
 }

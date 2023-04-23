@@ -26,28 +26,24 @@ class _ProfileEditTabState extends State<ProfileEditTab> {
 
   @override
   Widget build(BuildContext context) {
-    return Flexible(
-      child: SingleChildScrollView(
-        child: ListView.builder(
-          shrinkWrap: true,
-          itemBuilder: (context, index) {
-            var client = widget.clientManager.clients[index];
-            return Column(
-              children: [
-                ProfileEditView(
-                  avatar: client.user?.avatar,
-                  displayName: client.user!.displayName,
-                  identifier: client.user!.identifier,
-                  pickAvatar: () => pickAvatar(client),
-                  setDisplayName: (name) => setDisplayName(client, name),
-                ),
-                const Seperator()
-              ],
-            );
-          },
-          itemCount: widget.clientManager.clients.length,
-        ),
-      ),
+    return ListView.builder(
+      shrinkWrap: true,
+      itemBuilder: (context, index) {
+        var client = widget.clientManager.clients[index];
+        return Column(
+          children: [
+            ProfileEditView(
+              avatar: client.user?.avatar,
+              displayName: client.user!.displayName,
+              identifier: client.user!.identifier,
+              pickAvatar: () => pickAvatar(client),
+              setDisplayName: (name) => setDisplayName(client, name),
+            ),
+            const Seperator()
+          ],
+        );
+      },
+      itemCount: widget.clientManager.clients.length,
     );
   }
 

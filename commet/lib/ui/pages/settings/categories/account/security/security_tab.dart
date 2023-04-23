@@ -26,23 +26,19 @@ class _SecuritySettingsTabState extends State<SecuritySettingsTab> {
 
   @override
   Widget build(BuildContext context) {
-    return Flexible(
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            if (widget.clientManager.clients.length > 1)
-              AccountSelector(
-                widget.clientManager.clients,
-                onClientSelected: (client) {
-                  setState(() {
-                    selectedClient = client;
-                  });
-                },
-              ),
-            pickSecurityPage(selectedClient)
-          ],
-        ),
-      ),
+    return Column(
+      children: [
+        if (widget.clientManager.clients.length > 1)
+          AccountSelector(
+            widget.clientManager.clients,
+            onClientSelected: (client) {
+              setState(() {
+                selectedClient = client;
+              });
+            },
+          ),
+        pickSecurityPage(selectedClient)
+      ],
     );
   }
 
