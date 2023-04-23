@@ -15,7 +15,7 @@ class TimelineViewerState extends State<TimelineViewer> {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
 
   final ScrollController _scrollController =
-      ScrollController(initialScrollOffset: 9999);
+      ScrollController(initialScrollOffset: 99999);
   int _count = 0;
 
   double scrollExtent = 0;
