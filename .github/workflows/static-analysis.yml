@@ -27,6 +27,11 @@ jobs:
 
       - name: Configure Flutter (∩｀-´)⊃━☆ﾟ.*･｡ﾟ
         run: flutter config --enable-linux-desktop
+
+      - name: Check Code Style
+        run: |
+          cd $PROJECT_PATH
+          dart format -o hide --fix --set-exit-if-changed .
         
       - name: Code Generation __φ(．．;)
         run: |
@@ -37,8 +42,3 @@ jobs:
         run: |
           cd $PROJECT_PATH
           dart analyze
-
-      - name: Check Code Style
-        run: |
-          cd $PROJECT_PATH
-          dart format -o show --fix --set-exit-if-changed .
