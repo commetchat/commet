@@ -8,11 +8,12 @@ import 'package:commet/ui/molecules/space_viewer.dart';
 import 'package:commet/ui/molecules/user_list.dart';
 import 'package:commet/ui/molecules/user_panel.dart';
 import 'package:commet/ui/organisms/side_navigation_bar.dart';
-import 'package:commet/ui/organisms/space_summary.dart';
 import 'package:commet/ui/pages/chat/chat_page.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart';
+
+import '../../organisms/space_summary/space_summary.dart';
 
 class DesktopChatPageView extends StatefulWidget {
   const DesktopChatPageView({required this.state, super.key});
@@ -27,6 +28,8 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
     return Stack(
       children: [
         Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Tile.low4(
               child: SideNavigationBar(
@@ -50,9 +53,14 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
             if (widget.state.selectedSpace != null &&
                 widget.state.selectedRoom == null)
               Expanded(
-                  child: SpaceSummary(
-                      key: widget.state.selectedSpace!.key,
-                      space: widget.state.selectedSpace!)),
+                child: Tile(
+                  child: ListView(children: [
+                    SpaceSummary(
+                        key: widget.state.selectedSpace!.key,
+                        space: widget.state.selectedSpace!),
+                  ]),
+                ),
+              ),
           ],
         ),
         if (widget.state.selectedRoom != null)

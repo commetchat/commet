@@ -2,7 +2,6 @@
 
 import 'package:commet/ui/molecules/direct_message_list.dart';
 import 'package:commet/ui/molecules/split_timeline_viewer.dart';
-import 'package:commet/ui/organisms/space_summary.dart';
 import 'package:commet/ui/pages/chat/chat_page.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart' as material;
@@ -21,6 +20,8 @@ import '../../molecules/user_panel.dart';
 import '../../organisms/side_navigation_bar.dart';
 
 import 'package:flutter/material.dart' as m;
+
+import '../../organisms/space_summary/space_summary.dart';
 
 class MobileChatPageView extends StatefulWidget {
   const MobileChatPageView({required this.state, super.key});
@@ -91,7 +92,15 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
   Widget mainPanel() {
     if (widget.state.selectedSpace != null &&
         widget.state.selectedRoom == null) {
-      return SpaceSummary(space: widget.state.selectedSpace!);
+      return Expanded(
+        child: Tile(
+          child: ListView(children: [
+            SpaceSummary(
+                key: widget.state.selectedSpace!.key,
+                space: widget.state.selectedSpace!),
+          ]),
+        ),
+      );
     }
 
     return timelineView();

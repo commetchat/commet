@@ -32,6 +32,8 @@ class ChatPageState extends State<ChatPage> {
   void selectSpace(Space? space) {
     if (space == selectedSpace) return;
 
+    if (space != null && !space.loaded) space.loadExtra();
+
     clearRoomSelection();
     if (kDebugMode) {
       // Weird hacky work around mentioned in #2

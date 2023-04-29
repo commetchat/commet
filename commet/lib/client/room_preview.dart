@@ -2,7 +2,6 @@ import 'package:flutter/widgets.dart';
 
 class PreviewData {
   String roomId;
-  bool exists = false;
   ImageProvider? avatar;
   String? displayName;
   String? topic;

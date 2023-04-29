@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:commet/client/client_manager.dart';
-import 'package:commet/client/matrix/matrix_room_preview.dart';
-import 'package:commet/client/preview_data.dart';
+import 'package:commet/client/matrix/matrix_client_extensions.dart';
+import 'package:commet/client/room_preview.dart';
 import 'package:commet/config/app_config.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/main.dart';
@@ -243,12 +243,7 @@ class MatrixClient extends Client {
 
   @override
   Future<PreviewData?> getRoomPreviewInternal(String address) async {
-    MatrixRoomPreview preview =
-        MatrixRoomPreview(roomId: address, matrixClient: _matrixClient);
-    if (preview.exists) {
-      return preview;
-    }
-    return null;
+    return await _matrixClient.getRoomPreview(address);
   }
 
   @override

@@ -1,7 +1,8 @@
 import 'package:commet/cache/file_image.dart';
 import 'package:commet/client/client.dart';
+import 'package:commet/client/matrix/matrix_client_extensions.dart';
 import 'package:commet/client/matrix/matrix_room_permissions.dart';
-import 'package:commet/client/matrix/matrix_room_preview.dart';
+import 'package:commet/client/room_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
@@ -94,23 +95,32 @@ class MatrixSpace extends Space {
   }
 
   @override
-  Future<Room> createSpaceChild(String name, RoomVisibility visibility) async {
+  Future<Room> createRoom(String name, RoomVisibility visibility) async {
     var room = await client.createRoom(name, visibility);
     _matrixRoom.setSpaceChild(room.identifier);
     return room;
   }
 
   @override
-  Future<void> fetchUnjoinedRoomsInternal() async {
+  Future<List<PreviewData>> fetchUnjoinedRooms() async {
+    List<PreviewData> data = List.empty(growable: true);
+
     for (var child in _matrixRoom.spaceChildren) {
-      if (_matrixClient.getRoomById(child.roomId!) == null) {
-        if (!hasUnjoinedRoom(child.roomId!)) {
-          var preview = MatrixRoomPreview(
-              roomId: child.roomId!, matrixClient: _matrixClient);
-          addUnjoinedRoom(child.roomId!, preview);
-          await preview.init();
-        }
+      if (child.roomId == null) continue;
+
+      if (containsRoom(child.roomId!)) continue;
+
+      if (childPreviews.any((element) => element.roomId == child.roomId)) {
+        continue;
       }
+
+      var preview = await _matrixClient.getRoomPreview(child.roomId!);
+
+      if (preview != null) data.add(preview);
     }
+    return data;
   }
+
+  @override
+  void onRoomReorderedCallback(int oldIndex, int newIndex) {}
 }

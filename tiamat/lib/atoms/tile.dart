@@ -11,27 +11,32 @@ Widget wbtileSurface(BuildContext context) {
 
 @WidgetbookUseCase(name: 'Low 1', type: Tile)
 Widget wbtileSurfaceLow1(BuildContext context) {
-  return const Tile.low1(child: Center(child: tiamat.Text.body("Hello, World!")));
+  return const Tile.low1(
+      child: Center(child: tiamat.Text.body("Hello, World!")));
 }
 
 @WidgetbookUseCase(name: 'Low 2', type: Tile)
 Widget wbtileSurfaceLow2(BuildContext context) {
-  return const Tile.low2(child: Center(child: tiamat.Text.body("Hello, World!")));
+  return const Tile.low2(
+      child: Center(child: tiamat.Text.body("Hello, World!")));
 }
 
 @WidgetbookUseCase(name: 'Low 3', type: Tile)
 Widget wbtileSurfaceLow3(BuildContext context) {
-  return const Tile.low3(child: Center(child: tiamat.Text.body("Hello, World!")));
+  return const Tile.low3(
+      child: Center(child: tiamat.Text.body("Hello, World!")));
 }
 
 @WidgetbookUseCase(name: 'Low 4', type: Tile)
 Widget wbtileSurfaceLow4(BuildContext context) {
-  return const Tile.low4(child: Center(child: tiamat.Text.body("Hello, World!")));
+  return const Tile.low4(
+      child: Center(child: tiamat.Text.body("Hello, World!")));
 }
 
 @WidgetbookUseCase(name: 'High', type: Tile)
 Widget wbtileSurfaceHigh(BuildContext context) {
-  return const Tile.high(child: Center(child: tiamat.Text.body("Hello, World!")));
+  return const Tile.high(
+      child: Center(child: tiamat.Text.body("Hello, World!")));
 }
 
 @WidgetbookUseCase(name: 'All', type: Tile)
@@ -44,10 +49,10 @@ Widget tileAll(BuildContext context) {
       Expanded(
           child: Tile.high(
         child: Center(
-            child: tiamat.Text.body(
-          "Hello, World!",
-          
-        ),),
+          child: tiamat.Text.body(
+            "Hello, World!",
+          ),
+        ),
       )),
       Expanded(
           child: Tile(
@@ -83,7 +88,6 @@ Widget tileAll(BuildContext context) {
   );
 }
 
-
 @WidgetbookUseCase(name: 'All with border', type: Tile)
 Widget tileAllBorders(BuildContext context) {
   return Column(
@@ -93,36 +97,41 @@ Widget tileAllBorders(BuildContext context) {
     children: [
       Expanded(
           child: Tile.high(
-        child: Center(
-            child: tiamat.Text.body(
-          "Hello, World!",
-          
-        ),),
-        borderBottom: true      )),
+              child: Center(
+                child: tiamat.Text.body(
+                  "Hello, World!",
+                ),
+              ),
+              borderBottom: true)),
       Expanded(
           child: Tile(
               child: Center(
                   child: tiamat.Text.body(
-        "Hello, World!",
-      )),borderBottom: true)),
+                "Hello, World!",
+              )),
+              borderBottom: true)),
       Expanded(
           child: Tile.low1(
               child: Center(
                   child: tiamat.Text.body(
-        "Hello, World!",
-      )),borderBottom: true)),
+                "Hello, World!",
+              )),
+              borderBottom: true)),
       Expanded(
           child: Tile.low2(
               child: Center(
                   child: tiamat.Text.body(
-        "Hello, World!",
-      )),borderBottom: true)),
+                "Hello, World!",
+              )),
+              borderBottom: true)),
       Expanded(
           child: Tile.low3(
-              child: Center(
-                  child: tiamat.Text.body(
-        "Hello, World!",
-      )),borderBottom: true,)),
+        child: Center(
+            child: tiamat.Text.body(
+          "Hello, World!",
+        )),
+        borderBottom: true,
+      )),
       Expanded(
           child: Tile.low4(
               child: Center(
@@ -133,8 +142,14 @@ Widget tileAllBorders(BuildContext context) {
   );
 }
 
-
-enum TileType { surface, surfaceLow1, surfaceLow2, surfaceLow3, surfaceLow4, surfaceHigh }
+enum TileType {
+  surface,
+  surfaceLow1,
+  surfaceLow2,
+  surfaceLow3,
+  surfaceLow4,
+  surfaceHigh
+}
 
 class Tile extends StatelessWidget {
   const Tile(
@@ -159,7 +174,11 @@ class Tile extends StatelessWidget {
   final bool borderTop;
   final bool borderBottom;
 
-  const Tile.low1({Key? key, this.child, this.decoration, this.borderBottom = false,
+  const Tile.low1(
+      {Key? key,
+      this.child,
+      this.decoration,
+      this.borderBottom = false,
       this.borderTop = false,
       this.borderLeft = false,
       this.borderRight = false})
@@ -167,7 +186,11 @@ class Tile extends StatelessWidget {
         glassOpacity = 0.4,
         glassSigma = 5,
         super(key: key);
-  const Tile.low2({Key? key, this.child, this.decoration, this.borderBottom = false,
+  const Tile.low2(
+      {Key? key,
+      this.child,
+      this.decoration,
+      this.borderBottom = false,
       this.borderTop = false,
       this.borderLeft = false,
       this.borderRight = false})
@@ -175,7 +198,11 @@ class Tile extends StatelessWidget {
         glassOpacity = 0.5,
         glassSigma = 7,
         super(key: key);
-  const Tile.low3({Key? key, this.child, this.decoration, this.borderBottom = false,
+  const Tile.low3(
+      {Key? key,
+      this.child,
+      this.decoration,
+      this.borderBottom = false,
       this.borderTop = false,
       this.borderLeft = false,
       this.borderRight = false})
@@ -183,7 +210,11 @@ class Tile extends StatelessWidget {
         glassOpacity = 0.6,
         glassSigma = 8,
         super(key: key);
-  const Tile.low4({Key? key, this.child, this.decoration, this.borderBottom = false,
+  const Tile.low4(
+      {Key? key,
+      this.child,
+      this.decoration,
+      this.borderBottom = false,
       this.borderTop = false,
       this.borderLeft = false,
       this.borderRight = false})
@@ -191,7 +222,11 @@ class Tile extends StatelessWidget {
         glassOpacity = 0.7,
         glassSigma = 10,
         super(key: key);
-  const Tile.high({Key? key, this.child, this.decoration, this.borderBottom = false,
+  const Tile.high(
+      {Key? key,
+      this.child,
+      this.decoration,
+      this.borderBottom = false,
       this.borderTop = false,
       this.borderLeft = false,
       this.borderRight = false})
@@ -226,19 +261,21 @@ class Tile extends StatelessWidget {
     }
 
     bool frosted = Theme.of(context).extension<ThemeSettings>()!.frosted;
-    var border = BorderSide(color: Theme.of(context).extension<ExtraColors>()!.outline);
+    var border =
+        BorderSide(color: Theme.of(context).extension<ExtraColors>()!.outline);
 
     if (!frosted) {
       return Container(
-        decoration: decoration ?? BoxDecoration(
-          color: color,
-          border: Border(
-            top : borderTop ? border : BorderSide.none,
-            bottom:  borderBottom ? border : BorderSide.none,
-            left:  borderLeft ? border : BorderSide.none,
-            right:  borderRight ? border : BorderSide.none
-          )
-        ),
+        decoration: decoration ??
+            BoxDecoration(
+                color: color,
+                border: (borderTop || borderBottom || borderLeft || borderRight)
+                    ? Border(
+                        top: borderTop ? border : BorderSide.none,
+                        bottom: borderBottom ? border : BorderSide.none,
+                        left: borderLeft ? border : BorderSide.none,
+                        right: borderRight ? border : BorderSide.none)
+                    : null),
         child: child,
       );
     }

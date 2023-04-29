@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:commet/client/preview_data.dart';
+import 'package:commet/client/room_preview.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/client/space.dart';
 import 'package:flutter/material.dart';

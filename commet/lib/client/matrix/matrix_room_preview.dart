@@ -1,4 +1,4 @@
-import 'package:commet/client/preview_data.dart';
+import 'package:commet/client/room_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
@@ -26,6 +26,5 @@ class MatrixRoomPreview extends PreviewData {
 
     var topicState = state.where((element) => element.type == "m.room.topic");
     if (topicState.isNotEmpty) topic = topicState.first.content['topic'];
-    exists = true;
   }
 }

@@ -1,37 +1,49 @@
 import 'dart:async';
-
 import 'package:commet/client/client.dart';
 import 'package:commet/client/permissions.dart';
-import 'package:commet/client/preview_data.dart';
+import 'package:commet/client/room_preview.dart';
 import 'package:flutter/material.dart';
 
 abstract class Space {
+  Space(this.identifier, this.client);
+
   late String identifier;
   late Client client;
-  ImageProvider? avatar;
-  ImageProvider? avatarThumbnail;
-  final Map<String, Room> _rooms = {};
-  final Map<String, PreviewData> _unjoinedRooms = {};
-  late List<Room> rooms = List.empty(growable: true);
   late Key key = UniqueKey();
+
   late Permissions permissions;
 
   late String displayName;
+  ImageProvider? avatar;
+  ImageProvider? avatarThumbnail;
+
+  late List<Room> rooms = List.empty(growable: true);
 
   String get topic => "";
+
   late RoomVisibility visibility = RoomVisibility.private;
 
   int notificationCount = 0;
 
-  Space(this.identifier, this.client);
+  String get localId => "${client.identifier}:$identifier";
+  List<PreviewData> get childPreviews => _childPreviewsList;
 
   StreamController<void> onUpdate = StreamController.broadcast();
-
-  bool get isMember => false;
-
-  String get localId => "${client.identifier}:$identifier";
-
   late StreamController<int> onRoomAdded = StreamController.broadcast();
+  late StreamController<void> onChildrenUpdated = StreamController.broadcast();
+
+  late StreamController<int> onChildPreviewAdded = StreamController.broadcast();
+
+  late StreamController<int> onChildPreviewRemoved =
+      StreamController.broadcast();
+  late StreamController<void> onChildPreviewsUpdated =
+      StreamController.broadcast();
+
+  final Map<String, Room> _rooms = {};
+
+  final List<PreviewData> _childPreviewsList = List.empty(growable: true);
+
+  bool loaded = false;
 
   @override
   // ignore: hash_and_equals
@@ -47,24 +59,11 @@ abstract class Space {
     return _rooms.containsKey(identifier);
   }
 
-  bool hasUnjoinedRoom(String identifier) {
-    return _unjoinedRooms.containsKey(identifier);
-  }
-
-  void addUnjoinedRoom(String identifier, PreviewData preview) {
-    if (!hasUnjoinedRoom(identifier)) {
-      _unjoinedRooms[identifier] = preview;
-    }
-  }
-
   void addRoom(Room room) {
     if (!containsRoom(room.identifier)) {
       rooms.add(room);
       _rooms[room.identifier] = room;
       onRoomAdded.add(rooms.length - 1);
-      if (_unjoinedRooms.containsKey(room.identifier)) {
-        _unjoinedRooms.remove(room.identifier);
-      }
     }
   }
 
@@ -78,14 +77,31 @@ abstract class Space {
     rooms.insert(newIndex, item);
   }
 
-  Future<List<PreviewData>> getUnjoinedRooms() async {
-    await fetchUnjoinedRoomsInternal();
-    return _unjoinedRooms.values.toList();
+  Future<void> _updateChildPreviews() async {
+    var previews = await fetchUnjoinedRooms();
+    for (var preview in previews) {
+      if (_childPreviewsList
+          .any((element) => element.roomId == preview.roomId)) {
+        continue;
+      }
+
+      _childPreviewsList.add(preview);
+      onChildPreviewAdded.add(_childPreviewsList.length - 1);
+    }
   }
 
-  Future<void> fetchUnjoinedRoomsInternal();
+  @protected
+  void onRoomReorderedCallback(int oldIndex, int newIndex);
 
-  void onRoomReorderedCallback(int oldIndex, int newIndex) {}
+  @protected
+  Future<List<PreviewData>> fetchUnjoinedRooms();
 
-  Future<Room> createSpaceChild(String name, RoomVisibility visibility);
+  Future<Room> createRoom(String name, RoomVisibility visibility);
+
+  Future<void> loadExtra() async {
+    var childFuture = _updateChildPreviews();
+
+    await childFuture;
+    loaded = true;
+  }
 }

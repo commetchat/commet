@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 import 'package:commet/client/client.dart';
-import 'package:commet/client/preview_data.dart';
+import 'package:commet/client/room_preview.dart';
 import 'package:commet/client/simulated/simulated_peer.dart';
 import 'package:commet/client/simulated/simulated_room.dart';
 import 'package:commet/client/simulated/simulated_space.dart';

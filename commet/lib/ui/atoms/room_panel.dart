@@ -52,7 +52,7 @@ class _RoomPanelState extends State<RoomPanel> {
             if (widget.showJoinButton)
               Padding(
                 padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
-                child: Button.success(
+                child: Button(
                   text: "Join",
                   onTap: () {
                     widget.onJoinButtonPressed?.call();

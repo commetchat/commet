@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:commet/client/client.dart';
-import 'package:commet/client/preview_data.dart';
+import 'package:commet/client/room_preview.dart';
 import 'package:commet/client/simulated/simulated_room_permissions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -34,16 +34,17 @@ class SimulatedSpace extends Space {
       length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
 
   @override
-  Future<Room> createSpaceChild(String name, RoomVisibility visibility) {
+  Future<Room> createRoom(String name, RoomVisibility visibility) {
     // ignore: todo
 // TODO: implement createSpaceChild
     throw UnimplementedError();
   }
 
   @override
-  Future<List<PreviewData>> fetchUnjoinedRoomsInternal() async {
-    // ignore: todo
-// TODO: implement fetchUnjoinedRoomsInternal
+  void onRoomReorderedCallback(int oldIndex, int newIndex) {}
+
+  @override
+  Future<List<PreviewData>> fetchUnjoinedRooms() async {
     return List.empty();
   }
 }

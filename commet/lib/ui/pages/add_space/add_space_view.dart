@@ -1,5 +1,5 @@
 import 'package:commet/client/client.dart';
-import 'package:commet/client/preview_data.dart';
+import 'package:commet/client/room_preview.dart';
 import 'package:commet/client/simulated/simulated_client.dart';
 import 'package:commet/ui/atoms/room_preview.dart';
 import 'package:commet/utils/debounce.dart';
@@ -260,7 +260,7 @@ class _AddSpaceViewState extends State<AddSpaceView> {
                     ],
                   )
                 : spacePreview != null
-                    ? RoomPreview(previewData: spacePreview!)
+                    ? RoomPreviewView(previewData: spacePreview!)
                     : Center(
                         child: tiamat.Text.label(
                             T.of(context).couldNotLoadRoomPreview)),
