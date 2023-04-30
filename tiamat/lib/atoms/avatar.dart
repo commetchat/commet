@@ -92,7 +92,8 @@ class Avatar extends StatelessWidget {
                 image: DecorationImage(
                     image: image!,
                     isAntiAlias: true,
-                    filterQuality: FilterQuality.high,
+                    filterQuality:
+                        radius > 22 ? FilterQuality.medium : FilterQuality.high,
                     fit: BoxFit.cover))),
       );
     }

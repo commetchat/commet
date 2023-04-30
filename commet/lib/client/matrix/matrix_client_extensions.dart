@@ -26,7 +26,7 @@ extension MatrixExtensions on Client {
     return FileImageProvider(getMxcFile(mxc));
   }
 
-  Future<PreviewData?> getRoomPreview(String roomId) async {
+  Future<RoomPreview?> getRoomPreview(String roomId) async {
     var state = await getRoomState(roomId);
     String? displayName;
     ImageProvider? avatar;
@@ -46,7 +46,7 @@ extension MatrixExtensions on Client {
     var topicState = state.where((element) => element.type == "m.room.topic");
     if (topicState.isNotEmpty) topic = topicState.first.content['topic'];
 
-    return PreviewData(
-        roomId: roomId, avatar: avatar, displayName: displayName, topic: topic);
+    return GenericRoomPreview(roomId,
+        avatar: avatar, displayName: displayName, topic: topic);
   }
 }

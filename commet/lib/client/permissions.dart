@@ -5,5 +5,7 @@ abstract class Permissions {
 
   bool get canSendMessage;
 
-  bool get canChangeSettings;
+  bool get canEditName;
+
+  bool get canEditAvatar;
 }

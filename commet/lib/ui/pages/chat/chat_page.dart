@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/ui/pages/chat/desktop_chat_page.dart';
 import 'package:commet/ui/pages/chat/mobile_chat_page.dart';
@@ -25,6 +27,8 @@ class ChatPageState extends State<ChatPage> {
   late Map<String, GlobalKey<SplitTimelineViewerState>> timelines = {};
   double height = -1;
 
+  StreamSubscription? onSpaceUpdateSubscription;
+
   void selectHomePage() {
     homePageSelected = true;
   }
@@ -33,6 +37,9 @@ class ChatPageState extends State<ChatPage> {
     if (space == selectedSpace) return;
 
     if (space != null && !space.loaded) space.loadExtra();
+
+    onSpaceUpdateSubscription?.cancel();
+    onSpaceUpdateSubscription = space?.onUpdate.stream.listen(onSpaceUpdated);
 
     clearRoomSelection();
     if (kDebugMode) {
@@ -106,6 +113,16 @@ class ChatPageState extends State<ChatPage> {
   @override
   void initState() {
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    onSpaceUpdateSubscription?.cancel();
+    super.dispose();
+  }
+
+  void onSpaceUpdated(void _) {
+    setState(() {});
   }
 
   @override

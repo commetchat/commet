@@ -92,14 +92,12 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
   Widget mainPanel() {
     if (widget.state.selectedSpace != null &&
         widget.state.selectedRoom == null) {
-      return Expanded(
-        child: Tile(
-          child: ListView(children: [
-            SpaceSummary(
-                key: widget.state.selectedSpace!.key,
-                space: widget.state.selectedSpace!),
-          ]),
-        ),
+      return Tile(
+        child: ListView(children: [
+          SpaceSummary(
+              key: widget.state.selectedSpace!.key,
+              space: widget.state.selectedSpace!),
+        ]),
       );
     }
 

@@ -1,7 +1,9 @@
+import 'dart:typed_data';
+
 import 'package:commet/cache/file_image.dart';
 import 'package:commet/client/client.dart';
-import 'package:commet/client/matrix/matrix_client_extensions.dart';
 import 'package:commet/client/matrix/matrix_room_permissions.dart';
+import 'package:commet/client/matrix/matrix_room_preview.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart' as matrix;
@@ -11,6 +13,8 @@ import '../../cache/cache_file_provider.dart';
 class MatrixSpace extends Space {
   late matrix.Room _matrixRoom;
   late matrix.Client _matrixClient;
+  Uri? _avatarUrl;
+  bool ignoreNextAvatarUpdate = false;
 
   @override
   String get topic => _matrixRoom.topic;
@@ -55,31 +59,49 @@ class MatrixSpace extends Space {
   void refresh() {
     displayName = _matrixRoom.getLocalizedDisplayname();
 
+    if (_matrixRoom.avatar != null && _matrixRoom.avatar != _avatarUrl) {
+      updateAvatarFromRoomState();
+    }
+
+    updateRoomsList();
+  }
+
+  void updateAvatarFromRoomState() {
+    _avatarUrl = _matrixRoom.avatar;
+    if (ignoreNextAvatarUpdate) {
+      ignoreNextAvatarUpdate = false;
+      return;
+    }
     if (_matrixRoom.avatar != null) {
       var url = _matrixRoom.avatar!
           .getThumbnail(_matrixClient, width: 56, height: 56)
           .toString();
-      avatar = NetworkImage(url);
+      var avatar = NetworkImage(url);
+      setAvatar(newAvatar: avatar);
     }
 
     if (_matrixRoom.avatar != null) {
-      avatar = FileImageProvider(
-          CacheFileProvider(_matrixRoom.avatar.toString(), () async {
-        return (await _matrixClient.httpClient
-                .get(_matrixRoom.avatar!.getDownloadLink(_matrixClient)))
-            .bodyBytes;
-      }));
-
-      avatarThumbnail = FileImageProvider(
-          CacheFileProvider.thumbnail(_matrixRoom.avatar.toString(), () async {
-        return (await _matrixClient.httpClient.get(_matrixRoom.avatar!
-                .getThumbnail(_matrixClient,
-                    width: 90, height: 90, animated: true)))
-            .bodyBytes;
-      }));
+      updateAvatar();
     }
+  }
 
-    updateRoomsList();
+  void updateAvatar() {
+    var avatar = FileImageProvider(
+        CacheFileProvider(_matrixRoom.avatar.toString(), () async {
+      return (await _matrixClient.httpClient
+              .get(_matrixRoom.avatar!.getDownloadLink(_matrixClient)))
+          .bodyBytes;
+    }));
+
+    var avatarThumbnail = FileImageProvider(
+        CacheFileProvider.thumbnail(_matrixRoom.avatar.toString(), () async {
+      return (await _matrixClient.httpClient.get(_matrixRoom.avatar!
+              .getThumbnail(_matrixClient,
+                  width: 90, height: 90, animated: true)))
+          .bodyBytes;
+    }));
+
+    setAvatar(newAvatar: avatar, newThumbnail: avatarThumbnail);
   }
 
   void updateRoomsList() {
@@ -102,25 +124,34 @@ class MatrixSpace extends Space {
   }
 
   @override
-  Future<List<PreviewData>> fetchUnjoinedRooms() async {
-    List<PreviewData> data = List.empty(growable: true);
+  Future<List<RoomPreview>> fetchChildren() async {
+    var response =
+        await _matrixClient.getSpaceHierarchy(identifier, maxDepth: 5);
 
-    for (var child in _matrixRoom.spaceChildren) {
-      if (child.roomId == null) continue;
-
-      if (containsRoom(child.roomId!)) continue;
-
-      if (childPreviews.any((element) => element.roomId == child.roomId)) {
-        continue;
-      }
-
-      var preview = await _matrixClient.getRoomPreview(child.roomId!);
-
-      if (preview != null) data.add(preview);
-    }
-    return data;
+    return response.rooms
+        .where((element) => element.roomId != identifier)
+        .where((element) => !containsRoom(element.roomId))
+        .map((e) => MatrixSpaceRoomChunkPreview(e, _matrixClient))
+        .toList();
   }
 
   @override
   void onRoomReorderedCallback(int oldIndex, int newIndex) {}
+
+  @override
+  Future<void> setDisplayNameInternal(String name) async {
+    await _matrixRoom.setName(name);
+  }
+
+  @override
+  Future<void> changeAvatar(Uint8List bytes, String? mimeType) async {
+    var avatar = Image.memory(bytes).image;
+    ignoreNextAvatarUpdate = true;
+    setAvatar(newAvatar: avatar, newThumbnail: avatar);
+
+    await _matrixRoom.setAvatar(matrix.MatrixImageFile(
+        bytes: bytes,
+        name: "avatar",
+        mimeType: mimeType == "" ? null : mimeType));
+  }
 }

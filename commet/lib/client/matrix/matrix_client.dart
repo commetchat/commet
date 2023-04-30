@@ -242,19 +242,19 @@ class MatrixClient extends Client {
   }
 
   @override
-  Future<PreviewData?> getRoomPreviewInternal(String address) async {
+  Future<RoomPreview?> getRoomPreviewInternal(String address) async {
     return await _matrixClient.getRoomPreview(address);
   }
 
   @override
-  Future<PreviewData?> getSpacePreviewInternal(String address) {
+  Future<RoomPreview?> getSpacePreviewInternal(String address) {
     return getRoomPreviewInternal(address);
   }
 
   @override
   Future<Room> joinRoom(String address) async {
     var id = await _matrixClient.joinRoom(address);
-    _matrixClient.waitForRoomInSync(id);
+    await _matrixClient.waitForRoomInSync(id);
     if (roomExists(id)) return getRoom(id)!;
 
     var room = MatrixRoom(this, _matrixClient.getRoomById(id)!, _matrixClient);

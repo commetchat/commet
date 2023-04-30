@@ -17,3 +17,12 @@ class StaleSpaceInfo {
   StaleSpaceInfo(
       {required this.index, this.name, this.avatar, this.userAvatar});
 }
+
+class StaleRoomInfo {
+  int index;
+  String? name;
+  String? topic;
+  ImageProvider? avatar;
+
+  StaleRoomInfo({required this.index, this.name, this.avatar, this.topic});
+}

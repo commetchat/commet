@@ -5,7 +5,7 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 
 class RoomPreviewView extends StatelessWidget {
   const RoomPreviewView({required this.previewData, super.key});
-  final PreviewData previewData;
+  final RoomPreview previewData;
   @override
   Widget build(BuildContext context) {
     return Row(

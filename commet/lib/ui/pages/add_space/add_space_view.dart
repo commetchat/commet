@@ -75,7 +75,7 @@ class _AddSpaceViewState extends State<AddSpaceView> {
   TextEditingController topicController = TextEditingController();
   TextEditingController spaceAddressController = TextEditingController();
 
-  PreviewData? spacePreview;
+  RoomPreview? spacePreview;
   bool loadingSpacePreview = false;
 
   Debouncer spacePreviewDebounce =

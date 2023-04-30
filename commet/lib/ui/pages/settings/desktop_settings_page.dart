@@ -1,5 +1,4 @@
 import 'package:commet/ui/pages/settings/settings_category.dart';
-import 'package:commet/ui/pages/settings/settings_menu.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart' as m;
 
@@ -7,8 +6,8 @@ import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class DesktopSettingsPage extends StatefulWidget {
-  const DesktopSettingsPage({super.key});
-
+  const DesktopSettingsPage({required this.settings, super.key});
+  final List<SettingsCategory> settings;
   @override
   State<DesktopSettingsPage> createState() => _DesktopSettingsPageState();
 }
@@ -20,7 +19,7 @@ class _DesktopSettingsPageState extends State<DesktopSettingsPage> {
 
   @override
   void initState() {
-    categories = SettingsMenu().settings;
+    categories = widget.settings;
     super.initState();
   }
 
@@ -49,9 +48,13 @@ class _DesktopSettingsPageState extends State<DesktopSettingsPage> {
             child: SingleChildScrollView(
               child: Tile(
                 key: ValueKey(selectedTabIndex),
-                child: settingsTab(categories[selectedCategoryIndex]
-                    .tabs[selectedTabIndex]
-                    .pageBuilder!),
+                child: selectedCategoryIndex < categories.length &&
+                        selectedTabIndex <
+                            categories[selectedCategoryIndex].tabs.length
+                    ? settingsTab(categories[selectedCategoryIndex]
+                        .tabs[selectedTabIndex]
+                        .pageBuilder!)
+                    : null,
               ),
             ),
           ))

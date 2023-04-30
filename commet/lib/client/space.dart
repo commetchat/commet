@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/permissions.dart';
 import 'package:commet/client/room_preview.dart';
+import 'package:commet/client/stale_info.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 abstract class Space {
@@ -14,8 +16,11 @@ abstract class Space {
   late Permissions permissions;
 
   late String displayName;
-  ImageProvider? avatar;
-  ImageProvider? avatarThumbnail;
+  ImageProvider? get avatar => _avatar;
+  ImageProvider? get avatarThumbnail => _avatarThumbnail;
+
+  ImageProvider? _avatar;
+  ImageProvider? _avatarThumbnail;
 
   late List<Room> rooms = List.empty(growable: true);
 
@@ -26,22 +31,21 @@ abstract class Space {
   int notificationCount = 0;
 
   String get localId => "${client.identifier}:$identifier";
-  List<PreviewData> get childPreviews => _childPreviewsList;
+  List<RoomPreview> get childPreviews => _childPreviewsList;
 
   StreamController<void> onUpdate = StreamController.broadcast();
   late StreamController<int> onRoomAdded = StreamController.broadcast();
   late StreamController<void> onChildrenUpdated = StreamController.broadcast();
-
   late StreamController<int> onChildPreviewAdded = StreamController.broadcast();
 
-  late StreamController<int> onChildPreviewRemoved =
+  late StreamController<StaleRoomInfo> onChildPreviewRemoved =
       StreamController.broadcast();
   late StreamController<void> onChildPreviewsUpdated =
       StreamController.broadcast();
 
   final Map<String, Room> _rooms = {};
 
-  final List<PreviewData> _childPreviewsList = List.empty(growable: true);
+  final List<RoomPreview> _childPreviewsList = List.empty(growable: true);
 
   bool loaded = false;
 
@@ -60,6 +64,17 @@ abstract class Space {
   }
 
   void addRoom(Room room) {
+    for (int i = _childPreviewsList.length - 1; i >= 0; i--) {
+      if (_childPreviewsList[i].roomId == room.identifier) {
+        onChildPreviewRemoved.add(StaleRoomInfo(
+            index: i,
+            avatar: _childPreviewsList[i].avatar,
+            name: _childPreviewsList[i].displayName,
+            topic: _childPreviewsList[i].topic));
+        _childPreviewsList.removeAt(i);
+      }
+    }
+
     if (!containsRoom(room.identifier)) {
       rooms.add(room);
       _rooms[room.identifier] = room;
@@ -78,7 +93,8 @@ abstract class Space {
   }
 
   Future<void> _updateChildPreviews() async {
-    var previews = await fetchUnjoinedRooms();
+    var previews = await fetchChildren();
+
     for (var preview in previews) {
       if (_childPreviewsList
           .any((element) => element.roomId == preview.roomId)) {
@@ -94,7 +110,7 @@ abstract class Space {
   void onRoomReorderedCallback(int oldIndex, int newIndex);
 
   @protected
-  Future<List<PreviewData>> fetchUnjoinedRooms();
+  Future<List<RoomPreview>> fetchChildren();
 
   Future<Room> createRoom(String name, RoomVisibility visibility);
 
@@ -103,5 +119,29 @@ abstract class Space {
 
     await childFuture;
     loaded = true;
+  }
+
+  Future<void> setDisplayName(String newName) async {
+    await setDisplayNameInternal(newName);
+    displayName = newName;
+    onUpdate.add(null);
+  }
+
+  @protected
+  Future<void> setDisplayNameInternal(String name);
+
+  Future<void> changeAvatar(Uint8List bytes, String? mimeType);
+
+  @protected
+  void setAvatar({ImageProvider? newAvatar, ImageProvider? newThumbnail}) {
+    onUpdate.add(null);
+    if (newAvatar != null) {
+      _avatar = newAvatar;
+      _avatarThumbnail = newThumbnail;
+    }
+
+    if (newThumbnail != null) {
+      _avatarThumbnail = newThumbnail;
+    }
   }
 }

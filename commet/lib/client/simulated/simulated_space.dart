@@ -1,10 +1,10 @@
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/client/simulated/simulated_room_permissions.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 
 import '../../utils/rng.dart';
 
@@ -21,8 +21,10 @@ class SimulatedSpace extends Space {
     ];
     var placeholderImageIndex = Random().nextInt(images.length);
 
-    avatar = AssetImage(images[placeholderImageIndex]);
-    avatarThumbnail = avatar;
+    var avatar = AssetImage(images[placeholderImageIndex]);
+
+    setAvatar(newAvatar: avatar, newThumbnail: avatar);
+
     permissions = SimulatedRoomPermissions();
   }
 
@@ -44,7 +46,18 @@ class SimulatedSpace extends Space {
   void onRoomReorderedCallback(int oldIndex, int newIndex) {}
 
   @override
-  Future<List<PreviewData>> fetchUnjoinedRooms() async {
+  Future<List<RoomPreview>> fetchChildren() async {
     return List.empty();
+  }
+
+  @override
+  Future<void> setDisplayNameInternal(String name) async {
+    displayName = name;
+  }
+
+  @override
+  Future<void> changeAvatar(Uint8List bytes, String? mimeType) async {
+    var avatar = Image.memory(bytes).image;
+    setAvatar(newAvatar: avatar, newThumbnail: avatar);
   }
 }

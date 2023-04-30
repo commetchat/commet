@@ -1,5 +1,6 @@
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/ui/pages/add_space/add_space.dart';
+import 'package:commet/ui/pages/settings/app_settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
 import 'package:provider/provider.dart';
@@ -10,7 +11,6 @@ import '../../generated/l10n.dart';
 import '../molecules/space_selector.dart';
 import '../molecules/split_timeline_viewer.dart';
 import '../navigation/navigation_utils.dart';
-import '../pages/settings/settings_page.dart';
 
 class SideNavigationBar extends StatefulWidget {
   const SideNavigationBar(
@@ -114,7 +114,8 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                     size: 70,
                     icon: Icons.settings,
                     onTap: () {
-                      NavigationUtils.navigateTo(context, const SettingsPage());
+                      NavigationUtils.navigateTo(
+                          context, const AppSettingsPage());
                     },
                   ),
                   context,

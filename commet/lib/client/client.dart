@@ -42,8 +42,8 @@ abstract class Client {
   final Map<String, Room> _rooms = {};
   final Map<String, Space> _spaces = {};
   final Map<String, Peer> _peers = {};
-  final Map<String, PreviewData> _roomPreviews = {};
-  final Map<String, PreviewData> _spacePreviews = {};
+
+  final Map<String, RoomPreview> _spacePreviews = {};
 
   //Key is user ID
   final Map<String, Room> _directMessages = {};
@@ -96,6 +96,13 @@ abstract class Client {
         }
       }
 
+      for (var space in spaces) {
+        if (space.childPreviews
+            .any((element) => element.roomId == room.identifier)) {
+          space.addRoom(room);
+        }
+      }
+
       onRoomAdded.add(index);
     }
   }
@@ -126,21 +133,7 @@ abstract class Client {
 
   Future<Room> joinRoom(String address);
 
-  Future<PreviewData?> getRoomPreview(String address) async {
-    if (_roomPreviews.containsKey(address)) {
-      return _roomPreviews[address];
-    }
-
-    var preview = await getRoomPreviewInternal(address);
-    if (preview != null) {
-      _roomPreviews[address] = preview;
-      return preview;
-    }
-
-    return null;
-  }
-
-  Future<PreviewData?> getSpacePreview(String address) async {
+  Future<RoomPreview?> getSpacePreview(String address) async {
     if (_spacePreviews.containsKey(address)) {
       return _spacePreviews[address];
     }
@@ -154,9 +147,9 @@ abstract class Client {
     return null;
   }
 
-  Future<PreviewData?> getRoomPreviewInternal(String address);
+  Future<RoomPreview?> getRoomPreviewInternal(String address);
 
-  Future<PreviewData?> getSpacePreviewInternal(String address);
+  Future<RoomPreview?> getSpacePreviewInternal(String address);
 
   Future<void> setAvatar(Uint8List bytes, String mimeType);
 

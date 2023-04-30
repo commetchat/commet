@@ -11,11 +11,14 @@ class MatrixRoomPermissions implements Permissions {
   bool get canBan => room.canBan;
 
   @override
-  bool get canChangeSettings => room.canSendDefaultStates;
-
-  @override
   bool get canKick => room.canKick;
 
   @override
   bool get canSendMessage => room.canSendDefaultMessages;
+
+  @override
+  bool get canEditAvatar => room.canChangeStateEvent("m.room.avatar");
+
+  @override
+  bool get canEditName => room.canChangeStateEvent("m.room.name");
 }

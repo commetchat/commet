@@ -108,14 +108,14 @@ class SimulatedClient extends Client {
   }
 
   @override
-  Future<PreviewData?> getRoomPreviewInternal(String address) {
+  Future<RoomPreview?> getRoomPreviewInternal(String address) {
     // ignore: todo
 // TODO: implement getRoomPreviewInternal
     throw UnimplementedError();
   }
 
   @override
-  Future<PreviewData?> getSpacePreviewInternal(String address) {
+  Future<RoomPreview?> getSpacePreviewInternal(String address) {
     // ignore: todo
 // TODO: implement getSpacePreviewInternal
     throw UnimplementedError();
