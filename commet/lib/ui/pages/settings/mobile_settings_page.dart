@@ -102,21 +102,26 @@ class SettingsSubPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Tile.low1(
       child: SafeArea(
-        child: Padding(
+        child: m.Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Column(
+          child: Stack(
             children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: CircleButton(
-                      radius: 25,
-                      icon: m.Icons.arrow_back,
-                      onPressed: () => Navigator.of(context).pop(),
-                    )),
+              ListView(
+                children: [
+                  SizedBox(
+                    height: 70,
+                  ),
+                  builder(context)
+                ],
               ),
-              builder(context)
+              m.Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: CircleButton(
+                  radius: 25,
+                  icon: m.Icons.arrow_back,
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              )
             ],
           ),
         ),
