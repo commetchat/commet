@@ -11,6 +11,7 @@ class RoomAppearanceSettingsView extends StatefulWidget {
       this.onImagePicked,
       this.onNameChanged,
       this.canEditName = false,
+      this.canEditAvatar = false,
       super.key});
   final ImageProvider? avatar;
   final String displayName;
@@ -18,6 +19,7 @@ class RoomAppearanceSettingsView extends StatefulWidget {
   final Function(Uint8List bytes, String? mimeType)? onImagePicked;
   final Function(String name)? onNameChanged;
   final bool canEditName;
+  final bool canEditAvatar;
   @override
   State<RoomAppearanceSettingsView> createState() =>
       _RoomAppearanceSettingsViewState();
@@ -34,6 +36,7 @@ class _RoomAppearanceSettingsViewState
       pickAvatar: (bytes, type) => widget.onImagePicked?.call(bytes, type),
       setDisplayName: (name) => widget.onNameChanged?.call(name),
       canEditName: widget.canEditName,
+      canEditAvatar: widget.canEditAvatar,
     );
   }
 }

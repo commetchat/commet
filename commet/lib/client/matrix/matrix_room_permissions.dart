@@ -2,7 +2,7 @@ import 'package:matrix/matrix.dart' as matrix;
 
 import '../permissions.dart';
 
-class MatrixRoomPermissions implements Permissions {
+class MatrixRoomPermissions extends Permissions {
   late matrix.Room room;
 
   MatrixRoomPermissions(this.room);

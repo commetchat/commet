@@ -39,6 +39,7 @@ class _ProfileEditTabState extends State<ProfileEditTab> {
               pickAvatar: (bytes, type) => pickAvatar(client, bytes, type),
               setDisplayName: (name) => setDisplayName(client, name),
               canEditName: true,
+              canEditAvatar: true,
             ),
             const Seperator()
           ],

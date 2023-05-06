@@ -3,12 +3,14 @@ import 'dart:async';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/ui/pages/chat/desktop_chat_page.dart';
 import 'package:commet/ui/pages/chat/mobile_chat_page.dart';
+import 'package:commet/ui/pages/settings/room_settings_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 import '../../../client/client.dart';
 import '../../../config/build_config.dart';
 import '../../molecules/split_timeline_viewer.dart';
+import '../../navigation/navigation_utils.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({required this.clientManager, super.key});
@@ -27,7 +29,10 @@ class ChatPageState extends State<ChatPage> {
   late Map<String, GlobalKey<SplitTimelineViewerState>> timelines = {};
   double height = -1;
 
+  StreamController<Room> onRoomSelectionChanged = StreamController.broadcast();
+
   StreamSubscription? onSpaceUpdateSubscription;
+  StreamSubscription? onRoomUpdateSubscription;
 
   void selectHomePage() {
     homePageSelected = true;
@@ -53,11 +58,14 @@ class ChatPageState extends State<ChatPage> {
   }
 
   void clearSpaceSelection() {
+    onSpaceUpdateSubscription?.cancel();
     clearRoomSelection();
     selectSpace(null);
   }
 
   void clearRoomSelection() {
+    onRoomUpdateSubscription?.cancel();
+
     if (kDebugMode) {
       // Weird hacky work around mentioned in #2
       timelines[selectedRoom?.localId]?.currentState!.prepareForDisposal();
@@ -80,6 +88,11 @@ class ChatPageState extends State<ChatPage> {
     if (!timelines.containsKey(room.localId)) {
       timelines[room.localId] = GlobalKey<SplitTimelineViewerState>();
     }
+
+    onRoomUpdateSubscription?.cancel();
+    onRoomUpdateSubscription = room.onUpdate.stream.listen(onRoomUpdated);
+
+    onRoomSelectionChanged.add(room);
 
     if (kDebugMode) {
       // Weird hacky work around mentioned in #2
@@ -118,11 +131,27 @@ class ChatPageState extends State<ChatPage> {
   @override
   void dispose() {
     onSpaceUpdateSubscription?.cancel();
+    onRoomUpdateSubscription?.cancel();
     super.dispose();
   }
 
   void onSpaceUpdated(void _) {
     setState(() {});
+  }
+
+  void onRoomUpdated(void _) {
+    setState(() {});
+  }
+
+  void navigateRoomSettings() {
+    print("Selected room: ${selectedRoom!.displayName}");
+    if (selectedRoom != null) {
+      NavigationUtils.navigateTo(
+          context,
+          RoomSettingsPage(
+            room: selectedRoom!,
+          ));
+    }
   }
 
   @override

@@ -1,11 +1,13 @@
-abstract class Permissions {
-  bool get canBan;
+class Permissions {
+  bool get canBan => false;
 
-  bool get canKick;
+  bool get canKick => false;
 
-  bool get canSendMessage;
+  bool get canSendMessage => false;
 
-  bool get canEditName;
+  bool get canEditName => false;
 
-  bool get canEditAvatar;
+  bool get canEditAvatar => false;
+
+  bool get canEditAnything => (canEditName || canEditAvatar);
 }

@@ -15,7 +15,8 @@ class RoomList extends StatefulWidget {
       this.onRoomReordered,
       this.expandable = false,
       this.showHeader = false,
-      this.expanderText});
+      this.expanderText,
+      this.onRoomSelectionChanged});
   final bool expandable;
   final bool showHeader;
   final List<Room> rooms;
@@ -24,6 +25,7 @@ class RoomList extends StatefulWidget {
   final String? expanderText;
   final void Function(int)? onRoomSelected;
   final void Function(int oldIndex, int newIndex)? onRoomReordered;
+  final Stream<Room>? onRoomSelectionChanged;
   @override
   State<RoomList> createState() => _RoomListState();
 }
@@ -34,6 +36,7 @@ class _RoomListState extends State<RoomList>
   int _count = 0;
   StreamSubscription<int>? onInsertListener;
   StreamSubscription<void>? onUpdateListener;
+  StreamSubscription<Room>? onRoomSelectionChangedListener;
   AnimationController? controller;
   bool expanded = false;
   bool editMode = false;
@@ -50,6 +53,15 @@ class _RoomListState extends State<RoomList>
       _count++;
     });
 
+    onRoomSelectionChangedListener =
+        widget.onRoomSelectionChanged?.listen((room) {
+      if (_selectedIndex != -1 && widget.rooms[_selectedIndex] == room) return;
+
+      setState(() {
+        _selectedIndex = widget.rooms.indexOf(room);
+      });
+    });
+
     _count = widget.rooms.length;
     controller = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 100));
@@ -61,6 +73,7 @@ class _RoomListState extends State<RoomList>
   void dispose() {
     onInsertListener?.cancel();
     onUpdateListener?.cancel();
+    onRoomSelectionChangedListener?.cancel();
     super.dispose();
   }
 

@@ -14,11 +14,13 @@ class ProfileEditView extends StatefulWidget {
       required this.identifier,
       this.pickAvatar,
       this.canEditName = false,
+      this.canEditAvatar = false,
       this.setDisplayName});
   final ImageProvider? avatar;
   final String displayName;
   final String identifier;
   final bool canEditName;
+  final bool canEditAvatar;
   final Function(Uint8List bytes, String? type)? pickAvatar;
   final Function(String name)? setDisplayName;
 
@@ -66,11 +68,18 @@ class _ProfileEditViewState extends State<ProfileEditView> {
   }
 
   Widget avatarEditor() {
-    return ImagePicker(
-      currentImage: widget.avatar,
-      withData: true,
-      onImageRead: (bytes, mimeType) =>
-          widget.pickAvatar?.call(bytes, mimeType),
-    );
+    if (widget.canEditAvatar) {
+      return ImagePicker(
+        currentImage: widget.avatar,
+        withData: true,
+        onImageRead: (bytes, mimeType) =>
+            widget.pickAvatar?.call(bytes, mimeType),
+      );
+    } else {
+      return Avatar.large(
+        image: widget.avatar,
+        placeholderText: widget.displayName,
+      );
+    }
   }
 }

@@ -23,6 +23,7 @@ class _SpaceAppearanceSettingsPageState
       onImagePicked: onAvatarPicked,
       onNameChanged: setName,
       canEditName: widget.space.permissions.canEditName,
+      canEditAvatar: widget.space.permissions.canEditAvatar,
     );
   }
 

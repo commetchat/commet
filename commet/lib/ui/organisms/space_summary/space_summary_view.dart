@@ -27,7 +27,9 @@ class SpaceSummaryView extends StatefulWidget {
       this.onRoomAdded,
       this.onRoomRemoved,
       this.visibility,
-      this.openSpaceSettings});
+      this.openSpaceSettings,
+      this.onRoomTap,
+      this.onRoomSettingsButtonTap});
   final String displayName;
   final String? topic;
   final Future<void> Function(String roomId)? joinRoom;
@@ -42,6 +44,8 @@ class SpaceSummaryView extends StatefulWidget {
   final ImageProvider? avatar;
   final List<Room>? rooms;
   final Function? openSpaceSettings;
+  final Function(Room room)? onRoomSettingsButtonTap;
+  final Function(Room room)? onRoomTap;
   @override
   State<SpaceSummaryView> createState() => _SpaceSummaryViewState();
 }
@@ -164,6 +168,15 @@ class _SpaceSummaryViewState extends State<SpaceSummaryView> {
                   child: RoomPanel(
                     displayName: room.displayName,
                     avatar: room.avatar,
+                    showSettingsButton: room.permissions.canEditAnything,
+                    onRoomSettingsButtonPressed: () {
+                      widget.onRoomSettingsButtonTap?.call(room);
+                    },
+                    onTap: widget.onRoomTap != null
+                        ? () {
+                            widget.onRoomTap?.call(room);
+                          }
+                        : null,
                   ));
             },
           ),

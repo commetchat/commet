@@ -86,4 +86,9 @@ class SimulatedRoom extends Room {
 
     addMessage();
   }
+
+  @override
+  Future<void> setDisplayNameInternal(String name) async {
+    displayName = name;
+  }
 }

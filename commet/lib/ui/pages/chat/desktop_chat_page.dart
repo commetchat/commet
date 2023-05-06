@@ -56,8 +56,12 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
                 child: Tile(
                   child: ListView(children: [
                     SpaceSummary(
-                        key: widget.state.selectedSpace!.key,
-                        space: widget.state.selectedSpace!),
+                      key: widget.state.selectedSpace!.key,
+                      space: widget.state.selectedSpace!,
+                      onRoomTap: (room) {
+                        widget.state.selectRoom(room);
+                      },
+                    ),
                   ]),
                 ),
               ),
@@ -98,7 +102,15 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
       borderLeft: true,
       child: Column(
         children: [
-          SizedBox(height: 50, child: RoomHeader(widget.state.selectedRoom!)),
+          SizedBox(
+              height: 50,
+              child: RoomHeader(
+                widget.state.selectedRoom!,
+                onTap: widget.state.selectedRoom?.permissions.canEditAnything ==
+                        true
+                    ? () => widget.state.navigateRoomSettings()
+                    : null,
+              )),
           Flexible(
             child: Row(
               children: [
@@ -160,6 +172,8 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
                   child: SpaceViewer(
                 widget.state.selectedSpace!,
                 key: widget.state.selectedSpace!.key,
+                onRoomSelectionChanged:
+                    widget.state.onRoomSelectionChanged.stream,
                 onRoomInsert: widget.state.selectedSpace!.onRoomAdded.stream,
                 onRoomSelected: (index) {
                   widget.state

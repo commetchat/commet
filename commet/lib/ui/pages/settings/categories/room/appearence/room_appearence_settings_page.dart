@@ -21,9 +21,15 @@ class _RoomAppearanceSettingsPageState
       displayName: widget.room.displayName,
       identifier: widget.room.identifier,
       canEditName: widget.room.permissions.canEditName,
+      canEditAvatar: widget.room.permissions.canEditAvatar,
       onImagePicked: setRoomAvatar,
+      onNameChanged: setRoomName,
     );
   }
 
   setRoomAvatar(Uint8List bytes, String? mimeType) {}
+
+  setRoomName(String name) {
+    widget.room.setDisplayName(name);
+  }
 }

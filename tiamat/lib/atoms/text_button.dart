@@ -11,23 +11,28 @@ Widget wbiconUseCase(BuildContext context) {
       children: const [
         material.Padding(
           padding: EdgeInsets.all(8.0),
-          child: material.SizedBox(height: 30, child: TextButton("Height: 30", icon: Icons.tag)),
+          child: material.SizedBox(
+              height: 30, child: TextButton("Height: 30", icon: Icons.tag)),
         ),
         material.Padding(
           padding: EdgeInsets.all(8.0),
-          child: material.SizedBox(height: 35, child: TextButton("Height: 35", icon: Icons.tag)),
+          child: material.SizedBox(
+              height: 35, child: TextButton("Height: 35", icon: Icons.tag)),
         ),
         material.Padding(
           padding: EdgeInsets.all(8.0),
-          child: material.SizedBox(height: 40, child: TextButton("Height: 40", icon: Icons.tag)),
+          child: material.SizedBox(
+              height: 40, child: TextButton("Height: 40", icon: Icons.tag)),
         ),
         material.Padding(
           padding: EdgeInsets.all(8.0),
-          child: material.SizedBox(height: 45, child: TextButton("Height: 45", icon: Icons.tag)),
+          child: material.SizedBox(
+              height: 45, child: TextButton("Height: 45", icon: Icons.tag)),
         ),
         material.Padding(
           padding: EdgeInsets.all(8.0),
-          child: material.SizedBox(height: 50, child: TextButton("Height: 50", icon: Icons.tag)),
+          child: material.SizedBox(
+              height: 50, child: TextButton("Height: 50", icon: Icons.tag)),
         )
       ],
     ),
@@ -35,7 +40,8 @@ Widget wbiconUseCase(BuildContext context) {
 }
 
 class TextButton extends StatelessWidget {
-  const TextButton(this.text, {super.key, this.icon, this.onTap, this.highlighted = false});
+  const TextButton(this.text,
+      {super.key, this.icon, this.onTap, this.highlighted = false});
   final String text;
 
   final IconData? icon;
@@ -47,7 +53,8 @@ class TextButton extends StatelessWidget {
     return material.TextButton(
         clipBehavior: Clip.antiAlias,
         style: ButtonStyle(
-          backgroundColor: MaterialStatePropertyAll(highlighted ? Theme.of(context).highlightColor : null),
+          backgroundColor: MaterialStatePropertyAll(
+              highlighted ? Theme.of(context).highlightColor : null),
         ),
         child: Row(
           children: [
@@ -65,7 +72,9 @@ class TextButton extends StatelessWidget {
               ),
             Padding(
               padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
-              child: Align(alignment: Alignment.centerLeft, child: tiamat.Text.labelEmphasised(text)),
+              child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: tiamat.Text.labelEmphasised(text)),
             ),
           ],
         ),

@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:typed_data';
+
 import 'package:commet/client/client.dart';
 import 'package:flutter/material.dart';
 
@@ -17,6 +20,7 @@ abstract class Room {
   late String? directMessagePartnerID;
   late Permissions permissions;
   bool get isMember => false;
+  StreamController<void> onUpdate = StreamController.broadcast();
 
   int notificationCount = 0;
 
@@ -33,6 +37,15 @@ abstract class Room {
     isDirectMessage = false;
     directMessagePartnerID = null;
   }
+
+  Future<void> setDisplayName(String newName) async {
+    await setDisplayNameInternal(newName);
+    displayName = newName;
+    onUpdate.add(null);
+  }
+
+  @protected
+  Future<void> setDisplayNameInternal(String name);
 
   @override
   bool operator ==(Object other) {

@@ -95,8 +95,12 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
       return Tile(
         child: ListView(children: [
           SpaceSummary(
-              key: widget.state.selectedSpace!.key,
-              space: widget.state.selectedSpace!),
+            key: widget.state.selectedSpace!.key,
+            space: widget.state.selectedSpace!,
+            onRoomTap: (room) {
+              widget.state.selectRoom(room);
+            },
+          ),
         ]),
       );
     }
@@ -174,6 +178,8 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
                 widget.state.selectedSpace!,
                 key: widget.state.selectedSpace!.key,
                 onRoomInsert: widget.state.selectedSpace!.onRoomAdded.stream,
+                onRoomSelectionChanged:
+                    widget.state.onRoomSelectionChanged.stream,
                 onRoomSelected: (index) async {
                   selectRoom(widget.state.selectedSpace!.rooms[index]);
                 },
@@ -205,7 +211,15 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
           child: Column(
             children: [
               SizedBox(
-                  height: 50, child: RoomHeader(widget.state.selectedRoom!)),
+                  height: 50,
+                  child: RoomHeader(
+                    widget.state.selectedRoom!,
+                    onTap: widget.state.selectedRoom?.permissions
+                                .canEditAnything ==
+                            true
+                        ? () => widget.state.navigateRoomSettings()
+                        : null,
+                  )),
               Flexible(
                 // We listen to this so that when the onscreen keyboard changes the size of view inset, we can offset the scroll position
                 child: NotificationListener(

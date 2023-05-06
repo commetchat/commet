@@ -7,9 +7,13 @@ import '../atoms/room_list.dart';
 
 class SpaceViewer extends StatefulWidget {
   const SpaceViewer(this.space,
-      {super.key, this.onRoomSelected, this.onRoomInsert});
+      {super.key,
+      this.onRoomSelected,
+      this.onRoomInsert,
+      this.onRoomSelectionChanged});
   final Space space;
   final Stream<int>? onRoomInsert;
+  final Stream<Room>? onRoomSelectionChanged;
   final void Function(int)? onRoomSelected;
 
   @override
@@ -28,6 +32,7 @@ class _SpaceViewerState extends State<SpaceViewer>
           onInsertStream: widget.space.onRoomAdded.stream,
           onUpdateStream: widget.space.onUpdate.stream,
           onRoomSelected: widget.onRoomSelected,
+          onRoomSelectionChanged: widget.onRoomSelectionChanged,
           expandable: false,
           showHeader: true,
           onRoomReordered: (oldIndex, newIndex) {

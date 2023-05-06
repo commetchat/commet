@@ -61,4 +61,9 @@ class MatrixRoom extends Room {
     }
     return null;
   }
+
+  @override
+  Future<void> setDisplayNameInternal(String name) async {
+    await _matrixRoom.setName(name);
+  }
 }

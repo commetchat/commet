@@ -1,6 +1,6 @@
 import '../permissions.dart';
 
-class SimulatedRoomPermissions implements Permissions {
+class SimulatedRoomPermissions extends Permissions {
   @override
   bool get canBan => true;
 
