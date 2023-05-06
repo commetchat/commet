@@ -49,10 +49,10 @@ class SpaceSummaryView extends StatefulWidget {
   final Function(Room room)? onRoomTap;
   final bool showSpaceSettingsButton;
   @override
-  State<SpaceSummaryView> createState() => _SpaceSummaryViewState();
+  State<SpaceSummaryView> createState() => SpaceSummaryViewState();
 }
 
-class _SpaceSummaryViewState extends State<SpaceSummaryView> {
+class SpaceSummaryViewState extends State<SpaceSummaryView> {
   int childPreviewCount = 0;
   int childCount = 0;
 
@@ -60,6 +60,9 @@ class _SpaceSummaryViewState extends State<SpaceSummaryView> {
       GlobalKey<AnimatedListState>();
   final GlobalKey<AnimatedListState> _roomListKey =
       GlobalKey<AnimatedListState>();
+
+  static ValueKey spaceSettingsButtonKey =
+      const ValueKey("SPACE_SUMMARY_SPACE_SETTINGS_BUTTON");
 
   StreamSubscription? previewAddedSubscription;
   StreamSubscription? previewRemovedSubscription;
@@ -133,6 +136,7 @@ class _SpaceSummaryViewState extends State<SpaceSummaryView> {
         text: "Space settings",
         preferredDirection: AxisDirection.left,
         child: tiamat.CircleButton(
+          key: spaceSettingsButtonKey,
           icon: Icons.settings,
           radius: BuildConfig.MOBILE ? 24 : 16,
           onPressed: () => widget.openSpaceSettings?.call(),

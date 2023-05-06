@@ -39,5 +39,9 @@
   "loginResultFailedMessage": "Login Failed",
   "loginResultErrorMessage": "There was an error logging in",
   "loginResultAlreadyLoggedInMessage": "This account is already logged in",
-  "settingsTabAccountSecurity": "Security"
+  "settingsTabAccountSecurity": "Security",
+  "spaceSettingsSpaceAppearance": "Appearance",
+  "spaceSettingsHeader": "Space Settings",
+  "roomSettingsHeader": "Room Settings",
+  "roomSettingsAppearance": "Appearance"
 }

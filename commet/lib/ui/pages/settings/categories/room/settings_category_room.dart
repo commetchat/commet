@@ -12,8 +12,8 @@ class SettingsCategoryRoom implements SettingsCategory {
   @override
   List<SettingsTab> get tabs => List.from([
         SettingsTab(
-            label: T.current.settingsTabManageAccounts,
-            icon: Icons.person,
+            label: T.current.roomSettingsAppearance,
+            icon: Icons.style,
             pageBuilder: (context) {
               return RoomAppearanceSettingsPage(
                 room: room,
@@ -22,5 +22,5 @@ class SettingsCategoryRoom implements SettingsCategory {
       ]);
 
   @override
-  String get title => "Room Settings";
+  String get title => T.current.roomSettingsHeader;
 }

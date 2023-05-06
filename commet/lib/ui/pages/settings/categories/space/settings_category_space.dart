@@ -1,4 +1,5 @@
 import 'package:commet/client/client.dart';
+import 'package:commet/generated/l10n.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
 import 'package:commet/ui/pages/settings/settings_tab.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +14,7 @@ class SettingsCategorySpace implements SettingsCategory {
   List<SettingsTab> get tabs => List.from([
         if (shouldShowAppearanceSettings())
           SettingsTab(
-              label: "Appearance",
+              label: T.current.spaceSettingsSpaceAppearance,
               icon: Icons.style,
               pageBuilder: (context) {
                 return SpaceAppearanceSettingsPage(
@@ -23,7 +24,7 @@ class SettingsCategorySpace implements SettingsCategory {
       ]);
 
   @override
-  String get title => "Space Settings";
+  String get title => T.current.spaceSettingsHeader;
 
   bool shouldShowAppearanceSettings() {
     return space.permissions.canEditAvatar || space.permissions.canEditName;

@@ -9,13 +9,16 @@ class DesktopSettingsPage extends StatefulWidget {
   const DesktopSettingsPage({required this.settings, super.key});
   final List<SettingsCategory> settings;
   @override
-  State<DesktopSettingsPage> createState() => _DesktopSettingsPageState();
+  State<DesktopSettingsPage> createState() => DesktopSettingsPageState();
 }
 
-class _DesktopSettingsPageState extends State<DesktopSettingsPage> {
+class DesktopSettingsPageState extends State<DesktopSettingsPage> {
   late List<SettingsCategory> categories;
   int selectedCategoryIndex = 0;
   int selectedTabIndex = 0;
+
+  static ValueKey backButtonKey =
+      const ValueKey("DESKTOP_SETTINGS_PAGE_BACK_BUTTON");
 
   @override
   void initState() {
@@ -76,6 +79,7 @@ class _DesktopSettingsPageState extends State<DesktopSettingsPage> {
                 child: Align(
                     alignment: Alignment.centerLeft,
                     child: CircleButton(
+                      key: backButtonKey,
                       radius: 25,
                       icon: m.Icons.arrow_back,
                       onPressed: () => Navigator.of(context).pop(),
