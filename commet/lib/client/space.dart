@@ -114,6 +114,14 @@ abstract class Space {
 
   Future<Room> createRoom(String name, RoomVisibility visibility);
 
+  Future<void> setSpaceChildRoom(Room room) async {
+    await setSpaceChildRoomInternal(room);
+    addRoom(room);
+  }
+
+  @protected
+  Future<void> setSpaceChildRoomInternal(Room room);
+
   Future<void> loadExtra() async {
     var childFuture = _updateChildPreviews();
 

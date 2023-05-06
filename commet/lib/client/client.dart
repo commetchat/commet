@@ -156,4 +156,6 @@ abstract class Client {
   Future<void> setDisplayName(String name);
 
   Future<void> close() async {}
+
+  Iterable<Room> getEligibleRoomsForSpace(Space space);
 }

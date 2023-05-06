@@ -89,10 +89,10 @@ class SimulatedClient extends Client {
   }
 
   @override
-  Future<Room> createRoom(String name, RoomVisibility visibility) {
-    // ignore: todo
-// TODO: implement createRoom
-    throw UnimplementedError();
+  Future<Room> createRoom(String name, RoomVisibility visibility) async {
+    var room = SimulatedRoom(name, this);
+    addRoom(room);
+    return room;
   }
 
   @override
@@ -136,5 +136,10 @@ class SimulatedClient extends Client {
   @override
   Future<void> setDisplayName(String name) async {
     (user as SimulatedPeer).displayName = name;
+  }
+
+  @override
+  Iterable<Room> getEligibleRoomsForSpace(Space space) {
+    return rooms.where((room) => !space.containsRoom(room.identifier));
   }
 }

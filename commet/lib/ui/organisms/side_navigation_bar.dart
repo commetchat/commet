@@ -1,5 +1,5 @@
 import 'package:commet/client/client_manager.dart';
-import 'package:commet/ui/pages/add_space/add_space.dart';
+import 'package:commet/ui/pages/add_space_or_room/add_space_or_room.dart';
 import 'package:commet/ui/pages/settings/app_settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
@@ -98,7 +98,9 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                       icon: Icons.add,
                       onTap: () {
                         PopupDialog.show(context,
-                            content: AddSpace(clientManager: _clientManager),
+                            content: AddSpaceOrRoom(
+                              clients: _clientManager.clients,
+                            ),
                             title: T.of(context).addSpace);
                       },
                     ),

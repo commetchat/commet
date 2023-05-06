@@ -3,7 +3,6 @@ import 'package:commet/ui/atoms/space_header.dart';
 import 'package:commet/ui/atoms/space_icon.dart';
 import 'package:commet/ui/organisms/space_summary/space_summary_view.dart';
 import 'package:commet/ui/pages/chat/chat_page.dart';
-import 'package:commet/ui/pages/login/login_page.dart';
 import 'package:commet/ui/pages/settings/desktop_settings_page.dart';
 import 'package:commet/utils/rng.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +10,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:commet/main.dart';
 import 'package:integration_test/integration_test.dart';
 
-import '../extensions/wait_for.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import '../extensions/common_flows.dart';
 

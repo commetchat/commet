@@ -280,4 +280,9 @@ class MatrixClient extends Client {
     await _matrixClient.setDisplayName(_matrixClient.userID!, name);
     user!.displayName = name;
   }
+
+  @override
+  Iterable<Room> getEligibleRoomsForSpace(Space space) {
+    return rooms.where((room) => !space.containsRoom(room.identifier));
+  }
 }

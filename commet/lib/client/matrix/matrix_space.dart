@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:commet/cache/file_image.dart';
 import 'package:commet/client/client.dart';
+import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/matrix/matrix_room_permissions.dart';
 import 'package:commet/client/matrix/matrix_room_preview.dart';
 import 'package:commet/client/room_preview.dart';
@@ -153,5 +154,14 @@ class MatrixSpace extends Space {
         bytes: bytes,
         name: "avatar",
         mimeType: mimeType == "" ? null : mimeType));
+  }
+
+  @override
+  Future<void> setSpaceChildRoomInternal(Room room) async {
+    if (room is! MatrixRoom) {
+      throw Exception("Invalid room type for this client");
+    }
+
+    await _matrixRoom.setSpaceChild(room.identifier);
   }
 }

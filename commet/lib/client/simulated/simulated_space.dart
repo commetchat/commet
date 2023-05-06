@@ -60,4 +60,9 @@ class SimulatedSpace extends Space {
     var avatar = Image.memory(bytes).image;
     setAvatar(newAvatar: avatar, newThumbnail: avatar);
   }
+
+  @override
+  Future<void> setSpaceChildRoomInternal(Room room) async {
+    addRoom(room);
+  }
 }
