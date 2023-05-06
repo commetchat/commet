@@ -1,6 +1,5 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/ui/pages/settings/categories/room/settings_category_room.dart';
-import 'package:commet/ui/pages/settings/categories/space/settings_category_space.dart';
 import 'package:commet/ui/pages/settings/settings_page.dart';
 import 'package:flutter/widgets.dart';
 

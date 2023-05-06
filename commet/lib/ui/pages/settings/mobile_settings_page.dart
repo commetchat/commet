@@ -108,7 +108,7 @@ class SettingsSubPage extends StatelessWidget {
             children: [
               ListView(
                 children: [
-                  SizedBox(
+                  const SizedBox(
                     height: 70,
                   ),
                   builder(context)

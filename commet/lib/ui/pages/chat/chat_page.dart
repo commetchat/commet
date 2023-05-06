@@ -144,7 +144,6 @@ class ChatPageState extends State<ChatPage> {
   }
 
   void navigateRoomSettings() {
-    print("Selected room: ${selectedRoom!.displayName}");
     if (selectedRoom != null) {
       NavigationUtils.navigateTo(
           context,
