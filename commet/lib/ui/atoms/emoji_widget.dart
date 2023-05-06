@@ -40,7 +40,7 @@ class EmojiWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Image(
-      filterQuality: FilterQuality.high,
+      filterQuality: FilterQuality.medium,
       isAntiAlias: true,
       width: height,
       height: height,
