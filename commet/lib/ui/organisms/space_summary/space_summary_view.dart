@@ -27,6 +27,7 @@ class SpaceSummaryView extends StatefulWidget {
       this.onRoomAdded,
       this.onRoomRemoved,
       this.visibility,
+      this.showSpaceSettingsButton = false,
       this.openSpaceSettings,
       this.onRoomTap,
       this.onRoomSettingsButtonTap});
@@ -46,6 +47,7 @@ class SpaceSummaryView extends StatefulWidget {
   final Function? openSpaceSettings;
   final Function(Room room)? onRoomSettingsButtonTap;
   final Function(Room room)? onRoomTap;
+  final bool showSpaceSettingsButton;
   @override
   State<SpaceSummaryView> createState() => _SpaceSummaryViewState();
 }
@@ -110,7 +112,7 @@ class _SpaceSummaryViewState extends State<SpaceSummaryView> {
                   spaceVisibility(),
                 ],
               ),
-              buildSettingsButton()
+              if (widget.showSpaceSettingsButton) buildSettingsButton()
             ],
           ),
           if (childPreviewCount > 0) buildPreviewList(),

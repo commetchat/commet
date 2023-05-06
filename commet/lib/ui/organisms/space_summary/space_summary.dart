@@ -48,6 +48,7 @@ class _SpaceSummaryState extends State<SpaceSummary> {
       openSpaceSettings: openSpaceSettings,
       onRoomSettingsButtonTap: openRoomSettings,
       onRoomTap: widget.onRoomTap,
+      showSpaceSettingsButton: widget.space.permissions.canEditAnything,
     );
   }
 
