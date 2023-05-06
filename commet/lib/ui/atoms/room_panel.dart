@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
+import '../../config/build_config.dart';
+
 class RoomPanel extends StatefulWidget {
   const RoomPanel(
       {required this.displayName,
@@ -76,6 +78,7 @@ class _RoomPanelState extends State<RoomPanel> {
                       if (widget.showSettingsButton)
                         tiamat.CircleButton(
                           icon: Icons.settings,
+                          radius: BuildConfig.MOBILE ? 24 : 16,
                           onPressed: widget.onRoomSettingsButtonPressed,
                         )
                     ],
