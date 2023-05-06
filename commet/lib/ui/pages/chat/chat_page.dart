@@ -77,9 +77,22 @@ class ChatPageState extends State<ChatPage> {
   }
 
   void selectHome() {
-    setState(() {
-      homePageSelected = true;
-    });
+    onRoomUpdateSubscription?.cancel();
+    if (kDebugMode) {
+      // Weird hacky work around mentioned in #2
+      timelines[selectedRoom?.localId]?.currentState!.prepareForDisposal();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        setState(() {
+          homePageSelected = true;
+          selectedSpace = null;
+        });
+      });
+    } else {
+      setState(() {
+        homePageSelected = true;
+        selectedSpace = null;
+      });
+    }
   }
 
   void selectRoom(Room room) {

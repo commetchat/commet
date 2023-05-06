@@ -257,6 +257,7 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
                           padding: EdgeInsets.fromLTRB(0, 0, 0, 8),
                           child: MessageInput(
                             key: messageInput,
+                            isRoomE2EE: widget.state.selectedRoom!.isE2EE,
                             onSendMessage: (message) {
                               widget.state.selectedRoom!.sendMessage(message);
                               return MessageInputSendResult.clearText;

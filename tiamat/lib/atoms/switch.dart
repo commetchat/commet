@@ -25,24 +25,26 @@ Widget wbswitchNoIcons(BuildContext context) {
 
 class Switch extends StatefulWidget {
   const Switch(
-      {super.key, this.onIcon = material.Icons.check, this.offIcon = material.Icons.close, this.defaultState = false});
+      {super.key,
+      this.onIcon = material.Icons.check,
+      this.offIcon = material.Icons.close,
+      this.onChanged,
+      this.state = false});
 
   final IconData? onIcon;
   final IconData? offIcon;
-  final bool defaultState;
+  final bool state;
+  final void Function(bool value)? onChanged;
 
   @override
   State<Switch> createState() => _SwitchState();
 }
 
 class _SwitchState extends State<Switch> {
-  late bool enabled;
   late material.MaterialStateProperty<Icon?> thumbIcon;
   @override
   void initState() {
     super.initState();
-    enabled = widget.defaultState;
-
     thumbIcon = material.MaterialStateProperty.resolveWith<Icon?>(
       (Set<material.MaterialState> states) {
         if (states.contains(material.MaterialState.selected)) {
@@ -58,13 +60,9 @@ class _SwitchState extends State<Switch> {
   @override
   Widget build(BuildContext context) {
     return material.Switch(
-      onChanged: (value) {
-        setState(() {
-          enabled = value;
-        });
-      },
+      onChanged: widget.onChanged,
       thumbIcon: thumbIcon,
-      value: enabled,
+      value: widget.state,
       thumbColor: material.MaterialStateProperty.resolveWith(
         (Set<material.MaterialState> states) {
           if (states.contains(material.MaterialState.selected)) {

@@ -38,6 +38,9 @@ class MatrixClient extends Client {
     return hash.toString();
   }
 
+  @override
+  bool get supportsE2EE => true;
+
   static Future<void> loadFromDB(ClientManager manager) async {
     var clients = preferences.getRegisteredMatrixClients();
 
@@ -201,14 +204,20 @@ class MatrixClient extends Client {
   }
 
   @override
-  Future<Room> createRoom(String name, RoomVisibility visibility) async {
+  Future<Room> createRoom(String name, RoomVisibility visibility,
+      {bool enableE2EE = true}) async {
     var id = await _matrixClient.createRoom(
         name: name,
         visibility: visibility == RoomVisibility.private
             ? matrix.Visibility.private
             : matrix.Visibility.public);
+    var matrixRoom = _matrixClient.getRoomById(id)!;
+    if (enableE2EE) {
+      await matrixRoom.enableEncryption();
+    }
+
     if (roomExists(id)) return getRoom(id)!;
-    var room = MatrixRoom(this, _matrixClient.getRoomById(id)!, _matrixClient);
+    var room = MatrixRoom(this, matrixRoom, _matrixClient);
     addRoom(room);
     return room;
   }

@@ -18,6 +18,7 @@ abstract class Room {
   late String? directMessagePartnerID;
   late Permissions permissions;
   bool get isMember => false;
+  bool get isE2EE;
   StreamController<void> onUpdate = StreamController.broadcast();
 
   int notificationCount = 0;
@@ -56,4 +57,6 @@ abstract class Room {
 
   @override
   int get hashCode => identifier.hashCode;
+
+  Future<void> enableE2EE();
 }

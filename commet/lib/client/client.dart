@@ -35,6 +35,8 @@ abstract class Client {
 
   ValueKey get key => ValueKey(identifier);
 
+  bool get supportsE2EE;
+
   Future<LoginResult> login(
       LoginType type, String userIdentifier, String server,
       {String? password, String? token});
@@ -125,7 +127,8 @@ abstract class Client {
     }
   }
 
-  Future<Room> createRoom(String name, RoomVisibility visibility);
+  Future<Room> createRoom(String name, RoomVisibility visibility,
+      {bool enableE2EE = true});
 
   Future<Space> createSpace(String name, RoomVisibility visibility);
 

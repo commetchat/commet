@@ -127,6 +127,7 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
                       Tile(
                         borderTop: true,
                         child: MessageInput(
+                          isRoomE2EE: widget.state.selectedRoom!.isE2EE,
                           onSendMessage: (message) {
                             widget.state.selectedRoom!.sendMessage(message);
                             return MessageInputSendResult.clearText;

@@ -1,6 +1,7 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/generated/l10n.dart';
 import 'package:commet/ui/pages/settings/categories/room/appearence/room_appearence_settings_page.dart';
+import 'package:commet/ui/pages/settings/categories/room/security/room_security_settings_page.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
 import 'package:commet/ui/pages/settings/settings_tab.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,15 @@ class SettingsCategoryRoom implements SettingsCategory {
                 room: room,
               );
             }),
+        if (room.permissions.canEditRoomSecurity)
+          SettingsTab(
+              label: "Security",
+              icon: Icons.lock,
+              pageBuilder: (context) {
+                return RoomSecuritySettingsPage(
+                  room: room,
+                );
+              }),
       ]);
 
   @override

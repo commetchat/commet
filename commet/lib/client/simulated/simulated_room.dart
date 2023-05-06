@@ -17,6 +17,9 @@ class SimulatedRoom extends Room {
   @override
   bool get isMember => true;
 
+  @override
+  bool get isE2EE => false;
+
   SimulatedRoom(displayName, client, {bool isDm = false})
       : super(RandomUtils.getRandomString(20), client) {
     identifier = RandomUtils.getRandomString(20);
@@ -90,5 +93,10 @@ class SimulatedRoom extends Room {
   @override
   Future<void> setDisplayNameInternal(String name) async {
     displayName = name;
+  }
+
+  @override
+  Future<void> enableE2EE() {
+    throw UnimplementedError();
   }
 }

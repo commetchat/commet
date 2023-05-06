@@ -10,4 +10,8 @@ class Permissions {
   bool get canEditAvatar => false;
 
   bool get canEditAnything => (canEditName || canEditAvatar);
+
+  bool get canEnableE2EE => false;
+
+  bool get canEditRoomSecurity => canEnableE2EE;
 }

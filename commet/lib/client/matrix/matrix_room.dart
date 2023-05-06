@@ -13,6 +13,9 @@ class MatrixRoom extends Room {
   @override
   bool get isMember => _matrixRoom.membership == matrix.Membership.join;
 
+  @override
+  bool get isE2EE => _matrixRoom.encrypted;
+
   MatrixRoom(client, matrix.Room room, matrix.Client matrixClient)
       : super(room.id, client) {
     _matrixRoom = room;
@@ -65,5 +68,10 @@ class MatrixRoom extends Room {
   @override
   Future<void> setDisplayNameInternal(String name) async {
     await _matrixRoom.setName(name);
+  }
+
+  @override
+  Future<void> enableE2EE() async {
+    await _matrixRoom.enableEncryption();
   }
 }

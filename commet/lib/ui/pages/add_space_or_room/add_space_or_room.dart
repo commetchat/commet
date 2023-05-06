@@ -48,7 +48,8 @@ class AddSpaceOrRoom extends StatefulWidget {
 }
 
 class AddSpaceOrRoomState extends State<AddSpaceOrRoom> {
-  void create(Client client, String name, RoomVisibility visibility) async {
+  void create(Client client, String name, RoomVisibility visibility,
+      bool enableE2EE) async {
     switch (widget.mode) {
       case AddSpaceOrRoomMode.createOrJoinSpace:
         var space = await client.createSpace(name, visibility);
@@ -56,7 +57,8 @@ class AddSpaceOrRoomState extends State<AddSpaceOrRoom> {
         break;
       case AddSpaceOrRoomMode.createOrJoinRoom:
       case AddSpaceOrRoomMode.createOrExistingRoom:
-        var room = await client.createRoom(name, visibility);
+        var room =
+            await client.createRoom(name, visibility, enableE2EE: enableE2EE);
         widget.onRoomCreated?.call(room);
         break;
     }

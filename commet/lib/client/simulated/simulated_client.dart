@@ -22,6 +22,9 @@ class SimulatedClient extends Client {
   bool isLoggedIn() => _isLogged;
 
   @override
+  bool get supportsE2EE => false;
+
+  @override
   Future<LoginResult> login(
       LoginType type, String userIdentifier, String server,
       {String? password, String? token}) async {
@@ -89,7 +92,8 @@ class SimulatedClient extends Client {
   }
 
   @override
-  Future<Room> createRoom(String name, RoomVisibility visibility) async {
+  Future<Room> createRoom(String name, RoomVisibility visibility,
+      {bool enableE2EE = false}) async {
     var room = SimulatedRoom(name, this);
     addRoom(room);
     return room;

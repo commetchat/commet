@@ -49,5 +49,7 @@
   "spaceSettingsHeader": "Space Settings",
   "roomSettingsHeader": "Room Settings",
   "roomSettingsAppearance": "Appearance",
-  "roomNamePrompt": "Room Name"
+  "roomNamePrompt": "Room Name",
+  "enableEncryptionPrompt": "Enable Encryption",
+  "encryptionCannotBeDisabled": "If enabled, this cannot be disabled later"
 }

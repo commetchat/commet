@@ -225,12 +225,13 @@ class AddSpaceOrRoomView extends StatefulWidget {
       this.initialPhase});
   final List<Client>? clients;
   final Client? client;
-  final Function(Client client, String name, RoomVisibility visibility)?
-      onCreate;
+  final Function(Client client, String name, RoomVisibility visibility,
+      bool enableE2EE)? onCreate;
   final Function(Client client, String address)? onJoin;
   final Function(Iterable<Room> selectedRooms)? onRoomsSelected;
   final AddSpaceOrRoomPhase? initialPhase;
   final bool roomMode;
+
   final List<Room>? rooms;
 
   @override
@@ -256,6 +257,7 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
 
   RoomPreview? spacePreview;
   bool loadingSpacePreview = false;
+  bool enableE2EE = true;
 
   Debouncer spacePreviewDebounce =
       Debouncer(delay: const Duration(milliseconds: 500));
@@ -326,7 +328,7 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
 
   Widget createSpace(BuildContext context) {
     return SizedBox(
-      height: 400,
+      height: 450,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -356,7 +358,7 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
               padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
               child: tiamat.DropdownSelector<RoomVisibility>(
                 items: const [RoomVisibility.private, RoomVisibility.public],
-                itemHeight: 104,
+                itemHeight: 90,
                 onItemSelected: (item) {
                   setState(() {
                     visibility = item;
@@ -386,14 +388,14 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
                   }
 
                   return Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(0.0),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
+                          mainAxisSize: MainAxisSize.max,
                           children: [
                             Padding(
                               padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
@@ -412,14 +414,43 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
                 },
               ),
             ),
+            if (selectedClient.supportsE2EE)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Flexible(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          tiamat.Text.labelEmphasised(
+                              T.current.enableEncryptionPrompt),
+                          tiamat.Text.labelLow(
+                              T.current.encryptionCannotBeDisabled)
+                        ],
+                      ),
+                    ),
+                    tiamat.Switch(
+                      state: enableE2EE,
+                      onChanged: (value) {
+                        setState(() {
+                          enableE2EE = value;
+                        });
+                      },
+                    )
+                  ],
+                ),
+              ),
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
               child: tiamat.Button.success(
                 text: widget.roomMode
                     ? T.current.addSpaceViewCreateRoomButton
                     : T.current.addSpaceViewCreateSpaceButton,
-                onTap: () => widget.onCreate
-                    ?.call(selectedClient, nameController.text, visibility),
+                onTap: () => widget.onCreate?.call(selectedClient,
+                    nameController.text, visibility, enableE2EE),
               ),
             )
           ],
