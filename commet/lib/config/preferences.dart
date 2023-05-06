@@ -1,9 +1,16 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
+enum AppTheme {
+  light,
+  dark,
+}
+
 class Preferences {
   SharedPreferences? _preferences;
 
   static const String registeredMatrixClients = "registered_matrix_clients";
+  static const String themeKey = "app_theme";
+  static const String appScaleKey = "app_scale";
 
   Future<void> init() async {
     _preferences = await SharedPreferences.getInstance();
@@ -40,6 +47,28 @@ class Preferences {
       }
       _preferences!.setStringList(registeredMatrixClients, names);
     }
+  }
+
+  AppTheme getTheme() {
+    var name = _preferences!.getString(themeKey);
+    if (name == null) return AppTheme.dark;
+    try {
+      return AppTheme.values.byName(name);
+    } catch (e) {
+      return AppTheme.dark;
+    }
+  }
+
+  void setTheme(AppTheme theme) {
+    _preferences!.setString(themeKey, theme.name);
+  }
+
+  double getAppScale() {
+    return _preferences!.getDouble(appScaleKey) ?? 1;
+  }
+
+  void setAppScale(double scale) {
+    _preferences!.setDouble(appScaleKey, scale);
   }
 
   Future<void> clear() async {

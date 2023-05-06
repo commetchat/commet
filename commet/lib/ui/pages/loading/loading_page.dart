@@ -37,7 +37,6 @@ class LoadingPageState extends State<LoadingPage> {
       Hive.registerAdapter(adapter);
     }
 
-    await preferences.init();
     await fileCache.init();
     await EmojiPack.defaults();
 

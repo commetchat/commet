@@ -1,7 +1,6 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/ui/pages/settings/categories/room/security/room_security_settings_view.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:flutter/widgets.dart';
 
 class RoomSecuritySettingsPage extends StatefulWidget {
   const RoomSecuritySettingsPage({super.key, required this.room});

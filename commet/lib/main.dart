@@ -21,13 +21,18 @@ FileCacheInstance fileCache = FileCacheInstance();
 Preferences preferences = Preferences();
 
 void main() async {
+  await preferences.init();
+  double scale = preferences.getAppScale();
   ScaledWidgetsFlutterBinding.ensureInitialized(
     scaleFactor: (deviceSize) {
-      return 1;
+      return scale;
     },
   );
+  var theme = preferences.getTheme();
 
-  runApp(App());
+  runApp(App(
+    initialTheme: theme,
+  ));
 }
 
 @WidgetbookTheme(name: 'Dark')
@@ -48,13 +53,15 @@ ThemeData commetGlassTheme() => ThemeGlass.theme;
           nativeSize: DeviceSize(width: 1280, height: 720), scaleFactor: 1))
 ])
 class App extends StatelessWidget {
-  App({Key? key}) : super(key: key);
+  App({Key? key, this.initialTheme = AppTheme.dark}) : super(key: key);
+  final AppTheme initialTheme;
   final clientManager = ClientManager();
 
   @override
   Widget build(BuildContext context) {
     return ThemeChanger(
-        initialTheme: ThemeDark.theme,
+        initialTheme:
+            initialTheme == AppTheme.dark ? ThemeDark.theme : ThemeLight.theme,
         materialAppBuilder: (context, theme) {
           return MaterialApp(
             title: 'Commet',

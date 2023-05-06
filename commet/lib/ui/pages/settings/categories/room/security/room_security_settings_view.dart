@@ -1,7 +1,6 @@
 import 'package:commet/generated/l10n.dart';
-import 'package:flutter/src/widgets/basic.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:flutter/widgets.dart';
+
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class RoomSecuritySettingsView extends StatefulWidget {
