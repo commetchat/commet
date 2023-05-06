@@ -87,7 +87,7 @@ Future<void> _setPrivate(WidgetTester tester) async {
   await tester.pumpAndSettle();
 
   await tester.tap(find
-      .widgetWithText(tiamat.Text, T.current.roomVisibilityPrivateExplanation)
+      .widgetWithText(tiamat.Text, T.current.spaceVisibilityPrivateExplanation)
       .last);
 
   await tester.pumpAndSettle();
@@ -99,7 +99,7 @@ Future<void> _setPublic(WidgetTester tester) async {
   await tester.pumpAndSettle();
 
   await tester.tap(find
-      .widgetWithText(tiamat.Text, T.current.roomVisibilityPublicExplanation)
+      .widgetWithText(tiamat.Text, T.current.spaceVisibilityPublicExplanation)
       .last);
 
   await tester.pumpAndSettle();

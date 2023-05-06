@@ -74,8 +74,7 @@ class _SpaceSummaryState extends State<SpaceSummary> {
           rooms: widget.space.client
               .getEligibleRoomsForSpace(widget.space)
               .toList(),
-          createRoom: (client, name, visibility) async {
-            var room = await client.createRoom(name, visibility);
+          onRoomCreated: (Room room) async {
             widget.space.setSpaceChildRoom(room);
             if (mounted) {
               Navigator.pop(context);

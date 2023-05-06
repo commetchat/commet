@@ -15,8 +15,8 @@ class AddSpaceOrRoom extends StatefulWidget {
     this.eligibleRooms,
     this.client,
     this.clients,
-    this.createRoom,
-    this.createSpace,
+    this.onRoomCreated,
+    this.onSpaceCreated,
     this.joinSpace,
     this.onRoomsSelected,
     this.mode = AddSpaceOrRoomMode.createOrJoinSpace,
@@ -26,10 +26,8 @@ class AddSpaceOrRoom extends StatefulWidget {
   final AddSpaceOrRoomMode mode;
   final List<Room>? eligibleRooms;
   final Function(Iterable<Room> rooms)? onRoomsSelected;
-  final Function(Client client, String name, RoomVisibility visibility)?
-      createRoom;
-  final Function(Client client, String name, RoomVisibility visibility)?
-      createSpace;
+  final Function(Room room)? onRoomCreated;
+  final Function(Space space)? onSpaceCreated;
 
   final Function(Client client, String address)? joinSpace;
   @override
@@ -40,9 +38,9 @@ class AddSpaceOrRoom extends StatefulWidget {
       required List<Room> rooms,
       this.client,
       this.clients,
-      this.createRoom,
+      this.onRoomCreated,
       this.joinSpace,
-      this.createSpace,
+      this.onSpaceCreated,
       this.onRoomsSelected})
       : mode = AddSpaceOrRoomMode.createOrExistingRoom,
         eligibleRooms = rooms,
@@ -50,14 +48,16 @@ class AddSpaceOrRoom extends StatefulWidget {
 }
 
 class AddSpaceOrRoomState extends State<AddSpaceOrRoom> {
-  void create(Client client, String name, RoomVisibility visibility) {
+  void create(Client client, String name, RoomVisibility visibility) async {
     switch (widget.mode) {
       case AddSpaceOrRoomMode.createOrJoinSpace:
-        widget.createSpace?.call(client, name, visibility);
+        var space = await client.createSpace(name, visibility);
+        widget.onSpaceCreated?.call(space);
         break;
       case AddSpaceOrRoomMode.createOrJoinRoom:
       case AddSpaceOrRoomMode.createOrExistingRoom:
-        widget.createRoom?.call(client, name, visibility);
+        var room = await client.createRoom(name, visibility);
+        widget.onRoomCreated?.call(room);
         break;
     }
   }
