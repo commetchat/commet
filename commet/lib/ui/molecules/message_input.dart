@@ -10,16 +10,19 @@ import '../../generated/l10n.dart';
 enum MessageInputSendResult { clearText, unhandled }
 
 class MessageInput extends StatefulWidget {
-  const MessageInput(
-      {super.key,
-      this.maxHeight = 200,
-      this.onSendMessage,
-      this.isRoomE2EE = false,
-      this.onFocusChanged});
+  const MessageInput({
+    super.key,
+    this.maxHeight = 200,
+    this.onSendMessage,
+    this.isRoomE2EE = false,
+    this.onFocusChanged,
+    this.readIndicator,
+  });
   final double maxHeight;
   final double size = 48;
   final bool isRoomE2EE;
   final MessageInputSendResult Function(String message)? onSendMessage;
+  final Widget? readIndicator;
   final void Function(bool focused)? onFocusChanged;
 
   @override
@@ -80,7 +83,7 @@ class MessageInputState extends State<MessageInput> {
     return Material(
       color: Colors.transparent,
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.fromLTRB(8.0, 8, 8, 4),
         child: Tile(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -188,8 +191,23 @@ class MessageInputState extends State<MessageInput> {
                       )
                     ]),
               ),
-              const SizedBox(
-                height: 20,
+              SizedBox(
+                height: 25,
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Expanded(
+                        child: SizedBox(),
+                      ),
+                      if (widget.readIndicator != null)
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+                          child: SizedBox(
+                            width: 150,
+                            child: widget.readIndicator!,
+                          ),
+                        )
+                    ]),
               )
             ],
           ),

@@ -84,9 +84,7 @@ class _SpaceIconState extends State<SpaceIcon> {
       child: SizedBox(
         width: 20,
         height: 20,
-        child: Container(
-          child: NotificationBadge(widget.highlightedNotificationCount),
-        ),
+        child: NotificationBadge(widget.highlightedNotificationCount),
       ),
     );
   }
@@ -97,12 +95,11 @@ class _SpaceIconState extends State<SpaceIcon> {
       child: SizedBox(
         width: 8,
         height: 8,
-        child: Container(
-            child: DecoratedBox(
+        child: DecoratedBox(
           decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.onSurface,
               borderRadius: BorderRadius.circular(5)),
-        )),
+        ),
       ),
     );
   }

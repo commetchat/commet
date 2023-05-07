@@ -2,6 +2,7 @@ import 'package:commet/ui/atoms/drag_drop_file_target.dart';
 import 'package:commet/ui/atoms/room_header.dart';
 import 'package:commet/ui/atoms/space_header.dart';
 import 'package:commet/ui/molecules/direct_message_list.dart';
+import 'package:commet/ui/molecules/read_indicator.dart';
 import 'package:commet/ui/molecules/split_timeline_viewer.dart';
 import 'package:commet/ui/molecules/message_input.dart';
 import 'package:commet/ui/molecules/space_viewer.dart';
@@ -120,14 +121,19 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
                     children: [
                       Expanded(
                           child: SplitTimelineViewer(
-                        key: widget.state
-                            .timelines[widget.state.selectedRoom!.localId],
-                        timeline: widget.state.selectedRoom!.timeline!,
-                      )),
+                              key: widget.state.timelines[
+                                  widget.state.selectedRoom!.localId],
+                              timeline: widget.state.selectedRoom!.timeline!,
+                              markAsRead: widget
+                                  .state.selectedRoom!.timeline!.markAsRead)),
                       Tile(
                         borderTop: true,
                         child: MessageInput(
                           isRoomE2EE: widget.state.selectedRoom!.isE2EE,
+                          readIndicator: ReadIndicator(
+                            initialList:
+                                widget.state.selectedRoom?.timeline?.receipts,
+                          ),
                           onSendMessage: (message) {
                             widget.state.selectedRoom!.sendMessage(message);
                             return MessageInputSendResult.clearText;

@@ -175,6 +175,6 @@ class _SpaceSelectorState extends State<SpaceSelector> {
   }
 
   Widget messageOverlay() {
-    return Positioned(left: -6, child: DotIndicator());
+    return const Positioned(left: -6, child: DotIndicator());
   }
 }

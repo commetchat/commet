@@ -14,6 +14,7 @@ import '../../atoms/room_header.dart';
 import '../../atoms/space_header.dart';
 import '../../molecules/message_input.dart';
 import '../../molecules/overlapping_panels.dart';
+import '../../molecules/read_indicator.dart';
 import '../../molecules/space_viewer.dart';
 import '../../molecules/user_list.dart';
 import '../../molecules/user_panel.dart';
@@ -249,6 +250,8 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
                       children: [
                         Expanded(
                             child: SplitTimelineViewer(
+                          markAsRead:
+                              widget.state.selectedRoom!.timeline!.markAsRead,
                           key: widget.state
                               .timelines[widget.state.selectedRoom!.localId],
                           timeline: widget.state.selectedRoom!.timeline!,
@@ -258,6 +261,10 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
                           child: MessageInput(
                             key: messageInput,
                             isRoomE2EE: widget.state.selectedRoom!.isE2EE,
+                            readIndicator: ReadIndicator(
+                              initialList:
+                                  widget.state.selectedRoom?.timeline?.receipts,
+                            ),
                             onSendMessage: (message) {
                               widget.state.selectedRoom!.sendMessage(message);
                               return MessageInputSendResult.clearText;

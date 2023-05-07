@@ -191,4 +191,28 @@ class MatrixTimeline extends Timeline {
       onRemove.add(index);
     }
   }
+
+  @override
+  void markAsRead(TimelineEvent event) async {
+    if (event.sender == client.user) return;
+
+    if (event.status == TimelineEventStatus.synced) {
+      _matrixTimeline?.setReadMarker(event.eventId);
+    }
+  }
+
+  @override
+  Iterable<Peer>? get receipts => getReceipts();
+
+  Iterable<Peer>? getReceipts() {
+    var mxReceipts = _matrixTimeline?.events.first.receipts;
+    var mapped = mxReceipts?.map((receipt) => client.getPeer(receipt.user.id)!);
+    if (mapped == null) return null;
+
+    var list = mapped.toList(growable: true);
+    var sender = client.getPeer(_matrixTimeline!.events.first.senderId);
+    if (sender != null) list.add(sender);
+
+    return list;
+  }
 }

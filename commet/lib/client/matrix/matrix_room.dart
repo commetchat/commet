@@ -82,7 +82,7 @@ class MatrixRoom extends Room {
     await _matrixRoom.enableEncryption();
   }
 
-  void onMatrixRoomUpdate(String event) {
+  void onMatrixRoomUpdate(String event) async {
     displayName = _matrixRoom.getLocalizedDisplayname();
     onUpdate.add(null);
   }

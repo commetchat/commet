@@ -6,7 +6,6 @@ import 'package:commet/ui/atoms/room_panel.dart';
 import 'package:commet/ui/atoms/room_preview.dart';
 import 'package:commet/utils/debounce.dart';
 import 'package:flutter/material.dart';
-import 'package:tiamat/atoms/toggleable_list.dart';
 
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;

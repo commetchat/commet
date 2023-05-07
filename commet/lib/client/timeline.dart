@@ -94,6 +94,10 @@ abstract class Timeline {
   late StreamController<int> onRemove = StreamController.broadcast();
   late Client client;
 
+  Iterable<Peer>? get receipts;
+
+  void markAsRead(TimelineEvent event);
+
   Future<void> loadMoreHistory();
 
   void insertEvent(int index, TimelineEvent event) {

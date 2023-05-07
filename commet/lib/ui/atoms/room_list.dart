@@ -4,7 +4,6 @@ import 'package:commet/ui/atoms/dot_indicator.dart';
 import 'package:commet/ui/atoms/notification_badge.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tiamat/atoms/text_button.dart';
-import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:flutter/material.dart' as m;
 import '../../client/client.dart';
@@ -177,8 +176,8 @@ class _RoomListState extends State<RoomList>
                   ? NotificationBadge(
                       widget.rooms[i].highlightedNotificationCount)
                   : widget.rooms[i].notificationCount > 0
-                      ? Padding(
-                          padding: const EdgeInsets.all(2.0),
+                      ? const Padding(
+                          padding: EdgeInsets.all(2.0),
                           child: DotIndicator(),
                         )
                       : null,

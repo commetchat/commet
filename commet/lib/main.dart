@@ -1,5 +1,6 @@
 import 'package:commet/cache/file_cache.dart';
 import 'package:commet/client/client_manager.dart';
+import 'package:commet/config/build_config.dart';
 import 'package:commet/config/preferences.dart';
 import 'package:commet/ui/pages/loading/loading_page.dart';
 
@@ -21,6 +22,10 @@ FileCacheInstance fileCache = FileCacheInstance();
 Preferences preferences = Preferences();
 
 void main() async {
+  if (BuildConfig.MOBILE) {
+    WidgetsFlutterBinding.ensureInitialized();
+  }
+
   await preferences.init();
   double scale = preferences.getAppScale();
   ScaledWidgetsFlutterBinding.ensureInitialized(
