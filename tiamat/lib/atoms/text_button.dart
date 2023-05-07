@@ -41,13 +41,21 @@ Widget wbiconUseCase(BuildContext context) {
 
 class TextButton extends StatelessWidget {
   const TextButton(this.text,
-      {super.key, this.icon, this.onTap, this.highlighted = false});
+      {super.key,
+      this.icon,
+      this.onTap,
+      this.highlighted = false,
+      this.textColor,
+      this.iconColor,
+      this.footer});
   final String text;
 
   final IconData? icon;
   final bool highlighted;
   final void Function()? onTap;
-
+  final Widget? footer;
+  final Color? textColor;
+  final Color? iconColor;
   @override
   Widget build(BuildContext context) {
     return material.TextButton(
@@ -56,28 +64,39 @@ class TextButton extends StatelessWidget {
           backgroundColor: MaterialStatePropertyAll(
               highlighted ? Theme.of(context).highlightColor : null),
         ),
-        child: Row(
-          children: [
-            if (icon != null)
-              Padding(
-                padding: const EdgeInsets.all(1.0),
-                child: Align(
-                  alignment: Alignment.center,
-                  child: Icon(
-                    size: 20,
-                    icon!,
-                    weight: 0.5,
+        child: material.Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (icon != null)
+                    Padding(
+                      padding: const EdgeInsets.all(1.0),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Icon(
+                          size: 20,
+                          icon!,
+                          weight: 0.5,
+                          color: iconColor,
+                        ),
+                      ),
+                    ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+                    child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: tiamat.Text.labelEmphasised(
+                          text,
+                          color: textColor,
+                        )),
                   ),
-                ),
+                ],
               ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
-              child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: tiamat.Text.labelEmphasised(text)),
-            ),
-          ],
-        ),
+              if (footer != null) footer!,
+            ]),
         onPressed: () => onTap?.call());
   }
 }

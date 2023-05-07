@@ -1,3 +1,4 @@
+import 'package:commet/ui/atoms/notification_badge.dart';
 import 'package:commet/ui/organisms/side_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart';
@@ -10,6 +11,8 @@ class SpaceIcon extends StatefulWidget {
       this.showUser = false,
       this.onUpdate,
       this.avatar,
+      this.notificationCount = 0,
+      this.highlightedNotificationCount = 0,
       required this.displayName,
       this.userAvatar});
   final double width;
@@ -17,6 +20,8 @@ class SpaceIcon extends StatefulWidget {
   final bool showUser;
   final Stream<void>? onUpdate;
   final String displayName;
+  final int notificationCount;
+  final int highlightedNotificationCount;
   final ImageProvider? avatar;
   final ImageProvider? userAvatar;
 
@@ -37,6 +42,7 @@ class _SpaceIconState extends State<SpaceIcon> {
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
+      //if (widget.notificationCount > 0) messageOverlay(),
       SideNavigationBar.tooltip(
           widget.displayName,
           ImageButton(
@@ -46,7 +52,8 @@ class _SpaceIconState extends State<SpaceIcon> {
             size: widget.width,
           ),
           context),
-      if (widget.showUser && widget.userAvatar != null) avatarOverlay()
+      if (widget.showUser && widget.userAvatar != null) avatarOverlay(),
+      if (widget.highlightedNotificationCount > 0) notificationOverlay(),
     ]);
   }
 
@@ -66,6 +73,36 @@ class _SpaceIconState extends State<SpaceIcon> {
             //border: Border.all(color: Colors.white, width: 1)),
           ),
         ),
+      ),
+    );
+  }
+
+  Positioned notificationOverlay() {
+    return Positioned(
+      right: 0,
+      top: 0,
+      child: SizedBox(
+        width: 20,
+        height: 20,
+        child: Container(
+          child: NotificationBadge(widget.highlightedNotificationCount),
+        ),
+      ),
+    );
+  }
+
+  Positioned messageOverlay() {
+    return Positioned(
+      left: 0,
+      child: SizedBox(
+        width: 8,
+        height: 8,
+        child: Container(
+            child: DecoratedBox(
+          decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.onSurface,
+              borderRadius: BorderRadius.circular(5)),
+        )),
       ),
     );
   }

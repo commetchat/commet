@@ -1,7 +1,10 @@
 import 'dart:async';
 
+import 'package:commet/ui/atoms/dot_indicator.dart';
+import 'package:commet/ui/atoms/notification_badge.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tiamat/atoms/text_button.dart';
+import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:flutter/material.dart' as m;
 import '../../client/client.dart';
@@ -16,11 +19,13 @@ class RoomList extends StatefulWidget {
       this.expandable = false,
       this.showHeader = false,
       this.expanderText,
+      this.onChildUpdatedStream,
       this.onRoomSelectionChanged});
   final bool expandable;
   final bool showHeader;
   final List<Room> rooms;
   final Stream<void>? onUpdateStream;
+  final Stream<Room>? onChildUpdatedStream;
   final Stream<int>? onInsertStream;
   final String? expanderText;
   final void Function(int)? onRoomSelected;
@@ -36,6 +41,7 @@ class _RoomListState extends State<RoomList>
   int _count = 0;
   StreamSubscription<int>? onInsertListener;
   StreamSubscription<void>? onUpdateListener;
+  StreamSubscription<Room>? onChildUpdatedListener;
   StreamSubscription<Room>? onRoomSelectionChangedListener;
   AnimationController? controller;
   bool expanded = false;
@@ -51,6 +57,10 @@ class _RoomListState extends State<RoomList>
     onInsertListener = widget.onInsertStream?.listen((index) {
       _listKey.currentState?.insertItem(index);
       _count++;
+    });
+
+    onChildUpdatedListener = widget.onChildUpdatedStream?.listen((event) {
+      _listKey.currentState?.setState(() {});
     });
 
     onRoomSelectionChangedListener =
@@ -74,6 +84,7 @@ class _RoomListState extends State<RoomList>
     onInsertListener?.cancel();
     onUpdateListener?.cancel();
     onRoomSelectionChangedListener?.cancel();
+    onChildUpdatedListener?.cancel();
     super.dispose();
   }
 
@@ -160,6 +171,17 @@ class _RoomListState extends State<RoomList>
               widget.rooms[i].displayName,
               highlighted: _selectedIndex == i,
               icon: m.Icons.tag,
+              iconColor: getIconColor(context, i),
+              textColor: getTextColor(context, i),
+              footer: widget.rooms[i].highlightedNotificationCount > 0
+                  ? NotificationBadge(
+                      widget.rooms[i].highlightedNotificationCount)
+                  : widget.rooms[i].notificationCount > 0
+                      ? Padding(
+                          padding: const EdgeInsets.all(2.0),
+                          child: DotIndicator(),
+                        )
+                      : null,
               onTap: () {
                 widget.onRoomSelected?.call(i);
                 setState(() {
@@ -179,5 +201,26 @@ class _RoomListState extends State<RoomList>
       if (expanded) controller?.forward(from: controller!.value);
       if (!expanded) controller?.reverse(from: controller!.value);
     });
+  }
+
+  Color getTextColor(BuildContext context, int index) {
+    if (index == _selectedIndex)
+      return m.Theme.of(context).colorScheme.onSurface;
+
+    var room = widget.rooms[index];
+
+    if (room.notificationCount > 0 || room.highlightedNotificationCount > 0)
+      return m.Theme.of(context).colorScheme.onSurface;
+
+    return m.Theme.of(context).colorScheme.secondary;
+  }
+
+  Color getIconColor(BuildContext context, int index) {
+    var room = widget.rooms[index];
+
+    if (room.notificationCount > 0 || room.highlightedNotificationCount > 0)
+      return m.Theme.of(context).colorScheme.onSurface;
+
+    return m.Theme.of(context).colorScheme.secondary;
   }
 }

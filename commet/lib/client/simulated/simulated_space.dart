@@ -11,7 +11,6 @@ import '../../utils/rng.dart';
 class SimulatedSpace extends Space {
   SimulatedSpace(displayName, client)
       : super(RandomUtils.getRandomString(20), client) {
-    notificationCount = 1;
     this.displayName = displayName;
 
     var images = [

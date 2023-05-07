@@ -20,10 +20,18 @@ class SimulatedRoom extends Room {
   @override
   bool get isE2EE => false;
 
+  int _highlightedNotifications = 0;
+  int _notifications = 0;
+
+  @override
+  int get highlightedNotificationCount => _highlightedNotifications;
+
+  @override
+  int get notificationCount => _notifications;
+
   SimulatedRoom(displayName, client, {bool isDm = false})
       : super(RandomUtils.getRandomString(20), client) {
     identifier = RandomUtils.getRandomString(20);
-    notificationCount = 1;
 
     permissions = SimulatedRoomPermissions();
 
@@ -37,6 +45,14 @@ class SimulatedRoom extends Room {
       members.add(bob);
       members.add((client as Client).user!);
       this.displayName = displayName;
+    }
+
+    if (Random().nextInt(10) > 7) {
+      _highlightedNotifications = 1;
+    }
+
+    if (Random().nextInt(10) > 5) {
+      _notifications++;
     }
 
     timeline = SimulatedTimeline();
@@ -68,12 +84,6 @@ class SimulatedRoom extends Room {
     e.originServerTs = DateTime.now();
     e.sender = sender;
     e.body = RandomUtils.getRandomSentence(Random().nextInt(10) + 10);
-    if (Random().nextInt(10) > 7) {
-      e.attachments = List.empty(growable: true);
-      // for (int i = 0; i < Random().nextInt(3) + 1; i++) {
-      //   e.attachments!.add(Attachment("https://picsum.photos/200/300", "image"));
-      // }
-    }
     return e;
   }
 

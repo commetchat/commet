@@ -16,6 +16,12 @@ class MatrixRoom extends Room {
   @override
   bool get isE2EE => _matrixRoom.encrypted;
 
+  @override
+  int get highlightedNotificationCount => _matrixRoom.highlightCount;
+
+  @override
+  int get notificationCount => _matrixRoom.notificationCount;
+
   MatrixRoom(client, matrix.Room room, matrix.Client matrixClient)
       : super(room.id, client) {
     _matrixRoom = room;
@@ -36,7 +42,6 @@ class MatrixRoom extends Room {
     }
 
     displayName = room.getLocalizedDisplayname();
-    notificationCount = room.notificationCount;
 
     var users = room.getParticipants();
 
@@ -50,6 +55,8 @@ class MatrixRoom extends Room {
         List.from(users.map((e) => this.client.getPeer(e.id)), growable: true);
 
     timeline = MatrixTimeline(client, this, room);
+
+    _matrixRoom.onUpdate.stream.listen(onMatrixRoomUpdate);
 
     permissions = MatrixRoomPermissions(_matrixRoom);
   }
@@ -73,5 +80,10 @@ class MatrixRoom extends Room {
   @override
   Future<void> enableE2EE() async {
     await _matrixRoom.enableEncryption();
+  }
+
+  void onMatrixRoomUpdate(String event) {
+    displayName = _matrixRoom.getLocalizedDisplayname();
+    onUpdate.add(null);
   }
 }

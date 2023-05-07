@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/ui/pages/add_space_or_room/add_space_or_room.dart';
 import 'package:commet/ui/pages/settings/app_settings_page.dart';
@@ -55,11 +57,22 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
   late GlobalKey<SplitTimelineViewerState> timelineKey =
       GlobalKey<SplitTimelineViewerState>();
   late Map<String, GlobalKey<SplitTimelineViewerState>> timelines = {};
-
+  StreamSubscription? onSpaceUpdated;
+  StreamSubscription? onSpaceChildUpdated;
   @override
   void initState() {
     _clientManager = Provider.of<ClientManager>(context, listen: false);
+    onSpaceChildUpdated = _clientManager.onSpaceChildUpdated.stream
+        .listen((_) => onSpaceUpdate());
+
+    onSpaceUpdated =
+        _clientManager.onSpaceUpdated.stream.listen((_) => onSpaceUpdate());
+
     super.initState();
+  }
+
+  void onSpaceUpdate() {
+    setState(() {});
   }
 
   @override

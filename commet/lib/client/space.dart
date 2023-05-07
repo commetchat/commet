@@ -28,12 +28,20 @@ abstract class Space {
 
   late RoomVisibility visibility = RoomVisibility.private;
 
-  int notificationCount = 0;
+  int get notificationCount => rooms.fold(
+      0, (previousValue, element) => previousValue + element.notificationCount);
+
+  int get highlightedNotificationCount => rooms.fold(
+      0,
+      (previousValue, element) =>
+          previousValue + element.highlightedNotificationCount);
 
   String get localId => "${client.identifier}:$identifier";
   List<RoomPreview> get childPreviews => _childPreviewsList;
 
   StreamController<void> onUpdate = StreamController.broadcast();
+  StreamController<Room> onChildUpdated = StreamController.broadcast();
+
   late StreamController<int> onRoomAdded = StreamController.broadcast();
   late StreamController<void> onChildrenUpdated = StreamController.broadcast();
   late StreamController<int> onChildPreviewAdded = StreamController.broadcast();
@@ -77,6 +85,11 @@ abstract class Space {
 
     if (!containsRoom(room.identifier)) {
       rooms.add(room);
+
+      room.onUpdate.stream.listen((event) {
+        onChildUpdated.add(room);
+      });
+
       _rooms[room.identifier] = room;
       onRoomAdded.add(rooms.length - 1);
     }

@@ -21,7 +21,8 @@ abstract class Room {
   bool get isE2EE;
   StreamController<void> onUpdate = StreamController.broadcast();
 
-  int notificationCount = 0;
+  int get notificationCount;
+  int get highlightedNotificationCount;
 
   Future<TimelineEvent?> sendMessage(String message,
       {TimelineEvent? inReplyTo});
