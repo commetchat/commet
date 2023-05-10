@@ -22,6 +22,18 @@ class MatrixRoom extends Room {
   @override
   int get notificationCount => _matrixRoom.notificationCount;
 
+  @override
+  PushRule get pushRule {
+    switch (_matrixRoom.pushRuleState) {
+      case matrix.PushRuleState.notify:
+        return PushRule.notify;
+      case matrix.PushRuleState.mentionsOnly:
+        return PushRule.notify;
+      case matrix.PushRuleState.dontNotify:
+        return PushRule.dontNotify;
+    }
+  }
+
   MatrixRoom(client, matrix.Room room, matrix.Client matrixClient)
       : super(room.id, client) {
     _matrixRoom = room;

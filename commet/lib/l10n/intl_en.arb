@@ -51,5 +51,6 @@
   "roomSettingsAppearance": "Appearance",
   "roomNamePrompt": "Room Name",
   "enableEncryptionPrompt": "Enable Encryption",
-  "encryptionCannotBeDisabled": "If enabled, this cannot be disabled later"
+  "encryptionCannotBeDisabled": "If enabled, this cannot be disabled later",
+  "notificationReceivedMessagePlaceholder": "Sent a message"
 }

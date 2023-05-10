@@ -6,6 +6,8 @@ import 'permissions.dart';
 
 enum RoomVisibility { public, private, invite, knock }
 
+enum PushRule { notify, mentionsOnly, dontNotify }
+
 abstract class Room {
   late String identifier;
   late Client client;
@@ -20,6 +22,7 @@ abstract class Room {
   bool get isMember => false;
   bool get isE2EE;
   StreamController<void> onUpdate = StreamController.broadcast();
+  PushRule get pushRule;
 
   int get notificationCount;
   int get highlightedNotificationCount;

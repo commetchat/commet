@@ -19,6 +19,7 @@ class MatrixTimeline extends Timeline {
     events = List.empty(growable: true);
     _matrixRoom = matrixRoom;
     this.client = client;
+    this.room = room;
 
     initTimeline();
   }
@@ -27,7 +28,7 @@ class MatrixTimeline extends Timeline {
     _matrixTimeline = await _matrixRoom.getTimeline(
       onInsert: (index) {
         if (_matrixTimeline == null) return;
-        insertEvent(index, convertEvent(_matrixTimeline!.events[index]));
+        insertNewEvent(index, convertEvent(_matrixTimeline!.events[index]));
       },
       onChange: (index) {
         if (_matrixTimeline == null) return;

@@ -29,6 +29,9 @@ class SimulatedRoom extends Room {
   @override
   int get notificationCount => _notifications;
 
+  @override
+  PushRule get pushRule => PushRule.dontNotify;
+
   SimulatedRoom(displayName, client, {bool isDm = false})
       : super(RandomUtils.getRandomString(20), client) {
     identifier = RandomUtils.getRandomString(20);

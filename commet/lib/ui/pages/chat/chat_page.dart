@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:commet/client/client_manager.dart';
+import 'package:commet/main.dart';
 import 'package:commet/ui/pages/chat/desktop_chat_page.dart';
 import 'package:commet/ui/pages/chat/mobile_chat_page.dart';
 import 'package:commet/ui/pages/settings/room_settings_page.dart';
+import 'package:commet/utils/notification/notification_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
@@ -139,13 +141,23 @@ class ChatPageState extends State<ChatPage> {
   @override
   void initState() {
     super.initState();
+    notificationManager.addModifier(onlyNotifyNonSelectedRooms);
   }
 
   @override
   void dispose() {
     onSpaceUpdateSubscription?.cancel();
     onRoomUpdateSubscription?.cancel();
+
+    notificationManager.removeModifier(onlyNotifyNonSelectedRooms);
     super.dispose();
+  }
+
+  NotificationContent? onlyNotifyNonSelectedRooms(NotificationContent content) {
+    if (content.sentFrom == selectedRoom) {
+      return null;
+    }
+    return content;
   }
 
   void onSpaceUpdated(void _) {

@@ -3,6 +3,7 @@ import 'package:commet/client/client_manager.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/preferences.dart';
 import 'package:commet/ui/pages/loading/loading_page.dart';
+import 'package:commet/utils/notification/notification_manager.dart';
 
 import 'package:flutter/material.dart';
 
@@ -20,6 +21,7 @@ import 'generated/l10n.dart';
 final GlobalKey<NavigatorState> navigator = GlobalKey();
 FileCacheInstance fileCache = FileCacheInstance();
 Preferences preferences = Preferences();
+NotificationManager notificationManager = NotificationManager();
 
 void main() async {
   if (BuildConfig.MOBILE) {
