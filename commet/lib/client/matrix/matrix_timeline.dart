@@ -68,6 +68,17 @@ class MatrixTimeline extends Timeline {
 
     e.body = event.getDisplayEvent(_matrixTimeline!).body;
 
+    if (event.relationshipType != null) {
+      switch (event.relationshipType) {
+        case "m.in_reply_to":
+          e.relatedEventId = event.relationshipEventId;
+          e.relationshipType = EventRelationshipType.reply;
+          break;
+      }
+    }
+
+    e.relatedEventId = event.relationshipEventId;
+
     switch (event.type) {
       case matrix.EventTypes.Message:
         e = parseMessage(e, event);
@@ -215,5 +226,12 @@ class MatrixTimeline extends Timeline {
     if (sender != null) list.add(sender);
 
     return list;
+  }
+
+  @override
+  Future<TimelineEvent?> fetchEventByIdInternal(String eventId) async {
+    var event = await _matrixRoom.getEventById(eventId);
+    if (event == null) return null;
+    return convertEvent(event);
   }
 }

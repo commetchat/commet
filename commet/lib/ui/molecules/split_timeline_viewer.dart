@@ -169,35 +169,30 @@ class SplitTimelineViewerState extends State<SplitTimelineViewer> {
       physics: physics,
       slivers: <Widget>[
         SliverList(
+            key: historyListKey,
             delegate: SliverChildBuilderDelegate((context, index) {
-          int actualIndex = split.getTimelineIndex(
-              split.getHistoryDisplayIndex(index),
-              SplitTimelinePart.historical);
+              int idx = split.getHistoryDisplayIndex(index);
 
-          return TimelineEventView(
-            event: split.historical[split.getHistoryDisplayIndex(index)],
-            showSender: shouldShowSender(split.getTimelineIndex(
-                split.getHistoryDisplayIndex(index),
-                SplitTimelinePart.historical)),
-            debugInfo:
-                "Split Part: ${split.whichList(actualIndex)} history index: $index, actual index: $actualIndex, actual index id: ${widget.timeline.events[actualIndex].eventId}",
-            onDelete: () {
-              widget.timeline.deleteEventByIndex(index);
-            },
-          );
-        }, childCount: split.historical.length)),
+              return TimelineEventView(
+                event: split.historical[idx],
+                timeline: widget.timeline,
+                showSender: shouldShowSender(
+                    split.getTimelineIndex(idx, SplitTimelinePart.historical)),
+                onDelete: () {
+                  widget.timeline.deleteEventByIndex(index);
+                },
+              );
+            }, childCount: split.historical.length)),
         SliverList(
             key: newEventsListKey,
             delegate: SliverChildBuilderDelegate((context, index) {
-              int actualIndex = split.getTimelineIndex(
-                  split.getRecentDisplayIndex(index), SplitTimelinePart.recent);
+              int idx = split.getRecentDisplayIndex(index);
+
               return TimelineEventView(
-                showSender: shouldShowSender(split.getTimelineIndex(
-                    split.getRecentDisplayIndex(index),
-                    SplitTimelinePart.recent)),
-                event: split.recent[split.getRecentDisplayIndex(index)],
-                debugInfo:
-                    "Split Part: ${split.whichList(actualIndex)} history index: $index, actual index: $actualIndex, actual index id: ${widget.timeline.events[actualIndex].eventId}",
+                timeline: widget.timeline,
+                showSender: shouldShowSender(
+                    split.getTimelineIndex(idx, SplitTimelinePart.recent)),
+                event: split.recent[idx],
                 onDelete: () {
                   widget.timeline.deleteEventByIndex(
                       split.getTimelineIndex(index, SplitTimelinePart.recent));
@@ -212,6 +207,12 @@ class SplitTimelineViewerState extends State<SplitTimelineViewer> {
     if (widget.timeline.events.length <= index + 1) {
       return true;
     }
+
+    if (widget.timeline.events[index].relationshipType ==
+        EventRelationshipType.reply) return true;
+
+    if (widget.timeline.events[index + 1].type != EventType.message)
+      return true;
 
     if (widget.timeline.events[index].originServerTs
             .difference(widget.timeline.events[index + 1].originServerTs)

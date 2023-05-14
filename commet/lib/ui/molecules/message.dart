@@ -11,9 +11,11 @@ import '../../generated/l10n.dart';
 import 'package:flutter/material.dart' as material;
 
 class Message extends StatefulWidget {
-  const Message(this.event, {super.key, this.showSender = true, this.onDelete});
+  const Message(this.event,
+      {super.key, this.showSender = true, this.onDelete, this.relatedEvent});
 
   final TimelineEvent event;
+  final TimelineEvent? relatedEvent;
   final bool showSender;
   final Function? onDelete;
 
@@ -71,26 +73,96 @@ class _MessageState extends State<Message> {
             Opacity(
               opacity:
                   widget.event.status == TimelineEventStatus.sending ? 0.5 : 1,
-              child: Row(
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisSize: material.MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (widget.showSender)
-                    Avatar.medium(
-                      image: widget.event.sender.avatar,
-                    ),
-                  if (!widget.showSender)
-                    const Avatar.medium(
-                      image: null,
-                      isPadding: true,
-                    ),
-                  messageBody(context, selectableText: !BuildConfig.MOBILE)
+                  if (widget.event.relationshipType ==
+                      EventRelationshipType.reply)
+                    response(context),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (widget.showSender)
+                        Avatar.medium(
+                          image: widget.event.sender.avatar,
+                        ),
+                      if (!widget.showSender)
+                        const Avatar.medium(
+                          image: null,
+                          isPadding: true,
+                        ),
+                      messageBody(context, selectableText: !BuildConfig.MOBILE)
+                    ],
+                  ),
                 ],
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget response(BuildContext context) {
+    if (widget.relatedEvent == null) return responseLoading(context);
+    return responseLoaded(context);
+  }
+
+  Widget responseLoaded(BuildContext context) {
+    return SizedBox(
+      height: 20,
+      child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Padding(
+              padding: EdgeInsets.fromLTRB(50, 0, 0, 0),
+              child: Icon(material.Icons.keyboard_arrow_right_rounded),
+            ),
+            tiamat.Text.name(
+              widget.relatedEvent!.sender.displayName,
+              color: widget.relatedEvent!.sender.color,
+            ),
+            const SizedBox(
+              width: 10,
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
+                child: tiamat.Text(
+                  widget.relatedEvent!.body!,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  color: material.Theme.of(context).colorScheme.secondary,
+                ),
+              ),
+            )
+          ]),
+    );
+  }
+
+  Widget responseLoading(BuildContext context) {
+    return SizedBox(
+      height: 20,
+      child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: const [
+            Padding(
+              padding: EdgeInsets.fromLTRB(50, 0, 0, 0),
+              child: Icon(material.Icons.keyboard_arrow_right_rounded),
+            ),
+            Opacity(
+              opacity: 0.5,
+              child: SizedBox(
+                  height: 5,
+                  width: 100,
+                  child: material.LinearProgressIndicator()),
+            ),
+          ]),
     );
   }
 

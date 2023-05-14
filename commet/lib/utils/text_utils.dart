@@ -7,7 +7,7 @@ import 'package:intl/intl.dart' as intl;
 import 'package:flutter/material.dart' as material;
 
 final _urlRegex = RegExp(
-  r'([\w+]+\:\/\/)?([\w\d-]+\.)*[\w-]+[\.\:]\w+([\/\?\=\&\#.]?[\w-]+)*\/?',
+  r'(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#/%=~_|$?!:,.]*\)|[A-Z0-9+&@#/%=~_|$])',
   caseSensitive: false,
   dotAll: true,
 );

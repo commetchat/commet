@@ -108,46 +108,54 @@ enum TextType {
 
 class Text extends StatelessWidget {
   const Text(this.text,
-      {super.key, this.type = TextType.label, this.overflow, this.color});
+      {super.key,
+      this.type = TextType.label,
+      this.overflow,
+      this.color,
+      this.maxLines});
   final String text;
   final TextType type;
   final Color? color;
   final TextOverflow? overflow;
+  final int? maxLines;
 
-  const Text.label(this.text, {Key? key, this.overflow})
+  const Text.label(this.text, {Key? key, this.overflow, this.maxLines})
       : type = TextType.label,
         color = null,
         super(key: key);
 
-  const Text.labelEmphasised(this.text, {Key? key, this.overflow, this.color})
+  const Text.labelEmphasised(this.text,
+      {Key? key, this.overflow, this.color, this.maxLines})
       : type = TextType.labelEmphasised,
         super(key: key);
 
-  const Text.error(this.text, {Key? key, this.overflow})
+  const Text.error(this.text, {Key? key, this.overflow, this.maxLines})
       : type = TextType.error,
         color = null,
         super(key: key);
 
-  const Text.tiny(this.text, {Key? key, this.overflow})
+  const Text.tiny(this.text, {Key? key, this.overflow, this.maxLines})
       : type = TextType.tiny,
         color = null,
         super(key: key);
 
-  const Text.body(this.text, {Key? key, this.overflow})
+  const Text.body(this.text, {Key? key, this.overflow, this.maxLines})
       : type = TextType.body,
         color = null,
         super(key: key);
 
-  const Text.largeTitle(this.text, {Key? key, this.overflow})
+  const Text.largeTitle(this.text, {Key? key, this.overflow, this.maxLines})
       : type = TextType.largeTitle,
         color = null,
         super(key: key);
 
-  const Text.name(this.text, {Key? key, this.color, this.overflow})
+  const Text.name(this.text,
+      {Key? key, this.color, this.overflow, this.maxLines})
       : type = TextType.name,
         super(key: key);
 
-  const Text.labelLow(this.text, {Key? key, this.color, this.overflow})
+  const Text.labelLow(this.text,
+      {Key? key, this.color, this.overflow, this.maxLines})
       : type = TextType.labelLow,
         super(key: key);
 
@@ -209,6 +217,7 @@ class Text extends StatelessWidget {
       text,
       style: style,
       overflow: overflow,
+      maxLines: maxLines,
     );
   }
 }

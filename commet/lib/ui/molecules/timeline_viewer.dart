@@ -63,7 +63,10 @@ class TimelineViewerState extends State<TimelineViewer> {
             return SizeTransition(
                 sizeFactor:
                     animation.drive(CurveTween(curve: Curves.easeOutCubic)),
-                child: TimelineEventView(event: widget.timeline.events[i]));
+                child: TimelineEventView(
+                  event: widget.timeline.events[i],
+                  timeline: widget.timeline,
+                ));
           }),
     ));
   }

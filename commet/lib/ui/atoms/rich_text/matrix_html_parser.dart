@@ -11,6 +11,8 @@ class MatrixHtmlParser {
     var fragment = html_parser.parseFragment(text);
     List<InlineSpan> spans = List.empty(growable: true);
     for (var element in fragment.nodes) {
+      if (element is dom.Element && !doParse(element)) continue;
+
       spans.addAll(_parseChild(element, const TextStyle()));
     }
 
@@ -37,10 +39,20 @@ class MatrixHtmlParser {
     }
 
     for (var child in element.nodes) {
+      if (child is dom.Element && !doParse(child)) continue;
+
       parsedText.addAll(_parseChild(child, theme));
     }
 
     return parsedText;
+  }
+
+  static bool doParse(dom.Element element) {
+    switch (element.localName) {
+      case "mx-reply":
+        return false;
+    }
+    return true;
   }
 
   static InlineSpan? parseSpecial(dom.Element element, TextStyle style) {

@@ -29,12 +29,15 @@ void main() async {
   }
 
   await preferences.init();
-  double scale = preferences.getAppScale();
-  ScaledWidgetsFlutterBinding.ensureInitialized(
-    scaleFactor: (deviceSize) {
-      return scale;
-    },
-  );
+
+  if (BuildConfig.DESKTOP) {
+    double scale = preferences.getAppScale();
+    ScaledWidgetsFlutterBinding.ensureInitialized(
+      scaleFactor: (deviceSize) {
+        return scale;
+      },
+    );
+  }
   var theme = preferences.getTheme();
 
   runApp(App(

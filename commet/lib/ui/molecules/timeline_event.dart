@@ -9,6 +9,7 @@ import '../../client/client.dart';
 class TimelineEventView extends StatefulWidget {
   const TimelineEventView(
       {required this.event,
+      required this.timeline,
       super.key,
       this.onDelete,
       this.hovered = false,
@@ -19,12 +20,36 @@ class TimelineEventView extends StatefulWidget {
   final Function? onDelete;
   final bool showSender;
   final String? debugInfo;
+  final Timeline timeline;
 
   @override
   State<TimelineEventView> createState() => _TimelineEventState();
 }
 
 class _TimelineEventState extends State<TimelineEventView> {
+  TimelineEvent? relatedEvent;
+
+  @override
+  void initState() {
+    if (widget.event.relatedEventId != null) {
+      relatedEvent = widget.timeline.tryGetEvent(widget.event.relatedEventId!);
+      if (relatedEvent == null) {
+        fetchRelatedEvent();
+      }
+    }
+
+    super.initState();
+  }
+
+  void fetchRelatedEvent() async {
+    var event =
+        await widget.timeline.fetchEventById(widget.event.relatedEventId!);
+    if (mounted)
+      setState(() {
+        relatedEvent = event;
+      });
+  }
+
   @override
   Widget build(BuildContext context) {
     var display = eventToWidget(widget.event);
@@ -41,6 +66,7 @@ class _TimelineEventState extends State<TimelineEventView> {
           widget.event,
           showSender: widget.showSender,
           onDelete: widget.onDelete,
+          relatedEvent: relatedEvent,
         );
       default:
         break;
