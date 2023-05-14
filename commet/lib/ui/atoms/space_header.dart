@@ -12,12 +12,17 @@ class SpaceHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (space.avatar != null) {
-      return Material(
-          child: Ink.image(
-        image: space.avatar!,
-        fit: BoxFit.cover,
-        child: layout(context),
-      ));
+      return Stack(
+        fit: StackFit.expand,
+        children: [
+          Image(
+            image: space.avatar!,
+            fit: BoxFit.cover,
+            filterQuality: FilterQuality.medium,
+          ),
+          Material(color: Colors.transparent, child: layout(context))
+        ],
+      );
     }
     return Material(
         color: Theme.of(context).colorScheme.surface, child: layout(context));

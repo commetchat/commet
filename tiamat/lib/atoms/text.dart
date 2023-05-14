@@ -119,9 +119,8 @@ class Text extends StatelessWidget {
         color = null,
         super(key: key);
 
-  const Text.labelEmphasised(this.text, {Key? key, this.overflow})
+  const Text.labelEmphasised(this.text, {Key? key, this.overflow, this.color})
       : type = TextType.labelEmphasised,
-        color = null,
         super(key: key);
 
   const Text.error(this.text, {Key? key, this.overflow})

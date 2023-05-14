@@ -29,6 +29,10 @@ class ClientManager {
   late StreamController<StalePeerInfo> onClientRemoved =
       StreamController.broadcast();
 
+  late StreamController<Space> onSpaceUpdated = StreamController.broadcast();
+  late StreamController<Space> onSpaceChildUpdated =
+      StreamController.broadcast();
+
   void addClient(Client client) {
     _clients[client.identifier] = client;
 
@@ -48,9 +52,24 @@ class ClientManager {
     });
 
     client.onSpaceAdded.stream.listen((i) {
-      spaces.add(client.spaces[i]);
-      onSpaceAdded.add(spaces.length - 1);
+      addSpace(client, i);
     });
+  }
+
+  void addSpace(Client client, int index) {
+    var space = client.spaces[index];
+    space.onUpdate.stream.listen((_) => spaceUpdated(space));
+    space.onChildUpdated.stream.listen((_) => spaceChildUpdated(space));
+    spaces.add(client.spaces[index]);
+    onSpaceAdded.add(spaces.length - 1);
+  }
+
+  void spaceUpdated(Space space) {
+    onSpaceUpdated.add(space);
+  }
+
+  void spaceChildUpdated(Space space) {
+    onSpaceChildUpdated.add(space);
   }
 
   Future<void> logoutClient(Client client) async {

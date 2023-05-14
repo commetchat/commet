@@ -1,8 +1,8 @@
+import 'dart:typed_data';
+
 import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/ui/pages/settings/categories/account/profile/profile_edit_view.dart';
-import 'package:commet/utils/mime.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tiamat/tiamat.dart';
 
@@ -36,8 +36,10 @@ class _ProfileEditTabState extends State<ProfileEditTab> {
               avatar: client.user?.avatar,
               displayName: client.user!.displayName,
               identifier: client.user!.identifier,
-              pickAvatar: () => pickAvatar(client),
+              pickAvatar: (bytes, type) => pickAvatar(client, bytes, type),
               setDisplayName: (name) => setDisplayName(client, name),
+              canEditName: true,
+              canEditAvatar: true,
             ),
             const Seperator()
           ],
@@ -47,15 +49,8 @@ class _ProfileEditTabState extends State<ProfileEditTab> {
     );
   }
 
-  void pickAvatar(Client client) async {
-    FilePickerResult? result = await FilePicker.platform
-        .pickFiles(type: FileType.image, withData: true);
-    if (result == null || result.count != 1) return;
-
-    var type = Mime.fromExtenstion(result.files.first.extension!);
-    if (type == null || result.files.first.bytes == null) return;
-
-    await client.setAvatar(result.files.first.bytes!, type);
+  void pickAvatar(Client client, Uint8List bytes, String? type) async {
+    await client.setAvatar(bytes, type ?? "");
     setState(() {});
   }
 

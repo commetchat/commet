@@ -2,7 +2,6 @@
 
 import 'package:commet/ui/molecules/direct_message_list.dart';
 import 'package:commet/ui/molecules/split_timeline_viewer.dart';
-import 'package:commet/ui/organisms/space_summary.dart';
 import 'package:commet/ui/pages/chat/chat_page.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart' as material;
@@ -15,12 +14,15 @@ import '../../atoms/room_header.dart';
 import '../../atoms/space_header.dart';
 import '../../molecules/message_input.dart';
 import '../../molecules/overlapping_panels.dart';
+import '../../molecules/read_indicator.dart';
 import '../../molecules/space_viewer.dart';
 import '../../molecules/user_list.dart';
 import '../../molecules/user_panel.dart';
 import '../../organisms/side_navigation_bar.dart';
 
 import 'package:flutter/material.dart' as m;
+
+import '../../organisms/space_summary/space_summary.dart';
 
 class MobileChatPageView extends StatefulWidget {
   const MobileChatPageView({required this.state, super.key});
@@ -91,7 +93,17 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
   Widget mainPanel() {
     if (widget.state.selectedSpace != null &&
         widget.state.selectedRoom == null) {
-      return SpaceSummary(space: widget.state.selectedSpace!);
+      return Tile(
+        child: ListView(children: [
+          SpaceSummary(
+            key: widget.state.selectedSpace!.key,
+            space: widget.state.selectedSpace!,
+            onRoomTap: (room) {
+              widget.state.selectRoom(room);
+            },
+          ),
+        ]),
+      );
     }
 
     return timelineView();
@@ -167,6 +179,8 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
                 widget.state.selectedSpace!,
                 key: widget.state.selectedSpace!.key,
                 onRoomInsert: widget.state.selectedSpace!.onRoomAdded.stream,
+                onRoomSelectionChanged:
+                    widget.state.onRoomSelectionChanged.stream,
                 onRoomSelected: (index) async {
                   selectRoom(widget.state.selectedSpace!.rooms[index]);
                 },
@@ -198,7 +212,15 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
           child: Column(
             children: [
               SizedBox(
-                  height: 50, child: RoomHeader(widget.state.selectedRoom!)),
+                  height: 50,
+                  child: RoomHeader(
+                    widget.state.selectedRoom!,
+                    onTap: widget.state.selectedRoom?.permissions
+                                .canEditAnything ==
+                            true
+                        ? () => widget.state.navigateRoomSettings()
+                        : null,
+                  )),
               Flexible(
                 // We listen to this so that when the onscreen keyboard changes the size of view inset, we can offset the scroll position
                 child: NotificationListener(
@@ -228,6 +250,8 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
                       children: [
                         Expanded(
                             child: SplitTimelineViewer(
+                          markAsRead:
+                              widget.state.selectedRoom!.timeline!.markAsRead,
                           key: widget.state
                               .timelines[widget.state.selectedRoom!.localId],
                           timeline: widget.state.selectedRoom!.timeline!,
@@ -236,6 +260,11 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
                           padding: EdgeInsets.fromLTRB(0, 0, 0, 8),
                           child: MessageInput(
                             key: messageInput,
+                            isRoomE2EE: widget.state.selectedRoom!.isE2EE,
+                            readIndicator: ReadIndicator(
+                              initialList:
+                                  widget.state.selectedRoom?.timeline?.receipts,
+                            ),
                             onSendMessage: (message) {
                               widget.state.selectedRoom!.sendMessage(message);
                               return MessageInputSendResult.clearText;

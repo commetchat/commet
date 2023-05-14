@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:commet/client/client_manager.dart';
-import 'package:commet/client/matrix/matrix_room_preview.dart';
-import 'package:commet/client/preview_data.dart';
+import 'package:commet/client/matrix/matrix_client_extensions.dart';
+import 'package:commet/client/room_preview.dart';
 import 'package:commet/config/app_config.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/main.dart';
@@ -37,6 +37,9 @@ class MatrixClient extends Client {
     var hash = sha256.convert(bytes);
     return hash.toString();
   }
+
+  @override
+  bool get supportsE2EE => true;
 
   static Future<void> loadFromDB(ClientManager manager) async {
     var clients = preferences.getRegisteredMatrixClients();
@@ -201,14 +204,20 @@ class MatrixClient extends Client {
   }
 
   @override
-  Future<Room> createRoom(String name, RoomVisibility visibility) async {
+  Future<Room> createRoom(String name, RoomVisibility visibility,
+      {bool enableE2EE = true}) async {
     var id = await _matrixClient.createRoom(
         name: name,
         visibility: visibility == RoomVisibility.private
             ? matrix.Visibility.private
             : matrix.Visibility.public);
+    var matrixRoom = _matrixClient.getRoomById(id)!;
+    if (enableE2EE) {
+      await matrixRoom.enableEncryption();
+    }
+
     if (roomExists(id)) return getRoom(id)!;
-    var room = MatrixRoom(this, _matrixClient.getRoomById(id)!, _matrixClient);
+    var room = MatrixRoom(this, matrixRoom, _matrixClient);
     addRoom(room);
     return room;
   }
@@ -242,24 +251,19 @@ class MatrixClient extends Client {
   }
 
   @override
-  Future<PreviewData?> getRoomPreviewInternal(String address) async {
-    MatrixRoomPreview preview =
-        MatrixRoomPreview(roomId: address, matrixClient: _matrixClient);
-    if (preview.exists) {
-      return preview;
-    }
-    return null;
+  Future<RoomPreview?> getRoomPreviewInternal(String address) async {
+    return await _matrixClient.getRoomPreview(address);
   }
 
   @override
-  Future<PreviewData?> getSpacePreviewInternal(String address) {
+  Future<RoomPreview?> getSpacePreviewInternal(String address) {
     return getRoomPreviewInternal(address);
   }
 
   @override
   Future<Room> joinRoom(String address) async {
     var id = await _matrixClient.joinRoom(address);
-    _matrixClient.waitForRoomInSync(id);
+    await _matrixClient.waitForRoomInSync(id);
     if (roomExists(id)) return getRoom(id)!;
 
     var room = MatrixRoom(this, _matrixClient.getRoomById(id)!, _matrixClient);
@@ -284,5 +288,10 @@ class MatrixClient extends Client {
   Future<void> setDisplayName(String name) async {
     await _matrixClient.setDisplayName(_matrixClient.userID!, name);
     user!.displayName = name;
+  }
+
+  @override
+  Iterable<Room> getEligibleRoomsForSpace(Space space) {
+    return rooms.where((room) => !space.containsRoom(room.identifier));
   }
 }

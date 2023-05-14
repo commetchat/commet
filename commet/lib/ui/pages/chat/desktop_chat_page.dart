@@ -2,17 +2,19 @@ import 'package:commet/ui/atoms/drag_drop_file_target.dart';
 import 'package:commet/ui/atoms/room_header.dart';
 import 'package:commet/ui/atoms/space_header.dart';
 import 'package:commet/ui/molecules/direct_message_list.dart';
+import 'package:commet/ui/molecules/read_indicator.dart';
 import 'package:commet/ui/molecules/split_timeline_viewer.dart';
 import 'package:commet/ui/molecules/message_input.dart';
 import 'package:commet/ui/molecules/space_viewer.dart';
 import 'package:commet/ui/molecules/user_list.dart';
 import 'package:commet/ui/molecules/user_panel.dart';
 import 'package:commet/ui/organisms/side_navigation_bar.dart';
-import 'package:commet/ui/organisms/space_summary.dart';
 import 'package:commet/ui/pages/chat/chat_page.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart';
+
+import '../../organisms/space_summary/space_summary.dart';
 
 class DesktopChatPageView extends StatefulWidget {
   const DesktopChatPageView({required this.state, super.key});
@@ -27,6 +29,8 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
     return Stack(
       children: [
         Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Tile.low4(
               child: SideNavigationBar(
@@ -50,9 +54,18 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
             if (widget.state.selectedSpace != null &&
                 widget.state.selectedRoom == null)
               Expanded(
-                  child: SpaceSummary(
+                child: Tile(
+                  child: ListView(children: [
+                    SpaceSummary(
                       key: widget.state.selectedSpace!.key,
-                      space: widget.state.selectedSpace!)),
+                      space: widget.state.selectedSpace!,
+                      onRoomTap: (room) {
+                        widget.state.selectRoom(room);
+                      },
+                    ),
+                  ]),
+                ),
+              ),
           ],
         ),
         if (widget.state.selectedRoom != null)
@@ -90,7 +103,15 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
       borderLeft: true,
       child: Column(
         children: [
-          SizedBox(height: 50, child: RoomHeader(widget.state.selectedRoom!)),
+          SizedBox(
+              height: 50,
+              child: RoomHeader(
+                widget.state.selectedRoom!,
+                onTap: widget.state.selectedRoom?.permissions.canEditAnything ==
+                        true
+                    ? () => widget.state.navigateRoomSettings()
+                    : null,
+              )),
           Flexible(
             child: Row(
               children: [
@@ -100,13 +121,19 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
                     children: [
                       Expanded(
                           child: SplitTimelineViewer(
-                        key: widget.state
-                            .timelines[widget.state.selectedRoom!.localId],
-                        timeline: widget.state.selectedRoom!.timeline!,
-                      )),
+                              key: widget.state.timelines[
+                                  widget.state.selectedRoom!.localId],
+                              timeline: widget.state.selectedRoom!.timeline!,
+                              markAsRead: widget
+                                  .state.selectedRoom!.timeline!.markAsRead)),
                       Tile(
                         borderTop: true,
                         child: MessageInput(
+                          isRoomE2EE: widget.state.selectedRoom!.isE2EE,
+                          readIndicator: ReadIndicator(
+                            initialList:
+                                widget.state.selectedRoom?.timeline?.receipts,
+                          ),
                           onSendMessage: (message) {
                             widget.state.selectedRoom!.sendMessage(message);
                             return MessageInputSendResult.clearText;
@@ -152,6 +179,8 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
                   child: SpaceViewer(
                 widget.state.selectedSpace!,
                 key: widget.state.selectedSpace!.key,
+                onRoomSelectionChanged:
+                    widget.state.onRoomSelectionChanged.stream,
                 onRoomInsert: widget.state.selectedSpace!.onRoomAdded.stream,
                 onRoomSelected: (index) {
                   widget.state

@@ -19,6 +19,7 @@ class MatrixTimeline extends Timeline {
     events = List.empty(growable: true);
     _matrixRoom = matrixRoom;
     this.client = client;
+    this.room = room;
 
     initTimeline();
   }
@@ -27,7 +28,7 @@ class MatrixTimeline extends Timeline {
     _matrixTimeline = await _matrixRoom.getTimeline(
       onInsert: (index) {
         if (_matrixTimeline == null) return;
-        insertEvent(index, convertEvent(_matrixTimeline!.events[index]));
+        insertNewEvent(index, convertEvent(_matrixTimeline!.events[index]));
       },
       onChange: (index) {
         if (_matrixTimeline == null) return;
@@ -190,5 +191,29 @@ class MatrixTimeline extends Timeline {
       _matrixTimeline!.events[index].remove();
       onRemove.add(index);
     }
+  }
+
+  @override
+  void markAsRead(TimelineEvent event) async {
+    if (event.sender == client.user) return;
+
+    if (event.status == TimelineEventStatus.synced) {
+      _matrixTimeline?.setReadMarker(event.eventId);
+    }
+  }
+
+  @override
+  Iterable<Peer>? get receipts => getReceipts();
+
+  Iterable<Peer>? getReceipts() {
+    var mxReceipts = _matrixTimeline?.events.first.receipts;
+    var mapped = mxReceipts?.map((receipt) => client.getPeer(receipt.user.id)!);
+    if (mapped == null) return null;
+
+    var list = mapped.toList(growable: true);
+    var sender = client.getPeer(_matrixTimeline!.events.first.senderId);
+    if (sender != null) list.add(sender);
+
+    return list;
   }
 }

@@ -1,3 +1,4 @@
+import 'package:commet/config/build_config.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
@@ -32,81 +33,93 @@ class MatrixSessionView extends StatelessWidget {
           borderRadius: BorderRadius.circular(5)),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: Column(
           children: [
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(8.0, 16, 16, 16),
-                  child: Icon(
-                    getIcon(),
-                    color: verified ? Colors.green : Colors.redAccent,
-                  ),
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                Row(
                   children: [
-                    if (displayName != null)
-                      tiamat.Text.labelEmphasised(displayName!),
-                    Row(
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(8.0, 16, 16, 16),
+                      child: Icon(
+                        getIcon(),
+                        color: verified ? Colors.green : Colors.redAccent,
+                      ),
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (isThisDevice)
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(5),
-                                  color: Theme.of(context).colorScheme.primary),
-                              child: const Padding(
-                                padding: EdgeInsets.all(2.0),
-                                child: tiamat.Text.tiny("This Device"),
+                        if (displayName != null)
+                          tiamat.Text.labelEmphasised(displayName!),
+                        Row(
+                          children: [
+                            if (isThisDevice)
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(5),
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary),
+                                  child: const Padding(
+                                    padding: EdgeInsets.all(2.0),
+                                    child: tiamat.Text.tiny("This Device"),
+                                  ),
+                                ),
+                              ),
+                            tiamat.Text.labelLow(deviceId),
+                          ],
+                        ),
+                        if (lastSeenTimestamp != null)
+                          tiamat.Text.tiny(
+                              "Last Seen: ${DateFormat(DateFormat.YEAR_MONTH_WEEKDAY_DAY).format(DateTime.fromMillisecondsSinceEpoch(lastSeenTimestamp!))}"),
+                        if (lastSeenIp != null)
+                          const Padding(
+                            padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                            child: SizedBox(
+                              width: 10,
+                              child: tiamat.Seperator(
+                                padding: 0,
                               ),
                             ),
                           ),
-                        tiamat.Text.labelLow(deviceId),
+                        if (lastSeenIp != null) tiamat.Text.tiny(lastSeenIp!),
                       ],
                     ),
-                    if (lastSeenTimestamp != null)
-                      tiamat.Text.tiny(
-                          "Last Seen: ${DateFormat(DateFormat.YEAR_MONTH_WEEKDAY_DAY).format(DateTime.fromMillisecondsSinceEpoch(lastSeenTimestamp!))}"),
-                    if (lastSeenIp != null)
-                      const Padding(
-                        padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                        child: SizedBox(
-                          width: 10,
-                          child: tiamat.Seperator(
-                            padding: 0,
-                          ),
-                        ),
-                      ),
-                    if (lastSeenIp != null) tiamat.Text.tiny(lastSeenIp!),
                   ],
                 ),
+                if (BuildConfig.DESKTOP) verifyButton()
               ],
             ),
-            Row(
-              children: [
-                if (verified == false)
-                  tiamat.Button.secondary(
-                    text: "Verify",
-                    onTap: () => beginVerification?.call(),
-                  ),
-                if (!isThisDevice)
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 0, 4, 0),
-                    child: tiamat.IconButton(
-                      icon: Icons.delete,
-                      size: 24,
-                      onPressed: () => removeSession?.call(),
-                    ),
-                  )
-              ],
-            )
+            if (BuildConfig.MOBILE) Align(child: verifyButton()),
           ],
         ),
       ),
+    );
+  }
+
+  Row verifyButton() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        if (verified == false)
+          tiamat.Button.secondary(
+            text: "Verify",
+            onTap: () => beginVerification?.call(),
+          ),
+        if (!isThisDevice)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(8, 0, 4, 0),
+            child: tiamat.IconButton(
+              icon: Icons.delete,
+              size: 24,
+              onPressed: () => removeSession?.call(),
+            ),
+          )
+      ],
     );
   }
 

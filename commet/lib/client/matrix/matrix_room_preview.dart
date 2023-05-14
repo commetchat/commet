@@ -1,31 +1,27 @@
-import 'package:commet/client/preview_data.dart';
-import 'package:flutter/material.dart';
-import 'package:matrix/matrix.dart' as matrix;
+import 'package:commet/client/room_preview.dart';
+import 'package:flutter/widgets.dart';
+import 'package:matrix/matrix.dart';
 
-class MatrixRoomPreview extends PreviewData {
-  late matrix.Client _matrixClient;
+class MatrixSpaceRoomChunkPreview implements RoomPreview {
+  SpaceRoomsChunk chunk;
+  Client matrixClient;
+  @override
+  ImageProvider? avatar;
 
-  MatrixRoomPreview(
-      {required String roomId, required matrix.Client matrixClient})
-      : super(roomId: roomId) {
-    _matrixClient = matrixClient;
-  }
+  @override
+  String? get displayName => chunk.name;
 
-  Future<void> init() async {
-    var state = await _matrixClient.getRoomState(roomId);
+  @override
+  String get roomId => chunk.roomId;
 
-    var nameState = state.where((element) => element.type == "m.room.name");
-    if (nameState.isNotEmpty) displayName = nameState.first.content['name'];
+  @override
+  String? get topic => chunk.topic;
 
-    var avatarState = state.where((element) => element.type == "m.room.avatar");
-    if (avatarState.isNotEmpty) {
-      var mxc = Uri.parse(avatarState.first.content['url']);
-      var thumbnail = mxc.getDownloadLink(_matrixClient);
-      avatar = NetworkImage(thumbnail.toString());
-    }
-
-    var topicState = state.where((element) => element.type == "m.room.topic");
-    if (topicState.isNotEmpty) topic = topicState.first.content['topic'];
-    exists = true;
+  MatrixSpaceRoomChunkPreview(this.chunk, this.matrixClient) {
+    avatar = chunk.avatarUrl != null
+        ? NetworkImage(chunk.avatarUrl!
+            .getThumbnail(matrixClient, width: 60, height: 60)
+            .toString())
+        : null;
   }
 }

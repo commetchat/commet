@@ -2,7 +2,7 @@ import 'package:matrix/matrix.dart' as matrix;
 
 import '../permissions.dart';
 
-class MatrixRoomPermissions implements Permissions {
+class MatrixRoomPermissions extends Permissions {
   late matrix.Room room;
 
   MatrixRoomPermissions(this.room);
@@ -11,11 +11,17 @@ class MatrixRoomPermissions implements Permissions {
   bool get canBan => room.canBan;
 
   @override
-  bool get canChangeSettings => room.canSendDefaultStates;
-
-  @override
   bool get canKick => room.canKick;
 
   @override
   bool get canSendMessage => room.canSendDefaultMessages;
+
+  @override
+  bool get canEditAvatar => room.canChangeStateEvent("m.room.avatar");
+
+  @override
+  bool get canEditName => room.canChangeStateEvent("m.room.name");
+
+  @override
+  bool get canEnableE2EE => room.canChangeStateEvent("m.room.encryption");
 }

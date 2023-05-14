@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/stale_info.dart';
+import 'package:commet/ui/atoms/dot_indicator.dart';
 
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart';
@@ -69,52 +70,63 @@ class _SpaceSelectorState extends State<SpaceSelector> {
     super.dispose();
   }
 
+  EdgeInsets get padding => const EdgeInsets.fromLTRB(7, 0, 7, 0);
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(7, 0, 7, 0),
-        child: Column(
-          children: [
-            Flexible(
-              child: ScrollConfiguration(
-                behavior:
-                    ScrollConfiguration.of(context).copyWith(scrollbars: false),
-                child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (widget.header != null) widget.header!,
-                        if (widget.header != null) const Seperator(),
-                        AnimatedList(
-                            key: _listKey,
-                            physics: const NeverScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            initialItemCount: _count,
-                            itemBuilder: (context, i, animation) =>
-                                buildSpaceIcon(
-                                  animation,
-                                  displayName: widget.spaces[i].displayName,
-                                  onUpdate: widget.spaces[i].onUpdate.stream,
-                                  avatar: widget.spaces[i].avatarThumbnail,
-                                  userAvatar:
-                                      widget.spaces[i].client.user!.avatar,
-                                  index: i,
-                                )),
-                        if (widget.footer != null) const Seperator(),
-                        if (widget.footer != null) widget.footer!,
-                      ],
-                    ),
+      child: Column(
+        children: [
+          Flexible(
+            child: ScrollConfiguration(
+              behavior:
+                  ScrollConfiguration.of(context).copyWith(scrollbars: false),
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (widget.header != null)
+                        Padding(
+                          padding: padding,
+                          child: widget.header!,
+                        ),
+                      if (widget.header != null) const Seperator(),
+                      AnimatedList(
+                          key: _listKey,
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          initialItemCount: _count,
+                          itemBuilder: (context, i, animation) =>
+                              buildSpaceIcon(
+                                animation,
+                                displayName: widget.spaces[i].displayName,
+                                onUpdate: widget.spaces[i].onUpdate.stream,
+                                avatar: widget.spaces[i].avatarThumbnail,
+                                notificationCount:
+                                    widget.spaces[i].displayNotificationCount,
+                                highlightedNotificationCount: widget.spaces[i]
+                                    .displayHighlightedNotificationCount,
+                                userAvatar:
+                                    widget.spaces[i].client.user!.avatar,
+                                index: i,
+                              )),
+                      if (widget.footer != null) const Seperator(),
+                      if (widget.footer != null)
+                        Padding(
+                          padding: padding,
+                          child: widget.footer!,
+                        ),
+                    ],
                   ),
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -124,28 +136,45 @@ class _SpaceSelectorState extends State<SpaceSelector> {
       Stream<void>? onUpdate,
       ImageProvider? avatar,
       ImageProvider? userAvatar,
+      int highlightedNotificationCount = 0,
+      int notificationCount = 0,
       int? index}) {
     return ScaleTransition(
       scale: animation,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
-        child: SpaceIcon(
-          displayName: displayName,
-          onUpdate: onUpdate,
-          avatar: avatar,
-          userAvatar: userAvatar,
-          width: widget.width,
-          onTap: () {
-            if (index != null) {
-              setState(() {
-                _selectedIndex = index;
-              });
-              widget.onSelected?.call(index);
-            }
-          },
-          showUser: widget.showSpaceOwnerAvatar,
-        ),
+      child: Stack(
+        alignment: Alignment.centerLeft,
+        children: [
+          Padding(
+            padding: padding,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
+              child: SpaceIcon(
+                displayName: displayName,
+                onUpdate: onUpdate,
+                avatar: avatar,
+                userAvatar: userAvatar,
+                highlightedNotificationCount: highlightedNotificationCount,
+                notificationCount: notificationCount,
+                width: widget.width,
+                onTap: () {
+                  if (index != null) {
+                    setState(() {
+                      _selectedIndex = index;
+                    });
+                    widget.onSelected?.call(index);
+                  }
+                },
+                showUser: widget.showSpaceOwnerAvatar,
+              ),
+            ),
+          ),
+          if (notificationCount > 0) messageOverlay()
+        ],
       ),
     );
+  }
+
+  Widget messageOverlay() {
+    return const Positioned(left: -6, child: DotIndicator());
   }
 }

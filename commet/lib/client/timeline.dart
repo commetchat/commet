@@ -2,7 +2,11 @@ import 'dart:async';
 
 import 'package:commet/client/attachment.dart';
 import 'package:commet/client/client.dart';
+import 'package:commet/main.dart';
+import 'package:commet/utils/notification/notification_manager.dart';
 import 'package:flutter/material.dart';
+
+import '../generated/l10n.dart';
 
 enum TimelineEventStatus {
   removed,
@@ -93,12 +97,53 @@ abstract class Timeline {
   late StreamController<int> onChange = StreamController.broadcast();
   late StreamController<int> onRemove = StreamController.broadcast();
   late Client client;
+  late Room room;
+
+  Iterable<Peer>? get receipts;
+
+  void markAsRead(TimelineEvent event);
 
   Future<void> loadMoreHistory();
 
   void insertEvent(int index, TimelineEvent event) {
     events.insert(index, event);
     onEventAdded.add(index);
+  }
+
+  void insertNewEvent(int index, TimelineEvent event) {
+    if (shouldDisplayNotification(event)) displayNotification(event);
+
+    insertEvent(index, event);
+  }
+
+  @protected
+  bool shouldDisplayNotification(TimelineEvent event) {
+    if (event.type != EventType.message) return false;
+
+    if (event.sender == client.user) return false;
+
+    if (room.pushRule == PushRule.dontNotify) return false;
+
+    var containingSpaces = room.client.spaces
+        .where((element) => element.containsRoom(room.identifier))
+        .toList();
+
+    if (containingSpaces
+        .every((space) => space.pushRule == PushRule.dontNotify)) {
+      return false;
+    }
+
+    return true;
+  }
+
+  @protected
+  void displayNotification(TimelineEvent event) {
+    notificationManager.notify(NotificationContent(
+        event.sender.displayName,
+        event.body ?? T.current.notificationReceivedMessagePlaceholder,
+        NotificationType.messageReceived,
+        sentFrom: room,
+        event: event));
   }
 
   void notifyChanged(int index) {

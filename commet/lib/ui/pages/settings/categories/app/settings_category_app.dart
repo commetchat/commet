@@ -1,4 +1,6 @@
+import 'package:commet/config/preferences.dart';
 import 'package:commet/generated/l10n.dart';
+import 'package:commet/main.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
 import 'package:commet/ui/pages/settings/settings_tab.dart';
 import 'package:flutter/material.dart' as m;
@@ -30,13 +32,12 @@ class SettingsCategoryAppearence implements SettingsCategory {
           mode: TileType.surfaceLow2,
           child: Column(children: [
             TextButton(T.of(context).themeLight, onTap: () {
+              preferences.setTheme(AppTheme.light);
               ThemeChanger.setTheme(context, ThemeLight.theme);
             }),
             TextButton(T.of(context).themeDark, onTap: () {
+              preferences.setTheme(AppTheme.dark);
               ThemeChanger.setTheme(context, ThemeDark.theme);
-            }),
-            TextButton(T.of(context).themeGlass, onTap: () {
-              ThemeChanger.setTheme(context, ThemeGlass.theme);
             }),
           ]),
         ),
@@ -64,18 +65,24 @@ class _UIScaleSelectorState extends State<UIScaleSelector> {
   double value = 1;
 
   @override
+  void initState() {
+    value = preferences.getAppScale();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return m.Padding(
       padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
       child: Row(
         children: [
-          SizedBox(width: 30, child: tiamat.Text(value.toString())),
+          SizedBox(width: 30, child: tiamat.Text(value.toStringAsPrecision(2))),
           Expanded(
               child: Slider(
-            min: 0.25,
+            min: 0.5,
             max: 2,
             value: value,
-            divisions: 7,
+            divisions: 15,
             onChanged: (value) {
               setState(() {
                 this.value = value;
@@ -86,6 +93,7 @@ class _UIScaleSelectorState extends State<UIScaleSelector> {
             text: "Apply",
             onTap: () {
               double newValue = value;
+              preferences.setAppScale(newValue);
               ScaledWidgetsFlutterBinding.instance.scaleFactor = (deviceSize) {
                 return newValue;
               };

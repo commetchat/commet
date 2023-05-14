@@ -34,7 +34,12 @@ Widget wbavatarPlaceholderLarge(BuildContext context) {
 }
 
 class Avatar extends StatelessWidget {
-  const Avatar({Key? key, this.image, this.radius = 22, this.placeholderText, this.isPadding = false})
+  const Avatar(
+      {Key? key,
+      this.image,
+      this.radius = 22,
+      this.placeholderText,
+      this.isPadding = false})
       : super(key: key);
 
   const Avatar.small({
@@ -45,12 +50,22 @@ class Avatar extends StatelessWidget {
   })  : radius = 15,
         super(key: key);
 
-  const Avatar.medium({Key? key, required this.image, this.placeholderText, this.isPadding = false})
+  const Avatar.medium(
+      {Key? key,
+      required this.image,
+      this.placeholderText,
+      this.isPadding = false})
       : radius = 22,
         super(key: key);
 
-  const Avatar.large({Key? key, this.image, this.placeholderText, this.isPadding = false})
+  const Avatar.large(
+      {Key? key, this.image, this.placeholderText, this.isPadding = false})
       : radius = 44,
+        super(key: key);
+
+  const Avatar.extraLarge(
+      {Key? key, this.image, this.placeholderText, this.isPadding = false})
+      : radius = 80,
         super(key: key);
 
   final double radius;
@@ -74,7 +89,12 @@ class Avatar extends StatelessWidget {
         child: DecoratedBox(
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(radius),
-                image: DecorationImage(image: image!, filterQuality: FilterQuality.high, fit: BoxFit.cover))),
+                image: DecorationImage(
+                    image: image!,
+                    isAntiAlias: true,
+                    filterQuality:
+                        radius > 22 ? FilterQuality.medium : FilterQuality.high,
+                    fit: BoxFit.cover))),
       );
     }
 
@@ -92,7 +112,10 @@ class Avatar extends StatelessWidget {
                   child: placeholderText != null
                       ? Text(
                           placeholderText!.substring(0, 1).toUpperCase(),
-                          style: Theme.of(context).textTheme.headlineSmall!.copyWith(fontSize: radius),
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineSmall!
+                              .copyWith(fontSize: radius),
                         )
                       : null),
             )

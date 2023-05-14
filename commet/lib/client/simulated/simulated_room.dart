@@ -17,10 +17,21 @@ class SimulatedRoom extends Room {
   @override
   bool get isMember => true;
 
+  @override
+  bool get isE2EE => false;
+
+  @override
+  int highlightedNotificationCount = 0;
+
+  @override
+  int notificationCount = 0;
+
+  @override
+  PushRule pushRule = PushRule.notify;
+
   SimulatedRoom(displayName, client, {bool isDm = false})
       : super(RandomUtils.getRandomString(20), client) {
     identifier = RandomUtils.getRandomString(20);
-    notificationCount = 1;
 
     permissions = SimulatedRoomPermissions();
 
@@ -36,7 +47,15 @@ class SimulatedRoom extends Room {
       this.displayName = displayName;
     }
 
-    timeline = SimulatedTimeline();
+    if (Random().nextInt(10) > 5) {
+      highlightedNotificationCount = 1;
+    }
+
+    if (Random().nextInt(10) > 5) {
+      notificationCount++;
+    }
+
+    timeline = SimulatedTimeline(this.client, this);
     addMessage();
   }
 
@@ -65,12 +84,6 @@ class SimulatedRoom extends Room {
     e.originServerTs = DateTime.now();
     e.sender = sender;
     e.body = RandomUtils.getRandomSentence(Random().nextInt(10) + 10);
-    if (Random().nextInt(10) > 7) {
-      e.attachments = List.empty(growable: true);
-      // for (int i = 0; i < Random().nextInt(3) + 1; i++) {
-      //   e.attachments!.add(Attachment("https://picsum.photos/200/300", "image"));
-      // }
-    }
     return e;
   }
 
@@ -85,5 +98,21 @@ class SimulatedRoom extends Room {
     });
 
     addMessage();
+  }
+
+  @override
+  Future<void> setDisplayNameInternal(String name) async {
+    displayName = name;
+  }
+
+  @override
+  Future<void> enableE2EE() {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> setPushRule(PushRule rule) async {
+    pushRule = rule;
+    onUpdate.add(null);
   }
 }

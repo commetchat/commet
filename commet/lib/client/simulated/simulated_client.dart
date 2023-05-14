@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 import 'package:commet/client/client.dart';
-import 'package:commet/client/preview_data.dart';
+import 'package:commet/client/room_preview.dart';
 import 'package:commet/client/simulated/simulated_peer.dart';
 import 'package:commet/client/simulated/simulated_room.dart';
 import 'package:commet/client/simulated/simulated_space.dart';
@@ -20,6 +20,9 @@ class SimulatedClient extends Client {
 
   @override
   bool isLoggedIn() => _isLogged;
+
+  @override
+  bool get supportsE2EE => false;
 
   @override
   Future<LoginResult> login(
@@ -89,10 +92,11 @@ class SimulatedClient extends Client {
   }
 
   @override
-  Future<Room> createRoom(String name, RoomVisibility visibility) {
-    // ignore: todo
-// TODO: implement createRoom
-    throw UnimplementedError();
+  Future<Room> createRoom(String name, RoomVisibility visibility,
+      {bool enableE2EE = false}) async {
+    var room = SimulatedRoom(name, this);
+    addRoom(room);
+    return room;
   }
 
   @override
@@ -108,14 +112,14 @@ class SimulatedClient extends Client {
   }
 
   @override
-  Future<PreviewData?> getRoomPreviewInternal(String address) {
+  Future<RoomPreview?> getRoomPreviewInternal(String address) {
     // ignore: todo
 // TODO: implement getRoomPreviewInternal
     throw UnimplementedError();
   }
 
   @override
-  Future<PreviewData?> getSpacePreviewInternal(String address) {
+  Future<RoomPreview?> getSpacePreviewInternal(String address) {
     // ignore: todo
 // TODO: implement getSpacePreviewInternal
     throw UnimplementedError();
@@ -136,5 +140,10 @@ class SimulatedClient extends Client {
   @override
   Future<void> setDisplayName(String name) async {
     (user as SimulatedPeer).displayName = name;
+  }
+
+  @override
+  Iterable<Room> getEligibleRoomsForSpace(Space space) {
+    return rooms.where((room) => !space.containsRoom(room.identifier));
   }
 }

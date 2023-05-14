@@ -1,5 +1,4 @@
 import 'package:commet/ui/pages/settings/settings_category.dart';
-import 'package:commet/ui/pages/settings/settings_menu.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart' as m;
 
@@ -7,26 +6,30 @@ import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class DesktopSettingsPage extends StatefulWidget {
-  const DesktopSettingsPage({super.key});
-
+  const DesktopSettingsPage({required this.settings, super.key});
+  final List<SettingsCategory> settings;
   @override
-  State<DesktopSettingsPage> createState() => _DesktopSettingsPageState();
+  State<DesktopSettingsPage> createState() => DesktopSettingsPageState();
 }
 
-class _DesktopSettingsPageState extends State<DesktopSettingsPage> {
+class DesktopSettingsPageState extends State<DesktopSettingsPage> {
   late List<SettingsCategory> categories;
   int selectedCategoryIndex = 0;
   int selectedTabIndex = 0;
 
+  static ValueKey backButtonKey =
+      const ValueKey("DESKTOP_SETTINGS_PAGE_BACK_BUTTON");
+
   @override
   void initState() {
-    categories = SettingsMenu().settings;
+    categories = widget.settings;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return m.Material(
+      color: m.Theme.of(context).colorScheme.surface,
       child: Row(
         mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -36,7 +39,6 @@ class _DesktopSettingsPageState extends State<DesktopSettingsPage> {
               child: AnimatedSwitcher(
             duration: const Duration(milliseconds: 300),
             switchInCurve: Curves.easeInOutCubic,
-            //switchOutCurve: Curves.easeInExpo,
             transitionBuilder: (Widget child, Animation<double> animation) {
               return SlideTransition(
                 position: Tween(
@@ -49,9 +51,13 @@ class _DesktopSettingsPageState extends State<DesktopSettingsPage> {
             child: SingleChildScrollView(
               child: Tile(
                 key: ValueKey(selectedTabIndex),
-                child: settingsTab(categories[selectedCategoryIndex]
-                    .tabs[selectedTabIndex]
-                    .pageBuilder!),
+                child: selectedCategoryIndex < categories.length &&
+                        selectedTabIndex <
+                            categories[selectedCategoryIndex].tabs.length
+                    ? settingsTab(categories[selectedCategoryIndex]
+                        .tabs[selectedTabIndex]
+                        .pageBuilder!)
+                    : null,
               ),
             ),
           ))
@@ -73,6 +79,7 @@ class _DesktopSettingsPageState extends State<DesktopSettingsPage> {
                 child: Align(
                     alignment: Alignment.centerLeft,
                     child: CircleButton(
+                      key: backButtonKey,
                       radius: 25,
                       icon: m.Icons.arrow_back,
                       onPressed: () => Navigator.of(context).pop(),

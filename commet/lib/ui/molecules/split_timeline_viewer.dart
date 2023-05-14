@@ -14,8 +14,10 @@ import 'package:flutter/material.dart';
 class SplitTimelineViewer extends StatefulWidget {
   final Timeline timeline;
 
-  const SplitTimelineViewer({required this.timeline, Key? key})
+  const SplitTimelineViewer({required this.timeline, this.markAsRead, Key? key})
       : super(key: key);
+
+  final Function(TimelineEvent event)? markAsRead;
 
   @override
   State<SplitTimelineViewer> createState() => SplitTimelineViewerState();
@@ -113,6 +115,7 @@ class SplitTimelineViewerState extends State<SplitTimelineViewer> {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             animateAndSnapToBottom();
           });
+          widget.markAsRead?.call(widget.timeline.events.first);
         }
       });
     });
@@ -134,6 +137,7 @@ class SplitTimelineViewerState extends State<SplitTimelineViewer> {
         });
         setState(() {
           firstFrame = false;
+          widget.markAsRead?.call(widget.timeline.events.first);
         });
       },
     );
@@ -143,6 +147,10 @@ class SplitTimelineViewerState extends State<SplitTimelineViewer> {
     setState(() {
       attachedToBottom = controller.position.pixels >=
           controller.position.maxScrollExtent - 20;
+
+      if (attachedToBottom) {
+        widget.markAsRead?.call(widget.timeline.events.first);
+      }
     });
   }
 

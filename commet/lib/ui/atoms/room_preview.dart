@@ -1,11 +1,11 @@
-import 'package:commet/client/preview_data.dart';
+import 'package:commet/client/room_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
-class RoomPreview extends StatelessWidget {
-  const RoomPreview({required this.previewData, super.key});
-  final PreviewData previewData;
+class RoomPreviewView extends StatelessWidget {
+  const RoomPreviewView({required this.previewData, super.key});
+  final RoomPreview previewData;
   @override
   Widget build(BuildContext context) {
     return Row(

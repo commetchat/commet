@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:commet/client/client_manager.dart';
-import 'package:commet/ui/pages/add_space/add_space.dart';
+import 'package:commet/ui/pages/add_space_or_room/add_space_or_room.dart';
+import 'package:commet/ui/pages/settings/app_settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
 import 'package:provider/provider.dart';
@@ -10,7 +13,6 @@ import '../../generated/l10n.dart';
 import '../molecules/space_selector.dart';
 import '../molecules/split_timeline_viewer.dart';
 import '../navigation/navigation_utils.dart';
-import '../pages/settings/settings_page.dart';
 
 class SideNavigationBar extends StatefulWidget {
   const SideNavigationBar(
@@ -55,11 +57,22 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
   late GlobalKey<SplitTimelineViewerState> timelineKey =
       GlobalKey<SplitTimelineViewerState>();
   late Map<String, GlobalKey<SplitTimelineViewerState>> timelines = {};
-
+  StreamSubscription? onSpaceUpdated;
+  StreamSubscription? onSpaceChildUpdated;
   @override
   void initState() {
     _clientManager = Provider.of<ClientManager>(context, listen: false);
+    onSpaceChildUpdated = _clientManager.onSpaceChildUpdated.stream
+        .listen((_) => onSpaceUpdate());
+
+    onSpaceUpdated =
+        _clientManager.onSpaceUpdated.stream.listen((_) => onSpaceUpdate());
+
     super.initState();
+  }
+
+  void onSpaceUpdate() {
+    setState(() {});
   }
 
   @override
@@ -98,7 +111,9 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                       icon: Icons.add,
                       onTap: () {
                         PopupDialog.show(context,
-                            content: AddSpace(clientManager: _clientManager),
+                            content: AddSpaceOrRoom(
+                              clients: _clientManager.clients,
+                            ),
                             title: T.of(context).addSpace);
                       },
                     ),
@@ -114,7 +129,8 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                     size: 70,
                     icon: Icons.settings,
                     onTap: () {
-                      NavigationUtils.navigateTo(context, const SettingsPage());
+                      NavigationUtils.navigateTo(
+                          context, const AppSettingsPage());
                     },
                   ),
                   context,
