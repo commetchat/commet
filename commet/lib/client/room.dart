@@ -27,6 +27,12 @@ abstract class Room {
   int get notificationCount;
   int get highlightedNotificationCount;
 
+  int get displayNotificationCount =>
+      pushRule == PushRule.notify ? notificationCount : 0;
+
+  int get displayHighlightedNotificationCount =>
+      pushRule != PushRule.dontNotify ? highlightedNotificationCount : 0;
+
   Future<TimelineEvent?> sendMessage(String message,
       {TimelineEvent? inReplyTo});
 
@@ -49,6 +55,8 @@ abstract class Room {
 
   @protected
   Future<void> setDisplayNameInternal(String name);
+
+  Future<void> setPushRule(PushRule rule);
 
   @override
   bool operator ==(Object other) {

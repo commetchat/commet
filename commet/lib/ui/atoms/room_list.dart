@@ -172,10 +172,10 @@ class _RoomListState extends State<RoomList>
               icon: m.Icons.tag,
               iconColor: getIconColor(context, i),
               textColor: getTextColor(context, i),
-              footer: widget.rooms[i].highlightedNotificationCount > 0
+              footer: widget.rooms[i].displayHighlightedNotificationCount > 0
                   ? NotificationBadge(
-                      widget.rooms[i].highlightedNotificationCount)
-                  : widget.rooms[i].notificationCount > 0
+                      widget.rooms[i].displayHighlightedNotificationCount)
+                  : widget.rooms[i].displayNotificationCount > 0
                       ? const Padding(
                           padding: EdgeInsets.all(2.0),
                           child: DotIndicator(),

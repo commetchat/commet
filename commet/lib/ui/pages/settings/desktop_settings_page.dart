@@ -29,6 +29,7 @@ class DesktopSettingsPageState extends State<DesktopSettingsPage> {
   @override
   Widget build(BuildContext context) {
     return m.Material(
+      color: m.Theme.of(context).colorScheme.surface,
       child: Row(
         mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -38,7 +39,6 @@ class DesktopSettingsPageState extends State<DesktopSettingsPage> {
               child: AnimatedSwitcher(
             duration: const Duration(milliseconds: 300),
             switchInCurve: Curves.easeInOutCubic,
-            //switchOutCurve: Curves.easeInExpo,
             transitionBuilder: (Widget child, Animation<double> animation) {
               return SlideTransition(
                 position: Tween(

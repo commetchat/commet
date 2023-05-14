@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:commet/client/room.dart';
-import 'package:commet/ui/pages/settings/categories/room/appearence/room_appearence_settings_view.dart';
+import 'package:commet/ui/pages/settings/categories/room/appearance/room_appearance_settings_view.dart';
 import 'package:flutter/widgets.dart';
 
 class RoomAppearanceSettingsPage extends StatefulWidget {

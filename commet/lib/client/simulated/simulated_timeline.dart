@@ -10,4 +10,12 @@ class SimulatedTimeline extends Timeline {
 
   @override
   Iterable<Peer>? get receipts => null;
+
+  SimulatedTimeline(
+    Client client,
+    Room room,
+  ) {
+    this.client = client;
+    this.room = room;
+  }
 }

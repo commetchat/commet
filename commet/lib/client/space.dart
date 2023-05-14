@@ -26,15 +26,27 @@ abstract class Space {
 
   String get topic => "";
 
+  PushRule get pushRule;
+
   late RoomVisibility visibility = RoomVisibility.private;
 
-  int get notificationCount => rooms.fold(
-      0, (previousValue, element) => previousValue + element.notificationCount);
+  int get notificationCount =>
+      rooms.where((element) => element.pushRule == PushRule.notify).fold(
+          0,
+          (previousValue, element) =>
+              previousValue + element.notificationCount);
 
-  int get highlightedNotificationCount => rooms.fold(
-      0,
-      (previousValue, element) =>
-          previousValue + element.highlightedNotificationCount);
+  int get highlightedNotificationCount =>
+      rooms.where((element) => element.pushRule != PushRule.dontNotify).fold(
+          0,
+          (previousValue, element) =>
+              previousValue + element.highlightedNotificationCount);
+
+  int get displayNotificationCount =>
+      pushRule == PushRule.notify ? notificationCount : 0;
+
+  int get displayHighlightedNotificationCount =>
+      pushRule == PushRule.dontNotify ? 0 : highlightedNotificationCount;
 
   String get localId => "${client.identifier}:$identifier";
   List<RoomPreview> get childPreviews => _childPreviewsList;
@@ -152,6 +164,8 @@ abstract class Space {
   Future<void> setDisplayNameInternal(String name);
 
   Future<void> changeAvatar(Uint8List bytes, String? mimeType);
+
+  Future<void> setPushRule(PushRule rule);
 
   @protected
   void setAvatar({ImageProvider? newAvatar, ImageProvider? newThumbnail}) {

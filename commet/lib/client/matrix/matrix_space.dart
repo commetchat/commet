@@ -21,6 +21,18 @@ class MatrixSpace extends Space {
   String get topic => _matrixRoom.topic;
 
   @override
+  PushRule get pushRule {
+    switch (_matrixRoom.pushRuleState) {
+      case matrix.PushRuleState.notify:
+        return PushRule.notify;
+      case matrix.PushRuleState.mentionsOnly:
+        return PushRule.notify;
+      case matrix.PushRuleState.dontNotify:
+        return PushRule.dontNotify;
+    }
+  }
+
+  @override
   RoomVisibility get visibility {
     switch (_matrixRoom.joinRules) {
       case matrix.JoinRules.public:
@@ -163,5 +175,25 @@ class MatrixSpace extends Space {
     }
 
     await _matrixRoom.setSpaceChild(room.identifier);
+  }
+
+  @override
+  Future<void> setPushRule(PushRule rule) async {
+    var newRule = _matrixRoom.pushRuleState;
+
+    switch (rule) {
+      case PushRule.notify:
+        newRule = matrix.PushRuleState.notify;
+        break;
+      case PushRule.mentionsOnly:
+        newRule = matrix.PushRuleState.mentionsOnly;
+        break;
+      case PushRule.dontNotify:
+        newRule = matrix.PushRuleState.dontNotify;
+        break;
+    }
+
+    await _matrixRoom.setPushRuleState(newRule);
+    onUpdate.add(null);
   }
 }

@@ -20,17 +20,14 @@ class SimulatedRoom extends Room {
   @override
   bool get isE2EE => false;
 
-  int _highlightedNotifications = 0;
-  int _notifications = 0;
+  @override
+  int highlightedNotificationCount = 0;
 
   @override
-  int get highlightedNotificationCount => _highlightedNotifications;
+  int notificationCount = 0;
 
   @override
-  int get notificationCount => _notifications;
-
-  @override
-  PushRule get pushRule => PushRule.dontNotify;
+  PushRule pushRule = PushRule.notify;
 
   SimulatedRoom(displayName, client, {bool isDm = false})
       : super(RandomUtils.getRandomString(20), client) {
@@ -50,15 +47,15 @@ class SimulatedRoom extends Room {
       this.displayName = displayName;
     }
 
-    if (Random().nextInt(10) > 7) {
-      _highlightedNotifications = 1;
+    if (Random().nextInt(10) > 5) {
+      highlightedNotificationCount = 1;
     }
 
     if (Random().nextInt(10) > 5) {
-      _notifications++;
+      notificationCount++;
     }
 
-    timeline = SimulatedTimeline();
+    timeline = SimulatedTimeline(this.client, this);
     addMessage();
   }
 
@@ -111,5 +108,11 @@ class SimulatedRoom extends Room {
   @override
   Future<void> enableE2EE() {
     throw UnimplementedError();
+  }
+
+  @override
+  Future<void> setPushRule(PushRule rule) async {
+    pushRule = rule;
+    onUpdate.add(null);
   }
 }

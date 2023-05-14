@@ -107,9 +107,9 @@ class _SpaceSelectorState extends State<SpaceSelector> {
                                 onUpdate: widget.spaces[i].onUpdate.stream,
                                 avatar: widget.spaces[i].avatarThumbnail,
                                 notificationCount:
-                                    widget.spaces[i].notificationCount,
-                                highlightedNotificationCount: widget
-                                    .spaces[i].highlightedNotificationCount,
+                                    widget.spaces[i].displayNotificationCount,
+                                highlightedNotificationCount: widget.spaces[i]
+                                    .displayHighlightedNotificationCount,
                                 userAvatar:
                                     widget.spaces[i].client.user!.avatar,
                                 index: i,

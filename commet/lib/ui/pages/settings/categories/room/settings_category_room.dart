@@ -1,6 +1,7 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/generated/l10n.dart';
-import 'package:commet/ui/pages/settings/categories/room/appearence/room_appearence_settings_page.dart';
+import 'package:commet/ui/pages/settings/categories/room/appearance/room_appearance_settings_page.dart';
+import 'package:commet/ui/pages/settings/categories/room/general/room_general_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/room/security/room_security_settings_page.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
 import 'package:commet/ui/pages/settings/settings_tab.dart';
@@ -13,13 +14,23 @@ class SettingsCategoryRoom implements SettingsCategory {
   @override
   List<SettingsTab> get tabs => List.from([
         SettingsTab(
-            label: T.current.roomSettingsAppearance,
-            icon: Icons.style,
-            pageBuilder: (context) {
-              return RoomAppearanceSettingsPage(
-                room: room,
-              );
-            }),
+          label: "General",
+          icon: Icons.settings,
+          pageBuilder: (context) {
+            return RoomGeneralSettingsPage(
+              room: room,
+            );
+          },
+        ),
+        if (room.permissions.canEditAppearance)
+          SettingsTab(
+              label: T.current.roomSettingsAppearance,
+              icon: Icons.style,
+              pageBuilder: (context) {
+                return RoomAppearanceSettingsPage(
+                  room: room,
+                );
+              }),
         if (room.permissions.canEditRoomSecurity)
           SettingsTab(
               label: "Security",

@@ -124,6 +124,15 @@ abstract class Timeline {
 
     if (room.pushRule == PushRule.dontNotify) return false;
 
+    var containingSpaces = room.client.spaces
+        .where((element) => element.containsRoom(room.identifier))
+        .toList();
+
+    if (containingSpaces
+        .every((space) => space.pushRule == PushRule.dontNotify)) {
+      return false;
+    }
+
     return true;
   }
 

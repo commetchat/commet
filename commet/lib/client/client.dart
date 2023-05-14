@@ -27,7 +27,7 @@ abstract class Client {
 
   final String identifier;
 
-  late Peer? user;
+  Peer? user;
 
   Client(this.identifier);
 

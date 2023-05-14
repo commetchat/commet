@@ -27,6 +27,11 @@ class SimulatedSpace extends Space {
     permissions = SimulatedRoomPermissions();
   }
 
+  PushRule _pushRule = PushRule.notify;
+
+  @override
+  PushRule get pushRule => _pushRule;
+
   static const _chars =
       'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
   final Random _rnd = Random();
@@ -63,5 +68,11 @@ class SimulatedSpace extends Space {
   @override
   Future<void> setSpaceChildRoomInternal(Room room) async {
     addRoom(room);
+  }
+
+  @override
+  Future<void> setPushRule(PushRule rule) async {
+    _pushRule = rule;
+    onUpdate.add(null);
   }
 }
