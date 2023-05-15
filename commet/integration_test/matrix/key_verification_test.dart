@@ -11,7 +11,7 @@ import '../extensions/common_flows.dart';
 void main() {
   testWidgets('Test emoji verification started from another device',
       (WidgetTester tester) async {
-    var app = App();
+    var app = await tester.setupApp();
     await tester.pumpWidget(app);
     await tester.login(app);
 

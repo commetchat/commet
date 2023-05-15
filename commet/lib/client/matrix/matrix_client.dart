@@ -44,18 +44,22 @@ class MatrixClient extends Client {
   static Future<void> loadFromDB(ClientManager manager) async {
     var clients = preferences.getRegisteredMatrixClients();
 
+    List<Future> futures = List.empty(growable: true);
+
     if (clients != null) {
       for (var clientName in clients) {
         var client = MatrixClient(name: clientName, identifier: clientName);
         try {
           manager.addClient(client);
-          await client.init();
+          futures.add(client.init(true));
         } catch (_) {
           manager.removeClient(client);
           preferences.removeRegisteredMatrixClient(clientName);
         }
       }
     }
+
+    await Future.wait(futures);
   }
 
   static matrix.NativeImplementations get nativeImplementations =>
@@ -64,9 +68,11 @@ class MatrixClient extends Client {
           : matrix.NativeImplementationsIsolate(compute);
 
   @override
-  Future<void> init() async {
+  Future<void> init(bool loadingFromCache) async {
     if (!_matrixClient.isLogged()) {
-      await _matrixClient.init();
+      await _matrixClient.init(
+          waitForFirstSync: !loadingFromCache,
+          waitUntilLoadCompletedLoaded: true);
       user = MatrixPeer(_matrixClient, _matrixClient.userID!);
       addPeer(user!);
     }
