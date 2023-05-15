@@ -14,7 +14,7 @@ void main() {
   testWidgets('Add New Account', (WidgetTester tester) async {
     await tester.clearUserData();
     // Build our app and trigger a frame.
-    var app = App();
+    var app = await tester.setupApp();
     await tester.pumpWidget(app);
     await tester.login(app);
 
@@ -57,7 +57,7 @@ void main() {
   testWidgets('Try Add Same Account Twice', (WidgetTester tester) async {
     await tester.clearUserData();
     // Build our app and trigger a frame.
-    var app = App();
+    var app = await tester.setupApp();
     await tester.pumpWidget(app);
     await tester.login(app);
 

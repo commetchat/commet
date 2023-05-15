@@ -19,7 +19,7 @@ void main() {
   testWidgets('Test Matrix Login Success', (WidgetTester tester) async {
     await tester.clearUserData();
     // Build our app and trigger a frame.
-    var app = App();
+    var app = await tester.setupApp();
     await tester.pumpWidget(app);
     await tester.login(app);
 

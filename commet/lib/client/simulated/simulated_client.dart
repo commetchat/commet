@@ -16,7 +16,7 @@ class SimulatedClient extends Client {
   SimulatedClient() : super(RandomUtils.getRandomString(20));
 
   @override
-  Future<void> init() async {}
+  Future<void> init(bool loadingFromCache) async {}
 
   @override
   bool isLoggedIn() => _isLogged;
@@ -39,7 +39,7 @@ class SimulatedClient extends Client {
     var client = SimulatedClient();
     clientManager.addClient(client);
     client.login(LoginType.loginPassword, "alice", "");
-    client.init();
+    client.init(false);
   }
 
   @override
