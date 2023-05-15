@@ -133,7 +133,9 @@ class _MessageState extends State<Message> {
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
                 child: tiamat.Text(
-                  widget.relatedEvent!.body!,
+                  widget.relatedEvent!.body ??
+                      widget.relatedEvent!.attachments?.first.name ??
+                      "Unknown",
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   color: material.Theme.of(context).colorScheme.secondary,
