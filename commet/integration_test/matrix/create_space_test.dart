@@ -16,7 +16,7 @@ void main() {
   testWidgets('Create Private Space', (WidgetTester tester) async {
     await tester.clearUserData();
 
-    var app = App();
+    var app = await tester.setupApp();
     await _openMenu(tester, app);
     await _setPrivate(tester);
 
@@ -41,7 +41,7 @@ void main() {
   testWidgets('Create Public Space', (WidgetTester tester) async {
     await tester.clearUserData();
 
-    var app = App();
+    var app = await tester.setupApp();
     await _openMenu(tester, app);
     await _setPublic(tester);
 

@@ -21,7 +21,7 @@ enum LoginType {
 enum LoginResult { success, failed, error, alreadyLoggedIn }
 
 abstract class Client {
-  Future<void> init();
+  Future<void> init(bool loadingFromCache);
 
   Future<void> logout();
 

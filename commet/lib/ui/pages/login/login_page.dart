@@ -35,7 +35,7 @@ class LoginPageState extends State<LoginPage> {
 
       if (result == LoginResult.success) {
         manager.addClient(client);
-        await client.init();
+        await client.init(false);
         widget.onSuccess?.call(client);
         return LoginResult.success;
       } else {

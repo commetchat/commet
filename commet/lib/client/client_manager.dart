@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:commet/client/client.dart';
+import 'package:commet/client/simulated/simulated_client.dart';
 import 'package:commet/client/stale_info.dart';
 
 class ClientManager {
@@ -117,7 +118,9 @@ class ClientManager {
   }
 
   bool isLoggedIn() {
-    return _clients.values.any((element) => element.isLoggedIn());
+    return _clients.values
+        .where((element) => element is! SimulatedClient)
+        .any((element) => element.isLoggedIn());
   }
 
   Future<void> close() async {
