@@ -29,20 +29,9 @@ class MatrixTimeline extends Timeline {
 
   void initTimeline() async {
     _matrixTimeline = await _matrixRoom.getTimeline(
-      onInsert: (index) {
-        if (_matrixTimeline == null) return;
-        insertNewEvent(index, convertEvent(_matrixTimeline!.events[index]));
-      },
-      onChange: (index) {
-        if (_matrixTimeline == null) return;
-        events[index] = convertEvent(_matrixTimeline!.events[index],
-            existing: events[index]);
-        notifyChanged(index);
-      },
-      onRemove: (index) {
-        events.removeAt(index);
-        onRemove.add(index);
-      },
+      onInsert: onEventInserted,
+      onChange: onEventChanged,
+      onRemove: onEventRemoved,
     );
 
     // This could maybe make load times realllly slow if we have a ton of stuff in the cache?
@@ -51,6 +40,23 @@ class MatrixTimeline extends Timeline {
       var converted = convertEvent(_matrixTimeline!.events[i]);
       insertEvent(i, converted);
     }
+  }
+
+  void onEventInserted(index) {
+    if (_matrixTimeline == null) return;
+    insertNewEvent(index, convertEvent(_matrixTimeline!.events[index]));
+  }
+
+  void onEventChanged(index) {
+    if (_matrixTimeline == null) return;
+    events[index] =
+        convertEvent(_matrixTimeline!.events[index], existing: events[index]);
+    notifyChanged(index);
+  }
+
+  void onEventRemoved(index) {
+    events.removeAt(index);
+    onRemove.add(index);
   }
 
   TimelineEvent convertEvent(matrix.Event event, {TimelineEvent? existing}) {
@@ -69,17 +75,25 @@ class MatrixTimeline extends Timeline {
       e.sender = client.getPeer(event.senderId)!;
     }
 
-    e.body = event.getDisplayEvent(_matrixTimeline!).body;
+    var displayEvent = event.getDisplayEvent(_matrixTimeline!);
+    e.edited = displayEvent.eventId != event.eventId;
+
+    if (event.relationshipType == "m.replace") {
+      e.type = EventType.edit;
+      return e;
+    }
+
+    e.body = displayEvent.body;
 
     switch (event.type) {
       case matrix.EventTypes.Message:
-        e = parseMessage(e, event);
+        e = parseMessage(e, displayEvent);
         break;
       case matrix.EventTypes.Redaction:
         e.type = EventType.redaction;
     }
 
-    switch (event.status) {
+    switch (displayEvent.status) {
       case matrix.EventStatus.removed:
         e.status = TimelineEventStatus.removed;
         break;
@@ -100,7 +114,7 @@ class MatrixTimeline extends Timeline {
         break;
     }
 
-    if (event.redacted) {
+    if (displayEvent.redacted) {
       e.status = TimelineEventStatus.removed;
     }
 
@@ -205,10 +219,12 @@ class MatrixTimeline extends Timeline {
 
   @override
   void markAsRead(TimelineEvent event) async {
+    print("Marking as read: ${event.eventId}");
     if (event.sender == client.user) return;
 
-    if (event.status == TimelineEventStatus.synced) {
-      _matrixTimeline?.setReadMarker(event.eventId);
+    if (event.type == EventType.edit ||
+        event.status == TimelineEventStatus.synced) {
+      _matrixTimeline?.setReadMarker();
     }
   }
 

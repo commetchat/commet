@@ -115,6 +115,12 @@ class _MessageState extends State<Message> {
                   ? material.SelectionArea(
                       child: tiamat.Text.body(widget.event.body!))
                   : tiamat.Text.body(widget.event.body!),
+            if (widget.event.edited)
+              tiamat.Text(
+                "(edited)",
+                type: TextType.tiny,
+                color: material.Theme.of(context).colorScheme.secondary,
+              ),
             if (widget.event.attachments != null)
               Wrap(
                 children: widget.event.attachments!
