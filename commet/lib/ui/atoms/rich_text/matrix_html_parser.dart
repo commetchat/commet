@@ -1,26 +1,60 @@
 import 'package:commet/ui/atoms/code_block.dart';
+import 'package:commet/ui/atoms/emoji_widget.dart';
 import 'package:commet/ui/atoms/rich_text/spans/link.dart';
+import 'package:commet/utils/emoji/matrix_emoji.dart';
 import 'package:commet/utils/text_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:html/parser.dart' as html_parser;
 import 'package:html/dom.dart' as dom;
+import 'package:matrix/matrix.dart' as matrix;
 
 class MatrixHtmlParser {
-  static Widget parse(String text) {
+  static Widget parse(String text, matrix.Client client) {
     var fragment = html_parser.parseFragment(text);
     List<InlineSpan> spans = List.empty(growable: true);
     for (var element in fragment.nodes) {
       if (element is dom.Element && !doParse(element)) continue;
 
-      spans.addAll(_parseChild(element, const TextStyle()));
+      spans.addAll(_parseChild(element, const TextStyle(), client));
     }
+
+    spans = handleBigEmoji(spans);
 
     return TextUtils.manageRtlSpan(text, spans, isHtml: true);
   }
 
+  static List<InlineSpan> handleBigEmoji(List<InlineSpan> spans) {
+    if (doBigEmoji(spans)) {
+      var emojis = spans.where(
+          (element) => element is WidgetSpan && element.child is EmojiWidget);
+
+      double size = emojis.length <= 10 ? 48 : 24;
+      return emojis.map((e) {
+        var widget = (e as WidgetSpan).child as EmojiWidget;
+        widget.height = size;
+        return e;
+      }).toList();
+    } else {
+      return spans;
+    }
+  }
+
+  static bool doBigEmoji(List<InlineSpan> spans) {
+    return spans.every((span) {
+      if (span is TextSpan &&
+          (span.text == null || span.text!.trim().isEmpty)) {
+        return true;
+      }
+
+      if (span is WidgetSpan && span.child is EmojiWidget) return true;
+
+      return false;
+    });
+  }
+
   static List<InlineSpan> _parseChild(
-      dom.Node element, TextStyle currentStyle) {
+      dom.Node element, TextStyle currentStyle, matrix.Client client) {
     TextStyle theme = currentStyle;
     if (element is dom.Text) {
       return TextUtils.formatString(element.data,
@@ -31,7 +65,7 @@ class MatrixHtmlParser {
 
     if (element is dom.Element) {
       theme = updateStyle(theme, element.localName!);
-      var span = parseSpecial(element, theme);
+      var span = parseSpecial(element, theme, client);
 
       if (span != null) {
         return [span];
@@ -41,7 +75,7 @@ class MatrixHtmlParser {
     for (var child in element.nodes) {
       if (child is dom.Element && !doParse(child)) continue;
 
-      parsedText.addAll(_parseChild(child, theme));
+      parsedText.addAll(_parseChild(child, theme, client));
     }
 
     return parsedText;
@@ -55,8 +89,22 @@ class MatrixHtmlParser {
     return true;
   }
 
-  static InlineSpan? parseSpecial(dom.Element element, TextStyle style) {
+  static InlineSpan? parseSpecial(
+      dom.Element element, TextStyle style, matrix.Client client) {
     switch (element.localName) {
+      case "img":
+        if (element.attributes.containsKey("data-mx-emoticon")) {
+          String? uri = element.attributes['src'];
+          String? shortcode = element.attributes['alt'];
+
+          if (uri != null) {
+            return WidgetSpan(
+                child: EmojiWidget(
+                    MatrixEmoji(Uri.parse(uri), client, shortcode: shortcode)));
+          }
+        }
+
+        break;
       case "a":
         return LinkSpan.create((element.nodes.first as dom.Text).data,
             destination: element.attributes.containsKey('href')

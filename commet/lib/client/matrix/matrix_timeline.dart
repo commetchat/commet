@@ -144,7 +144,8 @@ class MatrixTimeline extends Timeline {
       e.formattedBody = matrixEvent.formattedText;
 
       if (format == "org.matrix.custom.html") {
-        e.formattedContent = MatrixHtmlParser.parse(e.formattedBody!);
+        e.formattedContent =
+            MatrixHtmlParser.parse(e.formattedBody!, _matrixRoom.client);
       }
     } else {
       e.bodyFormat = "chat.commet.default";

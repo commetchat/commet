@@ -1,5 +1,6 @@
 import 'package:commet/generated/l10n.dart';
 import 'package:commet/ui/atoms/emoji_widget.dart';
+import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:matrix/encryption/utils/key_verification.dart';
@@ -213,7 +214,7 @@ class MatrixVerificationPageView extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             EmojiWidget(
-                              e.emoji,
+                              UnicodeEmoji(e.emoji),
                               height: 30,
                             ),
                             Padding(
