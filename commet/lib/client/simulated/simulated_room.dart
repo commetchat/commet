@@ -20,6 +20,11 @@ class SimulatedRoom extends Room {
   @override
   bool get isE2EE => false;
 
+  List<Peer> _participants = List.empty(growable: true);
+
+  @override
+  Iterable<Peer> get members => _participants;
+
   @override
   int highlightedNotificationCount = 0;
 
@@ -38,12 +43,12 @@ class SimulatedRoom extends Room {
     if (isDm) {
       isDirectMessage = true;
       directMessagePartnerID = bob.identifier;
-      members.add(bob);
+      _participants.add(bob);
       this.displayName = bob.displayName;
     } else {
-      members.add(alice);
-      members.add(bob);
-      members.add((client as Client).user!);
+      _participants.add(alice);
+      _participants.add(bob);
+      _participants.add((client as Client).user!);
       this.displayName = displayName;
     }
 

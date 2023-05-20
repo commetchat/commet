@@ -22,6 +22,9 @@ class MatrixRoom extends Room {
   int get notificationCount => _matrixRoom.notificationCount;
 
   @override
+  Iterable<Peer> get members => getMembers();
+
+  @override
   PushRule get pushRule {
     switch (_matrixRoom.pushRuleState) {
       case matrix.PushRuleState.notify:
@@ -57,14 +60,23 @@ class MatrixRoom extends Room {
       }
     }
 
-    members =
-        List.from(users.map((e) => this.client.getPeer(e.id)), growable: true);
-
     timeline = MatrixTimeline(client, this, room);
 
     _matrixRoom.onUpdate.stream.listen(onMatrixRoomUpdate);
 
     permissions = MatrixRoomPermissions(_matrixRoom);
+  }
+
+  Iterable<Peer> getMembers() {
+    var users = _matrixRoom.getParticipants();
+
+    for (var user in users) {
+      if (!client.peerExists(user.id)) {
+        client.addPeer(MatrixPeer(_matrixRoom.client, user.id));
+      }
+    }
+
+    return users.map((e) => client.getPeer(e.id)!);
   }
 
   @override
@@ -90,6 +102,7 @@ class MatrixRoom extends Room {
 
   void onMatrixRoomUpdate(String event) async {
     displayName = _matrixRoom.getLocalizedDisplayname();
+
     onUpdate.add(null);
   }
 

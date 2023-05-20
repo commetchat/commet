@@ -14,7 +14,7 @@ abstract class Room {
   final Key key = UniqueKey();
   Timeline? timeline;
   late ImageProvider? avatar;
-  late List<Peer> members;
+  Iterable<Peer> get members;
   late String displayName;
   late bool isDirectMessage;
   late String? directMessagePartnerID;
@@ -41,7 +41,6 @@ abstract class Room {
   Room(this.identifier, this.client) {
     identifier = identifier;
     client = client;
-    members = List.empty(growable: true);
     avatar = null;
     isDirectMessage = false;
     directMessagePartnerID = null;
