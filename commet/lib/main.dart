@@ -1,5 +1,4 @@
 import 'package:commet/cache/file_cache.dart';
-import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/config/build_config.dart';
@@ -10,7 +9,6 @@ import 'package:commet/utils/emoji/emoji_pack.dart';
 import 'package:commet/utils/notification/notification_manager.dart';
 
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
 
 import 'package:provider/provider.dart';
@@ -108,7 +106,6 @@ ThemeData commetGlassTheme() => ThemeGlass.theme;
           nativeSize: DeviceSize(width: 1280, height: 720), scaleFactor: 1))
 ])
 class App extends StatelessWidget {
-
   const App(
       {Key? key,
       required this.clientManager,
