@@ -17,11 +17,8 @@ abstract class Space {
 
   late String displayName;
   ImageProvider? get avatar => _avatar;
-  ImageProvider? get avatarThumbnail => _avatarThumbnail;
 
   ImageProvider? _avatar;
-  ImageProvider? _avatarThumbnail;
-
   late List<Room> rooms = List.empty(growable: true);
 
   String get topic => "";
@@ -172,11 +169,6 @@ abstract class Space {
     onUpdate.add(null);
     if (newAvatar != null) {
       _avatar = newAvatar;
-      _avatarThumbnail = newThumbnail;
-    }
-
-    if (newThumbnail != null) {
-      _avatarThumbnail = newThumbnail;
     }
   }
 }

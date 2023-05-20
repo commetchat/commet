@@ -65,6 +65,7 @@ class _VideoPlayerDesktopState extends State<VideoPlayerDesktop> {
   Widget build(BuildContext context) {
     if (loaded) {
       return Video(
+        fit: BoxFit.cover,
         controller: controller,
       );
     }

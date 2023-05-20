@@ -1,8 +1,7 @@
+import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/matrix/matrix_peer.dart';
 import 'package:commet/client/matrix/matrix_room_permissions.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 
 import '../client.dart';
 import 'package:matrix/matrix.dart' as matrix;
@@ -39,12 +38,7 @@ class MatrixRoom extends Room {
     _matrixRoom = room;
 
     if (room.avatar != null) {
-      var url = room.avatar!
-          .getThumbnail(matrixClient, width: 56, height: 56)
-          .toString();
-      avatar = NetworkImage(url);
-    } else {
-      avatar = null;
+      avatar = MatrixMxcImage(room.avatar!, _matrixRoom.client);
     }
 
     isDirectMessage = _matrixRoom.isDirectChat;

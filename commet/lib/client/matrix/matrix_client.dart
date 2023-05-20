@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:commet/client/client_manager.dart';
-import 'package:commet/client/matrix/matrix_client_extensions.dart';
+import 'package:commet/client/matrix/extensions/matrix_client_extensions.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/config/app_config.dart';
 import 'package:commet/config/build_config.dart';

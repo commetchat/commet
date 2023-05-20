@@ -94,7 +94,7 @@ class ClientManager {
         var info = StaleSpaceInfo(
             index: i,
             name: spaces[i].displayName,
-            avatar: spaces[i].avatarThumbnail,
+            avatar: spaces[i].avatar,
             userAvatar: spaces[i].client.user!.avatar);
         spaces.removeAt(i);
         onSpaceRemoved.add(info);

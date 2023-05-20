@@ -127,91 +127,84 @@ class VideoPlayerState extends State<VideoPlayer> {
         child: AnimatedOpacity(
           opacity: shouldShowControls ? 1.0 : 0.0,
           duration: const Duration(milliseconds: 300),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+          child: Stack(
             children: [
-              widget.fileName != null
-                  ? GradientBackground(
-                      begin: Alignment.bottomCenter,
-                      end: Alignment.center,
-                      backgroundColor: Theme.of(context)
-                          .extension<ExtraColors>()!
-                          .surfaceLow1
-                          .withAlpha(200),
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-                        child: tiamat.Text.body(widget.fileName!),
-                      ))
-                  : const SizedBox(
-                      height: 20,
+              Align(
+                alignment: Alignment.center,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Opacity(
+                      opacity: 0.9,
+                      child: tiamat.CircleButton(
+                        radius: 30,
+                        icon: isCompleted
+                            ? Icons.replay
+                            : playing
+                                ? Icons.pause_rounded
+                                : Icons.play_arrow_rounded,
+                        onPressed: () {
+                          if (isCompleted) return replay();
+                          if (playing) return pause();
+                          play();
+                        },
+                      ),
                     ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Opacity(
-                    opacity: 0.9,
-                    child: tiamat.CircleButton(
-                      radius: 30,
-                      icon: isCompleted
-                          ? Icons.replay
-                          : playing
-                              ? Icons.pause_rounded
-                              : Icons.play_arrow_rounded,
-                      onPressed: () {
-                        if (isCompleted) return replay();
-                        if (playing) return pause();
-                        play();
-                      },
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               if (widget.canGoFullscreen || widget.showProgressBar)
-                GradientBackground(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  backgroundColor: Theme.of(context)
-                      .extension<ExtraColors>()!
-                      .surfaceLow4
-                      .withAlpha(200),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      if (widget.showProgressBar)
-                        Expanded(
-                          child: tiamat.Slider(
-                            value: videoProgress,
-                            min: 0,
-                            max: 1,
-                            onChangeEnd: (value) {
-                              updateSlider = true;
-                              seekPercent(value);
-                            },
-                            onChanged: (value) {
-                              setState(() {
-                                videoProgress = value;
-                              });
-                            },
-                            onChangeStart: (value) {
-                              updateSlider = false;
-                            },
-                          ),
-                        ),
-                      if (widget.canGoFullscreen)
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
-                          child: i.IconButton(
-                            icon: Icons.fullscreen_rounded,
-                            size: 24,
-                            onPressed: () {
-                              pause();
-                              widget.onFullscreen?.call();
-                            },
-                          ),
-                        )
-                    ],
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: SizedBox(
+                    height: 50,
+                    child: GradientBackground(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      backgroundColor: Theme.of(context)
+                          .extension<ExtraColors>()!
+                          .surfaceLow4
+                          .withAlpha(200),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          if (widget.showProgressBar)
+                            Expanded(
+                              child: tiamat.Slider(
+                                value: videoProgress,
+                                min: 0,
+                                max: 1,
+                                onChangeEnd: (value) {
+                                  updateSlider = true;
+                                  seekPercent(value);
+                                },
+                                onChanged: (value) {
+                                  setState(() {
+                                    videoProgress = value;
+                                  });
+                                },
+                                onChangeStart: (value) {
+                                  updateSlider = false;
+                                },
+                              ),
+                            ),
+                          if (widget.canGoFullscreen)
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+                              child: i.IconButton(
+                                icon: Icons.fullscreen_rounded,
+                                size: 24,
+                                onPressed: () {
+                                  pause();
+                                  widget.onFullscreen?.call();
+                                },
+                              ),
+                            )
+                        ],
+                      ),
+                    ),
                   ),
                 )
             ],

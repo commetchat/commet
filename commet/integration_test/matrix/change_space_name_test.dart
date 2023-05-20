@@ -7,7 +7,6 @@ import 'package:commet/ui/pages/settings/desktop_settings_page.dart';
 import 'package:commet/utils/rng.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:commet/main.dart';
 import 'package:integration_test/integration_test.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;
