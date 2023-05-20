@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:commet/cache/cached_file.dart';
 import 'package:commet/config/app_config.dart';
+import 'package:commet/config/build_config.dart';
 import 'package:commet/utils/rng.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
@@ -59,6 +60,20 @@ class FileCacheInstance {
     return file.uri;
   }
 
+  Future<Uri> putFile(String identifier, Uint8List bytes) async {
+    var path = await generateTempFilePath();
+    if (BuildConfig.DEBUG) path += "_${Uri.encodeComponent(identifier)}";
+    var file = File(path);
+    await file.create(recursive: true);
+    await file.writeAsBytes(bytes);
+
+    CachedFile entry =
+        CachedFile(file.path, DateTime.now().millisecondsSinceEpoch);
+    filesBox!.put(identifier, entry);
+
+    return file.uri;
+  }
+
   Future<Uri> fetchFile(
       String identifier, Future<Uint8List> Function() getter) async {
     var existing = await getFile(identifier);
@@ -66,6 +81,7 @@ class FileCacheInstance {
 
     var bytes = await getter();
     var path = await generateTempFilePath();
+    if (BuildConfig.DEBUG) path += "_${Uri.encodeComponent(identifier)}";
 
     var file = File(path);
     await file.create(recursive: true);

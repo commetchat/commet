@@ -1,15 +1,13 @@
 import 'dart:typed_data';
 
-import 'package:commet/cache/file_image.dart';
 import 'package:commet/client/client.dart';
+import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/matrix/matrix_room_permissions.dart';
 import 'package:commet/client/matrix/matrix_room_preview.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart' as matrix;
-
-import '../../cache/cache_file_provider.dart';
 
 class MatrixSpace extends Space {
   late matrix.Room _matrixRoom;
@@ -99,22 +97,8 @@ class MatrixSpace extends Space {
   }
 
   void updateAvatar() {
-    var avatar = FileImageProvider(
-        CacheFileProvider(_matrixRoom.avatar.toString(), () async {
-      return (await _matrixClient.httpClient
-              .get(_matrixRoom.avatar!.getDownloadLink(_matrixClient)))
-          .bodyBytes;
-    }));
-
-    var avatarThumbnail = FileImageProvider(
-        CacheFileProvider.thumbnail(_matrixRoom.avatar.toString(), () async {
-      return (await _matrixClient.httpClient.get(_matrixRoom.avatar!
-              .getThumbnail(_matrixClient,
-                  width: 90, height: 90, animated: true)))
-          .bodyBytes;
-    }));
-
-    setAvatar(newAvatar: avatar, newThumbnail: avatarThumbnail);
+    var avatar = MatrixMxcImage(_matrixRoom.avatar!, _matrixClient);
+    setAvatar(newAvatar: avatar);
   }
 
   void updateRoomsList() {
