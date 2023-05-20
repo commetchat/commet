@@ -1,6 +1,12 @@
 import 'package:matrix/matrix.dart';
 
 class Mime {
+  static const displayableTypes = {"image/jpeg", "image/png", "image/gif"};
+
+  static const imageTypes = {"image/jpeg", "image/png", "image/gif"};
+
+  static const videoTypes = {"video/mp4"};
+
   static String? fromExtenstion(String extension) {
     var types = {
       "jpeg": "image/jpeg",

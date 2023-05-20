@@ -2,7 +2,6 @@ import 'package:commet/generated/l10n.dart';
 import 'package:commet/ui/pages/login/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:commet/main.dart';
 import 'package:integration_test/integration_test.dart';
 
 import '../extensions/wait_for.dart';

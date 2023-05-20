@@ -1,5 +1,4 @@
 import 'package:commet/cache/cache_file_provider.dart';
-import 'package:commet/cache/file_image.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart';
@@ -20,10 +19,6 @@ extension MatrixExtensions on Client {
     return CacheFileProvider(mxc.toString(), () async {
       return (await httpClient.get(uri.getDownloadLink(this))).bodyBytes;
     });
-  }
-
-  ImageProvider getMxcImage(String mxc) {
-    return FileImageProvider(getMxcFile(mxc));
   }
 
   Future<RoomPreview?> getRoomPreview(String roomId) async {

@@ -1,97 +1,94 @@
-import 'package:commet/cache/file_image.dart';
 import 'package:commet/client/attachment.dart';
-import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/atoms/lightbox.dart';
 import 'package:commet/ui/molecules/video_player/video_player.dart';
 import 'package:flutter/material.dart';
+import 'package:tiamat/tiamat.dart';
 
 class MessageAttachment extends StatefulWidget {
   const MessageAttachment(this.attachment, {super.key});
   final Attachment attachment;
-
-  static const displayableTypes = {"image/jpeg", "image/png", "image/gif"};
-  static const imageTypes = {"image/jpeg", "image/png", "image/gif"};
-  static const videoTypes = {"video/mp4", "image/png"};
 
   @override
   State<MessageAttachment> createState() => _MessageAttachmentState();
 }
 
 class _MessageAttachmentState extends State<MessageAttachment> {
+  late Key videoPlayerKey;
   @override
   void initState() {
+    videoPlayerKey = UniqueKey();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (MessageAttachment.imageTypes.contains(widget.attachment.mimeType)) {
-      return buildImage(context);
-    }
-    if (MessageAttachment.videoTypes.contains(widget.attachment.mimeType)) {
-      return buildVideo(context);
-    }
-    return const SizedBox();
+    if (widget.attachment is ImageAttachment) return buildImage();
+    if (widget.attachment is VideoAttachment) return buildVideo();
+
+    return const Placeholder();
   }
 
-  Widget buildVideo(BuildContext context) {
-    return ConstrainedBox(
-        constraints: const BoxConstraints(maxHeight: 300),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: AspectRatio(
-            aspectRatio: getAspectRatio(),
-            child: VideoPlayer(
-              widget.attachment.fileProvider,
-              fileName: widget.attachment.name,
-              thumbnail: widget.attachment.thumbnail != null
-                  ? FileImageProvider(widget.attachment.thumbnail!)
-                  : null,
-              showProgressBar: BuildConfig.DESKTOP,
-              canGoFullscreen: true,
-              onFullscreen: () {
-                Lightbox.show(context,
-                    video: widget.attachment.fileProvider,
-                    aspectRatio: getAspectRatio(),
-                    thumbnail: widget.attachment.thumbnail != null
-                        ? FileImageProvider(widget.attachment.thumbnail!)
-                        : null);
-              },
-            ),
-          ),
-        ));
-  }
+  Widget buildImage() {
+    assert(widget.attachment is ImageAttachment);
+    var attachment = widget.attachment as ImageAttachment;
 
-  Widget buildImage(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(10),
-      child: Material(
-        child: SizedBox(
+        borderRadius: BorderRadius.circular(10),
+        child: Material(
+            child: SizedBox(
           height: 200,
-          child: ClipRRect(
-            child: AspectRatio(
-              aspectRatio: widget.attachment.aspectRatio!,
-              child: Ink.image(
+          child: AspectRatio(
+            aspectRatio: attachment.aspectRatio,
+            child: InkWell(
+              onTap: () {
+                Lightbox.show(context, image: attachment.image);
+              },
+              child: Image(
+                image: attachment.image,
+                filterQuality: FilterQuality.medium,
                 fit: BoxFit.cover,
-                image: FileImageProvider(widget.attachment.fileProvider),
-                child: InkWell(
-                  onTap: () {
-                    Lightbox.show(context,
-                        image:
-                            FileImageProvider(widget.attachment.fileProvider));
-                  },
-                ),
               ),
             ),
           ),
-        ),
+        )));
+  }
+
+  Widget buildVideo() {
+    var attachment = widget.attachment as VideoAttachment;
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(10),
+      child: SizedBox(
+        height: 200 + 30,
+        width: attachment.aspectRatio * 200,
+        child: Panel(
+            mainAxisSize: MainAxisSize.min,
+            header: attachment.name,
+            mode: TileType.surfaceLow2,
+            padding: 0,
+            child: SizedBox(
+                height: 200,
+                width: 500,
+                child: AspectRatio(
+                    aspectRatio: attachment.aspectRatio,
+                    child: VideoPlayer(
+                      attachment.videoFile,
+                      thumbnail: attachment.thumbnail,
+                      fileName: attachment.name,
+                      canGoFullscreen: true,
+                      onFullscreen: fullscreenVideo,
+                    )))),
       ),
     );
   }
 
-  double getAspectRatio() {
-    return widget.attachment.aspectRatio != null
-        ? widget.attachment.aspectRatio!
-        : 16 / 9;
+  void fullscreenVideo() {
+    var attachment = (widget.attachment as VideoAttachment);
+    Lightbox.show(
+      context,
+      video: attachment.videoFile,
+      aspectRatio: attachment.aspectRatio,
+      thumbnail: attachment.thumbnail,
+    );
   }
 }

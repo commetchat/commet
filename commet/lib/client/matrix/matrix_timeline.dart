@@ -1,7 +1,10 @@
 import 'dart:async';
-import 'package:commet/cache/cache_file_provider.dart';
 import 'package:commet/client/attachment.dart';
+import 'package:commet/client/matrix/extensions/matrix_event_extensions.dart';
+import 'package:commet/client/matrix/matrix_mxc_file_provider.dart';
+import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/ui/atoms/rich_text/matrix_html_parser.dart';
+import 'package:commet/utils/mime.dart';
 import 'package:commet/utils/text_utils.dart';
 
 import '../client.dart';
@@ -107,9 +110,17 @@ class MatrixTimeline extends Timeline {
   TimelineEvent parseMessage(TimelineEvent e, matrix.Event matrixEvent) {
     e.type = EventType.message;
 
+    handleFormatting(matrixEvent, e);
     parseAnyAttachments(matrixEvent, e);
 
-    handleFormatting(matrixEvent, e);
+    // if the message body is the same as a file name we dont want to display that
+    if (e.attachments != null &&
+        e.attachments!.any((element) => matrixEvent.body == element.name)) {
+      e.body = null;
+      e.formattedBody = null;
+      e.formattedContent = null;
+      e.bodyFormat = null;
+    }
 
     return e;
   }
@@ -134,39 +145,38 @@ class MatrixTimeline extends Timeline {
 
   void parseAnyAttachments(matrix.Event matrixEvent, TimelineEvent e) {
     if (matrixEvent.hasAttachment) {
-      double? width;
-      double? height;
-      var info = matrixEvent.content.tryGet<Map<String, dynamic>>("info");
-      if (info != null) {
-        int? w = info.tryGet("w");
-        int? h = info.tryGet("h");
+      double? width = matrixEvent.attachmentWidth;
+      double? height = matrixEvent.attachmentHeight;
 
-        if (w != null) width = w.toDouble();
-        if (h != null) height = h.toDouble();
+      Attachment? attachment;
+
+      if (Mime.imageTypes.contains(matrixEvent.attachmentMimetype)) {
+        attachment = ImageAttachment(
+            MatrixMxcImage(matrixEvent.attachmentMxcUrl!, _matrixRoom.client,
+                blurhash: matrixEvent.attachmentBlurhash,
+                doThumbnail: false,
+                matrixEvent: matrixEvent),
+            width: width,
+            name: matrixEvent.body,
+            height: height);
       }
 
-      Attachment file = Attachment(
-          fileProvider: CacheFileProvider(
-              matrixEvent.attachmentMxcUrl.toString(), () async {
-            var file = await matrixEvent.downloadAndDecryptAttachment();
-            return file.bytes;
-          }),
-          name: matrixEvent.content.tryGet<String>("filename") ??
-              matrixEvent.body,
-          mimeType: matrixEvent.attachmentMimetype,
-          height: height,
-          width: width,
-          thumbnail: matrixEvent.thumbnailMxcUrl != null
-              ? CacheFileProvider.thumbnail(
-                  matrixEvent.attachmentMxcUrl.toString(), () async {
-                  var file = await matrixEvent.downloadAndDecryptAttachment(
-                      getThumbnail: true);
-                  return file.bytes;
-                })
-              : null);
+      if (Mime.videoTypes.contains(matrixEvent.attachmentMimetype)) {
+        attachment = VideoAttachment(
+            MxcFileProvider(_matrixRoom.client, matrixEvent.attachmentMxcUrl!,
+                event: matrixEvent),
+            thumbnail: MatrixMxcImage(
+                matrixEvent.videoThumbnailUrl!, _matrixRoom.client,
+                blurhash: matrixEvent.attachmentBlurhash,
+                matrixEvent: matrixEvent),
+            name: matrixEvent.body,
+            width: width,
+            height: height);
+      }
 
-      e.body = null;
-      e.attachments = List.from([file]);
+      if (attachment != null) {
+        e.attachments = List.from([attachment]);
+      }
     }
   }
 

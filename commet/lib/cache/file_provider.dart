@@ -1,5 +1,5 @@
 abstract class FileProvider {
-  Future<Uri> resolve();
+  Future<Uri?> resolve();
 
-  late String fileIdentifier;
+  String get fileIdentifier;
 }

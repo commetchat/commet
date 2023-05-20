@@ -8,8 +8,13 @@ import 'package:tiamat/atoms/popup_dialog.dart';
 import 'dart:ui' as ui;
 
 class Lightbox extends StatefulWidget {
-  const Lightbox(
-      {this.image, this.video, this.thumbnail, this.aspectRatio, super.key});
+  const Lightbox({
+    this.image,
+    this.video,
+    this.thumbnail,
+    this.aspectRatio,
+    super.key,
+  });
   final ImageProvider? image;
   final FileProvider? video;
   final ImageProvider? thumbnail;
@@ -18,11 +23,13 @@ class Lightbox extends StatefulWidget {
   @override
   State<Lightbox> createState() => _LightboxState();
 
-  static void show(BuildContext context,
-      {ImageProvider? image,
-      ImageProvider? thumbnail,
-      FileProvider? video,
-      double? aspectRatio}) {
+  static void show(
+    BuildContext context, {
+    ImageProvider? image,
+    ImageProvider? thumbnail,
+    FileProvider? video,
+    double? aspectRatio,
+  }) {
     showGeneralDialog(
         context: context,
         barrierDismissible: false,
@@ -50,17 +57,15 @@ class Lightbox extends StatefulWidget {
 
 class _LightboxState extends State<Lightbox> {
   double aspectRatio = 1;
-  GlobalKey<VideoPlayerState>? videoPlayer;
   @override
   void initState() {
     super.initState();
+
     if (widget.aspectRatio == null) {
       getImageInfo();
     } else {
       aspectRatio = widget.aspectRatio!;
     }
-
-    videoPlayer = GlobalKey(debugLabel: "Lightbox video player");
   }
 
   void getImageInfo() async {
@@ -84,7 +89,6 @@ class _LightboxState extends State<Lightbox> {
   }
 
   void dismiss() {
-    videoPlayer?.currentState?.pause();
     Navigator.of(context).pop();
   }
 
@@ -110,7 +114,7 @@ class _LightboxState extends State<Lightbox> {
                             fit: BoxFit.cover,
                             image: widget.image!,
                             isAntiAlias: true,
-                            filterQuality: FilterQuality.high,
+                            filterQuality: FilterQuality.medium,
                           )
                         : widget.video != null
                             ? VideoPlayer(
@@ -118,7 +122,6 @@ class _LightboxState extends State<Lightbox> {
                                 showProgressBar: true,
                                 canGoFullscreen: false,
                                 thumbnail: widget.thumbnail,
-                                key: videoPlayer,
                               )
                             : const Placeholder()),
               ),

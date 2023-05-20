@@ -41,8 +41,10 @@ class _VideoPlayerMobileState extends State<VideoPlayerMobile> {
   }
 
   void loadVideo() async {
-    _controller = video_player.VideoPlayerController.file(
-        File.fromUri(await widget.videoFile.resolve()))
+    var file = await widget.videoFile.resolve();
+    if (file == null) return;
+
+    _controller = video_player.VideoPlayerController.file(File.fromUri(file))
       ..initialize().then((value) {
         widget.controller.setBuffering(false);
         _controller!.play();

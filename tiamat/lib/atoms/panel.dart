@@ -30,10 +30,14 @@ class Panel extends StatelessWidget {
       {super.key,
       this.header,
       required this.child,
-      this.mode = TileType.surface});
+      this.mode = TileType.surface,
+      this.padding = 8,
+      this.mainAxisSize = MainAxisSize.max});
   final String? header;
   final Widget child;
   final TileType mode;
+  final double padding;
+  final MainAxisSize mainAxisSize;
 
   @override
   Widget build(BuildContext context) {
@@ -64,6 +68,8 @@ class Panel extends StatelessWidget {
       decoration:
           BoxDecoration(borderRadius: BorderRadius.circular(10), color: color),
       child: Column(
+        mainAxisSize: mainAxisSize,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (header != null)
             Padding(
@@ -74,13 +80,13 @@ class Panel extends StatelessWidget {
             ),
           if (header != null)
             Padding(
-              padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
+              padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
               child: tiamat.Seperator(
                 padding: 0,
               ),
             ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: EdgeInsets.all(padding),
             child: child,
           ),
         ],
