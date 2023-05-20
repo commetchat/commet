@@ -62,14 +62,13 @@ class _TimelineEventState extends State<TimelineEventView> {
   Widget? eventToWidget(TimelineEvent event) {
     switch (widget.event.type) {
       case EventType.message:
+      case EventType.sticker:
         return Message(
           widget.event,
           showSender: widget.showSender,
           onDelete: widget.onDelete,
           relatedEvent: relatedEvent,
         );
-      default:
-        break;
     }
 
     if (BuildConfig.DEBUG) {

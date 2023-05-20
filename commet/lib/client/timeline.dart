@@ -19,6 +19,7 @@ enum TimelineEventStatus {
 
 enum EventType {
   message,
+  sticker,
   redaction,
   edit,
   invalid,
@@ -83,7 +84,7 @@ class TimelineEvent {
   late TimelineEventStatus status;
   late Peer sender;
   late DateTime originServerTs;
-  late String? body;
+  String? body;
   late String? source = "";
   List<Attachment>? attachments;
   String? bodyFormat;

@@ -69,8 +69,6 @@ class MatrixTimeline extends Timeline {
       e.sender = client.getPeer(event.senderId)!;
     }
 
-    e.body = event.getDisplayEvent(_matrixTimeline!).body;
-
     if (event.relationshipType != null) {
       switch (event.relationshipType) {
         case "m.in_reply_to":
@@ -88,6 +86,11 @@ class MatrixTimeline extends Timeline {
         break;
       case matrix.EventTypes.Redaction:
         e.type = EventType.redaction;
+        break;
+      case matrix.EventTypes.Sticker:
+        e.type = EventType.sticker;
+        parseSticker(e, event);
+        break;
     }
 
     switch (event.status) {
@@ -242,5 +245,9 @@ class MatrixTimeline extends Timeline {
     var event = await _matrixRoom.getEventById(eventId);
     if (event == null) return null;
     return convertEvent(event);
+  }
+
+  void parseSticker(TimelineEvent e, matrix.Event event) {
+    parseAnyAttachments(event, e);
   }
 }
