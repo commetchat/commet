@@ -1,8 +1,9 @@
 import 'package:commet/utils/emoji/emoji.dart';
 import 'package:flutter/widgets.dart';
 
+// ignore: must_be_immutable
 class EmojiWidget extends StatelessWidget {
-  Emoji emoji;
+  final Emoji emoji;
   double? height;
 
   EmojiWidget(this.emoji, {super.key, this.height = 24});

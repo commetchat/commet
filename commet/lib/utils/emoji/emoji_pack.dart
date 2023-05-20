@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:commet/utils/emoji/emoji.dart';
 import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 
 class EmojiPack {
   late List<Emoji> emoji;

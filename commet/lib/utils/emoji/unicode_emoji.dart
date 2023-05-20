@@ -1,5 +1,4 @@
 import 'package:commet/utils/emoji/emoji.dart';
-import 'package:flutter/src/painting/image_provider.dart';
 import 'package:flutter/widgets.dart';
 
 class UnicodeEmoji extends Emoji {

@@ -1,5 +1,5 @@
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
-import 'package:flutter/src/painting/image_provider.dart';
+import 'package:flutter/widgets.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
 import 'emoji.dart';
