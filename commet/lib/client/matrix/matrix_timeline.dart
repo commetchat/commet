@@ -168,7 +168,9 @@ class MatrixTimeline extends Timeline {
       if (Mime.imageTypes.contains(matrixEvent.attachmentMimetype)) {
         attachment = ImageAttachment(
             MatrixMxcImage(matrixEvent.attachmentMxcUrl!, _matrixRoom.client,
-                blurhash: matrixEvent.attachmentBlurhash, doThumbnail: false),
+                blurhash: matrixEvent.attachmentBlurhash,
+                doThumbnail: false,
+                matrixEvent: matrixEvent),
             width: width,
             name: matrixEvent.body,
             height: height);
@@ -176,12 +178,12 @@ class MatrixTimeline extends Timeline {
 
       if (Mime.videoTypes.contains(matrixEvent.attachmentMimetype)) {
         attachment = VideoAttachment(
-            MxcFileProvider(_matrixRoom.client, matrixEvent.attachmentMxcUrl!),
+            MxcFileProvider(_matrixRoom.client, matrixEvent.attachmentMxcUrl!,
+                event: matrixEvent),
             thumbnail: MatrixMxcImage(
-              matrixEvent.videoThumbnailUrl!,
-              _matrixRoom.client,
-              blurhash: matrixEvent.attachmentBlurhash,
-            ),
+                matrixEvent.videoThumbnailUrl!, _matrixRoom.client,
+                blurhash: matrixEvent.attachmentBlurhash,
+                matrixEvent: matrixEvent),
             name: matrixEvent.body,
             width: width,
             height: height);
