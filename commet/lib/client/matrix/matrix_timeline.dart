@@ -141,6 +141,7 @@ class MatrixTimeline extends Timeline {
 
   void handleFormatting(matrix.Event matrixEvent, TimelineEvent e) {
     var format = matrixEvent.content.tryGet<String>("format");
+    e.body = matrixEvent.body;
 
     if (format != null) {
       e.bodyFormat = format;

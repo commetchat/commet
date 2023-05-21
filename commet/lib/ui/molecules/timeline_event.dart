@@ -2,9 +2,13 @@ import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/molecules/message.dart';
 import 'package:flutter/material.dart' as m;
 import 'package:flutter/widgets.dart';
+import 'package:tiamat/atoms/icon_button.dart';
+import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 import '../../client/client.dart';
+import '../atoms/message_attachment.dart';
+import '../atoms/tooltip.dart' as t;
 
 class TimelineEventView extends StatefulWidget {
   const TimelineEventView(
@@ -64,11 +68,19 @@ class _TimelineEventState extends State<TimelineEventView> {
       case EventType.message:
       case EventType.sticker:
         return Message(
-          widget.event,
+          senderName: widget.event.sender.displayName,
+          senderColor: widget.event.sender.color,
+          senderAvatar: widget.event.sender.avatar,
+          sentTimeStamp: widget.event.originServerTs,
           showSender: widget.showSender,
-          onDelete: widget.onDelete,
-          relatedEvent: relatedEvent,
+          replyBody: relatedEvent?.body,
+          replySenderName: relatedEvent?.sender.displayName,
+          replySenderColor: relatedEvent?.sender.color,
+          body: buildBody(),
+          menuBuilder: BuildConfig.DESKTOP ? buildMenu : null,
         );
+      default:
+        break;
     }
 
     if (BuildConfig.DEBUG) {
@@ -83,5 +95,79 @@ class _TimelineEventState extends State<TimelineEventView> {
       );
     }
     return null;
+  }
+
+  Widget buildMenu(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          color: m.Theme.of(context).colorScheme.surface,
+          border: Border.all(
+              color: m.Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+              width: 1)),
+      child: m.Padding(
+        padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
+        child: Row(
+          children: [
+            buildMenuEntry(m.Icons.reply, "Reply", () => null),
+            buildMenuEntry(m.Icons.add_reaction, "Add Reaction", () => null),
+            if (canUserEditEvent())
+              buildMenuEntry(m.Icons.edit, "Edit", () => null),
+            buildMenuEntry(m.Icons.more_vert, "Options", () => null)
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildMenuEntry(IconData icon, String label, Function()? callback) {
+    const double size = 32;
+    return t.Tooltip(
+      text: label,
+      child: m.Padding(
+        padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+        child: m.SizedBox(
+          width: size,
+          height: size,
+          child: IconButton(
+            size: 20,
+            icon: icon,
+          ),
+        ),
+      ),
+    );
+  }
+
+  bool canUserEditEvent() {
+    return widget.timeline.room.permissions.canUserEditMessages &&
+        widget.event.sender == widget.timeline.room.client.user;
+  }
+
+  Widget buildBody() {
+    bool selectableText = BuildConfig.DESKTOP;
+    return m.Material(
+      color: m.Colors.transparent,
+      child: Column(
+        children: [
+          if (widget.event.bodyFormat != null)
+            selectableText
+                ? m.SelectionArea(child: widget.event.formattedContent!)
+                : widget.event.formattedContent!
+          else if (widget.event.body != null)
+            selectableText
+                ? m.SelectionArea(child: tiamat.Text.body(widget.event.body!))
+                : tiamat.Text.body(widget.event.body!),
+          if (widget.event.attachments != null)
+            Wrap(
+              children: widget.event.attachments!
+                  .map((e) => Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 8, 8, 8),
+                        child: MessageAttachment(e),
+                      ))
+                  .toList(),
+            ),
+        ],
+      ),
+    );
   }
 }

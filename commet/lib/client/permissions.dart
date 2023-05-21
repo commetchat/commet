@@ -19,4 +19,6 @@ class Permissions {
   bool get canEditRoomSecurity => canEnableE2EE;
 
   bool get canChangeNotificationSettings => true;
+
+  bool get canUserEditMessages => true;
 }

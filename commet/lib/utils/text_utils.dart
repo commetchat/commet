@@ -1,6 +1,5 @@
 import 'package:commet/utils/emoji/emoji.dart';
 import 'package:flutter/material.dart';
-
 import '../ui/atoms/rich_text/spans/link.dart';
 import 'emoji/emoji_matcher.dart';
 import 'package:intl/intl.dart' as intl;
@@ -151,5 +150,22 @@ class TextUtils {
     }
 
     return NewPasswordResult.valid;
+  }
+
+  static String timestampToLocalizedTime(DateTime time) {
+    var difference = DateTime.now().difference(time);
+
+    if (difference.inDays == 0) {
+      return intl.DateFormat(intl.DateFormat.HOUR_MINUTE)
+          .format(time.toLocal());
+    }
+
+    if (difference.inDays < 365) {
+      return intl.DateFormat(intl.DateFormat.MONTH_WEEKDAY_DAY)
+          .format(time.toLocal());
+    }
+
+    return intl.DateFormat(intl.DateFormat.YEAR_MONTH_WEEKDAY_DAY)
+        .format(time.toLocal());
   }
 }
