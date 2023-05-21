@@ -206,6 +206,8 @@ class _MessageState extends State<Message> {
   Widget replyText() {
     return SizedBox(
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           SizedBox(
             width: widget.avatarSize,

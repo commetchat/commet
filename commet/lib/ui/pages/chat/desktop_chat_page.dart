@@ -124,19 +124,31 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
                               key: widget.state.timelines[
                                   widget.state.selectedRoom!.localId],
                               timeline: widget.state.selectedRoom!.timeline!,
+                              setReplyingEvent: (event) =>
+                                  widget.state.setReplyingEvent(event),
                               markAsRead: widget
                                   .state.selectedRoom!.timeline!.markAsRead)),
                       Tile(
                         borderTop: true,
                         child: MessageInput(
                           isRoomE2EE: widget.state.selectedRoom!.isE2EE,
+                          focusKeyboard:
+                              widget.state.onFocusMessageInput.stream,
                           readIndicator: ReadIndicator(
                             initialList:
                                 widget.state.selectedRoom?.timeline?.receipts,
                           ),
                           onSendMessage: (message) {
-                            widget.state.selectedRoom!.sendMessage(message);
+                            widget.state.sendMessage(message);
                             return MessageInputSendResult.clearText;
+                          },
+                          replyingToBody: widget.state.replyingToEvent?.body,
+                          replyingToName:
+                              widget.state.replyingToEvent?.sender.displayName,
+                          replyingToColor:
+                              widget.state.replyingToEvent?.sender.color,
+                          cancelReply: () {
+                            widget.state.setReplyingEvent(null);
                           },
                         ),
                       )

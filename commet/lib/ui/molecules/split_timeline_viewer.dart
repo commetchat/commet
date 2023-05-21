@@ -14,10 +14,15 @@ import 'package:flutter/material.dart';
 class SplitTimelineViewer extends StatefulWidget {
   final Timeline timeline;
 
-  const SplitTimelineViewer({required this.timeline, this.markAsRead, Key? key})
+  const SplitTimelineViewer(
+      {required this.timeline,
+      this.markAsRead,
+      this.setReplyingEvent,
+      Key? key})
       : super(key: key);
 
   final Function(TimelineEvent event)? markAsRead;
+  final Function(TimelineEvent? event)? setReplyingEvent;
 
   @override
   State<SplitTimelineViewer> createState() => SplitTimelineViewerState();
@@ -176,6 +181,7 @@ class SplitTimelineViewerState extends State<SplitTimelineViewer> {
               return TimelineEventView(
                 event: split.historical[idx],
                 timeline: widget.timeline,
+                setReplyingEvent: widget.setReplyingEvent,
                 showSender: shouldShowSender(
                     split.getTimelineIndex(idx, SplitTimelinePart.historical)),
                 onDelete: () {
@@ -190,6 +196,7 @@ class SplitTimelineViewerState extends State<SplitTimelineViewer> {
 
               return TimelineEventView(
                 timeline: widget.timeline,
+                setReplyingEvent: widget.setReplyingEvent,
                 showSender: shouldShowSender(
                     split.getTimelineIndex(idx, SplitTimelinePart.recent)),
                 event: split.recent[idx],

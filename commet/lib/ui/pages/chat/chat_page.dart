@@ -31,13 +31,23 @@ class ChatPageState extends State<ChatPage> {
   late Map<String, GlobalKey<SplitTimelineViewerState>> timelines = {};
   double height = -1;
 
+  TimelineEvent? replyingToEvent;
+
   StreamController<Room> onRoomSelectionChanged = StreamController.broadcast();
+  StreamController<void> onFocusMessageInput = StreamController();
 
   StreamSubscription? onSpaceUpdateSubscription;
   StreamSubscription? onRoomUpdateSubscription;
 
   void selectHomePage() {
     homePageSelected = true;
+  }
+
+  void setReplyingEvent(TimelineEvent? event) {
+    setState(() {
+      replyingToEvent = event;
+    });
+    onFocusMessageInput.add(null);
   }
 
   void selectSpace(Space? space) {
@@ -166,6 +176,11 @@ class ChatPageState extends State<ChatPage> {
 
   void onRoomUpdated(void _) {
     setState(() {});
+  }
+
+  void sendMessage(String message) {
+    selectedRoom!.sendMessage(message, inReplyTo: replyingToEvent);
+    setReplyingEvent(null);
   }
 
   void navigateRoomSettings() {

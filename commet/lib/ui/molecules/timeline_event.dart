@@ -7,6 +7,7 @@ import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 import '../../client/client.dart';
+import '../../generated/l10n.dart';
 import '../atoms/message_attachment.dart';
 import '../atoms/tooltip.dart' as t;
 
@@ -18,6 +19,7 @@ class TimelineEventView extends StatefulWidget {
       this.onDelete,
       this.hovered = false,
       this.showSender = true,
+      this.setReplyingEvent,
       this.debugInfo});
   final TimelineEvent event;
   final bool hovered;
@@ -25,6 +27,7 @@ class TimelineEventView extends StatefulWidget {
   final bool showSender;
   final String? debugInfo;
   final Timeline timeline;
+  final Function(TimelineEvent? event)? setReplyingEvent;
 
   @override
   State<TimelineEventView> createState() => _TimelineEventState();
@@ -64,6 +67,7 @@ class _TimelineEventState extends State<TimelineEventView> {
   }
 
   Widget? eventToWidget(TimelineEvent event) {
+    if (event.status == TimelineEventStatus.removed) return const SizedBox();
     switch (widget.event.type) {
       case EventType.message:
       case EventType.sticker:
@@ -73,7 +77,10 @@ class _TimelineEventState extends State<TimelineEventView> {
           senderAvatar: widget.event.sender.avatar,
           sentTimeStamp: widget.event.originServerTs,
           showSender: widget.showSender,
-          replyBody: relatedEvent?.body,
+          replyBody: relatedEvent?.body ??
+              (relatedEvent?.type == EventType.sticker
+                  ? T.current.messagePlaceholderSticker
+                  : null),
           replySenderName: relatedEvent?.sender.displayName,
           replySenderColor: relatedEvent?.sender.color,
           body: buildBody(),
@@ -109,7 +116,9 @@ class _TimelineEventState extends State<TimelineEventView> {
         padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
         child: Row(
           children: [
-            buildMenuEntry(m.Icons.reply, "Reply", () => null),
+            buildMenuEntry(m.Icons.reply, "Reply", () {
+              widget.setReplyingEvent!.call(widget.event);
+            }),
             buildMenuEntry(m.Icons.add_reaction, "Add Reaction", () => null),
             if (canUserEditEvent())
               buildMenuEntry(m.Icons.edit, "Edit", () => null),
@@ -132,6 +141,7 @@ class _TimelineEventState extends State<TimelineEventView> {
           child: IconButton(
             size: 20,
             icon: icon,
+            onPressed: () => callback?.call(),
           ),
         ),
       ),

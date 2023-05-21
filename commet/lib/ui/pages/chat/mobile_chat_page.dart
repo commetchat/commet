@@ -259,17 +259,27 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
                         Padding(
                           padding: EdgeInsets.fromLTRB(0, 0, 0, 8),
                           child: MessageInput(
-                            key: messageInput,
-                            isRoomE2EE: widget.state.selectedRoom!.isE2EE,
-                            readIndicator: ReadIndicator(
-                              initialList:
-                                  widget.state.selectedRoom?.timeline?.receipts,
-                            ),
-                            onSendMessage: (message) {
-                              widget.state.selectedRoom!.sendMessage(message);
-                              return MessageInputSendResult.clearText;
-                            },
-                          ),
+                              key: messageInput,
+                              isRoomE2EE: widget.state.selectedRoom!.isE2EE,
+                              readIndicator: ReadIndicator(
+                                initialList: widget
+                                    .state.selectedRoom?.timeline?.receipts,
+                              ),
+                              onSendMessage: (message) {
+                                widget.state.selectedRoom!.sendMessage(message);
+                                return MessageInputSendResult.clearText;
+                              },
+                              replyingToBody:
+                                  widget.state.replyingToEvent?.body,
+                              replyingToName: widget
+                                  .state.replyingToEvent?.sender.displayName,
+                              replyingToColor:
+                                  widget.state.replyingToEvent?.sender.color,
+                              focusKeyboard:
+                                  widget.state.onFocusMessageInput.stream,
+                              cancelReply: () {
+                                widget.state.setReplyingEvent(null);
+                              }),
                         )
                       ],
                     ),

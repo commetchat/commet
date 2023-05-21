@@ -70,11 +70,20 @@ class MatrixRoom extends Room {
   @override
   Future<TimelineEvent?> sendMessage(String message,
       {TimelineEvent? inReplyTo}) async {
-    String? id = await _matrixRoom.sendTextEvent(message);
+    matrix.Event? replyingTo;
+
+    if (inReplyTo != null) {
+      replyingTo = await _matrixRoom.getEventById(inReplyTo.eventId);
+    }
+
+    String? id =
+        await _matrixRoom.sendTextEvent(message, inReplyTo: replyingTo);
+
     if (id != null) {
       var event = await _matrixRoom.getEventById(id);
       return (timeline as MatrixTimeline).convertEvent(event!);
     }
+
     return null;
   }
 

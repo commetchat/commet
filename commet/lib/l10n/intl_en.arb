@@ -52,5 +52,6 @@
   "roomNamePrompt": "Room Name",
   "enableEncryptionPrompt": "Enable Encryption",
   "encryptionCannotBeDisabled": "If enabled, this cannot be disabled later",
-  "notificationReceivedMessagePlaceholder": "Sent a message"
+  "notificationReceivedMessagePlaceholder": "Sent a message",
+  "messagePlaceholderSticker": "Sent a sticker"
 }
