@@ -18,6 +18,8 @@ class Message extends StatefulWidget {
       this.replySenderName,
       this.menuBuilder,
       this.edited = false,
+      this.onDoubleTap,
+      this.onLongPress,
       this.showSender = true});
   final double avatarSize = 48;
 
@@ -35,6 +37,9 @@ class Message extends StatefulWidget {
   final bool edited;
 
   final Widget body;
+
+  final Function()? onLongPress;
+  final Function()? onDoubleTap;
 
   final Widget Function(BuildContext context)? menuBuilder;
 
@@ -57,10 +62,14 @@ class _MessageState extends State<Message> {
         child: BuildConfig.MOBILE
             ? material.InkWell(
                 child: buildContent(),
-                onLongPress: () {},
+                onLongPress: widget.onLongPress,
+                onDoubleTap: widget.onDoubleTap,
               )
             : MouseRegion(
-                child: buildContent(),
+                child: GestureDetector(
+                    onLongPress: widget.onLongPress,
+                    onDoubleTap: widget.onDoubleTap,
+                    child: buildContent()),
                 onEnter: (_) {
                   if (entry == null) {
                     _showOverlay();

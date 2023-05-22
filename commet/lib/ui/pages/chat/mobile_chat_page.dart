@@ -255,6 +255,8 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
                           key: widget.state
                               .timelines[widget.state.selectedRoom!.localId],
                           timeline: widget.state.selectedRoom!.timeline!,
+                          onEventLongPress: widget.state.onEventLongPress,
+                          onEventDoubleTap: widget.state.onEventDoubleTap,
                         )),
                         Padding(
                           padding: EdgeInsets.fromLTRB(0, 0, 0, 8),

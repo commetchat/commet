@@ -69,6 +69,14 @@ class ChatPageState extends State<ChatPage> {
     }
   }
 
+  void onEventDoubleTap(TimelineEvent event) {
+    setReplyingEvent(event);
+  }
+
+  void onEventLongPress(TimelineEvent event) {
+    print("event long pressed");
+  }
+
   void clearSpaceSelection() {
     onSpaceUpdateSubscription?.cancel();
     clearRoomSelection();

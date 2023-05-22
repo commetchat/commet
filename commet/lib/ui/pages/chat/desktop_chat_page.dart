@@ -121,13 +121,16 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
                     children: [
                       Expanded(
                           child: SplitTimelineViewer(
-                              key: widget.state.timelines[
-                                  widget.state.selectedRoom!.localId],
-                              timeline: widget.state.selectedRoom!.timeline!,
-                              setReplyingEvent: (event) =>
-                                  widget.state.setReplyingEvent(event),
-                              markAsRead: widget
-                                  .state.selectedRoom!.timeline!.markAsRead)),
+                        key: widget.state
+                            .timelines[widget.state.selectedRoom!.localId],
+                        timeline: widget.state.selectedRoom!.timeline!,
+                        setReplyingEvent: (event) =>
+                            widget.state.setReplyingEvent(event),
+                        markAsRead:
+                            widget.state.selectedRoom!.timeline!.markAsRead,
+                        onEventLongPress: widget.state.onEventLongPress,
+                        onEventDoubleTap: widget.state.onEventDoubleTap,
+                      )),
                       Tile(
                         borderTop: true,
                         child: MessageInput(

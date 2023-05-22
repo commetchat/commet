@@ -21,6 +21,8 @@ class TimelineEventView extends StatefulWidget {
       this.hovered = false,
       this.showSender = true,
       this.setReplyingEvent,
+      this.onDoubleTap,
+      this.onLongPress,
       this.debugInfo});
   final TimelineEvent event;
   final bool hovered;
@@ -28,6 +30,8 @@ class TimelineEventView extends StatefulWidget {
   final bool showSender;
   final String? debugInfo;
   final Timeline timeline;
+  final Function()? onDoubleTap;
+  final Function()? onLongPress;
   final Function(TimelineEvent? event)? setReplyingEvent;
 
   @override
@@ -77,6 +81,8 @@ class _TimelineEventState extends State<TimelineEventView> {
           senderColor: widget.event.sender.color,
           senderAvatar: widget.event.sender.avatar,
           sentTimeStamp: widget.event.originServerTs,
+          onDoubleTap: widget.onDoubleTap,
+          onLongPress: widget.onLongPress,
           showSender: widget.showSender,
           replyBody: relatedEvent?.body ??
               (relatedEvent?.type == EventType.sticker

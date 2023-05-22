@@ -18,11 +18,15 @@ class SplitTimelineViewer extends StatefulWidget {
       {required this.timeline,
       this.markAsRead,
       this.setReplyingEvent,
+      this.onEventDoubleTap,
+      this.onEventLongPress,
       Key? key})
       : super(key: key);
 
   final Function(TimelineEvent event)? markAsRead;
   final Function(TimelineEvent? event)? setReplyingEvent;
+  final Function(TimelineEvent event)? onEventDoubleTap;
+  final Function(TimelineEvent event)? onEventLongPress;
 
   @override
   State<SplitTimelineViewer> createState() => SplitTimelineViewerState();
@@ -181,6 +185,10 @@ class SplitTimelineViewerState extends State<SplitTimelineViewer> {
               return TimelineEventView(
                 event: split.historical[idx],
                 timeline: widget.timeline,
+                onDoubleTap: () =>
+                    widget.onEventDoubleTap?.call(split.historical[idx]),
+                onLongPress: () =>
+                    widget.onEventLongPress?.call(split.historical[idx]),
                 setReplyingEvent: widget.setReplyingEvent,
                 showSender: shouldShowSender(
                     split.getTimelineIndex(idx, SplitTimelinePart.historical)),
@@ -199,6 +207,10 @@ class SplitTimelineViewerState extends State<SplitTimelineViewer> {
                 setReplyingEvent: widget.setReplyingEvent,
                 showSender: shouldShowSender(
                     split.getTimelineIndex(idx, SplitTimelinePart.recent)),
+                onDoubleTap: () =>
+                    widget.onEventDoubleTap?.call(split.recent[idx]),
+                onLongPress: () =>
+                    widget.onEventLongPress?.call(split.recent[idx]),
                 event: split.recent[idx],
                 onDelete: () {
                   widget.timeline.deleteEventByIndex(
