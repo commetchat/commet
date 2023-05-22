@@ -34,7 +34,7 @@ class ChatPageState extends State<ChatPage> {
   TimelineEvent? replyingToEvent;
 
   StreamController<Room> onRoomSelectionChanged = StreamController.broadcast();
-  StreamController<void> onFocusMessageInput = StreamController();
+  StreamController<void> onFocusMessageInput = StreamController.broadcast();
 
   StreamSubscription? onSpaceUpdateSubscription;
   StreamSubscription? onRoomUpdateSubscription;
@@ -132,6 +132,7 @@ class ChatPageState extends State<ChatPage> {
   void _setSelectedRoom(Room room) {
     setState(() {
       selectedRoom = room;
+      replyingToEvent = null;
     });
   }
 
@@ -139,11 +140,13 @@ class ChatPageState extends State<ChatPage> {
     setState(() {
       selectedSpace = space;
       homePageSelected = false;
+      replyingToEvent = null;
     });
   }
 
   void _clearRoomSelection() {
     setState(() {
+      replyingToEvent = null;
       selectedRoom = null;
     });
   }

@@ -133,10 +133,11 @@ class _MessageState extends State<Message> {
   }
 
   Widget buildContent() {
-    return Container(
+    return AnimatedContainer(
       color: hovered || overlayHovered
           ? material.Theme.of(context).hoverColor
           : material.Colors.transparent,
+      duration: const Duration(milliseconds: 100),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 4, 8, 4),
         child: Column(
@@ -234,11 +235,15 @@ class _MessageState extends State<Message> {
   }
 
   Widget timeStamp() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
-      child: SizedBox(
-        child: tiamat.Text.labelLow(
-            TextUtils.timestampToLocalizedTime(widget.sentTimeStamp)),
+    return AnimatedOpacity(
+      opacity: hovered ? 1 : 0,
+      duration: const Duration(milliseconds: 200),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
+        child: SizedBox(
+          child: tiamat.Text.labelLow(
+              TextUtils.timestampToLocalizedTime(widget.sentTimeStamp)),
+        ),
       ),
     );
   }

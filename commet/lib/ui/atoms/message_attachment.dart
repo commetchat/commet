@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart';
 
 class MessageAttachment extends StatefulWidget {
-  const MessageAttachment(this.attachment, {super.key});
+  const MessageAttachment(this.attachment,
+      {super.key, this.ignorePointer = false});
   final Attachment attachment;
+  final bool ignorePointer;
 
   @override
   State<MessageAttachment> createState() => _MessageAttachmentState();
@@ -32,25 +34,29 @@ class _MessageAttachmentState extends State<MessageAttachment> {
     assert(widget.attachment is ImageAttachment);
     var attachment = widget.attachment as ImageAttachment;
 
-    return ClipRRect(
-        borderRadius: BorderRadius.circular(10),
-        child: Material(
-            child: SizedBox(
-          height: 200,
-          child: AspectRatio(
-            aspectRatio: attachment.aspectRatio,
-            child: InkWell(
-              onTap: () {
-                Lightbox.show(context, image: attachment.image);
-              },
-              child: Image(
-                image: attachment.image,
-                filterQuality: FilterQuality.medium,
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-        )));
+    return IgnorePointer(
+      ignoring: widget.ignorePointer,
+      child: ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: Material(
+              color: Colors.transparent,
+              child: SizedBox(
+                height: 200,
+                child: AspectRatio(
+                  aspectRatio: attachment.aspectRatio,
+                  child: InkWell(
+                    onTap: () {
+                      Lightbox.show(context, image: attachment.image);
+                    },
+                    child: Image(
+                      image: attachment.image,
+                      filterQuality: FilterQuality.medium,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              ))),
+    );
   }
 
   Widget buildVideo() {

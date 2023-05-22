@@ -1,4 +1,5 @@
 import 'package:commet/config/build_config.dart';
+import 'package:commet/ui/atoms/generic_room_event.dart';
 import 'package:commet/ui/molecules/message.dart';
 import 'package:flutter/material.dart' as m;
 import 'package:flutter/widgets.dart';
@@ -86,6 +87,18 @@ class _TimelineEventState extends State<TimelineEventView> {
           body: buildBody(),
           menuBuilder: BuildConfig.DESKTOP ? buildMenu : null,
         );
+      case EventType.roomCreated:
+        return GenericRoomEvent(
+            T.current.userCreatedRoom(event.sender.displayName),
+            m.Icons.room_preferences_outlined);
+      case EventType.memberJoined:
+        return GenericRoomEvent(
+            T.current.userJoinedRoom(event.sender.displayName),
+            m.Icons.waving_hand_rounded);
+      case EventType.memberLeft:
+        return GenericRoomEvent(
+            T.current.userLeftRoom(event.sender.displayName),
+            m.Icons.subdirectory_arrow_left_rounded);
       default:
         break;
     }
@@ -172,7 +185,10 @@ class _TimelineEventState extends State<TimelineEventView> {
               children: widget.event.attachments!
                   .map((e) => Padding(
                         padding: const EdgeInsets.fromLTRB(0, 8, 8, 8),
-                        child: MessageAttachment(e),
+                        child: MessageAttachment(
+                          e,
+                          ignorePointer: widget.event.type == EventType.sticker,
+                        ),
                       ))
                   .toList(),
             ),

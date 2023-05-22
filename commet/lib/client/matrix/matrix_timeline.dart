@@ -79,46 +79,61 @@ class MatrixTimeline extends Timeline {
     }
 
     e.relatedEventId = event.relationshipEventId;
+    e.type = convertType(event) ?? EventType.invalid;
 
     switch (event.type) {
       case matrix.EventTypes.Message:
         e = parseMessage(e, event);
         break;
-      case matrix.EventTypes.Redaction:
-        e.type = EventType.redaction;
-        break;
       case matrix.EventTypes.Sticker:
-        e.type = EventType.sticker;
         parseSticker(e, event);
         break;
     }
 
-    switch (event.status) {
-      case matrix.EventStatus.removed:
-        e.status = TimelineEventStatus.removed;
-        break;
-      case matrix.EventStatus.error:
-        e.status = TimelineEventStatus.error;
-        break;
-      case matrix.EventStatus.sending:
-        e.status = TimelineEventStatus.sending;
-        break;
-      case matrix.EventStatus.sent:
-        e.status = TimelineEventStatus.sent;
-        break;
-      case matrix.EventStatus.synced:
-        e.status = TimelineEventStatus.synced;
-        break;
-      case matrix.EventStatus.roomState:
-        e.status = TimelineEventStatus.roomState;
-        break;
-    }
+    e.status = convertStatus(event.status);
 
     if (event.redacted) {
       e.status = TimelineEventStatus.removed;
     }
 
     return e;
+  }
+
+  EventType? convertType(matrix.Event event) {
+    const dict = {
+      matrix.EventTypes.Message: EventType.message,
+      matrix.EventTypes.Reaction: EventType.redaction,
+      matrix.EventTypes.Sticker: EventType.sticker,
+      matrix.EventTypes.RoomCreate: EventType.roomCreated,
+    };
+
+    var result = dict[event.type];
+
+    if (event.type == matrix.EventTypes.RoomMember &&
+        event.content['membership'] != null) {
+      switch (event.content['membership'] as String) {
+        case "join":
+          result = EventType.memberJoined;
+          break;
+        case "leave":
+          result = EventType.memberLeft;
+      }
+    }
+
+    return result;
+  }
+
+  TimelineEventStatus convertStatus(matrix.EventStatus status) {
+    const dict = {
+      matrix.EventStatus.removed: TimelineEventStatus.removed,
+      matrix.EventStatus.error: TimelineEventStatus.error,
+      matrix.EventStatus.sending: TimelineEventStatus.sending,
+      matrix.EventStatus.sent: TimelineEventStatus.sent,
+      matrix.EventStatus.synced: TimelineEventStatus.synced,
+      matrix.EventStatus.roomState: TimelineEventStatus.roomState,
+    };
+
+    return dict[status]!;
   }
 
   TimelineEvent parseMessage(TimelineEvent e, matrix.Event matrixEvent) {

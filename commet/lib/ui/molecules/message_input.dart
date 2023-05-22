@@ -131,78 +131,67 @@ class MessageInputState extends State<MessageInput> {
                         ),
                       ),
                       Flexible(
-                        child: Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: Theme.of(context)
-                                  .extension<ExtraColors>()!
-                                  .surfaceLow2),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(8, 14, 4, 12),
-                                  child: Stack(
-                                    children: [
-                                      TextField(
-                                        controller: controller,
-                                        focusNode: textFocus,
-                                        decoration: null,
-                                        maxLines: null,
-                                        cursorColor: Theme.of(context)
-                                            .colorScheme
-                                            .onPrimary,
-                                        cursorWidth: 1,
-                                      ),
-                                      if (showHint)
-                                        IgnorePointer(
-                                          ignoring: true,
-                                          child: Padding(
-                                            padding: const EdgeInsets.fromLTRB(
-                                                2, 2, 0, 0),
-                                            child: tiamat.Text(
-                                                T
-                                                    .of(context)
-                                                    .sendAMessagePrompt,
-                                                type: TextType.label,
-                                                color: Theme.of(context)
-                                                    .iconTheme
-                                                    .color),
-                                          ),
-                                        )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              if (widget.isRoomE2EE)
-                                const SizedBox(
-                                  width: 22,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: Theme.of(context)
+                                    .extension<ExtraColors>()!
+                                    .surfaceLow2),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
                                   child: Padding(
-                                    padding: EdgeInsets.fromLTRB(8, 17, 0, 0),
-                                    child: Icon(
-                                      Icons.lock_outline,
-                                      size: 18,
+                                    padding:
+                                        const EdgeInsets.fromLTRB(0, 2, 4, 2),
+                                    child: Stack(
+                                      children: [
+                                        TextField(
+                                          controller: controller,
+                                          focusNode: textFocus,
+
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium,
+                                          decoration: InputDecoration(
+                                            prefix: const SizedBox(
+                                              width: 8,
+                                              height: 10,
+                                            ),
+                                            hintText: widget.isRoomE2EE
+                                                ? T.current
+                                                    .sendEncryptedMessagePrompt
+                                                : T.current.sendAMessagePrompt,
+                                          ),
+                                          //decoration: null,
+                                          maxLines: null,
+                                          cursorColor: Theme.of(context)
+                                              .colorScheme
+                                              .onPrimary,
+                                          cursorWidth: 1,
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
-                              Padding(
-                                padding: const EdgeInsets.all(2.0),
-                                child: SizedBox(
-                                    width: widget.size,
-                                    height: widget.size,
-                                    child: const tiamat.IconButton(
-                                      icon: Icons.face,
-                                      size: 24,
-                                    )),
-                              ),
-                            ],
+                                Padding(
+                                  padding: const EdgeInsets.all(2.0),
+                                  child: SizedBox(
+                                      width: widget.size,
+                                      height: widget.size,
+                                      child: const tiamat.IconButton(
+                                        icon: Icons.face,
+                                        size: 24,
+                                      )),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+                        padding: const EdgeInsets.fromLTRB(4, 0, 0, 0),
                         child: SizedBox(
                             width: widget.size,
                             height: widget.size,

@@ -206,6 +206,10 @@ class SplitTimelineViewerState extends State<SplitTimelineViewer> {
                 },
               );
             }, childCount: split.recent.length)),
+        const SliverToBoxAdapter(
+          //Add some padding to bottom
+          child: SizedBox(height: 30),
+        )
       ],
     );
   }

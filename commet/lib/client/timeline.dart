@@ -26,6 +26,9 @@ enum EventType {
   setRoomName,
   setRoomAvatar,
   roomCreated,
+  memberJoined,
+  memberLeft,
+  encryptionEnabled,
 }
 
 TimelineEventStatus eventStatusFromInt(int intValue) =>
