@@ -7,7 +7,7 @@ import '../../client/peer.dart';
 class PeerList extends StatefulWidget {
   const PeerList(this.peers, {super.key});
 
-  final List<Peer> peers;
+  final Iterable<Peer> peers;
 
   @override
   State<PeerList> createState() => _PeerListState();
@@ -36,9 +36,9 @@ class _PeerListState extends State<PeerList> {
               sizeFactor:
                   animation.drive(CurveTween(curve: Curves.easeOutCubic)),
               child: UserPanel(
-                displayName: widget.peers[i].displayName,
-                avatar: widget.peers[i].avatar,
-                color: widget.peers[i].color,
+                displayName: widget.peers.elementAt(i).displayName,
+                avatar: widget.peers.elementAt(i).avatar,
+                color: widget.peers.elementAt(i).color,
               )),
         ),
       ),

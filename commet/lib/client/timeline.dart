@@ -84,6 +84,7 @@ enum EventRelationshipType { reply }
 class TimelineEvent {
   String eventId = "";
   EventType type = EventType.invalid;
+  bool edited = false;
   late TimelineEventStatus status;
   late Peer sender;
   late DateTime originServerTs;

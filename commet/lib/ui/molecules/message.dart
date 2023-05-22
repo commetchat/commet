@@ -17,6 +17,7 @@ class Message extends StatefulWidget {
       this.replySenderColor,
       this.replySenderName,
       this.menuBuilder,
+      this.edited = false,
       this.showSender = true});
   final double avatarSize = 48;
 
@@ -30,6 +31,8 @@ class Message extends StatefulWidget {
 
   final ImageProvider? senderAvatar;
   final DateTime sentTimeStamp;
+
+  final bool edited;
 
   final Widget body;
 
@@ -166,6 +169,7 @@ class _MessageState extends State<Message> {
                             ),
                           ),
                         body(),
+                        if (widget.edited) edited()
                       ],
                     ),
                   ),
@@ -250,6 +254,10 @@ class _MessageState extends State<Message> {
 
   Widget body() {
     return widget.body;
+  }
+
+  Widget edited() {
+    return tiamat.Text.labelLow("(Edited)");
   }
 
   Widget reactions() {
