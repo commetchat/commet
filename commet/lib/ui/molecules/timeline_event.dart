@@ -174,6 +174,19 @@ class _TimelineEventState extends State<TimelineEventView> {
   }
 
   Widget buildBody() {
+    switch (widget.event.type) {
+      case EventType.message:
+        return buildMessageBody();
+      case EventType.sticker:
+        return buildStickerBody();
+      default:
+        return const Placeholder(
+          fallbackHeight: 50,
+        );
+    }
+  }
+
+  Widget buildMessageBody() {
     bool selectableText = BuildConfig.DESKTOP;
     return m.Material(
       color: m.Colors.transparent,
@@ -187,6 +200,27 @@ class _TimelineEventState extends State<TimelineEventView> {
             selectableText
                 ? m.SelectionArea(child: tiamat.Text.body(widget.event.body!))
                 : tiamat.Text.body(widget.event.body!),
+          if (widget.event.attachments != null)
+            Wrap(
+              children: widget.event.attachments!
+                  .map((e) => Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 8, 8, 8),
+                        child: MessageAttachment(
+                          e,
+                        ),
+                      ))
+                  .toList(),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildStickerBody() {
+    return m.Material(
+      color: m.Colors.transparent,
+      child: Column(
+        children: [
           if (widget.event.attachments != null)
             Wrap(
               children: widget.event.attachments!
