@@ -84,6 +84,7 @@ class _TimelineEventState extends State<TimelineEventView> {
                   : null),
           replySenderName: relatedEvent?.sender.displayName,
           replySenderColor: relatedEvent?.sender.color,
+          edited: widget.event.edited,
           body: buildBody(),
           menuBuilder: BuildConfig.DESKTOP ? buildMenu : null,
         );

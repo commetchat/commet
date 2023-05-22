@@ -20,7 +20,7 @@ class SimulatedRoom extends Room {
   @override
   bool get isE2EE => false;
 
-  List<Peer> _participants = List.empty(growable: true);
+  final List<Peer> _participants = List.empty(growable: true);
 
   @override
   Iterable<Peer> get members => _participants;
