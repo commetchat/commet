@@ -204,9 +204,7 @@ class MatrixTimeline extends Timeline {
             width: width,
             name: matrixEvent.body,
             height: height);
-      }
-
-      if (Mime.videoTypes.contains(matrixEvent.attachmentMimetype)) {
+      } else if (Mime.videoTypes.contains(matrixEvent.attachmentMimetype)) {
         attachment = VideoAttachment(
             MxcFileProvider(_matrixRoom.client, matrixEvent.attachmentMxcUrl!,
                 event: matrixEvent),
@@ -217,11 +215,16 @@ class MatrixTimeline extends Timeline {
             name: matrixEvent.body,
             width: width,
             height: height);
+      } else {
+        attachment = FileAttachment(
+            MxcFileProvider(_matrixRoom.client, matrixEvent.attachmentMxcUrl!,
+                event: matrixEvent),
+            name: matrixEvent.body,
+            mimeType: matrixEvent.attachmentMimetype,
+            fileSize: matrixEvent.infoMap['size'] as int?);
       }
 
-      if (attachment != null) {
-        e.attachments = List.from([attachment]);
-      }
+      e.attachments = List.from([attachment]);
     }
   }
 

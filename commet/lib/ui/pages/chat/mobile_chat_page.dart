@@ -1,12 +1,16 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:commet/client/timeline.dart';
 import 'package:commet/ui/molecules/direct_message_list.dart';
 import 'package:commet/ui/molecules/split_timeline_viewer.dart';
+import 'package:commet/ui/molecules/timeline_event.dart';
 import 'package:commet/ui/pages/chat/chat_page.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart' as material;
 import 'package:tiamat/config/config.dart';
 import 'package:tiamat/tiamat.dart';
+
+import 'package:flutter/services.dart' as services;
 
 import '../../../client/room.dart';
 
@@ -255,8 +259,7 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
                           key: widget.state
                               .timelines[widget.state.selectedRoom!.localId],
                           timeline: widget.state.selectedRoom!.timeline!,
-                          onEventLongPress: widget.state.onEventLongPress,
-                          onEventDoubleTap: widget.state.onEventDoubleTap,
+                          onEventLongPress: showMessageMenu,
                         )),
                         Padding(
                           padding: EdgeInsets.fromLTRB(0, 0, 0, 8),
@@ -314,5 +317,145 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
     });
 
     widget.state.selectRoom(room);
+  }
+
+  void showMessageMenu(TimelineEvent event) {
+    m.showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor:
+          m.Theme.of(context).extension<ExtraColors>()!.surfaceLow1,
+      builder: (context) {
+        return DraggableScrollableSheet(
+          expand: false,
+          initialChildSize: 0.4,
+          minChildSize: 0.4,
+          builder: (context, scrollController) {
+            return SingleChildScrollView(
+                controller: scrollController,
+                child: buildMessageMenu(context, event));
+          },
+        );
+      },
+    );
+  }
+
+  Widget buildMessageMenu(BuildContext context, TimelineEvent event) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ShaderMask(
+              shaderCallback: (bounds) {
+                return const LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    m.Colors.white,
+                    m.Colors.transparent,
+                  ],
+                  stops: [0.90, 1.0],
+                ).createShader(bounds);
+              },
+              child: SizedBox(
+                height: 100,
+                child: Center(
+                  child: SingleChildScrollView(
+                    physics: NeverScrollableScrollPhysics(),
+                    child: SizedBox(
+                      child: TimelineEventView(
+                          event: event,
+                          timeline: widget.state.selectedRoom!.timeline!),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 50,
+              child: TextButton(
+                "Reply",
+                icon: m.Icons.reply,
+                onTap: () {
+                  widget.state.setReplyingEvent(event);
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+            SizedBox(
+              height: 50,
+              child: TextButton(
+                "Add Reaction",
+                icon: m.Icons.add_reaction_rounded,
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+            if (canEditMessage(event))
+              SizedBox(
+                height: 50,
+                child: TextButton(
+                  "Edit Message",
+                  icon: m.Icons.edit,
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ),
+            if (canDeleteMessage(event))
+              SizedBox(
+                height: 50,
+                child: TextButton(
+                  "Delete Message",
+                  icon: m.Icons.delete_forever,
+                  onTap: () {
+                    widget.state.selectedRoom?.timeline
+                        ?.deleteEvent(event.eventId);
+                    Navigator.pop(context);
+                  },
+                ),
+              ),
+            SizedBox(
+              height: 50,
+              child: TextButton(
+                "Copy Text",
+                icon: m.Icons.copy,
+                onTap: () {
+                  services.Clipboard.setData(
+                      services.ClipboardData(text: event.body!));
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  bool canEditMessage(TimelineEvent event) {
+    if (widget.state.selectedRoom?.permissions.canUserEditMessages != true)
+      return false;
+
+    if (event.sender != widget.state.selectedRoom!.client.user) return false;
+
+    if (event.type != EventType.message) return false;
+
+    return true;
+  }
+
+  bool canDeleteMessage(TimelineEvent event) {
+    if (widget.state.selectedRoom?.permissions.canUserDeleteMessages != true)
+      return false;
+
+    if (event.sender != widget.state.selectedRoom!.client.user) return false;
+
+    if (event.type != EventType.message) return false;
+
+    return true;
   }
 }

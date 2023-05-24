@@ -57,5 +57,6 @@
   "enableEncryptionPrompt": "Enable Encryption",
   "encryptionCannotBeDisabled": "If enabled, this cannot be disabled later",
   "notificationReceivedMessagePlaceholder": "Sent a message",
-  "messagePlaceholderSticker": "Sent a sticker"
+  "messagePlaceholderSticker": "Sent a sticker",
+  "messageEditedMarker": "(Edited)"
 }

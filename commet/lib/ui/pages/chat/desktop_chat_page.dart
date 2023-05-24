@@ -128,8 +128,6 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
                             widget.state.setReplyingEvent(event),
                         markAsRead:
                             widget.state.selectedRoom!.timeline!.markAsRead,
-                        onEventLongPress: widget.state.onEventLongPress,
-                        onEventDoubleTap: widget.state.onEventDoubleTap,
                       )),
                       Tile(
                         borderTop: true,

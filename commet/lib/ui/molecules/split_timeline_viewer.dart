@@ -185,10 +185,12 @@ class SplitTimelineViewerState extends State<SplitTimelineViewer> {
               return TimelineEventView(
                 event: split.historical[idx],
                 timeline: widget.timeline,
-                onDoubleTap: () =>
-                    widget.onEventDoubleTap?.call(split.historical[idx]),
-                onLongPress: () =>
-                    widget.onEventLongPress?.call(split.historical[idx]),
+                onDoubleTap: widget.onEventDoubleTap != null
+                    ? () => widget.onEventDoubleTap!.call(split.historical[idx])
+                    : null,
+                onLongPress: widget.onEventLongPress != null
+                    ? () => widget.onEventLongPress!.call(split.historical[idx])
+                    : null,
                 setReplyingEvent: widget.setReplyingEvent,
                 showSender: shouldShowSender(
                     split.getTimelineIndex(idx, SplitTimelinePart.historical)),
@@ -207,10 +209,12 @@ class SplitTimelineViewerState extends State<SplitTimelineViewer> {
                 setReplyingEvent: widget.setReplyingEvent,
                 showSender: shouldShowSender(
                     split.getTimelineIndex(idx, SplitTimelinePart.recent)),
-                onDoubleTap: () =>
-                    widget.onEventDoubleTap?.call(split.recent[idx]),
-                onLongPress: () =>
-                    widget.onEventLongPress?.call(split.recent[idx]),
+                onDoubleTap: widget.onEventDoubleTap != null
+                    ? () => widget.onEventDoubleTap!.call(split.recent[idx])
+                    : null,
+                onLongPress: widget.onEventLongPress != null
+                    ? () => widget.onEventLongPress!.call(split.recent[idx])
+                    : null,
                 event: split.recent[idx],
                 onDelete: () {
                   widget.timeline.deleteEventByIndex(

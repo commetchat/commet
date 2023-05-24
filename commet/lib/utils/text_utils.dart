@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:commet/utils/emoji/emoji.dart';
 import 'package:flutter/material.dart';
 import '../ui/atoms/rich_text/spans/link.dart';
@@ -167,5 +169,17 @@ class TextUtils {
 
     return intl.DateFormat(intl.DateFormat.YEAR_MONTH_WEEKDAY_DAY)
         .format(time.toLocal());
+  }
+
+  static String readableFileSize(num number, {bool base1024 = true}) {
+    final base = base1024 ? 1024 : 1000;
+    if (number <= 0) return "0";
+    final units = ["B", "kB", "MB", "GB", "TB"];
+    int digitGroups = (log(number) / log(base)).round();
+    // ignore: prefer_interpolation_to_compose_strings
+    return intl.NumberFormat("#,##0.#")
+            .format(number / pow(base, digitGroups)) +
+        " " +
+        units[digitGroups];
   }
 }

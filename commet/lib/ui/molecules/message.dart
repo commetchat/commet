@@ -5,6 +5,8 @@ import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:flutter/material.dart' as material;
 
+import '../../generated/l10n.dart';
+
 class Message extends StatefulWidget {
   const Message(
       {super.key,
@@ -61,14 +63,14 @@ class _MessageState extends State<Message> {
         color: material.Colors.transparent,
         child: BuildConfig.MOBILE
             ? material.InkWell(
-                child: buildContent(),
                 onLongPress: widget.onLongPress,
                 onDoubleTap: widget.onDoubleTap,
+                child: buildContent(),
               )
             : MouseRegion(
                 child: GestureDetector(
                     onLongPress: widget.onLongPress,
-                    onDoubleTap: widget.onDoubleTap,
+                    //onDoubleTap: widget.onDoubleTap,
                     child: buildContent()),
                 onEnter: (_) {
                   if (entry == null) {
@@ -266,7 +268,7 @@ class _MessageState extends State<Message> {
   }
 
   Widget edited() {
-    return tiamat.Text.labelLow("(Edited)");
+    return tiamat.Text.labelLow(T.current.messageEditedMarker);
   }
 
   Widget reactions() {

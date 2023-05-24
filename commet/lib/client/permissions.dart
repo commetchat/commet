@@ -21,4 +21,6 @@ class Permissions {
   bool get canChangeNotificationSettings => true;
 
   bool get canUserEditMessages => true;
+
+  bool get canUserDeleteMessages => true;
 }
