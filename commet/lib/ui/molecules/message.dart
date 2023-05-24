@@ -113,12 +113,12 @@ class _MessageState extends State<Message> {
     entry = OverlayEntry(
       builder: (context) {
         return Positioned(
-            height: 40,
+            height: 56,
             child: CompositedTransformFollower(
               targetAnchor: Alignment.topRight,
               followerAnchor: Alignment.topRight,
               showWhenUnlinked: false,
-              offset: const Offset(-20, -35),
+              offset: const Offset(-20, -50),
               link: layerLink,
               child: MouseRegion(
                 onEnter: (event) {

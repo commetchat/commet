@@ -133,25 +133,29 @@ class _TimelineEventState extends State<TimelineEventView> {
   }
 
   Widget buildMenu(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-          color: m.Theme.of(context).colorScheme.surface,
-          border: Border.all(
-              color: m.Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
-              width: 1)),
-      child: m.Padding(
-        padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
-        child: Row(
-          children: [
-            buildMenuEntry(m.Icons.reply, "Reply", () {
-              widget.setReplyingEvent!.call(widget.event);
-            }),
-            buildMenuEntry(m.Icons.add_reaction, "Add Reaction", () => null),
-            if (canUserEditEvent())
-              buildMenuEntry(m.Icons.edit, "Edit", () => null),
-            buildMenuEntry(m.Icons.more_vert, "Options", () => null)
-          ],
+    return m.Padding(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            color: m.Theme.of(context).colorScheme.surface,
+            border: Border.all(
+                color:
+                    m.Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+                width: 1)),
+        child: m.Padding(
+          padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
+          child: Row(
+            children: [
+              buildMenuEntry(m.Icons.reply, "Reply", () {
+                widget.setReplyingEvent!.call(widget.event);
+              }),
+              buildMenuEntry(m.Icons.add_reaction, "Add Reaction", () => null),
+              if (canUserEditEvent())
+                buildMenuEntry(m.Icons.edit, "Edit", () => null),
+              buildMenuEntry(m.Icons.more_vert, "Options", () => null)
+            ],
+          ),
         ),
       ),
     );
