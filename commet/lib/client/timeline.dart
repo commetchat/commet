@@ -18,6 +18,7 @@ enum TimelineEventStatus {
 }
 
 enum EventType {
+  unknown,
   message,
   sticker,
   redaction,
@@ -28,6 +29,8 @@ enum EventType {
   roomCreated,
   memberJoined,
   memberLeft,
+  memberAvatar,
+  memberDisplayName,
   encryptionEnabled,
 }
 

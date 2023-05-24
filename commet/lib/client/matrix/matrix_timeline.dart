@@ -122,13 +122,7 @@ class MatrixTimeline extends Timeline {
 
     if (event.type == matrix.EventTypes.RoomMember &&
         event.content['membership'] != null) {
-      switch (event.content['membership'] as String) {
-        case "join":
-          result = EventType.memberJoined;
-          break;
-        case "leave":
-          result = EventType.memberLeft;
-      }
+      result = convertMembershipEvent(event);
     }
 
     if (event.relationshipType == "m.replace") {
@@ -136,6 +130,26 @@ class MatrixTimeline extends Timeline {
     }
 
     return result;
+  }
+
+  EventType convertMembershipEvent(matrix.Event event) {
+    switch (event.content['membership'] as String) {
+      case "join":
+        if (event.prevContent != null) {
+          if (event.prevContent!['avatar_url'] != event.content['avatar_url'])
+            return EventType.memberAvatar;
+
+          if (event.prevContent!['displayname'] != event.content['displayname'])
+            return EventType.memberDisplayName;
+        }
+
+        return EventType.memberJoined;
+
+      case "leave":
+        return EventType.memberLeft;
+    }
+
+    return EventType.unknown;
   }
 
   TimelineEventStatus convertStatus(matrix.EventStatus status) {

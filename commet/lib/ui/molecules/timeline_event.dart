@@ -106,6 +106,14 @@ class _TimelineEventState extends State<TimelineEventView> {
         return GenericRoomEvent(
             T.current.userLeftRoom(event.sender.displayName),
             m.Icons.subdirectory_arrow_left_rounded);
+      case EventType.memberAvatar:
+        return GenericRoomEvent(
+            T.current.userUpdatedAvatar(event.sender.displayName),
+            m.Icons.person);
+      case EventType.memberDisplayName:
+        return GenericRoomEvent(
+            T.current.userUpdatedDisplayName(event.sender.displayName),
+            m.Icons.edit);
       default:
         break;
     }

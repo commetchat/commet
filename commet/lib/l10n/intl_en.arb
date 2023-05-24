@@ -22,6 +22,8 @@
   "userCreatedRoom": "{username} created the room!",
   "userJoinedRoom": "{username} joined the room!",
   "userLeftRoom": "{username} left the room",
+  "userUpdatedAvatar": "{username} updated their avatar",
+  "userUpdatedDisplayName": "{username} updated their display name",
   "home": "Home",
   "addSpace": "Add Space",
   "settings": "Settings",
