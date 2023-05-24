@@ -268,7 +268,7 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
                                     .state.selectedRoom?.timeline?.receipts,
                               ),
                               onSendMessage: (message) {
-                                widget.state.selectedRoom!.sendMessage(message);
+                                widget.state.sendMessage(message);
                                 return MessageInputSendResult.clearText;
                               },
                               replyingToBody:
