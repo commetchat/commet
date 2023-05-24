@@ -67,47 +67,53 @@ class MatrixTimeline extends Timeline {
       e = TimelineEvent();
     }
 
-    e.eventId = event.eventId;
-    e.originServerTs = event.originServerTs;
-    e.source = event.toJson().toString();
+    try {
+      e.eventId = event.eventId;
+      e.originServerTs = event.originServerTs;
+      e.source = event.toJson().toString();
 
-    if (client.peerExists(event.senderId)) {
-      e.sender = client.getPeer(event.senderId)!;
-    }
+      if (client.peerExists(event.senderId)) {
+        e.sender = client.getPeer(event.senderId)!;
+      }
 
-    if (event.relationshipType != null) {
-      switch (event.relationshipType) {
-        case "m.in_reply_to":
-          e.relatedEventId = event.relationshipEventId;
-          e.relationshipType = EventRelationshipType.reply;
+      if (event.relationshipType != null) {
+        switch (event.relationshipType) {
+          case "m.in_reply_to":
+            e.relatedEventId = event.relationshipEventId;
+            e.relationshipType = EventRelationshipType.reply;
+            break;
+        }
+      }
+
+      var displayEvent = event.getDisplayEvent(_matrixTimeline!);
+
+      e.relatedEventId = event.relationshipEventId;
+      e.edited = displayEvent.eventId != event.eventId;
+      e.body = displayEvent.body;
+
+      e.type = convertType(event) ?? EventType.invalid;
+
+      switch (event.type) {
+        case matrix.EventTypes.Message:
+          e = parseMessage(e, displayEvent);
+          break;
+        case matrix.EventTypes.Sticker:
+          parseSticker(e, event);
           break;
       }
+
+      e.status = convertStatus(event.status);
+
+      if (displayEvent.redacted) {
+        e.status = TimelineEventStatus.removed;
+      }
+
+      return e;
+    } catch (identifier) {
+      var result = TimelineEvent();
+      result.type = EventType.unknown;
+      return result;
     }
-
-    var displayEvent = event.getDisplayEvent(_matrixTimeline!);
-
-    e.relatedEventId = event.relationshipEventId;
-    e.edited = displayEvent.eventId != event.eventId;
-    e.body = displayEvent.body;
-
-    e.type = convertType(event) ?? EventType.invalid;
-
-    switch (event.type) {
-      case matrix.EventTypes.Message:
-        e = parseMessage(e, displayEvent);
-        break;
-      case matrix.EventTypes.Sticker:
-        parseSticker(e, event);
-        break;
-    }
-
-    e.status = convertStatus(event.status);
-
-    if (displayEvent.redacted) {
-      e.status = TimelineEventStatus.removed;
-    }
-
-    return e;
   }
 
   EventType? convertType(matrix.Event event) {
@@ -222,10 +228,12 @@ class MatrixTimeline extends Timeline {
         attachment = VideoAttachment(
             MxcFileProvider(_matrixRoom.client, matrixEvent.attachmentMxcUrl!,
                 event: matrixEvent),
-            thumbnail: MatrixMxcImage(
-                matrixEvent.videoThumbnailUrl!, _matrixRoom.client,
-                blurhash: matrixEvent.attachmentBlurhash,
-                matrixEvent: matrixEvent),
+            thumbnail: matrixEvent.videoThumbnailUrl != null
+                ? MatrixMxcImage(
+                    matrixEvent.videoThumbnailUrl!, _matrixRoom.client,
+                    blurhash: matrixEvent.attachmentBlurhash,
+                    matrixEvent: matrixEvent)
+                : null,
             name: matrixEvent.body,
             width: width,
             height: height);
