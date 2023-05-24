@@ -49,9 +49,11 @@ class MatrixTimeline extends Timeline {
 
   void onEventChanged(index) {
     if (_matrixTimeline == null) return;
-    events[index] =
-        convertEvent(_matrixTimeline!.events[index], existing: events[index]);
-    notifyChanged(index);
+    if (index < _matrixTimeline!.events.length) {
+      events[index] =
+          convertEvent(_matrixTimeline!.events[index], existing: events[index]);
+      notifyChanged(index);
+    }
   }
 
   void onEventRemoved(index) {
@@ -142,10 +144,14 @@ class MatrixTimeline extends Timeline {
     switch (event.content['membership'] as String) {
       case "join":
         if (event.prevContent != null) {
-          if (event.prevContent!['avatar_url'] != event.content['avatar_url'])
+          if (event.prevContent!['avatar_url'] != null &&
+              event.content['avatar_url'] != null &&
+              event.prevContent!['avatar_url'] != event.content['avatar_url'])
             return EventType.memberAvatar;
 
-          if (event.prevContent!['displayname'] != event.content['displayname'])
+          if (event.prevContent!['displayname'] != null &&
+              event.content['displayname'] != null &&
+              event.prevContent!['displayname'] != event.content['displayname'])
             return EventType.memberDisplayName;
         }
 
