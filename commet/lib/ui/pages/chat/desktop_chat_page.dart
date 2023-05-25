@@ -121,22 +121,42 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
                     children: [
                       Expanded(
                           child: SplitTimelineViewer(
-                              key: widget.state.timelines[
-                                  widget.state.selectedRoom!.localId],
-                              timeline: widget.state.selectedRoom!.timeline!,
-                              markAsRead: widget
-                                  .state.selectedRoom!.timeline!.markAsRead)),
+                        key: widget.state
+                            .timelines[widget.state.selectedRoom!.localId],
+                        timeline: widget.state.selectedRoom!.timeline!,
+                        markAsRead:
+                            widget.state.selectedRoom!.timeline!.markAsRead,
+                        setReplyingEvent: (event) => widget.state
+                            .setInteractingEvent(event,
+                                type: EventInteractionType.reply),
+                        setEditingEvent: (event) => widget.state
+                            .setInteractingEvent(event,
+                                type: EventInteractionType.edit),
+                      )),
                       Tile(
                         borderTop: true,
                         child: MessageInput(
                           isRoomE2EE: widget.state.selectedRoom!.isE2EE,
+                          focusKeyboard:
+                              widget.state.onFocusMessageInput.stream,
                           readIndicator: ReadIndicator(
                             initialList:
                                 widget.state.selectedRoom?.timeline?.receipts,
                           ),
+                          interactionType: widget.state.interactionType,
                           onSendMessage: (message) {
-                            widget.state.selectedRoom!.sendMessage(message);
+                            widget.state.sendMessage(message);
                             return MessageInputSendResult.clearText;
+                          },
+                          relatedEventBody: widget.state.interactingEvent?.body,
+                          relatedEventSenderName:
+                              widget.state.interactingEvent?.sender.displayName,
+                          relatedEventSenderColor:
+                              widget.state.interactingEvent?.sender.color,
+                          setInputText: widget.state.setMessageInputText.stream,
+                          editLastMessage: widget.state.editLastMessage,
+                          cancelReply: () {
+                            widget.state.setInteractingEvent(null);
                           },
                         ),
                       )

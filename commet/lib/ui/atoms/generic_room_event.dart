@@ -1,5 +1,4 @@
 import 'package:flutter/widgets.dart';
-import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:flutter/material.dart' as m;
 
@@ -20,11 +19,16 @@ class GenericRoomEvent extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
             child: Row(
               children: [
-                const Avatar.medium(image: null, isPadding: true),
-                Icon(icon),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-                  child: tiamat.Text.label(text),
+                  padding: const EdgeInsets.fromLTRB(44, 0, 8, 0),
+                  child: Icon(icon),
+                ),
+                Flexible(
+                  child: Row(
+                    children: [
+                      Flexible(child: tiamat.Text.label(text)),
+                    ],
+                  ),
                 )
               ],
             ),

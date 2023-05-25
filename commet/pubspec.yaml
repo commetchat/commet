@@ -51,6 +51,7 @@ dependencies:
   file_picker: ^5.2.10
   html: ^0.15.2
   desktop_notifications: ^0.6.3
+  url_launcher: ^6.1.11
   flutter_blurhash: ^0.7.0
 
 dev_dependencies:

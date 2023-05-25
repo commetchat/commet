@@ -1,12 +1,18 @@
 import 'package:commet/client/attachment.dart';
 import 'package:commet/ui/atoms/lightbox.dart';
 import 'package:commet/ui/molecules/video_player/video_player.dart';
+import 'package:commet/utils/mime.dart';
+import 'package:commet/utils/text_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart';
+import 'package:tiamat/tiamat.dart' as tiamat;
 
 class MessageAttachment extends StatefulWidget {
-  const MessageAttachment(this.attachment, {super.key});
+  const MessageAttachment(this.attachment,
+      {super.key, this.ignorePointer = false});
   final Attachment attachment;
+  final bool ignorePointer;
 
   @override
   State<MessageAttachment> createState() => _MessageAttachmentState();
@@ -24,6 +30,7 @@ class _MessageAttachmentState extends State<MessageAttachment> {
   Widget build(BuildContext context) {
     if (widget.attachment is ImageAttachment) return buildImage();
     if (widget.attachment is VideoAttachment) return buildVideo();
+    if (widget.attachment is FileAttachment) return buildFile();
 
     return const Placeholder();
   }
@@ -32,25 +39,29 @@ class _MessageAttachmentState extends State<MessageAttachment> {
     assert(widget.attachment is ImageAttachment);
     var attachment = widget.attachment as ImageAttachment;
 
-    return ClipRRect(
-        borderRadius: BorderRadius.circular(10),
-        child: Material(
-            child: SizedBox(
-          height: 200,
-          child: AspectRatio(
-            aspectRatio: attachment.aspectRatio,
-            child: InkWell(
-              onTap: () {
-                Lightbox.show(context, image: attachment.image);
-              },
-              child: Image(
-                image: attachment.image,
-                filterQuality: FilterQuality.medium,
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-        )));
+    return IgnorePointer(
+      ignoring: widget.ignorePointer,
+      child: ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: Material(
+              color: Colors.transparent,
+              child: SizedBox(
+                height: 200,
+                child: AspectRatio(
+                  aspectRatio: attachment.aspectRatio,
+                  child: InkWell(
+                    onTap: () {
+                      Lightbox.show(context, image: attachment.image);
+                    },
+                    child: Image(
+                      image: attachment.image,
+                      filterQuality: FilterQuality.medium,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              ))),
+    );
   }
 
   Widget buildVideo() {
@@ -89,6 +100,52 @@ class _MessageAttachmentState extends State<MessageAttachment> {
       video: attachment.videoFile,
       aspectRatio: attachment.aspectRatio,
       thumbnail: attachment.thumbnail,
+    );
+  }
+
+  Widget buildFile() {
+    var attachment = widget.attachment as FileAttachment;
+    return Container(
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Theme.of(context).extension<ExtraColors>()!.surfaceLow1,
+          border: Border.all(
+              color: Theme.of(context).extension<ExtraColors>()!.outline)),
+      child: Padding(
+        padding: const EdgeInsets.all(2.0),
+        child:
+            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Icon(Mime.toIcon(attachment.mimeType)),
+              ),
+              Flexible(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    tiamat.Text.labelEmphasised(attachment.name),
+                    if (attachment.fileSize != null)
+                      tiamat.Text.labelLow(
+                          TextUtils.readableFileSize(attachment.fileSize!))
+                  ],
+                ),
+              ),
+            ],
+          ),
+          /*Padding(
+            padding: const EdgeInsets.fromLTRB(8.0, 0, 8, 0),
+            child: tiamat.IconButton(
+              icon: Icons.download,
+              size: 24,
+              backgroundColor:
+                  Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+            ),
+          )*/
+        ]),
+      ),
     );
   }
 }
