@@ -53,7 +53,7 @@ class MatrixTimeline extends Timeline {
 
   void onEventChanged(index) {
     if (_matrixTimeline == null) return;
-    if (index <= _matrixTimeline!.events.length) {
+    if (index < _matrixTimeline!.events.length) {
       events[index] =
           convertEvent(_matrixTimeline!.events[index], existing: events[index]);
       notifyChanged(index);
