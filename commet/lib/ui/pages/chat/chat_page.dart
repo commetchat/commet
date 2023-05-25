@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/main.dart';
@@ -13,6 +14,11 @@ import '../../../client/client.dart';
 import '../../../config/build_config.dart';
 import '../../molecules/split_timeline_viewer.dart';
 import '../../navigation/navigation_utils.dart';
+
+enum EventInteractionType {
+  reply,
+  edit,
+}
 
 class ChatPage extends StatefulWidget {
   const ChatPage({required this.clientManager, super.key});
@@ -31,13 +37,66 @@ class ChatPageState extends State<ChatPage> {
   late Map<String, GlobalKey<SplitTimelineViewerState>> timelines = {};
   double height = -1;
 
+  EventInteractionType? interactionType;
+  TimelineEvent? interactingEvent;
+
   StreamController<Room> onRoomSelectionChanged = StreamController.broadcast();
+  StreamController<void> onFocusMessageInput = StreamController.broadcast();
+  StreamController<String> setMessageInputText = StreamController.broadcast();
 
   StreamSubscription? onSpaceUpdateSubscription;
   StreamSubscription? onRoomUpdateSubscription;
 
   void selectHomePage() {
     homePageSelected = true;
+  }
+
+  void clearRelatedEvents() {
+    setState(() {
+      interactingEvent = null;
+    });
+  }
+
+  void editLastMessage() {
+    if (!selectedRoom!.permissions.canUserEditMessages) return;
+    if (interactionType != null) return;
+
+    for (int i = 0; i < min(20, selectedRoom!.timeline!.events.length); i++) {
+      var event = selectedRoom!.timeline!.events[i];
+
+      if (event.sender != selectedRoom!.client.user) continue;
+
+      if (event.type != EventType.message) continue;
+
+      setInteractingEvent(event, type: EventInteractionType.edit);
+      break;
+    }
+  }
+
+  void setInteractingEvent(TimelineEvent? event, {EventInteractionType? type}) {
+    setState(() {
+      if (event == null) {
+        interactingEvent = null;
+        interactionType = null;
+        return;
+      }
+      interactingEvent = event;
+      interactionType = type;
+
+      switch (type) {
+        case EventInteractionType.reply:
+          onFocusMessageInput.add(null);
+          break;
+        case EventInteractionType.edit:
+          if (event.body != null) {
+            setMessageInputText.add(event.body!);
+          }
+          onFocusMessageInput.add(null);
+          break;
+        default:
+          break;
+      }
+    });
   }
 
   void selectSpace(Space? space) {
@@ -122,6 +181,7 @@ class ChatPageState extends State<ChatPage> {
   void _setSelectedRoom(Room room) {
     setState(() {
       selectedRoom = room;
+      interactingEvent = null;
     });
   }
 
@@ -129,11 +189,13 @@ class ChatPageState extends State<ChatPage> {
     setState(() {
       selectedSpace = space;
       homePageSelected = false;
+      interactingEvent = null;
     });
   }
 
   void _clearRoomSelection() {
     setState(() {
+      interactingEvent = null;
       selectedRoom = null;
     });
   }
@@ -166,6 +228,20 @@ class ChatPageState extends State<ChatPage> {
 
   void onRoomUpdated(void _) {
     setState(() {});
+  }
+
+  void sendMessage(String message) {
+    if (interactingEvent != null &&
+        interactionType == EventInteractionType.reply) {
+      selectedRoom!.sendMessage(message, inReplyTo: interactingEvent);
+    } else if (interactingEvent != null &&
+        interactionType == EventInteractionType.edit) {
+      selectedRoom!.sendMessage(message, replaceEvent: interactingEvent);
+    } else {
+      selectedRoom!.sendMessage(message);
+    }
+
+    setInteractingEvent(null);
   }
 
   void navigateRoomSettings() {

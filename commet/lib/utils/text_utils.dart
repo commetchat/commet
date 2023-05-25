@@ -1,13 +1,14 @@
+import 'dart:math';
+
 import 'package:commet/utils/emoji/emoji.dart';
 import 'package:flutter/material.dart';
-
 import '../ui/atoms/rich_text/spans/link.dart';
 import 'emoji/emoji_matcher.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:flutter/material.dart' as material;
 
 final _urlRegex = RegExp(
-  r'([\w+]+\:\/\/)?([\w\d-]+\.)*[\w-]+[\.\:]\w+([\/\?\=\&\#.]?[\w-]+)*\/?',
+  r'(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#/%=~_|$?!:,.]*\)|[A-Z0-9+&@#/%=~_|$])',
   caseSensitive: false,
   dotAll: true,
 );
@@ -151,5 +152,34 @@ class TextUtils {
     }
 
     return NewPasswordResult.valid;
+  }
+
+  static String timestampToLocalizedTime(DateTime time) {
+    var difference = DateTime.now().difference(time);
+
+    if (difference.inDays == 0) {
+      return intl.DateFormat(intl.DateFormat.HOUR_MINUTE)
+          .format(time.toLocal());
+    }
+
+    if (difference.inDays < 365) {
+      return intl.DateFormat(intl.DateFormat.MONTH_WEEKDAY_DAY)
+          .format(time.toLocal());
+    }
+
+    return intl.DateFormat(intl.DateFormat.YEAR_MONTH_WEEKDAY_DAY)
+        .format(time.toLocal());
+  }
+
+  static String readableFileSize(num number, {bool base1024 = true}) {
+    final base = base1024 ? 1024 : 1000;
+    if (number <= 0) return "0";
+    final units = ["B", "kB", "MB", "GB", "TB"];
+    int digitGroups = (log(number) / log(base)).round();
+    // ignore: prefer_interpolation_to_compose_strings
+    return intl.NumberFormat("#,##0.#")
+            .format(number / pow(base, digitGroups)) +
+        " " +
+        units[digitGroups];
   }
 }

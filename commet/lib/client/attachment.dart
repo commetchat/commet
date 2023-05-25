@@ -32,3 +32,13 @@ class VideoAttachment implements Attachment {
   VideoAttachment(this.videoFile,
       {required this.name, this.thumbnail, this.width, this.height});
 }
+
+class FileAttachment implements Attachment {
+  @override
+  String name;
+  int? fileSize;
+  String? mimeType;
+  FileProvider provider;
+  FileAttachment(this.provider,
+      {required this.name, this.fileSize, this.mimeType});
+}

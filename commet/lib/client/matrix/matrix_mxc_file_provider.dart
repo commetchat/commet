@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-
 import 'package:commet/cache/file_provider.dart';
 import 'package:commet/main.dart';
 import 'package:matrix/matrix.dart' as matrix;

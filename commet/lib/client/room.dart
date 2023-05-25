@@ -14,7 +14,7 @@ abstract class Room {
   final Key key = UniqueKey();
   Timeline? timeline;
   late ImageProvider? avatar;
-  late List<Peer> members;
+  Iterable<Peer> get members;
   late String displayName;
   late bool isDirectMessage;
   late String? directMessagePartnerID;
@@ -34,14 +34,13 @@ abstract class Room {
       pushRule != PushRule.dontNotify ? highlightedNotificationCount : 0;
 
   Future<TimelineEvent?> sendMessage(String message,
-      {TimelineEvent? inReplyTo});
+      {TimelineEvent? inReplyTo, TimelineEvent? replaceEvent});
 
   String get localId => "${client.identifier}:$identifier";
 
   Room(this.identifier, this.client) {
     identifier = identifier;
     client = client;
-    members = List.empty(growable: true);
     avatar = null;
     isDirectMessage = false;
     directMessagePartnerID = null;
