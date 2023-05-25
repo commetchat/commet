@@ -124,10 +124,14 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
                         key: widget.state
                             .timelines[widget.state.selectedRoom!.localId],
                         timeline: widget.state.selectedRoom!.timeline!,
-                        setReplyingEvent: (event) =>
-                            widget.state.setReplyingEvent(event),
                         markAsRead:
                             widget.state.selectedRoom!.timeline!.markAsRead,
+                        setReplyingEvent: (event) => widget.state
+                            .setInteractingEvent(event,
+                                type: EventInteractionType.reply),
+                        setEditingEvent: (event) => widget.state
+                            .setInteractingEvent(event,
+                                type: EventInteractionType.edit),
                       )),
                       Tile(
                         borderTop: true,
@@ -139,17 +143,20 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
                             initialList:
                                 widget.state.selectedRoom?.timeline?.receipts,
                           ),
+                          interactionType: widget.state.interactionType,
                           onSendMessage: (message) {
                             widget.state.sendMessage(message);
                             return MessageInputSendResult.clearText;
                           },
-                          replyingToBody: widget.state.replyingToEvent?.body,
-                          replyingToName:
-                              widget.state.replyingToEvent?.sender.displayName,
-                          replyingToColor:
-                              widget.state.replyingToEvent?.sender.color,
+                          relatedEventBody: widget.state.interactingEvent?.body,
+                          relatedEventSenderName:
+                              widget.state.interactingEvent?.sender.displayName,
+                          relatedEventSenderColor:
+                              widget.state.interactingEvent?.sender.color,
+                          setInputText: widget.state.setMessageInputText.stream,
+                          editLastMessage: widget.state.editLastMessage,
                           cancelReply: () {
-                            widget.state.setReplyingEvent(null);
+                            widget.state.setInteractingEvent(null);
                           },
                         ),
                       )

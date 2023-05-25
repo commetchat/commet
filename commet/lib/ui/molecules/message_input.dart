@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:commet/config/build_config.dart';
+import 'package:commet/ui/pages/chat/chat_page.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -19,22 +20,28 @@ class MessageInput extends StatefulWidget {
       this.isRoomE2EE = false,
       this.onFocusChanged,
       this.readIndicator,
-      this.replyingToBody,
-      this.replyingToColor,
-      this.replyingToName,
+      this.relatedEventBody,
+      this.relatedEventSenderColor,
+      this.relatedEventSenderName,
+      this.interactionType,
       this.focusKeyboard,
+      this.setInputText,
+      this.editLastMessage,
       this.cancelReply});
   final double maxHeight;
   final double size = 48;
   final bool isRoomE2EE;
   final MessageInputSendResult Function(String message)? onSendMessage;
   final Widget? readIndicator;
-  final String? replyingToBody;
-  final String? replyingToName;
-  final Color? replyingToColor;
+  final String? relatedEventBody;
+  final String? relatedEventSenderName;
+  final Color? relatedEventSenderColor;
+  final EventInteractionType? interactionType;
   final Stream<void>? focusKeyboard;
+  final Stream<String>? setInputText;
   final void Function(bool focused)? onFocusChanged;
   final void Function()? cancelReply;
+  final void Function()? editLastMessage;
 
   @override
   State<MessageInput> createState() => MessageInputState();
@@ -45,7 +52,7 @@ class MessageInputState extends State<MessageInput> {
   late TextEditingController controller;
   bool showHint = true;
   StreamSubscription? keyboardFocusSubscription;
-
+  StreamSubscription? setInputTextSubscription;
   void unfocus() {
     textFocus.unfocus();
   }
@@ -54,9 +61,16 @@ class MessageInputState extends State<MessageInput> {
     textFocus.requestFocus();
   }
 
+  void onSetInputText(String newText) {
+    controller.text = newText;
+    controller.selection =
+        TextSelection(baseOffset: newText.length, extentOffset: newText.length);
+  }
+
   @override
   void dispose() {
     keyboardFocusSubscription?.cancel();
+    setInputTextSubscription?.cancel();
     super.dispose();
   }
 
@@ -66,27 +80,15 @@ class MessageInputState extends State<MessageInput> {
     keyboardFocusSubscription =
         widget.focusKeyboard?.listen((_) => onKeyboardFocusRequested());
 
+    setInputTextSubscription = widget.setInputText?.listen(onSetInputText);
+
     controller.addListener(() {
       setState(() {
         showHint = controller.text.isEmpty;
       });
     });
 
-    textFocus = FocusNode(
-      onKey: (node, event) {
-        if (BuildConfig.MOBILE) return KeyEventResult.ignored;
-
-        if (event.isKeyPressed(LogicalKeyboardKey.enter)) {
-          if (event.isShiftPressed) {
-            return KeyEventResult.ignored;
-          }
-
-          sendMessage();
-          return KeyEventResult.handled;
-        }
-        return KeyEventResult.ignored;
-      },
-    );
+    textFocus = FocusNode(onKey: onKey);
 
     super.initState();
   }
@@ -102,6 +104,31 @@ class MessageInputState extends State<MessageInput> {
     }
   }
 
+  KeyEventResult onKey(FocusNode node, RawKeyEvent event) {
+    if (BuildConfig.MOBILE) return KeyEventResult.ignored;
+
+    if (event.isKeyPressed(LogicalKeyboardKey.enter)) {
+      if (event.isShiftPressed) {
+        return KeyEventResult.ignored;
+      }
+
+      sendMessage();
+      return KeyEventResult.handled;
+    }
+
+    if (event.isKeyPressed(LogicalKeyboardKey.escape)) {
+      doCancelInteraction();
+      return KeyEventResult.handled;
+    }
+
+    if (event.isKeyPressed(LogicalKeyboardKey.arrowUp) &&
+        controller.text.isEmpty) {
+      widget.editLastMessage?.call();
+    }
+
+    return KeyEventResult.ignored;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -112,7 +139,7 @@ class MessageInputState extends State<MessageInput> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (widget.replyingToName != null) replyText(),
+              if (widget.interactionType != null) interactionText(),
               ConstrainedBox(
                 constraints: const BoxConstraints(maxHeight: 200),
                 child: Row(
@@ -228,7 +255,15 @@ class MessageInputState extends State<MessageInput> {
     );
   }
 
-  Widget replyText() {
+  void doCancelInteraction() {
+    if (widget.interactionType == EventInteractionType.edit) {
+      controller.clear();
+    }
+
+    widget.cancelReply?.call();
+  }
+
+  Widget interactionText() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(8, 0, 0, 4),
       child: SizedBox(
@@ -241,19 +276,23 @@ class MessageInputState extends State<MessageInput> {
               child: tiamat.IconButton(
                 icon: Icons.cancel_outlined,
                 size: 16,
-                onPressed: widget.cancelReply,
+                onPressed: doCancelInteraction,
               ),
             ),
-            const Icon(Icons.keyboard_arrow_right_rounded),
+            Icon(widget.interactionType == EventInteractionType.reply
+                ? Icons.keyboard_arrow_right_rounded
+                : widget.interactionType == EventInteractionType.edit
+                    ? Icons.edit
+                    : null),
             tiamat.Text.name(
-              widget.replyingToName!,
-              color: widget.replyingToColor,
+              widget.relatedEventSenderName!,
+              color: widget.relatedEventSenderColor,
             ),
             Flexible(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
                 child: tiamat.Text(
-                  widget.replyingToBody ?? "Unknown",
+                  widget.relatedEventBody ?? "Unknown",
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   color: Theme.of(context).colorScheme.secondary,

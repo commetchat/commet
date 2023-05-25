@@ -274,16 +274,21 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
                                 widget.state.sendMessage(message);
                                 return MessageInputSendResult.clearText;
                               },
-                              replyingToBody:
-                                  widget.state.replyingToEvent?.body,
-                              replyingToName: widget
-                                  .state.replyingToEvent?.sender.displayName,
-                              replyingToColor:
-                                  widget.state.replyingToEvent?.sender.color,
+                              relatedEventBody:
+                                  widget.state.interactingEvent?.body,
+                              setInputText:
+                                  widget.state.setMessageInputText.stream,
+                              relatedEventSenderName: widget
+                                  .state.interactingEvent?.sender.displayName,
+                              relatedEventSenderColor:
+                                  widget.state.interactingEvent?.sender.color,
+                              interactionType: widget.state.interactionType,
                               focusKeyboard:
                                   widget.state.onFocusMessageInput.stream,
                               cancelReply: () {
-                                widget.state.setReplyingEvent(null);
+                                widget.state.setInteractingEvent(
+                                  null,
+                                );
                               }),
                         )
                       ],
@@ -380,7 +385,8 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
                 "Reply",
                 icon: m.Icons.reply,
                 onTap: () {
-                  widget.state.setReplyingEvent(event);
+                  widget.state.setInteractingEvent(event,
+                      type: EventInteractionType.reply);
                   Navigator.pop(context);
                 },
               ),
@@ -402,6 +408,8 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
                   "Edit Message",
                   icon: m.Icons.edit,
                   onTap: () {
+                    widget.state.setInteractingEvent(event,
+                        type: EventInteractionType.edit);
                     Navigator.pop(context);
                   },
                 ),

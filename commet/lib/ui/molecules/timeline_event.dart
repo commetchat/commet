@@ -21,6 +21,7 @@ class TimelineEventView extends StatefulWidget {
       this.hovered = false,
       this.showSender = true,
       this.setReplyingEvent,
+      this.setEditingEvent,
       this.onDoubleTap,
       this.onLongPress,
       this.debugInfo});
@@ -33,6 +34,7 @@ class TimelineEventView extends StatefulWidget {
   final Function()? onDoubleTap;
   final Function()? onLongPress;
   final Function(TimelineEvent? event)? setReplyingEvent;
+  final Function(TimelineEvent? event)? setEditingEvent;
 
   @override
   State<TimelineEventView> createState() => _TimelineEventState();
@@ -152,7 +154,9 @@ class _TimelineEventState extends State<TimelineEventView> {
               }),
               buildMenuEntry(m.Icons.add_reaction, "Add Reaction", () => null),
               if (canUserEditEvent())
-                buildMenuEntry(m.Icons.edit, "Edit", () => null),
+                buildMenuEntry(m.Icons.edit, "Edit", () {
+                  widget.setEditingEvent?.call(widget.event);
+                }),
               buildMenuEntry(m.Icons.more_vert, "Options", () => null)
             ],
           ),
@@ -199,33 +203,44 @@ class _TimelineEventState extends State<TimelineEventView> {
   }
 
   Widget buildMessageBody() {
-    bool selectableText = BuildConfig.DESKTOP;
     return m.Material(
       color: m.Colors.transparent,
       child: Column(
         children: [
-          if (widget.event.bodyFormat != null)
-            selectableText
-                ? m.SelectionArea(child: widget.event.formattedContent!)
-                : widget.event.formattedContent!
-          else if (widget.event.body != null)
-            selectableText
-                ? m.SelectionArea(child: tiamat.Text.body(widget.event.body!))
-                : tiamat.Text.body(widget.event.body!),
-          if (widget.event.attachments != null)
-            Wrap(
-              children: widget.event.attachments!
-                  .map((e) => Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 8, 8, 8),
-                        child: MessageAttachment(
-                          e,
-                        ),
-                      ))
-                  .toList(),
-            ),
+          buildMessageText(),
+          if (widget.event.attachments != null) buildMessageAttachments()
         ],
       ),
     );
+  }
+
+  Widget buildMessageAttachments() {
+    return Wrap(
+      children: widget.event.attachments!
+          .map((e) => Padding(
+                padding: const EdgeInsets.fromLTRB(0, 8, 8, 8),
+                child: MessageAttachment(
+                  e,
+                ),
+              ))
+          .toList(),
+    );
+  }
+
+  Widget buildMessageText() {
+    const bool selectableText = BuildConfig.DESKTOP;
+
+    if (widget.event.bodyFormat != null)
+      return selectableText
+          ? m.SelectionArea(child: widget.event.formattedContent!)
+          : widget.event.formattedContent!;
+
+    if (widget.event.body != null)
+      return selectableText
+          ? m.SelectionArea(child: tiamat.Text.body(widget.event.body!))
+          : tiamat.Text.body(widget.event.body!);
+
+    return const SizedBox();
   }
 
   Widget buildStickerBody() {

@@ -66,7 +66,7 @@ class SimulatedRoom extends Room {
 
   @override
   Future<TimelineEvent?> sendMessage(String message,
-      {TimelineEvent? inReplyTo}) async {
+      {TimelineEvent? inReplyTo, TimelineEvent? replaceEvent}) async {
     TimelineEvent e = TimelineEvent();
     e.eventId = RandomUtils.getRandomString(20);
     e.status = TimelineEventStatus.sent;

@@ -54,6 +54,7 @@ class _MessageState extends State<Message> {
   bool overlayHovered = false;
   OverlayEntry? entry;
   final layerLink = LayerLink();
+  bool editMode = false;
 
   @override
   Widget build(BuildContext context) {

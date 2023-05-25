@@ -34,7 +34,7 @@ abstract class Room {
       pushRule != PushRule.dontNotify ? highlightedNotificationCount : 0;
 
   Future<TimelineEvent?> sendMessage(String message,
-      {TimelineEvent? inReplyTo});
+      {TimelineEvent? inReplyTo, TimelineEvent? replaceEvent});
 
   String get localId => "${client.identifier}:$identifier";
 
