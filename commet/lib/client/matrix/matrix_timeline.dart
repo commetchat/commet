@@ -10,6 +10,8 @@ import 'package:commet/utils/text_utils.dart';
 import '../client.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
+import 'matrix_client.dart';
+
 class MatrixTimeline extends Timeline {
   matrix.Timeline? _matrixTimeline;
   late matrix.Room _matrixRoom;
@@ -28,6 +30,8 @@ class MatrixTimeline extends Timeline {
   }
 
   void initTimeline() async {
+    await (client as MatrixClient).firstSync;
+
     _matrixTimeline = await _matrixRoom.getTimeline(
       onInsert: onEventInserted,
       onChange: onEventChanged,
@@ -49,7 +53,7 @@ class MatrixTimeline extends Timeline {
 
   void onEventChanged(index) {
     if (_matrixTimeline == null) return;
-    if (index < _matrixTimeline!.events.length) {
+    if (index <= _matrixTimeline!.events.length) {
       events[index] =
           convertEvent(_matrixTimeline!.events[index], existing: events[index]);
       notifyChanged(index);

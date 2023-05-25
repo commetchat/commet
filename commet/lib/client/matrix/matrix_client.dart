@@ -24,6 +24,7 @@ import 'matrix_space.dart';
 
 class MatrixClient extends Client {
   late matrix.Client _matrixClient;
+  Future? firstSync;
 
   MatrixClient({String? name, String? identifier})
       : super(identifier ?? RandomUtils.getRandomString(20)) {
@@ -75,6 +76,8 @@ class MatrixClient extends Client {
           waitUntilLoadCompletedLoaded: true);
       user = MatrixPeer(_matrixClient, _matrixClient.userID!);
       addPeer(user!);
+
+      firstSync = _matrixClient.oneShotSync();
     }
 
     _matrixClient.onSync.stream.listen(
