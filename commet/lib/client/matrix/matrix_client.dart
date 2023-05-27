@@ -5,6 +5,7 @@ import 'package:commet/client/room_preview.dart';
 import 'package:commet/config/app_config.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/main.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/pages/matrix/authentication/matrix_uia_request.dart';
 import 'package:flutter/foundation.dart';
 
@@ -16,7 +17,6 @@ import 'package:commet/client/matrix/matrix_peer.dart';
 import 'package:commet/utils/rng.dart';
 import 'package:matrix/matrix.dart' as matrix;
 import 'package:matrix/encryption.dart';
-import 'package:tiamat/tiamat.dart';
 
 import '../../ui/pages/matrix/verification/matrix_verification_page.dart';
 import 'matrix_room.dart';
@@ -84,15 +84,15 @@ class MatrixClient extends Client {
     _updateSpacesList();
 
     _matrixClient.onKeyVerificationRequest.stream.listen((event) {
-      PopupDialog.show(navigator.currentContext!,
-          content: MatrixVerificationPage(request: event),
+      AdaptiveDialog.show(navigator.currentContext!,
+          builder: (_) => MatrixVerificationPage(request: event),
           title: "Verification Request");
     });
 
     _matrixClient.onUiaRequest.stream.listen((event) {
       if (event.state == matrix.UiaRequestState.waitForUser) {
-        PopupDialog.show(navigator.currentContext!,
-            content: MatrixUIARequest(event, this),
+        AdaptiveDialog.show(navigator.currentContext!,
+            builder: (_) => MatrixUIARequest(event, this),
             title: "Authentication Request");
       }
     });

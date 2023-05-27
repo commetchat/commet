@@ -1,4 +1,5 @@
 import 'package:commet/client/matrix/matrix_client.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/pages/settings/categories/account/security/matrix/session/matrix_session.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart';
@@ -122,23 +123,23 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
             child: crossSigningEnabled
                 ? tiamat.Button.danger(
                     text: "Reset",
-                    onTap: () => PopupDialog.show(context,
-                        content: MatrixCrossSigningPage(
-                          client: widget.client,
-                          mode: MatrixCrossSigningMode.resetCrossSigning,
-                          onComplete: checkState,
-                        ),
-                        barrierDismissible: true,
+                    onTap: () => AdaptiveDialog.show(context,
+                        builder: (_) => MatrixCrossSigningPage(
+                              client: widget.client,
+                              mode: MatrixCrossSigningMode.resetCrossSigning,
+                              onComplete: checkState,
+                            ),
+                        dismissible: true,
                         title: "Reset Cross Signing"),
                   )
                 : tiamat.Button.secondary(
                     text: "Enable",
-                    onTap: () => PopupDialog.show(context,
-                        content: MatrixCrossSigningPage(
-                          client: widget.client,
-                          onComplete: checkState,
-                        ),
-                        barrierDismissible: true,
+                    onTap: () => AdaptiveDialog.show(context,
+                        builder: (_) => MatrixCrossSigningPage(
+                              client: widget.client,
+                              onComplete: checkState,
+                            ),
+                        dismissible: true,
                         title: "Cross Signing"),
                   )),
       ],
@@ -165,25 +166,25 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
             child: messageBackupEnabled == true
                 ? tiamat.Button.secondary(
                     text: "Restore",
-                    onTap: () => PopupDialog.show(context,
-                        content: MatrixCrossSigningPage(
-                          client: widget.client,
-                          onComplete: checkState,
-                          mode: MatrixCrossSigningMode.restoreBackup,
-                        ),
-                        barrierDismissible: true,
+                    onTap: () => AdaptiveDialog.show(context,
+                        builder: (_) => MatrixCrossSigningPage(
+                              client: widget.client,
+                              onComplete: checkState,
+                              mode: MatrixCrossSigningMode.restoreBackup,
+                            ),
+                        dismissible: true,
                         title: "Restore Backup"),
                   )
                 : messageBackupEnabled == false
                     ? tiamat.Button.secondary(
                         text: "Enable",
-                        onTap: () => PopupDialog.show(context,
-                            content: MatrixCrossSigningPage(
-                              client: widget.client,
-                              onComplete: checkState,
-                              mode: MatrixCrossSigningMode.enableBackup,
-                            ),
-                            barrierDismissible: true,
+                        onTap: () => AdaptiveDialog.show(context,
+                            builder: (_) => MatrixCrossSigningPage(
+                                  client: widget.client,
+                                  onComplete: checkState,
+                                  mode: MatrixCrossSigningMode.enableBackup,
+                                ),
+                            dismissible: true,
                             title: "Setup Backup"),
                       )
                     : const CircularProgressIndicator())
