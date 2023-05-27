@@ -2,16 +2,14 @@ import 'dart:core';
 
 import 'package:commet/ui/atoms/emoji_widget.dart';
 import 'package:commet/utils/emoji/emoji_matcher.dart';
+import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:flutter/material.dart';
 
 import '../text_utils.dart';
 
-class Emoji {
-  late ImageProvider image;
-  String? shortcode;
-  String? unicode;
-
-  Emoji(this.image, {this.shortcode, this.unicode});
+abstract class Emoji {
+  ImageProvider get image;
+  String? get shortcode;
 
   static List<InlineSpan> emojify(List<InlineSpan> span,
       {double? emojiHeight}) {
@@ -29,7 +27,7 @@ class Emoji {
         builder: ((matchedText, style) {
       return WidgetSpan(
           child: EmojiWidget(
-        matchedText,
+        UnicodeEmoji(matchedText),
         height: style != null && style.fontSize != null
             ? style.fontSize
             : emojiHeight,

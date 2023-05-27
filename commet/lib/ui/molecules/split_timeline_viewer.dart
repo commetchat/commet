@@ -14,10 +14,21 @@ import 'package:flutter/material.dart';
 class SplitTimelineViewer extends StatefulWidget {
   final Timeline timeline;
 
-  const SplitTimelineViewer({required this.timeline, this.markAsRead, Key? key})
+  const SplitTimelineViewer(
+      {required this.timeline,
+      this.markAsRead,
+      this.setReplyingEvent,
+      this.onEventDoubleTap,
+      this.setEditingEvent,
+      this.onEventLongPress,
+      Key? key})
       : super(key: key);
 
   final Function(TimelineEvent event)? markAsRead;
+  final Function(TimelineEvent? event)? setReplyingEvent;
+  final Function(TimelineEvent? event)? setEditingEvent;
+  final Function(TimelineEvent event)? onEventDoubleTap;
+  final Function(TimelineEvent event)? onEventLongPress;
 
   @override
   State<SplitTimelineViewer> createState() => SplitTimelineViewerState();
@@ -169,41 +180,56 @@ class SplitTimelineViewerState extends State<SplitTimelineViewer> {
       physics: physics,
       slivers: <Widget>[
         SliverList(
+            key: historyListKey,
             delegate: SliverChildBuilderDelegate((context, index) {
-          int actualIndex = split.getTimelineIndex(
-              split.getHistoryDisplayIndex(index),
-              SplitTimelinePart.historical);
+              int idx = split.getHistoryDisplayIndex(index);
 
-          return TimelineEventView(
-            event: split.historical[split.getHistoryDisplayIndex(index)],
-            showSender: shouldShowSender(split.getTimelineIndex(
-                split.getHistoryDisplayIndex(index),
-                SplitTimelinePart.historical)),
-            debugInfo:
-                "Split Part: ${split.whichList(actualIndex)} history index: $index, actual index: $actualIndex, actual index id: ${widget.timeline.events[actualIndex].eventId}",
-            onDelete: () {
-              widget.timeline.deleteEventByIndex(index);
-            },
-          );
-        }, childCount: split.historical.length)),
+              return TimelineEventView(
+                event: split.historical[idx],
+                timeline: widget.timeline,
+                onDoubleTap: widget.onEventDoubleTap != null
+                    ? () => widget.onEventDoubleTap!.call(split.historical[idx])
+                    : null,
+                onLongPress: widget.onEventLongPress != null
+                    ? () => widget.onEventLongPress!.call(split.historical[idx])
+                    : null,
+                setReplyingEvent: widget.setReplyingEvent,
+                setEditingEvent: widget.setEditingEvent,
+                showSender: shouldShowSender(
+                    split.getTimelineIndex(idx, SplitTimelinePart.historical)),
+                onDelete: () {
+                  widget.timeline.deleteEventByIndex(index);
+                },
+              );
+            }, childCount: split.historical.length)),
         SliverList(
             key: newEventsListKey,
             delegate: SliverChildBuilderDelegate((context, index) {
-              int actualIndex = split.getTimelineIndex(
-                  split.getRecentDisplayIndex(index), SplitTimelinePart.recent);
+              int idx = split.getRecentDisplayIndex(index);
+
               return TimelineEventView(
-                showSender: shouldShowSender(split.getTimelineIndex(
-                    split.getRecentDisplayIndex(index),
-                    SplitTimelinePart.recent)),
-                event: split.recent[split.getRecentDisplayIndex(index)],
-                debugInfo:
-                    "Split Part: ${split.whichList(actualIndex)} history index: $index, actual index: $actualIndex, actual index id: ${widget.timeline.events[actualIndex].eventId}",
+                timeline: widget.timeline,
+                setReplyingEvent: widget.setReplyingEvent,
+                showSender: shouldShowSender(
+                    split.getTimelineIndex(idx, SplitTimelinePart.recent)),
+                onDoubleTap: widget.onEventDoubleTap != null
+                    ? () => widget.onEventDoubleTap!.call(split.recent[idx])
+                    : null,
+                onLongPress: widget.onEventLongPress != null
+                    ? () => widget.onEventLongPress!.call(split.recent[idx])
+                    : null,
+                event: split.recent[idx],
+                setEditingEvent: widget.setEditingEvent,
                 onDelete: () {
                   widget.timeline.deleteEventByIndex(
                       split.getTimelineIndex(index, SplitTimelinePart.recent));
                 },
               );
             }, childCount: split.recent.length)),
+        const SliverToBoxAdapter(
+          //Add some padding to bottom
+          child: SizedBox(height: 30),
+        )
       ],
     );
   }
@@ -212,6 +238,12 @@ class SplitTimelineViewerState extends State<SplitTimelineViewer> {
     if (widget.timeline.events.length <= index + 1) {
       return true;
     }
+
+    if (widget.timeline.events[index].relationshipType ==
+        EventRelationshipType.reply) return true;
+
+    if (widget.timeline.events[index + 1].type != EventType.message)
+      return true;
 
     if (widget.timeline.events[index].originServerTs
             .difference(widget.timeline.events[index + 1].originServerTs)

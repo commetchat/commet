@@ -1,3 +1,4 @@
+import 'package:commet/config/build_config.dart';
 import 'package:commet/config/preferences.dart';
 import 'package:commet/generated/l10n.dart';
 import 'package:commet/main.dart';
@@ -44,11 +45,12 @@ class SettingsCategoryAppearence implements SettingsCategory {
         const SizedBox(
           height: 10,
         ),
-        const Panel(
-          header: "UI Scale",
-          mode: TileType.surfaceLow2,
-          child: UIScaleSelector(),
-        )
+        if (BuildConfig.DESKTOP)
+          const Panel(
+            header: "UI Scale",
+            mode: TileType.surfaceLow2,
+            child: UIScaleSelector(),
+          )
       ],
     );
   }

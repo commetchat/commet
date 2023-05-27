@@ -19,6 +19,11 @@
   "genericRejectButton": "Reject",
   "sasEmojiVerificationPrompt": "Check that the emoji are the same, and in the same order as the other device",
   "verificationRequestPrompt": "**{username}** has requested to verify your session",
+  "userCreatedRoom": "{username} created the room!",
+  "userJoinedRoom": "{username} joined the room!",
+  "userLeftRoom": "{username} left the room",
+  "userUpdatedAvatar": "{username} updated their avatar",
+  "userUpdatedDisplayName": "{username} updated their display name",
   "home": "Home",
   "addSpace": "Add Space",
   "settings": "Settings",
@@ -38,6 +43,7 @@
   "roomAddressPrompt": "Room Address:",
   "couldNotLoadRoomPreview": "Could not load room preview",
   "sendAMessagePrompt": "Send a message...",
+  "sendEncryptedMessagePrompt": "Send an encrypted message...",
   "settingsCategoryApp": "App Settings",
   "settingsCategoryAccount": "Account Settings",
   "settingsTabManageAccounts": "Manage Accounts",
@@ -52,5 +58,7 @@
   "roomNamePrompt": "Room Name",
   "enableEncryptionPrompt": "Enable Encryption",
   "encryptionCannotBeDisabled": "If enabled, this cannot be disabled later",
-  "notificationReceivedMessagePlaceholder": "Sent a message"
+  "notificationReceivedMessagePlaceholder": "Sent a message",
+  "messagePlaceholderSticker": "Sent a sticker",
+  "messageEditedMarker": "(Edited)"
 }

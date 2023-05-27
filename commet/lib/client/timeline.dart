@@ -18,13 +18,20 @@ enum TimelineEventStatus {
 }
 
 enum EventType {
+  unknown,
   message,
+  sticker,
   redaction,
   edit,
   invalid,
   setRoomName,
   setRoomAvatar,
   roomCreated,
+  memberJoined,
+  memberLeft,
+  memberAvatar,
+  memberDisplayName,
+  encryptionEnabled,
 }
 
 TimelineEventStatus eventStatusFromInt(int intValue) =>
@@ -75,24 +82,30 @@ extension EventStatusExtension on TimelineEventStatus {
       ].contains(this);
 }
 
+enum EventRelationshipType { reply }
+
 class TimelineEvent {
   String eventId = "";
   EventType type = EventType.invalid;
+  bool edited = false;
   late TimelineEventStatus status;
   late Peer sender;
   late DateTime originServerTs;
-  late String? body;
+  String? body;
   late String? source = "";
   List<Attachment>? attachments;
   String? bodyFormat;
   String? formattedBody;
   Widget? formattedContent;
+  String? relatedEventId;
+  EventRelationshipType? relationshipType;
 
   late StreamController onChange = StreamController.broadcast();
 }
 
 abstract class Timeline {
   late List<TimelineEvent> events = List.empty(growable: true);
+  final Map<String, TimelineEvent> _eventsDict = {};
   late StreamController<int> onEventAdded = StreamController.broadcast();
   late StreamController<int> onChange = StreamController.broadcast();
   late StreamController<int> onRemove = StreamController.broadcast();
@@ -105,8 +118,19 @@ abstract class Timeline {
 
   Future<void> loadMoreHistory();
 
+  @protected
+  Future<TimelineEvent?> fetchEventByIdInternal(String eventId);
+
+  Future<TimelineEvent?> fetchEventById(String eventId) async {
+    var event = await fetchEventByIdInternal(eventId);
+    if (event == null) return null;
+    _eventsDict[event.eventId] = event;
+    return event;
+  }
+
   void insertEvent(int index, TimelineEvent event) {
     events.insert(index, event);
+    _eventsDict[event.eventId] = event;
     onEventAdded.add(index);
   }
 
@@ -114,6 +138,14 @@ abstract class Timeline {
     if (shouldDisplayNotification(event)) displayNotification(event);
 
     insertEvent(index, event);
+  }
+
+  bool hasEvent(String eventId) {
+    return _eventsDict.containsKey(eventId);
+  }
+
+  TimelineEvent? tryGetEvent(String eventId) {
+    return _eventsDict[eventId];
   }
 
   @protected

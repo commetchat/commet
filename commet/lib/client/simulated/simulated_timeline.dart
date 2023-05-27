@@ -18,4 +18,9 @@ class SimulatedTimeline extends Timeline {
     this.client = client;
     this.room = room;
   }
+
+  @override
+  Future<TimelineEvent?> fetchEventByIdInternal(String eventId) async {
+    return tryGetEvent(eventId);
+  }
 }

@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:commet/utils/emoji/emoji.dart';
+import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 
 class EmojiPack {
   late List<Emoji> emoji;
@@ -59,8 +59,7 @@ class EmojiPack {
 
       if (emojiData.containsKey('group')) {
         int groupId = emojiData['group'];
-        var e = Emoji(AssetImage("assets/twemoji/assets/72x72/$hexcode.png"),
-            shortcode: shortcode, unicode: hexcode);
+        var e = UnicodeEmoji(emojiData['emoji'], shortcode: shortcode);
 
         if (groupToPack.containsKey(groupId)) {
           groupToPack[groupId]!.add(e);
