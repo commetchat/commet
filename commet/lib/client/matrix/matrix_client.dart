@@ -25,6 +25,7 @@ import 'matrix_space.dart';
 class MatrixClient extends Client {
   late matrix.Client _matrixClient;
   Future? firstSync;
+  matrix.ServerConfig? config;
 
   matrix.NativeImplementations get nativeImplentations => BuildConfig.WEB
       ? const matrix.NativeImplementationsDummy()
@@ -45,6 +46,9 @@ class MatrixClient extends Client {
 
   @override
   bool get supportsE2EE => true;
+
+  @override
+  int? get maxFileSize => config?.mUploadSize;
 
   static Future<void> loadFromDB(ClientManager manager) async {
     var clients = preferences.getRegisteredMatrixClients();
@@ -83,6 +87,10 @@ class MatrixClient extends Client {
 
       firstSync = _matrixClient.oneShotSync();
     }
+
+    _matrixClient.getConfig().then((value) {
+      config = value;
+    });
 
     _matrixClient.onSync.stream.listen(
         (event) => {onSync.add(null), _updateRoomslist(), _updateSpacesList()});

@@ -277,13 +277,16 @@ class MessageInputState extends State<MessageInput> {
   }
 
   void addAttachment() async {
-    FilePickerResult? result = await FilePicker.platform
-        .pickFiles(type: FileType.image, withData: true);
+    FilePickerResult? result =
+        await FilePicker.platform.pickFiles(type: FileType.any, withData: true);
 
     if (result != null) {
       for (var file in result.files) {
         var attachment = PendingFileAttachment(
-            name: file.name, path: file.path, data: file.bytes);
+            name: file.name,
+            path: file.path,
+            data: file.bytes,
+            size: file.bytes?.length);
         widget.addAttachment?.call(attachment);
       }
     }
@@ -389,13 +392,8 @@ class MessageInputState extends State<MessageInput> {
         if (BuildConfig.DESKTOP) {
           var image = await Pasteboard.image;
           if (image != null) {
-            widget.addAttachment?.call(PendingFileAttachment(data: image));
-          }
-
-          var files = await Pasteboard.files();
-
-          for (var file in files) {
-            widget.addAttachment?.call(PendingFileAttachment(path: file));
+            widget.addAttachment
+                ?.call(PendingFileAttachment(data: image, size: image.length));
           }
         }
       },

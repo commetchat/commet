@@ -17,8 +17,10 @@ class PendingFileAttachment {
   String? path;
   Uint8List? data;
   String? mimeType;
+  int? size;
 
-  PendingFileAttachment({this.name, this.path, this.data, this.mimeType}) {
+  PendingFileAttachment(
+      {this.name, this.path, this.data, this.mimeType, this.size}) {
     assert(path != null || data != null);
 
     mimeType ??= mime.lookupMimeType(path ?? "", headerBytes: data);

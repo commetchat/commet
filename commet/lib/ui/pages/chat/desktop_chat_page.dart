@@ -198,7 +198,11 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
       }
 
       var attachment = PendingFileAttachment(
-          name: name, path: file.path, data: data, mimeType: mimeType);
+          name: name,
+          path: file.path,
+          data: data,
+          mimeType: mimeType,
+          size: length);
 
       widget.state.addAttachment(attachment);
     }
