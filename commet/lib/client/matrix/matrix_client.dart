@@ -26,6 +26,10 @@ class MatrixClient extends Client {
   late matrix.Client _matrixClient;
   Future? firstSync;
 
+  matrix.NativeImplementations get nativeImplentations => BuildConfig.WEB
+      ? const matrix.NativeImplementationsDummy()
+      : matrix.NativeImplementationsIsolate(compute);
+
   MatrixClient({String? name, String? identifier})
       : super(identifier ?? RandomUtils.getRandomString(20)) {
     if (name != null) {

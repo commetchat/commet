@@ -8,6 +8,8 @@ import 'package:commet/utils/rng.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 
+import '../attachment.dart';
+
 class SimulatedRoom extends Room {
   late Peer alice = SimulatedPeer(client, "alice@commet.chat", "alice",
       const AssetImage("assets/images/placeholder/generic/checker_green.png"));
@@ -65,8 +67,13 @@ class SimulatedRoom extends Room {
   }
 
   @override
-  Future<TimelineEvent?> sendMessage(String message,
-      {TimelineEvent? inReplyTo, TimelineEvent? replaceEvent}) async {
+  Future<TimelineEvent?> sendMessage({
+    String? message,
+    TimelineEvent? inReplyTo,
+    TimelineEvent? replaceEvent,
+    List<PendingFileAttachment>? attachments,
+    dynamic processedAttachments,
+  }) async {
     TimelineEvent e = TimelineEvent();
     e.eventId = RandomUtils.getRandomString(20);
     e.status = TimelineEventStatus.sent;
@@ -119,5 +126,11 @@ class SimulatedRoom extends Room {
   Future<void> setPushRule(PushRule rule) async {
     pushRule = rule;
     onUpdate.add(null);
+  }
+
+  @override
+  Future<List<ProcessedAttachment>> processAttachments(
+      List<PendingFileAttachment> attachments) async {
+    return List.empty();
   }
 }

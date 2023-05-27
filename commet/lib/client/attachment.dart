@@ -1,8 +1,40 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:commet/cache/file_provider.dart';
 import 'package:flutter/material.dart';
 
+import 'package:mime/mime.dart' as mime;
+
 abstract class Attachment {
   late String name;
+}
+
+abstract class ProcessedAttachment {}
+
+class PendingFileAttachment {
+  String? name;
+  String? path;
+  Uint8List? data;
+  String? mimeType;
+
+  PendingFileAttachment({this.name, this.path, this.data, this.mimeType}) {
+    assert(path != null || data != null);
+
+    mimeType ??= mime.lookupMimeType(path ?? "", headerBytes: data);
+  }
+
+  Future<void> resolve() async {
+    if (data != null) return;
+
+    if (path != null) {
+      var file = File(path!);
+      if (await file.exists()) {
+        data = await file.readAsBytes();
+        mimeType = mime.lookupMimeType(file.path, headerBytes: data);
+      }
+    }
+  }
 }
 
 class ImageAttachment implements Attachment {

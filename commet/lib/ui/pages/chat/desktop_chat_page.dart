@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:commet/ui/atoms/drag_drop_file_target.dart';
 import 'package:commet/ui/atoms/room_header.dart';
 import 'package:commet/ui/atoms/space_header.dart';
@@ -10,10 +12,14 @@ import 'package:commet/ui/molecules/user_list.dart';
 import 'package:commet/ui/molecules/user_panel.dart';
 import 'package:commet/ui/organisms/side_navigation_bar.dart';
 import 'package:commet/ui/pages/chat/chat_page.dart';
+import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart';
 
+import 'package:mime/mime.dart' as mime;
+
+import '../../../client/attachment.dart';
 import '../../organisms/space_summary/space_summary.dart';
 
 class DesktopChatPageView extends StatefulWidget {
@@ -69,13 +75,7 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
           ],
         ),
         if (widget.state.selectedRoom != null)
-          DragDropFileTarget(
-            onDropComplete: (details) {
-              for (var file in details.files) {
-                debugPrint(file.path);
-              }
-            },
-          )
+          DragDropFileTarget(onDropComplete: onFileDrop)
       ],
     );
   }
@@ -139,6 +139,7 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
                           isRoomE2EE: widget.state.selectedRoom!.isE2EE,
                           focusKeyboard:
                               widget.state.onFocusMessageInput.stream,
+                          attachments: widget.state.attachments,
                           readIndicator: ReadIndicator(
                             initialList:
                                 widget.state.selectedRoom?.timeline?.receipts,
@@ -146,8 +147,11 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
                           interactionType: widget.state.interactionType,
                           onSendMessage: (message) {
                             widget.state.sendMessage(message);
-                            return MessageInputSendResult.clearText;
+                            return MessageInputSendResult.success;
                           },
+                          addAttachment: widget.state.addAttachment,
+                          removeAttachment: widget.state.removeAttachment,
+                          isProcessing: widget.state.processing,
                           relatedEventBody: widget.state.interactingEvent?.body,
                           relatedEventSenderName:
                               widget.state.interactingEvent?.sender.displayName,
@@ -175,6 +179,29 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
         ],
       ),
     ));
+  }
+
+  void onFileDrop(DropDoneDetails details) async {
+    const int fiftyMb = 52428800;
+
+    for (var file in details.files) {
+      debugPrint(file.path);
+
+      var length = await file.length();
+
+      Uint8List? data;
+      String? name = file.name;
+      String? mimeType = mime.lookupMimeType(file.path, headerBytes: data);
+
+      if (length < fiftyMb) {
+        data = await file.readAsBytes();
+      }
+
+      var attachment = PendingFileAttachment(
+          name: name, path: file.path, data: data, mimeType: mimeType);
+
+      widget.state.addAttachment(attachment);
+    }
   }
 
   SizedBox spaceRoomSelector() {

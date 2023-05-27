@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:commet/client/client.dart';
 import 'package:flutter/material.dart';
 
+import 'attachment.dart';
 import 'permissions.dart';
 
 enum RoomVisibility { public, private, invite, knock }
@@ -33,8 +34,15 @@ abstract class Room {
   int get displayHighlightedNotificationCount =>
       pushRule != PushRule.dontNotify ? highlightedNotificationCount : 0;
 
-  Future<TimelineEvent?> sendMessage(String message,
-      {TimelineEvent? inReplyTo, TimelineEvent? replaceEvent});
+  Future<TimelineEvent?> sendMessage({
+    String? message,
+    TimelineEvent? inReplyTo,
+    TimelineEvent? replaceEvent,
+    List<ProcessedAttachment> processedAttachments,
+  });
+
+  Future<List<ProcessedAttachment>> processAttachments(
+      List<PendingFileAttachment> attachments);
 
   String get localId => "${client.identifier}:$identifier";
 

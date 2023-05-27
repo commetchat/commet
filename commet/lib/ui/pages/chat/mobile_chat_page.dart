@@ -272,10 +272,12 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
                               ),
                               onSendMessage: (message) {
                                 widget.state.sendMessage(message);
-                                return MessageInputSendResult.clearText;
+                                return MessageInputSendResult.success;
                               },
                               relatedEventBody:
                                   widget.state.interactingEvent?.body,
+                              attachments: widget.state.attachments,
+                              isProcessing: widget.state.processing,
                               setInputText:
                                   widget.state.setMessageInputText.stream,
                               relatedEventSenderName: widget
@@ -283,6 +285,8 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
                               relatedEventSenderColor:
                                   widget.state.interactingEvent?.sender.color,
                               interactionType: widget.state.interactionType,
+                              addAttachment: widget.state.addAttachment,
+                              removeAttachment: widget.state.removeAttachment,
                               focusKeyboard:
                                   widget.state.onFocusMessageInput.stream,
                               cancelReply: () {
