@@ -7,6 +7,7 @@ import 'package:file_picker/file_picker.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:pasteboard/pasteboard.dart';
 import 'package:tiamat/config/config.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -376,12 +377,27 @@ class MessageInputState extends State<MessageInput> {
       // to apply the normal behavior when click on cut
       onCut: () =>
           editableTextState.cutSelection(SelectionChangedCause.toolbar),
-      onPaste: () {
-        // HERE will be called when the paste button is clicked in the toolbar
-        // apply your own logic here
+      onPaste: () async {
+        var clipboard = await Clipboard.getData("text/plain");
 
-        // to apply the normal behavior when click on paste (add in input and close toolbar)
-        editableTextState.pasteText(SelectionChangedCause.toolbar);
+        if (clipboard != null) {
+          return editableTextState.pasteText(SelectionChangedCause.toolbar);
+        }
+
+        editableTextState.hideToolbar();
+
+        if (BuildConfig.DESKTOP) {
+          var image = await Pasteboard.image;
+          if (image != null) {
+            widget.addAttachment?.call(PendingFileAttachment(data: image));
+          }
+
+          var files = await Pasteboard.files();
+
+          for (var file in files) {
+            widget.addAttachment?.call(PendingFileAttachment(path: file));
+          }
+        }
       },
       // to apply the normal behavior when click on select all
       onSelectAll: () =>
