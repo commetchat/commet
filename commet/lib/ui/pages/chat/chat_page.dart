@@ -10,7 +10,6 @@ import 'package:commet/ui/pages/settings/room_settings_page.dart';
 import 'package:commet/utils/notification/notification_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import '../../../client/attachment.dart';
 import '../../../client/client.dart';
