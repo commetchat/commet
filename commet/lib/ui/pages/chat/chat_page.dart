@@ -365,6 +365,18 @@ class ChatPageState extends State<ChatPage> {
   Widget pickChatView() {
     if (BuildConfig.DESKTOP) return DesktopChatPageView(state: this);
     if (BuildConfig.MOBILE) return MobileChatPageView(state: this);
+
+    if (BuildConfig.WEB) {
+      var screenSize = MediaQuery.of(context).size;
+      var ratio = screenSize.width / screenSize.height;
+
+      if (ratio > 1) {
+        return DesktopChatPageView(state: this);
+      } else {
+        return MobileChatPageView(state: this);
+      }
+    }
+
     throw Exception("Unknown build config");
   }
 }

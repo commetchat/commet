@@ -246,6 +246,7 @@ class MatrixTimeline extends Timeline {
                 : null,
             name: matrixEvent.body,
             width: width,
+            fileSize: matrixEvent.infoMap['size'] as int?,
             height: height);
       } else {
         attachment = FileAttachment(

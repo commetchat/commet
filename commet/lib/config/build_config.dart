@@ -32,6 +32,8 @@ class BuildConfig {
 
   static const bool IOS = _platform == _Constants._ios;
 
+  static const bool SUPPORTS_CACHE = !WEB;
+
   static const String app = "Commet";
 
   // IM SO SORRY
