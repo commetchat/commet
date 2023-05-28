@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:commet/cache/file_provider.dart';
+import 'package:commet/utils/mime.dart';
 import 'package:flutter/material.dart';
 
 import 'package:mime/mime.dart' as mime;
@@ -23,7 +24,9 @@ class PendingFileAttachment {
       {this.name, this.path, this.data, this.mimeType, this.size}) {
     assert(path != null || data != null);
 
-    mimeType ??= mime.lookupMimeType(path ?? "", headerBytes: data);
+    mimeType ??= Mime.lookupType(path ?? "", data: data);
+
+    print(mimeType);
   }
 
   Future<void> resolve() async {

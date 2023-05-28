@@ -3,6 +3,7 @@ import 'package:commet/client/timeline.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/utils/notification/linux/linux_notifier.dart';
 import 'package:commet/utils/notification/notifier.dart';
+import 'package:commet/utils/notification/windows/windows_notifier.dart';
 import 'package:flutter/material.dart';
 
 enum NotificationType {
@@ -26,7 +27,7 @@ typedef NotificationModifier = NotificationContent? Function(
     NotificationContent content);
 
 class NotificationManager {
-  final Notifier? _notifier = BuildConfig.LINUX ? LinuxNotifier() : null;
+  final Notifier? _notifier = BuildConfig.LINUX ? LinuxNotifier() : BuildConfig.WINDOWS ? WindowsNotifier() : null;
 
   final List<NotificationModifier> _modifiers = List.empty(growable: true);
 

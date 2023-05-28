@@ -1,11 +1,13 @@
 import 'dart:async';
 
 import 'package:commet/utils/image/lod_image.dart';
+import 'package:commet/utils/image_utils.dart';
 import 'package:commet/utils/notification/notifier.dart';
 import 'package:desktop_notifications/desktop_notifications.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'dart:ui' as ui;
+import '../../../ui/navigation/navigation_signals.dart';
 import '../notification_manager.dart';
 
 class LinuxNotifier extends Notifier {
@@ -17,6 +19,29 @@ class LinuxNotifier extends Notifier {
   @override
   Future<bool> requestPermission() async {
     return true;
+  }
+
+  static FlutterLocalNotificationsPlugin? flutterLocalNotificationsPlugin;
+
+  static void backgroundNotificationResponse(NotificationResponse details) {}
+
+  static void notificationResponse(NotificationResponse details) {
+    NavigationSignals.openRoom.add(details.payload!);
+  }
+
+  static Future<void> init() async {
+    flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
+    const LinuxInitializationSettings initializationSettingsLinux =
+        LinuxInitializationSettings(defaultActionName: 'Open notification');
+
+    const InitializationSettings initializationSettings =
+        InitializationSettings(linux: initializationSettingsLinux);
+
+    flutterLocalNotificationsPlugin?.initialize(initializationSettings,
+        onDidReceiveBackgroundNotificationResponse:
+            backgroundNotificationResponse,
+        onDidReceiveNotificationResponse: notificationResponse);
   }
 
   @override
@@ -44,31 +69,18 @@ class LinuxNotifier extends Notifier {
       category: LinuxNotificationCategory.imReceived,
     );
 
-    Notifier.flutterLocalNotificationsPlugin?.show(0, notification.title,
+    flutterLocalNotificationsPlugin?.show(0, notification.title,
         notification.content, NotificationDetails(linux: details),
         payload: notification.sentFrom?.identifier);
-  }
-
-  Future<ui.Image> getImage(ImageProvider provider) async {
-    Completer<ui.Image> completer = Completer<ui.Image>();
-
-    provider
-        .resolve(const ImageConfiguration())
-        .addListener(ImageStreamListener((info, synchronousCall) {
-      if (!completer.isCompleted) {
-        completer.complete(info.image);
-      }
-    }));
-    return completer.future;
   }
 
   Future<ui.Image> determineImage(ImageProvider provider) async {
     if (provider is LODImageProvider) {
       var data = await provider.loadThumbnail?.call();
       var mem = MemoryImage(data!);
-      return await getImage(mem);
+      return await ImageUtils.imageProviderToImage(mem);
     }
 
-    return await getImage(provider);
+    return await ImageUtils.imageProviderToImage(provider);
   }
 }
