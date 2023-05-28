@@ -3,6 +3,7 @@ import 'package:commet/client/timeline.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/utils/notification/linux/linux_notifier.dart';
 import 'package:commet/utils/notification/notifier.dart';
+import 'package:flutter/material.dart';
 
 enum NotificationType {
   messageReceived,
@@ -15,9 +16,10 @@ class NotificationContent {
   NotificationType type;
   Room? sentFrom;
   TimelineEvent? event;
+  ImageProvider? image;
 
   NotificationContent(this.title, this.content, this.type,
-      {this.sentFrom, this.event});
+      {this.sentFrom, this.event, this.image});
 }
 
 typedef NotificationModifier = NotificationContent? Function(

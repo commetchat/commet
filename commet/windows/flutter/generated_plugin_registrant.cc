@@ -11,6 +11,7 @@
 #include <media_kit_video/media_kit_video_plugin_c_api.h>
 #include <pasteboard/pasteboard_plugin.h>
 #include <url_launcher_windows/url_launcher_windows.h>
+#include <window_to_front/window_to_front_plugin.h>
 
 void RegisterPlugins(flutter::PluginRegistry* registry) {
   DesktopDropPluginRegisterWithRegistrar(
@@ -23,4 +24,6 @@ void RegisterPlugins(flutter::PluginRegistry* registry) {
       registry->GetRegistrarForPlugin("PasteboardPlugin"));
   UrlLauncherWindowsRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("UrlLauncherWindows"));
+  WindowToFrontPluginRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("WindowToFrontPlugin"));
 }

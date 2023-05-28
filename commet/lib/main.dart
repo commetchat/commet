@@ -7,6 +7,7 @@ import 'package:commet/ui/pages/chat/chat_page.dart';
 import 'package:commet/ui/pages/login/login_page.dart';
 import 'package:commet/utils/emoji/emoji_pack.dart';
 import 'package:commet/utils/notification/notification_manager.dart';
+import 'package:commet/utils/notification/notifier.dart';
 
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
@@ -74,6 +75,7 @@ Future<ClientManager> initApp() async {
     preferences.init(),
     fileCache.init(),
     EmojiPack.defaults(),
+    Notifier.init(),
     if (!BuildConfig.LINUX) Hive.initFlutter(dbPath),
   ]);
 

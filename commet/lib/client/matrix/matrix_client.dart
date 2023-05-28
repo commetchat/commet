@@ -165,7 +165,7 @@ class MatrixClient extends Client {
               password: password,
               identifier:
                   matrix.AuthenticationUserIdentifier(user: userIdentifier));
-          if (result.accessToken != null) {
+          if (result.accessToken.isNotEmpty) {
             loginResult = LoginResult.success;
           } else {
             loginResult = LoginResult.failed;
