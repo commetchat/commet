@@ -34,9 +34,6 @@ class SimulatedRoom extends Room {
   int notificationCount = 0;
 
   @override
-  int get maxFileSize => 1000000000;
-
-  @override
   PushRule pushRule = PushRule.notify;
 
   SimulatedRoom(displayName, client, {bool isDm = false})
