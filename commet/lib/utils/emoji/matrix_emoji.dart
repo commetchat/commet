@@ -14,7 +14,34 @@ class MatrixEmoji implements Emoji {
   @override
   String? get shortcode => _shortcode;
 
-  MatrixEmoji(Uri emojiUrl, matrix.Client client, {String? shortcode}) {
+  Uri emojiUrl;
+
+  @override
+  String get identifier => emojiUrl.toString();
+
+  MatrixEmoji(this.emojiUrl, matrix.Client client, {String? shortcode}) {
     _image = MatrixMxcImage(emojiUrl, client, doThumbnail: false);
+
+    _shortcode = shortcode;
+
+    if (!Emoji.knownEmoji.containsKey(identifier)) {
+      Emoji.knownEmoji[identifier] = this;
+    }
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    if (other is! MatrixEmoji) {
+      return false;
+    }
+
+    return other.emojiUrl == emojiUrl;
+  }
+
+  @override
+  int get hashCode {
+    return emojiUrl.hashCode;
   }
 }

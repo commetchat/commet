@@ -1,4 +1,6 @@
 import 'package:commet/config/build_config.dart';
+import 'package:commet/ui/atoms/emoji_reaction.dart';
+import 'package:commet/utils/emoji/emoji.dart';
 import 'package:commet/utils/text_utils.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tiamat/tiamat.dart';
@@ -14,6 +16,7 @@ class Message extends StatefulWidget {
       required this.senderColor,
       required this.sentTimeStamp,
       required this.body,
+      required this.currentUserIdentifier,
       this.senderAvatar,
       this.replyBody,
       this.replySenderColor,
@@ -21,6 +24,7 @@ class Message extends StatefulWidget {
       this.menuBuilder,
       this.edited = false,
       this.onDoubleTap,
+      this.reactions,
       this.onLongPress,
       this.showSender = true});
   final double avatarSize = 48;
@@ -36,9 +40,13 @@ class Message extends StatefulWidget {
   final ImageProvider? senderAvatar;
   final DateTime sentTimeStamp;
 
+  final String currentUserIdentifier;
+
   final bool edited;
 
   final Widget body;
+
+  final Map<Emoji, Set<String>>? reactions;
 
   final Function()? onLongPress;
   final Function()? onDoubleTap;
@@ -181,7 +189,8 @@ class _MessageState extends State<Message> {
                             ),
                           ),
                         body(),
-                        if (widget.edited) edited()
+                        if (widget.edited) edited(),
+                        if (widget.reactions != null) reactions(),
                       ],
                     ),
                   ),
@@ -273,8 +282,16 @@ class _MessageState extends State<Message> {
   }
 
   Widget reactions() {
-    return const Placeholder(
-      fallbackHeight: 30,
-    );
+    return Wrap(
+        spacing: 3,
+        runSpacing: 3,
+        direction: material.Axis.horizontal,
+        children: widget.reactions!.keys.map((key) {
+          var value = widget.reactions![key]!;
+          return EmojiReaction(
+              emoji: key,
+              numReactions: value.length,
+              highlighted: value.contains(widget.currentUserIdentifier));
+        }).toList());
   }
 }

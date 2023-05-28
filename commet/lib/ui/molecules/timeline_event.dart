@@ -86,6 +86,8 @@ class _TimelineEventState extends State<TimelineEventView> {
           onDoubleTap: widget.onDoubleTap,
           onLongPress: widget.onLongPress,
           showSender: widget.showSender,
+          reactions: widget.event.reactions,
+          currentUserIdentifier: widget.timeline.room.client.user!.identifier,
           replyBody: relatedEvent?.body ??
               (relatedEvent?.type == EventType.sticker
                   ? T.current.messagePlaceholderSticker

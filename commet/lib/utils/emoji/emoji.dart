@@ -10,6 +10,9 @@ import '../text_utils.dart';
 abstract class Emoji {
   ImageProvider get image;
   String? get shortcode;
+  String get identifier;
+
+  static Map<String, Emoji> knownEmoji = {};
 
   static List<InlineSpan> emojify(List<InlineSpan> span,
       {double? emojiHeight}) {

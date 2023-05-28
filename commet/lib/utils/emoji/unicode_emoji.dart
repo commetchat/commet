@@ -11,10 +11,19 @@ class UnicodeEmoji extends Emoji {
   @override
   String? get shortcode => _shortcode;
 
-  UnicodeEmoji(String text, {String? shortcode}) {
+  @override
+  String get identifier => text;
+
+  String text;
+
+  UnicodeEmoji(this.text, {String? shortcode}) {
     String hexcode = emojiToUnicode(text);
     _image = AssetImage("assets/twemoji/assets/72x72/$hexcode.png");
     _shortcode = shortcode;
+
+    if (!Emoji.knownEmoji.containsKey(identifier)) {
+      Emoji.knownEmoji[identifier] = this;
+    }
   }
 
   final _u200D = String.fromCharCode(0x200D);
@@ -43,5 +52,21 @@ class UnicodeEmoji extends Emoji {
       }
     }
     return r.join(sep);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    if (other is! UnicodeEmoji) {
+      return false;
+    }
+
+    return other.text == text;
+  }
+
+  @override
+  int get hashCode {
+    return text.hashCode;
   }
 }
