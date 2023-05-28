@@ -10,4 +10,8 @@ class Debouncer {
     _timer?.cancel();
     _timer = Timer(delay, action);
   }
+
+  cancel() {
+    _timer?.cancel();
+  }
 }

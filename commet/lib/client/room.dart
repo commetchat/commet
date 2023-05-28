@@ -25,6 +25,8 @@ abstract class Room {
   StreamController<void> onUpdate = StreamController.broadcast();
   PushRule get pushRule;
 
+  List<Peer> get typingPeers;
+
   int get notificationCount;
   int get highlightedNotificationCount;
 
@@ -64,6 +66,8 @@ abstract class Room {
   Future<void> setDisplayNameInternal(String name);
 
   Future<void> setPushRule(PushRule rule);
+
+  Future<void> setTypingStatus(bool typing);
 
   @override
   bool operator ==(Object other) {

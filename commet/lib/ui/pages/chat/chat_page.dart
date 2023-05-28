@@ -7,6 +7,7 @@ import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/pages/chat/desktop_chat_page.dart';
 import 'package:commet/ui/pages/chat/mobile_chat_page.dart';
 import 'package:commet/ui/pages/settings/room_settings_page.dart';
+import 'package:commet/utils/debounce.dart';
 import 'package:commet/utils/notification/notification_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
@@ -43,17 +44,39 @@ class ChatPageState extends State<ChatPage> {
 
   List<PendingFileAttachment> attachments = List.empty(growable: true);
 
+  DateTime lastSetTyping = DateTime.fromMicrosecondsSinceEpoch(0);
+
+  Debouncer typingStatusDebouncer =
+      Debouncer(delay: const Duration(seconds: 5));
+
   EventInteractionType? interactionType;
   TimelineEvent? interactingEvent;
 
   StreamController<Room> onRoomSelectionChanged = StreamController.broadcast();
 
   StreamController<void> onFocusMessageInput = StreamController.broadcast();
-
   StreamController<String> setMessageInputText = StreamController.broadcast();
 
   StreamSubscription? onSpaceUpdateSubscription;
   StreamSubscription? onRoomUpdateSubscription;
+
+  void onInputTextUpdated(String currentText) {
+    if (currentText.isEmpty) {
+      stopTyping();
+      typingStatusDebouncer.cancel();
+      lastSetTyping = DateTime.fromMicrosecondsSinceEpoch(0);
+    } else {
+      if ((DateTime.now().difference(lastSetTyping)).inSeconds > 3) {
+        selectedRoom?.setTypingStatus(true);
+        lastSetTyping = DateTime.now();
+      }
+      typingStatusDebouncer.run(stopTyping);
+    }
+  }
+
+  void stopTyping() {
+    selectedRoom?.setTypingStatus(false);
+  }
 
   void selectHomePage() {
     homePageSelected = true;
@@ -295,6 +318,8 @@ class ChatPageState extends State<ChatPage> {
             ? interactingEvent
             : null,
         processedAttachments: processedAttachments);
+
+    selectedRoom?.setTypingStatus(false);
 
     setInteractingEvent(null);
     clearAttachments();

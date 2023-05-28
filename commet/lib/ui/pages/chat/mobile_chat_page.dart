@@ -286,6 +286,11 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
                                   widget.state.interactingEvent?.sender.color,
                               interactionType: widget.state.interactionType,
                               addAttachment: widget.state.addAttachment,
+                              onTextUpdated: widget.state.onInputTextUpdated,
+                              typingUsernames: widget
+                                  .state.selectedRoom!.typingPeers
+                                  .map((e) => e.displayName)
+                                  .toList(),
                               removeAttachment: widget.state.removeAttachment,
                               focusKeyboard:
                                   widget.state.onFocusMessageInput.stream,

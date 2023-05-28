@@ -149,6 +149,7 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
                             widget.state.sendMessage(message);
                             return MessageInputSendResult.success;
                           },
+                          onTextUpdated: widget.state.onInputTextUpdated,
                           addAttachment: widget.state.addAttachment,
                           removeAttachment: widget.state.removeAttachment,
                           isProcessing: widget.state.processing,
@@ -158,6 +159,10 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
                           relatedEventSenderColor:
                               widget.state.interactingEvent?.sender.color,
                           setInputText: widget.state.setMessageInputText.stream,
+                          typingUsernames: widget
+                              .state.selectedRoom!.typingPeers
+                              .map((e) => e.displayName)
+                              .toList(),
                           editLastMessage: widget.state.editLastMessage,
                           cancelReply: () {
                             widget.state.setInteractingEvent(null);

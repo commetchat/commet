@@ -36,6 +36,9 @@ class SimulatedRoom extends Room {
   @override
   PushRule pushRule = PushRule.notify;
 
+  @override
+  List<Peer> get typingPeers => List.from([alice, bob]);
+
   SimulatedRoom(displayName, client, {bool isDm = false})
       : super(RandomUtils.getRandomString(20), client) {
     identifier = RandomUtils.getRandomString(20);
@@ -133,4 +136,7 @@ class SimulatedRoom extends Room {
       List<PendingFileAttachment> attachments) async {
     return List.empty();
   }
+
+  @override
+  Future<void> setTypingStatus(bool typing) async {}
 }

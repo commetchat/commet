@@ -29,6 +29,12 @@ class MatrixRoom extends Room {
   Iterable<Peer> get members => getMembers();
 
   @override
+  List<Peer> get typingPeers => _matrixRoom.typingUsers
+      .where((element) => element.id != client.user!.identifier)
+      .map((e) => client.getPeer(e.id)!)
+      .toList();
+
+  @override
   PushRule get pushRule {
     switch (_matrixRoom.pushRuleState) {
       case matrix.PushRuleState.notify:
@@ -175,5 +181,10 @@ class MatrixRoom extends Room {
 
     await _matrixRoom.setPushRuleState(newRule);
     onUpdate.add(null);
+  }
+
+  @override
+  Future<void> setTypingStatus(bool typing) async {
+    await _matrixRoom.setTyping(typing, timeout: 2000);
   }
 }

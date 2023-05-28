@@ -34,7 +34,9 @@ class MessageInput extends StatefulWidget {
       this.editLastMessage,
       this.attachments,
       this.addAttachment,
+      this.onTextUpdated,
       this.removeAttachment,
+      this.typingUsernames,
       this.cancelReply});
   final double maxHeight;
   final double size = 48;
@@ -49,7 +51,9 @@ class MessageInput extends StatefulWidget {
   final Stream<void>? focusKeyboard;
   final Stream<String>? setInputText;
   final bool isProcessing;
+  final List<String>? typingUsernames;
   final void Function(bool focused)? onFocusChanged;
+  final Function(String currentText)? onTextUpdated;
   final void Function()? cancelReply;
   final void Function()? editLastMessage;
   final void Function(PendingFileAttachment attachment)? addAttachment;
@@ -62,7 +66,6 @@ class MessageInput extends StatefulWidget {
 class MessageInputState extends State<MessageInput> {
   late FocusNode textFocus;
   late TextEditingController controller;
-  bool showHint = true;
   StreamSubscription? keyboardFocusSubscription;
   StreamSubscription? setInputTextSubscription;
   void unfocus() {
@@ -94,15 +97,15 @@ class MessageInputState extends State<MessageInput> {
 
     setInputTextSubscription = widget.setInputText?.listen(onSetInputText);
 
-    controller.addListener(() {
-      setState(() {
-        showHint = controller.text.isEmpty;
-      });
-    });
+    controller.addListener(onTextfieldUpdated);
 
     textFocus = FocusNode(onKey: onKey);
 
     super.initState();
+  }
+
+  void onTextfieldUpdated() {
+    widget.onTextUpdated?.call(controller.text);
   }
 
   void sendMessage() {
@@ -151,6 +154,9 @@ class MessageInputState extends State<MessageInput> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                if (widget.typingUsernames != null &&
+                    widget.typingUsernames!.isNotEmpty)
+                  typingUsers(),
                 if (widget.interactionType != null) interactionText(),
                 if (widget.attachments != null &&
                     widget.attachments!.isNotEmpty)
@@ -401,5 +407,33 @@ class MessageInputState extends State<MessageInput> {
       onSelectAll: () =>
           editableTextState.selectAll(SelectionChangedCause.toolbar),
     );
+  }
+
+  Widget typingUsers() {
+    String text = "";
+
+    if (widget.typingUsernames!.length == 1) {
+      text = T.current.singleUserTyping(widget.typingUsernames![0]);
+    }
+    if (widget.typingUsernames!.length == 2) {
+      text = T.current.twoUsersTyping(
+          widget.typingUsernames![0], widget.typingUsernames![1]);
+    }
+
+    if (widget.typingUsernames!.length == 3) {
+      text = T.current.threeUsersTyping(widget.typingUsernames![0],
+          widget.typingUsernames![1], widget.typingUsernames![2]);
+    }
+
+    if (widget.typingUsernames!.length > 3) {
+      text = T.current.multipleUsersTyping(widget.typingUsernames![0],
+          widget.typingUsernames![1], widget.typingUsernames![2]);
+    }
+    return Align(
+        alignment: Alignment.centerLeft,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(0, 0, 0, 4),
+          child: tiamat.Text.labelLow(text),
+        ));
   }
 }
