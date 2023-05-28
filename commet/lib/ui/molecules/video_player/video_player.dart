@@ -2,8 +2,7 @@ import 'dart:async';
 
 import 'package:commet/cache/file_provider.dart';
 import 'package:commet/config/build_config.dart';
-import 'package:commet/ui/molecules/video_player/video_player_desktop.dart';
-import 'package:commet/ui/molecules/video_player/video_player_mobile.dart';
+import 'package:commet/ui/molecules/video_player/video_player_implementation.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
@@ -265,13 +264,7 @@ class VideoPlayerState extends State<VideoPlayer> {
   }
 
   Widget pickPlayer() {
-    if (BuildConfig.ANDROID || BuildConfig.IOS || BuildConfig.WEB) {
-      return VideoPlayerMobile(
-        controller: controller,
-        videoFile: widget.videoFile,
-      );
-    }
-    return VideoPlayerDesktop(
+    return VideoPlayerImplementation(
         controller: controller, videoFile: widget.videoFile);
   }
 }

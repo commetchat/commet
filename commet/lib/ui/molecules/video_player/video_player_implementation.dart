@@ -5,8 +5,8 @@ import 'package:media_kit_video/media_kit_video.dart';
 
 import 'video_player_controller.dart';
 
-class VideoPlayerDesktop extends StatefulWidget {
-  const VideoPlayerDesktop(
+class VideoPlayerImplementation extends StatefulWidget {
+  const VideoPlayerImplementation(
       {required this.controller,
       required this.videoFile,
       this.width = 640,
@@ -17,11 +17,12 @@ class VideoPlayerDesktop extends StatefulWidget {
   final int height;
   final VideoPlayerController controller;
   @override
-  State<VideoPlayerDesktop> createState() => _VideoPlayerDesktopState();
+  State<VideoPlayerImplementation> createState() =>
+      _VideoPlayerImplementationState();
 }
 
-class _VideoPlayerDesktopState extends State<VideoPlayerDesktop> {
-  final Player player = Player();
+class _VideoPlayerImplementationState extends State<VideoPlayerImplementation> {
+  late Player player;
   VideoController? controller;
   bool loaded = false;
   Uri? file;
@@ -29,6 +30,8 @@ class _VideoPlayerDesktopState extends State<VideoPlayerDesktop> {
   @override
   void initState() {
     super.initState();
+
+    player = Player();
 
     widget.controller.attach(
         pause: pause,
@@ -41,18 +44,17 @@ class _VideoPlayerDesktopState extends State<VideoPlayerDesktop> {
       widget.controller.setProgress(event);
     });
 
-    player.streams.isCompleted.listen(
+    player.streams.completed.listen(
       (completed) {
         widget.controller.setCompleted(completed);
       },
     );
 
+    controller = VideoController(player);
+
     Future.microtask(() async {
-      controller = await VideoController.create(player.handle);
       file = await widget.videoFile.resolve();
-
       await player.open(Playlist([Media(file.toString())]));
-
       widget.controller.setBuffering(false);
 
       setState(() {
@@ -66,7 +68,7 @@ class _VideoPlayerDesktopState extends State<VideoPlayerDesktop> {
     if (loaded) {
       return Video(
         fit: BoxFit.cover,
-        controller: controller,
+        controller: controller!,
       );
     }
     return const Placeholder();

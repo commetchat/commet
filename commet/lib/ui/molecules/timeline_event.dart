@@ -233,7 +233,7 @@ class _TimelineEventState extends State<TimelineEventView> {
   }
 
   Widget buildMessageText() {
-    const bool selectableText = BuildConfig.DESKTOP;
+    const bool selectableText = BuildConfig.DESKTOP || BuildConfig.WEB;
 
     if (widget.event.bodyFormat != null)
       return selectableText

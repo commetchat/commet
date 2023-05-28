@@ -1,4 +1,5 @@
 import 'package:commet/config/build_config.dart';
+import 'package:commet/utils/orientation.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart';
@@ -12,14 +13,23 @@ class AdaptiveDialog {
     bool dismissible = true,
     double initialHeightMobile = 0.5,
   }) {
-    if (BuildConfig.DESKTOP) {
+    var screenSize = MediaQuery.of(context).size;
+    var ratio = screenSize.width / screenSize.height;
+
+    if (BuildConfig.DESKTOP ||
+        (BuildConfig.WEB &&
+            OrientationUtils.getCurrentOrientation(context) ==
+                Orientation.landscape)) {
       PopupDialog.show(context,
           content: builder(context),
           title: title,
           barrierDismissible: dismissible);
     }
 
-    if (BuildConfig.MOBILE) {
+    if (BuildConfig.MOBILE ||
+        (BuildConfig.WEB &&
+            OrientationUtils.getCurrentOrientation(context) ==
+                Orientation.portrait)) {
       m.showModalBottomSheet(
         context: context,
         isScrollControlled: true,

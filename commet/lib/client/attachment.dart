@@ -57,6 +57,7 @@ class VideoAttachment implements Attachment {
   final FileProvider videoFile;
   final double? width;
   final double? height;
+  final int? fileSize;
   @override
   String name;
 
@@ -64,7 +65,11 @@ class VideoAttachment implements Attachment {
       (width != null && height != null) ? (width! / height!) : 1;
 
   VideoAttachment(this.videoFile,
-      {required this.name, this.thumbnail, this.width, this.height});
+      {required this.name,
+      this.thumbnail,
+      this.width,
+      this.height,
+      this.fileSize});
 }
 
 class FileAttachment implements Attachment {

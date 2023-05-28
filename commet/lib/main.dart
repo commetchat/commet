@@ -10,6 +10,7 @@ import 'package:commet/utils/notification/notification_manager.dart';
 
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:media_kit/media_kit.dart';
 
 import 'package:provider/provider.dart';
 import 'package:scaled_app/scaled_app.dart';
@@ -60,6 +61,8 @@ Future<ClientManager> initApp() async {
   await preferences.init();
 
   var adapter = CachedFileAdapter();
+
+  MediaKit.ensureInitialized();
 
   if (!Hive.isAdapterRegistered(adapter.typeId)) {
     Hive.registerAdapter(adapter);
