@@ -194,11 +194,13 @@ class ImageButton extends StatefulWidget {
       this.onTap,
       this.image,
       this.doShadow = false,
+      this.iconSize,
       required this.size,
       this.icon});
   final void Function()? onTap;
   final ImageProvider? image;
   final double size;
+  final double? iconSize;
   final IconData? icon;
   final bool doShadow;
 
@@ -291,7 +293,7 @@ class _ImageButtonState extends State<ImageButton> {
           : widget.icon != null
               ? Icon(
                   widget.icon,
-                  size: widget.size / 2.5,
+                  size: widget.iconSize ?? widget.size / 2.5,
                 )
               : null,
     );

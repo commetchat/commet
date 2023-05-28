@@ -3,13 +3,16 @@ import 'dart:math';
 
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/main.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/pages/chat/desktop_chat_page.dart';
 import 'package:commet/ui/pages/chat/mobile_chat_page.dart';
 import 'package:commet/ui/pages/settings/room_settings_page.dart';
+import 'package:commet/utils/debounce.dart';
 import 'package:commet/utils/notification/notification_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-
+import 'package:tiamat/tiamat.dart' as tiamat;
+import '../../../client/attachment.dart';
 import '../../../client/client.dart';
 import '../../../config/build_config.dart';
 import '../../molecules/split_timeline_viewer.dart';
@@ -37,15 +40,43 @@ class ChatPageState extends State<ChatPage> {
   late Map<String, GlobalKey<SplitTimelineViewerState>> timelines = {};
   double height = -1;
 
+  bool processing = false;
+
+  List<PendingFileAttachment> attachments = List.empty(growable: true);
+
+  DateTime lastSetTyping = DateTime.fromMicrosecondsSinceEpoch(0);
+
+  Debouncer typingStatusDebouncer =
+      Debouncer(delay: const Duration(seconds: 5));
+
   EventInteractionType? interactionType;
   TimelineEvent? interactingEvent;
 
   StreamController<Room> onRoomSelectionChanged = StreamController.broadcast();
+
   StreamController<void> onFocusMessageInput = StreamController.broadcast();
   StreamController<String> setMessageInputText = StreamController.broadcast();
 
   StreamSubscription? onSpaceUpdateSubscription;
   StreamSubscription? onRoomUpdateSubscription;
+
+  void onInputTextUpdated(String currentText) {
+    if (currentText.isEmpty) {
+      stopTyping();
+      typingStatusDebouncer.cancel();
+      lastSetTyping = DateTime.fromMicrosecondsSinceEpoch(0);
+    } else {
+      if ((DateTime.now().difference(lastSetTyping)).inSeconds > 3) {
+        selectedRoom?.setTypingStatus(true);
+        lastSetTyping = DateTime.now();
+      }
+      typingStatusDebouncer.run(stopTyping);
+    }
+  }
+
+  void stopTyping() {
+    selectedRoom?.setTypingStatus(false);
+  }
 
   void selectHomePage() {
     homePageSelected = true;
@@ -96,6 +127,39 @@ class ChatPageState extends State<ChatPage> {
         default:
           break;
       }
+    });
+  }
+
+  void addAttachment(PendingFileAttachment attachment) {
+    if (selectedRoom!.client.maxFileSize != null) {
+      if (attachment.size != null &&
+          attachment.size! > selectedRoom!.client.maxFileSize!) {
+        AdaptiveDialog.show(context, builder: (_) {
+          return const SizedBox(
+              height: 100,
+              child: Center(
+                  child:
+                      tiamat.Text.label("This file is too large to upload!")));
+        }, title: "Max file size exceeded");
+
+        return;
+      }
+    }
+
+    setState(() {
+      attachments.add(attachment);
+    });
+  }
+
+  void removeAttachment(PendingFileAttachment attachment) {
+    setState(() {
+      attachments.remove(attachment);
+    });
+  }
+
+  void clearAttachments() {
+    setState(() {
+      attachments.clear();
     });
   }
 
@@ -182,6 +246,7 @@ class ChatPageState extends State<ChatPage> {
     setState(() {
       selectedRoom = room;
       interactingEvent = null;
+      clearAttachments();
     });
   }
 
@@ -190,6 +255,7 @@ class ChatPageState extends State<ChatPage> {
       selectedSpace = space;
       homePageSelected = false;
       interactingEvent = null;
+      clearAttachments();
     });
   }
 
@@ -197,6 +263,7 @@ class ChatPageState extends State<ChatPage> {
     setState(() {
       interactingEvent = null;
       selectedRoom = null;
+      clearAttachments();
     });
   }
 
@@ -230,18 +297,33 @@ class ChatPageState extends State<ChatPage> {
     setState(() {});
   }
 
-  void sendMessage(String message) {
-    if (interactingEvent != null &&
-        interactionType == EventInteractionType.reply) {
-      selectedRoom!.sendMessage(message, inReplyTo: interactingEvent);
-    } else if (interactingEvent != null &&
-        interactionType == EventInteractionType.edit) {
-      selectedRoom!.sendMessage(message, replaceEvent: interactingEvent);
-    } else {
-      selectedRoom!.sendMessage(message);
-    }
+  void sendMessage(String message) async {
+    setState(() {
+      processing = true;
+    });
+
+    var processedAttachments =
+        await selectedRoom!.processAttachments(attachments);
+
+    setState(() {
+      processing = false;
+    });
+
+    selectedRoom!.sendMessage(
+        message: message,
+        inReplyTo: interactionType == EventInteractionType.reply
+            ? interactingEvent
+            : null,
+        replaceEvent: interactionType == EventInteractionType.edit
+            ? interactingEvent
+            : null,
+        processedAttachments: processedAttachments);
+
+    selectedRoom?.setTypingStatus(false);
 
     setInteractingEvent(null);
+    clearAttachments();
+    setMessageInputText.add("");
   }
 
   void navigateRoomSettings() {
