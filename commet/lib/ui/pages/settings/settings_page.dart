@@ -1,6 +1,7 @@
 import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/pages/settings/mobile_settings_page.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
+import 'package:commet/utils/orientation.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
@@ -28,10 +29,8 @@ class SettingsPage extends StatelessWidget {
     }
 
     if (BuildConfig.WEB) {
-      var screenSize = MediaQuery.of(context).size;
-      var ratio = screenSize.width / screenSize.height;
-
-      if (ratio > 1) {
+      if (OrientationUtils.getCurrentOrientation(context) ==
+          Orientation.landscape) {
         return DesktopSettingsPage(settings: settings);
       } else {
         return MobileSettingsPage(settings: settings);

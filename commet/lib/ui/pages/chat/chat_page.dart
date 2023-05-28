@@ -9,6 +9,7 @@ import 'package:commet/ui/pages/chat/mobile_chat_page.dart';
 import 'package:commet/ui/pages/settings/room_settings_page.dart';
 import 'package:commet/utils/debounce.dart';
 import 'package:commet/utils/notification/notification_manager.dart';
+import 'package:commet/utils/orientation.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -370,7 +371,8 @@ class ChatPageState extends State<ChatPage> {
       var screenSize = MediaQuery.of(context).size;
       var ratio = screenSize.width / screenSize.height;
 
-      if (ratio > 1) {
+      if (OrientationUtils.getCurrentOrientation(context) ==
+          Orientation.landscape) {
         return DesktopChatPageView(state: this);
       } else {
         return MobileChatPageView(state: this);
