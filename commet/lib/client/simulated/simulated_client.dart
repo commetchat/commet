@@ -19,6 +19,9 @@ class SimulatedClient extends Client {
   Future<void> init(bool loadingFromCache) async {}
 
   @override
+  int get maxFileSize => 10000000;
+
+  @override
   bool isLoggedIn() => _isLogged;
 
   @override

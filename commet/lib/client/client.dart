@@ -37,6 +37,8 @@ abstract class Client {
 
   bool get supportsE2EE;
 
+  int? get maxFileSize;
+
   Future<LoginResult> login(
       LoginType type, String userIdentifier, String server,
       {String? password, String? token});

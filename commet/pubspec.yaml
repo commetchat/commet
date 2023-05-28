@@ -53,6 +53,8 @@ dependencies:
   desktop_notifications: ^0.6.3
   url_launcher: ^6.1.11
   flutter_blurhash: ^0.7.0
+  mime: ^1.0.4
+  pasteboard: ^0.2.0
 
 dev_dependencies:
   build_runner:
