@@ -32,14 +32,15 @@ dependencies:
   path_provider: ^2.0.13
   widgetbook_annotation:
   flutter_markdown: ^0.6.9+1
-  video_player: ^2.6.0
 
-  media_kit: ^0.0.1
-  media_kit_video: ^0.0.1
-  media_kit_native_event_loop: ^1.0.0
-  media_kit_libs_windows_video: ^1.0.0          # Windows package for video (& audio) native libraries.
-  media_kit_libs_windows_audio: ^1.0.0          # Windows package for audio (only) native libraries.
-  media_kit_libs_linux: ^1.0.0                  # Linux dependency package.
+  media_kit: ^0.0.8                              # Primary package.
+  media_kit_video: ^0.0.10                       # For video rendering.
+  media_kit_native_event_loop: ^1.0.4            # Support for higher number of concurrent instances & better performance.
+  media_kit_libs_android_video: ^1.0.4           # Android package for video native libraries.
+  media_kit_libs_ios_video: ^1.0.4               # iOS package for video native libraries.
+  media_kit_libs_macos_video: ^1.0.5             # macOS package for video native libraries.
+  media_kit_libs_windows_video: ^1.0.2           # Windows package for video native libraries.
+  media_kit_libs_linux: ^1.0.2                   # GNU/Linux dependency package.
   hive: ^2.2.3
   hive_generator: ^1.1.3
   hive_flutter: ^1.1.0
