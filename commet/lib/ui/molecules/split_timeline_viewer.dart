@@ -132,6 +132,11 @@ class SplitTimelineViewerState extends State<SplitTimelineViewer> {
     });
 
     eventChanged = widget.timeline.onChange.stream.listen((index) {
+      if (index == 0 && (attachedToBottom || animatingToBottom)) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          animateAndSnapToBottom();
+        });
+      }
       setState(() {});
     });
 

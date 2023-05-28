@@ -1,8 +1,12 @@
+import 'package:commet/client/matrix/matrix_attachment.dart';
+import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/matrix/matrix_peer.dart';
 import 'package:commet/client/matrix/matrix_room_permissions.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
+import 'package:commet/utils/mime.dart';
 
+import '../attachment.dart';
 import '../client.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
@@ -80,20 +84,58 @@ class MatrixRoom extends Room {
   }
 
   @override
-  Future<TimelineEvent?> sendMessage(String message,
-      {TimelineEvent? inReplyTo, TimelineEvent? replaceEvent}) async {
+  Future<List<ProcessedAttachment>> processAttachments(
+      List<PendingFileAttachment> attachments) async {
+    return await Future.wait(attachments.map((e) async {
+      var file = await processAttachment(e);
+      return MatrixProcessedAttachment(file!);
+    }));
+  }
+
+  Future<matrix.MatrixFile?> processAttachment(
+      PendingFileAttachment attachment) async {
+    await attachment.resolve();
+    if (attachment.data == null) return null;
+
+    if (Mime.imageTypes.contains(attachment.mimeType)) {
+      return await matrix.MatrixImageFile.create(
+          bytes: attachment.data!,
+          name: attachment.name ?? "unknown",
+          nativeImplementations: (client as MatrixClient).nativeImplentations);
+    }
+
+    return matrix.MatrixFile(
+        bytes: attachment.data!,
+        name: attachment.name ?? "Unknown",
+        mimeType: attachment.mimeType);
+  }
+
+  @override
+  Future<TimelineEvent?> sendMessage(
+      {String? message,
+      TimelineEvent? inReplyTo,
+      TimelineEvent? replaceEvent,
+      List<ProcessedAttachment>? processedAttachments}) async {
     matrix.Event? replyingTo;
 
     if (inReplyTo != null) {
       replyingTo = await _matrixRoom.getEventById(inReplyTo.eventId);
     }
 
-    String? id = await _matrixRoom.sendTextEvent(message,
-        inReplyTo: replyingTo, editEventId: replaceEvent?.eventId);
+    if (processedAttachments != null) {
+      Future.wait(processedAttachments
+          .whereType<MatrixProcessedAttachment>()
+          .map((e) => _matrixRoom.sendFileEvent(e.file)));
+    }
 
-    if (id != null) {
-      var event = await _matrixRoom.getEventById(id);
-      return (timeline as MatrixTimeline).convertEvent(event!);
+    if (message != null && message.trim().isNotEmpty) {
+      String? id = await _matrixRoom.sendTextEvent(message,
+          inReplyTo: replyingTo, editEventId: replaceEvent?.eventId);
+
+      if (id != null) {
+        var event = await _matrixRoom.getEventById(id);
+        return (timeline as MatrixTimeline).convertEvent(event!);
+      }
     }
 
     return null;

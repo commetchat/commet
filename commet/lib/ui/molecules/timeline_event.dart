@@ -70,7 +70,10 @@ class _TimelineEventState extends State<TimelineEventView> {
     return AnimatedContainer(
         duration: const Duration(milliseconds: 100),
         color: widget.hovered ? m.Colors.red : m.Colors.transparent,
-        child: display);
+        child: Opacity(
+            opacity:
+                widget.event.status == TimelineEventStatus.sending ? 0.5 : 1,
+            child: display));
   }
 
   Widget? eventToWidget(TimelineEvent event) {

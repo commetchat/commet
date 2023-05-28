@@ -1,12 +1,12 @@
 import 'dart:async';
 
 import 'package:commet/client/client.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/organisms/space_summary/space_summary_view.dart';
 import 'package:commet/ui/pages/add_space_or_room/add_space_or_room.dart';
 import 'package:commet/ui/pages/settings/room_settings_page.dart';
 import 'package:commet/ui/pages/settings/space_settings_page.dart';
 import 'package:flutter/widgets.dart';
-import 'package:tiamat/tiamat.dart';
 
 import '../../navigation/navigation_utils.dart';
 
@@ -68,25 +68,25 @@ class _SpaceSummaryState extends State<SpaceSummary> {
   }
 
   onAddRoomButtonTap() {
-    PopupDialog.show(context,
-        content: AddSpaceOrRoom.askCreateOrExistingRoom(
-          client: widget.space.client,
-          rooms: widget.space.client
-              .getEligibleRoomsForSpace(widget.space)
-              .toList(),
-          onRoomCreated: (Room room) async {
-            widget.space.setSpaceChildRoom(room);
-            if (mounted) {
-              Navigator.pop(context);
-            }
-          },
-          onRoomsSelected: (rooms) {
-            for (var room in rooms) {
-              widget.space.setSpaceChildRoom(room);
-            }
-            Navigator.pop(context);
-          },
-        ),
+    AdaptiveDialog.show(context,
+        builder: (_) => AddSpaceOrRoom.askCreateOrExistingRoom(
+              client: widget.space.client,
+              rooms: widget.space.client
+                  .getEligibleRoomsForSpace(widget.space)
+                  .toList(),
+              onRoomCreated: (Room room) async {
+                widget.space.setSpaceChildRoom(room);
+                if (mounted) {
+                  Navigator.pop(context);
+                }
+              },
+              onRoomsSelected: (rooms) {
+                for (var room in rooms) {
+                  widget.space.setSpaceChildRoom(room);
+                }
+                Navigator.pop(context);
+              },
+            ),
         title: "Add Room to Space");
   }
 }

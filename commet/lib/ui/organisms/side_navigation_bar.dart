@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:commet/client/client_manager.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/pages/add_space_or_room/add_space_or_room.dart';
 import 'package:commet/ui/pages/settings/app_settings_page.dart';
 import 'package:flutter/material.dart';
@@ -110,10 +111,10 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                       size: 70,
                       icon: Icons.add,
                       onTap: () {
-                        PopupDialog.show(context,
-                            content: AddSpaceOrRoom(
-                              clients: _clientManager.clients,
-                            ),
+                        AdaptiveDialog.show(context,
+                            builder: (_) => AddSpaceOrRoom(
+                                  clients: _clientManager.clients,
+                                ),
                             title: T.of(context).addSpace);
                       },
                     ),
