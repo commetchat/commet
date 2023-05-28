@@ -58,11 +58,13 @@ dependencies:
   pasteboard: ^0.2.0
   flutter_local_notifications: ^14.1.0
   window_to_front: ^0.0.3
+  win_toast: ^0.3.0
 
 dev_dependencies:
   build_runner:
   widgetbook_generator:
   widgetbook:
+  msix: ^3.7.0
   flutter_test:
     sdk: flutter
 
@@ -106,3 +108,12 @@ flutter:
 
   shaders:
     - assets/shader/texture_coordinate.frag
+
+msix_config:
+  display_name: Commet
+  identity_name: chat.commet.app.windows-a33bc9ba
+  toast_activator:
+    clsid: "7685C041-9D17-4112-8FC4-386743A3D53E"
+    arguments: "-ToastActivated"
+    display_name: "Commet"
+  msix_version: 1.0.4.0

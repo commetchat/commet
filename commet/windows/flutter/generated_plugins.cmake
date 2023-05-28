@@ -8,6 +8,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   media_kit_video
   pasteboard
   url_launcher_windows
+  win_toast
   window_to_front
 )
 

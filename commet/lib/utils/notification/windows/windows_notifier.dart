@@ -1,6 +1,12 @@
 import 'dart:async';
+import 'package:commet/client/matrix/matrix_mxc_file_provider.dart';
+import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
+import 'package:commet/main.dart';
+import 'package:commet/ui/navigation/navigation_signals.dart';
+import 'package:commet/ui/navigation/navigation_utils.dart';
 import 'package:commet/utils/notification/notifier.dart';
 import 'package:desktop_notifications/desktop_notifications.dart';
+import 'package:win_toast/win_toast.dart';
 import '../notification_manager.dart';
 
 class WindowsNotifier extends Notifier {
@@ -9,7 +15,54 @@ class WindowsNotifier extends Notifier {
 
   static NotificationsClient client = NotificationsClient();
 
-  static Future<void> init() async {}
+  static Future<void> init() async {
+    await WinToast.instance().initialize(
+      aumId: 'chat.commet.app.windows-a33bc9ba',
+      displayName: 'Commet',
+      iconPath: '',
+      clsid: '7685C041-9D17-4112-8FC4-386743A3D53E',
+    );
+
+    WinToast.instance().setActivatedCallback(onActivated);
+    WinToast.instance().setDismissedCallback(onDismissed);
+  }
+
+  static void onActivated(ActivatedEvent event) {
+    var text = Uri.decodeQueryComponent(event.argument);
+    var args = Uri.splitQueryString(text);
+
+    switch (args['action']) {
+      case 'reply':
+        var clientId = args['client_id'];
+        var roomId = args['room_id'];
+        var eventId = args['event_id'];
+        var message = event.userInput['reply'];
+
+        if (clientId == null) return;
+        if (roomId == null) return;
+        if (eventId == null) return;
+        if (message == null) return;
+
+        var client = clientManager!.getClient(clientId);
+
+        if (client == null) return;
+
+        client.getRoom(roomId)?.sendMessage(message: message);
+
+        break;
+      case 'open_room':
+        var roomId = args['room_id'];
+        if (roomId == null) return;
+
+        NavigationSignals.openRoom.add(roomId);
+    }
+
+    print("ACTIVATED WHAT THE HELLLL");
+  }
+
+  static void onDismissed(DismissedEvent event) {
+    print("Dismissed WHAT THE HELLLL");
+  }
 
   @override
   Future<bool> requestPermission() async {
@@ -17,5 +70,35 @@ class WindowsNotifier extends Notifier {
   }
 
   @override
-  Future<void> notifyInternal(NotificationContent notification) async {}
+  Future<void> notifyInternal(NotificationContent notification) async {
+    String? avatarFilePath;
+
+    if (notification.image is MatrixMxcImage) {
+      var id = MatrixMxcImage.getThumbnailIdentifier(
+          (notification.image as MatrixMxcImage).identifier);
+      if (await fileCache.hasFile(id)) {
+        avatarFilePath = (await fileCache.getFile(id)).toString();
+      }
+    }
+
+    var f = (String string) => Uri.encodeComponent(string);
+
+    var xml = """
+<?xml version="1.0" encoding="UTF-8"?>
+<toast launch="action=open_room&amp;client_id=${f(notification.sentFrom!.client.identifier)}&amp;room_id=${f(notification.sentFrom!.identifier)}&amp;event_id=${f(notification.event!.eventId)}">
+   <visual>
+      <binding template="ToastGeneric">
+         <text>${notification.title}</text>
+         <text>${notification.content}</text>
+         ${avatarFilePath != null ? "<image placement='appLogoOverride' src='$avatarFilePath' hint-crop='circle'/>" : ""}
+      </binding>
+   </visual>
+   <actions>
+      <input id="reply" type="text" placeHolderContent="Send a reply..." />
+      <action content="Reply" activationType="background" arguments="action=reply&amp;client_id=${f(notification.sentFrom!.client.identifier)}&amp;room_id=${f(notification.sentFrom!.identifier)}&amp;event_id=${f(notification.event!.eventId)}" />
+   </actions>
+</toast>
+  """;
+    WinToast.instance().showCustomToast(xml: xml);
+  }
 }

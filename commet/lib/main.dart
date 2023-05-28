@@ -31,7 +31,7 @@ final GlobalKey<NavigatorState> navigator = GlobalKey();
 FileCacheInstance fileCache = FileCacheInstance();
 Preferences preferences = Preferences();
 NotificationManager notificationManager = NotificationManager();
-
+ClientManager? clientManager;
 void main() async {
   ScaledWidgetsFlutterBinding.ensureInitialized(
     scaleFactor: (deviceSize) {
@@ -41,7 +41,7 @@ void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
 
-  var clientManager = await initApp();
+  clientManager = await initApp();
 
   double scale = preferences.getAppScale();
   var theme = preferences.getTheme();
@@ -53,7 +53,7 @@ void main() async {
   }
 
   runApp(App(
-    clientManager: clientManager,
+    clientManager: clientManager!,
     initialTheme: theme,
   ));
 }
