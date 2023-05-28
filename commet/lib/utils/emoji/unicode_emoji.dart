@@ -226,4 +226,20 @@ class UnicodeEmoticon extends Emoticon {
     }
     return r.join(sep);
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    if (other is! UnicodeEmoticon) {
+      return false;
+    }
+
+    return other.slug == slug;
+  }
+
+  @override
+  int get hashCode {
+    return slug.hashCode;
+  }
 }

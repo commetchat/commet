@@ -4,6 +4,9 @@ import 'package:commet/client/matrix/extensions/matrix_event_extensions.dart';
 import 'package:commet/client/matrix/matrix_mxc_file_provider.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/ui/atoms/rich_text/matrix_html_parser.dart';
+import 'package:commet/utils/emoji/emoji.dart';
+import 'package:commet/utils/emoji/matrix_emoji.dart';
+import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:commet/utils/mime.dart';
 import 'package:commet/utils/text_utils.dart';
 
@@ -181,6 +184,7 @@ class MatrixTimeline extends Timeline {
   TimelineEvent parseMessage(TimelineEvent e, matrix.Event matrixEvent) {
     handleFormatting(matrixEvent, e);
     parseAnyAttachments(matrixEvent, e);
+    handleReactions(matrixEvent, e);
 
     // if the message body is the same as a file name we dont want to display that
     if (e.attachments != null &&
@@ -213,6 +217,42 @@ class MatrixTimeline extends Timeline {
       e.formattedContent = TextUtils.manageRtlSpan(matrixEvent.body,
           TextUtils.formatString(matrixEvent.body, allowBigEmoji: true));
     }
+  }
+
+  void handleReactions(matrix.Event matrixEvent, TimelineEvent e) {
+    if (!matrixEvent.hasAggregatedEvents(
+        _matrixTimeline!, matrix.RelationshipTypes.reaction)) return;
+
+    e.reactions = {};
+
+    var events = matrixEvent
+        .aggregatedEvents(_matrixTimeline!, matrix.RelationshipTypes.reaction)
+        .toList();
+
+    events.sort((eventA, eventB) =>
+        eventA.originServerTs.compareTo(eventB.originServerTs));
+
+    for (var event in events) {
+      var emoji = getEmojiFromEvent(event);
+      if (!e.reactions!.containsKey(emoji)) e.reactions![emoji] = {};
+
+      if (e.reactions!.containsKey(emoji)) {
+        e.reactions![emoji]!.add(event.senderId);
+      }
+    }
+  }
+
+  Emoji getEmojiFromEvent(matrix.Event event) {
+    var key = event.content["m.relates_to"]['key'] as String;
+
+    if (Emoji.knownEmoji.containsKey(key)) return Emoji.knownEmoji[key]!;
+
+    if (key.startsWith("mxc://")) {
+      return MatrixEmoji(Uri.parse(key), _matrixRoom.client,
+          shortcode: event.content['shortcode']);
+    }
+
+    return UnicodeEmoji(key, shortcode: event.content['shortcode']);
   }
 
   void parseAnyAttachments(matrix.Event matrixEvent, TimelineEvent e) {
