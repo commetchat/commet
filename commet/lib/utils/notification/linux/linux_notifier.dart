@@ -6,6 +6,7 @@ import 'package:commet/utils/notification/notifier.dart';
 import 'package:desktop_notifications/desktop_notifications.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:window_manager/window_manager.dart';
 import 'dart:ui' as ui;
 import '../../../ui/navigation/navigation_signals.dart';
 import '../notification_manager.dart';
@@ -27,6 +28,7 @@ class LinuxNotifier extends Notifier {
 
   static void notificationResponse(NotificationResponse details) {
     NavigationSignals.openRoom.add(details.payload!);
+    windowManager.show();
   }
 
   static Future<void> init() async {
