@@ -9,6 +9,7 @@ class WindowManagement {
     await windowManager.ensureInitialized();
     _WindowListener listener = _WindowListener();
 
+    windowManager.setPreventClose(preferences.minimizeOnClose);
     windowManager.addListener(listener);
   }
 }

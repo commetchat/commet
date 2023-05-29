@@ -29,6 +29,7 @@ class LinuxNotifier extends Notifier {
   static void notificationResponse(NotificationResponse details) {
     NavigationSignals.openRoom.add(details.payload!);
     windowManager.show();
+    windowManager.focus();
   }
 
   static Future<void> init() async {

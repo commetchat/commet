@@ -46,7 +46,9 @@ class WindowsNotifier extends Notifier {
 
         if (client == null) return;
 
-        client.getRoom(roomId)?.sendMessage(message: message);
+        if (message.trim().isNotEmpty) {
+          client.getRoom(roomId)?.sendMessage(message: message.trim());
+        }
 
         break;
       case 'open_room':

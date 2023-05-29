@@ -72,8 +72,10 @@ Future<ClientManager> initApp() async {
 
   var dbPath = await AppConfig.getDatabasePath();
 
+  // We need to wait for this first because other initializers might be dependent
+  await preferences.init();
+
   await Future.wait([
-    preferences.init(),
     fileCache.init(),
     EmojiPack.defaults(),
     Notifier.init(),
