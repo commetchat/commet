@@ -23,11 +23,15 @@ class NotificationContent {
       {this.sentFrom, this.event, this.image});
 }
 
-typedef NotificationModifier = NotificationContent? Function(
+typedef NotificationModifier = Future<NotificationContent?> Function(
     NotificationContent content);
 
 class NotificationManager {
-  final Notifier? _notifier = BuildConfig.LINUX ? LinuxNotifier() : BuildConfig.WINDOWS ? WindowsNotifier() : null;
+  final Notifier? _notifier = BuildConfig.LINUX
+      ? LinuxNotifier()
+      : BuildConfig.WINDOWS
+          ? WindowsNotifier()
+          : null;
 
   final List<NotificationModifier> _modifiers = List.empty(growable: true);
 
@@ -43,7 +47,7 @@ class NotificationManager {
     NotificationContent? content = notification;
 
     for (var modifier in _modifiers) {
-      content = modifier(content!);
+      content = await modifier(content!);
 
       if (content == null) return;
     }

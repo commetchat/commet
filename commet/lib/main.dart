@@ -8,6 +8,7 @@ import 'package:commet/ui/pages/login/login_page.dart';
 import 'package:commet/utils/emoji/emoji_pack.dart';
 import 'package:commet/utils/notification/notification_manager.dart';
 import 'package:commet/utils/notification/notifier.dart';
+import 'package:commet/utils/window_management.dart';
 
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
@@ -43,8 +44,8 @@ void main() async {
 
   clientManager = await initApp();
 
-  double scale = preferences.getAppScale();
-  var theme = preferences.getTheme();
+  double scale = preferences.appScale;
+  var theme = preferences.theme;
 
   if (BuildConfig.DESKTOP) {
     ScaledWidgetsFlutterBinding.instance.scaleFactor = (deviceSize) {
@@ -76,6 +77,7 @@ Future<ClientManager> initApp() async {
     fileCache.init(),
     EmojiPack.defaults(),
     Notifier.init(),
+    WindowManagement.init(),
     if (!BuildConfig.LINUX) Hive.initFlutter(dbPath),
   ]);
 

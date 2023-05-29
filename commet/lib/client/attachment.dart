@@ -25,8 +25,6 @@ class PendingFileAttachment {
     assert(path != null || data != null);
 
     mimeType ??= Mime.lookupType(path ?? "", data: data);
-
-    print(mimeType);
   }
 
   Future<void> resolve() async {

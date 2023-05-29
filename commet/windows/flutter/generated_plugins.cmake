@@ -7,9 +7,10 @@ list(APPEND FLUTTER_PLUGIN_LIST
   media_kit_libs_windows_video
   media_kit_video
   pasteboard
+  screen_retriever
   url_launcher_windows
   win_toast
-  window_to_front
+  window_manager
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST

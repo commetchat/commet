@@ -14,7 +14,7 @@ import 'package:commet/utils/orientation.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
-import 'package:window_to_front/window_to_front.dart';
+import 'package:window_manager/window_manager.dart';
 import '../../../client/attachment.dart';
 import '../../../client/client.dart';
 import '../../../config/build_config.dart';
@@ -294,10 +294,6 @@ class ChatPageState extends State<ChatPage> {
           }
 
           selectRoom(room);
-
-          if (BuildConfig.DESKTOP) {
-            WindowToFront.activate();
-          }
           break;
         }
       }
@@ -314,10 +310,19 @@ class ChatPageState extends State<ChatPage> {
     super.dispose();
   }
 
-  NotificationContent? onlyNotifyNonSelectedRooms(NotificationContent content) {
+  Future<NotificationContent?> onlyNotifyNonSelectedRooms(
+      NotificationContent content) async {
+    // Always show notification if the window does not have focus
+    if (BuildConfig.DESKTOP) {
+      if (!(await windowManager.isFocused())) {
+        return content;
+      }
+    }
+
     if (content.sentFrom == selectedRoom) {
       return null;
     }
+
     return content;
   }
 

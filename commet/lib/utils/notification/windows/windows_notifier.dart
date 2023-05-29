@@ -1,12 +1,11 @@
 import 'dart:async';
-import 'package:commet/client/matrix/matrix_mxc_file_provider.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/navigation_signals.dart';
-import 'package:commet/ui/navigation/navigation_utils.dart';
 import 'package:commet/utils/notification/notifier.dart';
 import 'package:desktop_notifications/desktop_notifications.dart';
 import 'package:win_toast/win_toast.dart';
+import 'package:window_manager/window_manager.dart';
 import '../notification_manager.dart';
 
 class WindowsNotifier extends Notifier {
@@ -55,14 +54,11 @@ class WindowsNotifier extends Notifier {
         if (roomId == null) return;
 
         NavigationSignals.openRoom.add(roomId);
+        windowManager.show();
     }
-
-    print("ACTIVATED WHAT THE HELLLL");
   }
 
-  static void onDismissed(DismissedEvent event) {
-    print("Dismissed WHAT THE HELLLL");
-  }
+  static void onDismissed(DismissedEvent event) {}
 
   @override
   Future<bool> requestPermission() async {
@@ -81,6 +77,7 @@ class WindowsNotifier extends Notifier {
       }
     }
 
+    // ignore: prefer_function_declarations_over_variables
     var f = (String string) => Uri.encodeComponent(string);
 
     var xml = """

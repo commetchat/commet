@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:commet/client/matrix/matrix_attachment.dart';
