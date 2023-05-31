@@ -13,9 +13,6 @@ class AdaptiveDialog {
     bool dismissible = true,
     double initialHeightMobile = 0.5,
   }) {
-    var screenSize = MediaQuery.of(context).size;
-    var ratio = screenSize.width / screenSize.height;
-
     if (BuildConfig.DESKTOP ||
         (BuildConfig.WEB &&
             OrientationUtils.getCurrentOrientation(context) ==

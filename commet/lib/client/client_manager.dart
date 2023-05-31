@@ -132,4 +132,10 @@ class ClientManager {
   void _synced() {
     onSync.add(null);
   }
+
+  Client? getClient(String identifier) {
+    var search = clients.where((element) => element.identifier == identifier);
+    if (search.isNotEmpty) return search.first;
+    return null;
+  }
 }

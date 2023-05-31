@@ -175,6 +175,7 @@ abstract class Timeline {
         event.body ?? T.current.notificationReceivedMessagePlaceholder,
         NotificationType.messageReceived,
         sentFrom: room,
+        image: event.sender.avatar,
         event: event));
   }
 

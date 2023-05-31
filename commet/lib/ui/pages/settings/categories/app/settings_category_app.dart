@@ -2,6 +2,7 @@ import 'package:commet/config/build_config.dart';
 import 'package:commet/config/preferences.dart';
 import 'package:commet/generated/l10n.dart';
 import 'package:commet/main.dart';
+import 'package:commet/ui/pages/settings/categories/app/window_settings.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
 import 'package:commet/ui/pages/settings/settings_tab.dart';
 import 'package:flutter/material.dart' as m;
@@ -11,7 +12,7 @@ import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/config/config.dart';
 import 'package:scaled_app/scaled_app.dart';
 
-class SettingsCategoryAppearence implements SettingsCategory {
+class SettingsCategoryApp implements SettingsCategory {
   @override
   List<SettingsTab> get tabs => List.from([
         SettingsTab(
@@ -20,6 +21,13 @@ class SettingsCategoryAppearence implements SettingsCategory {
             pageBuilder: (context) {
               return themeSettings(context);
             }),
+        if (BuildConfig.DESKTOP)
+          SettingsTab(
+              label: "Window Behaviour",
+              icon: m.Icons.window,
+              pageBuilder: (context) {
+                return const WindowSettingsPage();
+              }),
       ]);
 
   @override
@@ -68,7 +76,7 @@ class _UIScaleSelectorState extends State<UIScaleSelector> {
 
   @override
   void initState() {
-    value = preferences.getAppScale();
+    value = preferences.appScale;
     super.initState();
   }
 

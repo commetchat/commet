@@ -1,9 +1,7 @@
-import 'dart:math';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart' as matrix;
-import 'dart:math' as math;
 
 class MatrixPeer extends Peer {
   late matrix.Client _matrixClient;

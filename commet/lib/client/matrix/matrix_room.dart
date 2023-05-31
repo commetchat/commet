@@ -1,10 +1,14 @@
+import 'dart:ui';
+
 import 'package:commet/client/matrix/matrix_attachment.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/matrix/matrix_peer.dart';
 import 'package:commet/client/matrix/matrix_room_permissions.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
+import 'package:commet/utils/image_utils.dart';
 import 'package:commet/utils/mime.dart';
+import 'package:flutter/material.dart';
 
 import '../attachment.dart';
 import '../client.dart';
@@ -103,10 +107,19 @@ class MatrixRoom extends Room {
     await attachment.resolve();
     if (attachment.data == null) return null;
 
+    if (attachment.mimeType == "image/bmp") {
+      var img = MemoryImage(attachment.data!);
+      var image = await ImageUtils.imageProviderToImage(img);
+      var bytes = await image.toByteData(format: ImageByteFormat.png);
+      attachment.data = bytes!.buffer.asUint8List();
+      attachment.mimeType = "image/png";
+    }
+
     if (Mime.imageTypes.contains(attachment.mimeType)) {
       return await matrix.MatrixImageFile.create(
           bytes: attachment.data!,
           name: attachment.name ?? "unknown",
+          mimeType: attachment.mimeType,
           nativeImplementations: (client as MatrixClient).nativeImplentations);
     }
 
