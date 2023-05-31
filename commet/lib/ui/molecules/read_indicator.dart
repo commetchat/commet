@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart';
 
 import '../../client/peer.dart';
+import '../../client/room.dart';
 
 class ReadIndicator extends StatefulWidget {
-  const ReadIndicator({super.key, this.onMessageRead, this.initialList});
+  const ReadIndicator(
+      {super.key, this.room, this.onMessageRead, this.initialList});
   final Stream<Peer>? onMessageRead;
-  final Iterable<Peer>? initialList;
+  final Iterable<String>? initialList;
+  final Room? room;
   @override
   State<ReadIndicator> createState() => ReadIndicatorState();
 }
@@ -19,41 +22,44 @@ class ReadIndicatorState extends State<ReadIndicator> {
     }
     return SizedBox(
         height: 20,
-        child: ShaderMask(
-          shaderCallback: (rect) {
-            return const LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: [
-                Colors.purple,
-                Colors.transparent,
-              ],
-              stops: [
-                0.0,
-                0.3,
-              ],
-            ).createShader(rect);
-          },
-          blendMode: BlendMode.dstOut,
-          child: ListView.builder(
-            itemCount: widget.initialList!.length,
-            scrollDirection: Axis.horizontal,
-            reverse: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemBuilder: (context, index) {
-              return buildAvatar(widget.initialList!.elementAt(index));
-            },
-          ),
-        ));
+        child: widget.initialList == null
+            ? null
+            : ShaderMask(
+                shaderCallback: (rect) {
+                  return const LinearGradient(
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                    colors: [
+                      Colors.purple,
+                      Colors.transparent,
+                    ],
+                    stops: [
+                      0.0,
+                      0.3,
+                    ],
+                  ).createShader(rect);
+                },
+                blendMode: BlendMode.dstOut,
+                child: ListView.builder(
+                  itemCount: widget.initialList!.length,
+                  scrollDirection: Axis.horizontal,
+                  reverse: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    return buildAvatar(widget.initialList!.elementAt(index));
+                  },
+                ),
+              ));
   }
 
   Widget buildAvatar(
-    Peer peer,
+    String id,
   ) {
+    Peer? peer = widget.room?.client.getPeer(id);
     return Avatar(
       radius: 10,
-      image: peer.avatar,
-      placeholderText: peer.displayName,
+      image: peer?.avatar,
+      placeholderText: peer?.displayName ?? id,
     );
   }
 }

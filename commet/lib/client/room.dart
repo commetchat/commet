@@ -81,5 +81,7 @@ abstract class Room {
   @override
   int get hashCode => identifier.hashCode;
 
+  Color getColorOfUser(String userId);
+
   Future<void> enableE2EE();
 }

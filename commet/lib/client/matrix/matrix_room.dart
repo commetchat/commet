@@ -200,4 +200,9 @@ class MatrixRoom extends Room {
   Future<void> setTypingStatus(bool typing) async {
     await _matrixRoom.setTyping(typing, timeout: 2000);
   }
+
+  @override
+  Color getColorOfUser(String userId) {
+    return MatrixPeer.hashColor(userId);
+  }
 }

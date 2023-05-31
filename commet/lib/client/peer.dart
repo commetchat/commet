@@ -8,5 +8,4 @@ abstract class Peer {
   late Client client;
   String? detail;
   ImageProvider? avatar;
-  Color? color;
 }

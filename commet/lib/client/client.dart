@@ -53,6 +53,8 @@ abstract class Client {
   final Map<String, Room> _directMessages = {};
 
   List<Room> directMessages = List.empty(growable: true);
+  List<Room> singleRooms = List.empty(growable: true);
+
   List<Room> rooms = List.empty(growable: true);
   List<Space> spaces = List.empty(growable: true);
   List<Peer> peers = List.empty(growable: true);
@@ -105,6 +107,10 @@ abstract class Client {
             .any((element) => element.roomId == room.identifier)) {
           space.addRoom(room);
         }
+      }
+
+      if (!spaces.any((space) => space.containsRoom(room.identifier))) {
+        singleRooms.add(room);
       }
 
       onRoomAdded.add(index);

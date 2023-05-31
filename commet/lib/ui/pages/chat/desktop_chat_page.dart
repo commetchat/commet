@@ -8,7 +8,6 @@ import 'package:commet/ui/molecules/read_indicator.dart';
 import 'package:commet/ui/molecules/split_timeline_viewer.dart';
 import 'package:commet/ui/molecules/message_input.dart';
 import 'package:commet/ui/molecules/space_viewer.dart';
-import 'package:commet/ui/molecules/user_list.dart';
 import 'package:commet/ui/molecules/user_panel.dart';
 import 'package:commet/ui/organisms/side_navigation_bar.dart';
 import 'package:commet/ui/pages/chat/chat_page.dart';
@@ -20,6 +19,7 @@ import 'package:tiamat/tiamat.dart';
 import 'package:mime/mime.dart' as mime;
 
 import '../../../client/attachment.dart';
+import '../../molecules/user_list.dart';
 import '../../organisms/space_summary/space_summary.dart';
 
 class DesktopChatPageView extends StatefulWidget {
@@ -44,6 +44,9 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
                   widget.state
                       .selectSpace(widget.state.clientManager.spaces[index]);
                 },
+                onDirectMessagesSelected: () {
+                  widget.state.selectDirectMessages();
+                },
                 onHomeSelected: () {
                   widget.state.selectHome();
                 },
@@ -52,10 +55,12 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
                 },
               ),
             ),
-            if (widget.state.homePageSelected) homePageView(),
-            if (!widget.state.homePageSelected &&
+            if (widget.state.selectedView == SubView.directMessages)
+              directMessagesView(),
+            if (widget.state.selectedView == SubView.space &&
                 widget.state.selectedSpace != null)
               spaceRoomSelector(),
+            if (widget.state.selectedView == SubView.home) homeView(),
             if (widget.state.selectedRoom != null) roomChatView(),
             if (widget.state.selectedSpace != null &&
                 widget.state.selectedRoom == null)
@@ -80,7 +85,7 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
     );
   }
 
-  Widget homePageView() {
+  Widget directMessagesView() {
     return Tile.low1(
       child: SizedBox(
         width: 250,
@@ -90,6 +95,23 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
             setState(() {
               widget.state
                   .selectRoom(widget.state.clientManager.directMessages[index]);
+            });
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget homeView() {
+    return Tile.low1(
+      child: SizedBox(
+        width: 250,
+        child: DirectMessageList(
+          directMessages: widget.state.clientManager.singleRooms,
+          onSelected: (index) {
+            setState(() {
+              widget.state
+                  .selectRoom(widget.state.clientManager.singleRooms[index]);
             });
           },
         ),
@@ -155,9 +177,9 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
                           isProcessing: widget.state.processing,
                           relatedEventBody: widget.state.interactingEvent?.body,
                           relatedEventSenderName:
-                              widget.state.interactingEvent?.sender.displayName,
+                              widget.state.relatedEventSenderName,
                           relatedEventSenderColor:
-                              widget.state.interactingEvent?.sender.color,
+                              widget.state.relatedEventSenderColor,
                           setInputText: widget.state.setMessageInputText.stream,
                           typingUsernames: widget
                               .state.selectedRoom!.typingPeers
@@ -175,7 +197,7 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
                 SizedBox(
                     width: 250,
                     child: PeerList(
-                      widget.state.selectedRoom!.members,
+                      widget.state.selectedRoom!,
                       key: widget.state.selectedRoom!.key,
                     )),
               ],
@@ -253,7 +275,6 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
                           widget.state.selectedSpace!.client.user!.displayName,
                       avatar: widget.state.selectedSpace!.client.user!.avatar,
                       detail: widget.state.selectedSpace!.client.user!.detail,
-                      color: widget.state.selectedSpace!.client.user!.color,
                     ),
                   ),
                 ),

@@ -74,8 +74,8 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
       children: [
         Tile.low4(
           child: SideNavigationBar(
-            onHomeSelected: () {
-              widget.state.selectHome();
+            onDirectMessagesSelected: () {
+              widget.state.selectDirectMessages();
             },
             onSpaceSelected: (index) {
               widget.state
@@ -84,10 +84,15 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
             clearSpaceSelection: () {
               widget.state.clearSpaceSelection();
             },
+            onHomeSelected: () {
+              widget.state.selectHome();
+            },
           ),
         ),
-        if (widget.state.homePageSelected) homePageView(),
-        if (widget.state.homePageSelected == false &&
+        if (widget.state.selectedView == SubView.home) homeView(),
+        if (widget.state.selectedView == SubView.directMessages)
+          directMessagesView(),
+        if (widget.state.selectedView == SubView.space &&
             widget.state.selectedSpace != null)
           spaceRoomSelector(newContext),
       ],
@@ -120,7 +125,7 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
           child: Padding(
             padding: const EdgeInsets.fromLTRB(50, 20, 0, 0),
             child: PeerList(
-              widget.state.selectedRoom!.members,
+              widget.state.selectedRoom!,
               key: widget.state.selectedRoom!.key,
             ),
           ),
@@ -130,7 +135,7 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
     return const Placeholder();
   }
 
-  Widget homePageView() {
+  Widget directMessagesView() {
     return Flexible(
       child: Tile.low1(
         child: SafeArea(
@@ -141,6 +146,26 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
               onSelected: (index) {
                 setState(() {
                   selectRoom(widget.state.clientManager.directMessages[index]);
+                });
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget homeView() {
+    return Flexible(
+      child: Tile.low1(
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(0, 0, 50, 0),
+            child: DirectMessageList(
+              directMessages: widget.state.clientManager.singleRooms,
+              onSelected: (index) {
+                setState(() {
+                  selectRoom(widget.state.clientManager.singleRooms[index]);
                 });
               },
             ),
@@ -198,7 +223,6 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
                       widget.state.selectedSpace!.client.user!.displayName,
                   avatar: widget.state.selectedSpace!.client.user!.avatar,
                   detail: widget.state.selectedSpace!.client.user!.detail,
-                  color: widget.state.selectedSpace!.client.user!.color,
                 ),
               ),
             )
@@ -280,10 +304,10 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
                               isProcessing: widget.state.processing,
                               setInputText:
                                   widget.state.setMessageInputText.stream,
-                              relatedEventSenderName: widget
-                                  .state.interactingEvent?.sender.displayName,
+                              relatedEventSenderName:
+                                  widget.state.relatedEventSenderName,
                               relatedEventSenderColor:
-                                  widget.state.interactingEvent?.sender.color,
+                                  widget.state.relatedEventSenderColor,
                               interactionType: widget.state.interactionType,
                               addAttachment: widget.state.addAttachment,
                               onTextUpdated: widget.state.onInputTextUpdated,
@@ -458,7 +482,8 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
     if (widget.state.selectedRoom?.permissions.canUserEditMessages != true)
       return false;
 
-    if (event.sender != widget.state.selectedRoom!.client.user) return false;
+    if (event.senderId != widget.state.selectedRoom!.client.user!.identifier)
+      return false;
 
     if (event.type != EventType.message) return false;
 
@@ -469,7 +494,8 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
     if (widget.state.selectedRoom?.permissions.canUserDeleteMessages != true)
       return false;
 
-    if (event.sender != widget.state.selectedRoom!.client.user) return false;
+    if (event.senderId != widget.state.selectedRoom!.client.user!.identifier)
+      return false;
 
     if (event.type != EventType.message) return false;
 

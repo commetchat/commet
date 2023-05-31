@@ -19,8 +19,9 @@ class SideNavigationBar extends StatefulWidget {
   const SideNavigationBar(
       {super.key,
       this.onSpaceSelected,
-      this.onHomeSelected,
+      this.onDirectMessagesSelected,
       this.onSettingsSelected,
+      this.onHomeSelected,
       this.clearSpaceSelection});
 
   static ValueKey settingsKey =
@@ -28,6 +29,7 @@ class SideNavigationBar extends StatefulWidget {
 
   final void Function(int index)? onSpaceSelected;
   final void Function()? clearSpaceSelection;
+  final void Function()? onDirectMessagesSelected;
   final void Function()? onHomeSelected;
   final void Function()? onSettingsSelected;
 
@@ -95,6 +97,19 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                     icon: Icons.home,
                     onTap: () {
                       widget.onHomeSelected?.call();
+                    },
+                  ),
+                  context),
+              const SizedBox(
+                height: 3,
+              ),
+              SideNavigationBar.tooltip(
+                  "Direct Messages",
+                  ImageButton(
+                    size: 70,
+                    icon: Icons.person,
+                    onTap: () {
+                      widget.onDirectMessagesSelected?.call();
                     },
                   ),
                   context)

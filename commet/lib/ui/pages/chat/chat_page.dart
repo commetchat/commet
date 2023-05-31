@@ -26,6 +26,12 @@ enum EventInteractionType {
   edit,
 }
 
+enum SubView {
+  space,
+  directMessages,
+  home,
+}
+
 class ChatPage extends StatefulWidget {
   const ChatPage({required this.clientManager, super.key});
   final ClientManager clientManager;
@@ -37,7 +43,9 @@ class ChatPageState extends State<ChatPage> {
   ClientManager get clientManager => widget.clientManager;
   Space? selectedSpace;
   Room? selectedRoom;
-  late bool homePageSelected = false;
+
+  SubView selectedView = SubView.space;
+
   late GlobalKey<SplitTimelineViewerState> timelineKey =
       GlobalKey<SplitTimelineViewerState>();
   late Map<String, GlobalKey<SplitTimelineViewerState>> timelines = {};
@@ -65,6 +73,15 @@ class ChatPageState extends State<ChatPage> {
 
   StreamSubscription? onOpenRoomSubscription;
 
+  String? get relatedEventSenderName => interactingEvent == null
+      ? null
+      : selectedRoom?.client.getPeer(interactingEvent!.senderId)?.displayName ??
+          interactingEvent!.senderId;
+
+  Color? get relatedEventSenderColor => interactingEvent == null
+      ? null
+      : selectedRoom?.getColorOfUser(interactingEvent!.senderId);
+
   void onInputTextUpdated(String currentText) {
     if (currentText.isEmpty) {
       stopTyping();
@@ -83,10 +100,6 @@ class ChatPageState extends State<ChatPage> {
     selectedRoom?.setTypingStatus(false);
   }
 
-  void selectHomePage() {
-    homePageSelected = true;
-  }
-
   void clearRelatedEvents() {
     setState(() {
       interactingEvent = null;
@@ -100,7 +113,7 @@ class ChatPageState extends State<ChatPage> {
     for (int i = 0; i < min(20, selectedRoom!.timeline!.events.length); i++) {
       var event = selectedRoom!.timeline!.events[i];
 
-      if (event.sender != selectedRoom!.client.user) continue;
+      if (event.senderId != selectedRoom!.client.user!.identifier) continue;
 
       if (event.type != EventType.message) continue;
 
@@ -206,6 +219,25 @@ class ChatPageState extends State<ChatPage> {
     }
   }
 
+  void selectDirectMessages() {
+    onRoomUpdateSubscription?.cancel();
+    if (kDebugMode) {
+      // Weird hacky work around mentioned in #2
+      timelines[selectedRoom?.localId]?.currentState!.prepareForDisposal();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        setState(() {
+          selectedView = SubView.directMessages;
+          selectedSpace = null;
+        });
+      });
+    } else {
+      setState(() {
+        selectedView = SubView.directMessages;
+        selectedSpace = null;
+      });
+    }
+  }
+
   void selectHome() {
     onRoomUpdateSubscription?.cancel();
     if (kDebugMode) {
@@ -213,13 +245,13 @@ class ChatPageState extends State<ChatPage> {
       timelines[selectedRoom?.localId]?.currentState!.prepareForDisposal();
       WidgetsBinding.instance.addPostFrameCallback((_) {
         setState(() {
-          homePageSelected = true;
+          selectedView = SubView.home;
           selectedSpace = null;
         });
       });
     } else {
       setState(() {
-        homePageSelected = true;
+        selectedView = SubView.home;
         selectedSpace = null;
       });
     }
@@ -258,7 +290,7 @@ class ChatPageState extends State<ChatPage> {
   void _setSelectedSpace(Space? space) {
     setState(() {
       selectedSpace = space;
-      homePageSelected = false;
+      selectedView = SubView.space;
       interactingEvent = null;
       clearAttachments();
     });

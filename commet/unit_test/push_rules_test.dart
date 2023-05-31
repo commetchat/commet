@@ -99,7 +99,7 @@ void main() async {
 
     TimelineEvent event = TimelineEvent();
     event.type = EventType.message;
-    event.sender = client.user!;
+    event.senderId = client.user!.identifier;
 
     expect(room.timeline!.shouldDisplayNotification(event), isFalse);
   });
@@ -111,7 +111,7 @@ void main() async {
 
     TimelineEvent event = TimelineEvent();
     event.type = EventType.message;
-    event.sender = simulatedRoom.bob;
+    event.senderId = simulatedRoom.bob.identifier;
 
     expect(room.timeline!.shouldDisplayNotification(event), isTrue);
   });
@@ -124,7 +124,7 @@ void main() async {
 
     TimelineEvent event = TimelineEvent();
     event.type = EventType.message;
-    event.sender = simulatedRoom.bob;
+    event.senderId = simulatedRoom.bob.identifier;
 
     expect(room.timeline!.shouldDisplayNotification(event), isFalse);
   });
@@ -137,7 +137,7 @@ void main() async {
 
     TimelineEvent event = TimelineEvent();
     event.type = EventType.message;
-    event.sender = simulatedRoom.bob;
+    event.senderId = simulatedRoom.bob.identifier;
 
     expect(room.timeline!.shouldDisplayNotification(event), isFalse);
   });

@@ -25,7 +25,6 @@ class MatrixPeer extends Peer {
 
     userName = identifier.split('@').last.split(':').first;
     detail = identifier.split(':').last;
-    color = hashColor(identifier);
 
     refreshAvatar();
   }
@@ -43,7 +42,7 @@ class MatrixPeer extends Peer {
 
   // Matching color calculation that other clients use. Element, Cinny, Etc.
   // https://github.com/cinnyapp/cinny/blob/dev/src/util/colorMXID.js
-  Color hashColor(String userId) {
+  static Color hashColor(String userId) {
     int hash = 0;
 
     const colors = [
