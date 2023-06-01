@@ -38,6 +38,9 @@ class EmojiPack {
       9: flags
     };
 
+    final manifestContent = await rootBundle.loadString('AssetManifest.json');
+    final Map<String, dynamic> manifestMap = json.decode(manifestContent);
+
     String jsonString =
         await rootBundle.loadString("assets/emoji_data/data.json");
     List<dynamic> data = jsonDecode(jsonString);
@@ -59,7 +62,15 @@ class EmojiPack {
 
       if (emojiData.containsKey('group')) {
         int groupId = emojiData['group'];
-        var e = UnicodeEmoji(emojiData['emoji'], shortcode: shortcode);
+
+        var emojiChar = emojiData['emoji'];
+
+        //Skip emoji which we dont have an asset for
+        if (!manifestMap.containsKey(UnicodeEmoji.emojiToAsset(emojiChar))) {
+          continue;
+        }
+
+        var e = UnicodeEmoji(emojiChar, shortcode: shortcode);
 
         if (groupToPack.containsKey(groupId)) {
           groupToPack[groupId]!.add(e);
