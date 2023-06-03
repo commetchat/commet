@@ -6,10 +6,10 @@ import '../../client/room.dart';
 
 class ReadIndicator extends StatefulWidget {
   const ReadIndicator(
-      {super.key, this.room, this.onMessageRead, this.initialList});
+      {super.key, required this.room, this.onMessageRead, this.initialList});
   final Stream<Peer>? onMessageRead;
   final Iterable<String>? initialList;
-  final Room? room;
+  final Room room;
   @override
   State<ReadIndicator> createState() => ReadIndicatorState();
 }
@@ -46,20 +46,43 @@ class ReadIndicatorState extends State<ReadIndicator> {
                   reverse: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) {
-                    return buildAvatar(widget.initialList!.elementAt(index));
+                    return SingleUserReadIndicator(
+                      identifier: widget.initialList!.elementAt(index),
+                      room: widget.room,
+                    );
                   },
                 ),
               ));
   }
+}
 
-  Widget buildAvatar(
-    String id,
-  ) {
-    Peer? peer = widget.room?.client.getPeer(id);
+class SingleUserReadIndicator extends StatefulWidget {
+  const SingleUserReadIndicator(
+      {required this.identifier, required this.room, super.key});
+  final String identifier;
+  final Room room;
+  @override
+  State<SingleUserReadIndicator> createState() =>
+      _SingleUserReadIndicatorState();
+}
+
+class _SingleUserReadIndicatorState extends State<SingleUserReadIndicator> {
+  late Peer peer;
+  @override
+  void initState() {
+    peer = widget.room.client.fetchPeer(widget.identifier);
+    peer.loading?.then((_) {
+      setState(() {});
+    });
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Avatar(
       radius: 10,
-      image: peer?.avatar,
-      placeholderText: peer?.displayName ?? id,
+      image: peer.avatar,
+      placeholderText: peer.displayName,
     );
   }
 }

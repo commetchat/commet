@@ -52,6 +52,10 @@ class _TimelineEventState extends State<TimelineEventView> {
       }
     }
 
+    widget.timeline.client.fetchPeer(widget.event.senderId).loading?.then((_) {
+      if (mounted) setState(() {});
+    });
+
     super.initState();
   }
 
@@ -77,13 +81,16 @@ class _TimelineEventState extends State<TimelineEventView> {
   }
 
   String get displayName =>
-      widget.timeline.room.client.getPeer(widget.event.senderId)?.displayName ??
-      widget.event.senderId;
+      widget.timeline.room.client.fetchPeer(widget.event.senderId).displayName;
 
   ImageProvider? get avatar =>
-      widget.timeline.room.client.getPeer(widget.event.senderId)?.avatar;
+      widget.timeline.room.client.fetchPeer(widget.event.senderId).avatar;
 
   Color get color => widget.timeline.room.getColorOfUser(widget.event.senderId);
+
+  String? get relatedEventDisplayName => relatedEvent == null
+      ? null
+      : widget.timeline.client.fetchPeer(relatedEvent!.senderId).displayName;
 
   Widget? eventToWidget(TimelineEvent event) {
     if (event.status == TimelineEventStatus.removed) return const SizedBox();
@@ -102,7 +109,7 @@ class _TimelineEventState extends State<TimelineEventView> {
               (relatedEvent?.type == EventType.sticker
                   ? T.current.messagePlaceholderSticker
                   : null),
-          replySenderName: displayName,
+          replySenderName: relatedEventDisplayName,
           replySenderColor: color,
           edited: widget.event.edited,
           body: buildBody(),

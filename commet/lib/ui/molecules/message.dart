@@ -158,7 +158,9 @@ class _MessageState extends State<Message> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (widget.replySenderName != null) replyText(),
+            if (widget.replySenderName != null &&
+                widget.replySenderName != null)
+              replyText(),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

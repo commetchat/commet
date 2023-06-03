@@ -10,10 +10,10 @@ class MatrixPeer extends Peer {
     _matrixClient = matrixClient;
     identifier = userId;
     displayName = userId;
-    init();
+    loading = init();
   }
 
-  void init() async {
+  Future<void> init() async {
     String? name;
 
     try {
@@ -21,12 +21,10 @@ class MatrixPeer extends Peer {
     } catch (_) {}
     if (name != null) displayName = name;
 
-    hashColor("ABCDEFG");
-
     userName = identifier.split('@').last.split(':').first;
     detail = identifier.split(':').last;
 
-    refreshAvatar();
+    await refreshAvatar();
   }
 
   Future<void> refreshAvatar() async {

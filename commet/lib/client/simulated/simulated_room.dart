@@ -24,7 +24,7 @@ class SimulatedRoom extends Room {
   final List<Peer> _participants = List.empty(growable: true);
 
   @override
-  Iterable<Peer> get members => _participants;
+  Iterable<String> get memberIds => _participants.map((e) => e.identifier);
 
   @override
   int highlightedNotificationCount = 0;

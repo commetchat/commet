@@ -75,7 +75,9 @@ class ChatPageState extends State<ChatPage> {
 
   String? get relatedEventSenderName => interactingEvent == null
       ? null
-      : selectedRoom?.client.getPeer(interactingEvent!.senderId)?.displayName ??
+      : selectedRoom?.client
+              .fetchPeer(interactingEvent!.senderId)
+              .displayName ??
           interactingEvent!.senderId;
 
   Color? get relatedEventSenderColor => interactingEvent == null

@@ -171,11 +171,11 @@ abstract class Timeline {
   @protected
   void displayNotification(TimelineEvent event) {
     notificationManager.notify(NotificationContent(
-        room.client.getPeer(event.senderId)?.displayName ?? event.senderId,
+        room.client.fetchPeer(event.senderId).displayName,
         event.body ?? T.current.notificationReceivedMessagePlaceholder,
         NotificationType.messageReceived,
         sentFrom: room,
-        image: room.client.getPeer(event.senderId)?.avatar,
+        image: room.client.fetchPeer(event.senderId).avatar,
         event: event));
   }
 

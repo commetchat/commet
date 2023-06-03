@@ -15,7 +15,7 @@ abstract class Room {
   final Key key = UniqueKey();
   Timeline? timeline;
   late ImageProvider? avatar;
-  Iterable<Peer> get members;
+  Iterable<String> get memberIds;
   late String displayName;
   late bool isDirectMessage;
   late String? directMessagePartnerID;

@@ -85,8 +85,14 @@ abstract class Client {
     return _spaces[identifier];
   }
 
-  Peer? getPeer(String identifier) {
-    return _peers[identifier];
+  /// Fetches a peer from the server, handling any caching
+  Peer fetchPeer(String identifier) {
+    if (_peers.containsKey(identifier)) return _peers[identifier]!;
+
+    var result = fetchPeerInternal(identifier);
+    _peers[identifier] = result;
+
+    return result;
   }
 
   void addRoom(Room room) {
@@ -169,4 +175,9 @@ abstract class Client {
   Future<void> close() async {}
 
   Iterable<Room> getEligibleRoomsForSpace(Space space);
+
+  @protected
+
+  /// Fetches a peer from the server. does not need to implement caching
+  Peer fetchPeerInternal(String identifier);
 }

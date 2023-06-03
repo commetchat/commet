@@ -1,3 +1,4 @@
+import 'package:commet/client/client.dart';
 import 'package:commet/ui/molecules/user_panel.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart';
@@ -18,30 +19,23 @@ class _PeerListState extends State<PeerList> {
 
   @override
   void initState() {
-    _count = widget.room.members.length;
+    _count = widget.room.memberIds.length;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Tile.low1(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
-        child: AnimatedList(
-          key: _listKey,
-          physics: const BouncingScrollPhysics(),
-          initialItemCount: _count,
-          itemBuilder: (context, i, animation) => SizeTransition(
-              sizeFactor:
-                  animation.drive(CurveTween(curve: Curves.easeOutCubic)),
-              child: UserPanel(
-                displayName: widget.room.members.elementAt(i).displayName,
-                avatar: widget.room.members.elementAt(i).avatar,
-                color: widget.room.getColorOfUser(
-                    widget.room.members.elementAt(i).identifier),
-              )),
-        ),
-      ),
+    return AnimatedList(
+      key: _listKey,
+      physics: const BouncingScrollPhysics(),
+      initialItemCount: _count,
+      itemBuilder: (context, i, animation) => SizeTransition(
+          sizeFactor: animation.drive(CurveTween(curve: Curves.easeOutCubic)),
+          child: UserPanel(
+            widget.room.client.fetchPeer(widget.room.memberIds.elementAt(i)),
+            userColor:
+                widget.room.getColorOfUser(widget.room.memberIds.elementAt(i)),
+          )),
     );
   }
 }

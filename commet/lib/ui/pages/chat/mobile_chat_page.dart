@@ -42,6 +42,9 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
   bool shouldMainIgnoreInput = false;
   double height = -1;
 
+  static const Key homeRoomsList = ValueKey("MOBILE_HOME_ROOMS_LIST");
+  static const Key directRoomsList = ValueKey("MOBILE_DIRECT_ROOMS_LIST");
+
   @override
   void initState() {
     panelsKey = GlobalKey<OverlappingPanelsState>();
@@ -142,6 +145,7 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
           child: Padding(
             padding: const EdgeInsets.fromLTRB(0, 0, 50, 0),
             child: DirectMessageList(
+              key: directRoomsList,
               directMessages: widget.state.clientManager.directMessages,
               onSelected: (index) {
                 setState(() {
@@ -162,6 +166,7 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
           child: Padding(
             padding: const EdgeInsets.fromLTRB(0, 0, 50, 0),
             child: DirectMessageList(
+              key: homeRoomsList,
               directMessages: widget.state.clientManager.singleRooms,
               onSelected: (index) {
                 setState(() {
@@ -218,11 +223,14 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
             Tile.low2(
               child: SizedBox(
                 height: 70,
-                child: UserPanel(
-                  displayName:
-                      widget.state.selectedSpace!.client.user!.displayName,
-                  avatar: widget.state.selectedSpace!.client.user!.avatar,
-                  detail: widget.state.selectedSpace!.client.user!.detail,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(8.0, 0, 0, 0),
+                  child: UserPanelView(
+                    displayName:
+                        widget.state.selectedSpace!.client.user!.displayName,
+                    avatar: widget.state.selectedSpace!.client.user!.avatar,
+                    detail: widget.state.selectedSpace!.client.user!.detail,
+                  ),
                 ),
               ),
             )
@@ -291,6 +299,7 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
                               key: messageInput,
                               isRoomE2EE: widget.state.selectedRoom!.isE2EE,
                               readIndicator: ReadIndicator(
+                                room: widget.state.selectedRoom!,
                                 initialList: widget
                                     .state.selectedRoom?.timeline?.receipts,
                               ),

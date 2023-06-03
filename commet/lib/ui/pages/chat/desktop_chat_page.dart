@@ -30,6 +30,9 @@ class DesktopChatPageView extends StatefulWidget {
 }
 
 class _DesktopChatPageViewState extends State<DesktopChatPageView> {
+  static const Key homeRoomsList = ValueKey("DESKTOP_HOME_ROOMS_LIST");
+  static const Key directRoomsList = ValueKey("DESKTOP_DIRECT_ROOMS_LIST");
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -90,6 +93,7 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
       child: SizedBox(
         width: 250,
         child: DirectMessageList(
+          key: directRoomsList,
           directMessages: widget.state.clientManager.directMessages,
           onSelected: (index) {
             setState(() {
@@ -107,6 +111,7 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
       child: SizedBox(
         width: 250,
         child: DirectMessageList(
+          key: homeRoomsList,
           directMessages: widget.state.clientManager.singleRooms,
           onSelected: (index) {
             setState(() {
@@ -163,6 +168,7 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
                               widget.state.onFocusMessageInput.stream,
                           attachments: widget.state.attachments,
                           readIndicator: ReadIndicator(
+                            room: widget.state.selectedRoom!,
                             initialList:
                                 widget.state.selectedRoom?.timeline?.receipts,
                           ),
@@ -194,12 +200,17 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
                     ],
                   ),
                 ),
-                SizedBox(
-                    width: 250,
-                    child: PeerList(
-                      widget.state.selectedRoom!,
-                      key: widget.state.selectedRoom!.key,
-                    )),
+                Tile.low1(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 8, 0, 0),
+                    child: SizedBox(
+                        width: 250,
+                        child: PeerList(
+                          widget.state.selectedRoom!,
+                          key: widget.state.selectedRoom!.key,
+                        )),
+                  ),
+                ),
               ],
             ),
           ),
@@ -269,8 +280,8 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
                 child: SizedBox(
                   height: 65,
                   child: Padding(
-                    padding: const EdgeInsets.all(3.0),
-                    child: UserPanel(
+                    padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+                    child: UserPanelView(
                       displayName:
                           widget.state.selectedSpace!.client.user!.displayName,
                       avatar: widget.state.selectedSpace!.client.user!.avatar,
