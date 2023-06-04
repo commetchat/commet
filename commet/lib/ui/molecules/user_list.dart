@@ -1,7 +1,6 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/ui/molecules/user_panel.dart';
 import 'package:flutter/material.dart';
-import 'package:tiamat/tiamat.dart';
 
 import '../../client/room.dart';
 

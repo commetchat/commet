@@ -239,6 +239,8 @@ class MatrixTimeline extends Timeline {
                 ? MatrixMxcImage(
                     matrixEvent.videoThumbnailUrl!, _matrixRoom.client,
                     blurhash: matrixEvent.attachmentBlurhash,
+                    doFullres: false,
+                    doThumbnail: true,
                     matrixEvent: matrixEvent)
                 : null,
             name: matrixEvent.body,
