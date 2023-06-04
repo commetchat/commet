@@ -89,7 +89,7 @@ class TimelineEvent {
   EventType type = EventType.invalid;
   bool edited = false;
   late TimelineEventStatus status;
-  late Peer sender;
+  late String senderId;
   late DateTime originServerTs;
   String? body;
   late String? source = "";
@@ -112,7 +112,7 @@ abstract class Timeline {
   late Client client;
   late Room room;
 
-  Iterable<Peer>? get receipts;
+  Iterable<String>? get receipts;
 
   void markAsRead(TimelineEvent event);
 
@@ -152,7 +152,7 @@ abstract class Timeline {
   bool shouldDisplayNotification(TimelineEvent event) {
     if (event.type != EventType.message) return false;
 
-    if (event.sender == client.user) return false;
+    if (event.senderId == client.user!.identifier) return false;
 
     if (room.pushRule == PushRule.dontNotify) return false;
 
@@ -171,11 +171,11 @@ abstract class Timeline {
   @protected
   void displayNotification(TimelineEvent event) {
     notificationManager.notify(NotificationContent(
-        event.sender.displayName,
+        room.client.fetchPeer(event.senderId).displayName,
         event.body ?? T.current.notificationReceivedMessagePlaceholder,
         NotificationType.messageReceived,
         sentFrom: room,
-        image: event.sender.avatar,
+        image: room.client.fetchPeer(event.senderId).avatar,
         event: event));
   }
 

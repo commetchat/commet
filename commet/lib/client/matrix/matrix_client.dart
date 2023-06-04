@@ -315,4 +315,10 @@ class MatrixClient extends Client {
   Iterable<Room> getEligibleRoomsForSpace(Space space) {
     return rooms.where((room) => !space.containsRoom(room.identifier));
   }
+
+  @override
+  Peer fetchPeerInternal(String identifier) {
+    var peer = MatrixPeer(_matrixClient, identifier);
+    return peer;
+  }
 }

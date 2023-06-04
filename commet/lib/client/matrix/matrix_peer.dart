@@ -10,10 +10,10 @@ class MatrixPeer extends Peer {
     _matrixClient = matrixClient;
     identifier = userId;
     displayName = userId;
-    init();
+    loading = init();
   }
 
-  void init() async {
+  Future<void> init() async {
     String? name;
 
     try {
@@ -21,13 +21,10 @@ class MatrixPeer extends Peer {
     } catch (_) {}
     if (name != null) displayName = name;
 
-    hashColor("ABCDEFG");
-
     userName = identifier.split('@').last.split(':').first;
     detail = identifier.split(':').last;
-    color = hashColor(identifier);
 
-    refreshAvatar();
+    await refreshAvatar();
   }
 
   Future<void> refreshAvatar() async {
@@ -43,7 +40,7 @@ class MatrixPeer extends Peer {
 
   // Matching color calculation that other clients use. Element, Cinny, Etc.
   // https://github.com/cinnyapp/cinny/blob/dev/src/util/colorMXID.js
-  Color hashColor(String userId) {
+  static Color hashColor(String userId) {
     int hash = 0;
 
     const colors = [

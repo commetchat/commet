@@ -30,12 +30,13 @@ class MatrixRoom extends Room {
   int get notificationCount => _matrixRoom.notificationCount;
 
   @override
-  Iterable<Peer> get members => getMembers();
+  Iterable<String> get memberIds =>
+      _matrixRoom.getParticipants().map((e) => e.id);
 
   @override
   List<Peer> get typingPeers => _matrixRoom.typingUsers
       .where((element) => element.id != client.user!.identifier)
-      .map((e) => client.getPeer(e.id)!)
+      .map((e) => client.fetchPeer(e.id))
       .toList();
 
   @override
@@ -66,8 +67,9 @@ class MatrixRoom extends Room {
 
     displayName = room.getLocalizedDisplayname();
 
+    // Note this is not necessarily all users, this has the most effect on smaller rooms
+    // Where it is more likely that we are preloading important users
     var users = room.getParticipants();
-
     for (var user in users) {
       if (!this.client.peerExists(user.id)) {
         this.client.addPeer(MatrixPeer(matrixClient, user.id));
@@ -79,18 +81,6 @@ class MatrixRoom extends Room {
     _matrixRoom.onUpdate.stream.listen(onMatrixRoomUpdate);
 
     permissions = MatrixRoomPermissions(_matrixRoom);
-  }
-
-  Iterable<Peer> getMembers() {
-    var users = _matrixRoom.getParticipants();
-
-    for (var user in users) {
-      if (!client.peerExists(user.id)) {
-        client.addPeer(MatrixPeer(_matrixRoom.client, user.id));
-      }
-    }
-
-    return users.map((e) => client.getPeer(e.id)!);
   }
 
   @override
@@ -199,5 +189,10 @@ class MatrixRoom extends Room {
   @override
   Future<void> setTypingStatus(bool typing) async {
     await _matrixRoom.setTyping(typing, timeout: 2000);
+  }
+
+  @override
+  Color getColorOfUser(String userId) {
+    return MatrixPeer.hashColor(userId);
   }
 }

@@ -6,7 +6,6 @@ import 'package:commet/client/simulated/simulated_room_permissions.dart';
 import 'package:commet/client/simulated/simulated_timeline.dart';
 import 'package:commet/utils/rng.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 
 import '../attachment.dart';
 
@@ -25,7 +24,7 @@ class SimulatedRoom extends Room {
   final List<Peer> _participants = List.empty(growable: true);
 
   @override
-  Iterable<Peer> get members => _participants;
+  Iterable<String> get memberIds => _participants.map((e) => e.identifier);
 
   @override
   int highlightedNotificationCount = 0;
@@ -82,7 +81,7 @@ class SimulatedRoom extends Room {
     e.status = TimelineEventStatus.sent;
     e.type = EventType.message;
     e.originServerTs = DateTime.now();
-    e.sender = client.user!;
+    e.senderId = client.user!.identifier;
     e.body = message;
     timeline!.insertEvent(0, e);
     return e;
@@ -97,7 +96,7 @@ class SimulatedRoom extends Room {
     e.status = TimelineEventStatus.synced;
     e.type = EventType.message;
     e.originServerTs = DateTime.now();
-    e.sender = sender;
+    e.senderId = sender.identifier;
     e.body = RandomUtils.getRandomSentence(Random().nextInt(10) + 10);
     return e;
   }
@@ -139,4 +138,9 @@ class SimulatedRoom extends Room {
 
   @override
   Future<void> setTypingStatus(bool typing) async {}
+
+  @override
+  Color getColorOfUser(String userId) {
+    return Colors.red;
+  }
 }

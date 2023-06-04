@@ -255,7 +255,7 @@ class SplitTimelineViewerState extends State<SplitTimelineViewer> {
             .inMinutes >
         1) return true;
 
-    return widget.timeline.events[index].sender !=
-        widget.timeline.events[index + 1].sender;
+    return widget.timeline.events[index].senderId !=
+        widget.timeline.events[index + 1].senderId;
   }
 }

@@ -52,6 +52,10 @@ class _TimelineEventState extends State<TimelineEventView> {
       }
     }
 
+    widget.timeline.client.fetchPeer(widget.event.senderId).loading?.then((_) {
+      if (mounted) setState(() {});
+    });
+
     super.initState();
   }
 
@@ -76,15 +80,27 @@ class _TimelineEventState extends State<TimelineEventView> {
             child: display));
   }
 
+  String get displayName =>
+      widget.timeline.room.client.fetchPeer(widget.event.senderId).displayName;
+
+  ImageProvider? get avatar =>
+      widget.timeline.room.client.fetchPeer(widget.event.senderId).avatar;
+
+  Color get color => widget.timeline.room.getColorOfUser(widget.event.senderId);
+
+  String? get relatedEventDisplayName => relatedEvent == null
+      ? null
+      : widget.timeline.client.fetchPeer(relatedEvent!.senderId).displayName;
+
   Widget? eventToWidget(TimelineEvent event) {
     if (event.status == TimelineEventStatus.removed) return const SizedBox();
     switch (widget.event.type) {
       case EventType.message:
       case EventType.sticker:
         return Message(
-          senderName: widget.event.sender.displayName,
-          senderColor: widget.event.sender.color,
-          senderAvatar: widget.event.sender.avatar,
+          senderName: displayName,
+          senderColor: color,
+          senderAvatar: avatar,
           sentTimeStamp: widget.event.originServerTs,
           onDoubleTap: widget.onDoubleTap,
           onLongPress: widget.onLongPress,
@@ -93,32 +109,27 @@ class _TimelineEventState extends State<TimelineEventView> {
               (relatedEvent?.type == EventType.sticker
                   ? T.current.messagePlaceholderSticker
                   : null),
-          replySenderName: relatedEvent?.sender.displayName,
-          replySenderColor: relatedEvent?.sender.color,
+          replySenderName: relatedEventDisplayName,
+          replySenderColor: color,
           edited: widget.event.edited,
           body: buildBody(),
           menuBuilder: BuildConfig.DESKTOP ? buildMenu : null,
         );
       case EventType.roomCreated:
-        return GenericRoomEvent(
-            T.current.userCreatedRoom(event.sender.displayName),
+        return GenericRoomEvent(T.current.userCreatedRoom(displayName),
             m.Icons.room_preferences_outlined);
       case EventType.memberJoined:
         return GenericRoomEvent(
-            T.current.userJoinedRoom(event.sender.displayName),
-            m.Icons.waving_hand_rounded);
+            T.current.userJoinedRoom(displayName), m.Icons.waving_hand_rounded);
       case EventType.memberLeft:
-        return GenericRoomEvent(
-            T.current.userLeftRoom(event.sender.displayName),
+        return GenericRoomEvent(T.current.userLeftRoom(displayName),
             m.Icons.subdirectory_arrow_left_rounded);
       case EventType.memberAvatar:
         return GenericRoomEvent(
-            T.current.userUpdatedAvatar(event.sender.displayName),
-            m.Icons.person);
+            T.current.userUpdatedAvatar(displayName), m.Icons.person);
       case EventType.memberDisplayName:
         return GenericRoomEvent(
-            T.current.userUpdatedDisplayName(event.sender.displayName),
-            m.Icons.edit);
+            T.current.userUpdatedDisplayName(displayName), m.Icons.edit);
       default:
         break;
     }
@@ -189,7 +200,7 @@ class _TimelineEventState extends State<TimelineEventView> {
 
   bool canUserEditEvent() {
     return widget.timeline.room.permissions.canUserEditMessages &&
-        widget.event.sender == widget.timeline.room.client.user;
+        widget.event.senderId == widget.timeline.room.client.user!.identifier;
   }
 
   Widget buildBody() {

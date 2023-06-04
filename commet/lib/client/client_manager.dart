@@ -9,6 +9,7 @@ class ClientManager {
 
   List<Room> rooms = List.empty(growable: true);
   List<Room> directMessages = List.empty(growable: true);
+  List<Room> singleRooms = List.empty(growable: true);
   List<Space> spaces = List.empty(growable: true);
   final List<Client> _clientsList = List.empty(growable: true);
 
@@ -21,6 +22,8 @@ class ClientManager {
 
   late StreamController<int> onDirectMessageRoomAdded =
       StreamController.broadcast();
+
+  late StreamController<int> onSingleRoomAdded = StreamController.broadcast();
 
   late StreamController<int> onSpaceAdded = StreamController.broadcast();
   late StreamController<StaleSpaceInfo> onSpaceRemoved =
@@ -42,19 +45,26 @@ class ClientManager {
 
     client.onSync.stream.listen((_) => _synced());
 
-    client.onRoomAdded.stream.listen((i) {
-      rooms.add(client.rooms[i]);
-      onRoomAdded.add(rooms.length - 1);
-
-      if (client.rooms[i].isDirectMessage) {
-        directMessages.add(client.rooms[i]);
-        onDirectMessageRoomAdded.add(directMessages.length - 1);
-      }
-    });
+    client.onRoomAdded.stream
+        .listen((index) => _onClientAddedRoom(client, index));
 
     client.onSpaceAdded.stream.listen((i) {
       addSpace(client, i);
     });
+  }
+
+  void _onClientAddedRoom(Client client, int index) {
+    rooms.add(client.rooms[index]);
+    onRoomAdded.add(rooms.length - 1);
+
+    if (client.rooms[index].isDirectMessage) {
+      directMessages.add(client.rooms[index]);
+      onDirectMessageRoomAdded.add(directMessages.length - 1);
+    } else if (!client.spaces.any(
+        (element) => element.containsRoom(client.rooms[index].identifier))) {
+      singleRooms.add(client.rooms[index]);
+      onSingleRoomAdded.add(singleRooms.length - 1);
+    }
   }
 
   void addSpace(Client client, int index) {
