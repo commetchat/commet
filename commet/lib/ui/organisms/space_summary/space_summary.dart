@@ -6,6 +6,7 @@ import 'package:commet/ui/organisms/space_summary/space_summary_view.dart';
 import 'package:commet/ui/pages/add_space_or_room/add_space_or_room.dart';
 import 'package:commet/ui/pages/settings/room_settings_page.dart';
 import 'package:commet/ui/pages/settings/space_settings_page.dart';
+import 'package:commet/utils/image/lod_image.dart';
 import 'package:flutter/widgets.dart';
 
 import '../../navigation/navigation_utils.dart';
@@ -26,6 +27,10 @@ class _SpaceSummaryState extends State<SpaceSummary> {
     onUpdateSubscription = widget.space.onUpdate.stream.listen((_) {
       setState(() {});
     });
+
+    if (widget.space.avatar is LODImageProvider) {
+      (widget.space.avatar as LODImageProvider).fetchFullRes();
+    }
 
     super.initState();
   }

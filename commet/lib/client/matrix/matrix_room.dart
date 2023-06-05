@@ -56,7 +56,8 @@ class MatrixRoom extends Room {
     _matrixRoom = room;
 
     if (room.avatar != null) {
-      avatar = MatrixMxcImage(room.avatar!, _matrixRoom.client);
+      avatar = MatrixMxcImage(room.avatar!, _matrixRoom.client,
+          autoLoadFullRes: false);
     }
 
     isDirectMessage = _matrixRoom.isDirectChat;

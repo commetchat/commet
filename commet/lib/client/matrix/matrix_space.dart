@@ -83,13 +83,6 @@ class MatrixSpace extends Space {
       ignoreNextAvatarUpdate = false;
       return;
     }
-    if (_matrixRoom.avatar != null) {
-      var url = _matrixRoom.avatar!
-          .getThumbnail(_matrixClient, width: 56, height: 56)
-          .toString();
-      var avatar = NetworkImage(url);
-      setAvatar(newAvatar: avatar);
-    }
 
     if (_matrixRoom.avatar != null) {
       updateAvatar();
@@ -97,7 +90,8 @@ class MatrixSpace extends Space {
   }
 
   void updateAvatar() {
-    var avatar = MatrixMxcImage(_matrixRoom.avatar!, _matrixClient);
+    var avatar = MatrixMxcImage(_matrixRoom.avatar!, _matrixClient,
+        autoLoadFullRes: false);
     setAvatar(newAvatar: avatar);
   }
 

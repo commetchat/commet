@@ -34,7 +34,7 @@ class MatrixPeer extends Peer {
     } catch (_) {}
 
     if (avatarUrl != null) {
-      avatar = MatrixMxcImage(avatarUrl, _matrixClient);
+      avatar = MatrixMxcImage(avatarUrl, _matrixClient, autoLoadFullRes: false);
     }
   }
 
