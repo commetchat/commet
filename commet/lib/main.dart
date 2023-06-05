@@ -76,7 +76,7 @@ Future<ClientManager> initApp() async {
   await preferences.init();
 
   await Future.wait([
-    fileCache.init(),
+    fileCache.init().then((value) => fileCache.clean()),
     EmojiPack.defaults(),
     Notifier.init(),
     WindowManagement.init(),
