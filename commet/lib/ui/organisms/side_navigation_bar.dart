@@ -12,7 +12,6 @@ import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import '../../generated/l10n.dart';
 import '../molecules/space_selector.dart';
-import '../molecules/split_timeline_viewer.dart';
 import '../navigation/navigation_utils.dart';
 
 class SideNavigationBar extends StatefulWidget {
@@ -57,9 +56,6 @@ class SideNavigationBar extends StatefulWidget {
 
 class _SideNavigationBarState extends State<SideNavigationBar> {
   late ClientManager _clientManager;
-  late GlobalKey<SplitTimelineViewerState> timelineKey =
-      GlobalKey<SplitTimelineViewerState>();
-  late Map<String, GlobalKey<SplitTimelineViewerState>> timelines = {};
   StreamSubscription? onSpaceUpdated;
   StreamSubscription? onSpaceChildUpdated;
   @override

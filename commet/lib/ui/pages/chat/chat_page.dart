@@ -18,7 +18,7 @@ import 'package:window_manager/window_manager.dart';
 import '../../../client/attachment.dart';
 import '../../../client/client.dart';
 import '../../../config/build_config.dart';
-import '../../molecules/split_timeline_viewer.dart';
+import '../../molecules/timeline_viewer.dart';
 import '../../navigation/navigation_utils.dart';
 
 enum EventInteractionType {
@@ -46,9 +46,9 @@ class ChatPageState extends State<ChatPage> {
 
   SubView selectedView = SubView.space;
 
-  late GlobalKey<SplitTimelineViewerState> timelineKey =
-      GlobalKey<SplitTimelineViewerState>();
-  late Map<String, GlobalKey<SplitTimelineViewerState>> timelines = {};
+  late GlobalKey<TimelineViewerState> timelineKey =
+      GlobalKey<TimelineViewerState>();
+  late Map<String, GlobalKey<TimelineViewerState>> timelines = {};
   double height = -1;
 
   bool processing = false;
@@ -263,7 +263,7 @@ class ChatPageState extends State<ChatPage> {
     if (room == selectedRoom) return;
 
     if (!timelines.containsKey(room.localId)) {
-      timelines[room.localId] = GlobalKey<SplitTimelineViewerState>();
+      timelines[room.localId] = GlobalKey<TimelineViewerState>();
     }
 
     onRoomUpdateSubscription?.cancel();

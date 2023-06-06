@@ -2,7 +2,7 @@
 
 import 'package:commet/client/timeline.dart';
 import 'package:commet/ui/molecules/direct_message_list.dart';
-import 'package:commet/ui/molecules/split_timeline_viewer.dart';
+import 'package:commet/ui/molecules/timeline_viewer.dart';
 import 'package:commet/ui/molecules/timeline_event.dart';
 import 'package:commet/ui/pages/chat/chat_page.dart';
 import 'package:flutter/widgets.dart';
@@ -285,7 +285,7 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Expanded(
-                            child: SplitTimelineViewer(
+                            child: TimelineViewer(
                           markAsRead:
                               widget.state.selectedRoom!.timeline!.markAsRead,
                           key: widget.state

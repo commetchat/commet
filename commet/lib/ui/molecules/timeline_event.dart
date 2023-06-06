@@ -33,8 +33,8 @@ class TimelineEventView extends StatefulWidget {
   final Timeline timeline;
   final Function()? onDoubleTap;
   final Function()? onLongPress;
-  final Function(TimelineEvent? event)? setReplyingEvent;
-  final Function(TimelineEvent? event)? setEditingEvent;
+  final Function()? setReplyingEvent;
+  final Function()? setEditingEvent;
 
   @override
   State<TimelineEventView> createState() => _TimelineEventState();
@@ -164,12 +164,12 @@ class _TimelineEventState extends State<TimelineEventView> {
           child: Row(
             children: [
               buildMenuEntry(m.Icons.reply, "Reply", () {
-                widget.setReplyingEvent!.call(widget.event);
+                widget.setReplyingEvent!.call();
               }),
               buildMenuEntry(m.Icons.add_reaction, "Add Reaction", () => null),
               if (canUserEditEvent())
                 buildMenuEntry(m.Icons.edit, "Edit", () {
-                  widget.setEditingEvent?.call(widget.event);
+                  widget.setEditingEvent?.call();
                 }),
               buildMenuEntry(m.Icons.more_vert, "Options", () => null)
             ],
