@@ -94,7 +94,7 @@ class TimelineViewerState extends State<TimelineViewer> {
 
   void onAfterFirstFrame(_) {
     double extent = controller.position.minScrollExtent;
-    controller = ScrollController(initialScrollOffset: extent - 10);
+    controller = ScrollController(initialScrollOffset: extent);
     controller.addListener(onScroll);
     setState(() {
       firstFrame = false;
