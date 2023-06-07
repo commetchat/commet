@@ -286,6 +286,10 @@ class ChatPageState extends State<ChatPage> {
       selectedRoom = room;
       interactingEvent = null;
       clearAttachments();
+
+      if (room.timeline!.events.length < 50) {
+        room.timeline!.loadMoreHistory();
+      }
     });
   }
 
