@@ -109,10 +109,7 @@ class TimelineViewerState extends State<TimelineViewer> {
   }
 
   bool shouldScrollPositionLoadHistory() {
-    if (historyItemsCount == 0) {
-      return controller.offset > controller.position.minScrollExtent + 100;
-    }
-    return controller.offset > controller.position.maxScrollExtent - 100;
+    return controller.offset > controller.position.maxScrollExtent - 500;
   }
 
   void onScroll() {
