@@ -5,7 +5,7 @@ import 'package:commet/ui/atoms/emoji_widget.dart';
 
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 
-@WidgetbookUseCase(name: 'Emoji Picker', type: EmojiPickerWidget)
+@WidgetbookUseCase(name: 'Emoji Picker', type: EmojiPicker)
 @Deprecated("widgetbook")
 Widget emojiPickerWidget(BuildContext context) {
   return SizedBox(
@@ -15,20 +15,21 @@ Widget emojiPickerWidget(BuildContext context) {
           future: EmojiPack.defaults(),
           builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) =>
               snapshot.hasData
-                  ? EmojiPickerWidget(snapshot.data as List<EmojiPack>)
+                  ? EmojiPicker(snapshot.data as List<EmojiPack>)
                   : const Center(
                       child: CircularProgressIndicator(),
                     )));
 }
 
-class EmojiPickerWidget extends StatelessWidget {
-  const EmojiPickerWidget(this.packs, {super.key});
+class EmojiPicker extends StatelessWidget {
+  const EmojiPicker(this.packs, {super.key});
 
   final List<EmojiPack> packs;
 
   @override
   Widget build(BuildContext context) {
     return Panel(
+        padding: 10,
         child: SizedBox(
             width: 90,
             height: 84,
