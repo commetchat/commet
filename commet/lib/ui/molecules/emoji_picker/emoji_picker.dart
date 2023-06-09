@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' as material;
 import 'package:tiamat/tiamat.dart';
+import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:commet/utils/emoji/emoji_pack.dart';
 import 'package:commet/ui/atoms/emoji_widget.dart';
 
@@ -7,10 +9,10 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 
 @WidgetbookUseCase(name: 'Emoji Picker', type: EmojiPicker)
 @Deprecated("widgetbook")
-Widget emojiPickerWidget(BuildContext context) {
+Widget wbEmojiPickerDefault(BuildContext context) {
   return SizedBox(
-      width: 100,
-      height: 100,
+      width: 350,
+      height: 350,
       child: FutureBuilder(
           future: EmojiPack.defaults(),
           builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) =>
@@ -28,23 +30,30 @@ class EmojiPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Panel(
-        padding: 10,
-        child: SizedBox(
-            width: 90,
-            height: 84,
-            child: ListView.builder(
-              itemCount: packs.length,
-              itemBuilder: (BuildContext context, int packIndex) {
-                return GridView.count(
-                  crossAxisCount: 8,
-                  shrinkWrap: true,
-                  children: packs[packIndex]
-                      .emoji
-                      .map((e) => EmojiWidget(e))
-                      .toList(),
-                );
-              },
-            )));
+    return Tile.low1(
+        child: Material(
+            child: SizedBox(
+                child: ListView.builder(
+      itemCount: packs.length,
+      itemBuilder: (BuildContext context, int packIndex) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            tiamat.Text.labelLow(packs[packIndex].name),
+            Wrap(
+              spacing: 7,
+              runSpacing: 10,
+              children: packs[packIndex]
+                  .emoji
+                  .map((e) => InkWell(
+                      onTap: () {},
+                      mouseCursor: SystemMouseCursors.click,
+                      child: EmojiWidget(e)))
+                  .toList(),
+            )
+          ],
+        );
+      },
+    ))));
   }
 }
