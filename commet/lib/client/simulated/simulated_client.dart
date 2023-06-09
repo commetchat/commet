@@ -152,6 +152,6 @@ class SimulatedClient extends Client {
 
   @override
   Peer fetchPeerInternal(String identifier) {
-    throw UnimplementedError();
+    return SimulatedPeer(this, identifier, identifier, null);
   }
 }

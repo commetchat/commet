@@ -2,7 +2,7 @@
 
 import 'package:commet/client/timeline.dart';
 import 'package:commet/ui/molecules/direct_message_list.dart';
-import 'package:commet/ui/molecules/split_timeline_viewer.dart';
+import 'package:commet/ui/molecules/timeline_viewer.dart';
 import 'package:commet/ui/molecules/timeline_event.dart';
 import 'package:commet/ui/pages/chat/chat_page.dart';
 import 'package:flutter/widgets.dart';
@@ -258,84 +258,57 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
                         : null,
                   )),
               Flexible(
-                // We listen to this so that when the onscreen keyboard changes the size of view inset, we can offset the scroll position
-                child: NotificationListener(
-                  onNotification: (notification) {
-                    var prevHeight = height;
-                    height = MediaQuery.of(context).viewInsets.bottom;
-                    if (prevHeight == -1) return true;
-
-                    var diff = height - prevHeight;
-                    if (diff <= 0) return true;
-
-                    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                      var state = widget
-                          .state
-                          .timelines[widget.state.selectedRoom?.localId]
-                          ?.currentState;
-                      if (state != null) {
-                        state.controller.jumpTo(state.controller.offset + diff);
-                      }
-                    });
-
-                    return true;
-                  },
-                  child: SizeChangedLayoutNotifier(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Expanded(
-                            child: SplitTimelineViewer(
-                          markAsRead:
-                              widget.state.selectedRoom!.timeline!.markAsRead,
-                          key: widget.state
-                              .timelines[widget.state.selectedRoom!.localId],
-                          timeline: widget.state.selectedRoom!.timeline!,
-                          onEventLongPress: showMessageMenu,
-                        )),
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(0, 0, 0, 8),
-                          child: MessageInput(
-                              key: messageInput,
-                              isRoomE2EE: widget.state.selectedRoom!.isE2EE,
-                              readIndicator: ReadIndicator(
-                                room: widget.state.selectedRoom!,
-                                initialList: widget
-                                    .state.selectedRoom?.timeline?.receipts,
-                              ),
-                              onSendMessage: (message) {
-                                widget.state.sendMessage(message);
-                                return MessageInputSendResult.success;
-                              },
-                              relatedEventBody:
-                                  widget.state.interactingEvent?.body,
-                              attachments: widget.state.attachments,
-                              isProcessing: widget.state.processing,
-                              setInputText:
-                                  widget.state.setMessageInputText.stream,
-                              relatedEventSenderName:
-                                  widget.state.relatedEventSenderName,
-                              relatedEventSenderColor:
-                                  widget.state.relatedEventSenderColor,
-                              interactionType: widget.state.interactionType,
-                              addAttachment: widget.state.addAttachment,
-                              onTextUpdated: widget.state.onInputTextUpdated,
-                              typingUsernames: widget
-                                  .state.selectedRoom!.typingPeers
-                                  .map((e) => e.displayName)
-                                  .toList(),
-                              removeAttachment: widget.state.removeAttachment,
-                              focusKeyboard:
-                                  widget.state.onFocusMessageInput.stream,
-                              cancelReply: () {
-                                widget.state.setInteractingEvent(
-                                  null,
-                                );
-                              }),
-                        )
-                      ],
-                    ),
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Expanded(
+                        child: TimelineViewer(
+                      markAsRead:
+                          widget.state.selectedRoom!.timeline!.markAsRead,
+                      key: widget
+                          .state.timelines[widget.state.selectedRoom!.localId],
+                      timeline: widget.state.selectedRoom!.timeline!,
+                      onEventLongPress: showMessageMenu,
+                    )),
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(0, 0, 0, 8),
+                      child: MessageInput(
+                          key: messageInput,
+                          isRoomE2EE: widget.state.selectedRoom!.isE2EE,
+                          readIndicator: ReadIndicator(
+                            room: widget.state.selectedRoom!,
+                            initialList:
+                                widget.state.selectedRoom?.timeline?.receipts,
+                          ),
+                          onSendMessage: (message) {
+                            widget.state.sendMessage(message);
+                            return MessageInputSendResult.success;
+                          },
+                          relatedEventBody: widget.state.interactingEvent?.body,
+                          attachments: widget.state.attachments,
+                          isProcessing: widget.state.processing,
+                          setInputText: widget.state.setMessageInputText.stream,
+                          relatedEventSenderName:
+                              widget.state.relatedEventSenderName,
+                          relatedEventSenderColor:
+                              widget.state.relatedEventSenderColor,
+                          interactionType: widget.state.interactionType,
+                          addAttachment: widget.state.addAttachment,
+                          onTextUpdated: widget.state.onInputTextUpdated,
+                          typingUsernames: widget
+                              .state.selectedRoom!.typingPeers
+                              .map((e) => e.displayName)
+                              .toList(),
+                          removeAttachment: widget.state.removeAttachment,
+                          focusKeyboard:
+                              widget.state.onFocusMessageInput.stream,
+                          cancelReply: () {
+                            widget.state.setInteractingEvent(
+                              null,
+                            );
+                          }),
+                    )
+                  ],
                 ),
               ),
             ],
