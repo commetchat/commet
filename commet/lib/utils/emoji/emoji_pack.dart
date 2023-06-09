@@ -22,7 +22,7 @@ class EmojiPack {
     var food = EmojiPack(name: "Food & Drink");
     var activities = EmojiPack(name: "Activities");
     var objects = EmojiPack(name: "Objects");
-    var places = EmojiPack(name: "Trabel & Places");
+    var places = EmojiPack(name: "Travel & Places");
     var symbols = EmojiPack(name: "Symbols");
     var flags = EmojiPack(name: "Flags");
 
