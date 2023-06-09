@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart' as material;
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:commet/utils/emoji/emoji_pack.dart';
@@ -41,14 +40,17 @@ class EmojiPicker extends StatelessWidget {
           children: [
             tiamat.Text.labelLow(packs[packIndex].name),
             Wrap(
-              spacing: 7,
+              spacing: 5,
               runSpacing: 10,
               children: packs[packIndex]
                   .emoji
                   .map((e) => InkWell(
                       onTap: () {},
+                      onHover: (value) {},
                       mouseCursor: SystemMouseCursors.click,
-                      child: EmojiWidget(e)))
+                      child: Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: EmojiWidget(e))))
                   .toList(),
             )
           ],
