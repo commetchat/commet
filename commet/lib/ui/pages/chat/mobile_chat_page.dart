@@ -302,6 +302,8 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
                           removeAttachment: widget.state.removeAttachment,
                           focusKeyboard:
                               widget.state.onFocusMessageInput.stream,
+                          availibleEmoticons:
+                              widget.state.selectedRoom!.availbleEmoji,
                           cancelReply: () {
                             widget.state.setInteractingEvent(
                               null,

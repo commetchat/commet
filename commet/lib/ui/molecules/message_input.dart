@@ -1,18 +1,23 @@
 import 'dart:async';
 
 import 'package:commet/config/build_config.dart';
+import 'package:commet/main.dart';
 import 'package:commet/ui/molecules/attachment_icon.dart';
+import 'package:commet/ui/molecules/emoji_picker.dart';
 import 'package:commet/ui/pages/chat/chat_page.dart';
+import 'package:commet/utils/emoji/emoji_pack.dart';
 import 'package:file_picker/file_picker.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:just_the_tooltip/just_the_tooltip.dart';
 import 'package:pasteboard/pasteboard.dart';
 import 'package:tiamat/config/config.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import '../../client/attachment.dart';
 import '../../generated/l10n.dart';
+import '../../utils/emoji/emoticon.dart';
 
 enum MessageInputSendResult { success, unhandled }
 
@@ -37,6 +42,7 @@ class MessageInput extends StatefulWidget {
       this.onTextUpdated,
       this.removeAttachment,
       this.typingUsernames,
+      this.availibleEmoticons,
       this.cancelReply});
   final double maxHeight;
   final double size = 48;
@@ -52,6 +58,7 @@ class MessageInput extends StatefulWidget {
   final Stream<String>? setInputText;
   final bool isProcessing;
   final List<String>? typingUsernames;
+  final List<EmoticonPack>? availibleEmoticons;
   final void Function(bool focused)? onFocusChanged;
   final Function(String currentText)? onTextUpdated;
   final void Function()? cancelReply;
@@ -66,8 +73,13 @@ class MessageInput extends StatefulWidget {
 class MessageInputState extends State<MessageInput> {
   late FocusNode textFocus;
   late TextEditingController controller;
+  late JustTheController emojiOverlayController = JustTheController();
   StreamSubscription? keyboardFocusSubscription;
   StreamSubscription? setInputTextSubscription;
+  OverlayEntry? entry;
+  final layerLink = LayerLink();
+  bool showEmotePicker = false;
+
   void unfocus() {
     textFocus.unfocus();
   }
@@ -117,6 +129,26 @@ class MessageInputState extends State<MessageInput> {
     widget.onSendMessage?.call(controller.text.trim());
   }
 
+  void toggleEmojiOverlay() {
+    setState(() {
+      showEmotePicker = !showEmotePicker;
+    });
+  }
+
+  Widget emojiOverlay() {
+    return SizedBox(
+      width: 360,
+      height: 300,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: EmojiPicker(widget.availibleEmoticons!),
+        ),
+      ),
+    );
+  }
+
   KeyEventResult onKey(FocusNode node, RawKeyEvent event) {
     if (BuildConfig.MOBILE) return KeyEventResult.ignored;
 
@@ -146,135 +178,152 @@ class MessageInputState extends State<MessageInput> {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
-      child: Opacity(
-        opacity: widget.isProcessing ? 0.5 : 1,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(8.0, 8, 8, 4),
-          child: Tile(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (widget.typingUsernames != null &&
-                    widget.typingUsernames!.isNotEmpty)
+      child: TextFieldTapRegion(
+        child: Opacity(
+          opacity: widget.isProcessing ? 0.5 : 1,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(8.0, 8, 8, 4),
+            child: Tile(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
                   typingUsers(),
-                if (widget.interactionType != null) interactionText(),
-                if (widget.attachments != null &&
-                    widget.attachments!.isNotEmpty)
-                  displayAttachments(),
-                ConstrainedBox(
-                  constraints: const BoxConstraints(maxHeight: 200),
-                  child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
-                          child: SizedBox(
-                            width: widget.size,
-                            height: widget.size,
-                            child: tiamat.IconButton(
-                              icon: Icons.add,
-                              size: 24,
-                              onPressed: addAttachment,
-                            ),
-                          ),
-                        ),
-                        Flexible(
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  color: Theme.of(context)
-                                      .extension<ExtraColors>()!
-                                      .surfaceLow2),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                    child: Padding(
-                                      padding:
-                                          const EdgeInsets.fromLTRB(0, 2, 4, 2),
-                                      child: Stack(
-                                        children: [
-                                          TextField(
-                                            controller: controller,
-                                            focusNode: textFocus,
-                                            contextMenuBuilder:
-                                                contextMenuBuilder,
-                                            enabled:
-                                                widget.isProcessing != true,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyMedium,
-                                            decoration: InputDecoration(
-                                              prefix: const SizedBox(
-                                                width: 8,
-                                                height: 10,
-                                              ),
-                                              hintText: widget.isRoomE2EE
-                                                  ? T.current
-                                                      .sendEncryptedMessagePrompt
-                                                  : T.current
-                                                      .sendAMessagePrompt,
-                                            ),
-                                            //decoration: null,
-                                            maxLines: null,
-                                            cursorColor: Theme.of(context)
-                                                .colorScheme
-                                                .onPrimary,
-                                            cursorWidth: 1,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(2.0),
-                                    child: SizedBox(
-                                        width: widget.size,
-                                        height: widget.size,
-                                        child: const tiamat.IconButton(
-                                          icon: Icons.face,
-                                          size: 24,
-                                        )),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(4, 0, 0, 0),
-                          child: SizedBox(
+                  if (widget.interactionType != null) interactionText(),
+                  if (widget.attachments != null &&
+                      widget.attachments!.isNotEmpty)
+                    displayAttachments(),
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxHeight: 200),
+                    child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
+                            child: SizedBox(
                               width: widget.size,
                               height: widget.size,
                               child: tiamat.IconButton(
-                                icon: Icons.send,
-                                onPressed: sendMessage,
+                                icon: Icons.add,
                                 size: 24,
-                              )),
-                        )
-                      ]),
-                ),
-                SizedBox(
-                  height: 25,
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Expanded(
-                          child: SizedBox(),
-                        ),
-                        if (widget.readIndicator != null)
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
-                            child: SizedBox(
-                              width: 150,
-                              child: widget.readIndicator!,
+                                onPressed: addAttachment,
+                              ),
                             ),
+                          ),
+                          Flexible(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    color: Theme.of(context)
+                                        .extension<ExtraColors>()!
+                                        .surfaceLow2),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            0, 2, 4, 2),
+                                        child: Stack(
+                                          children: [
+                                            TextField(
+                                              controller: controller,
+                                              focusNode: textFocus,
+                                              contextMenuBuilder:
+                                                  contextMenuBuilder,
+                                              enabled:
+                                                  widget.isProcessing != true,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyMedium,
+                                              decoration: InputDecoration(
+                                                prefix: const SizedBox(
+                                                  width: 8,
+                                                  height: 10,
+                                                ),
+                                                hintText: widget.isRoomE2EE
+                                                    ? T.current
+                                                        .sendEncryptedMessagePrompt
+                                                    : T.current
+                                                        .sendAMessagePrompt,
+                                              ),
+                                              //decoration: null,
+                                              maxLines: null,
+                                              cursorColor: Theme.of(context)
+                                                  .colorScheme
+                                                  .onPrimary,
+                                              cursorWidth: 1,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(2.0),
+                                      child: JustTheTooltip(
+                                        isModal: true,
+                                        controller: emojiOverlayController,
+                                        content: emojiOverlay(),
+                                        child: SizedBox(
+                                            width: widget.size,
+                                            height: widget.size,
+                                            child: tiamat.IconButton(
+                                              icon: Icons.face,
+                                              size: 24,
+                                              onPressed: toggleEmojiOverlay,
+                                            )),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(4, 0, 0, 0),
+                            child: SizedBox(
+                                width: widget.size,
+                                height: widget.size,
+                                child: tiamat.IconButton(
+                                  icon: Icons.send,
+                                  onPressed: sendMessage,
+                                  size: 24,
+                                )),
                           )
-                      ]),
-                )
-              ],
+                        ]),
+                  ),
+                  SizedBox(
+                    height: 25,
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Expanded(
+                            child: SizedBox(),
+                          ),
+                          if (widget.readIndicator != null)
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+                              child: SizedBox(
+                                width: 150,
+                                child: widget.readIndicator!,
+                              ),
+                            )
+                        ]),
+                  ),
+                  AnimatedContainer(
+                      curve: Curves.easeOutExpo,
+                      duration: const Duration(milliseconds: 500),
+                      height: showEmotePicker
+                          ? (MediaQuery.of(context).size.height / 3) /
+                              preferences.appScale
+                          : 0,
+                      child: EmojiPicker(
+                        widget.availibleEmoticons!,
+                        onEmoticonPressed: insertEmoticon,
+                      )),
+                ],
+              ),
             ),
           ),
         ),
@@ -304,6 +353,41 @@ class MessageInputState extends State<MessageInput> {
     }
 
     widget.cancelReply?.call();
+  }
+
+  void insertEmoticon(Emoticon emote) {
+    var text = controller.text;
+    var selection = controller.selection;
+    int start = selection.start;
+    int end = selection.end;
+    String slug = emote.slug;
+
+    if (start == -1 && end == -1) {
+      if (!text.endsWith(" ")) text += " ";
+      text += emote.slug;
+      controller.text = text;
+      return;
+    }
+
+    //Add whitespace where necessary
+    if (emote.slug.startsWith(":") || emote.slug.endsWith(":")) {
+      if (start > 0) {
+        var startChar = text.characters.elementAt(start - 1);
+        if (startChar != " ") slug = " $slug";
+      }
+
+      if (end < text.length) {
+        var endChar = text.characters.elementAt(end);
+        if (endChar != " ") slug = "$slug ";
+      } else {
+        slug = "$slug ";
+      }
+    }
+
+    controller.text = text.replaceRange(start, end, slug);
+    var newOffset = start + slug.length;
+    controller.selection =
+        TextSelection(baseOffset: newOffset, extentOffset: newOffset);
   }
 
   Widget interactionText() {
@@ -410,30 +494,37 @@ class MessageInputState extends State<MessageInput> {
   }
 
   Widget typingUsers() {
-    String text = "";
+    String text = getTypingText();
 
-    if (widget.typingUsernames!.length == 1) {
-      text = T.current.singleUserTyping(widget.typingUsernames![0]);
-    }
-    if (widget.typingUsernames!.length == 2) {
-      text = T.current.twoUsersTyping(
-          widget.typingUsernames![0], widget.typingUsernames![1]);
-    }
-
-    if (widget.typingUsernames!.length == 3) {
-      text = T.current.threeUsersTyping(widget.typingUsernames![0],
-          widget.typingUsernames![1], widget.typingUsernames![2]);
-    }
-
-    if (widget.typingUsernames!.length > 3) {
-      text = T.current.multipleUsersTyping(widget.typingUsernames![0],
-          widget.typingUsernames![1], widget.typingUsernames![2]);
-    }
     return Align(
         alignment: Alignment.centerLeft,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(0, 0, 0, 4),
           child: tiamat.Text.labelLow(text),
         ));
+  }
+
+  String getTypingText() {
+    if (widget.typingUsernames == null) return "";
+
+    if (widget.typingUsernames!.length == 1) {
+      return T.current.singleUserTyping(widget.typingUsernames![0]);
+    }
+    if (widget.typingUsernames!.length == 2) {
+      return T.current.twoUsersTyping(
+          widget.typingUsernames![0], widget.typingUsernames![1]);
+    }
+
+    if (widget.typingUsernames!.length == 3) {
+      return T.current.threeUsersTyping(widget.typingUsernames![0],
+          widget.typingUsernames![1], widget.typingUsernames![2]);
+    }
+
+    if (widget.typingUsernames!.length > 3) {
+      return T.current.multipleUsersTyping(widget.typingUsernames![0],
+          widget.typingUsernames![1], widget.typingUsernames![2]);
+    }
+
+    return "";
   }
 }

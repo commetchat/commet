@@ -161,7 +161,6 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
                                 type: EventInteractionType.edit),
                       )),
                       Tile(
-                        borderTop: true,
                         child: MessageInput(
                           isRoomE2EE: widget.state.selectedRoom!.isE2EE,
                           focusKeyboard:
@@ -187,6 +186,8 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
                           relatedEventSenderColor:
                               widget.state.relatedEventSenderColor,
                           setInputText: widget.state.setMessageInputText.stream,
+                          availibleEmoticons:
+                              widget.state.selectedRoom!.availbleEmoji,
                           typingUsernames: widget
                               .state.selectedRoom!.typingPeers
                               .map((e) => e.displayName)

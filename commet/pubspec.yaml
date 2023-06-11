@@ -59,6 +59,7 @@ dependencies:
   flutter_local_notifications: ^14.1.0
   win_toast: ^0.3.0
   window_manager: ^0.3.4
+  html_unescape: ^2.0.0
 
 dev_dependencies:
   build_runner:

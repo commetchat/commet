@@ -32,6 +32,8 @@ class MatrixEmoticonPack implements EmoticonPack {
 
   String stateKey;
 
+  String get ownedRoomId => _matrixRoom.id;
+
   @override
   Stream<int> get onEmoticonAdded => _onEmoticonAdded.stream;
 

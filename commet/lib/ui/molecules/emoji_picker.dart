@@ -1,7 +1,6 @@
 import 'package:commet/utils/emoji/emoticon.dart';
 import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:flutter/material.dart';
-import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:commet/utils/emoji/emoji_pack.dart';
 import 'package:commet/ui/atoms/emoji_widget.dart';
@@ -39,30 +38,33 @@ class EmojiPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Tile.low1(
-        child: Material(
-            child: SizedBox(
-                child: ListView.builder(
-      itemCount: packs.length,
-      itemBuilder: (BuildContext context, int packIndex) {
-        return buildListItem(packIndex);
-      },
-    ))));
+    return Material(
+        color: Colors.transparent,
+        child: SizedBox(
+            child: ListView.builder(
+          itemCount: packs.length,
+          itemBuilder: (BuildContext context, int packIndex) {
+            return buildListItem(packIndex);
+          },
+        )));
   }
 
-  Column buildListItem(int packIndex) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        tiamat.Text.labelLow(packs[packIndex].displayName),
-        Wrap(
-          alignment: WrapAlignment.start,
-          runSpacing: 1,
-          spacing: 1,
-          children:
-              packs[packIndex].emotes.map((e) => buildEmoticon(e)).toList(),
-        )
-      ],
+  Widget buildListItem(int packIndex) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          tiamat.Text.labelLow(packs[packIndex].displayName),
+          Wrap(
+            alignment: WrapAlignment.start,
+            runSpacing: 1,
+            spacing: 1,
+            children:
+                packs[packIndex].emotes.map((e) => buildEmoticon(e)).toList(),
+          )
+        ],
+      ),
     );
   }
 
@@ -71,11 +73,15 @@ class EmojiPicker extends StatelessWidget {
         width: size,
         height: size,
         child: InkWell(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(3),
             onTap: () => onEmoticonPressed?.call(emoticon),
             mouseCursor: SystemMouseCursors.click,
             child: Padding(
-                padding: const EdgeInsets.all(5.0),
-                child: Center(child: EmojiWidget(emoticon)))));
+                padding: const EdgeInsets.all(2.0),
+                child: Center(
+                    child: EmojiWidget(
+                  emoticon,
+                  height: size,
+                )))));
   }
 }

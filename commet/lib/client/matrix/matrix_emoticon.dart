@@ -16,7 +16,9 @@ class MatrixEmoticon implements Emoticon {
   @override
   String? get shortcode => _shortcode;
 
-  MatrixEmoticon(Uri emojiUrl, matrix.Client client,
+  Uri emojiUrl;
+
+  MatrixEmoticon(this.emojiUrl, matrix.Client client,
       {required String shortcode}) {
     _shortcode = shortcode;
     _image = MatrixMxcImage(emojiUrl, client, doThumbnail: false);

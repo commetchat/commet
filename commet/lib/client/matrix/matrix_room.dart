@@ -4,15 +4,21 @@ import 'dart:ui';
 import 'package:commet/client/matrix/extensions/matrix_room_extensions.dart';
 import 'package:commet/client/matrix/matrix_attachment.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
+import 'package:commet/client/matrix/matrix_emoticon.dart';
 import 'package:commet/client/matrix/matrix_emoticon_pack.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/matrix/matrix_peer.dart';
 import 'package:commet/client/matrix/matrix_room_permissions.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
 import 'package:commet/utils/emoji/emoji_pack.dart';
+import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:commet/utils/image_utils.dart';
 import 'package:commet/utils/mime.dart';
 import 'package:flutter/material.dart';
+import 'package:html_unescape/html_unescape.dart';
+
+// ignore: implementation_imports
+import 'package:matrix/src/utils/markdown.dart' as mx_markdown;
 
 import '../attachment.dart';
 import '../client.dart';
@@ -62,10 +68,23 @@ class MatrixRoom extends Room {
   }
 
   @override
-  List<EmoticonPack> get availbleEmoji => _roomEmojis;
+  List<EmoticonPack> get availbleEmoji =>
+      _getAvailablePacks(includeUnicode: true);
 
   @override
   List<EmoticonPack> get ownedEmoji => _roomEmojis;
+
+  List<EmoticonPack> _getAvailablePacks({bool includeUnicode = false}) {
+    var result = List<EmoticonPack>.of(ownedEmoji);
+
+    for (var space
+        in client.spaces.where((element) => element.containsRoom(identifier))) {
+      result.addAll(space.ownedEmoji);
+    }
+    if (includeUnicode) result.addAll(UnicodeEmojis.packs!);
+
+    return result;
+  }
 
   MatrixRoom(client, matrix.Room room, matrix.Client matrixClient)
       : super(room.id, client) {
@@ -155,7 +174,26 @@ class MatrixRoom extends Room {
     }
 
     if (message != null && message.trim().isNotEmpty) {
-      String? id = await _matrixRoom.sendTextEvent(message,
+      // String? id = await _matrixRoom.sendTextEvent(message,
+      //     inReplyTo: replyingTo, editEventId: replaceEvent?.eventId);
+
+      final event = <String, dynamic>{
+        'msgtype': matrix.MessageTypes.Text,
+        'body': message
+      };
+
+      final html = mx_markdown.markdown(message,
+          getEmotePacks: () =>
+              getEmotePacksFlat(matrix.ImagePackUsage.emoticon),
+          getMention: _matrixRoom.getMention);
+
+      if (HtmlUnescape().convert(html.replaceAll(RegExp(r'<br />\n?'), '\n')) !=
+          event['body']) {
+        event['format'] = 'org.matrix.custom.html';
+        event['formatted_body'] = html;
+      }
+
+      var id = await _matrixRoom.sendEvent(event,
           inReplyTo: replyingTo, editEventId: replaceEvent?.eventId);
 
       if (id != null) {
@@ -226,5 +264,24 @@ class MatrixRoom extends Room {
   Future<void> deleteEmoticonPack(EmoticonPack pack) async {
     await _matrixRoom.deleteEmoticonPack(pack.identifier);
     _roomEmojis.remove(pack);
+  }
+
+  Map<String, Map<String, String>> getEmotePacksFlat(
+      matrix.ImagePackUsage emoticon) {
+    var packs = _getAvailablePacks(includeUnicode: false)
+        .whereType<MatrixEmoticonPack>();
+
+    var result = <String, Map<String, String>>{};
+
+    for (var pack in packs) {
+      var key = "${pack.displayName}-${pack.ownedRoomId}";
+      result[key] = <String, String>{};
+      for (var emote in pack.emotes) {
+        result[key]![emote.shortcode!] =
+            (emote as MatrixEmoticon).emojiUrl.toString();
+      }
+    }
+
+    return result;
   }
 }
