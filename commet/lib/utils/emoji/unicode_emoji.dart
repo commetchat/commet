@@ -127,6 +127,7 @@ class UnicodeEmoticon extends Emoticon {
   @override
   String? get shortcode => _shortcode;
 
+
   UnicodeEmoticon(String text, {String? shortcode}) {
     String hexcode = emojiToUnicode(text);
     _image = AssetImage("assets/twemoji/assets/72x72/$hexcode.png");
@@ -134,18 +135,23 @@ class UnicodeEmoticon extends Emoticon {
     slug = text;
   }
 
-  final _u200D = String.fromCharCode(0x200D);
+  static String emojiToAsset(String emojiChar) {
+    String hexcode = emojiToUnicode(emojiChar);
+    return "assets/twemoji/assets/72x72/$hexcode.png";
+  }
 
-  final _uFE0Fg = RegExp(
+  static final _u200D = String.fromCharCode(0x200D);
+
+  static final _uFE0Fg = RegExp(
     r'\uFE0F',
     unicode: true,
   );
 
-  String emojiToUnicode(String rawText) => toCodePoint(
+  static String emojiToUnicode(String rawText) => toCodePoint(
         !rawText.contains(_u200D) ? rawText.replaceAll(_uFE0Fg, '') : rawText,
       );
 
-  String toCodePoint(String input, {String sep = '-'}) {
+  static String toCodePoint(String input, {String sep = '-'}) {
     var r = [], c = 0, p = 0, i = 0;
     while (i < input.length) {
       c = input.codeUnitAt(i++);
