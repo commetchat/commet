@@ -2,7 +2,7 @@
 
 import 'package:commet/client/timeline.dart';
 import 'package:commet/ui/molecules/direct_message_list.dart';
-import 'package:commet/ui/molecules/split_timeline_viewer.dart';
+import 'package:commet/ui/molecules/timeline_viewer.dart';
 import 'package:commet/ui/molecules/timeline_event.dart';
 import 'package:commet/ui/pages/chat/chat_page.dart';
 import 'package:flutter/widgets.dart';
@@ -42,6 +42,9 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
   bool shouldMainIgnoreInput = false;
   double height = -1;
 
+  static const Key homeRoomsList = ValueKey("MOBILE_HOME_ROOMS_LIST");
+  static const Key directRoomsList = ValueKey("MOBILE_DIRECT_ROOMS_LIST");
+
   @override
   void initState() {
     panelsKey = GlobalKey<OverlappingPanelsState>();
@@ -74,8 +77,8 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
       children: [
         Tile.low4(
           child: SideNavigationBar(
-            onHomeSelected: () {
-              widget.state.selectHome();
+            onDirectMessagesSelected: () {
+              widget.state.selectDirectMessages();
             },
             onSpaceSelected: (index) {
               widget.state
@@ -84,10 +87,15 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
             clearSpaceSelection: () {
               widget.state.clearSpaceSelection();
             },
+            onHomeSelected: () {
+              widget.state.selectHome();
+            },
           ),
         ),
-        if (widget.state.homePageSelected) homePageView(),
-        if (widget.state.homePageSelected == false &&
+        if (widget.state.selectedView == SubView.home) homeView(),
+        if (widget.state.selectedView == SubView.directMessages)
+          directMessagesView(),
+        if (widget.state.selectedView == SubView.space &&
             widget.state.selectedSpace != null)
           spaceRoomSelector(newContext),
       ],
@@ -120,7 +128,7 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
           child: Padding(
             padding: const EdgeInsets.fromLTRB(50, 20, 0, 0),
             child: PeerList(
-              widget.state.selectedRoom!.members,
+              widget.state.selectedRoom!,
               key: widget.state.selectedRoom!.key,
             ),
           ),
@@ -130,17 +138,39 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
     return const Placeholder();
   }
 
-  Widget homePageView() {
+  Widget directMessagesView() {
     return Flexible(
       child: Tile.low1(
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(0, 0, 50, 0),
             child: DirectMessageList(
+              key: directRoomsList,
               directMessages: widget.state.clientManager.directMessages,
               onSelected: (index) {
                 setState(() {
                   selectRoom(widget.state.clientManager.directMessages[index]);
+                });
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget homeView() {
+    return Flexible(
+      child: Tile.low1(
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(0, 0, 50, 0),
+            child: DirectMessageList(
+              key: homeRoomsList,
+              directMessages: widget.state.clientManager.singleRooms,
+              onSelected: (index) {
+                setState(() {
+                  selectRoom(widget.state.clientManager.singleRooms[index]);
                 });
               },
             ),
@@ -193,12 +223,14 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
             Tile.low2(
               child: SizedBox(
                 height: 70,
-                child: UserPanel(
-                  displayName:
-                      widget.state.selectedSpace!.client.user!.displayName,
-                  avatar: widget.state.selectedSpace!.client.user!.avatar,
-                  detail: widget.state.selectedSpace!.client.user!.detail,
-                  color: widget.state.selectedSpace!.client.user!.color,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(8.0, 0, 0, 0),
+                  child: UserPanelView(
+                    displayName:
+                        widget.state.selectedSpace!.client.user!.displayName,
+                    avatar: widget.state.selectedSpace!.client.user!.avatar,
+                    detail: widget.state.selectedSpace!.client.user!.detail,
+                  ),
                 ),
               ),
             )
@@ -226,74 +258,57 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
                         : null,
                   )),
               Flexible(
-                // We listen to this so that when the onscreen keyboard changes the size of view inset, we can offset the scroll position
-                child: NotificationListener(
-                  onNotification: (notification) {
-                    var prevHeight = height;
-                    height = MediaQuery.of(context).viewInsets.bottom;
-                    if (prevHeight == -1) return true;
-
-                    var diff = height - prevHeight;
-                    if (diff <= 0) return true;
-
-                    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                      var state = widget
-                          .state
-                          .timelines[widget.state.selectedRoom?.localId]
-                          ?.currentState;
-                      if (state != null) {
-                        state.controller.jumpTo(state.controller.offset + diff);
-                      }
-                    });
-
-                    return true;
-                  },
-                  child: SizeChangedLayoutNotifier(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Expanded(
-                            child: SplitTimelineViewer(
-                          markAsRead:
-                              widget.state.selectedRoom!.timeline!.markAsRead,
-                          key: widget.state
-                              .timelines[widget.state.selectedRoom!.localId],
-                          timeline: widget.state.selectedRoom!.timeline!,
-                          onEventLongPress: showMessageMenu,
-                        )),
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(0, 0, 0, 8),
-                          child: MessageInput(
-                              key: messageInput,
-                              isRoomE2EE: widget.state.selectedRoom!.isE2EE,
-                              readIndicator: ReadIndicator(
-                                initialList: widget
-                                    .state.selectedRoom?.timeline?.receipts,
-                              ),
-                              onSendMessage: (message) {
-                                widget.state.sendMessage(message);
-                                return MessageInputSendResult.clearText;
-                              },
-                              relatedEventBody:
-                                  widget.state.interactingEvent?.body,
-                              setInputText:
-                                  widget.state.setMessageInputText.stream,
-                              relatedEventSenderName: widget
-                                  .state.interactingEvent?.sender.displayName,
-                              relatedEventSenderColor:
-                                  widget.state.interactingEvent?.sender.color,
-                              interactionType: widget.state.interactionType,
-                              focusKeyboard:
-                                  widget.state.onFocusMessageInput.stream,
-                              cancelReply: () {
-                                widget.state.setInteractingEvent(
-                                  null,
-                                );
-                              }),
-                        )
-                      ],
-                    ),
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Expanded(
+                        child: TimelineViewer(
+                      markAsRead:
+                          widget.state.selectedRoom!.timeline!.markAsRead,
+                      key: widget
+                          .state.timelines[widget.state.selectedRoom!.localId],
+                      timeline: widget.state.selectedRoom!.timeline!,
+                      onEventLongPress: showMessageMenu,
+                    )),
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(0, 0, 0, 8),
+                      child: MessageInput(
+                          key: messageInput,
+                          isRoomE2EE: widget.state.selectedRoom!.isE2EE,
+                          readIndicator: ReadIndicator(
+                            room: widget.state.selectedRoom!,
+                            initialList:
+                                widget.state.selectedRoom?.timeline?.receipts,
+                          ),
+                          onSendMessage: (message) {
+                            widget.state.sendMessage(message);
+                            return MessageInputSendResult.success;
+                          },
+                          relatedEventBody: widget.state.interactingEvent?.body,
+                          attachments: widget.state.attachments,
+                          isProcessing: widget.state.processing,
+                          setInputText: widget.state.setMessageInputText.stream,
+                          relatedEventSenderName:
+                              widget.state.relatedEventSenderName,
+                          relatedEventSenderColor:
+                              widget.state.relatedEventSenderColor,
+                          interactionType: widget.state.interactionType,
+                          addAttachment: widget.state.addAttachment,
+                          onTextUpdated: widget.state.onInputTextUpdated,
+                          typingUsernames: widget
+                              .state.selectedRoom!.typingPeers
+                              .map((e) => e.displayName)
+                              .toList(),
+                          removeAttachment: widget.state.removeAttachment,
+                          focusKeyboard:
+                              widget.state.onFocusMessageInput.stream,
+                          cancelReply: () {
+                            widget.state.setInteractingEvent(
+                              null,
+                            );
+                          }),
+                    )
+                  ],
                 ),
               ),
             ],
@@ -449,7 +464,8 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
     if (widget.state.selectedRoom?.permissions.canUserEditMessages != true)
       return false;
 
-    if (event.sender != widget.state.selectedRoom!.client.user) return false;
+    if (event.senderId != widget.state.selectedRoom!.client.user!.identifier)
+      return false;
 
     if (event.type != EventType.message) return false;
 
@@ -460,7 +476,8 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
     if (widget.state.selectedRoom?.permissions.canUserDeleteMessages != true)
       return false;
 
-    if (event.sender != widget.state.selectedRoom!.client.user) return false;
+    if (event.senderId != widget.state.selectedRoom!.client.user!.identifier)
+      return false;
 
     if (event.type != EventType.message) return false;
 

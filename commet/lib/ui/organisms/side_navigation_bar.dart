@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:commet/client/client_manager.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/pages/add_space_or_room/add_space_or_room.dart';
 import 'package:commet/ui/pages/settings/app_settings_page.dart';
 import 'package:flutter/material.dart';
@@ -11,15 +12,15 @@ import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import '../../generated/l10n.dart';
 import '../molecules/space_selector.dart';
-import '../molecules/split_timeline_viewer.dart';
 import '../navigation/navigation_utils.dart';
 
 class SideNavigationBar extends StatefulWidget {
   const SideNavigationBar(
       {super.key,
       this.onSpaceSelected,
-      this.onHomeSelected,
+      this.onDirectMessagesSelected,
       this.onSettingsSelected,
+      this.onHomeSelected,
       this.clearSpaceSelection});
 
   static ValueKey settingsKey =
@@ -27,6 +28,7 @@ class SideNavigationBar extends StatefulWidget {
 
   final void Function(int index)? onSpaceSelected;
   final void Function()? clearSpaceSelection;
+  final void Function()? onDirectMessagesSelected;
   final void Function()? onHomeSelected;
   final void Function()? onSettingsSelected;
 
@@ -54,9 +56,6 @@ class SideNavigationBar extends StatefulWidget {
 
 class _SideNavigationBarState extends State<SideNavigationBar> {
   late ClientManager _clientManager;
-  late GlobalKey<SplitTimelineViewerState> timelineKey =
-      GlobalKey<SplitTimelineViewerState>();
-  late Map<String, GlobalKey<SplitTimelineViewerState>> timelines = {};
   StreamSubscription? onSpaceUpdated;
   StreamSubscription? onSpaceChildUpdated;
   @override
@@ -96,6 +95,19 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                       widget.onHomeSelected?.call();
                     },
                   ),
+                  context),
+              const SizedBox(
+                height: 3,
+              ),
+              SideNavigationBar.tooltip(
+                  "Direct Messages",
+                  ImageButton(
+                    size: 70,
+                    icon: Icons.person,
+                    onTap: () {
+                      widget.onDirectMessagesSelected?.call();
+                    },
+                  ),
                   context)
             ],
           ),
@@ -110,10 +122,10 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                       size: 70,
                       icon: Icons.add,
                       onTap: () {
-                        PopupDialog.show(context,
-                            content: AddSpaceOrRoom(
-                              clients: _clientManager.clients,
-                            ),
+                        AdaptiveDialog.show(context,
+                            builder: (_) => AddSpaceOrRoom(
+                                  clients: _clientManager.clients,
+                                ),
                             title: T.of(context).addSpace);
                       },
                     ),

@@ -5,6 +5,7 @@ import 'package:commet/client/room_preview.dart';
 import 'package:commet/config/app_config.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/main.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/pages/matrix/authentication/matrix_uia_request.dart';
 import 'package:flutter/foundation.dart';
 
@@ -16,7 +17,6 @@ import 'package:commet/client/matrix/matrix_peer.dart';
 import 'package:commet/utils/rng.dart';
 import 'package:matrix/matrix.dart' as matrix;
 import 'package:matrix/encryption.dart';
-import 'package:tiamat/tiamat.dart';
 
 import '../../ui/pages/matrix/verification/matrix_verification_page.dart';
 import 'matrix_room.dart';
@@ -25,6 +25,11 @@ import 'matrix_space.dart';
 class MatrixClient extends Client {
   late matrix.Client _matrixClient;
   Future? firstSync;
+  matrix.ServerConfig? config;
+
+  matrix.NativeImplementations get nativeImplentations => BuildConfig.WEB
+      ? const matrix.NativeImplementationsDummy()
+      : matrix.NativeImplementationsIsolate(compute);
 
   MatrixClient({String? name, String? identifier})
       : super(identifier ?? RandomUtils.getRandomString(20)) {
@@ -41,6 +46,9 @@ class MatrixClient extends Client {
 
   @override
   bool get supportsE2EE => true;
+
+  @override
+  int? get maxFileSize => config?.mUploadSize;
 
   static Future<void> loadFromDB(ClientManager manager) async {
     var clients = preferences.getRegisteredMatrixClients();
@@ -80,6 +88,10 @@ class MatrixClient extends Client {
       firstSync = _matrixClient.oneShotSync();
     }
 
+    _matrixClient.getConfig().then((value) {
+      config = value;
+    });
+
     _matrixClient.onSync.stream.listen(
         (event) => {onSync.add(null), _updateRoomslist(), _updateSpacesList()});
 
@@ -87,15 +99,15 @@ class MatrixClient extends Client {
     _updateSpacesList();
 
     _matrixClient.onKeyVerificationRequest.stream.listen((event) {
-      PopupDialog.show(navigator.currentContext!,
-          content: MatrixVerificationPage(request: event),
+      AdaptiveDialog.show(navigator.currentContext!,
+          builder: (_) => MatrixVerificationPage(request: event),
           title: "Verification Request");
     });
 
     _matrixClient.onUiaRequest.stream.listen((event) {
       if (event.state == matrix.UiaRequestState.waitForUser) {
-        PopupDialog.show(navigator.currentContext!,
-            content: MatrixUIARequest(event, this),
+        AdaptiveDialog.show(navigator.currentContext!,
+            builder: (_) => MatrixUIARequest(event, this),
             title: "Authentication Request");
       }
     });
@@ -111,6 +123,7 @@ class MatrixClient extends Client {
         KeyVerificationMethod.emoji,
         KeyVerificationMethod.numbers
       },
+      importantStateEvents: {"im.ponies.room_emotes"},
       supportedLoginTypes: {matrix.AuthenticationTypes.password},
       nativeImplementations: nativeImplementations,
       logLevel:
@@ -153,7 +166,7 @@ class MatrixClient extends Client {
               password: password,
               identifier:
                   matrix.AuthenticationUserIdentifier(user: userIdentifier));
-          if (result.accessToken != null) {
+          if (result.accessToken.isNotEmpty) {
             loginResult = LoginResult.success;
           } else {
             loginResult = LoginResult.failed;
@@ -302,5 +315,11 @@ class MatrixClient extends Client {
   @override
   Iterable<Room> getEligibleRoomsForSpace(Space space) {
     return rooms.where((room) => !space.containsRoom(room.identifier));
+  }
+
+  @override
+  Peer fetchPeerInternal(String identifier) {
+    var peer = MatrixPeer(_matrixClient, identifier);
+    return peer;
   }
 }

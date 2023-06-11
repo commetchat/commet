@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'dart:typed_data';
 import 'package:commet/client/client.dart';
 import 'package:flutter/material.dart';
 
+import '../utils/emoji/emoji_pack.dart';
+import 'attachment.dart';
 import 'permissions.dart';
 
 enum RoomVisibility { public, private, invite, knock }
@@ -14,7 +17,7 @@ abstract class Room {
   final Key key = UniqueKey();
   Timeline? timeline;
   late ImageProvider? avatar;
-  Iterable<Peer> get members;
+  Iterable<String> get memberIds;
   late String displayName;
   late bool isDirectMessage;
   late String? directMessagePartnerID;
@@ -22,7 +25,16 @@ abstract class Room {
   bool get isMember => false;
   bool get isE2EE;
   StreamController<void> onUpdate = StreamController.broadcast();
+  late StreamController<int> onEmojiPackAdded = StreamController.broadcast();
   PushRule get pushRule;
+
+  List<Peer> get typingPeers;
+
+  List<EmoticonPack> get ownedEmoji;
+
+  List<EmoticonPack> get availbleEmoji;
+
+  String get developerInfo;
 
   int get notificationCount;
   int get highlightedNotificationCount;
@@ -33,8 +45,15 @@ abstract class Room {
   int get displayHighlightedNotificationCount =>
       pushRule != PushRule.dontNotify ? highlightedNotificationCount : 0;
 
-  Future<TimelineEvent?> sendMessage(String message,
-      {TimelineEvent? inReplyTo, TimelineEvent? replaceEvent});
+  Future<TimelineEvent?> sendMessage({
+    String? message,
+    TimelineEvent? inReplyTo,
+    TimelineEvent? replaceEvent,
+    List<ProcessedAttachment> processedAttachments,
+  });
+
+  Future<List<ProcessedAttachment>> processAttachments(
+      List<PendingFileAttachment> attachments);
 
   String get localId => "${client.identifier}:$identifier";
 
@@ -57,6 +76,8 @@ abstract class Room {
 
   Future<void> setPushRule(PushRule rule);
 
+  Future<void> setTypingStatus(bool typing);
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
@@ -69,5 +90,11 @@ abstract class Room {
   @override
   int get hashCode => identifier.hashCode;
 
+  Color getColorOfUser(String userId);
+
   Future<void> enableE2EE();
+
+  Future<void> createEmoticonPack(String name, Uint8List? avatarData);
+
+  Future<void> deleteEmoticonPack(EmoticonPack pack);
 }

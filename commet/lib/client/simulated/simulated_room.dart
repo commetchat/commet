@@ -1,12 +1,16 @@
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/simulated/simulated_peer.dart';
 import 'package:commet/client/simulated/simulated_room_permissions.dart';
 import 'package:commet/client/simulated/simulated_timeline.dart';
+import 'package:commet/utils/emoji/emoji_pack.dart';
+import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:commet/utils/rng.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
+
+import '../attachment.dart';
 
 class SimulatedRoom extends Room {
   late Peer alice = SimulatedPeer(client, "alice@commet.chat", "alice",
@@ -23,7 +27,7 @@ class SimulatedRoom extends Room {
   final List<Peer> _participants = List.empty(growable: true);
 
   @override
-  Iterable<Peer> get members => _participants;
+  Iterable<String> get memberIds => _participants.map((e) => e.identifier);
 
   @override
   int highlightedNotificationCount = 0;
@@ -33,6 +37,12 @@ class SimulatedRoom extends Room {
 
   @override
   PushRule pushRule = PushRule.notify;
+
+  @override
+  List<Peer> get typingPeers => List.from([alice, bob]);
+
+  @override
+  String get developerInfo => "";
 
   SimulatedRoom(displayName, client, {bool isDm = false})
       : super(RandomUtils.getRandomString(20), client) {
@@ -65,14 +75,19 @@ class SimulatedRoom extends Room {
   }
 
   @override
-  Future<TimelineEvent?> sendMessage(String message,
-      {TimelineEvent? inReplyTo, TimelineEvent? replaceEvent}) async {
+  Future<TimelineEvent?> sendMessage({
+    String? message,
+    TimelineEvent? inReplyTo,
+    TimelineEvent? replaceEvent,
+    List<PendingFileAttachment>? attachments,
+    dynamic processedAttachments,
+  }) async {
     TimelineEvent e = TimelineEvent();
     e.eventId = RandomUtils.getRandomString(20);
     e.status = TimelineEventStatus.sent;
     e.type = EventType.message;
     e.originServerTs = DateTime.now();
-    e.sender = client.user!;
+    e.senderId = client.user!.identifier;
     e.body = message;
     timeline!.insertEvent(0, e);
     return e;
@@ -87,7 +102,7 @@ class SimulatedRoom extends Room {
     e.status = TimelineEventStatus.synced;
     e.type = EventType.message;
     e.originServerTs = DateTime.now();
-    e.sender = sender;
+    e.senderId = sender.identifier;
     e.body = RandomUtils.getRandomSentence(Random().nextInt(10) + 10);
     return e;
   }
@@ -119,5 +134,35 @@ class SimulatedRoom extends Room {
   Future<void> setPushRule(PushRule rule) async {
     pushRule = rule;
     onUpdate.add(null);
+  }
+
+  @override
+  Future<List<ProcessedAttachment>> processAttachments(
+      List<PendingFileAttachment> attachments) async {
+    return List.empty();
+  }
+
+  @override
+  Future<void> setTypingStatus(bool typing) async {}
+
+  @override
+  Color getColorOfUser(String userId) {
+    return Colors.red;
+  }
+
+  @override
+  Future<void> createEmoticonPack(String name, Uint8List? avatarData) {
+    throw UnimplementedError();
+  }
+
+  @override
+  List<EmoticonPack> get availbleEmoji => UnicodeEmojis.packs!;
+
+  @override
+  List<EmoticonPack> get ownedEmoji => [];
+
+  @override
+  Future<void> deleteEmoticonPack(EmoticonPack pack) {
+    throw UnimplementedError();
   }
 }

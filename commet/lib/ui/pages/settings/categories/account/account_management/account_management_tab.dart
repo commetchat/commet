@@ -126,7 +126,7 @@ class _AccountManagementSettingsTabState
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          UserPanel(
+          UserPanelView(
             displayName: displayName,
             avatar: avatar,
             detail: detail,

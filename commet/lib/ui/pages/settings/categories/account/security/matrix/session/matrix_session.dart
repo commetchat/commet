@@ -1,8 +1,8 @@
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/pages/settings/categories/account/security/matrix/session/matrix_session_view.dart';
 import 'package:flutter/widgets.dart';
 
 import 'package:matrix/matrix.dart';
-import 'package:tiamat/tiamat.dart';
 
 import '../../../../../../matrix/verification/matrix_verification_page.dart';
 
@@ -51,8 +51,8 @@ class _MatrixSessionState extends State<MatrixSession> {
     previousOnUpdate = request.onUpdate;
     request.onUpdate = onRequestUpdate;
 
-    PopupDialog.show(context,
-        content: MatrixVerificationPage(request: request),
+    AdaptiveDialog.show(context,
+        builder: (_) => MatrixVerificationPage(request: request),
         title: "Verification Request");
   }
 

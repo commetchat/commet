@@ -1,4 +1,5 @@
 import 'package:commet/client/attachment.dart';
+import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/atoms/lightbox.dart';
 import 'package:commet/ui/molecules/video_player/video_player.dart';
 import 'package:commet/utils/mime.dart';
@@ -20,17 +21,27 @@ class MessageAttachment extends StatefulWidget {
 
 class _MessageAttachmentState extends State<MessageAttachment> {
   late Key videoPlayerKey;
+  bool isFullscreen = false;
   @override
   void initState() {
-    videoPlayerKey = UniqueKey();
+    videoPlayerKey = GlobalKey();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     if (widget.attachment is ImageAttachment) return buildImage();
-    if (widget.attachment is VideoAttachment) return buildVideo();
-    if (widget.attachment is FileAttachment) return buildFile();
+    if (widget.attachment is VideoAttachment) {
+      if (BuildConfig.WEB) {
+        return buildFile(Icons.video_file, widget.attachment.name, null);
+      }
+      return buildVideo();
+    }
+    if (widget.attachment is FileAttachment) {
+      var attachment = widget.attachment as FileAttachment;
+      return buildFile(Mime.toIcon(attachment.mimeType), attachment.name,
+          attachment.fileSize);
+    }
 
     return const Placeholder();
   }
@@ -82,29 +93,38 @@ class _MessageAttachmentState extends State<MessageAttachment> {
                 width: 500,
                 child: AspectRatio(
                     aspectRatio: attachment.aspectRatio,
-                    child: VideoPlayer(
-                      attachment.videoFile,
-                      thumbnail: attachment.thumbnail,
-                      fileName: attachment.name,
-                      canGoFullscreen: true,
-                      onFullscreen: fullscreenVideo,
-                    )))),
+                    child: isFullscreen
+                        ? null
+                        : VideoPlayer(
+                            attachment.videoFile,
+                            thumbnail: attachment.thumbnail,
+                            fileName: attachment.name,
+                            canGoFullscreen: true,
+                            onFullscreen: fullscreenVideo,
+                            key: videoPlayerKey,
+                          )))),
       ),
     );
   }
 
   void fullscreenVideo() {
     var attachment = (widget.attachment as VideoAttachment);
-    Lightbox.show(
-      context,
-      video: attachment.videoFile,
-      aspectRatio: attachment.aspectRatio,
-      thumbnail: attachment.thumbnail,
-    );
+    setState(() {
+      isFullscreen = true;
+    });
+    Lightbox.show(context,
+            video: attachment.videoFile,
+            aspectRatio: attachment.aspectRatio,
+            thumbnail: attachment.thumbnail,
+            key: videoPlayerKey)
+        .then((value) {
+      setState(() {
+        isFullscreen = false;
+      });
+    });
   }
 
-  Widget buildFile() {
-    var attachment = widget.attachment as FileAttachment;
+  Widget buildFile(IconData icon, String fileName, int? fileSize) {
     return Container(
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
@@ -120,30 +140,20 @@ class _MessageAttachmentState extends State<MessageAttachment> {
             children: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Icon(Mime.toIcon(attachment.mimeType)),
+                child: Icon(icon),
               ),
               Flexible(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    tiamat.Text.labelEmphasised(attachment.name),
-                    if (attachment.fileSize != null)
-                      tiamat.Text.labelLow(
-                          TextUtils.readableFileSize(attachment.fileSize!))
+                    tiamat.Text.labelEmphasised(fileName),
+                    if (fileSize != null)
+                      tiamat.Text.labelLow(TextUtils.readableFileSize(fileSize))
                   ],
                 ),
               ),
             ],
           ),
-          /*Padding(
-            padding: const EdgeInsets.fromLTRB(8.0, 0, 8, 0),
-            child: tiamat.IconButton(
-              icon: Icons.download,
-              size: 24,
-              backgroundColor:
-                  Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
-            ),
-          )*/
         ]),
       ),
     );

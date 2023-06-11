@@ -93,4 +93,44 @@ class FileCacheInstance {
 
     return file.uri;
   }
+
+  Future<void> clean() async {
+    var keys = await filesBox!.getAllKeys();
+    await Future.wait(keys.map((e) => _cleanFile(e)));
+  }
+
+  Future<void> _cleanFile(String key) async {
+    if (filesBox == null) return;
+
+    var entry = await filesBox!.get(key);
+    if (entry == null) return;
+
+    var file = File(entry.filePath);
+    if (!await file.exists()) {
+      entry.delete();
+      return;
+    }
+
+    int size = await file.length();
+
+    if (_shouldRemoveFile(
+        lastAccessedTime:
+            DateTime.fromMillisecondsSinceEpoch(entry.lastAccessedTimestamp),
+        fileSize: size)) {
+      await file.delete();
+      await entry.delete();
+    }
+  }
+
+  static bool _shouldRemoveFile(
+      {required DateTime lastAccessedTime, required int fileSize}) {
+    const largeFileSize = 10 * 1048576; //Ten Megabytes
+    var diff = DateTime.now().difference(lastAccessedTime);
+
+    if (fileSize > largeFileSize) {
+      return diff.inDays > 1;
+    }
+
+    return diff.inDays > 3;
+  }
 }

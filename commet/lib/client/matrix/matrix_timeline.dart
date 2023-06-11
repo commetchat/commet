@@ -77,10 +77,7 @@ class MatrixTimeline extends Timeline {
       e.eventId = event.eventId;
       e.originServerTs = event.originServerTs;
       e.source = event.toJson().toString();
-
-      if (client.peerExists(event.senderId)) {
-        e.sender = client.getPeer(event.senderId)!;
-      }
+      e.senderId = event.senderId;
 
       if (event.relationshipType != null) {
         switch (event.relationshipType) {
@@ -242,10 +239,13 @@ class MatrixTimeline extends Timeline {
                 ? MatrixMxcImage(
                     matrixEvent.videoThumbnailUrl!, _matrixRoom.client,
                     blurhash: matrixEvent.attachmentBlurhash,
+                    doFullres: false,
+                    doThumbnail: true,
                     matrixEvent: matrixEvent)
                 : null,
             name: matrixEvent.body,
             width: width,
+            fileSize: matrixEvent.infoMap['size'] as int?,
             height: height);
       } else {
         attachment = FileAttachment(
@@ -285,7 +285,7 @@ class MatrixTimeline extends Timeline {
 
   @override
   void markAsRead(TimelineEvent event) async {
-    if (event.sender == client.user) return;
+    if (event.senderId == client.user!.identifier) return;
 
     if (event.type == EventType.edit ||
         event.status == TimelineEventStatus.synced) {
@@ -294,18 +294,11 @@ class MatrixTimeline extends Timeline {
   }
 
   @override
-  Iterable<Peer>? get receipts => getReceipts();
+  Iterable<String>? get receipts => getReceipts();
 
-  Iterable<Peer>? getReceipts() {
+  Iterable<String>? getReceipts() {
     var mxReceipts = _matrixTimeline?.events.first.receipts;
-    var mapped = mxReceipts?.map((receipt) => client.getPeer(receipt.user.id)!);
-    if (mapped == null) return null;
-
-    var list = mapped.toList(growable: true);
-    var sender = client.getPeer(_matrixTimeline!.events.first.senderId);
-    if (sender != null) list.add(sender);
-
-    return list;
+    return mxReceipts?.map((receipt) => receipt.user.id);
   }
 
   @override

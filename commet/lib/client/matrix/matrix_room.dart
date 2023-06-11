@@ -1,8 +1,20 @@
+import 'dart:convert';
+import 'dart:typed_data';
+import 'dart:ui';
+import 'package:commet/client/matrix/extensions/matrix_room_extensions.dart';
+import 'package:commet/client/matrix/matrix_attachment.dart';
+import 'package:commet/client/matrix/matrix_client.dart';
+import 'package:commet/client/matrix/matrix_emoticon_pack.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/matrix/matrix_peer.dart';
 import 'package:commet/client/matrix/matrix_room_permissions.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
+import 'package:commet/utils/emoji/emoji_pack.dart';
+import 'package:commet/utils/image_utils.dart';
+import 'package:commet/utils/mime.dart';
+import 'package:flutter/material.dart';
 
+import '../attachment.dart';
 import '../client.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
@@ -22,7 +34,20 @@ class MatrixRoom extends Room {
   int get notificationCount => _matrixRoom.notificationCount;
 
   @override
-  Iterable<Peer> get members => getMembers();
+  Iterable<String> get memberIds =>
+      _matrixRoom.getParticipants().map((e) => e.id);
+
+  @override
+  List<Peer> get typingPeers => _matrixRoom.typingUsers
+      .where((element) => element.id != client.user!.identifier)
+      .map((e) => client.fetchPeer(e.id))
+      .toList();
+
+  @override
+  String get developerInfo =>
+      const JsonEncoder.withIndent('  ').convert(_matrixRoom.states);
+
+  List<EmoticonPack> _roomEmojis = List.empty(growable: true);
 
   @override
   PushRule get pushRule {
@@ -36,12 +61,19 @@ class MatrixRoom extends Room {
     }
   }
 
+  @override
+  List<EmoticonPack> get availbleEmoji => _roomEmojis;
+
+  @override
+  List<EmoticonPack> get ownedEmoji => _roomEmojis;
+
   MatrixRoom(client, matrix.Room room, matrix.Client matrixClient)
       : super(room.id, client) {
     _matrixRoom = room;
 
     if (room.avatar != null) {
-      avatar = MatrixMxcImage(room.avatar!, _matrixRoom.client);
+      avatar = MatrixMxcImage(room.avatar!, _matrixRoom.client,
+          autoLoadFullRes: false);
     }
 
     isDirectMessage = _matrixRoom.isDirectChat;
@@ -52,8 +84,9 @@ class MatrixRoom extends Room {
 
     displayName = room.getLocalizedDisplayname();
 
+    // Note this is not necessarily all users, this has the most effect on smaller rooms
+    // Where it is more likely that we are preloading important users
     var users = room.getParticipants();
-
     for (var user in users) {
       if (!this.client.peerExists(user.id)) {
         this.client.addPeer(MatrixPeer(matrixClient, user.id));
@@ -63,37 +96,72 @@ class MatrixRoom extends Room {
     timeline = MatrixTimeline(client, this, room);
 
     _matrixRoom.onUpdate.stream.listen(onMatrixRoomUpdate);
-
+    _roomEmojis = MatrixEmoticonPack.getPacks(_matrixRoom);
     permissions = MatrixRoomPermissions(_matrixRoom);
   }
 
-  Iterable<Peer> getMembers() {
-    var users = _matrixRoom.getParticipants();
+  @override
+  Future<List<ProcessedAttachment>> processAttachments(
+      List<PendingFileAttachment> attachments) async {
+    return await Future.wait(attachments.map((e) async {
+      var file = await processAttachment(e);
+      return MatrixProcessedAttachment(file!);
+    }));
+  }
 
-    for (var user in users) {
-      if (!client.peerExists(user.id)) {
-        client.addPeer(MatrixPeer(_matrixRoom.client, user.id));
-      }
+  Future<matrix.MatrixFile?> processAttachment(
+      PendingFileAttachment attachment) async {
+    await attachment.resolve();
+    if (attachment.data == null) return null;
+
+    if (attachment.mimeType == "image/bmp") {
+      var img = MemoryImage(attachment.data!);
+      var image = await ImageUtils.imageProviderToImage(img);
+      var bytes = await image.toByteData(format: ImageByteFormat.png);
+      attachment.data = bytes!.buffer.asUint8List();
+      attachment.mimeType = "image/png";
     }
 
-    return users.map((e) => client.getPeer(e.id)!);
+    if (Mime.imageTypes.contains(attachment.mimeType)) {
+      return await matrix.MatrixImageFile.create(
+          bytes: attachment.data!,
+          name: attachment.name ?? "unknown",
+          mimeType: attachment.mimeType,
+          nativeImplementations: (client as MatrixClient).nativeImplentations);
+    }
+
+    return matrix.MatrixFile(
+        bytes: attachment.data!,
+        name: attachment.name ?? "Unknown",
+        mimeType: attachment.mimeType);
   }
 
   @override
-  Future<TimelineEvent?> sendMessage(String message,
-      {TimelineEvent? inReplyTo, TimelineEvent? replaceEvent}) async {
+  Future<TimelineEvent?> sendMessage(
+      {String? message,
+      TimelineEvent? inReplyTo,
+      TimelineEvent? replaceEvent,
+      List<ProcessedAttachment>? processedAttachments}) async {
     matrix.Event? replyingTo;
 
     if (inReplyTo != null) {
       replyingTo = await _matrixRoom.getEventById(inReplyTo.eventId);
     }
 
-    String? id = await _matrixRoom.sendTextEvent(message,
-        inReplyTo: replyingTo, editEventId: replaceEvent?.eventId);
+    if (processedAttachments != null) {
+      Future.wait(processedAttachments
+          .whereType<MatrixProcessedAttachment>()
+          .map((e) => _matrixRoom.sendFileEvent(e.file)));
+    }
 
-    if (id != null) {
-      var event = await _matrixRoom.getEventById(id);
-      return (timeline as MatrixTimeline).convertEvent(event!);
+    if (message != null && message.trim().isNotEmpty) {
+      String? id = await _matrixRoom.sendTextEvent(message,
+          inReplyTo: replyingTo, editEventId: replaceEvent?.eventId);
+
+      if (id != null) {
+        var event = await _matrixRoom.getEventById(id);
+        return (timeline as MatrixTimeline).convertEvent(event!);
+      }
     }
 
     return null;
@@ -111,7 +179,6 @@ class MatrixRoom extends Room {
 
   void onMatrixRoomUpdate(String event) async {
     displayName = _matrixRoom.getLocalizedDisplayname();
-
     onUpdate.add(null);
   }
 
@@ -133,5 +200,31 @@ class MatrixRoom extends Room {
 
     await _matrixRoom.setPushRuleState(newRule);
     onUpdate.add(null);
+  }
+
+  @override
+  Future<void> setTypingStatus(bool typing) async {
+    await _matrixRoom.setTyping(typing, timeout: 2000);
+  }
+
+  @override
+  Color getColorOfUser(String userId) {
+    return MatrixPeer.hashColor(userId);
+  }
+
+  @override
+  Future<void> createEmoticonPack(String name, Uint8List? avatarData) async {
+    var data = await _matrixRoom.createEmoticonPack(name, avatarData);
+    if (data != null) {
+      var pack = MatrixEmoticonPack(data['key'], _matrixRoom, data['content']);
+      _roomEmojis.add(pack);
+      onEmojiPackAdded.add(_roomEmojis.length - 1);
+    }
+  }
+
+  @override
+  Future<void> deleteEmoticonPack(EmoticonPack pack) async {
+    await _matrixRoom.deleteEmoticonPack(pack.identifier);
+    _roomEmojis.remove(pack);
   }
 }

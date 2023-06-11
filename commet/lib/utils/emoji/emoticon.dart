@@ -7,8 +7,15 @@ import 'package:flutter/material.dart';
 
 import '../text_utils.dart';
 
-abstract class Emoji {
+enum EmoticonType {
+  emoji,
+  sticker,
+  both,
+}
+
+abstract class Emoticon {
   ImageProvider get image;
+  String get slug;
   String? get shortcode;
 
   static List<InlineSpan> emojify(List<InlineSpan> span,
@@ -27,7 +34,7 @@ abstract class Emoji {
         builder: ((matchedText, style) {
       return WidgetSpan(
           child: EmojiWidget(
-        UnicodeEmoji(matchedText),
+        UnicodeEmoticon(matchedText),
         height: style != null && style.fontSize != null
             ? style.fontSize
             : emojiHeight,

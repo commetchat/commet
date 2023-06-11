@@ -60,5 +60,11 @@
   "encryptionCannotBeDisabled": "If enabled, this cannot be disabled later",
   "notificationReceivedMessagePlaceholder": "Sent a message",
   "messagePlaceholderSticker": "Sent a sticker",
-  "messageEditedMarker": "(Edited)"
+  "messageEditedMarker": "(Edited)",
+  "singleUserTyping": "{username1} is typing...",
+  "twoUsersTyping": "{username1} and {username2} are typing...",
+  "threeUsersTyping": "{username1}, {username2}, and {username3} are typing...",
+  "multipleUsersTyping": "{username1}, {username2}, {username3} and others are typing...",
+  "promptEmoticonPackDelete": "Are you sure you want to delete the **{packName}** pack?",
+  "promptEmoticonDelete": "Are you sure you want to delete **{emoteName}**?"
 }

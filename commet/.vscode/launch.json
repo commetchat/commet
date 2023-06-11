@@ -14,6 +14,15 @@
             ],
         },
         {
+            "name": "commet (debug windows)",
+            "request": "launch",
+            "type": "dart",
+            "toolArgs": [
+                "--dart-define", "PLATFORM=windows",
+                "--dart-define", "BUILD_MODE=debug"
+            ],
+        },
+        {
             "name": "commet (debug mobile)",
             "request": "launch",
             "type": "dart",
@@ -21,6 +30,25 @@
                 "--dart-define", "PLATFORM=mobile",
                 "--dart-define", "BUILD_MODE=debug"
             ],
+        },
+        {
+            "name": "commet (debug web)",
+            "request": "launch",
+            "type": "dart",
+            "toolArgs": [
+                "--dart-define", "PLATFORM=web",
+                "--dart-define", "BUILD_MODE=debug"
+            ],
+        },
+        {
+            "name": "commet (release web)",
+            "request": "launch",
+            "type": "dart",
+            "toolArgs": [
+                "--dart-define", "PLATFORM=web",
+                "--dart-define", "BUILD_MODE=release"
+            ],
+            "flutterMode": "release"
         },
         {
             "name": "commet (debug android)",

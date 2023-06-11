@@ -1,13 +1,12 @@
+import 'package:commet/client/client.dart';
 import 'package:commet/ui/molecules/user_panel.dart';
 import 'package:flutter/material.dart';
-import 'package:tiamat/tiamat.dart';
 
-import '../../client/peer.dart';
+import '../../client/room.dart';
 
 class PeerList extends StatefulWidget {
-  const PeerList(this.peers, {super.key});
-
-  final Iterable<Peer> peers;
+  const PeerList(this.room, {super.key});
+  final Room room;
 
   @override
   State<PeerList> createState() => _PeerListState();
@@ -19,29 +18,23 @@ class _PeerListState extends State<PeerList> {
 
   @override
   void initState() {
-    _count = widget.peers.length;
+    _count = widget.room.memberIds.length;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Tile.low1(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
-        child: AnimatedList(
-          key: _listKey,
-          physics: const BouncingScrollPhysics(),
-          initialItemCount: _count,
-          itemBuilder: (context, i, animation) => SizeTransition(
-              sizeFactor:
-                  animation.drive(CurveTween(curve: Curves.easeOutCubic)),
-              child: UserPanel(
-                displayName: widget.peers.elementAt(i).displayName,
-                avatar: widget.peers.elementAt(i).avatar,
-                color: widget.peers.elementAt(i).color,
-              )),
-        ),
-      ),
+    return AnimatedList(
+      key: _listKey,
+      physics: const BouncingScrollPhysics(),
+      initialItemCount: _count,
+      itemBuilder: (context, i, animation) => SizeTransition(
+          sizeFactor: animation.drive(CurveTween(curve: Curves.easeOutCubic)),
+          child: UserPanel(
+            widget.room.client.fetchPeer(widget.room.memberIds.elementAt(i)),
+            userColor:
+                widget.room.getColorOfUser(widget.room.memberIds.elementAt(i)),
+          )),
     );
   }
 }

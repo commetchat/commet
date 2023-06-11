@@ -3,21 +3,33 @@ import 'dart:math';
 
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/main.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
+import 'package:commet/ui/navigation/navigation_signals.dart';
 import 'package:commet/ui/pages/chat/desktop_chat_page.dart';
 import 'package:commet/ui/pages/chat/mobile_chat_page.dart';
 import 'package:commet/ui/pages/settings/room_settings_page.dart';
+import 'package:commet/utils/debounce.dart';
 import 'package:commet/utils/notification/notification_manager.dart';
+import 'package:commet/utils/orientation.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-
+import 'package:tiamat/tiamat.dart' as tiamat;
+import 'package:window_manager/window_manager.dart';
+import '../../../client/attachment.dart';
 import '../../../client/client.dart';
 import '../../../config/build_config.dart';
-import '../../molecules/split_timeline_viewer.dart';
+import '../../molecules/timeline_viewer.dart';
 import '../../navigation/navigation_utils.dart';
 
 enum EventInteractionType {
   reply,
   edit,
+}
+
+enum SubView {
+  space,
+  directMessages,
+  home,
 }
 
 class ChatPage extends StatefulWidget {
@@ -31,24 +43,63 @@ class ChatPageState extends State<ChatPage> {
   ClientManager get clientManager => widget.clientManager;
   Space? selectedSpace;
   Room? selectedRoom;
-  late bool homePageSelected = false;
-  late GlobalKey<SplitTimelineViewerState> timelineKey =
-      GlobalKey<SplitTimelineViewerState>();
-  late Map<String, GlobalKey<SplitTimelineViewerState>> timelines = {};
+
+  SubView selectedView = SubView.space;
+
+  late GlobalKey<TimelineViewerState> timelineKey =
+      GlobalKey<TimelineViewerState>();
+  late Map<String, GlobalKey<TimelineViewerState>> timelines = {};
   double height = -1;
+
+  bool processing = false;
+
+  List<PendingFileAttachment> attachments = List.empty(growable: true);
+
+  DateTime lastSetTyping = DateTime.fromMicrosecondsSinceEpoch(0);
+
+  Debouncer typingStatusDebouncer =
+      Debouncer(delay: const Duration(seconds: 5));
 
   EventInteractionType? interactionType;
   TimelineEvent? interactingEvent;
 
   StreamController<Room> onRoomSelectionChanged = StreamController.broadcast();
+
   StreamController<void> onFocusMessageInput = StreamController.broadcast();
   StreamController<String> setMessageInputText = StreamController.broadcast();
 
   StreamSubscription? onSpaceUpdateSubscription;
   StreamSubscription? onRoomUpdateSubscription;
 
-  void selectHomePage() {
-    homePageSelected = true;
+  StreamSubscription? onOpenRoomSubscription;
+
+  String? get relatedEventSenderName => interactingEvent == null
+      ? null
+      : selectedRoom?.client
+              .fetchPeer(interactingEvent!.senderId)
+              .displayName ??
+          interactingEvent!.senderId;
+
+  Color? get relatedEventSenderColor => interactingEvent == null
+      ? null
+      : selectedRoom?.getColorOfUser(interactingEvent!.senderId);
+
+  void onInputTextUpdated(String currentText) {
+    if (currentText.isEmpty) {
+      stopTyping();
+      typingStatusDebouncer.cancel();
+      lastSetTyping = DateTime.fromMicrosecondsSinceEpoch(0);
+    } else {
+      if ((DateTime.now().difference(lastSetTyping)).inSeconds > 3) {
+        selectedRoom?.setTypingStatus(true);
+        lastSetTyping = DateTime.now();
+      }
+      typingStatusDebouncer.run(stopTyping);
+    }
+  }
+
+  void stopTyping() {
+    selectedRoom?.setTypingStatus(false);
   }
 
   void clearRelatedEvents() {
@@ -64,7 +115,7 @@ class ChatPageState extends State<ChatPage> {
     for (int i = 0; i < min(20, selectedRoom!.timeline!.events.length); i++) {
       var event = selectedRoom!.timeline!.events[i];
 
-      if (event.sender != selectedRoom!.client.user) continue;
+      if (event.senderId != selectedRoom!.client.user!.identifier) continue;
 
       if (event.type != EventType.message) continue;
 
@@ -96,6 +147,39 @@ class ChatPageState extends State<ChatPage> {
         default:
           break;
       }
+    });
+  }
+
+  void addAttachment(PendingFileAttachment attachment) {
+    if (selectedRoom!.client.maxFileSize != null) {
+      if (attachment.size != null &&
+          attachment.size! > selectedRoom!.client.maxFileSize!) {
+        AdaptiveDialog.show(context, builder: (_) {
+          return const SizedBox(
+              height: 100,
+              child: Center(
+                  child:
+                      tiamat.Text.label("This file is too large to upload!")));
+        }, title: "Max file size exceeded");
+
+        return;
+      }
+    }
+
+    setState(() {
+      attachments.add(attachment);
+    });
+  }
+
+  void removeAttachment(PendingFileAttachment attachment) {
+    setState(() {
+      attachments.remove(attachment);
+    });
+  }
+
+  void clearAttachments() {
+    setState(() {
+      attachments.clear();
     });
   }
 
@@ -137,6 +221,25 @@ class ChatPageState extends State<ChatPage> {
     }
   }
 
+  void selectDirectMessages() {
+    onRoomUpdateSubscription?.cancel();
+    if (kDebugMode) {
+      // Weird hacky work around mentioned in #2
+      timelines[selectedRoom?.localId]?.currentState!.prepareForDisposal();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        setState(() {
+          selectedView = SubView.directMessages;
+          selectedSpace = null;
+        });
+      });
+    } else {
+      setState(() {
+        selectedView = SubView.directMessages;
+        selectedSpace = null;
+      });
+    }
+  }
+
   void selectHome() {
     onRoomUpdateSubscription?.cancel();
     if (kDebugMode) {
@@ -144,13 +247,13 @@ class ChatPageState extends State<ChatPage> {
       timelines[selectedRoom?.localId]?.currentState!.prepareForDisposal();
       WidgetsBinding.instance.addPostFrameCallback((_) {
         setState(() {
-          homePageSelected = true;
+          selectedView = SubView.home;
           selectedSpace = null;
         });
       });
     } else {
       setState(() {
-        homePageSelected = true;
+        selectedView = SubView.home;
         selectedSpace = null;
       });
     }
@@ -160,7 +263,7 @@ class ChatPageState extends State<ChatPage> {
     if (room == selectedRoom) return;
 
     if (!timelines.containsKey(room.localId)) {
-      timelines[room.localId] = GlobalKey<SplitTimelineViewerState>();
+      timelines[room.localId] = GlobalKey<TimelineViewerState>();
     }
 
     onRoomUpdateSubscription?.cancel();
@@ -182,14 +285,20 @@ class ChatPageState extends State<ChatPage> {
     setState(() {
       selectedRoom = room;
       interactingEvent = null;
+      clearAttachments();
+
+      if (room.timeline!.events.length < 50) {
+        room.timeline!.loadMoreHistory();
+      }
     });
   }
 
   void _setSelectedSpace(Space? space) {
     setState(() {
       selectedSpace = space;
-      homePageSelected = false;
+      selectedView = SubView.space;
       interactingEvent = null;
+      clearAttachments();
     });
   }
 
@@ -197,6 +306,7 @@ class ChatPageState extends State<ChatPage> {
     setState(() {
       interactingEvent = null;
       selectedRoom = null;
+      clearAttachments();
     });
   }
 
@@ -204,6 +314,28 @@ class ChatPageState extends State<ChatPage> {
   void initState() {
     super.initState();
     notificationManager.addModifier(onlyNotifyNonSelectedRooms);
+    onOpenRoomSubscription =
+        NavigationSignals.openRoom.stream.listen(onOpenRoomSignal);
+  }
+
+  void onOpenRoomSignal(String roomId) {
+    for (var client in clientManager.clients) {
+      if (client.roomExists(roomId)) {
+        var room = client.getRoom(roomId);
+
+        if (room != null) {
+          var spacesWithRoom =
+              client.spaces.where((element) => element.containsRoom(roomId));
+
+          if (spacesWithRoom.isNotEmpty) {
+            selectSpace(spacesWithRoom.first);
+          }
+
+          selectRoom(room);
+          break;
+        }
+      }
+    }
   }
 
   @override
@@ -212,13 +344,23 @@ class ChatPageState extends State<ChatPage> {
     onRoomUpdateSubscription?.cancel();
 
     notificationManager.removeModifier(onlyNotifyNonSelectedRooms);
+    onOpenRoomSubscription?.cancel();
     super.dispose();
   }
 
-  NotificationContent? onlyNotifyNonSelectedRooms(NotificationContent content) {
+  Future<NotificationContent?> onlyNotifyNonSelectedRooms(
+      NotificationContent content) async {
+    // Always show notification if the window does not have focus
+    if (BuildConfig.DESKTOP) {
+      if (!(await windowManager.isFocused())) {
+        return content;
+      }
+    }
+
     if (content.sentFrom == selectedRoom) {
       return null;
     }
+
     return content;
   }
 
@@ -230,18 +372,33 @@ class ChatPageState extends State<ChatPage> {
     setState(() {});
   }
 
-  void sendMessage(String message) {
-    if (interactingEvent != null &&
-        interactionType == EventInteractionType.reply) {
-      selectedRoom!.sendMessage(message, inReplyTo: interactingEvent);
-    } else if (interactingEvent != null &&
-        interactionType == EventInteractionType.edit) {
-      selectedRoom!.sendMessage(message, replaceEvent: interactingEvent);
-    } else {
-      selectedRoom!.sendMessage(message);
-    }
+  void sendMessage(String message) async {
+    setState(() {
+      processing = true;
+    });
+
+    var processedAttachments =
+        await selectedRoom!.processAttachments(attachments);
+
+    setState(() {
+      processing = false;
+    });
+
+    selectedRoom!.sendMessage(
+        message: message,
+        inReplyTo: interactionType == EventInteractionType.reply
+            ? interactingEvent
+            : null,
+        replaceEvent: interactionType == EventInteractionType.edit
+            ? interactingEvent
+            : null,
+        processedAttachments: processedAttachments);
+
+    selectedRoom?.setTypingStatus(false);
 
     setInteractingEvent(null);
+    clearAttachments();
+    setMessageInputText.add("");
   }
 
   void navigateRoomSettings() {
@@ -283,6 +440,16 @@ class ChatPageState extends State<ChatPage> {
   Widget pickChatView() {
     if (BuildConfig.DESKTOP) return DesktopChatPageView(state: this);
     if (BuildConfig.MOBILE) return MobileChatPageView(state: this);
+
+    if (BuildConfig.WEB) {
+      if (OrientationUtils.getCurrentOrientation(context) ==
+          Orientation.landscape) {
+        return DesktopChatPageView(state: this);
+      } else {
+        return MobileChatPageView(state: this);
+      }
+    }
+
     throw Exception("Unknown build config");
   }
 }

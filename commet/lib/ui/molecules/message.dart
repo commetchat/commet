@@ -22,6 +22,7 @@ class Message extends StatefulWidget {
       this.edited = false,
       this.onDoubleTap,
       this.onLongPress,
+      this.isInReply = false,
       this.showSender = true});
   final double avatarSize = 48;
 
@@ -32,6 +33,7 @@ class Message extends StatefulWidget {
   final String? replyBody;
   final String? replySenderName;
   final Color? replySenderColor;
+  final bool isInReply;
 
   final ImageProvider? senderAvatar;
   final DateTime sentTimeStamp;
@@ -158,7 +160,7 @@ class _MessageState extends State<Message> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (widget.replySenderName != null) replyText(),
+            if (widget.isInReply) replyText(),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -231,7 +233,7 @@ class _MessageState extends State<Message> {
           ),
           const Icon(material.Icons.keyboard_arrow_right_rounded),
           tiamat.Text.name(
-            widget.replySenderName!,
+            widget.replySenderName ?? "Loading...",
             color: widget.replySenderColor,
           ),
           Flexible(

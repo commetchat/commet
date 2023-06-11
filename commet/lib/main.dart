@@ -5,11 +5,14 @@ import 'package:commet/config/build_config.dart';
 import 'package:commet/config/preferences.dart';
 import 'package:commet/ui/pages/chat/chat_page.dart';
 import 'package:commet/ui/pages/login/login_page.dart';
-import 'package:commet/utils/emoji/emoji_pack.dart';
+import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:commet/utils/notification/notification_manager.dart';
+import 'package:commet/utils/notification/notifier.dart';
+import 'package:commet/utils/window_management.dart';
 
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:media_kit/media_kit.dart';
 
 import 'package:provider/provider.dart';
 import 'package:scaled_app/scaled_app.dart';
@@ -29,7 +32,7 @@ final GlobalKey<NavigatorState> navigator = GlobalKey();
 FileCacheInstance fileCache = FileCacheInstance();
 Preferences preferences = Preferences();
 NotificationManager notificationManager = NotificationManager();
-
+ClientManager? clientManager;
 void main() async {
   ScaledWidgetsFlutterBinding.ensureInitialized(
     scaleFactor: (deviceSize) {
@@ -39,10 +42,10 @@ void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
 
-  var clientManager = await initApp();
+  clientManager = await initApp();
 
-  double scale = preferences.getAppScale();
-  var theme = preferences.getTheme();
+  double scale = preferences.appScale;
+  var theme = preferences.theme;
 
   if (BuildConfig.DESKTOP) {
     ScaledWidgetsFlutterBinding.instance.scaleFactor = (deviceSize) {
@@ -51,7 +54,7 @@ void main() async {
   }
 
   runApp(App(
-    clientManager: clientManager,
+    clientManager: clientManager!,
     initialTheme: theme,
   ));
 }
@@ -61,16 +64,22 @@ Future<ClientManager> initApp() async {
 
   var adapter = CachedFileAdapter();
 
+  MediaKit.ensureInitialized();
+
   if (!Hive.isAdapterRegistered(adapter.typeId)) {
     Hive.registerAdapter(adapter);
   }
 
   var dbPath = await AppConfig.getDatabasePath();
 
+  // We need to wait for this first because other initializers might be dependent
+  await preferences.init();
+
   await Future.wait([
-    preferences.init(),
-    fileCache.init(),
-    EmojiPack.defaults(),
+    fileCache.init().then((value) => fileCache.clean()),
+    UnicodeEmojis.load(),
+    Notifier.init(),
+    WindowManagement.init(),
     if (!BuildConfig.LINUX) Hive.initFlutter(dbPath),
   ]);
 

@@ -19,6 +19,9 @@ class SimulatedClient extends Client {
   Future<void> init(bool loadingFromCache) async {}
 
   @override
+  int get maxFileSize => 10000000;
+
+  @override
   bool isLoggedIn() => _isLogged;
 
   @override
@@ -145,5 +148,10 @@ class SimulatedClient extends Client {
   @override
   Iterable<Room> getEligibleRoomsForSpace(Space space) {
     return rooms.where((room) => !space.containsRoom(room.identifier));
+  }
+
+  @override
+  Peer fetchPeerInternal(String identifier) {
+    return SimulatedPeer(this, identifier, identifier, null);
   }
 }

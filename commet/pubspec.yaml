@@ -32,14 +32,15 @@ dependencies:
   path_provider: ^2.0.13
   widgetbook_annotation:
   flutter_markdown: ^0.6.9+1
-  video_player: ^2.6.0
 
-  media_kit: ^0.0.1
-  media_kit_video: ^0.0.1
-  media_kit_native_event_loop: ^1.0.0
-  media_kit_libs_windows_video: ^1.0.0          # Windows package for video (& audio) native libraries.
-  media_kit_libs_windows_audio: ^1.0.0          # Windows package for audio (only) native libraries.
-  media_kit_libs_linux: ^1.0.0                  # Linux dependency package.
+  media_kit: ^0.0.8                              # Primary package.
+  media_kit_video: ^0.0.10                       # For video rendering.
+  media_kit_native_event_loop: ^1.0.4            # Support for higher number of concurrent instances & better performance.
+  media_kit_libs_android_video: ^1.0.4           # Android package for video native libraries.
+  media_kit_libs_ios_video: ^1.0.4               # iOS package for video native libraries.
+  media_kit_libs_macos_video: ^1.0.5             # macOS package for video native libraries.
+  media_kit_libs_windows_video: ^1.0.2           # Windows package for video native libraries.
+  media_kit_libs_linux: ^1.0.2                   # GNU/Linux dependency package.
   hive: ^2.2.3
   hive_generator: ^1.1.3
   hive_flutter: ^1.1.0
@@ -53,11 +54,17 @@ dependencies:
   desktop_notifications: ^0.6.3
   url_launcher: ^6.1.11
   flutter_blurhash: ^0.7.0
+  mime: ^1.0.4
+  pasteboard: ^0.2.0
+  flutter_local_notifications: ^14.1.0
+  win_toast: ^0.3.0
+  window_manager: ^0.3.4
 
 dev_dependencies:
   build_runner:
   widgetbook_generator:
   widgetbook:
+  msix: ^3.7.0
   flutter_test:
     sdk: flutter
 
@@ -101,3 +108,12 @@ flutter:
 
   shaders:
     - assets/shader/texture_coordinate.frag
+
+msix_config:
+  display_name: Commet
+  identity_name: chat.commet.app.windows-a33bc9ba
+  toast_activator:
+    clsid: "7685C041-9D17-4112-8FC4-386743A3D53E"
+    arguments: "-ToastActivated"
+    display_name: "Commet"
+  msix_version: 1.0.4.0

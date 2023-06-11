@@ -44,6 +44,7 @@ class _EditableLabelState extends State<EditableLabel> {
 
   Widget nameEditor() {
     return material.Material(
+        color: material.Colors.transparent,
         child: editingName
             ? SizedBox(
                 width: 200,
