@@ -27,7 +27,6 @@ extension MatrixExtensions on Room {
       for (var pair in existing.entries) {
         if (pair.value.content.isEmpty) {
           stateKey = pair.key;
-          print("Reusing existing key: ${pair.key}");
           break;
         }
       }

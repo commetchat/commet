@@ -160,4 +160,9 @@ class SimulatedRoom extends Room {
 
   @override
   List<EmoticonPack> get ownedEmoji => [];
+
+  @override
+  Future<void> deleteEmoticonPack(EmoticonPack pack) {
+    throw UnimplementedError();
+  }
 }

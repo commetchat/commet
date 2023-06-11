@@ -194,7 +194,6 @@ class MatrixSpace extends Space {
   Future<void> createEmoticonPack(String name, Uint8List? avatarData) async {
     var data = await _matrixRoom.createEmoticonPack(name, avatarData);
     if (data != null) {
-      print(data);
       var pack = MatrixEmoticonPack(data['key'], _matrixRoom, data['content']);
       _spaceEmoji.add(pack);
       onEmojiPackAdded.add(_spaceEmoji.length - 1);

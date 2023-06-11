@@ -95,4 +95,6 @@ abstract class Room {
   Future<void> enableE2EE();
 
   Future<void> createEmoticonPack(String name, Uint8List? avatarData);
+
+  Future<void> deleteEmoticonPack(EmoticonPack pack);
 }

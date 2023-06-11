@@ -221,4 +221,10 @@ class MatrixRoom extends Room {
       onEmojiPackAdded.add(_roomEmojis.length - 1);
     }
   }
+
+  @override
+  Future<void> deleteEmoticonPack(EmoticonPack pack) async {
+    await _matrixRoom.deleteEmoticonPack(pack.identifier);
+    _roomEmojis.remove(pack);
+  }
 }
