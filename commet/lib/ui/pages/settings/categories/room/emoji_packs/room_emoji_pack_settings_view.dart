@@ -326,7 +326,8 @@ class _EmojiEditorState extends State<EmojiEditor> {
             size: 20,
             onPressed: () async {
               var result = await AdaptiveDialog.confirmation(context,
-                  prompt: "Are you sure you want to delete **{emote}**?",
+                  prompt:
+                      T.current.promptEmoticonDelete(widget.emoji.shortcode!),
                   dangerous: true);
 
               if (result == true) {
