@@ -1,85 +1,28 @@
-import 'dart:convert';
+import 'dart:async';
+import 'dart:typed_data';
 
-import 'package:commet/utils/emoji/emoji.dart';
-import 'package:commet/utils/emoji/unicode_emoji.dart';
-import 'package:flutter/services.dart';
+import 'package:commet/utils/emoji/emoticon.dart';
+import 'package:flutter/material.dart';
 
-class EmojiPack {
-  late List<Emoji> emoji;
-  late String name;
+abstract class EmoticonPack {
+  String get identifier;
+  String get attribution;
+  String get displayName;
 
-  EmojiPack({required this.name}) {
-    emoji = List.empty(growable: true);
-  }
+  Stream<int> get onEmoticonAdded;
 
-  void add(Emoji newEmoji) {
-    emoji.add(newEmoji);
-  }
+  List<Emoticon> get emotes;
 
-  static Future<List<EmojiPack>> defaults() async {
-    var people = EmojiPack(name: "Smileys & People");
-    var nature = EmojiPack(name: "Animals & Nature");
-    var food = EmojiPack(name: "Food & Drink");
-    var activities = EmojiPack(name: "Activities");
-    var objects = EmojiPack(name: "Objects");
-    var places = EmojiPack(name: "Trabel & Places");
-    var symbols = EmojiPack(name: "Symbols");
-    var flags = EmojiPack(name: "Flags");
+  ImageProvider? get image;
+  IconData? get icon;
 
-    Map<int, EmojiPack> groupToPack = {
-      0: people,
-      1: people,
-      3: nature,
-      4: food,
-      5: places,
-      6: activities,
-      7: objects,
-      8: symbols,
-      9: flags
-    };
+  Future<void> deleteEmoticon(Emoticon emoticon);
 
-    String jsonString =
-        await rootBundle.loadString("assets/emoji_data/data.json");
-    List<dynamic> data = jsonDecode(jsonString);
+  Future<void> renameEmoticon(Emoticon emoticon, String name);
 
-    String shortcodesString =
-        await rootBundle.loadString("assets/emoji_data/shortcodes/en.json");
-    Map<String, dynamic> shortCodes = jsonDecode(shortcodesString);
-
-    for (var emoji in data) {
-      Map emojiData = emoji;
-      String hexcode = emojiData['hexcode'];
-
-      if (!shortCodes.containsKey(hexcode)) {
-        continue;
-      }
-
-      var codes = shortCodes[hexcode];
-      var shortcode = codes is String ? codes : (codes as List).first;
-
-      if (emojiData.containsKey('group')) {
-        int groupId = emojiData['group'];
-        var e = UnicodeEmoji(emojiData['emoji'], shortcode: shortcode);
-
-        if (groupToPack.containsKey(groupId)) {
-          groupToPack[groupId]!.add(e);
-        } else {
-          symbols.add(e);
-        }
-      }
-    }
-
-    var result = [
-      people,
-      nature,
-      food,
-      places,
-      activities,
-      objects,
-      symbols,
-      flags
-    ];
-
-    return result;
-  }
+  Future<void> addEmoticon(
+      {required String slug,
+      String? shortcode,
+      required Uint8List data,
+      String? mimeType});
 }

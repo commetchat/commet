@@ -1,5 +1,8 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/generated/l10n.dart';
+import 'package:commet/main.dart';
+import 'package:commet/ui/pages/settings/categories/room/developer/room_developer_settings_view.dart';
+import 'package:commet/ui/pages/settings/categories/space/space_emoji_pack_settings.dart';
 import 'package:commet/ui/pages/settings/categories/space/space_general_settings_page.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
 import 'package:commet/ui/pages/settings/settings_tab.dart';
@@ -30,6 +33,22 @@ class SettingsCategorySpace implements SettingsCategory {
                   space: space,
                 );
               }),
+        if (space.permissions.canEditRoomEmoticons ||
+            space.ownedEmoji.isNotEmpty)
+          SettingsTab(
+              label: "Emoji",
+              icon: Icons.emoji_emotions,
+              pageBuilder: (context) {
+                return SpaceEmojiPackSettings(space);
+              }),
+        if (preferences.developerMode)
+          SettingsTab(
+            label: "Developer",
+            icon: Icons.code,
+            pageBuilder: (context) {
+              return RoomDeveloperSettingsView(space.developerInfo);
+            },
+          ),
       ]);
 
   @override

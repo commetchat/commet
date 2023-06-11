@@ -1,9 +1,12 @@
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/simulated/simulated_peer.dart';
 import 'package:commet/client/simulated/simulated_room_permissions.dart';
 import 'package:commet/client/simulated/simulated_timeline.dart';
+import 'package:commet/utils/emoji/emoji_pack.dart';
+import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:commet/utils/rng.dart';
 import 'package:flutter/material.dart';
 
@@ -37,6 +40,9 @@ class SimulatedRoom extends Room {
 
   @override
   List<Peer> get typingPeers => List.from([alice, bob]);
+
+  @override
+  String get developerInfo => "";
 
   SimulatedRoom(displayName, client, {bool isDm = false})
       : super(RandomUtils.getRandomString(20), client) {
@@ -143,4 +149,15 @@ class SimulatedRoom extends Room {
   Color getColorOfUser(String userId) {
     return Colors.red;
   }
+
+  @override
+  Future<void> createEmoticonPack(String name, Uint8List? avatarData) {
+    throw UnimplementedError();
+  }
+
+  @override
+  List<EmoticonPack> get availbleEmoji => UnicodeEmojis.packs!;
+
+  @override
+  List<EmoticonPack> get ownedEmoji => [];
 }

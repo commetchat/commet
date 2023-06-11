@@ -2,6 +2,7 @@ import 'package:commet/config/build_config.dart';
 import 'package:commet/config/preferences.dart';
 import 'package:commet/generated/l10n.dart';
 import 'package:commet/main.dart';
+import 'package:commet/ui/pages/settings/categories/app/advanced_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/app/window_settings.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
 import 'package:commet/ui/pages/settings/settings_tab.dart';
@@ -28,6 +29,12 @@ class SettingsCategoryApp implements SettingsCategory {
               pageBuilder: (context) {
                 return const WindowSettingsPage();
               }),
+        SettingsTab(
+            label: "Advanced",
+            icon: m.Icons.code,
+            pageBuilder: (context) {
+              return const AdvancedSettingsPage();
+            }),
       ]);
 
   @override

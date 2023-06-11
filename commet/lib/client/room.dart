@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:typed_data';
 import 'package:commet/client/client.dart';
 import 'package:flutter/material.dart';
 
+import '../utils/emoji/emoji_pack.dart';
 import 'attachment.dart';
 import 'permissions.dart';
 
@@ -23,9 +25,16 @@ abstract class Room {
   bool get isMember => false;
   bool get isE2EE;
   StreamController<void> onUpdate = StreamController.broadcast();
+  late StreamController<int> onEmojiPackAdded = StreamController.broadcast();
   PushRule get pushRule;
 
   List<Peer> get typingPeers;
+
+  List<EmoticonPack> get ownedEmoji;
+
+  List<EmoticonPack> get availbleEmoji;
+
+  String get developerInfo;
 
   int get notificationCount;
   int get highlightedNotificationCount;
@@ -84,4 +93,6 @@ abstract class Room {
   Color getColorOfUser(String userId);
 
   Future<void> enableE2EE();
+
+  Future<void> createEmoticonPack(String name, Uint8List? avatarData);
 }

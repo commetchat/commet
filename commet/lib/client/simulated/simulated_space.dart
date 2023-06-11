@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/client/simulated/simulated_room_permissions.dart';
+import 'package:commet/utils/emoji/emoji_pack.dart';
 import 'package:flutter/material.dart';
 
 import '../../utils/rng.dart';
@@ -31,6 +32,9 @@ class SimulatedSpace extends Space {
 
   @override
   PushRule get pushRule => _pushRule;
+
+  @override
+  String get developerInfo => "";
 
   static const _chars =
       'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
@@ -74,5 +78,18 @@ class SimulatedSpace extends Space {
   Future<void> setPushRule(PushRule rule) async {
     _pushRule = rule;
     onUpdate.add(null);
+  }
+
+  @override
+  Future<void> createEmoticonPack(String name, Uint8List? avatarData) {
+    throw UnimplementedError();
+  }
+
+  @override
+  List<EmoticonPack> get ownedEmoji => [];
+
+  @override
+  Future<void> deleteEmoticonPack(EmoticonPack pack) {
+    throw UnimplementedError();
   }
 }

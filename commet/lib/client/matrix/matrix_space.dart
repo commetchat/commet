@@ -1,11 +1,15 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:commet/client/client.dart';
+import 'package:commet/client/matrix/extensions/matrix_room_extensions.dart';
+import 'package:commet/client/matrix/matrix_emoticon_pack.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/matrix/matrix_room_permissions.dart';
 import 'package:commet/client/matrix/matrix_room_preview.dart';
 import 'package:commet/client/room_preview.dart';
+import 'package:commet/utils/emoji/emoji_pack.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
@@ -17,6 +21,10 @@ class MatrixSpace extends Space {
 
   @override
   String get topic => _matrixRoom.topic;
+
+  @override
+  String get developerInfo =>
+      const JsonEncoder.withIndent('  ').convert(_matrixRoom.states);
 
   @override
   PushRule get pushRule {
@@ -46,6 +54,11 @@ class MatrixSpace extends Space {
     }
   }
 
+  late List<EmoticonPack> _spaceEmoji = List.empty(growable: true);
+
+  @override
+  List<EmoticonPack> get ownedEmoji => _spaceEmoji;
+
   MatrixSpace(client, matrix.Room room, matrix.Client matrixClient)
       : super(room.id, client) {
     _matrixRoom = room;
@@ -64,6 +77,8 @@ class MatrixSpace extends Space {
     });
 
     permissions = MatrixRoomPermissions(_matrixRoom);
+    _spaceEmoji = MatrixEmoticonPack.getPacks(_matrixRoom);
+
     refresh();
   }
 
@@ -173,5 +188,22 @@ class MatrixSpace extends Space {
 
     await _matrixRoom.setPushRuleState(newRule);
     onUpdate.add(null);
+  }
+
+  @override
+  Future<void> createEmoticonPack(String name, Uint8List? avatarData) async {
+    var data = await _matrixRoom.createEmoticonPack(name, avatarData);
+    if (data != null) {
+      print(data);
+      var pack = MatrixEmoticonPack(data['key'], _matrixRoom, data['content']);
+      _spaceEmoji.add(pack);
+      onEmojiPackAdded.add(_spaceEmoji.length - 1);
+    }
+  }
+
+  @override
+  Future<void> deleteEmoticonPack(EmoticonPack pack) async {
+    await _matrixRoom.deleteEmoticonPack(pack.identifier);
+    _spaceEmoji.remove(pack);
   }
 }

@@ -1,11 +1,15 @@
+import 'dart:convert';
+import 'dart:typed_data';
 import 'dart:ui';
-
+import 'package:commet/client/matrix/extensions/matrix_room_extensions.dart';
 import 'package:commet/client/matrix/matrix_attachment.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
+import 'package:commet/client/matrix/matrix_emoticon_pack.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/matrix/matrix_peer.dart';
 import 'package:commet/client/matrix/matrix_room_permissions.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
+import 'package:commet/utils/emoji/emoji_pack.dart';
 import 'package:commet/utils/image_utils.dart';
 import 'package:commet/utils/mime.dart';
 import 'package:flutter/material.dart';
@@ -40,6 +44,12 @@ class MatrixRoom extends Room {
       .toList();
 
   @override
+  String get developerInfo =>
+      const JsonEncoder.withIndent('  ').convert(_matrixRoom.states);
+
+  List<EmoticonPack> _roomEmojis = List.empty(growable: true);
+
+  @override
   PushRule get pushRule {
     switch (_matrixRoom.pushRuleState) {
       case matrix.PushRuleState.notify:
@@ -50,6 +60,12 @@ class MatrixRoom extends Room {
         return PushRule.dontNotify;
     }
   }
+
+  @override
+  List<EmoticonPack> get availbleEmoji => _roomEmojis;
+
+  @override
+  List<EmoticonPack> get ownedEmoji => _roomEmojis;
 
   MatrixRoom(client, matrix.Room room, matrix.Client matrixClient)
       : super(room.id, client) {
@@ -80,7 +96,7 @@ class MatrixRoom extends Room {
     timeline = MatrixTimeline(client, this, room);
 
     _matrixRoom.onUpdate.stream.listen(onMatrixRoomUpdate);
-
+    _roomEmojis = MatrixEmoticonPack.getPacks(_matrixRoom);
     permissions = MatrixRoomPermissions(_matrixRoom);
   }
 
@@ -163,7 +179,6 @@ class MatrixRoom extends Room {
 
   void onMatrixRoomUpdate(String event) async {
     displayName = _matrixRoom.getLocalizedDisplayname();
-
     onUpdate.add(null);
   }
 
@@ -195,5 +210,15 @@ class MatrixRoom extends Room {
   @override
   Color getColorOfUser(String userId) {
     return MatrixPeer.hashColor(userId);
+  }
+
+  @override
+  Future<void> createEmoticonPack(String name, Uint8List? avatarData) async {
+    var data = await _matrixRoom.createEmoticonPack(name, avatarData);
+    if (data != null) {
+      var pack = MatrixEmoticonPack(data['key'], _matrixRoom, data['content']);
+      _roomEmojis.add(pack);
+      onEmojiPackAdded.add(_roomEmojis.length - 1);
+    }
   }
 }
