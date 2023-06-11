@@ -8,7 +8,9 @@ import 'package:flutter/widgets.dart';
 class UnicodeEmojis {
   static List<UnicodeEmoticonPack>? packs;
 
-  static Future<void> load() async {
+  static Future<List<UnicodeEmoticonPack>> load() async {
+    if (packs != null) return packs!;
+
     String jsonString =
         await rootBundle.loadString("assets/emoji_data/data.json");
     List<dynamic> data = jsonDecode(jsonString);
@@ -16,6 +18,9 @@ class UnicodeEmojis {
     String shortcodesString =
         await rootBundle.loadString("assets/emoji_data/shortcodes/en.json");
     Map<String, dynamic> shortCodes = jsonDecode(shortcodesString);
+
+    final manifestContent = await rootBundle.loadString('AssetManifest.json');
+    final Map<String, dynamic> manifestMap = json.decode(manifestContent);
 
     packs = List.from([
       UnicodeEmoticonPack(
@@ -32,8 +37,10 @@ class UnicodeEmojis {
     ]);
 
     for (var pack in packs!) {
-      await pack.load(data, shortCodes);
+      await pack.load(data, shortCodes, manifestMap);
     }
+
+    return packs!;
   }
 }
 
@@ -71,8 +78,8 @@ class UnicodeEmoticonPack implements EmoticonPack {
       this.icon,
       this.image});
 
-  Future<void> load(
-      List<dynamic> emojiData, Map<String, dynamic> shortCodes) async {
+  Future<void> load(List<dynamic> emojiData, Map<String, dynamic> shortCodes,
+      Map<String, dynamic> manifestMap) async {
     for (var emoji in emojiData) {
       Map data = emoji;
       String hexcode = data['hexcode'];
@@ -87,7 +94,15 @@ class UnicodeEmoticonPack implements EmoticonPack {
       if (data.containsKey('group')) {
         int groupId = data['group'];
         if (groups.contains(groupId)) {
-          var e = UnicodeEmoticon(data['emoji'], shortcode: shortcode);
+          var emojiChar = data['emoji'];
+
+          if (!manifestMap
+              .containsKey(UnicodeEmoticon.emojiToAsset(emojiChar))) {
+            print("Skipping emoji due to missing asset: $emojiChar");
+            continue;
+          }
+
+          var e = UnicodeEmoticon(emojiChar, shortcode: shortcode);
           _emoji.add(e);
         }
       }
@@ -126,7 +141,6 @@ class UnicodeEmoticon extends Emoticon {
 
   @override
   String? get shortcode => _shortcode;
-
 
   UnicodeEmoticon(String text, {String? shortcode}) {
     String hexcode = emojiToUnicode(text);

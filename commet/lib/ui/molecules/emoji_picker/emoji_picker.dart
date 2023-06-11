@@ -1,3 +1,4 @@
+import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -13,10 +14,10 @@ Widget wbEmojiPickerDefault(BuildContext context) {
       width: 350,
       height: 350,
       child: FutureBuilder(
-          future: EmojiPack.defaults(),
+          future: UnicodeEmojis.load(),
           builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) =>
               snapshot.hasData
-                  ? EmojiPicker(snapshot.data as List<EmojiPack>)
+                  ? EmojiPicker(snapshot.data as List<EmoticonPack>)
                   : const Center(
                       child: CircularProgressIndicator(),
                     )));
@@ -25,7 +26,7 @@ Widget wbEmojiPickerDefault(BuildContext context) {
 class EmojiPicker extends StatelessWidget {
   const EmojiPicker(this.packs, {super.key});
 
-  final List<EmojiPack> packs;
+  final List<EmoticonPack> packs;
 
   @override
   Widget build(BuildContext context) {
@@ -38,12 +39,12 @@ class EmojiPicker extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            tiamat.Text.labelLow(packs[packIndex].name),
+            tiamat.Text.labelLow(packs[packIndex].displayName),
             Wrap(
               spacing: 5,
               runSpacing: 10,
               children: packs[packIndex]
-                  .emoji
+                  .emotes
                   .map((e) => InkWell(
                       onTap: () {},
                       onHover: (value) {},
