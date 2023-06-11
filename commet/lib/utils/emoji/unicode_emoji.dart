@@ -98,7 +98,6 @@ class UnicodeEmoticonPack implements EmoticonPack {
 
           if (!manifestMap
               .containsKey(UnicodeEmoticon.emojiToAsset(emojiChar))) {
-            print("Skipping emoji due to missing asset: $emojiChar");
             continue;
           }
 
