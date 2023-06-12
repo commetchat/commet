@@ -1,3 +1,4 @@
+import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/molecules/emoji_picker.dart';
 import 'package:commet/ui/molecules/gif_picker.dart';
 import 'package:commet/ui/molecules/sticker_picker.dart';
@@ -102,6 +103,8 @@ class _EmoticonPickerState extends State<EmoticonPicker>
               Tab(
                 child: EmojiPicker(
                   widget.emoji,
+                  packButtonSize: BuildConfig.MOBILE ? 42 : 32,
+                  size: BuildConfig.MOBILE ? 42 : 38,
                   onEmoticonPressed: (emoticon) =>
                       widget.onEmojiPressed?.call(emoticon),
                 ),

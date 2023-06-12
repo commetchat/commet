@@ -5,6 +5,7 @@ import 'package:commet/utils/gif_search/tenor_search.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 
+import '../../config/build_config.dart';
 import '../../utils/emoji/emoticon.dart';
 import '../../utils/emoji/unicode_emoji.dart';
 
@@ -86,6 +87,7 @@ class _StickerPickerState extends State<StickerPicker> {
   Widget buildStickers() {
     return EmojiPicker(
       widget.packs!,
+      packButtonSize: BuildConfig.MOBILE ? 42 : 32,
       size: 100,
       staggered: true,
       onEmoticonPressed: (e) => widget.stickerPicked?.call(e),

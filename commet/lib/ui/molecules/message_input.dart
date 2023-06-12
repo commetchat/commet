@@ -133,6 +133,10 @@ class MessageInputState extends State<MessageInput> {
       if (controller.text.trim().isEmpty) return;
     }
 
+    setState(() {
+      showEmotePicker = false;
+    });
+
     widget.onSendMessage?.call(controller.text.trim());
   }
 
@@ -331,8 +335,18 @@ class MessageInputState extends State<MessageInput> {
             packSize: BuildConfig.MOBILE ? 4 : 38,
             packListAxis: BuildConfig.DESKTOP ? Axis.vertical : Axis.horizontal,
             allowGifSearch: preferences.tenorGifSearchEnabled,
-            onStickerPressed: (emoticon) => widget.sendSticker?.call(emoticon),
-            onGifPressed: widget.sendGif));
+            onStickerPressed: (emoticon) {
+              widget.sendSticker?.call(emoticon);
+              setState(() {
+                showEmotePicker = false;
+              });
+            },
+            onGifPressed: (gif) async {
+              await widget.sendGif?.call(gif);
+              setState(() {
+                showEmotePicker = false;
+              });
+            }));
   }
 
   void addAttachment() async {
