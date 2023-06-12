@@ -181,19 +181,19 @@ class MessageInputState extends State<MessageInput> {
       child: TextFieldTapRegion(
         child: Opacity(
           opacity: widget.isProcessing ? 0.5 : 1,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(8.0, 8, 8, 4),
-            child: Tile(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  typingUsers(),
-                  if (widget.interactionType != null) interactionText(),
-                  if (widget.attachments != null &&
-                      widget.attachments!.isNotEmpty)
-                    displayAttachments(),
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(maxHeight: 200),
+          child: Tile(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                typingUsers(),
+                if (widget.interactionType != null) interactionText(),
+                if (widget.attachments != null &&
+                    widget.attachments!.isNotEmpty)
+                  displayAttachments(),
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxHeight: 200),
+                  child: Padding(
+                    padding: const EdgeInsets.all(2),
                     child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.max,
@@ -293,37 +293,37 @@ class MessageInputState extends State<MessageInput> {
                           )
                         ]),
                   ),
-                  SizedBox(
-                    height: 25,
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Expanded(
-                            child: SizedBox(),
-                          ),
-                          if (widget.readIndicator != null)
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
-                              child: SizedBox(
-                                width: 150,
-                                child: widget.readIndicator!,
-                              ),
-                            )
-                        ]),
-                  ),
-                  AnimatedContainer(
-                      curve: Curves.easeOutExpo,
-                      duration: const Duration(milliseconds: 500),
-                      height: showEmotePicker
-                          ? (MediaQuery.of(context).size.height / 3) /
-                              preferences.appScale
-                          : 0,
-                      child: EmojiPicker(
-                        widget.availibleEmoticons!,
-                        onEmoticonPressed: insertEmoticon,
-                      )),
-                ],
-              ),
+                ),
+                SizedBox(
+                  height: 25,
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Expanded(
+                          child: SizedBox(),
+                        ),
+                        if (widget.readIndicator != null)
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+                            child: SizedBox(
+                              width: 150,
+                              child: widget.readIndicator!,
+                            ),
+                          )
+                      ]),
+                ),
+                AnimatedContainer(
+                    curve: Curves.easeOutExpo,
+                    duration: const Duration(milliseconds: 500),
+                    height: showEmotePicker
+                        ? (MediaQuery.of(context).size.height / 3) /
+                            preferences.appScale
+                        : 0,
+                    child: EmojiPicker(
+                      widget.availibleEmoticons!,
+                      onEmoticonPressed: insertEmoticon,
+                    )),
+              ],
             ),
           ),
         ),

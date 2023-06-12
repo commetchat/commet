@@ -26,7 +26,7 @@ class MatrixEmoticonPack implements EmoticonPack {
   ImageProvider<Object>? image;
 
   @override
-  IconData? get icon => throw UnimplementedError();
+  IconData? get icon => null;
 
   late matrix.Room _matrixRoom;
 

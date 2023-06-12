@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:commet/utils/emoji/emoticon.dart';
 import 'package:commet/utils/emoji/emoji_pack.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
@@ -24,16 +25,37 @@ class UnicodeEmojis {
 
     packs = List.from([
       UnicodeEmoticonPack(
-          getLocalisedName: () => "Smileys & People", groups: [0, 1]),
+          getLocalisedName: () => "Smileys & People",
+          groups: [0, 1],
+          icon: Icons.emoji_emotions),
       UnicodeEmoticonPack(
-          getLocalisedName: () => "Animals & Nature", groups: [3]),
-      UnicodeEmoticonPack(getLocalisedName: () => "Food & Drink", groups: [4]),
+          getLocalisedName: () => "Animals & Nature",
+          groups: [3],
+          icon: Icons.emoji_nature_rounded),
       UnicodeEmoticonPack(
-          getLocalisedName: () => "Travel & Places", groups: [5]),
-      UnicodeEmoticonPack(getLocalisedName: () => "Activities", groups: [6]),
-      UnicodeEmoticonPack(getLocalisedName: () => "Objects", groups: [7]),
-      UnicodeEmoticonPack(getLocalisedName: () => "Symbols", groups: [8]),
-      UnicodeEmoticonPack(getLocalisedName: () => "Flags", groups: [9]),
+          getLocalisedName: () => "Food & Drink",
+          groups: [4],
+          icon: Icons.emoji_food_beverage),
+      UnicodeEmoticonPack(
+          getLocalisedName: () => "Travel & Places",
+          groups: [5],
+          icon: Icons.emoji_transportation),
+      UnicodeEmoticonPack(
+          getLocalisedName: () => "Activities",
+          groups: [6],
+          icon: Icons.emoji_events),
+      UnicodeEmoticonPack(
+          getLocalisedName: () => "Objects",
+          groups: [7],
+          icon: Icons.emoji_objects),
+      UnicodeEmoticonPack(
+          getLocalisedName: () => "Symbols",
+          groups: [8],
+          icon: Icons.emoji_symbols),
+      UnicodeEmoticonPack(
+          getLocalisedName: () => "Flags",
+          groups: [9],
+          icon: Icons.emoji_flags),
     ]);
 
     for (var pack in packs!) {
