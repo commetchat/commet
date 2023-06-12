@@ -322,6 +322,10 @@ class MessageInputState extends State<MessageInput> {
                     child: EmojiPicker(
                       widget.availibleEmoticons!,
                       onEmoticonPressed: insertEmoticon,
+                      size: BuildConfig.MOBILE ? 48 : 38,
+                      packButtonSize: BuildConfig.MOBILE ? 44 : 38,
+                      packListAxis:
+                          BuildConfig.DESKTOP ? Axis.vertical : Axis.horizontal,
                     )),
               ],
             ),

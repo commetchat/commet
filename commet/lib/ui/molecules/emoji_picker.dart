@@ -1,6 +1,7 @@
 import 'package:commet/utils/emoji/emoticon.dart';
 import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:flutter/material.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:tiamat/atoms/image_button.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -33,20 +34,27 @@ Widget wbEmojiPickerDefault(BuildContext context) {
 }
 
 class EmojiPicker extends StatelessWidget {
-  const EmojiPicker(this.packs,
+  EmojiPicker(this.packs,
       {super.key,
       this.size = 38,
       this.onEmoticonPressed,
-      this.packButtonSize = 32});
+      this.packButtonSize = 32,
+      this.packListAxis = Axis.vertical});
   final void Function(Emoticon emoticon)? onEmoticonPressed;
   final List<EmoticonPack> packs;
   final double size;
+  final Axis packListAxis;
   final double packButtonSize;
+
+  final ItemScrollController itemScrollController = ItemScrollController();
 
   @override
   Widget build(BuildContext context) {
     return Material(
-        color: Colors.transparent, child: buildWithVerticalList(context));
+        color: Colors.transparent,
+        child: packListAxis == Axis.vertical
+            ? buildWithVerticalList(context)
+            : buildWithHorizontalList(context));
   }
 
   Row buildWithVerticalList(BuildContext context) {
@@ -65,7 +73,15 @@ class EmojiPicker extends StatelessWidget {
                 child: ListView.builder(
                   itemCount: packs.length,
                   itemBuilder: (context, index) {
-                    return buildPackButton(index);
+                    return Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
+                      child: buildPackButton(
+                          index,
+                          () => itemScrollController.scrollTo(
+                              index: index,
+                              curve: Curves.easeOutExpo,
+                              duration: Duration(milliseconds: 200))),
+                    );
                   },
                 ),
               ),
@@ -77,21 +93,52 @@ class EmojiPicker extends StatelessWidget {
     );
   }
 
-  Padding buildPackButton(int index) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
-      child: SizedBox(
-        height: packButtonSize,
-        width: packButtonSize,
-        child: t.Tooltip(
-          text: packs[index].displayName,
-          preferredDirection: AxisDirection.right,
-          child: ImageButton(
-            size: packButtonSize,
-            iconSize: packButtonSize - 8,
-            icon: packs[index].icon,
-            image: packs[index].image,
+  Widget buildWithHorizontalList(BuildContext context) {
+    return Column(
+      children: [
+        tiamat.Tile.low3(
+          child: Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: packButtonSize),
+              child: ScrollConfiguration(
+                behavior:
+                    ScrollConfiguration.of(context).copyWith(scrollbars: false),
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: packs.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
+                      child: buildPackButton(
+                          index,
+                          () => itemScrollController.scrollTo(
+                              index: index,
+                              curve: Curves.easeOutExpo,
+                              duration: Duration(milliseconds: 200))),
+                    );
+                  },
+                ),
+              ),
+            ),
           ),
+        ),
+        Container(child: buildEmojiList()),
+      ],
+    );
+  }
+
+  Widget buildPackButton(int index, void Function()? onTap) {
+    return SizedBox(
+      child: t.Tooltip(
+        text: packs[index].displayName,
+        preferredDirection: AxisDirection.right,
+        child: ImageButton(
+          size: packButtonSize,
+          iconSize: packButtonSize - 8,
+          icon: packs[index].icon,
+          image: packs[index].image,
+          onTap: onTap,
         ),
       ),
     );
@@ -99,7 +146,8 @@ class EmojiPicker extends StatelessWidget {
 
   Expanded buildEmojiList() {
     return Expanded(
-      child: ListView.builder(
+      child: ScrollablePositionedList.builder(
+        itemScrollController: itemScrollController,
         itemCount: packs.length,
         itemBuilder: (BuildContext context, int packIndex) {
           return buildListItem(packIndex);
