@@ -4,7 +4,6 @@ import 'package:commet/utils/emoji/emoticon.dart';
 import 'package:commet/utils/emoji/emoji_pack.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 
 class UnicodeEmojis {
   static List<UnicodeEmoticonPack>? packs;

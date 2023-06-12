@@ -271,7 +271,7 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
                       onEventLongPress: showMessageMenu,
                     )),
                     Padding(
-                      padding: EdgeInsets.fromLTRB(0, 0, 0, 8),
+                      padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
                       child: MessageInput(
                           key: messageInput,
                           isRoomE2EE: widget.state.selectedRoom!.isE2EE,
@@ -303,7 +303,11 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
                           focusKeyboard:
                               widget.state.onFocusMessageInput.stream,
                           availibleEmoticons:
-                              widget.state.selectedRoom!.availbleEmoji,
+                              widget.state.selectedRoom!.availableEmoji,
+                          availibleStickers:
+                              widget.state.selectedRoom!.availableStickers,
+                          sendGif: widget.state.sendGif,
+                          sendSticker: widget.state.sendSticker,
                           cancelReply: () {
                             widget.state.setInteractingEvent(
                               null,

@@ -3,9 +3,10 @@ import 'dart:async';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/molecules/attachment_icon.dart';
-import 'package:commet/ui/molecules/emoji_picker.dart';
+import 'package:commet/ui/molecules/emoticon_picker.dart';
 import 'package:commet/ui/pages/chat/chat_page.dart';
 import 'package:commet/utils/emoji/emoji_pack.dart';
+import 'package:commet/utils/gif_search/gif_search_result.dart';
 import 'package:file_picker/file_picker.dart';
 
 import 'package:flutter/material.dart';
@@ -43,6 +44,9 @@ class MessageInput extends StatefulWidget {
       this.removeAttachment,
       this.typingUsernames,
       this.availibleEmoticons,
+      this.availibleStickers,
+      this.sendGif,
+      this.sendSticker,
       this.cancelReply});
   final double maxHeight;
   final double size = 48;
@@ -59,6 +63,9 @@ class MessageInput extends StatefulWidget {
   final bool isProcessing;
   final List<String>? typingUsernames;
   final List<EmoticonPack>? availibleEmoticons;
+  final List<EmoticonPack>? availibleStickers;
+  final void Function(Emoticon sticker)? sendSticker;
+  final Future<void> Function(GifSearchResult gif)? sendGif;
   final void Function(bool focused)? onFocusChanged;
   final Function(String currentText)? onTextUpdated;
   final void Function()? cancelReply;
@@ -133,20 +140,6 @@ class MessageInputState extends State<MessageInput> {
     setState(() {
       showEmotePicker = !showEmotePicker;
     });
-  }
-
-  Widget emojiOverlay() {
-    return SizedBox(
-      width: 360,
-      height: 300,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: EmojiPicker(widget.availibleEmoticons!),
-        ),
-      ),
-    );
   }
 
   KeyEventResult onKey(FocusNode node, RawKeyEvent event) {
@@ -261,19 +254,14 @@ class MessageInputState extends State<MessageInput> {
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.all(2.0),
-                                      child: JustTheTooltip(
-                                        isModal: true,
-                                        controller: emojiOverlayController,
-                                        content: emojiOverlay(),
-                                        child: SizedBox(
-                                            width: widget.size,
-                                            height: widget.size,
-                                            child: tiamat.IconButton(
-                                              icon: Icons.face,
-                                              size: 24,
-                                              onPressed: toggleEmojiOverlay,
-                                            )),
-                                      ),
+                                      child: SizedBox(
+                                          width: widget.size,
+                                          height: widget.size,
+                                          child: tiamat.IconButton(
+                                            icon: Icons.face,
+                                            size: 24,
+                                            onPressed: toggleEmojiOverlay,
+                                          )),
                                     ),
                                   ],
                                 ),
@@ -313,26 +301,38 @@ class MessageInputState extends State<MessageInput> {
                       ]),
                 ),
                 AnimatedContainer(
-                    curve: Curves.easeOutExpo,
-                    duration: const Duration(milliseconds: 500),
-                    height: showEmotePicker
-                        ? (MediaQuery.of(context).size.height / 3) /
-                            preferences.appScale
-                        : 0,
-                    child: EmojiPicker(
-                      widget.availibleEmoticons!,
-                      onEmoticonPressed: insertEmoticon,
-                      size: BuildConfig.MOBILE ? 48 : 38,
-                      packButtonSize: BuildConfig.MOBILE ? 44 : 38,
-                      packListAxis:
-                          BuildConfig.DESKTOP ? Axis.vertical : Axis.horizontal,
-                    )),
+                  curve: Curves.easeOutExpo,
+                  duration: const Duration(milliseconds: 500),
+                  height: showEmotePicker ? emotePickerHeight : 0,
+                  child: buildEmojiPicker(),
+                )
               ],
             ),
           ),
         ),
       ),
     );
+  }
+
+  double get emotePickerHeight =>
+      (MediaQuery.of(context).size.height / (BuildConfig.MOBILE ? 1.7 : 3)) /
+      preferences.appScale;
+
+  Widget buildEmojiPicker() {
+    return OverflowBox(
+        minHeight: emotePickerHeight,
+        maxHeight: emotePickerHeight,
+        alignment: Alignment.topCenter,
+        child: EmoticonPicker(
+            emoji: widget.availibleEmoticons!,
+            stickers: widget.availibleStickers ?? [],
+            onEmojiPressed: insertEmoticon,
+            emojiSize: BuildConfig.MOBILE ? 48 : 38,
+            packSize: BuildConfig.MOBILE ? 4 : 38,
+            packListAxis: BuildConfig.DESKTOP ? Axis.vertical : Axis.horizontal,
+            allowGifSearch: preferences.tenorGifSearchEnabled,
+            onStickerPressed: (emoticon) => widget.sendSticker?.call(emoticon),
+            onGifPressed: widget.sendGif));
   }
 
   void addAttachment() async {

@@ -1,9 +1,9 @@
 import 'package:commet/utils/emoji/emoticon.dart';
 import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:tiamat/atoms/image_button.dart';
-import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:commet/utils/emoji/emoji_pack.dart';
 import 'package:commet/ui/atoms/emoji_widget.dart';
@@ -14,23 +14,25 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 @WidgetbookUseCase(name: 'Emoji Picker', type: EmojiPicker)
 @Deprecated("widgetbook")
 Widget wbEmojiPickerDefault(BuildContext context) {
-  return SizedBox(
-      width: 350,
-      height: 350,
-      child: FutureBuilder(
-          future: UnicodeEmojis.load(),
-          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) =>
-              snapshot.hasData
-                  ? EmojiPicker(
-                      snapshot.data as List<EmoticonPack>,
-                      onEmoticonPressed: (emoticon) {
-                        // ignore: avoid_print
-                        print("Emoticon Clicked: ${emoticon.slug}");
-                      },
-                    )
-                  : const Center(
-                      child: CircularProgressIndicator(),
-                    )));
+  return Center(
+    child: SizedBox(
+        width: 350,
+        height: 350,
+        child: FutureBuilder(
+            future: UnicodeEmojis.load(),
+            builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) =>
+                snapshot.hasData
+                    ? EmojiPicker(
+                        snapshot.data as List<EmoticonPack>,
+                        onEmoticonPressed: (emoticon) {
+                          // ignore: avoid_print
+                          print("Emoticon Clicked: ${emoticon.slug}");
+                        },
+                      )
+                    : const Center(
+                        child: CircularProgressIndicator(),
+                      ))),
+  );
 }
 
 class EmojiPicker extends StatelessWidget {
@@ -39,12 +41,14 @@ class EmojiPicker extends StatelessWidget {
       this.size = 38,
       this.onEmoticonPressed,
       this.packButtonSize = 32,
+      this.staggered = false,
       this.packListAxis = Axis.vertical});
   final void Function(Emoticon emoticon)? onEmoticonPressed;
   final List<EmoticonPack> packs;
   final double size;
   final Axis packListAxis;
   final double packButtonSize;
+  final bool staggered;
 
   final ItemScrollController itemScrollController = ItemScrollController();
 
@@ -80,7 +84,7 @@ class EmojiPicker extends StatelessWidget {
                           () => itemScrollController.scrollTo(
                               index: index,
                               curve: Curves.easeOutExpo,
-                              duration: Duration(milliseconds: 200))),
+                              duration: const Duration(milliseconds: 200))),
                     );
                   },
                 ),
@@ -115,7 +119,7 @@ class EmojiPicker extends StatelessWidget {
                           () => itemScrollController.scrollTo(
                               index: index,
                               curve: Curves.easeOutExpo,
-                              duration: Duration(milliseconds: 200))),
+                              duration: const Duration(milliseconds: 200))),
                     );
                   },
                 ),
@@ -150,7 +154,9 @@ class EmojiPicker extends StatelessWidget {
         itemScrollController: itemScrollController,
         itemCount: packs.length,
         itemBuilder: (BuildContext context, int packIndex) {
-          return buildListItem(packIndex);
+          return staggered
+              ? buildListItemStaggered(packIndex)
+              : buildListItem(packIndex);
         },
       ),
     );
@@ -172,6 +178,44 @@ class EmojiPicker extends StatelessWidget {
             spacing: 1,
             children:
                 packs[packIndex].emotes.map((e) => buildEmoticon(e)).toList(),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget buildListItemStaggered(int packIndex) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(4, 5, 4, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
+            child: tiamat.Text.labelLow(packs[packIndex].displayName),
+          ),
+          MasonryGridView.extent(
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisSpacing: 8,
+            mainAxisSpacing: 3,
+            maxCrossAxisExtent: size,
+            shrinkWrap: true,
+            itemCount: packs[packIndex].emotes.length,
+            itemBuilder: (context, index) {
+              return InkWell(
+                  borderRadius: BorderRadius.circular(8),
+                  onTap: () =>
+                      onEmoticonPressed?.call(packs[packIndex].emotes[index]),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Image(
+                      image: packs[packIndex].emotes[index].image,
+                      filterQuality: FilterQuality.medium,
+                      fit: BoxFit.fill,
+                    ),
+                  ));
+            },
           )
         ],
       ),

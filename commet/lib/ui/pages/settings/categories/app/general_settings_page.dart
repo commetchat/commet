@@ -4,26 +4,26 @@ import 'package:flutter/widgets.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:tiamat/tiamat.dart';
 
-class WindowSettingsPage extends StatefulWidget {
-  const WindowSettingsPage({super.key});
+class GeneralSettingsPage extends StatefulWidget {
+  const GeneralSettingsPage({super.key});
 
   @override
-  State<WindowSettingsPage> createState() => _WindowSettingsPageState();
+  State<GeneralSettingsPage> createState() => _GeneralSettingsPage();
 }
 
-class _WindowSettingsPageState extends State<WindowSettingsPage> {
-  bool minimizeOnClose = false;
+class _GeneralSettingsPage extends State<GeneralSettingsPage> {
+  bool enableTenor = false;
 
   @override
   void initState() {
-    minimizeOnClose = preferences.minimizeOnClose;
+    enableTenor = preferences.tenorGifSearchEnabled;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Panel(
-      header: "Window behaviour",
+      header: "Third party services",
       mode: TileType.surfaceLow2,
       child: Column(children: [
         Row(
@@ -33,21 +33,21 @@ class _WindowSettingsPageState extends State<WindowSettingsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: const [
-                  tiamat.Text.labelEmphasised("Minimize on close"),
+                  tiamat.Text.labelEmphasised("Gif search"),
                   tiamat.Text.labelLow(
-                      "When closing the window, the app will be minimized instead of exited")
+                      "Enable use of Tenor gif search. Requests will be proxied via proxy.commet.chat")
                 ],
               ),
             ),
             tiamat.Switch(
-              state: preferences.minimizeOnClose,
+              state: enableTenor,
               onChanged: (value) async {
                 setState(() {
-                  minimizeOnClose = value;
+                  enableTenor = value;
                 });
-                await preferences.setMinimizeOnClose(value);
+                await preferences.setTenorGifSearch(value);
                 setState(() {
-                  minimizeOnClose = preferences.minimizeOnClose;
+                  enableTenor = preferences.tenorGifSearchEnabled;
                 });
               },
             )

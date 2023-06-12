@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:typed_data';
 import 'package:commet/client/client.dart';
+import 'package:commet/utils/emoji/emoticon.dart';
+import 'package:commet/utils/gif_search/gif_search_result.dart';
 import 'package:flutter/material.dart';
 
 import '../utils/emoji/emoji_pack.dart';
@@ -32,7 +34,9 @@ abstract class Room {
 
   List<EmoticonPack> get ownedEmoji;
 
-  List<EmoticonPack> get availbleEmoji;
+  List<EmoticonPack> get availableEmoji;
+
+  List<EmoticonPack> get availableStickers;
 
   String get developerInfo;
 
@@ -51,6 +55,11 @@ abstract class Room {
     TimelineEvent? replaceEvent,
     List<ProcessedAttachment> processedAttachments,
   });
+
+  Future<TimelineEvent?> sendSticker(
+      Emoticon sticker, TimelineEvent? inReplyTo);
+
+  Future<TimelineEvent?> sendGif(GifSearchResult gif, TimelineEvent? inReplyTo);
 
   Future<List<ProcessedAttachment>> processAttachments(
       List<PendingFileAttachment> attachments);

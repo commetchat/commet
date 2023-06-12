@@ -187,7 +187,11 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
                               widget.state.relatedEventSenderColor,
                           setInputText: widget.state.setMessageInputText.stream,
                           availibleEmoticons:
-                              widget.state.selectedRoom!.availbleEmoji,
+                              widget.state.selectedRoom!.availableEmoji,
+                          availibleStickers:
+                              widget.state.selectedRoom!.availableStickers,
+                          sendSticker: widget.state.sendSticker,
+                          sendGif: widget.state.sendGif,
                           typingUsernames: widget
                               .state.selectedRoom!.typingPeers
                               .map((e) => e.displayName)

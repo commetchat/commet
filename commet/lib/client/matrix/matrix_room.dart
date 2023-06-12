@@ -11,7 +11,9 @@ import 'package:commet/client/matrix/matrix_peer.dart';
 import 'package:commet/client/matrix/matrix_room_permissions.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
 import 'package:commet/utils/emoji/emoji_pack.dart';
+import 'package:commet/utils/emoji/emoticon.dart';
 import 'package:commet/utils/emoji/unicode_emoji.dart';
+import 'package:commet/utils/gif_search/gif_search_result.dart';
 import 'package:commet/utils/image_utils.dart';
 import 'package:commet/utils/mime.dart';
 import 'package:flutter/material.dart';
@@ -68,8 +70,12 @@ class MatrixRoom extends Room {
   }
 
   @override
-  List<EmoticonPack> get availbleEmoji =>
+  List<EmoticonPack> get availableEmoji =>
       _getAvailablePacks(includeUnicode: true);
+
+  @override
+  List<EmoticonPack> get availableStickers =>
+      _getAvailablePacks(includeUnicode: false);
 
   @override
   List<EmoticonPack> get ownedEmoji => _roomEmojis;
@@ -283,5 +289,78 @@ class MatrixRoom extends Room {
     }
 
     return result;
+  }
+
+  @override
+  Future<TimelineEvent?> sendSticker(
+      Emoticon sticker, TimelineEvent? inReplyTo) async {
+    if (sticker is MatrixEmoticon) {
+      var image = await ImageUtils.imageProviderToImage(sticker.image);
+
+      matrix.Event? replyingTo;
+
+      if (inReplyTo != null) {
+        replyingTo = await _matrixRoom.getEventById(inReplyTo.eventId);
+      }
+      String? mimeType;
+      if (sticker.image is MatrixMxcImage) {
+        mimeType = (sticker.image as MatrixMxcImage).mimeType;
+      }
+
+      var content = {
+        "body": sticker.shortcode!,
+        "url": sticker.emojiUrl.toString(),
+        "info": {
+          "w": image.width,
+          "h": image.height,
+          if (mimeType != null) "mimetype": mimeType
+        }
+      };
+
+      var id = await _matrixRoom.sendEvent(content,
+          type: matrix.EventTypes.Sticker, inReplyTo: replyingTo);
+
+      if (id != null) {
+        var event = await _matrixRoom.getEventById(id);
+        return (timeline as MatrixTimeline).convertEvent(event!);
+      }
+    }
+    return null;
+  }
+
+  @override
+  Future<TimelineEvent?> sendGif(
+      GifSearchResult gif, TimelineEvent? inReplyTo) async {
+    var response = await _matrixRoom.client.httpClient.get(gif.fullResUrl);
+    if (response.statusCode == 200) {
+      var data = response.bodyBytes;
+
+      matrix.Event? replyingTo;
+      var uri = await _matrixRoom.client
+          .uploadContent(data, filename: "sticker", contentType: "image/gif");
+
+      var content = {
+        "body": "gif",
+        "url": uri.toString(),
+        "info": {
+          "w": gif.x.toInt(),
+          "h": gif.y.toInt(),
+          "mimetype": "image/gif"
+        }
+      };
+
+      if (inReplyTo != null) {
+        replyingTo = await _matrixRoom.getEventById(inReplyTo.eventId);
+      }
+
+      var id = await _matrixRoom.sendEvent(content,
+          type: matrix.EventTypes.Sticker, inReplyTo: replyingTo);
+
+      if (id != null) {
+        var event = await _matrixRoom.getEventById(id);
+        return (timeline as MatrixTimeline).convertEvent(event!);
+      }
+    }
+    throw UnimplementedError();
   }
 }
