@@ -7,16 +7,13 @@ import 'package:flutter/material.dart';
 
 import '../text_utils.dart';
 
-enum EmoticonType {
-  emoji,
-  sticker,
-  both,
-}
-
 abstract class Emoticon {
   ImageProvider get image;
   String get slug;
   String? get shortcode;
+
+  bool get isSticker;
+  bool get isEmoji;
 
   static List<InlineSpan> emojify(List<InlineSpan> span,
       {double? emojiHeight}) {

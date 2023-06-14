@@ -41,6 +41,8 @@ class EmojiPicker extends StatelessWidget {
       this.size = 38,
       this.onEmoticonPressed,
       this.packButtonSize = 32,
+      this.onlyEmoji = false,
+      this.onlyStickers = false,
       this.staggered = false,
       this.packListAxis = Axis.vertical});
   final void Function(Emoticon emoticon)? onEmoticonPressed;
@@ -49,6 +51,8 @@ class EmojiPicker extends StatelessWidget {
   final Axis packListAxis;
   final double packButtonSize;
   final bool staggered;
+  final bool onlyStickers;
+  final bool onlyEmoji;
 
   final ItemScrollController itemScrollController = ItemScrollController();
 
@@ -163,6 +167,13 @@ class EmojiPicker extends StatelessWidget {
   }
 
   Widget buildListItem(int packIndex) {
+    var pack = packs[packIndex];
+    var list = onlyEmoji
+        ? pack.emoji
+        : onlyStickers
+            ? pack.stickers
+            : pack.emotes;
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(4, 5, 4, 0),
       child: Column(
@@ -176,8 +187,7 @@ class EmojiPicker extends StatelessWidget {
             alignment: WrapAlignment.start,
             runSpacing: 1,
             spacing: 1,
-            children:
-                packs[packIndex].emotes.map((e) => buildEmoticon(e)).toList(),
+            children: list.map((e) => buildEmoticon(e)).toList(),
           )
         ],
       ),
@@ -185,6 +195,13 @@ class EmojiPicker extends StatelessWidget {
   }
 
   Widget buildListItemStaggered(int packIndex) {
+    var pack = packs[packIndex];
+    var list = onlyEmoji
+        ? pack.emoji
+        : onlyStickers
+            ? pack.stickers
+            : pack.emotes;
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(4, 5, 4, 0),
       child: Column(
@@ -201,7 +218,7 @@ class EmojiPicker extends StatelessWidget {
             mainAxisSpacing: 3,
             maxCrossAxisExtent: size,
             shrinkWrap: true,
-            itemCount: packs[packIndex].emotes.length,
+            itemCount: list.length,
             itemBuilder: (context, index) {
               return InkWell(
                   borderRadius: BorderRadius.circular(8),
@@ -210,7 +227,7 @@ class EmojiPicker extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Image(
-                      image: packs[packIndex].emotes[index].image,
+                      image: list[index].image,
                       filterQuality: FilterQuality.medium,
                       fit: BoxFit.fill,
                     ),

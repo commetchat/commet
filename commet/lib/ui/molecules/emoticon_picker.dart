@@ -105,6 +105,7 @@ class _EmoticonPickerState extends State<EmoticonPicker>
                   widget.emoji,
                   packButtonSize: BuildConfig.MOBILE ? 42 : 32,
                   size: BuildConfig.MOBILE ? 42 : 38,
+                  onlyEmoji: true,
                   onEmoticonPressed: (emoticon) =>
                       widget.onEmojiPressed?.call(emoticon),
                 ),

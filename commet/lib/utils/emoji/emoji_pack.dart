@@ -13,8 +13,15 @@ abstract class EmoticonPack {
 
   List<Emoticon> get emotes;
 
+  List<Emoticon> get emoji;
+
+  List<Emoticon> get stickers;
+
   ImageProvider? get image;
   IconData? get icon;
+
+  bool get isStickerPack;
+  bool get isEmojiPack;
 
   Future<void> deleteEmoticon(Emoticon emoticon);
 
@@ -24,5 +31,7 @@ abstract class EmoticonPack {
       {required String slug,
       String? shortcode,
       required Uint8List data,
-      String? mimeType});
+      String? mimeType,
+      bool? isEmoji,
+      bool? isSticker});
 }

@@ -90,6 +90,7 @@ class _StickerPickerState extends State<StickerPicker> {
       packButtonSize: BuildConfig.MOBILE ? 42 : 32,
       size: 100,
       staggered: true,
+      onlyStickers: true,
       onEmoticonPressed: (e) => widget.stickerPicked?.call(e),
     );
   }

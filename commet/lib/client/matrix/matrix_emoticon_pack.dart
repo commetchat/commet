@@ -28,6 +28,11 @@ class MatrixEmoticonPack implements EmoticonPack {
   @override
   IconData? get icon => null;
 
+  Map<String, dynamic> get state =>
+      ((_matrixRoom.states['im.ponies.room_emotes']
+              as Map<String, dynamic>)[stateKey] as matrix.Event)
+          .content;
+
   late matrix.Room _matrixRoom;
 
   String stateKey;
@@ -39,6 +44,20 @@ class MatrixEmoticonPack implements EmoticonPack {
 
   final StreamController<int> _onEmoticonAdded =
       StreamController<int>.broadcast();
+
+  @override
+  bool get isEmojiPack => _getUsage()?.contains("emoticon") ?? true;
+
+  @override
+  bool get isStickerPack => _getUsage()?.contains("sticker") ?? true;
+
+  @override
+  List<Emoticon> get emoji =>
+      emotes.where((element) => element.isEmoji).toList();
+
+  @override
+  List<Emoticon> get stickers =>
+      emotes.where((element) => element.isSticker).toList();
 
   MatrixEmoticonPack(
       this.stateKey, matrix.Room room, Map<String, dynamic> content) {
@@ -61,15 +80,38 @@ class MatrixEmoticonPack implements EmoticonPack {
     }
 
     var images = content['images'] as Map<String, dynamic>?;
+
+    bool isStickerPackCache = isStickerPack;
+    bool isEmojiPackCache = isEmojiPack;
     if (images == null) return;
 
     for (var image in images.keys) {
       var url = images[image]['url'];
+
+      var usages = images[image]['usage'] as List?;
+
+      bool sticker = isStickerPackCache;
+      bool emoji = isEmojiPackCache;
+
+      if (usages != null) {
+        sticker = usages.contains("sticker");
+        emoji = usages.contains("emoticon");
+      }
+
       if (url != null) {
         var uri = Uri.parse(url);
-        emotes.add(MatrixEmoticon(uri, room.client, shortcode: image));
+        emotes.add(MatrixEmoticon(uri, room.client,
+            shortcode: image, isEmoji: emoji, isSticker: sticker));
       }
     }
+  }
+
+  List? _getUsage() {
+    var info = state['pack'] as Map<String, dynamic>?;
+    if (info == null) return null;
+
+    var usage = info.tryGet("usage") as List?;
+    return usage;
   }
 
   @override
@@ -77,10 +119,13 @@ class MatrixEmoticonPack implements EmoticonPack {
       {required String slug,
       String? shortcode,
       required Uint8List data,
-      String? mimeType}) async {
+      String? mimeType,
+      bool? isEmoji,
+      bool? isSticker}) async {
     var result = await _matrixRoom.createEmoticon(stateKey, shortcode!, data);
     if (result == null) return;
     var url = result['images'][shortcode]['url'];
+
     try {
       var uri = Uri.parse(url);
       var emote = MatrixEmoticon(uri, _matrixRoom.client, shortcode: shortcode);
