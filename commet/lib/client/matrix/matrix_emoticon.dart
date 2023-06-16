@@ -18,20 +18,34 @@ class MatrixEmoticon implements Emoticon {
 
   Uri emojiUrl;
 
-  bool _isEmoji = true;
-  bool _isSticker = true;
+  late bool _isEmojiPack;
+  late bool _isStickerPack;
+  late bool _isMarkedEmoji;
+  late bool _isMarkedSticker;
 
   @override
-  bool get isEmoji => _isEmoji;
+  bool get isEmoji => _isEmojiPack || _isMarkedEmoji;
 
   @override
-  bool get isSticker => _isSticker;
+  bool get isSticker => _isStickerPack || _isMarkedSticker;
+
+  @override
+  bool get isMarkedEmoji => _isMarkedEmoji;
+
+  @override
+  bool get isMarkedSticker => _isMarkedSticker;
 
   MatrixEmoticon(this.emojiUrl, matrix.Client client,
-      {required String shortcode, bool isEmoji = true, bool isSticker = true}) {
+      {required String shortcode,
+      bool isEmojiPack = true,
+      bool isStickerPack = true,
+      bool isMarkedSticker = false,
+      bool isMarkedEmoji = false}) {
     _shortcode = shortcode;
-    _isEmoji = isEmoji;
-    _isSticker = isSticker;
+    _isEmojiPack = isEmojiPack;
+    _isStickerPack = isStickerPack;
+    _isMarkedEmoji = isMarkedEmoji;
+    _isMarkedSticker = isMarkedSticker;
     _image = MatrixMxcImage(emojiUrl, client, doThumbnail: false);
   }
 
@@ -39,11 +53,19 @@ class MatrixEmoticon implements Emoticon {
     _shortcode = shortcode;
   }
 
-  void setIsEmoji(bool value) {
-    _isEmoji = value;
+  void markAsEmoji(bool value) {
+    _isMarkedEmoji = value;
   }
 
-  void setIsSticker(bool value) {
-    _isSticker = value;
+  void markAsSticker(bool value) {
+    _isMarkedSticker = value;
+  }
+
+  void markPackAsEmoji(bool value) {
+    _isEmojiPack = value;
+  }
+
+  void markPackAsSticker(bool value) {
+    _isStickerPack = value;
   }
 }

@@ -89,6 +89,12 @@ class UnicodeEmoticonPack implements EmoticonPack {
   bool get isStickerPack => false;
 
   @override
+  List<Emoticon> get emoji => _emoji;
+
+  @override
+  List<Emoticon> get stickers => [];
+
+  @override
   final IconData? icon;
 
   @override
@@ -157,10 +163,24 @@ class UnicodeEmoticonPack implements EmoticonPack {
   }
 
   @override
-  List<Emoticon> get emoji => _emoji;
+  Future<void> markEmoticonAsEmoji(Object emoticon, bool isEmoji) {
+    throw UnimplementedError();
+  }
 
   @override
-  List<Emoticon> get stickers => [];
+  Future<void> markEmoticonAsSticker(Emoticon emoticon, bool isSticker) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> markAsEmoji(bool isEmojiPack) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> markAsSticker(bool isStickerPack) {
+    throw UnimplementedError();
+  }
 }
 
 class UnicodeEmoticon extends Emoticon {
@@ -181,6 +201,12 @@ class UnicodeEmoticon extends Emoticon {
 
   @override
   bool get isSticker => false;
+
+  @override
+  bool get isMarkedEmoji => true;
+
+  @override
+  bool get isMarkedSticker => false;
 
   UnicodeEmoticon(String text, {String? shortcode}) {
     String hexcode = emojiToUnicode(text);

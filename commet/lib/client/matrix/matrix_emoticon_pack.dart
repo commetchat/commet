@@ -90,18 +90,21 @@ class MatrixEmoticonPack implements EmoticonPack {
 
       var usages = images[image]['usage'] as List?;
 
-      bool sticker = isStickerPackCache;
-      bool emoji = isEmojiPackCache;
-
+      bool markedSticker = false;
+      bool markedEmoji = false;
       if (usages != null) {
-        sticker = usages.contains("sticker");
-        emoji = usages.contains("emoticon");
+        markedSticker = usages.contains("sticker");
+        markedEmoji = usages.contains("emoticon");
       }
 
       if (url != null) {
         var uri = Uri.parse(url);
         emotes.add(MatrixEmoticon(uri, room.client,
-            shortcode: image, isEmoji: emoji, isSticker: sticker));
+            shortcode: image,
+            isEmojiPack: isEmojiPackCache,
+            isStickerPack: isStickerPackCache,
+            isMarkedEmoji: markedEmoji,
+            isMarkedSticker: markedSticker));
       }
     }
   }
@@ -161,5 +164,41 @@ class MatrixEmoticonPack implements EmoticonPack {
   Future<void> renameEmoticon(Emoticon emoticon, String name) async {
     await _matrixRoom.renameEmoticon(identifier, emoticon.shortcode!, name);
     (emoticon as MatrixEmoticon).setShortcode(name);
+  }
+
+  @override
+  Future<void> markEmoticonAsEmoji(Emoticon emoticon, bool isEmoji) async {
+    await _matrixRoom.setEmoticonUsages(identifier, emoticon.shortcode!,
+        [if (isEmoji) 'emoticon', if (emoticon.isMarkedSticker) 'sticker']);
+
+    (emoticon as MatrixEmoticon).markAsEmoji(isEmoji);
+  }
+
+  @override
+  Future<void> markEmoticonAsSticker(Emoticon emoticon, bool isSticker) async {
+    await _matrixRoom.setEmoticonUsages(identifier, emoticon.shortcode!,
+        [if (emoticon.isMarkedEmoji) 'emoticon', if (isSticker) 'sticker']);
+
+    (emoticon as MatrixEmoticon).markAsSticker(isSticker);
+  }
+
+  @override
+  Future<void> markAsEmoji(bool isEmoji) async {
+    await _matrixRoom.setPackUsage(
+        identifier, [if (isEmoji) 'emoticon', if (isStickerPack) 'sticker']);
+
+    for (var emote in emotes) {
+      (emote as MatrixEmoticon).markPackAsEmoji(isEmoji);
+    }
+  }
+
+  @override
+  Future<void> markAsSticker(bool isSticker) async {
+    await _matrixRoom.setPackUsage(
+        identifier, [if (isEmojiPack) 'emoticon', if (isSticker) 'sticker']);
+
+    for (var emote in emotes) {
+      (emote as MatrixEmoticon).markPackAsSticker(isSticker);
+    }
   }
 }

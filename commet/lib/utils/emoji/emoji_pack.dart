@@ -27,6 +27,14 @@ abstract class EmoticonPack {
 
   Future<void> renameEmoticon(Emoticon emoticon, String name);
 
+  Future<void> markEmoticonAsSticker(Emoticon emoticon, bool isSticker);
+
+  Future<void> markEmoticonAsEmoji(Emoticon emoticon, bool isEmoji);
+
+  Future<void> markAsEmoji(bool isEmojiPack);
+
+  Future<void> markAsSticker(bool isStickerPack);
+
   Future<void> addEmoticon(
       {required String slug,
       String? shortcode,

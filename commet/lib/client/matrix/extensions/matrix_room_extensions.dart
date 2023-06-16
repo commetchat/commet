@@ -103,4 +103,46 @@ extension MatrixExtensions on Room {
     await client.setRoomStateWithKey(
         id, "im.ponies.room_emotes", packKey, content);
   }
+
+  Future<void> setEmoticonUsages(
+      String packKey, String emoteName, List<String>? usages) async {
+    var content =
+        await client.getRoomStateWithKey(id, "im.ponies.room_emotes", packKey);
+
+    if (content.containsKey('images')) {
+      var images = content['images'] as Map<String, dynamic>;
+
+      if (images.containsKey(emoteName)) {
+        var emote = images[emoteName] as Map<String, dynamic>;
+
+        emote.remove('usage');
+
+        if (usages != null && usages.isNotEmpty) {
+          emote['usage'] = usages;
+        }
+
+        images[emoteName] = emote;
+      }
+
+      content['images'] = images;
+    }
+
+    await client.setRoomStateWithKey(
+        id, "im.ponies.room_emotes", packKey, content);
+  }
+
+  Future<void> setPackUsage(String packKey, List<String>? usages) async {
+    var content =
+        await client.getRoomStateWithKey(id, "im.ponies.room_emotes", packKey);
+
+    var pack = content['pack'] as Map<String, dynamic>?;
+
+    if (pack == null) return;
+
+    pack['usage'] = usages?.isEmpty == true ? null : usages;
+    content['pack'] = pack;
+
+    await client.setRoomStateWithKey(
+        id, "im.ponies.room_emotes", packKey, content);
+  }
 }

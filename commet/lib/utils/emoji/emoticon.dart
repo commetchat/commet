@@ -12,6 +12,9 @@ abstract class Emoticon {
   String get slug;
   String? get shortcode;
 
+  bool get isMarkedEmoji;
+  bool get isMarkedSticker;
+
   bool get isSticker;
   bool get isEmoji;
 

@@ -168,11 +168,15 @@ class _EmojiPackEditorState extends State<EmojiPackEditor> {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
   StreamSubscription? onCreate;
   late int _itemCount;
+  late bool isPackEmoji;
+  late bool isPackSticker;
 
   @override
   void initState() {
     widget.pack.onEmoticonAdded.listen(onEmojiInsert);
     _itemCount = widget.pack.emotes.length;
+    isPackEmoji = widget.pack.isEmojiPack;
+    isPackSticker = widget.pack.isStickerPack;
     super.initState();
   }
 
@@ -181,6 +185,26 @@ class _EmojiPackEditorState extends State<EmojiPackEditor> {
       _itemCount++;
       _listKey.currentState?.insertItem(index);
     });
+  }
+
+  void setIsEmojiPack(bool isEmoji) {
+    //if (!(isEmoji || isPackSticker)) return;
+
+    setState(() {
+      isPackEmoji = isEmoji;
+    });
+
+    widget.pack.markAsEmoji(isEmoji);
+  }
+
+  void setIsStickerPack(bool isSticker) {
+    //if (!(isSticker || isPackEmoji)) return;
+
+    setState(() {
+      isPackSticker = isSticker;
+    });
+
+    widget.pack.markAsSticker(isSticker);
   }
 
   void deleteEmoji(int index) {
@@ -222,19 +246,52 @@ class _EmojiPackEditorState extends State<EmojiPackEditor> {
             collapsedBackgroundColor:
                 Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
             title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                if (widget.pack.image != null)
-                  SizedBox(
-                      width: 30,
-                      height: 30,
-                      child: Image(
-                        image: widget.pack.image!,
-                        filterQuality: FilterQuality.medium,
-                      )),
-                const SizedBox(
-                  width: 10,
+                Row(
+                  children: [
+                    if (widget.pack.image != null)
+                      SizedBox(
+                          width: 30,
+                          height: 30,
+                          child: Image(
+                            image: widget.pack.image!,
+                            filterQuality: FilterQuality.medium,
+                          )),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    tiamat.Text.labelEmphasised(widget.pack.displayName),
+                  ],
                 ),
-                tiamat.Text.labelEmphasised(widget.pack.displayName),
+                if (widget.editable)
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: 40,
+                        height: 40,
+                        child: tiamat.IconToggle(
+                          icon: Icons.sticky_note_2_rounded,
+                          size: 20,
+                          state: isPackSticker,
+                          onPressed: (newState) => setIsStickerPack(newState),
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 4,
+                      ),
+                      SizedBox(
+                        width: 40,
+                        height: 40,
+                        child: tiamat.IconToggle(
+                          size: 20,
+                          icon: Icons.emoji_emotions,
+                          state: isPackEmoji,
+                          onPressed: (newState) => setIsEmojiPack(newState),
+                        ),
+                      )
+                    ],
+                  ),
               ],
             ),
             children: [
@@ -246,10 +303,16 @@ class _EmojiPackEditorState extends State<EmojiPackEditor> {
                   return SizeTransition(
                     sizeFactor: CommonAnimations.easeOut(animation),
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(8, 2, 0, 2),
+                      padding: const EdgeInsets.fromLTRB(8, 2, 9, 2),
                       child: EmojiEditor(widget.pack.emotes[index],
                           deleteEmoji: () => deleteEmoji(index),
                           editable: widget.editable,
+                          setIsEmoji: (value) => widget.pack
+                              .markEmoticonAsEmoji(
+                                  widget.pack.emotes[index], value),
+                          setIsSticker: (value) => widget.pack
+                              .markEmoticonAsSticker(
+                                  widget.pack.emotes[index], value),
                           renameEmoji: (name) => renameEmoji(index, name)),
                     ),
                   );
@@ -301,57 +364,121 @@ class _EmojiPackEditorState extends State<EmojiPackEditor> {
 class EmojiEditor extends StatefulWidget {
   final Emoticon emoji;
   const EmojiEditor(this.emoji,
-      {super.key, this.deleteEmoji, this.editable = false, this.renameEmoji});
+      {super.key,
+      this.deleteEmoji,
+      this.editable = false,
+      this.renameEmoji,
+      this.setIsEmoji,
+      this.setIsSticker});
   final void Function()? deleteEmoji;
   final void Function(String)? renameEmoji;
   final bool editable;
+  final void Function(bool)? setIsEmoji;
+  final void Function(bool)? setIsSticker;
 
   @override
   State<EmojiEditor> createState() => _EmojiEditorState();
 }
 
 class _EmojiEditorState extends State<EmojiEditor> {
-  bool editMode = false;
+  late bool isSticker;
+  late bool isEmoji;
+
+  @override
+  void initState() {
+    isSticker = widget.emoji.isMarkedSticker;
+    isEmoji = widget.emoji.isMarkedEmoji;
+    super.initState();
+  }
+
+  void setSticker(bool newValue) {
+    setState(() {
+      isSticker = newValue;
+    });
+
+    widget.setIsSticker?.call(newValue);
+  }
+
+  void setEmoji(bool newValue) {
+    setState(() {
+      isEmoji = newValue;
+    });
+
+    widget.setIsEmoji?.call(newValue);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        if (widget.editable)
-          tiamat.IconButton(
-            icon: Icons.remove_circle_outline,
-            size: 20,
-            onPressed: () async {
-              var result = await AdaptiveDialog.confirmation(context,
-                  prompt:
-                      T.current.promptEmoticonDelete(widget.emoji.shortcode!),
-                  dangerous: true);
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (widget.editable)
+              tiamat.IconButton(
+                icon: Icons.remove_circle_outline,
+                size: 20,
+                onPressed: () async {
+                  var result = await AdaptiveDialog.confirmation(context,
+                      prompt: T.current
+                          .promptEmoticonDelete(widget.emoji.shortcode!),
+                      dangerous: true);
 
-              if (result == true) {
-                widget.deleteEmoji?.call();
-              }
-            },
-          ),
-        SizedBox(
-          height: 50,
-          width: 50,
-          child: EmojiWidget(widget.emoji),
-        ),
-        const SizedBox(
-          width: 10,
-        ),
-        Expanded(
-            child: widget.editable
+                  if (result == true) {
+                    widget.deleteEmoji?.call();
+                  }
+                },
+              ),
+            SizedBox(
+              height: 50,
+              width: 50,
+              child: EmojiWidget(widget.emoji),
+            ),
+            const SizedBox(
+              width: 10,
+            ),
+            widget.editable
                 ? EditableLabel(
                     initialText: widget.emoji.shortcode!,
                     changeTooltip: "Rename emoji",
                     onTextConfirmed: (newText) =>
                         widget.renameEmoji?.call(newText!),
                   )
-                : tiamat.Text.label(widget.emoji.shortcode!))
+                : tiamat.Text.label(widget.emoji.shortcode!),
+          ],
+        ),
+        if (widget.editable)
+          Row(
+            children: [
+              SizedBox(
+                width: 40,
+                height: 40,
+                child: tiamat.IconToggle(
+                  icon: Icons.sticky_note_2_rounded,
+                  size: 20,
+                  state: isSticker,
+                  onPressed: setSticker,
+                ),
+              ),
+              const SizedBox(
+                width: 4,
+              ),
+              SizedBox(
+                width: 40,
+                height: 40,
+                child: tiamat.IconToggle(
+                  size: 20,
+                  icon: Icons.emoji_emotions,
+                  state: isEmoji,
+                  onPressed: setEmoji,
+                ),
+              ),
+              const SizedBox(width: 43)
+            ],
+          ),
       ],
     );
   }
