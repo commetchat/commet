@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:commet/utils/emoji/emoticon.dart';
 import 'package:commet/utils/emoji/emoji_pack.dart';
+import 'package:commet/utils/emoji/unicode_emoji_data.dart';
+import 'package:commet/utils/emoji/unicode_emoji_data_groups.g.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -9,56 +11,43 @@ class UnicodeEmojis {
   static List<UnicodeEmoticonPack>? packs;
 
   static Future<List<UnicodeEmoticonPack>> load() async {
-    if (packs != null) return packs!;
-
-    String jsonString =
-        await rootBundle.loadString("assets/emoji_data/data.json");
-    List<dynamic> data = jsonDecode(jsonString);
-
-    String shortcodesString =
-        await rootBundle.loadString("assets/emoji_data/shortcodes/en.json");
-    Map<String, dynamic> shortCodes = jsonDecode(shortcodesString);
-
-    final manifestContent = await rootBundle.loadString('AssetManifest.json');
-    final Map<String, dynamic> manifestMap = json.decode(manifestContent);
-
     packs = List.from([
       UnicodeEmoticonPack(
+          dataPacks: [UnicodeEmojiGroups.GROUP_0, UnicodeEmojiGroups.GROUP_1],
           getLocalisedName: () => "Smileys & People",
-          groups: [0, 1],
           icon: Icons.emoji_emotions),
       UnicodeEmoticonPack(
+          dataPacks: [UnicodeEmojiGroups.GROUP_3],
           getLocalisedName: () => "Animals & Nature",
-          groups: [3],
           icon: Icons.emoji_nature_rounded),
       UnicodeEmoticonPack(
+          dataPacks: [UnicodeEmojiGroups.GROUP_4],
           getLocalisedName: () => "Food & Drink",
-          groups: [4],
           icon: Icons.emoji_food_beverage),
       UnicodeEmoticonPack(
+          dataPacks: [UnicodeEmojiGroups.GROUP_5],
           getLocalisedName: () => "Travel & Places",
-          groups: [5],
           icon: Icons.emoji_transportation),
       UnicodeEmoticonPack(
+          dataPacks: [UnicodeEmojiGroups.GROUP_6],
           getLocalisedName: () => "Activities",
-          groups: [6],
           icon: Icons.emoji_events),
       UnicodeEmoticonPack(
+          dataPacks: [UnicodeEmojiGroups.GROUP_7],
           getLocalisedName: () => "Objects",
-          groups: [7],
           icon: Icons.emoji_objects),
       UnicodeEmoticonPack(
+          dataPacks: [UnicodeEmojiGroups.GROUP_8],
           getLocalisedName: () => "Symbols",
-          groups: [8],
           icon: Icons.emoji_symbols),
       UnicodeEmoticonPack(
+          dataPacks: [UnicodeEmojiGroups.GROUP_9],
           getLocalisedName: () => "Flags",
-          groups: [9],
           icon: Icons.emoji_flags),
     ]);
 
     for (var pack in packs!) {
-      await pack.load(data, shortCodes, manifestMap);
+      await pack.load();
     }
 
     return packs!;
@@ -80,7 +69,7 @@ class UnicodeEmoticonPack implements EmoticonPack {
   Stream<int> get onEmoticonAdded => throw UnimplementedError();
 
   @override
-  List<Emoticon> get emotes => _emoji;
+  List<Emoticon> get emotes => _emoji!;
 
   @override
   bool get isEmojiPack => true;
@@ -89,10 +78,12 @@ class UnicodeEmoticonPack implements EmoticonPack {
   bool get isStickerPack => false;
 
   @override
-  List<Emoticon> get emoji => _emoji;
+  List<Emoticon> get emoji => _emoji!;
 
   @override
   List<Emoticon> get stickers => [];
+
+  List<List<UnicodeEmojiData>> dataPacks;
 
   @override
   final IconData? icon;
@@ -100,44 +91,26 @@ class UnicodeEmoticonPack implements EmoticonPack {
   @override
   final ImageProvider<Object>? image;
 
-  final List<Emoticon> _emoji = List.empty(growable: true);
+  List<Emoticon>? _emoji;
 
   final String Function() getLocalisedName;
-  final List<int> groups;
 
   UnicodeEmoticonPack(
-      {required this.groups,
-      required this.getLocalisedName,
+      {required this.getLocalisedName,
+      required this.dataPacks,
       this.icon,
       this.image});
 
-  Future<void> load(List<dynamic> emojiData, Map<String, dynamic> shortCodes,
-      Map<String, dynamic> manifestMap) async {
-    for (var emoji in emojiData) {
-      Map data = emoji;
-      String hexcode = data['hexcode'];
+  Future<void> load() async {
+    _emoji = List.empty(growable: true);
 
-      if (!shortCodes.containsKey(hexcode)) {
-        continue;
-      }
+    for (var pack in dataPacks) {
+      var emoji = List.generate(
+          pack.length,
+          (index) => UnicodeEmoticon(pack[index].unicode,
+              shortcode: pack[index].shortcode));
 
-      var codes = shortCodes[hexcode];
-      var shortcode = codes is String ? codes : (codes as List).first;
-
-      if (data.containsKey('group')) {
-        int groupId = data['group'];
-        if (groups.contains(groupId)) {
-          var emojiChar = data['emoji'];
-
-          if (!manifestMap
-              .containsKey(UnicodeEmoticon.emojiToAsset(emojiChar))) {
-            continue;
-          }
-
-          var e = UnicodeEmoticon(emojiChar, shortcode: shortcode);
-          _emoji.add(e);
-        }
-      }
+      _emoji!.addAll(emoji);
     }
   }
 
