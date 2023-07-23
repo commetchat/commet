@@ -39,8 +39,6 @@ class UnicodeEmojiBuilder implements Builder {
       String hexcode = emoji["hexcode"];
       if (!shortCodes.containsKey(hexcode)) continue;
 
-      print(hexcode);
-
       int group = emoji["group"];
       String unicode = emoji["emoji"];
 
@@ -61,6 +59,7 @@ class UnicodeEmojiBuilder implements Builder {
     }
 
     final outputBuffer = StringBuffer('// Generated, do not edit\n');
+    outputBuffer.write("// ignore_for_file: constant_identifier_names\n");
     outputBuffer.write(
         "import 'package:commet/utils/emoji/unicode_emoji_data.dart';\n");
 

@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:commet/utils/emoji/emoticon.dart';
 import 'package:commet/utils/emoji/emoji_pack.dart';
 import 'package:commet/utils/emoji/unicode_emoji_data.dart';

@@ -71,8 +71,6 @@ dev_dependencies:
   widgetbook_generator:
   widgetbook:
   msix: ^3.7.0
-  build:
-  build_config:
   flutter_test:
     sdk: flutter
 
