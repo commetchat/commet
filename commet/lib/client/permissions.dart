@@ -23,4 +23,6 @@ class Permissions {
   bool get canUserEditMessages => true;
 
   bool get canUserDeleteMessages => true;
+
+  bool get canEditRoomEmoticons => true;
 }

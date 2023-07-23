@@ -5,7 +5,8 @@ import 'package:commet/config/build_config.dart';
 import 'package:commet/config/preferences.dart';
 import 'package:commet/ui/pages/chat/chat_page.dart';
 import 'package:commet/ui/pages/login/login_page.dart';
-import 'package:commet/utils/emoji/emoji_pack.dart';
+import 'package:commet/utils/emoji/unicode_emoji.dart';
+import 'package:commet/utils/measure.dart';
 import 'package:commet/utils/notification/notification_manager.dart';
 import 'package:commet/utils/notification/notifier.dart';
 import 'package:commet/utils/window_management.dart';
@@ -76,8 +77,10 @@ Future<ClientManager> initApp() async {
   await preferences.init();
 
   await Future.wait([
-    fileCache.init().then((value) => fileCache.clean()),
-    EmojiPack.defaults(),
+    Measure.timeAsync(() => fileCache.init().then((value) => fileCache.clean()),
+        name: "Clean file cache"),
+    Measure.timeAsync(() => UnicodeEmojis.load(),
+        name: "Load emoji new method"),
     Notifier.init(),
     WindowManagement.init(),
     if (!BuildConfig.LINUX) Hive.initFlutter(dbPath),

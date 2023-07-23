@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:commet/utils/mime.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -19,6 +20,7 @@ class LODImageProvider extends ImageProvider<LODImageProvider> {
       this.loadFullRes,
       this.autoLoadFullRes = true});
   String? blurhash;
+  String? get mimeType => completer?.mimeType;
   bool autoLoadFullRes;
   Future<Uint8List?> Function()? loadThumbnail;
   Future<Uint8List?> Function()? loadFullRes;
@@ -57,7 +59,7 @@ class LODImageCompleter extends ImageStreamCompleter {
   late Duration _shownTimestamp;
   Duration? _frameDuration;
   bool _frameCallbackScheduled = false;
-
+  String? mimeType;
   int _framesEmitted = 0;
   Timer? _timer;
   bool _isFullResLoading = false;
@@ -88,6 +90,8 @@ class LODImageCompleter extends ImageStreamCompleter {
     var bytes = await loadThumbnail!.call();
     if (bytes == null) return;
 
+    mimeType = Mime.lookupType("", data: bytes);
+
     var codec = await instantiateImageCodec(bytes);
 
     _setCodec(LODImageType.thumbnail, codec);
@@ -102,6 +106,8 @@ class LODImageCompleter extends ImageStreamCompleter {
     _isFullResLoading = true;
     var bytes = await loadFullRes!.call();
     if (bytes == null) return;
+
+    mimeType = Mime.lookupType("", data: bytes);
 
     var codec = await instantiateImageCodec(bytes);
     _setCodec(LODImageType.fullres, codec);

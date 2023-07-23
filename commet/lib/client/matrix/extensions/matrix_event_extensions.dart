@@ -36,7 +36,7 @@ extension MatrixExtensions on Event {
     var info = content.tryGet("info") as Map<String, dynamic>?;
     if (info == null) return null;
 
-    int? width = info.tryGet("w");
+    dynamic width = info.tryGet("w");
     if (width == null) return null;
 
     return width.toDouble();
@@ -45,7 +45,7 @@ extension MatrixExtensions on Event {
   double? _attachmentHeight() {
     var info = content.tryGet("info") as Map<String, dynamic>?;
     if (info == null) return null;
-    int? height = info.tryGet("h");
+    dynamic height = info.tryGet("h");
     if (height == null) return null;
 
     return height.toDouble();

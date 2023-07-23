@@ -3,6 +3,7 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/permissions.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/client/stale_info.dart';
+import 'package:commet/utils/emoji/emoji_pack.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -25,7 +26,11 @@ abstract class Space {
 
   PushRule get pushRule;
 
+  List<EmoticonPack> get ownedEmoji;
+
   late RoomVisibility visibility = RoomVisibility.private;
+
+  String get developerInfo;
 
   int get notificationCount =>
       rooms.where((element) => element.pushRule == PushRule.notify).fold(
@@ -54,6 +59,7 @@ abstract class Space {
   late StreamController<int> onRoomAdded = StreamController.broadcast();
   late StreamController<void> onChildrenUpdated = StreamController.broadcast();
   late StreamController<int> onChildPreviewAdded = StreamController.broadcast();
+  late StreamController<int> onEmojiPackAdded = StreamController.broadcast();
 
   late StreamController<StaleRoomInfo> onChildPreviewRemoved =
       StreamController.broadcast();
@@ -163,6 +169,10 @@ abstract class Space {
   Future<void> changeAvatar(Uint8List bytes, String? mimeType);
 
   Future<void> setPushRule(PushRule rule);
+
+  Future<void> createEmoticonPack(String name, Uint8List? avatarData);
+
+  Future<void> deleteEmoticonPack(EmoticonPack pack);
 
   @protected
   void setAvatar({ImageProvider? newAvatar, ImageProvider? newThumbnail}) {

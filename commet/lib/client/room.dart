@@ -1,7 +1,11 @@
 import 'dart:async';
+import 'dart:typed_data';
 import 'package:commet/client/client.dart';
+import 'package:commet/utils/emoji/emoticon.dart';
+import 'package:commet/utils/gif_search/gif_search_result.dart';
 import 'package:flutter/material.dart';
 
+import '../utils/emoji/emoji_pack.dart';
 import 'attachment.dart';
 import 'permissions.dart';
 
@@ -23,9 +27,18 @@ abstract class Room {
   bool get isMember => false;
   bool get isE2EE;
   StreamController<void> onUpdate = StreamController.broadcast();
+  late StreamController<int> onEmojiPackAdded = StreamController.broadcast();
   PushRule get pushRule;
 
   List<Peer> get typingPeers;
+
+  List<EmoticonPack> get ownedEmoji;
+
+  List<EmoticonPack> get availableEmoji;
+
+  List<EmoticonPack> get availableStickers;
+
+  String get developerInfo;
 
   int get notificationCount;
   int get highlightedNotificationCount;
@@ -42,6 +55,11 @@ abstract class Room {
     TimelineEvent? replaceEvent,
     List<ProcessedAttachment> processedAttachments,
   });
+
+  Future<TimelineEvent?> sendSticker(
+      Emoticon sticker, TimelineEvent? inReplyTo);
+
+  Future<TimelineEvent?> sendGif(GifSearchResult gif, TimelineEvent? inReplyTo);
 
   Future<List<ProcessedAttachment>> processAttachments(
       List<PendingFileAttachment> attachments);
@@ -84,4 +102,8 @@ abstract class Room {
   Color getColorOfUser(String userId);
 
   Future<void> enableE2EE();
+
+  Future<void> createEmoticonPack(String name, Uint8List? avatarData);
+
+  Future<void> deleteEmoticonPack(EmoticonPack pack);
 }

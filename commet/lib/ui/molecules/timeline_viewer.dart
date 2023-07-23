@@ -1,8 +1,6 @@
 import 'dart:async';
-import 'dart:math';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/molecules/timeline_event.dart';
-import 'package:commet/utils/rng.dart';
 import 'package:flutter/material.dart';
 import '../../client/client.dart';
 

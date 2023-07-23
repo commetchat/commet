@@ -14,6 +14,8 @@ class Preferences {
   static const String themeKey = "app_theme";
   static const String appScaleKey = "app_scale";
   static const String _minimizeOnCloseKey = "minimize_on_close";
+  static const String _developerMode = "developer_mode";
+  static const String _tenorGifSearch = "enable_tenor_gif_search";
 
   Future<void> init() async {
     _preferences = await SharedPreferences.getInstance();
@@ -87,5 +89,18 @@ class Preferences {
     }
 
     _preferences!.setBool(_minimizeOnCloseKey, value);
+  }
+
+  bool get developerMode => _preferences!.getBool(_developerMode) ?? false;
+
+  Future<void> setDeveloperMode(bool value) async {
+    await _preferences!.setBool(_developerMode, value);
+  }
+
+  bool get tenorGifSearchEnabled =>
+      _preferences!.getBool(_tenorGifSearch) ?? false;
+
+  Future<void> setTenorGifSearch(bool value) async {
+    await _preferences!.setBool(_tenorGifSearch, value);
   }
 }

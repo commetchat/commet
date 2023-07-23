@@ -1,9 +1,14 @@
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/simulated/simulated_peer.dart';
 import 'package:commet/client/simulated/simulated_room_permissions.dart';
 import 'package:commet/client/simulated/simulated_timeline.dart';
+import 'package:commet/utils/emoji/emoji_pack.dart';
+import 'package:commet/utils/emoji/emoticon.dart';
+import 'package:commet/utils/emoji/unicode_emoji.dart';
+import 'package:commet/utils/gif_search/gif_search_result.dart';
 import 'package:commet/utils/rng.dart';
 import 'package:flutter/material.dart';
 
@@ -37,6 +42,9 @@ class SimulatedRoom extends Room {
 
   @override
   List<Peer> get typingPeers => List.from([alice, bob]);
+
+  @override
+  String get developerInfo => "";
 
   SimulatedRoom(displayName, client, {bool isDm = false})
       : super(RandomUtils.getRandomString(20), client) {
@@ -142,5 +150,36 @@ class SimulatedRoom extends Room {
   @override
   Color getColorOfUser(String userId) {
     return Colors.red;
+  }
+
+  @override
+  Future<void> createEmoticonPack(String name, Uint8List? avatarData) {
+    throw UnimplementedError();
+  }
+
+  @override
+  List<EmoticonPack> get availableEmoji => UnicodeEmojis.packs!;
+
+  @override
+  List<EmoticonPack> get ownedEmoji => [];
+
+  @override
+  Future<void> deleteEmoticonPack(EmoticonPack pack) {
+    throw UnimplementedError();
+  }
+
+  @override
+  List<EmoticonPack> get availableStickers => [];
+
+  @override
+  Future<TimelineEvent?> sendSticker(
+      Emoticon sticker, TimelineEvent? inReplyTo) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<TimelineEvent?> sendGif(
+      GifSearchResult gif, TimelineEvent? inReplyTo) {
+    throw UnimplementedError();
   }
 }

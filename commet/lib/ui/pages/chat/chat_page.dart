@@ -9,6 +9,7 @@ import 'package:commet/ui/pages/chat/desktop_chat_page.dart';
 import 'package:commet/ui/pages/chat/mobile_chat_page.dart';
 import 'package:commet/ui/pages/settings/room_settings_page.dart';
 import 'package:commet/utils/debounce.dart';
+import 'package:commet/utils/gif_search/gif_search_result.dart';
 import 'package:commet/utils/notification/notification_manager.dart';
 import 'package:commet/utils/orientation.dart';
 import 'package:flutter/foundation.dart';
@@ -18,6 +19,7 @@ import 'package:window_manager/window_manager.dart';
 import '../../../client/attachment.dart';
 import '../../../client/client.dart';
 import '../../../config/build_config.dart';
+import '../../../utils/emoji/emoticon.dart';
 import '../../molecules/timeline_viewer.dart';
 import '../../navigation/navigation_utils.dart';
 
@@ -409,6 +411,22 @@ class ChatPageState extends State<ChatPage> {
             room: selectedRoom!,
           ));
     }
+  }
+
+  void sendSticker(Emoticon sticker) {
+    selectedRoom!.sendSticker(
+        sticker,
+        interactionType == EventInteractionType.reply
+            ? interactingEvent
+            : null);
+  }
+
+  Future<void> sendGif(GifSearchResult gif) async {
+    await selectedRoom!.sendGif(
+        gif,
+        interactionType == EventInteractionType.reply
+            ? interactingEvent
+            : null);
   }
 
   @override
