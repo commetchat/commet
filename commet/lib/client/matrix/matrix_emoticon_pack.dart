@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:commet/client/matrix/extensions/matrix_client_extensions.dart';
-import 'package:commet/client/matrix/extensions/matrix_room_extensions.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/utils/emoji/emoticon.dart';
 import 'package:commet/utils/emoji/emoji_pack.dart';
