@@ -22,6 +22,7 @@ abstract class EmoticonPack {
 
   bool get isStickerPack;
   bool get isEmojiPack;
+  bool get isGloballyAvailable;
 
   Future<void> deleteEmoticon(Emoticon emoticon);
 
@@ -42,4 +43,6 @@ abstract class EmoticonPack {
       String? mimeType,
       bool? isEmoji,
       bool? isSticker});
+
+  Future<void> markAsGlobal(bool isGlobal);
 }

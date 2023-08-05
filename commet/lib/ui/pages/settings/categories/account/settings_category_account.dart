@@ -1,5 +1,8 @@
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/generated/l10n.dart';
+import 'package:commet/main.dart';
+import 'package:commet/ui/pages/settings/categories/account/account_emoji/account_emoji_tab.dart';
+import 'package:commet/ui/pages/settings/categories/account/account_state/account_state_tab.dart';
 import 'package:commet/ui/pages/settings/categories/account/profile/profile_edit_tab.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
 import 'package:commet/ui/pages/settings/settings_tab.dart';
@@ -36,6 +39,24 @@ class SettingsCategoryAccount implements SettingsCategory {
                 clientManager: Provider.of<ClientManager>(context),
               );
             }),
+        SettingsTab(
+          label: "Emoji",
+          icon: Icons.emoji_emotions,
+          pageBuilder: (context) {
+            return AccountEmojiTab(
+                clientManager: Provider.of<ClientManager>(context));
+          },
+        ),
+        if (preferences.developerMode)
+          SettingsTab(
+            label: "Developer",
+            icon: Icons.code,
+            pageBuilder: (context) {
+              return AccountStateTab(
+                clientManager: Provider.of<ClientManager>(context),
+              );
+            },
+          )
       ]);
 
   @override

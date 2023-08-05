@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/matrix/extensions/matrix_client_extensions.dart';
+import 'package:commet/client/matrix/matrix_emoticon_pack.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/config/app_config.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/pages/matrix/authentication/matrix_uia_request.dart';
+import 'package:commet/utils/emoji/emoji_pack.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:crypto/crypto.dart';
@@ -15,9 +17,11 @@ import 'dart:convert'; // for the utf8.encode method
 import 'package:commet/client/client.dart';
 import 'package:commet/client/matrix/matrix_peer.dart';
 import 'package:commet/utils/rng.dart';
+import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart' as matrix;
 import 'package:matrix/encryption.dart';
 
+import '../../ui/atoms/code_block.dart';
 import '../../ui/pages/matrix/verification/matrix_verification_page.dart';
 import 'matrix_room.dart';
 import 'matrix_space.dart';
@@ -49,6 +53,12 @@ class MatrixClient extends Client {
 
   @override
   int? get maxFileSize => config?.mUploadSize;
+
+  @override
+  List<EmoticonPack> get globalPacks => getGlobalEmoticons();
+
+  @override
+  List<EmoticonPack> get personalPacks => getPersonalEmoticons();
 
   static Future<void> loadFromDB(ClientManager manager) async {
     var clients = preferences.getRegisteredMatrixClients();
@@ -321,5 +331,66 @@ class MatrixClient extends Client {
   Peer fetchPeerInternal(String identifier) {
     var peer = MatrixPeer(_matrixClient, identifier);
     return peer;
+  }
+
+  @override
+  Widget buildDebugInfo() {
+    var data = _matrixClient.accountData.copy();
+
+    // is this really necessary? i dont know
+    for (var event in data.values) {
+      if (event.type.startsWith("m.secret_storage.key") ||
+          event.type == matrix.EventTypes.SecretStorageDefaultKey ||
+          event.type == matrix.EventTypes.MegolmBackup ||
+          event.type.startsWith("m.cross_signing")) {
+        for (var key in event.content.keys) {
+          event.content[key] = "[REDACTED BY COMMET]";
+        }
+      }
+    }
+
+    return SelectionArea(
+      child: Codeblock(
+        language: "json",
+        text: const JsonEncoder.withIndent('  ').convert(data),
+      ),
+    );
+  }
+
+  List<EmoticonPack> getGlobalEmoticons() {
+    if (!_matrixClient.accountData.containsKey("im.ponies.emote_rooms")) {
+      return [];
+    }
+
+    var rooms =
+        _matrixClient.accountData["im.ponies.emote_rooms"]!.content['rooms'];
+
+    var packs = List<EmoticonPack>.empty(growable: true);
+
+    for (var roomId in rooms.keys) {
+      var room = getRoom(roomId);
+      var space = getSpace(roomId);
+
+      if (room == null && space == null) continue;
+
+      var packKeys = rooms[roomId] as Map<String, dynamic>;
+
+      for (var packKey in packKeys.keys) {
+        List emoji = room != null ? room.ownedEmoji : space!.ownedEmoji;
+
+        var matchingPacks =
+            emoji.where((element) => element.identifier == packKey);
+
+        if (matchingPacks.isEmpty) continue;
+
+        packs.add(matchingPacks.first);
+      }
+    }
+
+    return packs;
+  }
+
+  List<MatrixEmoticonPack> getPersonalEmoticons() {
+    return [];
   }
 }

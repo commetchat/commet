@@ -87,6 +87,15 @@ class MatrixRoom extends Room {
         in client.spaces.where((element) => element.containsRoom(identifier))) {
       result.addAll(space.ownedEmoji);
     }
+
+    for (var pack in client.globalPacks) {
+      if (!result.contains(pack)) {
+        result.add(pack);
+      }
+    }
+
+    result.addAll(client.personalPacks);
+
     if (includeUnicode) result.addAll(UnicodeEmojis.packs!);
 
     return result;

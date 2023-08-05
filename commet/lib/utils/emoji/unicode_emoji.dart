@@ -152,6 +152,14 @@ class UnicodeEmoticonPack implements EmoticonPack {
   Future<void> markAsSticker(bool isStickerPack) {
     throw UnimplementedError();
   }
+
+  @override
+  Future<void> markAsGlobal(bool isGlobal) {
+    throw UnimplementedError();
+  }
+
+  @override
+  bool get isGloballyAvailable => true;
 }
 
 class UnicodeEmoticon extends Emoticon {

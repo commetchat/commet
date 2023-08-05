@@ -170,6 +170,7 @@ class _EmojiPackEditorState extends State<EmojiPackEditor> {
   late int _itemCount;
   late bool isPackEmoji;
   late bool isPackSticker;
+  late bool isGlobalPack;
 
   @override
   void initState() {
@@ -177,6 +178,7 @@ class _EmojiPackEditorState extends State<EmojiPackEditor> {
     _itemCount = widget.pack.emotes.length;
     isPackEmoji = widget.pack.isEmojiPack;
     isPackSticker = widget.pack.isStickerPack;
+    isGlobalPack = widget.pack.isGloballyAvailable;
     super.initState();
   }
 
@@ -205,6 +207,14 @@ class _EmojiPackEditorState extends State<EmojiPackEditor> {
     });
 
     widget.pack.markAsSticker(isSticker);
+  }
+
+  void setIsGlobal(bool isGlobal) {
+    setState(() {
+      isGlobalPack = isGlobal;
+    });
+
+    widget.pack.markAsGlobal(isGlobal);
   }
 
   void deleteEmoji(int index) {
@@ -264,9 +274,19 @@ class _EmojiPackEditorState extends State<EmojiPackEditor> {
                     tiamat.Text.labelEmphasised(widget.pack.displayName),
                   ],
                 ),
-                if (widget.editable)
-                  Row(
-                    children: [
+                Row(
+                  children: [
+                    SizedBox(
+                      width: 40,
+                      height: 40,
+                      child: tiamat.IconToggle(
+                        icon: Icons.public,
+                        size: 20,
+                        state: isGlobalPack,
+                        onPressed: (newState) => setIsGlobal(newState),
+                      ),
+                    ),
+                    if (widget.editable)
                       SizedBox(
                         width: 40,
                         height: 40,
@@ -277,9 +297,11 @@ class _EmojiPackEditorState extends State<EmojiPackEditor> {
                           onPressed: (newState) => setIsStickerPack(newState),
                         ),
                       ),
+                    if (widget.editable)
                       const SizedBox(
                         width: 4,
                       ),
+                    if (widget.editable)
                       SizedBox(
                         width: 40,
                         height: 40,
@@ -290,8 +312,8 @@ class _EmojiPackEditorState extends State<EmojiPackEditor> {
                           onPressed: (newState) => setIsEmojiPack(newState),
                         ),
                       )
-                    ],
-                  ),
+                  ],
+                ),
               ],
             ),
             children: [

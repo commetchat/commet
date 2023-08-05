@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:commet/client/matrix/extensions/matrix_client_extensions.dart';
 import 'package:commet/client/matrix/extensions/matrix_room_extensions.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/utils/emoji/emoticon.dart';
@@ -201,4 +202,17 @@ class MatrixEmoticonPack implements EmoticonPack {
       (emote as MatrixEmoticon).markPackAsSticker(isSticker);
     }
   }
+
+  @override
+  Future<void> markAsGlobal(bool isGlobal) async {
+    if (isGlobal) {
+      _matrixRoom.client.addEmoticonRoomPack(_matrixRoom.id, identifier);
+    } else {
+      _matrixRoom.client.removeEmoticonRoomPack(_matrixRoom.id, identifier);
+    }
+  }
+
+  @override
+  bool get isGloballyAvailable => _matrixRoom.client
+      .isEmoticonPackGloballyAvailable(_matrixRoom.id, identifier);
 }

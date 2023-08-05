@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/client/space.dart';
+import 'package:commet/utils/emoji/emoji_pack.dart';
 import 'package:flutter/material.dart';
 
 import 'peer.dart';
@@ -176,8 +177,14 @@ abstract class Client {
 
   Iterable<Room> getEligibleRoomsForSpace(Space space);
 
+  Widget buildDebugInfo();
+
   @protected
 
   /// Fetches a peer from the server. does not need to implement caching
   Peer fetchPeerInternal(String identifier);
+
+  List<EmoticonPack> get personalPacks;
+
+  List<EmoticonPack> get globalPacks;
 }
