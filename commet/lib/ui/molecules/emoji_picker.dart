@@ -222,8 +222,7 @@ class EmojiPicker extends StatelessWidget {
             itemBuilder: (context, index) {
               return InkWell(
                   borderRadius: BorderRadius.circular(8),
-                  onTap: () =>
-                      onEmoticonPressed?.call(packs[packIndex].emotes[index]),
+                  onTap: () => onEmoticonPressed?.call(list[index]),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Image(

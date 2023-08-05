@@ -57,8 +57,10 @@ class MatrixClient extends Client {
   @override
   List<EmoticonPack> get globalPacks => getGlobalEmoticons();
 
+  List<EmoticonPack>? personalEmoticons;
+
   @override
-  List<EmoticonPack> get personalPacks => getPersonalEmoticons();
+  List<EmoticonPack> get personalPacks => personalEmoticons ?? [];
 
   static Future<void> loadFromDB(ClientManager manager) async {
     var clients = preferences.getRegisteredMatrixClients();
@@ -107,6 +109,7 @@ class MatrixClient extends Client {
 
     _updateRoomslist();
     _updateSpacesList();
+    _getPersonalEmoticons();
 
     _matrixClient.onKeyVerificationRequest.stream.listen((event) {
       AdaptiveDialog.show(navigator.currentContext!,
@@ -232,6 +235,16 @@ class MatrixClient extends Client {
       if (spaceExists(space.id)) continue;
 
       addSpace(MatrixSpace(this, space, _matrixClient));
+    }
+  }
+
+  void _getPersonalEmoticons() {
+    print("Parsing personal emotes");
+    if (_matrixClient.accountData.containsKey("im.ponies.user_emotes")) {
+      personalEmoticons = [
+        MatrixEmoticonPack(
+            _matrixClient.userID!, MatrixPersonalEmoticonHelper(_matrixClient))
+      ];
     }
   }
 
@@ -388,9 +401,5 @@ class MatrixClient extends Client {
     }
 
     return packs;
-  }
-
-  List<MatrixEmoticonPack> getPersonalEmoticons() {
-    return [];
   }
 }

@@ -1,12 +1,13 @@
+import 'package:commet/ui/pages/settings/categories/room/emoji_packs/room_emoji_pack_settings_view.dart';
 import 'package:commet/utils/emoji/emoji_pack.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class AccountEmojiView extends StatefulWidget {
-  const AccountEmojiView(this.globalPacks, {super.key});
+  const AccountEmojiView(this.globalPacks, this.personalPacks, {super.key});
   final List<EmoticonPack> globalPacks;
-
+  final List<EmoticonPack> personalPacks;
   @override
   State<AccountEmojiView> createState() => _AccountEmojiViewState();
 }
@@ -14,11 +15,29 @@ class AccountEmojiView extends StatefulWidget {
 class _AccountEmojiViewState extends State<AccountEmojiView> {
   @override
   Widget build(BuildContext context) {
-    return tiamat.Panel(
-      header: "Global Packs",
-      mode: tiamat.TileType.surfaceLow1,
-      child: Column(
-          children: widget.globalPacks.map((e) => packSummary(e)).toList()),
+    return Column(
+      children: [
+        if (widget.personalPacks.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
+            child: Column(
+              children: widget.personalPacks
+                  .map((e) => EmojiPackEditor(
+                        e,
+                        initiallyExpanded: true,
+                        showDeleteButton: false,
+                        editable: true,
+                      ))
+                  .toList(),
+            ),
+          ),
+        tiamat.Panel(
+          header: "Global Packs",
+          mode: tiamat.TileType.surfaceLow2,
+          child: Column(
+              children: widget.globalPacks.map((e) => packSummary(e)).toList()),
+        ),
+      ],
     );
   }
 

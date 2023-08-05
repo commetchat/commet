@@ -40,7 +40,8 @@ class _AccountEmojiTabState extends State<AccountEmojiTab> {
           height: 10,
         ),
         if (selectedClient!.globalPacks.isNotEmpty)
-          AccountEmojiView(selectedClient!.globalPacks)
+          AccountEmojiView(
+              selectedClient!.globalPacks, selectedClient!.personalPacks)
       ],
     );
   }

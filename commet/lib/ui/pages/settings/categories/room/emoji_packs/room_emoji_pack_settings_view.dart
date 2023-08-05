@@ -153,10 +153,14 @@ class EmojiPackEditor extends StatefulWidget {
       this.deletePack,
       this.deleteEmoticon,
       this.renameEmoticon,
+      this.initiallyExpanded = false,
+      this.showDeleteButton = true,
       this.editable = false});
   final EmoticonPack pack;
   final Function()? deletePack;
   final bool editable;
+  final bool initiallyExpanded;
+  final bool showDeleteButton;
   final Future<void> Function(Emoticon)? deleteEmoticon;
   final Future<void> Function(Emoticon, String)? renameEmoticon;
 
@@ -250,7 +254,7 @@ class _EmojiPackEditorState extends State<EmojiPackEditor> {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(10),
         child: ExpansionTile(
-            initiallyExpanded: false,
+            initiallyExpanded: widget.initiallyExpanded,
             backgroundColor:
                 Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
             collapsedBackgroundColor:
@@ -260,14 +264,18 @@ class _EmojiPackEditorState extends State<EmojiPackEditor> {
               children: [
                 Row(
                   children: [
-                    if (widget.pack.image != null)
+                    if (widget.pack.image != null || widget.pack.icon != null)
                       SizedBox(
                           width: 30,
                           height: 30,
-                          child: Image(
-                            image: widget.pack.image!,
-                            filterQuality: FilterQuality.medium,
-                          )),
+                          child: widget.pack.image != null
+                              ? Image(
+                                  image: widget.pack.image!,
+                                  filterQuality: FilterQuality.medium,
+                                )
+                              : Icon(
+                                  widget.pack.icon!,
+                                )),
                     const SizedBox(
                       width: 10,
                     ),
@@ -346,17 +354,20 @@ class _EmojiPackEditorState extends State<EmojiPackEditor> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      tiamat.Button.danger(
-                          text: "Delete",
-                          onTap: () async {
-                            var result = await AdaptiveDialog.confirmation(
-                                context,
-                                dangerous: true,
-                                prompt: T.current.promptEmoticonPackDelete(
-                                    widget.pack.displayName));
+                      if (widget.showDeleteButton)
+                        tiamat.Button.danger(
+                            text: "Delete",
+                            onTap: () async {
+                              var result = await AdaptiveDialog.confirmation(
+                                  context,
+                                  dangerous: true,
+                                  prompt: T.current.promptEmoticonPackDelete(
+                                      widget.pack.displayName));
 
-                            if (result == true) widget.deletePack?.call();
-                          }),
+                              if (result == true) widget.deletePack?.call();
+                            }),
+                      //Just putting a widget here to make the circle button stay on the right
+                      if (!widget.showDeleteButton) const SizedBox(),
                       CircleButton(
                         radius: 20,
                         icon: Icons.add,

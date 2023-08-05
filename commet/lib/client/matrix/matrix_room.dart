@@ -267,9 +267,10 @@ class MatrixRoom extends Room {
 
   @override
   Future<void> createEmoticonPack(String name, Uint8List? avatarData) async {
-    var data = await _matrixRoom.createEmoticonPack(name, avatarData);
+    var helper = MatrixRoomEmoticonHelper(_matrixRoom);
+    var data = await helper.createEmoticonPack(name, avatarData);
     if (data != null) {
-      var pack = MatrixEmoticonPack(data['key'], _matrixRoom, data['content']);
+      var pack = MatrixEmoticonPack(data['key'], helper);
       _roomEmojis.add(pack);
       onEmojiPackAdded.add(_roomEmojis.length - 1);
     }
@@ -277,7 +278,7 @@ class MatrixRoom extends Room {
 
   @override
   Future<void> deleteEmoticonPack(EmoticonPack pack) async {
-    await _matrixRoom.deleteEmoticonPack(pack.identifier);
+    (pack as MatrixEmoticonPack).helper.deleteEmotionPack(pack.identifier);
     _roomEmojis.remove(pack);
   }
 
@@ -289,7 +290,7 @@ class MatrixRoom extends Room {
     var result = <String, Map<String, String>>{};
 
     for (var pack in packs) {
-      var key = "${pack.displayName}-${pack.ownedRoomId}";
+      var key = "${pack.displayName}-${pack.ownerId}";
       result[key] = <String, String>{};
       for (var emote in pack.emotes) {
         result[key]![emote.shortcode!] =
