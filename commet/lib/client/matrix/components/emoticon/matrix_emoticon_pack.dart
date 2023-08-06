@@ -2,18 +2,20 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:commet/client/matrix/extensions/matrix_client_extensions.dart';
+import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
-import 'package:commet/utils/emoji/emoticon.dart';
-import 'package:commet/utils/emoji/emoji_pack.dart';
-import 'package:commet/client/matrix/matrix_emoticon.dart';
+import 'package:commet/client/components/emoticon/emoticon.dart';
+import 'package:commet/client/components/emoticon/emoji_pack.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:matrix/matrix.dart' as matrix;
+
+import 'matrix_emoticon.dart';
 
 abstract class MatrixEmoticonHelper {
   Map<String, dynamic> getState(String packKey);
   Map<String, dynamic> getAllStates();
   Future<void> setState(String packKey, Map<String, dynamic> content);
+  Future<void> refreshState(String packKey);
   matrix.Client getClient();
   String getDefaultDisplayName();
   IconData? getDefaultIcon();
@@ -38,20 +40,21 @@ abstract class MatrixEmoticonHelper {
     };
 
     String stateKey = name;
-    var states = await getAllStates();
+    var states = getAllStates();
 
     // Check for existing and empty state keys, and reuse those keys first
-    var existing = states['im.ponies.room_emotes'];
-    if (existing != null) {
-      for (var pair in existing.entries) {
-        if (pair.value.content.isEmpty) {
-          stateKey = pair.key;
-          break;
-        }
+    for (var pair in states.entries) {
+      if (pair.value.isEmpty) {
+        stateKey = pair.key;
+        print("Found existing key: $stateKey");
+        break;
       }
     }
 
+    print("Creating pack: $stateKey");
+
     await setState(stateKey, content);
+    await refreshState(stateKey);
 
     var data = getState(stateKey);
 
@@ -160,17 +163,33 @@ abstract class MatrixEmoticonHelper {
 
 class MatrixRoomEmoticonHelper extends MatrixEmoticonHelper {
   matrix.Room room;
-  MatrixRoomEmoticonHelper(this.room);
+  MatrixRoomEmoticonHelper(
+    this.room,
+  );
 
   @override
   Map<String, dynamic> getState(String packKey) {
     var states = getAllStates();
-    return (states[packKey] as matrix.Event).content;
+    var data = states[packKey];
+    print(data);
+
+    return data;
   }
 
   @override
   Map<String, dynamic> getAllStates() {
-    return ((room.states["im.ponies.room_emotes"] as Map<String, dynamic>));
+    if (!room.states.containsKey("im.ponies.room_emotes")) return {};
+
+    var state =
+        (room.states["im.ponies.room_emotes"] as Map<String, matrix.Event>);
+
+    var result = <String, dynamic>{};
+
+    for (var key in state.keys) {
+      result[key] = state[key]!.content;
+    }
+
+    return result;
   }
 
   @override
@@ -194,17 +213,17 @@ class MatrixRoomEmoticonHelper extends MatrixEmoticonHelper {
   }
 
   @override
-  Future<void> setState(String packKey, Map<String, dynamic> content) {
-    return room.client.setRoomStateWithKey(
+  Future<void> setState(String packKey, Map<String, dynamic> content) async {
+    print("Setting state: ");
+    print(content);
+    await room.client.setRoomStateWithKey(
         room.id, "im.ponies.room_emotes", packKey, content);
+
+    print("Done");
   }
 
   @override
   ImageProvider? getDefaultImage() {
-    if (room.avatar != null) {
-      return MatrixMxcImage(room.avatar!, room.client);
-    }
-
     return null;
   }
 
@@ -212,37 +231,49 @@ class MatrixRoomEmoticonHelper extends MatrixEmoticonHelper {
   IconData? getDefaultIcon() {
     return Icons.emoji_emotions;
   }
+
+  @override
+  Future<void> refreshState(String packKey) {
+    return room.client.getRoomState(room.id);
+  }
 }
 
 class MatrixPersonalEmoticonHelper extends MatrixEmoticonHelper {
-  matrix.Client client;
+  MatrixClient client;
   ImageProvider? userAvatar;
   MatrixPersonalEmoticonHelper(this.client, {this.userAvatar});
 
   @override
   Map<String, dynamic> getAllStates() {
-    throw UnimplementedError(
-        "There is only one state for personal emoticon packs, should not be getting here...");
+    //These keys are kind of irrelevant, since they dont actually get used for
+    //the state, its just easier this way
+    var state = getState("personal");
+    if (state.isEmpty) return {};
+    return {"personal": state};
   }
 
   @override
   matrix.Client getClient() {
-    return client;
+    return client.getMatrixClient();
   }
 
   @override
   String getDefaultDisplayName() {
-    return client.clientName;
+    return client.user?.displayName ?? "Personal";
   }
 
   @override
   String getOwnerId() {
-    return client.userID!;
+    return client.user!.identifier;
   }
 
   @override
   Map<String, dynamic> getState(String packKey) {
-    return client.accountData['im.ponies.user_emotes']?.content ?? {};
+    return client
+            .getMatrixClient()
+            .accountData['im.ponies.user_emotes']
+            ?.content ??
+        {};
   }
 
   @override
@@ -255,8 +286,8 @@ class MatrixPersonalEmoticonHelper extends MatrixEmoticonHelper {
     print("Setting personal emoticon data: ");
     print(content);
 
-    return client.setAccountData(
-        client.userID!, "im.ponies.user_emotes", content);
+    return client.getMatrixClient().setAccountData(
+        client.getMatrixClient().userID!, "im.ponies.user_emotes", content);
   }
 
   @override
@@ -269,6 +300,13 @@ class MatrixPersonalEmoticonHelper extends MatrixEmoticonHelper {
   @override
   IconData? getDefaultIcon() {
     return Icons.star;
+  }
+
+  @override
+  Future<void> refreshState(String packKey) {
+    var matrixClient = client.getMatrixClient();
+    return matrixClient.getAccountData(
+        matrixClient.userID!, "im.ponies.user_emotes");
   }
 }
 
@@ -401,23 +439,6 @@ class MatrixEmoticonPack implements EmoticonPack {
       emotes.add(emote);
       _onEmoticonAdded.add(emotes.length - 1);
     } catch (_) {}
-  }
-
-  static List<MatrixEmoticonPack> getPacks(matrix.Room room) {
-    var state = room.states['im.ponies.room_emotes'];
-    List<MatrixEmoticonPack> items = List.empty(growable: true);
-
-    if (state != null && state.isNotEmpty) {
-      for (var key in state.keys) {
-        var value = state[key]!;
-        if (value.content['pack'] == null && value.content['images'] == null)
-          continue;
-        var pack = MatrixEmoticonPack(key, MatrixRoomEmoticonHelper(room));
-        items.add(pack);
-      }
-    }
-
-    return items;
   }
 
   @override

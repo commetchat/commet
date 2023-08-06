@@ -1,14 +1,14 @@
 import 'dart:async';
 import 'package:commet/client/client_manager.dart';
+import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/client/matrix/extensions/matrix_client_extensions.dart';
-import 'package:commet/client/matrix/matrix_emoticon_pack.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/config/app_config.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/pages/matrix/authentication/matrix_uia_request.dart';
-import 'package:commet/utils/emoji/emoji_pack.dart';
+import 'package:commet/client/components/emoticon/emoji_pack.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:crypto/crypto.dart';
@@ -23,12 +23,17 @@ import 'package:matrix/encryption.dart';
 
 import '../../ui/atoms/code_block.dart';
 import '../../ui/pages/matrix/verification/matrix_verification_page.dart';
+import 'components/emoticon/matrix_emoticon_component.dart';
+import 'components/emoticon/matrix_emoticon_pack.dart';
 import 'matrix_room.dart';
 import 'matrix_space.dart';
 
 class MatrixClient extends Client {
   late matrix.Client _matrixClient;
+
   Future? firstSync;
+  MatrixEmoticonComponent? _emoticons;
+
   matrix.ServerConfig? config;
 
   matrix.NativeImplementations get nativeImplentations => BuildConfig.WEB
@@ -42,6 +47,9 @@ class MatrixClient extends Client {
     }
   }
 
+  @override
+  EmoticonComponent? get emoticons => _emoticons;
+
   static String hash(String name) {
     var bytes = utf8.encode(name);
     var hash = sha256.convert(bytes);
@@ -53,14 +61,6 @@ class MatrixClient extends Client {
 
   @override
   int? get maxFileSize => config?.mUploadSize;
-
-  @override
-  List<EmoticonPack> get globalPacks => getGlobalEmoticons();
-
-  List<EmoticonPack>? personalEmoticons;
-
-  @override
-  List<EmoticonPack> get personalPacks => personalEmoticons ?? [];
 
   static Future<void> loadFromDB(ClientManager manager) async {
     var clients = preferences.getRegisteredMatrixClients();
@@ -109,7 +109,8 @@ class MatrixClient extends Client {
 
     _updateRoomslist();
     _updateSpacesList();
-    _getPersonalEmoticons();
+    _emoticons =
+        MatrixEmoticonComponent(MatrixPersonalEmoticonHelper(this), this);
 
     _matrixClient.onKeyVerificationRequest.stream.listen((event) {
       AdaptiveDialog.show(navigator.currentContext!,
@@ -238,16 +239,6 @@ class MatrixClient extends Client {
     }
   }
 
-  void _getPersonalEmoticons() {
-    print("Parsing personal emotes");
-    if (_matrixClient.accountData.containsKey("im.ponies.user_emotes")) {
-      personalEmoticons = [
-        MatrixEmoticonPack(
-            _matrixClient.userID!, MatrixPersonalEmoticonHelper(_matrixClient))
-      ];
-    }
-  }
-
   @override
   Future<Room> createRoom(String name, RoomVisibility visibility,
       {bool enableE2EE = true}) async {
@@ -368,38 +359,5 @@ class MatrixClient extends Client {
         text: const JsonEncoder.withIndent('  ').convert(data),
       ),
     );
-  }
-
-  List<EmoticonPack> getGlobalEmoticons() {
-    if (!_matrixClient.accountData.containsKey("im.ponies.emote_rooms")) {
-      return [];
-    }
-
-    var rooms =
-        _matrixClient.accountData["im.ponies.emote_rooms"]!.content['rooms'];
-
-    var packs = List<EmoticonPack>.empty(growable: true);
-
-    for (var roomId in rooms.keys) {
-      var room = getRoom(roomId);
-      var space = getSpace(roomId);
-
-      if (room == null && space == null) continue;
-
-      var packKeys = rooms[roomId] as Map<String, dynamic>;
-
-      for (var packKey in packKeys.keys) {
-        List emoji = room != null ? room.ownedEmoji : space!.ownedEmoji;
-
-        var matchingPacks =
-            emoji.where((element) => element.identifier == packKey);
-
-        if (matchingPacks.isEmpty) continue;
-
-        packs.add(matchingPacks.first);
-      }
-    }
-
-    return packs;
   }
 }

@@ -2,7 +2,7 @@ import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:flutter/widgets.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
-import '../../utils/emoji/emoticon.dart';
+import '../../../components/emoticon/emoticon.dart';
 
 class MatrixEmoticon implements Emoticon {
   late MatrixMxcImage _image;

@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:commet/utils/emoji/emoticon.dart';
+import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:flutter/material.dart';
 import '../ui/atoms/rich_text/spans/link.dart';
 import 'emoji/emoji_matcher.dart';

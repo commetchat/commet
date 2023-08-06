@@ -7,8 +7,8 @@ import 'package:commet/ui/molecules/editable_label.dart';
 import 'package:commet/ui/molecules/image_picker.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/utils/common_animation.dart';
-import 'package:commet/utils/emoji/emoticon.dart';
-import 'package:commet/utils/emoji/emoji_pack.dart';
+import 'package:commet/client/components/emoticon/emoticon.dart';
+import 'package:commet/client/components/emoticon/emoji_pack.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/atoms/circle_button.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
@@ -51,6 +51,8 @@ class _RoomEmojiPackSettingsViewState extends State<RoomEmojiPackSettingsView> {
   @override
   void initState() {
     itemCount = widget.packs.length;
+    print("onPackCreated:");
+    print(widget.onPackCreated);
     onItemAddedSubscription = widget.onPackCreated?.listen(onPackAdded);
     super.initState();
   }
@@ -62,6 +64,7 @@ class _RoomEmojiPackSettingsViewState extends State<RoomEmojiPackSettingsView> {
   }
 
   void onPackAdded(int index) {
+    print("OnPackAdded called");
     setState(() {
       _listKey.currentState?.insertItem(index);
     });

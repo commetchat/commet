@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:commet/utils/emoji/emoticon.dart';
+import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:flutter/material.dart';
 
 abstract class EmoticonPack {

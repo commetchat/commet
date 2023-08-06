@@ -1,5 +1,5 @@
-import 'package:commet/utils/emoji/emoticon.dart';
-import 'package:commet/utils/emoji/emoji_pack.dart';
+import 'package:commet/client/components/emoticon/emoticon.dart';
+import 'package:commet/client/components/emoticon/emoji_pack.dart';
 import 'package:commet/utils/emoji/unicode_emoji_data.dart';
 import 'package:commet/utils/emoji/unicode_emoji_data_groups.g.dart';
 import 'package:flutter/material.dart';

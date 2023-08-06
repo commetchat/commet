@@ -1,16 +1,16 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:ui';
+import 'package:commet/client/components/emoticon/emoticon_component.dart';
+import 'package:commet/client/matrix/components/emoticon/matrix_emoticon_component.dart';
 import 'package:commet/client/matrix/matrix_attachment.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
-import 'package:commet/client/matrix/matrix_emoticon.dart';
-import 'package:commet/client/matrix/matrix_emoticon_pack.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/matrix/matrix_peer.dart';
 import 'package:commet/client/matrix/matrix_room_permissions.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
-import 'package:commet/utils/emoji/emoji_pack.dart';
-import 'package:commet/utils/emoji/emoticon.dart';
+import 'package:commet/client/components/emoticon/emoji_pack.dart';
+import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:commet/utils/gif_search/gif_search_result.dart';
 import 'package:commet/utils/image_utils.dart';
@@ -25,8 +25,13 @@ import '../attachment.dart';
 import '../client.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
+import 'components/emoticon/matrix_emoticon_pack.dart';
+
 class MatrixRoom extends Room {
   late matrix.Room _matrixRoom;
+
+  @override
+  late final MatrixRoomEmoticonComponent roomEmoticons;
 
   @override
   bool get isMember => _matrixRoom.membership == matrix.Membership.join;
@@ -39,6 +44,8 @@ class MatrixRoom extends Room {
 
   @override
   int get notificationCount => _matrixRoom.notificationCount;
+
+  matrix.Room get matrixRoom => _matrixRoom;
 
   @override
   Iterable<String> get memberIds =>
@@ -54,8 +61,6 @@ class MatrixRoom extends Room {
   String get developerInfo =>
       const JsonEncoder.withIndent('  ').convert(_matrixRoom.states);
 
-  List<EmoticonPack> _roomEmojis = List.empty(growable: true);
-
   @override
   PushRule get pushRule {
     switch (_matrixRoom.pushRuleState) {
@@ -66,38 +71,6 @@ class MatrixRoom extends Room {
       case matrix.PushRuleState.dontNotify:
         return PushRule.dontNotify;
     }
-  }
-
-  @override
-  List<EmoticonPack> get availableEmoji =>
-      _getAvailablePacks(includeUnicode: true);
-
-  @override
-  List<EmoticonPack> get availableStickers =>
-      _getAvailablePacks(includeUnicode: false);
-
-  @override
-  List<EmoticonPack> get ownedEmoji => _roomEmojis;
-
-  List<EmoticonPack> _getAvailablePacks({bool includeUnicode = false}) {
-    var result = List<EmoticonPack>.of(ownedEmoji);
-
-    for (var space
-        in client.spaces.where((element) => element.containsRoom(identifier))) {
-      result.addAll(space.ownedEmoji);
-    }
-
-    for (var pack in client.globalPacks) {
-      if (!result.contains(pack)) {
-        result.add(pack);
-      }
-    }
-
-    result.addAll(client.personalPacks);
-
-    if (includeUnicode) result.addAll(UnicodeEmojis.packs!);
-
-    return result;
   }
 
   MatrixRoom(client, matrix.Room room, matrix.Client matrixClient)
@@ -129,7 +102,12 @@ class MatrixRoom extends Room {
     timeline = MatrixTimeline(client, this, room);
 
     _matrixRoom.onUpdate.stream.listen(onMatrixRoomUpdate);
-    _roomEmojis = MatrixEmoticonPack.getPacks(_matrixRoom);
+
+    roomEmoticons = MatrixRoomEmoticonComponent(
+        MatrixRoomEmoticonHelper(_matrixRoom),
+        this.client as MatrixClient,
+        this);
+
     permissions = MatrixRoomPermissions(_matrixRoom);
   }
 
@@ -198,7 +176,7 @@ class MatrixRoom extends Room {
 
       final html = mx_markdown.markdown(message,
           getEmotePacks: () =>
-              getEmotePacksFlat(matrix.ImagePackUsage.emoticon),
+              roomEmoticons.getEmotePacksFlat(matrix.ImagePackUsage.emoticon),
           getMention: _matrixRoom.getMention);
 
       if (HtmlUnescape().convert(html.replaceAll(RegExp(r'<br />\n?'), '\n')) !=
@@ -262,79 +240,6 @@ class MatrixRoom extends Room {
   @override
   Color getColorOfUser(String userId) {
     return MatrixPeer.hashColor(userId);
-  }
-
-  @override
-  Future<void> createEmoticonPack(String name, Uint8List? avatarData) async {
-    var helper = MatrixRoomEmoticonHelper(_matrixRoom);
-    var data = await helper.createEmoticonPack(name, avatarData);
-    if (data != null) {
-      var pack = MatrixEmoticonPack(data['key'], helper);
-      _roomEmojis.add(pack);
-      onEmojiPackAdded.add(_roomEmojis.length - 1);
-    }
-  }
-
-  @override
-  Future<void> deleteEmoticonPack(EmoticonPack pack) async {
-    (pack as MatrixEmoticonPack).helper.deleteEmotionPack(pack.identifier);
-    _roomEmojis.remove(pack);
-  }
-
-  Map<String, Map<String, String>> getEmotePacksFlat(
-      matrix.ImagePackUsage emoticon) {
-    var packs = _getAvailablePacks(includeUnicode: false)
-        .whereType<MatrixEmoticonPack>();
-
-    var result = <String, Map<String, String>>{};
-
-    for (var pack in packs) {
-      var key = "${pack.displayName}-${pack.ownerId}";
-      result[key] = <String, String>{};
-      for (var emote in pack.emotes) {
-        result[key]![emote.shortcode!] =
-            (emote as MatrixEmoticon).emojiUrl.toString();
-      }
-    }
-
-    return result;
-  }
-
-  @override
-  Future<TimelineEvent?> sendSticker(
-      Emoticon sticker, TimelineEvent? inReplyTo) async {
-    if (sticker is MatrixEmoticon) {
-      var image = await ImageUtils.imageProviderToImage(sticker.image);
-
-      matrix.Event? replyingTo;
-
-      if (inReplyTo != null) {
-        replyingTo = await _matrixRoom.getEventById(inReplyTo.eventId);
-      }
-      String? mimeType;
-      if (sticker.image is MatrixMxcImage) {
-        mimeType = (sticker.image as MatrixMxcImage).mimeType;
-      }
-
-      var content = {
-        "body": sticker.shortcode!,
-        "url": sticker.emojiUrl.toString(),
-        "info": {
-          "w": image.width,
-          "h": image.height,
-          if (mimeType != null) "mimetype": mimeType
-        }
-      };
-
-      var id = await _matrixRoom.sendEvent(content,
-          type: matrix.EventTypes.Sticker, inReplyTo: replyingTo);
-
-      if (id != null) {
-        var event = await _matrixRoom.getEventById(id);
-        return (timeline as MatrixTimeline).convertEvent(event!);
-      }
-    }
-    return null;
   }
 
   @override

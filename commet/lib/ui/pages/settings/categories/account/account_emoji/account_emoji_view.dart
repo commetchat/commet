@@ -1,5 +1,5 @@
 import 'package:commet/ui/pages/settings/categories/room/emoji_packs/room_emoji_pack_settings_view.dart';
-import 'package:commet/utils/emoji/emoji_pack.dart';
+import 'package:commet/client/components/emoticon/emoji_pack.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;

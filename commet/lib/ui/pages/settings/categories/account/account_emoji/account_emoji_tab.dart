@@ -39,10 +39,17 @@ class _AccountEmojiTabState extends State<AccountEmojiTab> {
         const SizedBox(
           height: 10,
         ),
-        if (selectedClient!.globalPacks.isNotEmpty)
-          AccountEmojiView(
-              selectedClient!.globalPacks, selectedClient!.personalPacks)
+        buildEmojiView(context)
       ],
     );
+  }
+
+  Widget buildEmojiView(BuildContext context) {
+    if (selectedClient?.emoticons == null) {
+      return Placeholder();
+    }
+
+    return AccountEmojiView(selectedClient!.emoticons!.globalPacks(),
+        selectedClient!.emoticons!.ownedPacks);
   }
 }

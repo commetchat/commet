@@ -1,12 +1,12 @@
 import 'package:commet/ui/molecules/emoji_picker.dart';
-import 'package:commet/utils/emoji/emoji_pack.dart';
+import 'package:commet/client/components/emoticon/emoji_pack.dart';
 import 'package:commet/utils/gif_search/gif_search_result.dart';
 import 'package:commet/utils/gif_search/tenor_search.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 
 import '../../config/build_config.dart';
-import '../../utils/emoji/emoticon.dart';
+import '../../client/components/emoticon/emoticon.dart';
 import '../../utils/emoji/unicode_emoji.dart';
 
 @WidgetbookUseCase(name: 'Sticker Picker', type: StickerPicker)

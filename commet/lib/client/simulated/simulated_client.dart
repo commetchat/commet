@@ -5,7 +5,7 @@ import 'package:commet/client/room_preview.dart';
 import 'package:commet/client/simulated/simulated_peer.dart';
 import 'package:commet/client/simulated/simulated_room.dart';
 import 'package:commet/client/simulated/simulated_space.dart';
-import 'package:commet/utils/emoji/emoji_pack.dart';
+import 'package:commet/client/components/emoticon/emoji_pack.dart';
 import 'package:commet/utils/rng.dart';
 import 'package:flutter/material.dart';
 
@@ -166,4 +166,10 @@ class SimulatedClient extends Client {
 
   @override
   List<EmoticonPack> get personalPacks => [];
+
+  @override
+  Future<void> createEmoticonPack(String name, Uint8List? avatarData) {
+    // TODO: implement createEmoticonPack
+    throw UnimplementedError();
+  }
 }
