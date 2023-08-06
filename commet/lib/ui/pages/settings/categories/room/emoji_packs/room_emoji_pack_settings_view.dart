@@ -7,8 +7,8 @@ import 'package:commet/ui/molecules/editable_label.dart';
 import 'package:commet/ui/molecules/image_picker.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/utils/common_animation.dart';
-import 'package:commet/utils/emoji/emoticon.dart';
-import 'package:commet/utils/emoji/emoji_pack.dart';
+import 'package:commet/client/components/emoticon/emoticon.dart';
+import 'package:commet/client/components/emoticon/emoji_pack.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/atoms/circle_button.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
@@ -28,13 +28,16 @@ class RoomEmojiPackSettingsView extends StatefulWidget {
       EmoticonPack pack, Emoticon emoticon, String name)? renameEmoticon;
 
   final bool editable;
-
+  final bool canCreatePack;
+  final bool defaultExpanded;
   const RoomEmojiPackSettingsView(this.packs,
       {this.createNewPack,
       super.key,
       this.onPackCreated,
       this.deletePack,
       this.editable = true,
+      this.canCreatePack = true,
+      this.defaultExpanded = false,
       this.renameEmoticon,
       this.deleteEmoticon});
 
@@ -84,13 +87,14 @@ class _RoomEmojiPackSettingsViewState extends State<RoomEmojiPackSettingsView> {
                 deletePack: () => deletePack(index),
                 deleteEmoticon: (emoticon) => deleteEmoticon(index, emoticon),
                 editable: widget.editable,
+                initiallyExpanded: widget.defaultExpanded,
                 renameEmoticon: (emoticon, name) =>
                     renameEmoticon(index, emoticon, name),
               ),
             );
           },
         ),
-        if (widget.editable)
+        if (widget.editable && widget.canCreatePack)
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Align(
@@ -153,10 +157,14 @@ class EmojiPackEditor extends StatefulWidget {
       this.deletePack,
       this.deleteEmoticon,
       this.renameEmoticon,
+      this.initiallyExpanded = false,
+      this.showDeleteButton = true,
       this.editable = false});
   final EmoticonPack pack;
   final Function()? deletePack;
   final bool editable;
+  final bool initiallyExpanded;
+  final bool showDeleteButton;
   final Future<void> Function(Emoticon)? deleteEmoticon;
   final Future<void> Function(Emoticon, String)? renameEmoticon;
 
@@ -170,6 +178,7 @@ class _EmojiPackEditorState extends State<EmojiPackEditor> {
   late int _itemCount;
   late bool isPackEmoji;
   late bool isPackSticker;
+  late bool isGlobalPack;
 
   @override
   void initState() {
@@ -177,6 +186,7 @@ class _EmojiPackEditorState extends State<EmojiPackEditor> {
     _itemCount = widget.pack.emotes.length;
     isPackEmoji = widget.pack.isEmojiPack;
     isPackSticker = widget.pack.isStickerPack;
+    isGlobalPack = widget.pack.isGloballyAvailable;
     super.initState();
   }
 
@@ -205,6 +215,14 @@ class _EmojiPackEditorState extends State<EmojiPackEditor> {
     });
 
     widget.pack.markAsSticker(isSticker);
+  }
+
+  void setIsGlobal(bool isGlobal) {
+    setState(() {
+      isGlobalPack = isGlobal;
+    });
+
+    widget.pack.markAsGlobal(isGlobal);
   }
 
   void deleteEmoji(int index) {
@@ -240,7 +258,7 @@ class _EmojiPackEditorState extends State<EmojiPackEditor> {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(10),
         child: ExpansionTile(
-            initiallyExpanded: false,
+            initiallyExpanded: widget.initiallyExpanded,
             backgroundColor:
                 Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
             collapsedBackgroundColor:
@@ -250,23 +268,37 @@ class _EmojiPackEditorState extends State<EmojiPackEditor> {
               children: [
                 Row(
                   children: [
-                    if (widget.pack.image != null)
+                    if (widget.pack.image != null || widget.pack.icon != null)
                       SizedBox(
                           width: 30,
                           height: 30,
-                          child: Image(
-                            image: widget.pack.image!,
-                            filterQuality: FilterQuality.medium,
-                          )),
+                          child: widget.pack.image != null
+                              ? Image(
+                                  image: widget.pack.image!,
+                                  filterQuality: FilterQuality.medium,
+                                )
+                              : Icon(
+                                  widget.pack.icon!,
+                                )),
                     const SizedBox(
                       width: 10,
                     ),
                     tiamat.Text.labelEmphasised(widget.pack.displayName),
                   ],
                 ),
-                if (widget.editable)
-                  Row(
-                    children: [
+                Row(
+                  children: [
+                    SizedBox(
+                      width: 40,
+                      height: 40,
+                      child: tiamat.IconToggle(
+                        icon: Icons.public,
+                        size: 20,
+                        state: isGlobalPack,
+                        onPressed: (newState) => setIsGlobal(newState),
+                      ),
+                    ),
+                    if (widget.editable)
                       SizedBox(
                         width: 40,
                         height: 40,
@@ -277,9 +309,11 @@ class _EmojiPackEditorState extends State<EmojiPackEditor> {
                           onPressed: (newState) => setIsStickerPack(newState),
                         ),
                       ),
+                    if (widget.editable)
                       const SizedBox(
                         width: 4,
                       ),
+                    if (widget.editable)
                       SizedBox(
                         width: 40,
                         height: 40,
@@ -290,8 +324,8 @@ class _EmojiPackEditorState extends State<EmojiPackEditor> {
                           onPressed: (newState) => setIsEmojiPack(newState),
                         ),
                       )
-                    ],
-                  ),
+                  ],
+                ),
               ],
             ),
             children: [
@@ -324,17 +358,20 @@ class _EmojiPackEditorState extends State<EmojiPackEditor> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      tiamat.Button.danger(
-                          text: "Delete",
-                          onTap: () async {
-                            var result = await AdaptiveDialog.confirmation(
-                                context,
-                                dangerous: true,
-                                prompt: T.current.promptEmoticonPackDelete(
-                                    widget.pack.displayName));
+                      if (widget.showDeleteButton)
+                        tiamat.Button.danger(
+                            text: "Delete",
+                            onTap: () async {
+                              var result = await AdaptiveDialog.confirmation(
+                                  context,
+                                  dangerous: true,
+                                  prompt: T.current.promptEmoticonPackDelete(
+                                      widget.pack.displayName));
 
-                            if (result == true) widget.deletePack?.call();
-                          }),
+                              if (result == true) widget.deletePack?.call();
+                            }),
+                      //Just putting a widget here to make the circle button stay on the right
+                      if (!widget.showDeleteButton) const SizedBox(),
                       CircleButton(
                         radius: 20,
                         icon: Icons.add,

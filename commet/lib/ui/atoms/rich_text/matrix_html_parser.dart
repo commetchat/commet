@@ -1,7 +1,7 @@
+import 'package:commet/client/matrix/components/emoticon/matrix_emoticon.dart';
 import 'package:commet/ui/atoms/code_block.dart';
 import 'package:commet/ui/atoms/emoji_widget.dart';
 import 'package:commet/ui/atoms/rich_text/spans/link.dart';
-import 'package:commet/client/matrix/matrix_emoticon.dart';
 import 'package:commet/utils/text_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';

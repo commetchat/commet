@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:commet/utils/emoji/emoticon.dart';
+import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:flutter/material.dart';
 
 abstract class EmoticonPack {
@@ -22,6 +22,7 @@ abstract class EmoticonPack {
 
   bool get isStickerPack;
   bool get isEmojiPack;
+  bool get isGloballyAvailable;
 
   Future<void> deleteEmoticon(Emoticon emoticon);
 
@@ -42,4 +43,6 @@ abstract class EmoticonPack {
       String? mimeType,
       bool? isEmoji,
       bool? isSticker});
+
+  Future<void> markAsGlobal(bool isGlobal);
 }

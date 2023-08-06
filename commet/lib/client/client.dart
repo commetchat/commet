@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/client/space.dart';
@@ -59,10 +60,12 @@ abstract class Client {
   List<Space> spaces = List.empty(growable: true);
   List<Peer> peers = List.empty(growable: true);
 
+  EmoticonComponent? emoticons;
+
   late StreamController<int> onRoomAdded = StreamController.broadcast();
   late StreamController<int> onSpaceAdded = StreamController.broadcast();
   late StreamController<int> onPeerAdded = StreamController.broadcast();
-
+  late StreamController<int> onEmojiPackAdded = StreamController.broadcast();
   late StreamController<void> onSync = StreamController.broadcast();
 
   bool spaceExists(String identifier) {
@@ -175,6 +178,8 @@ abstract class Client {
   Future<void> close() async {}
 
   Iterable<Room> getEligibleRoomsForSpace(Space space);
+
+  Widget buildDebugInfo();
 
   @protected
 

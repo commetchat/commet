@@ -9,8 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
-import '../../utils/emoji/emoji_pack.dart';
-import '../../utils/emoji/emoticon.dart';
+import '../../client/components/emoticon/emoji_pack.dart';
+import '../../client/components/emoticon/emoticon.dart';
 
 @WidgetbookUseCase(name: 'Emoticon Picker', type: EmoticonPicker)
 @Deprecated("widgetbook")

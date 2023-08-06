@@ -19,7 +19,7 @@ import 'package:window_manager/window_manager.dart';
 import '../../../client/attachment.dart';
 import '../../../client/client.dart';
 import '../../../config/build_config.dart';
-import '../../../utils/emoji/emoticon.dart';
+import '../../../client/components/emoticon/emoticon.dart';
 import '../../molecules/timeline_viewer.dart';
 import '../../navigation/navigation_utils.dart';
 
@@ -414,7 +414,7 @@ class ChatPageState extends State<ChatPage> {
   }
 
   void sendSticker(Emoticon sticker) {
-    selectedRoom!.sendSticker(
+    selectedRoom!.roomEmoticons!.sendSticker(
         sticker,
         interactionType == EventInteractionType.reply
             ? interactingEvent

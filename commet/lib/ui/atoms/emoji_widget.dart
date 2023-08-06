@@ -1,4 +1,4 @@
-import 'package:commet/utils/emoji/emoticon.dart';
+import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:flutter/widgets.dart';
 
 // ignore: must_be_immutable

@@ -1,11 +1,11 @@
-import 'package:commet/utils/emoji/emoticon.dart';
+import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:tiamat/atoms/image_button.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
-import 'package:commet/utils/emoji/emoji_pack.dart';
+import 'package:commet/client/components/emoticon/emoji_pack.dart';
 import 'package:commet/ui/atoms/emoji_widget.dart';
 import '../atoms/tooltip.dart' as t;
 
@@ -222,8 +222,7 @@ class EmojiPicker extends StatelessWidget {
             itemBuilder: (context, index) {
               return InkWell(
                   borderRadius: BorderRadius.circular(8),
-                  onTap: () =>
-                      onEmoticonPressed?.call(packs[packIndex].emotes[index]),
+                  onTap: () => onEmoticonPressed?.call(list[index]),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Image(

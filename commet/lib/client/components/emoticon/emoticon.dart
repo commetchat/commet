@@ -5,7 +5,7 @@ import 'package:commet/utils/emoji/emoji_matcher.dart';
 import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:flutter/material.dart';
 
-import '../text_utils.dart';
+import '../../../utils/text_utils.dart';
 
 abstract class Emoticon {
   ImageProvider get image;

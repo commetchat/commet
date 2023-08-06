@@ -302,10 +302,10 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
                           removeAttachment: widget.state.removeAttachment,
                           focusKeyboard:
                               widget.state.onFocusMessageInput.stream,
-                          availibleEmoticons:
-                              widget.state.selectedRoom!.availableEmoji,
-                          availibleStickers:
-                              widget.state.selectedRoom!.availableStickers,
+                          availibleEmoticons: widget.state.selectedRoom!
+                              .roomEmoticons!.availableEmoji,
+                          availibleStickers: widget.state.selectedRoom!
+                              .roomEmoticons!.availableStickers,
                           sendGif: widget.state.sendGif,
                           sendSticker: widget.state.sendSticker,
                           cancelReply: () {

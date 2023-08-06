@@ -17,7 +17,7 @@ class SettingsCategoryRoom implements SettingsCategory {
   @override
   List<SettingsTab> get tabs => List.from([
         SettingsTab(
-          label: "General",
+          label: T.current.settingsGeneral,
           icon: Icons.settings,
           pageBuilder: (context) {
             return RoomGeneralSettingsPage(
@@ -36,23 +36,25 @@ class SettingsCategoryRoom implements SettingsCategory {
               }),
         if (room.permissions.canEditRoomSecurity)
           SettingsTab(
-              label: "Security",
+              label: T.current.settingsGeneral,
               icon: Icons.lock,
               pageBuilder: (context) {
                 return RoomSecuritySettingsPage(
                   room: room,
                 );
               }),
-        if (room.permissions.canEditRoomEmoticons || room.ownedEmoji.isNotEmpty)
+        if ((room.permissions.canEditRoomEmoticons ||
+                room.roomEmoticons!.ownedPacks.isNotEmpty) &&
+            room.roomEmoticons != null)
           SettingsTab(
-              label: "Emoji",
+              label: T.current.settingsEmoji,
               icon: Icons.emoji_emotions,
               pageBuilder: (context) {
                 return RoomEmojiPackSettingsPage(room);
               }),
         if (preferences.developerMode)
           SettingsTab(
-              label: "Developer",
+              label: T.current.settingsDeveloper,
               icon: Icons.code,
               pageBuilder: (context) {
                 return RoomDeveloperSettingsView(room.developerInfo);

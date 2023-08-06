@@ -1,4 +1,4 @@
-import 'package:commet/utils/emoji/emoticon.dart';
+import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/utils/text_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:test/test.dart';

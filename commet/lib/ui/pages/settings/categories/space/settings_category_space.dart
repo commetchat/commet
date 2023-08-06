@@ -17,7 +17,7 @@ class SettingsCategorySpace implements SettingsCategory {
   @override
   List<SettingsTab> get tabs => List.from([
         SettingsTab(
-            label: "General",
+            label: T.current.settingsGeneral,
             icon: Icons.settings,
             pageBuilder: (context) {
               return SpaceGeneralSettingsPage(
@@ -33,17 +33,18 @@ class SettingsCategorySpace implements SettingsCategory {
                   space: space,
                 );
               }),
-        if (space.permissions.canEditRoomEmoticons ||
-            space.ownedEmoji.isNotEmpty)
+        if ((space.permissions.canEditRoomEmoticons ||
+                space.emoticons!.ownedPacks.isNotEmpty) &&
+            space.emoticons != null)
           SettingsTab(
-              label: "Emoji",
+              label: T.current.settingsEmoji,
               icon: Icons.emoji_emotions,
               pageBuilder: (context) {
                 return SpaceEmojiPackSettings(space);
               }),
         if (preferences.developerMode)
           SettingsTab(
-            label: "Developer",
+            label: T.current.settingsDeveloper,
             icon: Icons.code,
             pageBuilder: (context) {
               return RoomDeveloperSettingsView(space.developerInfo);

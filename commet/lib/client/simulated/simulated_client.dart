@@ -154,4 +154,9 @@ class SimulatedClient extends Client {
   Peer fetchPeerInternal(String identifier) {
     return SimulatedPeer(this, identifier, identifier, null);
   }
+
+  @override
+  Widget buildDebugInfo() {
+    return const Placeholder();
+  }
 }

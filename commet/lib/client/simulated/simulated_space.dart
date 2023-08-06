@@ -2,9 +2,9 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/client/simulated/simulated_room_permissions.dart';
-import 'package:commet/utils/emoji/emoji_pack.dart';
 import 'package:flutter/material.dart';
 
 import '../../utils/rng.dart';
@@ -81,15 +81,5 @@ class SimulatedSpace extends Space {
   }
 
   @override
-  Future<void> createEmoticonPack(String name, Uint8List? avatarData) {
-    throw UnimplementedError();
-  }
-
-  @override
-  List<EmoticonPack> get ownedEmoji => [];
-
-  @override
-  Future<void> deleteEmoticonPack(EmoticonPack pack) {
-    throw UnimplementedError();
-  }
+  EmoticonComponent? get emoticons => null;
 }

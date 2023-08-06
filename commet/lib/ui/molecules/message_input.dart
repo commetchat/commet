@@ -5,7 +5,7 @@ import 'package:commet/main.dart';
 import 'package:commet/ui/molecules/attachment_icon.dart';
 import 'package:commet/ui/molecules/emoticon_picker.dart';
 import 'package:commet/ui/pages/chat/chat_page.dart';
-import 'package:commet/utils/emoji/emoji_pack.dart';
+import 'package:commet/client/components/emoticon/emoji_pack.dart';
 import 'package:commet/utils/gif_search/gif_search_result.dart';
 import 'package:file_picker/file_picker.dart';
 
@@ -18,7 +18,7 @@ import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import '../../client/attachment.dart';
 import '../../generated/l10n.dart';
-import '../../utils/emoji/emoticon.dart';
+import '../../client/components/emoticon/emoticon.dart';
 
 enum MessageInputSendResult { success, unhandled }
 
@@ -304,12 +304,14 @@ class MessageInputState extends State<MessageInput> {
                           )
                       ]),
                 ),
-                AnimatedContainer(
-                  curve: Curves.easeOutExpo,
-                  duration: const Duration(milliseconds: 500),
-                  height: showEmotePicker ? emotePickerHeight : 0,
-                  child: buildEmojiPicker(),
-                )
+                if (widget.availibleEmoticons != null &&
+                    widget.availibleStickers != null)
+                  AnimatedContainer(
+                    curve: Curves.easeOutExpo,
+                    duration: const Duration(milliseconds: 500),
+                    height: showEmotePicker ? emotePickerHeight : 0,
+                    child: buildEmojiPicker(),
+                  )
               ],
             ),
           ),
