@@ -97,6 +97,9 @@ class MatrixEmoticonComponent implements EmoticonComponent {
 
     return packs;
   }
+
+  @override
+  bool get canCreatePack => ownedPacks.isEmpty;
 }
 
 class MatrixRoomEmoticonComponent extends MatrixEmoticonComponent
@@ -209,4 +212,7 @@ class MatrixRoomEmoticonComponent extends MatrixEmoticonComponent
 
     return result;
   }
+
+  @override
+  bool get canCreatePack => true;
 }

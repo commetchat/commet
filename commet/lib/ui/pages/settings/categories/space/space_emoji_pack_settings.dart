@@ -23,6 +23,7 @@ class _SpaceEmojiPackSettingsState extends State<SpaceEmojiPackSettings> {
       onPackCreated: widget.space.emoticons!.onOwnedPackAdded,
       deletePack: deletePack,
       deleteEmoticon: deleteEmoticon,
+      canCreatePack: widget.space.emoticons!.canCreatePack,
       editable: widget.space.permissions.canEditRoomEmoticons,
       renameEmoticon: renameEmoticon,
     );

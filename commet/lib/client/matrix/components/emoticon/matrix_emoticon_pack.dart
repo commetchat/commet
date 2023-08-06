@@ -15,7 +15,7 @@ abstract class MatrixEmoticonHelper {
   Map<String, dynamic> getState(String packKey);
   Map<String, dynamic> getAllStates();
   Future<void> setState(String packKey, Map<String, dynamic> content);
-  Future<void> refreshState(String packKey);
+  Future<void> markAsGlobal(bool isGlobal, String packKey);
   matrix.Client getClient();
   String getDefaultDisplayName();
   IconData? getDefaultIcon();
@@ -51,11 +51,8 @@ abstract class MatrixEmoticonHelper {
     }
 
     await setState(stateKey, content);
-    await refreshState(stateKey);
 
-    var data = getState(stateKey);
-
-    return {"key": stateKey, "content": data};
+    return {"key": stateKey, "content": content};
   }
 
   Future<void> deleteEmoticon(String packKey, String emoteName) async {
@@ -154,8 +151,6 @@ abstract class MatrixEmoticonHelper {
     await setState(packKey, content);
     return content;
   }
-
-  Future<void> markAsGlobal(String packKey, bool isGlobal) async {}
 }
 
 class MatrixRoomEmoticonHelper extends MatrixEmoticonHelper {
@@ -210,8 +205,14 @@ class MatrixRoomEmoticonHelper extends MatrixEmoticonHelper {
 
   @override
   Future<void> setState(String packKey, Map<String, dynamic> content) async {
-    await room.client.setRoomStateWithKey(
+    print("Setting state:");
+    print(content);
+
+    var event = await room.client.setRoomStateWithKey(
         room.id, "im.ponies.room_emotes", packKey, content);
+
+    var result = await room.getEventById(event);
+    room.states["im.ponies.room_emotes"]![packKey] = result!;
   }
 
   @override
@@ -225,8 +226,10 @@ class MatrixRoomEmoticonHelper extends MatrixEmoticonHelper {
   }
 
   @override
-  Future<void> refreshState(String packKey) {
-    return room.client.getRoomState(room.id);
+  Future<void> markAsGlobal(bool isGlobal, String packId) {
+    if (isGlobal) return room.client.addEmoticonRoomPack(room.id, packId);
+
+    return room.client.removeEmoticonRoomPack(room.id, packId);
   }
 }
 
@@ -290,11 +293,7 @@ class MatrixPersonalEmoticonHelper extends MatrixEmoticonHelper {
   }
 
   @override
-  Future<void> refreshState(String packKey) {
-    var matrixClient = client.getMatrixClient();
-    return matrixClient.getAccountData(
-        matrixClient.userID!, "im.ponies.user_emotes");
-  }
+  Future<void> markAsGlobal(bool isGlobal, String packKey) async {}
 }
 
 class MatrixEmoticonPack implements EmoticonPack {
@@ -476,7 +475,7 @@ class MatrixEmoticonPack implements EmoticonPack {
 
   @override
   Future<void> markAsGlobal(bool isGlobal) async {
-    helper.markAsGlobal(identifier, isGlobal);
+    helper.markAsGlobal(isGlobal, identifier);
   }
 
   @override

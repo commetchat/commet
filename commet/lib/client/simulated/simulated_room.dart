@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/emoticon/emoticon_component.dart';

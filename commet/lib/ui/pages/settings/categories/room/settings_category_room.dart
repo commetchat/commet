@@ -43,8 +43,9 @@ class SettingsCategoryRoom implements SettingsCategory {
                   room: room,
                 );
               }),
-        if (room.permissions.canEditRoomEmoticons ||
-            room.roomEmoticons!.ownedPacks.isNotEmpty)
+        if ((room.permissions.canEditRoomEmoticons ||
+                room.roomEmoticons!.ownedPacks.isNotEmpty) &&
+            room.roomEmoticons != null)
           SettingsTab(
               label: T.current.settingsEmoji,
               icon: Icons.emoji_emotions,

@@ -1,6 +1,11 @@
+import 'dart:typed_data';
+
 import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
+import 'package:commet/client/components/emoticon/emoticon.dart';
+import 'package:commet/client/components/emoticon/emoji_pack.dart';
 import 'package:commet/ui/pages/settings/categories/account/account_emoji/account_emoji_view.dart';
+import 'package:commet/ui/pages/settings/categories/room/emoji_packs/room_emoji_pack_settings_view.dart';
 import 'package:flutter/widgets.dart';
 
 import '../../../../../molecules/account_selector.dart';
@@ -49,7 +54,39 @@ class _AccountEmojiTabState extends State<AccountEmojiTab> {
       return const Placeholder();
     }
 
-    return AccountEmojiView(selectedClient!.emoticons!.globalPacks(),
-        selectedClient!.emoticons!.ownedPacks);
+    return Column(
+      children: [
+        RoomEmojiPackSettingsView(selectedClient!.emoticons!.ownedPacks,
+            createNewPack: createPack,
+            defaultExpanded: true,
+            canCreatePack: selectedClient!.emoticons!.canCreatePack,
+            deleteEmoticon: deleteEmoticon,
+            deletePack: deletePack,
+            renameEmoticon: renameEmoticon,
+            onPackCreated: selectedClient!.emoticons!.onOwnedPackAdded),
+        const SizedBox(
+          height: 5,
+        ),
+        AccountEmojiView(selectedClient!.emoticons!.globalPacks(),
+            selectedClient!.emoticons!.ownedPacks),
+      ],
+    );
+  }
+
+  Future<void> createPack(String name, Uint8List? avatarData) {
+    return selectedClient!.emoticons!.createEmoticonPack(name, avatarData);
+  }
+
+  Future<void> renameEmoticon(
+      EmoticonPack pack, Emoticon emoticon, String name) {
+    return pack.renameEmoticon(emoticon, name);
+  }
+
+  Future<void> deleteEmoticon(EmoticonPack pack, Emoticon emoticon) {
+    return pack.deleteEmoticon(emoticon);
+  }
+
+  Future<void> deletePack(EmoticonPack pack) {
+    return selectedClient!.emoticons!.deleteEmoticonPack(pack);
   }
 }

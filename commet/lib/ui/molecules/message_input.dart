@@ -304,12 +304,14 @@ class MessageInputState extends State<MessageInput> {
                           )
                       ]),
                 ),
-                AnimatedContainer(
-                  curve: Curves.easeOutExpo,
-                  duration: const Duration(milliseconds: 500),
-                  height: showEmotePicker ? emotePickerHeight : 0,
-                  child: buildEmojiPicker(),
-                )
+                if (widget.availibleEmoticons != null &&
+                    widget.availibleStickers != null)
+                  AnimatedContainer(
+                    curve: Curves.easeOutExpo,
+                    duration: const Duration(milliseconds: 500),
+                    height: showEmotePicker ? emotePickerHeight : 0,
+                    child: buildEmojiPicker(),
+                  )
               ],
             ),
           ),

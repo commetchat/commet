@@ -9,6 +9,7 @@ import 'emoji_pack.dart';
 abstract class EmoticonComponent {
   List<EmoticonPack> globalPacks();
   List<EmoticonPack> get ownedPacks;
+  bool get canCreatePack;
 
   Stream<int> get onOwnedPackAdded;
 

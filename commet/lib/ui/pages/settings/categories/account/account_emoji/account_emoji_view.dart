@@ -17,20 +17,6 @@ class _AccountEmojiViewState extends State<AccountEmojiView> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        if (widget.personalPacks.isNotEmpty)
-          Padding(
-            padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
-            child: Column(
-              children: widget.personalPacks
-                  .map((e) => EmojiPackEditor(
-                        e,
-                        initiallyExpanded: true,
-                        showDeleteButton: false,
-                        editable: true,
-                      ))
-                  .toList(),
-            ),
-          ),
         tiamat.Panel(
           header: "Global Packs",
           mode: tiamat.TileType.surfaceLow2,

@@ -24,6 +24,7 @@ class _RoomEmojiPackSettingsPageState extends State<RoomEmojiPackSettingsPage> {
       onPackCreated: widget.room.roomEmoticons!.onOwnedPackAdded,
       deletePack: deletePack,
       deleteEmoticon: deleteEmoticon,
+      canCreatePack: widget.room.roomEmoticons!.canCreatePack,
       renameEmoticon: renameEmoticon,
       editable: widget.room.permissions.canEditRoomEmoticons,
     );

@@ -33,8 +33,9 @@ class SettingsCategorySpace implements SettingsCategory {
                   space: space,
                 );
               }),
-        if (space.permissions.canEditRoomEmoticons ||
-            space.emoticons!.ownedPacks.isNotEmpty)
+        if ((space.permissions.canEditRoomEmoticons ||
+                space.emoticons!.ownedPacks.isNotEmpty) &&
+            space.emoticons != null)
           SettingsTab(
               label: T.current.settingsEmoji,
               icon: Icons.emoji_emotions,

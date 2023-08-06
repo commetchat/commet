@@ -28,13 +28,16 @@ class RoomEmojiPackSettingsView extends StatefulWidget {
       EmoticonPack pack, Emoticon emoticon, String name)? renameEmoticon;
 
   final bool editable;
-
+  final bool canCreatePack;
+  final bool defaultExpanded;
   const RoomEmojiPackSettingsView(this.packs,
       {this.createNewPack,
       super.key,
       this.onPackCreated,
       this.deletePack,
       this.editable = true,
+      this.canCreatePack = true,
+      this.defaultExpanded = false,
       this.renameEmoticon,
       this.deleteEmoticon});
 
@@ -84,13 +87,14 @@ class _RoomEmojiPackSettingsViewState extends State<RoomEmojiPackSettingsView> {
                 deletePack: () => deletePack(index),
                 deleteEmoticon: (emoticon) => deleteEmoticon(index, emoticon),
                 editable: widget.editable,
+                initiallyExpanded: widget.defaultExpanded,
                 renameEmoticon: (emoticon, name) =>
                     renameEmoticon(index, emoticon, name),
               ),
             );
           },
         ),
-        if (widget.editable)
+        if (widget.editable && widget.canCreatePack)
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Align(
