@@ -205,9 +205,6 @@ class MatrixRoomEmoticonHelper extends MatrixEmoticonHelper {
 
   @override
   Future<void> setState(String packKey, Map<String, dynamic> content) async {
-    print("Setting state:");
-    print(content);
-
     var event = await room.client.setRoomStateWithKey(
         room.id, "im.ponies.room_emotes", packKey, content);
 
@@ -226,10 +223,10 @@ class MatrixRoomEmoticonHelper extends MatrixEmoticonHelper {
   }
 
   @override
-  Future<void> markAsGlobal(bool isGlobal, String packId) {
-    if (isGlobal) return room.client.addEmoticonRoomPack(room.id, packId);
+  Future<void> markAsGlobal(bool isGlobal, String packKey) {
+    if (isGlobal) return room.client.addEmoticonRoomPack(room.id, packKey);
 
-    return room.client.removeEmoticonRoomPack(room.id, packId);
+    return room.client.removeEmoticonRoomPack(room.id, packKey);
   }
 }
 
