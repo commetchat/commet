@@ -4,7 +4,6 @@ import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/client/permissions.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/client/stale_info.dart';
-import 'package:commet/client/components/emoticon/emoji_pack.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 

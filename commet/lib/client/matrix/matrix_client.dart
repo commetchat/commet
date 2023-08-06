@@ -8,7 +8,6 @@ import 'package:commet/config/build_config.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/pages/matrix/authentication/matrix_uia_request.dart';
-import 'package:commet/client/components/emoticon/emoji_pack.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:crypto/crypto.dart';

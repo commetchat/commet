@@ -5,7 +5,6 @@ import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/client/space.dart';
-import 'package:commet/client/components/emoticon/emoji_pack.dart';
 import 'package:flutter/material.dart';
 
 import 'peer.dart';

@@ -5,7 +5,6 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/client/simulated/simulated_room_permissions.dart';
-import 'package:commet/client/components/emoticon/emoji_pack.dart';
 import 'package:flutter/material.dart';
 
 import '../../utils/rng.dart';
@@ -82,6 +81,5 @@ class SimulatedSpace extends Space {
   }
 
   @override
-  // TODO: implement emoticons
   EmoticonComponent? get emoticons => null;
 }

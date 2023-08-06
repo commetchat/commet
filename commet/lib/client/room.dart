@@ -1,12 +1,8 @@
 import 'dart:async';
-import 'dart:typed_data';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/emoticon/emoticon_component.dart';
-import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/utils/gif_search/gif_search_result.dart';
 import 'package:flutter/material.dart';
-
-import 'components/emoticon/emoji_pack.dart';
 import 'attachment.dart';
 import 'permissions.dart';
 

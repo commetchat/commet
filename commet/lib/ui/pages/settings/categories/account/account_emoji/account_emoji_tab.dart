@@ -46,7 +46,7 @@ class _AccountEmojiTabState extends State<AccountEmojiTab> {
 
   Widget buildEmojiView(BuildContext context) {
     if (selectedClient?.emoticons == null) {
-      return Placeholder();
+      return const Placeholder();
     }
 
     return AccountEmojiView(selectedClient!.emoticons!.globalPacks(),

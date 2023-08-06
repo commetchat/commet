@@ -28,7 +28,6 @@ class MatrixEmoticonComponent implements EmoticonComponent {
 
   @override
   Stream<int> get onOwnedPackAdded {
-    print("getting onOwnedPack");
     return _onOwnedPackAdded.stream;
   }
 
@@ -51,7 +50,6 @@ class MatrixEmoticonComponent implements EmoticonComponent {
     var data = await helper.createEmoticonPack(name, avatarData);
     if (data != null) {
       var pack = MatrixEmoticonPack(data['key'], helper);
-      print("Added pack!");
       ownedPacks.add(pack);
       _onOwnedPackAdded.add(ownedPacks.length - 1);
     }

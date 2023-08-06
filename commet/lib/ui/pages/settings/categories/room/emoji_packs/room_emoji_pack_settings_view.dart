@@ -51,8 +51,6 @@ class _RoomEmojiPackSettingsViewState extends State<RoomEmojiPackSettingsView> {
   @override
   void initState() {
     itemCount = widget.packs.length;
-    print("onPackCreated:");
-    print(widget.onPackCreated);
     onItemAddedSubscription = widget.onPackCreated?.listen(onPackAdded);
     super.initState();
   }
@@ -64,7 +62,6 @@ class _RoomEmojiPackSettingsViewState extends State<RoomEmojiPackSettingsView> {
   }
 
   void onPackAdded(int index) {
-    print("OnPackAdded called");
     setState(() {
       _listKey.currentState?.insertItem(index);
     });

@@ -46,12 +46,9 @@ abstract class MatrixEmoticonHelper {
     for (var pair in states.entries) {
       if (pair.value.isEmpty) {
         stateKey = pair.key;
-        print("Found existing key: $stateKey");
         break;
       }
     }
-
-    print("Creating pack: $stateKey");
 
     await setState(stateKey, content);
     await refreshState(stateKey);
@@ -171,7 +168,6 @@ class MatrixRoomEmoticonHelper extends MatrixEmoticonHelper {
   Map<String, dynamic> getState(String packKey) {
     var states = getAllStates();
     var data = states[packKey];
-    print(data);
 
     return data;
   }
@@ -214,12 +210,8 @@ class MatrixRoomEmoticonHelper extends MatrixEmoticonHelper {
 
   @override
   Future<void> setState(String packKey, Map<String, dynamic> content) async {
-    print("Setting state: ");
-    print(content);
     await room.client.setRoomStateWithKey(
         room.id, "im.ponies.room_emotes", packKey, content);
-
-    print("Done");
   }
 
   @override
@@ -283,17 +275,12 @@ class MatrixPersonalEmoticonHelper extends MatrixEmoticonHelper {
 
   @override
   Future<void> setState(String packKey, Map<String, dynamic> content) {
-    print("Setting personal emoticon data: ");
-    print(content);
-
     return client.getMatrixClient().setAccountData(
         client.getMatrixClient().userID!, "im.ponies.user_emotes", content);
   }
 
   @override
   ImageProvider? getDefaultImage() {
-    print("Getting default image:");
-    print(userAvatar);
     return userAvatar;
   }
 
@@ -355,9 +342,6 @@ class MatrixEmoticonPack implements EmoticonPack {
 
   MatrixEmoticonPack(this.identifier, this.helper) {
     var content = helper.getState(identifier);
-    print("Got content:");
-    print(content);
-
     displayName = "";
 
     var info = content['pack'] as Map<String, dynamic>?;
