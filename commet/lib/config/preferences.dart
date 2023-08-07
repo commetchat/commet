@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:commet/config/build_config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
@@ -16,6 +18,9 @@ class Preferences {
   static const String _minimizeOnCloseKey = "minimize_on_close";
   static const String _developerMode = "developer_mode";
   static const String _tenorGifSearch = "enable_tenor_gif_search";
+
+  final StreamController _onSettingChanged = StreamController.broadcast();
+  Stream get onSettingChanged => _onSettingChanged.stream;
 
   Future<void> init() async {
     _preferences = await SharedPreferences.getInstance();
@@ -74,6 +79,7 @@ class Preferences {
 
   void setAppScale(double scale) {
     _preferences!.setDouble(appScaleKey, scale);
+    _onSettingChanged.add(null);
   }
 
   Future<void> clear() async {
@@ -89,12 +95,14 @@ class Preferences {
     }
 
     _preferences!.setBool(_minimizeOnCloseKey, value);
+    _onSettingChanged.add(null);
   }
 
-  bool get developerMode => _preferences!.getBool(_developerMode) ?? false;
+  bool get developerMode => _preferences?.getBool(_developerMode) ?? false;
 
   Future<void> setDeveloperMode(bool value) async {
     await _preferences!.setBool(_developerMode, value);
+    _onSettingChanged.add(null);
   }
 
   bool get tenorGifSearchEnabled =>
@@ -102,5 +110,6 @@ class Preferences {
 
   Future<void> setTenorGifSearch(bool value) async {
     await _preferences!.setBool(_tenorGifSearch, value);
+    _onSettingChanged.add(null);
   }
 }

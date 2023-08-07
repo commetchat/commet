@@ -5,6 +5,7 @@ import 'package:commet/main.dart';
 import 'package:commet/ui/pages/settings/categories/app/advanced_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/app/general_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/app/window_settings.dart';
+import 'package:commet/ui/pages/settings/categories/developer/developer_settings_page.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
 import 'package:commet/ui/pages/settings/settings_tab.dart';
 import 'package:flutter/material.dart' as m;
@@ -42,6 +43,14 @@ class SettingsCategoryApp implements SettingsCategory {
             pageBuilder: (context) {
               return const AdvancedSettingsPage();
             }),
+        if (preferences.developerMode)
+          SettingsTab(
+            label: "Diagnostics",
+            icon: m.Icons.bug_report,
+            pageBuilder: (context) {
+              return const DeveloperSettingsPage();
+            },
+          )
       ]);
 
   @override
