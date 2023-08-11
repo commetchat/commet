@@ -5,20 +5,14 @@ import 'package:commet/utils/emoji/emoji_matcher.dart';
 import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:flutter/material.dart';
 
-import '../../../utils/text_utils.dart';
+import '../text_utils.dart';
 
-abstract class Emoticon {
+abstract class Emoji {
   ImageProvider get image;
-  String get slug;
   String? get shortcode;
+  String get identifier;
 
-  static Map<String, Emoticon> knownEmoji = {};
-
-  bool get isMarkedEmoji;
-  bool get isMarkedSticker;
-
-  bool get isSticker;
-  bool get isEmoji;
+  static Map<String, Emoji> knownEmoji = {};
 
   static List<InlineSpan> emojify(List<InlineSpan> span,
       {double? emojiHeight}) {
@@ -36,7 +30,7 @@ abstract class Emoticon {
         builder: ((matchedText, style) {
       return WidgetSpan(
           child: EmojiWidget(
-        UnicodeEmoticon(matchedText),
+        UnicodeEmoji(matchedText),
         height: style != null && style.fontSize != null
             ? style.fontSize
             : emojiHeight,

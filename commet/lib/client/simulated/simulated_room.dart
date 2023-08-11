@@ -1,13 +1,12 @@
 import 'dart:math';
 
 import 'package:commet/client/client.dart';
-import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/client/simulated/simulated_peer.dart';
 import 'package:commet/client/simulated/simulated_room_permissions.dart';
 import 'package:commet/client/simulated/simulated_timeline.dart';
-import 'package:commet/utils/gif_search/gif_search_result.dart';
 import 'package:commet/utils/rng.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 
 import '../attachment.dart';
 
@@ -26,7 +25,7 @@ class SimulatedRoom extends Room {
   final List<Peer> _participants = List.empty(growable: true);
 
   @override
-  Iterable<String> get memberIds => _participants.map((e) => e.identifier);
+  Iterable<Peer> get members => _participants;
 
   @override
   int highlightedNotificationCount = 0;
@@ -39,12 +38,6 @@ class SimulatedRoom extends Room {
 
   @override
   List<Peer> get typingPeers => List.from([alice, bob]);
-
-  @override
-  RoomEmoticonComponent? get roomEmoticons => null;
-
-  @override
-  String get developerInfo => "";
 
   SimulatedRoom(displayName, client, {bool isDm = false})
       : super(RandomUtils.getRandomString(20), client) {
@@ -89,7 +82,7 @@ class SimulatedRoom extends Room {
     e.status = TimelineEventStatus.sent;
     e.type = EventType.message;
     e.originServerTs = DateTime.now();
-    e.senderId = client.user!.identifier;
+    e.sender = client.user!;
     e.body = message;
     timeline!.insertEvent(0, e);
     return e;
@@ -104,7 +97,7 @@ class SimulatedRoom extends Room {
     e.status = TimelineEventStatus.synced;
     e.type = EventType.message;
     e.originServerTs = DateTime.now();
-    e.senderId = sender.identifier;
+    e.sender = sender;
     e.body = RandomUtils.getRandomSentence(Random().nextInt(10) + 10);
     return e;
   }
@@ -146,15 +139,4 @@ class SimulatedRoom extends Room {
 
   @override
   Future<void> setTypingStatus(bool typing) async {}
-
-  @override
-  Color getColorOfUser(String userId) {
-    return Colors.red;
-  }
-
-  @override
-  Future<TimelineEvent?> sendGif(
-      GifSearchResult gif, TimelineEvent? inReplyTo) {
-    throw UnimplementedError();
-  }
 }

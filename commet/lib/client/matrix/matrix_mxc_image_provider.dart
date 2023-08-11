@@ -11,7 +11,6 @@ class MatrixMxcImage extends LODImageProvider {
       {String? blurhash,
       bool? doThumbnail,
       bool? doFullres,
-      bool autoLoadFullRes = true,
       Event? matrixEvent})
       : super(
             blurhash: blurhash,
@@ -21,8 +20,7 @@ class MatrixMxcImage extends LODImageProvider {
                 : null,
             loadFullRes: (doFullres == null || doFullres == true)
                 ? () => loadMatrixFullRes(matrixClient, identifier, matrixEvent)
-                : null,
-            autoLoadFullRes: autoLoadFullRes);
+                : null);
 
   static String getThumbnailIdentifier(Uri uri) {
     return "matrix_thumbnail-$uri";

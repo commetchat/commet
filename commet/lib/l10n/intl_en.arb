@@ -55,10 +55,6 @@
   "spaceSettingsHeader": "Space Settings",
   "roomSettingsHeader": "Room Settings",
   "roomSettingsAppearance": "Appearance",
-  "settingsEmoji": "Emoji",
-  "settingsSecurity": "Security",
-  "settingsDeveloper": "Developer",
-  "settingsGeneral": "General",
   "roomNamePrompt": "Room Name",
   "enableEncryptionPrompt": "Enable Encryption",
   "encryptionCannotBeDisabled": "If enabled, this cannot be disabled later",
@@ -68,7 +64,5 @@
   "singleUserTyping": "{username1} is typing...",
   "twoUsersTyping": "{username1} and {username2} are typing...",
   "threeUsersTyping": "{username1}, {username2}, and {username3} are typing...",
-  "multipleUsersTyping": "{username1}, {username2}, {username3} and others are typing...",
-  "promptEmoticonPackDelete": "Are you sure you want to delete the **{packName}** pack?",
-  "promptEmoticonDelete": "Are you sure you want to delete **{emoteName}**?"
+  "multipleUsersTyping": "{username1}, {username2}, {username3} and others are typing..."
 }

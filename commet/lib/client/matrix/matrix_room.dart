@@ -1,32 +1,17 @@
-import 'dart:convert';
-import 'dart:ui';
-import 'package:commet/client/matrix/components/emoticon/matrix_emoticon_component.dart';
 import 'package:commet/client/matrix/matrix_attachment.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/matrix/matrix_peer.dart';
 import 'package:commet/client/matrix/matrix_room_permissions.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
-import 'package:commet/utils/gif_search/gif_search_result.dart';
-import 'package:commet/utils/image_utils.dart';
 import 'package:commet/utils/mime.dart';
-import 'package:flutter/material.dart';
-import 'package:html_unescape/html_unescape.dart';
-
-// ignore: implementation_imports
-import 'package:matrix/src/utils/markdown.dart' as mx_markdown;
 
 import '../attachment.dart';
 import '../client.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
-import 'components/emoticon/matrix_emoticon_pack.dart';
-
 class MatrixRoom extends Room {
   late matrix.Room _matrixRoom;
-
-  @override
-  late final MatrixRoomEmoticonComponent roomEmoticons;
 
   @override
   bool get isMember => _matrixRoom.membership == matrix.Membership.join;
@@ -40,21 +25,14 @@ class MatrixRoom extends Room {
   @override
   int get notificationCount => _matrixRoom.notificationCount;
 
-  matrix.Room get matrixRoom => _matrixRoom;
-
   @override
-  Iterable<String> get memberIds =>
-      _matrixRoom.getParticipants().map((e) => e.id);
+  Iterable<Peer> get members => getMembers();
 
   @override
   List<Peer> get typingPeers => _matrixRoom.typingUsers
       .where((element) => element.id != client.user!.identifier)
-      .map((e) => client.fetchPeer(e.id))
+      .map((e) => client.getPeer(e.id)!)
       .toList();
-
-  @override
-  String get developerInfo =>
-      const JsonEncoder.withIndent('  ').convert(_matrixRoom.states);
 
   @override
   PushRule get pushRule {
@@ -73,8 +51,7 @@ class MatrixRoom extends Room {
     _matrixRoom = room;
 
     if (room.avatar != null) {
-      avatar = MatrixMxcImage(room.avatar!, _matrixRoom.client,
-          autoLoadFullRes: false);
+      avatar = MatrixMxcImage(room.avatar!, _matrixRoom.client);
     }
 
     isDirectMessage = _matrixRoom.isDirectChat;
@@ -85,9 +62,8 @@ class MatrixRoom extends Room {
 
     displayName = room.getLocalizedDisplayname();
 
-    // Note this is not necessarily all users, this has the most effect on smaller rooms
-    // Where it is more likely that we are preloading important users
     var users = room.getParticipants();
+
     for (var user in users) {
       if (!this.client.peerExists(user.id)) {
         this.client.addPeer(MatrixPeer(matrixClient, user.id));
@@ -98,12 +74,19 @@ class MatrixRoom extends Room {
 
     _matrixRoom.onUpdate.stream.listen(onMatrixRoomUpdate);
 
-    roomEmoticons = MatrixRoomEmoticonComponent(
-        MatrixRoomEmoticonHelper(_matrixRoom),
-        this.client as MatrixClient,
-        this);
-
     permissions = MatrixRoomPermissions(_matrixRoom);
+  }
+
+  Iterable<Peer> getMembers() {
+    var users = _matrixRoom.getParticipants();
+
+    for (var user in users) {
+      if (!client.peerExists(user.id)) {
+        client.addPeer(MatrixPeer(_matrixRoom.client, user.id));
+      }
+    }
+
+    return users.map((e) => client.getPeer(e.id)!);
   }
 
   @override
@@ -120,19 +103,10 @@ class MatrixRoom extends Room {
     await attachment.resolve();
     if (attachment.data == null) return null;
 
-    if (attachment.mimeType == "image/bmp") {
-      var img = MemoryImage(attachment.data!);
-      var image = await ImageUtils.imageProviderToImage(img);
-      var bytes = await image.toByteData(format: ImageByteFormat.png);
-      attachment.data = bytes!.buffer.asUint8List();
-      attachment.mimeType = "image/png";
-    }
-
     if (Mime.imageTypes.contains(attachment.mimeType)) {
       return await matrix.MatrixImageFile.create(
           bytes: attachment.data!,
           name: attachment.name ?? "unknown",
-          mimeType: attachment.mimeType,
           nativeImplementations: (client as MatrixClient).nativeImplentations);
     }
 
@@ -161,26 +135,7 @@ class MatrixRoom extends Room {
     }
 
     if (message != null && message.trim().isNotEmpty) {
-      // String? id = await _matrixRoom.sendTextEvent(message,
-      //     inReplyTo: replyingTo, editEventId: replaceEvent?.eventId);
-
-      final event = <String, dynamic>{
-        'msgtype': matrix.MessageTypes.Text,
-        'body': message
-      };
-
-      final html = mx_markdown.markdown(message,
-          getEmotePacks: () =>
-              roomEmoticons.getEmotePacksFlat(matrix.ImagePackUsage.emoticon),
-          getMention: _matrixRoom.getMention);
-
-      if (HtmlUnescape().convert(html.replaceAll(RegExp(r'<br />\n?'), '\n')) !=
-          event['body']) {
-        event['format'] = 'org.matrix.custom.html';
-        event['formatted_body'] = html;
-      }
-
-      var id = await _matrixRoom.sendEvent(event,
+      String? id = await _matrixRoom.sendTextEvent(message,
           inReplyTo: replyingTo, editEventId: replaceEvent?.eventId);
 
       if (id != null) {
@@ -204,6 +159,7 @@ class MatrixRoom extends Room {
 
   void onMatrixRoomUpdate(String event) async {
     displayName = _matrixRoom.getLocalizedDisplayname();
+
     onUpdate.add(null);
   }
 
@@ -230,46 +186,5 @@ class MatrixRoom extends Room {
   @override
   Future<void> setTypingStatus(bool typing) async {
     await _matrixRoom.setTyping(typing, timeout: 2000);
-  }
-
-  @override
-  Color getColorOfUser(String userId) {
-    return MatrixPeer.hashColor(userId);
-  }
-
-  @override
-  Future<TimelineEvent?> sendGif(
-      GifSearchResult gif, TimelineEvent? inReplyTo) async {
-    var response = await _matrixRoom.client.httpClient.get(gif.fullResUrl);
-    if (response.statusCode == 200) {
-      var data = response.bodyBytes;
-
-      matrix.Event? replyingTo;
-      var uri = await _matrixRoom.client
-          .uploadContent(data, filename: "sticker", contentType: "image/gif");
-
-      var content = {
-        "body": "gif",
-        "url": uri.toString(),
-        "info": {
-          "w": gif.x.toInt(),
-          "h": gif.y.toInt(),
-          "mimetype": "image/gif"
-        }
-      };
-
-      if (inReplyTo != null) {
-        replyingTo = await _matrixRoom.getEventById(inReplyTo.eventId);
-      }
-
-      var id = await _matrixRoom.sendEvent(content,
-          type: matrix.EventTypes.Sticker, inReplyTo: replyingTo);
-
-      if (id != null) {
-        var event = await _matrixRoom.getEventById(id);
-        return (timeline as MatrixTimeline).convertEvent(event!);
-      }
-    }
-    throw UnimplementedError();
   }
 }

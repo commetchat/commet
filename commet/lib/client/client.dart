@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/client/space.dart';
@@ -54,18 +53,14 @@ abstract class Client {
   final Map<String, Room> _directMessages = {};
 
   List<Room> directMessages = List.empty(growable: true);
-  List<Room> singleRooms = List.empty(growable: true);
-
   List<Room> rooms = List.empty(growable: true);
   List<Space> spaces = List.empty(growable: true);
   List<Peer> peers = List.empty(growable: true);
 
-  EmoticonComponent? emoticons;
-
   late StreamController<int> onRoomAdded = StreamController.broadcast();
   late StreamController<int> onSpaceAdded = StreamController.broadcast();
   late StreamController<int> onPeerAdded = StreamController.broadcast();
-  late StreamController<int> onEmojiPackAdded = StreamController.broadcast();
+
   late StreamController<void> onSync = StreamController.broadcast();
 
   bool spaceExists(String identifier) {
@@ -88,14 +83,8 @@ abstract class Client {
     return _spaces[identifier];
   }
 
-  /// Fetches a peer from the server, handling any caching
-  Peer fetchPeer(String identifier) {
-    if (_peers.containsKey(identifier)) return _peers[identifier]!;
-
-    var result = fetchPeerInternal(identifier);
-    _peers[identifier] = result;
-
-    return result;
+  Peer? getPeer(String identifier) {
+    return _peers[identifier];
   }
 
   void addRoom(Room room) {
@@ -116,10 +105,6 @@ abstract class Client {
             .any((element) => element.roomId == room.identifier)) {
           space.addRoom(room);
         }
-      }
-
-      if (!spaces.any((space) => space.containsRoom(room.identifier))) {
-        singleRooms.add(room);
       }
 
       onRoomAdded.add(index);
@@ -178,11 +163,4 @@ abstract class Client {
   Future<void> close() async {}
 
   Iterable<Room> getEligibleRoomsForSpace(Space space);
-
-  Widget buildDebugInfo();
-
-  @protected
-
-  /// Fetches a peer from the server. does not need to implement caching
-  Peer fetchPeerInternal(String identifier);
 }

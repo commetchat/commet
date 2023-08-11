@@ -9,7 +9,7 @@ class SimulatedTimeline extends Timeline {
   void markAsRead(TimelineEvent event) {}
 
   @override
-  Iterable<String>? get receipts => null;
+  Iterable<Peer>? get receipts => null;
 
   SimulatedTimeline(
     Client client,

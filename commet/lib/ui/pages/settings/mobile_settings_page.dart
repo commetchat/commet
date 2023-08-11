@@ -100,31 +100,29 @@ class SettingsSubPage extends StatelessWidget {
   final Widget Function(BuildContext) builder;
   @override
   Widget build(BuildContext context) {
-    return m.Material(
-      child: Tile.low1(
-        child: SafeArea(
-          child: m.Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Stack(
-              children: [
-                ListView(
-                  children: [
-                    const SizedBox(
-                      height: 70,
-                    ),
-                    builder(context)
-                  ],
-                ),
-                m.Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: CircleButton(
-                    radius: 25,
-                    icon: m.Icons.arrow_back,
-                    onPressed: () => Navigator.of(context).pop(),
+    return Tile.low1(
+      child: SafeArea(
+        child: m.Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Stack(
+            children: [
+              ListView(
+                children: [
+                  const SizedBox(
+                    height: 70,
                   ),
-                )
-              ],
-            ),
+                  builder(context)
+                ],
+              ),
+              m.Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: CircleButton(
+                  radius: 25,
+                  icon: m.Icons.arrow_back,
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              )
+            ],
           ),
         ),
       ),

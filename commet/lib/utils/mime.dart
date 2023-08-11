@@ -1,25 +1,14 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart';
 
-import 'package:mime/mime.dart' as mime;
-
 class Mime {
-  static const displayableTypes = {
-    "image/jpeg",
-    "image/png",
-    "image/gif",
-    "image/bmp",
-    "image/webp"
-  };
+  static const displayableTypes = {"image/jpeg", "image/png", "image/gif"};
 
   static const imageTypes = {
     "image/jpeg",
     "image/png",
     "image/gif",
-    "image/webp",
-    "image/bmp",
+    "image/webp"
   };
 
   static const videoTypes = {"video/mp4", "video/mpeg"};
@@ -49,12 +38,5 @@ class Mime {
     if (archiveTypes.contains(mimeType)) return Icons.folder_zip_outlined;
 
     return Icons.file_present;
-  }
-
-  static String? lookupType(String filepath, {Uint8List? data}) {
-    var resolver = mime.MimeTypeResolver();
-    resolver.addMagicNumber([0x42, 0x4d], "image/bmp");
-
-    return resolver.lookup(filepath, headerBytes: data);
   }
 }

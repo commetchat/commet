@@ -32,13 +32,11 @@ class IconButton extends StatefulWidget {
       this.size = 15,
       required this.icon,
       this.onPressed,
-      this.backgroundColor = material.Colors.transparent,
-      this.iconColor});
+      this.backgroundColor = material.Colors.transparent});
   final double size;
   final Function? onPressed;
   final IconData icon;
   final Color backgroundColor;
-  final Color? iconColor;
 
   @override
   State<IconButton> createState() => _IconButtonState();
@@ -73,10 +71,9 @@ class _IconButtonState extends State<IconButton> {
                     child: Icon(
                       widget.icon,
                       size: widget.size,
-                      color: widget.iconColor ??
-                          (hovered
-                              ? material.Theme.of(context).colorScheme.onPrimary
-                              : null),
+                      color: hovered
+                          ? material.Theme.of(context).colorScheme.onPrimary
+                          : null,
                     )),
               ),
             ),

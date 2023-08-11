@@ -1,4 +1,3 @@
-import 'package:commet/client/client.dart';
 import 'package:flutter/material.dart' as material;
 import 'package:flutter/widgets.dart';
 import 'package:tiamat/tiamat.dart';
@@ -6,68 +5,41 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 
-@WidgetbookUseCase(name: 'No Avatar', type: UserPanelView)
+@WidgetbookUseCase(name: 'No Avatar', type: UserPanel)
 @Deprecated("widgetbook")
 Widget wbUserPanelDefault(BuildContext context) {
-  return const Center(child: UserPanelView(displayName: "User"));
+  return const Center(child: UserPanel(displayName: "User"));
 }
 
-@WidgetbookUseCase(name: 'With Avatar', type: UserPanelView)
+@WidgetbookUseCase(name: 'With Avatar', type: UserPanel)
 @Deprecated("widgetbook")
 Widget wbUserPanelWithAvatar(BuildContext context) {
   return const Center(
-      child: UserPanelView(
+      child: UserPanel(
     displayName: "User",
     avatar: AssetImage("assets/images/placeholder/generic/checker_purple.png"),
   ));
 }
 
-class UserPanel extends material.StatefulWidget {
-  const UserPanel(this.peer, {super.key, this.userColor});
-  final Peer peer;
-  final Color? userColor;
-
-  @override
-  State<UserPanel> createState() => _UserPanelState();
-}
-
-class _UserPanelState extends material.State<UserPanel> {
-  @override
-  void initState() {
-    widget.peer.loading?.then((value) {
-      if (mounted) setState(() {});
-    });
-
-    super.initState();
-  }
-
-  @override
-  material.Widget build(material.BuildContext context) {
-    return UserPanelView(
-      displayName: widget.peer.displayName,
-      avatar: widget.peer.avatar,
-      detail: widget.peer.detail,
-      color: widget.userColor,
-    );
-  }
-}
-
-class UserPanelView extends material.StatelessWidget {
-  const UserPanelView(
+class UserPanel extends StatefulWidget {
+  const UserPanel(
       {super.key,
       this.avatar,
       required this.displayName,
       this.color,
       this.detail,
-      this.padding,
       this.onClicked});
   final ImageProvider? avatar;
   final String displayName;
   final Color? color;
   final String? detail;
-  final EdgeInsets? padding;
   final void Function()? onClicked;
 
+  @override
+  State<UserPanel> createState() => _UserPanelState();
+}
+
+class _UserPanelState extends State<UserPanel> {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
@@ -76,35 +48,30 @@ class UserPanelView extends material.StatelessWidget {
         color: material.Colors.transparent,
         child: material.InkWell(
           splashColor: material.Theme.of(context).highlightColor,
-          onTap: onClicked,
+          onTap: widget.onClicked,
           child: Padding(
-            padding: padding ?? const EdgeInsets.fromLTRB(0, 3, 0, 3),
+            padding: const EdgeInsets.fromLTRB(0, 3, 0, 3),
             child: Row(
-              mainAxisSize: MainAxisSize.min,
               children: [
                 Avatar.medium(
-                  image: avatar,
-                  placeholderText: displayName,
+                  image: widget.avatar,
+                  placeholderText: widget.displayName,
                 ),
-                Flexible(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: Container(
-                      alignment: Alignment.centerLeft,
-                      child: Column(
-                        mainAxisSize: material.MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          tiamat.Text.name(
-                            displayName,
-                            color: color,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          if (detail != null) tiamat.Text.tiny(detail!),
-                        ],
-                      ),
+                Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Container(
+                    alignment: Alignment.centerLeft,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        tiamat.Text.name(
+                          widget.displayName,
+                          color: widget.color,
+                        ),
+                        if (widget.detail != null)
+                          tiamat.Text.tiny(widget.detail!),
+                      ],
                     ),
                   ),
                 )

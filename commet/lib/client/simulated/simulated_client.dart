@@ -149,14 +149,4 @@ class SimulatedClient extends Client {
   Iterable<Room> getEligibleRoomsForSpace(Space space) {
     return rooms.where((room) => !space.containsRoom(room.identifier));
   }
-
-  @override
-  Peer fetchPeerInternal(String identifier) {
-    return SimulatedPeer(this, identifier, identifier, null);
-  }
-
-  @override
-  Widget buildDebugInfo() {
-    return const Placeholder();
-  }
 }

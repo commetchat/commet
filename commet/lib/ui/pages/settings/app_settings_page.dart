@@ -11,7 +11,7 @@ class AppSettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return SettingsPage(settings: [
       SettingsCategoryAccount(),
-      SettingsCategoryApp(),
+      SettingsCategoryAppearence(),
     ]);
   }
 }

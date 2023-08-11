@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:commet/client/client_manager.dart';
-import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/client/matrix/extensions/matrix_client_extensions.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/config/app_config.dart';
@@ -16,23 +15,16 @@ import 'dart:convert'; // for the utf8.encode method
 import 'package:commet/client/client.dart';
 import 'package:commet/client/matrix/matrix_peer.dart';
 import 'package:commet/utils/rng.dart';
-import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart' as matrix;
 import 'package:matrix/encryption.dart';
 
-import '../../ui/atoms/code_block.dart';
 import '../../ui/pages/matrix/verification/matrix_verification_page.dart';
-import 'components/emoticon/matrix_emoticon_component.dart';
-import 'components/emoticon/matrix_emoticon_pack.dart';
 import 'matrix_room.dart';
 import 'matrix_space.dart';
 
 class MatrixClient extends Client {
   late matrix.Client _matrixClient;
-
   Future? firstSync;
-  MatrixEmoticonComponent? _emoticons;
-
   matrix.ServerConfig? config;
 
   matrix.NativeImplementations get nativeImplentations => BuildConfig.WEB
@@ -45,9 +37,6 @@ class MatrixClient extends Client {
       _matrixClient = _createMatrixClient(name);
     }
   }
-
-  @override
-  EmoticonComponent? get emoticons => _emoticons;
 
   static String hash(String name) {
     var bytes = utf8.encode(name);
@@ -62,29 +51,24 @@ class MatrixClient extends Client {
   int? get maxFileSize => config?.mUploadSize;
 
   static Future<void> loadFromDB(ClientManager manager) async {
-    await diagnostics.timeAsync("loadFromDB", () async {
-      var clients = preferences.getRegisteredMatrixClients();
+    var clients = preferences.getRegisteredMatrixClients();
 
-      List<Future> futures = List.empty(growable: true);
+    List<Future> futures = List.empty(growable: true);
 
-      if (clients != null) {
-        for (var clientName in clients) {
-          var client = MatrixClient(name: clientName, identifier: clientName);
-          try {
-            manager.addClient(client);
-            futures.add(diagnostics.timeAsync("Initializing client $clientName",
-                () async {
-              await client.init(true);
-            }));
-          } catch (_) {
-            manager.removeClient(client);
-            preferences.removeRegisteredMatrixClient(clientName);
-          }
+    if (clients != null) {
+      for (var clientName in clients) {
+        var client = MatrixClient(name: clientName, identifier: clientName);
+        try {
+          manager.addClient(client);
+          futures.add(client.init(true));
+        } catch (_) {
+          manager.removeClient(client);
+          preferences.removeRegisteredMatrixClient(clientName);
         }
       }
+    }
 
-      await Future.wait(futures);
-    });
+    await Future.wait(futures);
   }
 
   static matrix.NativeImplementations get nativeImplementations =>
@@ -95,11 +79,9 @@ class MatrixClient extends Client {
   @override
   Future<void> init(bool loadingFromCache) async {
     if (!_matrixClient.isLogged()) {
-      await diagnostics.timeAsync("Matrix client init", () async {
-        await _matrixClient.init(
-            waitForFirstSync: !loadingFromCache,
-            waitUntilLoadCompletedLoaded: true);
-      });
+      await _matrixClient.init(
+          waitForFirstSync: !loadingFromCache,
+          waitUntilLoadCompletedLoaded: true);
       user = MatrixPeer(_matrixClient, _matrixClient.userID!);
       addPeer(user!);
 
@@ -115,8 +97,6 @@ class MatrixClient extends Client {
 
     _updateRoomslist();
     _updateSpacesList();
-    _emoticons =
-        MatrixEmoticonComponent(MatrixPersonalEmoticonHelper(this), this);
 
     _matrixClient.onKeyVerificationRequest.stream.listen((event) {
       AdaptiveDialog.show(navigator.currentContext!,
@@ -143,7 +123,6 @@ class MatrixClient extends Client {
         KeyVerificationMethod.emoji,
         KeyVerificationMethod.numbers
       },
-      importantStateEvents: {"im.ponies.room_emotes"},
       supportedLoginTypes: {matrix.AuthenticationTypes.password},
       nativeImplementations: nativeImplementations,
       logLevel:
@@ -186,7 +165,7 @@ class MatrixClient extends Client {
               password: password,
               identifier:
                   matrix.AuthenticationUserIdentifier(user: userIdentifier));
-          if (result.accessToken.isNotEmpty) {
+          if (result.accessToken != null) {
             loginResult = LoginResult.success;
           } else {
             loginResult = LoginResult.failed;
@@ -335,35 +314,5 @@ class MatrixClient extends Client {
   @override
   Iterable<Room> getEligibleRoomsForSpace(Space space) {
     return rooms.where((room) => !space.containsRoom(room.identifier));
-  }
-
-  @override
-  Peer fetchPeerInternal(String identifier) {
-    var peer = MatrixPeer(_matrixClient, identifier);
-    return peer;
-  }
-
-  @override
-  Widget buildDebugInfo() {
-    var data = _matrixClient.accountData.copy();
-
-    // is this really necessary? i dont know
-    for (var event in data.values) {
-      if (event.type.startsWith("m.secret_storage.key") ||
-          event.type == matrix.EventTypes.SecretStorageDefaultKey ||
-          event.type == matrix.EventTypes.MegolmBackup ||
-          event.type.startsWith("m.cross_signing")) {
-        for (var key in event.content.keys) {
-          event.content[key] = "[REDACTED BY COMMET]";
-        }
-      }
-    }
-
-    return SelectionArea(
-      child: Codeblock(
-        language: "json",
-        text: const JsonEncoder.withIndent('  ').convert(data),
-      ),
-    );
   }
 }

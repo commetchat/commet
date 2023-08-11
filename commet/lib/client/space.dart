@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:commet/client/client.dart';
-import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/client/permissions.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/client/stale_info.dart';
@@ -27,10 +26,6 @@ abstract class Space {
   PushRule get pushRule;
 
   late RoomVisibility visibility = RoomVisibility.private;
-
-  EmoticonComponent? get emoticons;
-
-  String get developerInfo;
 
   int get notificationCount =>
       rooms.where((element) => element.pushRule == PushRule.notify).fold(

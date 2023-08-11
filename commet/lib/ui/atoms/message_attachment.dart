@@ -21,10 +21,9 @@ class MessageAttachment extends StatefulWidget {
 
 class _MessageAttachmentState extends State<MessageAttachment> {
   late Key videoPlayerKey;
-  bool isFullscreen = false;
   @override
   void initState() {
-    videoPlayerKey = GlobalKey();
+    videoPlayerKey = UniqueKey();
     super.initState();
   }
 
@@ -93,35 +92,25 @@ class _MessageAttachmentState extends State<MessageAttachment> {
                 width: 500,
                 child: AspectRatio(
                     aspectRatio: attachment.aspectRatio,
-                    child: isFullscreen
-                        ? null
-                        : VideoPlayer(
-                            attachment.videoFile,
-                            thumbnail: attachment.thumbnail,
-                            fileName: attachment.name,
-                            canGoFullscreen: true,
-                            onFullscreen: fullscreenVideo,
-                            key: videoPlayerKey,
-                          )))),
+                    child: VideoPlayer(
+                      attachment.videoFile,
+                      thumbnail: attachment.thumbnail,
+                      fileName: attachment.name,
+                      canGoFullscreen: true,
+                      onFullscreen: fullscreenVideo,
+                    )))),
       ),
     );
   }
 
   void fullscreenVideo() {
     var attachment = (widget.attachment as VideoAttachment);
-    setState(() {
-      isFullscreen = true;
-    });
-    Lightbox.show(context,
-            video: attachment.videoFile,
-            aspectRatio: attachment.aspectRatio,
-            thumbnail: attachment.thumbnail,
-            key: videoPlayerKey)
-        .then((value) {
-      setState(() {
-        isFullscreen = false;
-      });
-    });
+    Lightbox.show(
+      context,
+      video: attachment.videoFile,
+      aspectRatio: attachment.aspectRatio,
+      thumbnail: attachment.thumbnail,
+    );
   }
 
   Widget buildFile(IconData icon, String fileName, int? fileSize) {

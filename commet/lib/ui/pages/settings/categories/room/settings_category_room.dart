@@ -1,9 +1,6 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/generated/l10n.dart';
-import 'package:commet/main.dart';
 import 'package:commet/ui/pages/settings/categories/room/appearance/room_appearance_settings_page.dart';
-import 'package:commet/ui/pages/settings/categories/room/developer/room_developer_settings_view.dart';
-import 'package:commet/ui/pages/settings/categories/room/emoji_packs/room_emoji_pack_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/room/general/room_general_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/room/security/room_security_settings_page.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
@@ -17,7 +14,7 @@ class SettingsCategoryRoom implements SettingsCategory {
   @override
   List<SettingsTab> get tabs => List.from([
         SettingsTab(
-          label: T.current.settingsGeneral,
+          label: "General",
           icon: Icons.settings,
           pageBuilder: (context) {
             return RoomGeneralSettingsPage(
@@ -36,28 +33,12 @@ class SettingsCategoryRoom implements SettingsCategory {
               }),
         if (room.permissions.canEditRoomSecurity)
           SettingsTab(
-              label: T.current.settingsGeneral,
+              label: "Security",
               icon: Icons.lock,
               pageBuilder: (context) {
                 return RoomSecuritySettingsPage(
                   room: room,
                 );
-              }),
-        if ((room.permissions.canEditRoomEmoticons ||
-                room.roomEmoticons!.ownedPacks.isNotEmpty) &&
-            room.roomEmoticons != null)
-          SettingsTab(
-              label: T.current.settingsEmoji,
-              icon: Icons.emoji_emotions,
-              pageBuilder: (context) {
-                return RoomEmojiPackSettingsPage(room);
-              }),
-        if (preferences.developerMode)
-          SettingsTab(
-              label: T.current.settingsDeveloper,
-              icon: Icons.code,
-              pageBuilder: (context) {
-                return RoomDeveloperSettingsView(room.developerInfo);
               }),
       ]);
 

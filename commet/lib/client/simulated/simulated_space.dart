@@ -2,7 +2,6 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:commet/client/client.dart';
-import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/client/simulated/simulated_room_permissions.dart';
 import 'package:flutter/material.dart';
@@ -32,9 +31,6 @@ class SimulatedSpace extends Space {
 
   @override
   PushRule get pushRule => _pushRule;
-
-  @override
-  String get developerInfo => "";
 
   static const _chars =
       'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
@@ -79,7 +75,4 @@ class SimulatedSpace extends Space {
     _pushRule = rule;
     onUpdate.add(null);
   }
-
-  @override
-  EmoticonComponent? get emoticons => null;
 }

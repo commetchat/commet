@@ -12,15 +12,15 @@ import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import '../../generated/l10n.dart';
 import '../molecules/space_selector.dart';
+import '../molecules/split_timeline_viewer.dart';
 import '../navigation/navigation_utils.dart';
 
 class SideNavigationBar extends StatefulWidget {
   const SideNavigationBar(
       {super.key,
       this.onSpaceSelected,
-      this.onDirectMessagesSelected,
-      this.onSettingsSelected,
       this.onHomeSelected,
+      this.onSettingsSelected,
       this.clearSpaceSelection});
 
   static ValueKey settingsKey =
@@ -28,7 +28,6 @@ class SideNavigationBar extends StatefulWidget {
 
   final void Function(int index)? onSpaceSelected;
   final void Function()? clearSpaceSelection;
-  final void Function()? onDirectMessagesSelected;
   final void Function()? onHomeSelected;
   final void Function()? onSettingsSelected;
 
@@ -56,6 +55,9 @@ class SideNavigationBar extends StatefulWidget {
 
 class _SideNavigationBarState extends State<SideNavigationBar> {
   late ClientManager _clientManager;
+  late GlobalKey<SplitTimelineViewerState> timelineKey =
+      GlobalKey<SplitTimelineViewerState>();
+  late Map<String, GlobalKey<SplitTimelineViewerState>> timelines = {};
   StreamSubscription? onSpaceUpdated;
   StreamSubscription? onSpaceChildUpdated;
   @override
@@ -93,19 +95,6 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                     icon: Icons.home,
                     onTap: () {
                       widget.onHomeSelected?.call();
-                    },
-                  ),
-                  context),
-              const SizedBox(
-                height: 3,
-              ),
-              SideNavigationBar.tooltip(
-                  "Direct Messages",
-                  ImageButton(
-                    size: 70,
-                    icon: Icons.person,
-                    onTap: () {
-                      widget.onDirectMessagesSelected?.call();
                     },
                   ),
                   context)

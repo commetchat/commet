@@ -20,7 +20,7 @@ class AccountSelector extends StatelessWidget {
       itemBuilder: (item) {
         return Padding(
           padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
-          child: UserPanelView(
+          child: UserPanel(
             displayName: item.user!.displayName,
             detail: item.user!.detail,
             avatar: item.user!.avatar,

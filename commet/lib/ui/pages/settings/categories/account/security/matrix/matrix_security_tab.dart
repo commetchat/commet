@@ -38,10 +38,9 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
   void getDevices() async {
     var gotDevices = await widget.client.getMatrixClient().getDevices();
 
-    if (mounted)
-      setState(() {
-        devices = gotDevices;
-      });
+    setState(() {
+      devices = gotDevices;
+    });
   }
 
   @override

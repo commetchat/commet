@@ -214,7 +214,7 @@ class MatrixVerificationPageView extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             EmojiWidget(
-                              UnicodeEmoticon(e.emoji),
+                              UnicodeEmoji(e.emoji),
                               height: 30,
                             ),
                             Padding(

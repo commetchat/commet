@@ -72,7 +72,7 @@ class _ProfileEditViewState extends State<ProfileEditView> {
       return ImagePicker(
         currentImage: widget.avatar,
         withData: true,
-        onImageRead: (bytes, mimeType, path) =>
+        onImageRead: (bytes, mimeType) =>
             widget.pickAvatar?.call(bytes, mimeType),
       );
     } else {

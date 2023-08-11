@@ -1,7 +1,9 @@
+import 'dart:math';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart' as matrix;
+import 'dart:math' as math;
 
 class MatrixPeer extends Peer {
   late matrix.Client _matrixClient;
@@ -10,10 +12,10 @@ class MatrixPeer extends Peer {
     _matrixClient = matrixClient;
     identifier = userId;
     displayName = userId;
-    loading = init();
+    init();
   }
 
-  Future<void> init() async {
+  void init() async {
     String? name;
 
     try {
@@ -25,8 +27,9 @@ class MatrixPeer extends Peer {
 
     userName = identifier.split('@').last.split(':').first;
     detail = identifier.split(':').last;
+    color = hashColor(identifier);
 
-    await refreshAvatar();
+    refreshAvatar();
   }
 
   Future<void> refreshAvatar() async {
@@ -36,13 +39,13 @@ class MatrixPeer extends Peer {
     } catch (_) {}
 
     if (avatarUrl != null) {
-      avatar = MatrixMxcImage(avatarUrl, _matrixClient, autoLoadFullRes: false);
+      avatar = MatrixMxcImage(avatarUrl, _matrixClient);
     }
   }
 
   // Matching color calculation that other clients use. Element, Cinny, Etc.
   // https://github.com/cinnyapp/cinny/blob/dev/src/util/colorMXID.js
-  static Color hashColor(String userId) {
+  Color hashColor(String userId) {
     int hash = 0;
 
     const colors = [
