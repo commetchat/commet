@@ -62,24 +62,29 @@ class MatrixClient extends Client {
   int? get maxFileSize => config?.mUploadSize;
 
   static Future<void> loadFromDB(ClientManager manager) async {
-    var clients = preferences.getRegisteredMatrixClients();
+    await diagnostics.timeAsync("loadFromDB", () async {
+      var clients = preferences.getRegisteredMatrixClients();
 
-    List<Future> futures = List.empty(growable: true);
+      List<Future> futures = List.empty(growable: true);
 
-    if (clients != null) {
-      for (var clientName in clients) {
-        var client = MatrixClient(name: clientName, identifier: clientName);
-        try {
-          manager.addClient(client);
-          futures.add(client.init(true));
-        } catch (_) {
-          manager.removeClient(client);
-          preferences.removeRegisteredMatrixClient(clientName);
+      if (clients != null) {
+        for (var clientName in clients) {
+          var client = MatrixClient(name: clientName, identifier: clientName);
+          try {
+            manager.addClient(client);
+            futures.add(diagnostics.timeAsync("Initializing client $clientName",
+                () async {
+              await client.init(true);
+            }));
+          } catch (_) {
+            manager.removeClient(client);
+            preferences.removeRegisteredMatrixClient(clientName);
+          }
         }
       }
-    }
 
-    await Future.wait(futures);
+      await Future.wait(futures);
+    });
   }
 
   static matrix.NativeImplementations get nativeImplementations =>
@@ -90,9 +95,11 @@ class MatrixClient extends Client {
   @override
   Future<void> init(bool loadingFromCache) async {
     if (!_matrixClient.isLogged()) {
-      await _matrixClient.init(
-          waitForFirstSync: !loadingFromCache,
-          waitUntilLoadCompletedLoaded: true);
+      await diagnostics.timeAsync("Matrix client init", () async {
+        await _matrixClient.init(
+            waitForFirstSync: !loadingFromCache,
+            waitUntilLoadCompletedLoaded: true);
+      });
       user = MatrixPeer(_matrixClient, _matrixClient.userID!);
       addPeer(user!);
 
