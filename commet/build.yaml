@@ -1,0 +1,9 @@
+# Read about `build.yaml` at https://pub.dev/packages/build_config
+builders:
+
+  emojiBuilder:
+    import: "package:commet/generator/builder.dart"
+    builder_factories: ["emojiBuilder"]
+    build_extensions: {"assets/emoji_data/data.json": ["lib/utils/emoji/unicode_emoji_data_groups.g.dart"]}
+    build_to: source
+    auto_apply: root_package

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:commet/utils/mime.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -13,10 +14,17 @@ enum LODImageType {
 }
 
 class LODImageProvider extends ImageProvider<LODImageProvider> {
-  LODImageProvider({this.blurhash, this.loadThumbnail, this.loadFullRes});
+  LODImageProvider(
+      {this.blurhash,
+      this.loadThumbnail,
+      this.loadFullRes,
+      this.autoLoadFullRes = true});
   String? blurhash;
+  String? get mimeType => completer?.mimeType;
+  bool autoLoadFullRes;
   Future<Uint8List?> Function()? loadThumbnail;
   Future<Uint8List?> Function()? loadFullRes;
+  LODImageCompleter? completer;
 
   @override
   Future<LODImageProvider> obtainKey(ImageConfiguration configuration) {
@@ -26,10 +34,16 @@ class LODImageProvider extends ImageProvider<LODImageProvider> {
   @override
   ImageStreamCompleter loadBuffer(
       LODImageProvider key, DecoderBufferCallback decode) {
-    return LODImageCompleter(
+    completer = LODImageCompleter(
         blurhash: blurhash,
         loadThumbnail: loadThumbnail,
-        loadFullRes: loadFullRes);
+        loadFullRes: loadFullRes,
+        autoLoadFullRes: autoLoadFullRes);
+    return completer!;
+  }
+
+  void fetchFullRes() {
+    completer?.fetchFullRes();
   }
 }
 
@@ -45,21 +59,26 @@ class LODImageCompleter extends ImageStreamCompleter {
   late Duration _shownTimestamp;
   Duration? _frameDuration;
   bool _frameCallbackScheduled = false;
-
+  String? mimeType;
   int _framesEmitted = 0;
   Timer? _timer;
+  bool _isFullResLoading = false;
 
   LODImageCompleter(
-      {this.blurhash, this.loadThumbnail, this.loadFullRes, double scale = 1}) {
+      {this.blurhash,
+      this.loadThumbnail,
+      this.loadFullRes,
+      double scale = 1,
+      bool autoLoadFullRes = true}) {
     if (blurhash != null) _loadBlurhash();
     if (loadThumbnail != null) _loadThumbnail();
-    if (loadFullRes != null) _loadFullRes();
+    if (loadFullRes != null && autoLoadFullRes) _loadFullRes();
     _scale = scale;
   }
 
   Future<void> _loadBlurhash() async {
     var image =
-        await blurHashDecodeImage(blurHash: blurhash!, width: 30, height: 30);
+        await blurHashDecodeImage(blurHash: blurhash!, width: 10, height: 10);
 
     if (currentlyLoadedImage == null) {
       currentlyLoadedImage = LODImageType.blurhash;
@@ -71,14 +90,24 @@ class LODImageCompleter extends ImageStreamCompleter {
     var bytes = await loadThumbnail!.call();
     if (bytes == null) return;
 
+    mimeType = Mime.lookupType("", data: bytes);
+
     var codec = await instantiateImageCodec(bytes);
 
     _setCodec(LODImageType.thumbnail, codec);
   }
 
+  Future<void> fetchFullRes() async {
+    return _loadFullRes();
+  }
+
   Future<void> _loadFullRes() async {
+    if (_isFullResLoading) return;
+    _isFullResLoading = true;
     var bytes = await loadFullRes!.call();
     if (bytes == null) return;
+
+    mimeType = Mime.lookupType("", data: bytes);
 
     var codec = await instantiateImageCodec(bytes);
     _setCodec(LODImageType.fullres, codec);

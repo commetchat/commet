@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/emoticon/emoticon_component.dart';
+import 'package:commet/utils/gif_search/gif_search_result.dart';
 import 'package:flutter/material.dart';
-
 import 'attachment.dart';
 import 'permissions.dart';
 
@@ -15,7 +16,7 @@ abstract class Room {
   final Key key = UniqueKey();
   Timeline? timeline;
   late ImageProvider? avatar;
-  Iterable<Peer> get members;
+  Iterable<String> get memberIds;
   late String displayName;
   late bool isDirectMessage;
   late String? directMessagePartnerID;
@@ -25,7 +26,11 @@ abstract class Room {
   StreamController<void> onUpdate = StreamController.broadcast();
   PushRule get pushRule;
 
+  RoomEmoticonComponent? get roomEmoticons;
+
   List<Peer> get typingPeers;
+
+  String get developerInfo;
 
   int get notificationCount;
   int get highlightedNotificationCount;
@@ -42,6 +47,8 @@ abstract class Room {
     TimelineEvent? replaceEvent,
     List<ProcessedAttachment> processedAttachments,
   });
+
+  Future<TimelineEvent?> sendGif(GifSearchResult gif, TimelineEvent? inReplyTo);
 
   Future<List<ProcessedAttachment>> processAttachments(
       List<PendingFileAttachment> attachments);
@@ -80,6 +87,8 @@ abstract class Room {
 
   @override
   int get hashCode => identifier.hashCode;
+
+  Color getColorOfUser(String userId);
 
   Future<void> enableE2EE();
 }

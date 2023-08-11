@@ -1,4 +1,4 @@
-import 'package:commet/utils/emoji/emoji.dart';
+import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/utils/text_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:test/test.dart';
@@ -30,7 +30,7 @@ void main() async {
   });
 
   test("EmojiTest: Emojify '😀'", () async {
-    var parsed = Emoji.emojifyString("😀");
+    var parsed = Emoticon.emojifyString("😀");
 
     expect(parsed.length, equals(1));
 
@@ -38,7 +38,7 @@ void main() async {
   });
 
   test("EmojiTest: Emojify 'a😀'", () async {
-    var parsed = Emoji.emojifyString("a😀");
+    var parsed = Emoticon.emojifyString("a😀");
 
     expect(parsed.length, equals(2));
 
@@ -47,7 +47,7 @@ void main() async {
   });
 
   test("EmojiTest: Emojify 'a😀a'", () async {
-    var parsed = Emoji.emojifyString("a😀a");
+    var parsed = Emoticon.emojifyString("a😀a");
 
     expect(parsed.length, equals(3));
 
@@ -57,7 +57,7 @@ void main() async {
   });
 
   test("EmojiTest: Emojify 'a😀a😀'", () async {
-    var parsed = Emoji.emojifyString("a😀a😀");
+    var parsed = Emoticon.emojifyString("a😀a😀");
 
     expect(parsed.length, equals(4));
 
@@ -68,7 +68,7 @@ void main() async {
   });
 
   test("EmojiTest: Emojify 'a'", () async {
-    var parsed = Emoji.emojifyString("a");
+    var parsed = Emoticon.emojifyString("a");
 
     expect(parsed.length, equals(1));
 

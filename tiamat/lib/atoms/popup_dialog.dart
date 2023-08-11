@@ -52,13 +52,13 @@ class PopupDialog extends StatelessWidget {
 
   static Color barrierColor = Colors.black.withAlpha(128);
 
-  static void show(BuildContext context,
+  static Future<T?> show<T extends Object?>(BuildContext context,
       {required Widget content,
       required String title,
       double? width,
       double? height,
       bool barrierDismissible = true}) {
-    showGeneralDialog(
+    return showGeneralDialog(
         context: context,
         barrierDismissible: barrierDismissible,
         barrierLabel: "POPUP_DIALOG",
@@ -88,11 +88,7 @@ class PopupDialog extends StatelessWidget {
           Text(title),
         ],
       ),
-      content: SizedBox(
-        height: height,
-        width: width,
-        child: content,
-      ),
+      content: content,
     );
   }
 }

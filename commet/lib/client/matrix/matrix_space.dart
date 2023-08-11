@@ -1,6 +1,9 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:commet/client/client.dart';
+import 'package:commet/client/matrix/components/emoticon/matrix_emoticon_component.dart';
+import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/matrix/matrix_room_permissions.dart';
@@ -9,14 +12,24 @@ import 'package:commet/client/room_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
+import 'components/emoticon/matrix_emoticon_pack.dart';
+
 class MatrixSpace extends Space {
   late matrix.Room _matrixRoom;
   late matrix.Client _matrixClient;
+
   Uri? _avatarUrl;
   bool ignoreNextAvatarUpdate = false;
 
   @override
   String get topic => _matrixRoom.topic;
+
+  @override
+  String get developerInfo =>
+      const JsonEncoder.withIndent('  ').convert(_matrixRoom.states);
+
+  @override
+  late final MatrixEmoticonComponent emoticons;
 
   @override
   PushRule get pushRule {
@@ -64,6 +77,10 @@ class MatrixSpace extends Space {
     });
 
     permissions = MatrixRoomPermissions(_matrixRoom);
+
+    emoticons = MatrixEmoticonComponent(
+        MatrixRoomEmoticonHelper(_matrixRoom), this.client as MatrixClient);
+
     refresh();
   }
 
@@ -83,13 +100,6 @@ class MatrixSpace extends Space {
       ignoreNextAvatarUpdate = false;
       return;
     }
-    if (_matrixRoom.avatar != null) {
-      var url = _matrixRoom.avatar!
-          .getThumbnail(_matrixClient, width: 56, height: 56)
-          .toString();
-      var avatar = NetworkImage(url);
-      setAvatar(newAvatar: avatar);
-    }
 
     if (_matrixRoom.avatar != null) {
       updateAvatar();
@@ -97,7 +107,8 @@ class MatrixSpace extends Space {
   }
 
   void updateAvatar() {
-    var avatar = MatrixMxcImage(_matrixRoom.avatar!, _matrixClient);
+    var avatar = MatrixMxcImage(_matrixRoom.avatar!, _matrixClient,
+        autoLoadFullRes: false);
     setAvatar(newAvatar: avatar);
   }
 

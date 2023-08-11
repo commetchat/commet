@@ -13,24 +13,27 @@ class Lightbox extends StatefulWidget {
     this.video,
     this.thumbnail,
     this.aspectRatio,
+    this.contentKey,
     super.key,
   });
   final ImageProvider? image;
   final FileProvider? video;
   final ImageProvider? thumbnail;
   final double? aspectRatio;
+  final Key? contentKey;
 
   @override
   State<Lightbox> createState() => _LightboxState();
 
-  static void show(
+  static Future<void> show(
     BuildContext context, {
     ImageProvider? image,
     ImageProvider? thumbnail,
     FileProvider? video,
     double? aspectRatio,
+    Key? key,
   }) {
-    showGeneralDialog(
+    return showGeneralDialog(
         context: context,
         barrierDismissible: false,
         barrierLabel: "LIGHTBOX",
@@ -41,6 +44,7 @@ class Lightbox extends StatefulWidget {
             video: video,
             aspectRatio: aspectRatio,
             thumbnail: thumbnail,
+            contentKey: key,
           );
         },
         transitionDuration: const Duration(milliseconds: 300),
@@ -57,6 +61,7 @@ class Lightbox extends StatefulWidget {
 
 class _LightboxState extends State<Lightbox> {
   double aspectRatio = 1;
+  bool dismissing = false;
   @override
   void initState() {
     super.initState();
@@ -89,7 +94,10 @@ class _LightboxState extends State<Lightbox> {
   }
 
   void dismiss() {
-    Navigator.of(context).pop();
+    setState(() {
+      dismissing = true;
+    });
+    Navigator.pop(context, widget.contentKey);
   }
 
   @override
@@ -117,12 +125,18 @@ class _LightboxState extends State<Lightbox> {
                             filterQuality: FilterQuality.medium,
                           )
                         : widget.video != null
-                            ? VideoPlayer(
-                                widget.video!,
-                                showProgressBar: true,
-                                canGoFullscreen: false,
-                                thumbnail: widget.thumbnail,
-                              )
+                            ? dismissing
+                                ? Image(
+                                    fit: BoxFit.cover,
+                                    image: widget.thumbnail!,
+                                  )
+                                : VideoPlayer(
+                                    widget.video!,
+                                    showProgressBar: true,
+                                    canGoFullscreen: false,
+                                    thumbnail: widget.thumbnail,
+                                    key: widget.contentKey,
+                                  )
                             : const Placeholder()),
               ),
             ),

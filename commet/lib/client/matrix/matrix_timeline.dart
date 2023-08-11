@@ -4,9 +4,7 @@ import 'package:commet/client/matrix/extensions/matrix_event_extensions.dart';
 import 'package:commet/client/matrix/matrix_mxc_file_provider.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/ui/atoms/rich_text/matrix_html_parser.dart';
-import 'package:commet/utils/emoji/emoji.dart';
-import 'package:commet/utils/emoji/matrix_emoji.dart';
-import 'package:commet/utils/emoji/unicode_emoji.dart';
+
 import 'package:commet/utils/mime.dart';
 import 'package:commet/utils/text_utils.dart';
 
@@ -14,6 +12,9 @@ import '../client.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
 import 'matrix_client.dart';
+import '../../utils/emoji/unicode_emoji.dart';
+import '../components/emoticon/emoticon.dart';
+import './components/emoticon/matrix_emoticon.dart';
 
 class MatrixTimeline extends Timeline {
   matrix.Timeline? _matrixTimeline;
@@ -80,10 +81,7 @@ class MatrixTimeline extends Timeline {
       e.eventId = event.eventId;
       e.originServerTs = event.originServerTs;
       e.source = event.toJson().toString();
-
-      if (client.peerExists(event.senderId)) {
-        e.sender = client.getPeer(event.senderId)!;
-      }
+      e.senderId = event.senderId;
 
       if (event.relationshipType != null) {
         switch (event.relationshipType) {
@@ -245,17 +243,17 @@ class MatrixTimeline extends Timeline {
     }
   }
 
-  Emoji getEmojiFromEvent(matrix.Event event) {
+  Emoticon getEmojiFromEvent(matrix.Event event) {
     var key = event.content["m.relates_to"]['key'] as String;
 
-    if (Emoji.knownEmoji.containsKey(key)) return Emoji.knownEmoji[key]!;
+    if (Emoticon.knownEmoji.containsKey(key)) return Emoticon.knownEmoji[key]!;
 
     if (key.startsWith("mxc://")) {
-      return MatrixEmoji(Uri.parse(key), _matrixRoom.client,
+      return MatrixEmoticon(Uri.parse(key), _matrixRoom.client,
           shortcode: event.content['shortcode']);
     }
 
-    return UnicodeEmoji(key, shortcode: event.content['shortcode']);
+    return UnicodeEmoticon(key, shortcode: event.content['shortcode']);
   }
 
   void parseAnyAttachments(matrix.Event matrixEvent, TimelineEvent e) {
@@ -282,6 +280,8 @@ class MatrixTimeline extends Timeline {
                 ? MatrixMxcImage(
                     matrixEvent.videoThumbnailUrl!, _matrixRoom.client,
                     blurhash: matrixEvent.attachmentBlurhash,
+                    doFullres: false,
+                    doThumbnail: true,
                     matrixEvent: matrixEvent)
                 : null,
             name: matrixEvent.body,
@@ -326,7 +326,7 @@ class MatrixTimeline extends Timeline {
 
   @override
   void markAsRead(TimelineEvent event) async {
-    if (event.sender == client.user) return;
+    if (event.senderId == client.user!.identifier) return;
 
     if (event.type == EventType.edit ||
         event.status == TimelineEventStatus.synced) {
@@ -335,18 +335,11 @@ class MatrixTimeline extends Timeline {
   }
 
   @override
-  Iterable<Peer>? get receipts => getReceipts();
+  Iterable<String>? get receipts => getReceipts();
 
-  Iterable<Peer>? getReceipts() {
+  Iterable<String>? getReceipts() {
     var mxReceipts = _matrixTimeline?.events.first.receipts;
-    var mapped = mxReceipts?.map((receipt) => client.getPeer(receipt.user.id)!);
-    if (mapped == null) return null;
-
-    var list = mapped.toList(growable: true);
-    var sender = client.getPeer(_matrixTimeline!.events.first.senderId);
-    if (sender != null) list.add(sender);
-
-    return list;
+    return mxReceipts?.map((receipt) => receipt.user.id);
   }
 
   @override
@@ -358,5 +351,6 @@ class MatrixTimeline extends Timeline {
 
   void parseSticker(TimelineEvent e, matrix.Event event) {
     parseAnyAttachments(event, e);
+    handleReactions(event, e);
   }
 }

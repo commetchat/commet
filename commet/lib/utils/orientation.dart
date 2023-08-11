@@ -1,4 +1,3 @@
-import 'package:commet/config/build_config.dart';
 import 'package:flutter/widgets.dart';
 
 class OrientationUtils {

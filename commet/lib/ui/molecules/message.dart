@@ -1,6 +1,6 @@
+import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/atoms/emoji_reaction.dart';
-import 'package:commet/utils/emoji/emoji.dart';
 import 'package:commet/utils/text_utils.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tiamat/tiamat.dart';
@@ -26,6 +26,7 @@ class Message extends StatefulWidget {
       this.onDoubleTap,
       this.reactions,
       this.onLongPress,
+      this.isInReply = false,
       this.showSender = true});
   final double avatarSize = 48;
 
@@ -36,6 +37,7 @@ class Message extends StatefulWidget {
   final String? replyBody;
   final String? replySenderName;
   final Color? replySenderColor;
+  final bool isInReply;
 
   final ImageProvider? senderAvatar;
   final DateTime sentTimeStamp;
@@ -46,7 +48,7 @@ class Message extends StatefulWidget {
 
   final Widget body;
 
-  final Map<Emoji, Set<String>>? reactions;
+  final Map<Emoticon, Set<String>>? reactions;
 
   final Function()? onLongPress;
   final Function()? onDoubleTap;
@@ -166,7 +168,7 @@ class _MessageState extends State<Message> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (widget.replySenderName != null) replyText(),
+            if (widget.isInReply) replyText(),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -240,7 +242,7 @@ class _MessageState extends State<Message> {
           ),
           const Icon(material.Icons.keyboard_arrow_right_rounded),
           tiamat.Text.name(
-            widget.replySenderName!,
+            widget.replySenderName ?? "Loading...",
             color: widget.replySenderColor,
           ),
           Flexible(

@@ -14,6 +14,15 @@
             ],
         },
         {
+            "name": "commet (debug windows)",
+            "request": "launch",
+            "type": "dart",
+            "toolArgs": [
+                "--dart-define", "PLATFORM=windows",
+                "--dart-define", "BUILD_MODE=debug"
+            ],
+        },
+        {
             "name": "commet (debug mobile)",
             "request": "launch",
             "type": "dart",

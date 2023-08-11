@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:commet/client/attachment.dart';
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/main.dart';
-import 'package:commet/utils/emoji/emoji.dart';
 import 'package:commet/utils/notification/notification_manager.dart';
 import 'package:flutter/material.dart';
 
@@ -90,7 +90,7 @@ class TimelineEvent {
   EventType type = EventType.invalid;
   bool edited = false;
   late TimelineEventStatus status;
-  late Peer sender;
+  late String senderId;
   late DateTime originServerTs;
   String? body;
   late String? source = "";
@@ -101,7 +101,7 @@ class TimelineEvent {
   String? relatedEventId;
   EventRelationshipType? relationshipType;
 
-  Map<Emoji, Set<String>>? reactions;
+  Map<Emoticon, Set<String>>? reactions;
 
   late StreamController onChange = StreamController.broadcast();
 }
@@ -115,7 +115,7 @@ abstract class Timeline {
   late Client client;
   late Room room;
 
-  Iterable<Peer>? get receipts;
+  Iterable<String>? get receipts;
 
   void markAsRead(TimelineEvent event);
 
@@ -155,7 +155,7 @@ abstract class Timeline {
   bool shouldDisplayNotification(TimelineEvent event) {
     if (event.type != EventType.message) return false;
 
-    if (event.sender == client.user) return false;
+    if (event.senderId == client.user!.identifier) return false;
 
     if (room.pushRule == PushRule.dontNotify) return false;
 
@@ -174,10 +174,11 @@ abstract class Timeline {
   @protected
   void displayNotification(TimelineEvent event) {
     notificationManager.notify(NotificationContent(
-        event.sender.displayName,
+        room.client.fetchPeer(event.senderId).displayName,
         event.body ?? T.current.notificationReceivedMessagePlaceholder,
         NotificationType.messageReceived,
         sentFrom: room,
+        image: room.client.fetchPeer(event.senderId).avatar,
         event: event));
   }
 

@@ -44,4 +44,68 @@ extension MatrixExtensions on Client {
     return GenericRoomPreview(roomId,
         avatar: avatar, displayName: displayName, topic: topic);
   }
+
+  Future<void> addEmoticonRoomPack(String roomId, String packKey) async {
+    var state = BasicEvent(type: "im.ponies.emote_rooms", content: {});
+
+    if (accountData.containsKey("im.ponies.emote_rooms")) {
+      state = accountData["im.ponies.emote_rooms"]!;
+    }
+
+    if (!state.content.containsKey("rooms")) {
+      state.content['rooms'] = {};
+    }
+
+    var rooms = state.content['rooms'] as Map;
+    if (!rooms.containsKey(roomId)) {
+      rooms[roomId] = {};
+    }
+
+    var roomPacks = rooms[roomId] as Map;
+    roomPacks[packKey] = {};
+
+    await setAccountData(userID!, "im.ponies.emote_rooms", state.content);
+  }
+
+  Future<void> removeEmoticonRoomPack(String roomId, String packKey) async {
+    var state = BasicEvent(type: "im.ponies.emote_rooms", content: {});
+
+    if (accountData.containsKey("im.ponies.emote_rooms")) {
+      state = accountData["im.ponies.emote_rooms"]!;
+    }
+
+    if (!state.content.containsKey("rooms")) {
+      state.content['rooms'] = {};
+    }
+
+    var rooms = state.content['rooms'] as Map;
+    if (!rooms.containsKey(roomId)) {
+      rooms[roomId] = {};
+    }
+
+    var roomPacks = rooms[roomId] as Map;
+    roomPacks.remove(packKey);
+
+    await setAccountData(userID!, "im.ponies.emote_rooms", state.content);
+  }
+
+  bool isEmoticonPackGloballyAvailable(String roomId, String packKey) {
+    if (!accountData.containsKey("im.ponies.emote_rooms")) {
+      return false;
+    }
+
+    var state = accountData["im.ponies.emote_rooms"]!.content;
+    if (!state.containsKey("rooms")) {
+      return false;
+    }
+
+    var rooms = state["rooms"] as Map;
+    if (!rooms.containsKey(roomId)) {
+      return false;
+    }
+
+    var roomData = rooms[roomId] as Map;
+
+    return roomData.containsKey(packKey);
+  }
 }

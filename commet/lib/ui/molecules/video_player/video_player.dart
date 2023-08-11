@@ -196,7 +196,6 @@ class VideoPlayerState extends State<VideoPlayer> {
                                 icon: Icons.fullscreen_rounded,
                                 size: 24,
                                 onPressed: () {
-                                  pause();
                                   widget.onFullscreen?.call();
                                 },
                               ),

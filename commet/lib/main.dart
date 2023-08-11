@@ -3,10 +3,13 @@ import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/preferences.dart';
+import 'package:commet/diagnostic/diagnostics.dart';
 import 'package:commet/ui/pages/chat/chat_page.dart';
 import 'package:commet/ui/pages/login/login_page.dart';
-import 'package:commet/utils/emoji/emoji_pack.dart';
+import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:commet/utils/notification/notification_manager.dart';
+import 'package:commet/utils/notification/notifier.dart';
+import 'package:commet/utils/window_management.dart';
 
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
@@ -30,6 +33,8 @@ final GlobalKey<NavigatorState> navigator = GlobalKey();
 FileCacheInstance fileCache = FileCacheInstance();
 Preferences preferences = Preferences();
 NotificationManager notificationManager = NotificationManager();
+Diagnostics diagnostics = Diagnostics();
+ClientManager? clientManager;
 
 void main() async {
   ScaledWidgetsFlutterBinding.ensureInitialized(
@@ -40,10 +45,13 @@ void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
 
-  var clientManager = await initApp();
+  await preferences.init();
 
-  double scale = preferences.getAppScale();
-  var theme = preferences.getTheme();
+  clientManager =
+      await diagnostics.timeAsync("App initialization", () => initApp());
+
+  double scale = preferences.appScale;
+  var theme = preferences.theme;
 
   if (BuildConfig.DESKTOP) {
     ScaledWidgetsFlutterBinding.instance.scaleFactor = (deviceSize) {
@@ -52,14 +60,12 @@ void main() async {
   }
 
   runApp(App(
-    clientManager: clientManager,
+    clientManager: clientManager!,
     initialTheme: theme,
   ));
 }
 
 Future<ClientManager> initApp() async {
-  await preferences.init();
-
   var adapter = CachedFileAdapter();
 
   MediaKit.ensureInitialized();
@@ -71,9 +77,13 @@ Future<ClientManager> initApp() async {
   var dbPath = await AppConfig.getDatabasePath();
 
   await Future.wait([
-    preferences.init(),
-    fileCache.init(),
-    EmojiPack.defaults(),
+    diagnostics.timeAsync(
+      "Cleaning file cache",
+      () => fileCache.init().then((value) => fileCache.clean()),
+    ),
+    diagnostics.timeAsync("Loading default emoji", () => UnicodeEmojis.load()),
+    Notifier.init(),
+    WindowManagement.init(),
     if (!BuildConfig.LINUX) Hive.initFlutter(dbPath),
   ]);
 
@@ -83,10 +93,12 @@ Future<ClientManager> initApp() async {
 
   final clientManager = ClientManager();
 
-  await Future.wait([
-    MatrixClient.loadFromDB(clientManager),
-    if (BuildConfig.DEBUG) SimulatedClient.loadFromDB(clientManager),
-  ]);
+  await diagnostics.timeAsync("Loading clients", () async {
+    await Future.wait([
+      MatrixClient.loadFromDB(clientManager),
+      if (BuildConfig.DEBUG) SimulatedClient.loadFromDB(clientManager),
+    ]);
+  });
 
   return clientManager;
 }
@@ -146,17 +158,24 @@ class App extends StatelessWidget {
   }
 }
 
-class AppView extends StatelessWidget {
+class AppView extends StatefulWidget {
   const AppView({required this.clientManager, super.key});
   final ClientManager clientManager;
+
+  @override
+  State<AppView> createState() => _AppViewState();
+}
+
+class _AppViewState extends State<AppView> {
   @override
   Widget build(BuildContext context) {
-    return clientManager.isLoggedIn()
-        ? ChatPage(clientManager: clientManager)
+    return widget.clientManager.isLoggedIn()
+        ? ChatPage(clientManager: widget.clientManager)
         : LoginPage(onSuccess: (_) {
             Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(
-                  builder: (_) => ChatPage(clientManager: clientManager)),
+                  builder: (_) =>
+                      ChatPage(clientManager: widget.clientManager)),
               (route) => false,
             );
           });
