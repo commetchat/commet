@@ -470,4 +470,8 @@ class ChatPageState extends State<ChatPage> {
 
     throw Exception("Unknown build config");
   }
+
+  void addReaction(TimelineEvent event, Emoticon emote) {
+    selectedRoom?.addReaction(event, emote);
+  }
 }

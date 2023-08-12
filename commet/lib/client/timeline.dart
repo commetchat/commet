@@ -89,6 +89,7 @@ class TimelineEvent {
   String eventId = "";
   EventType type = EventType.invalid;
   bool edited = false;
+  bool get editable => type == EventType.message;
   late TimelineEventStatus status;
   late String senderId;
   late DateTime originServerTs;

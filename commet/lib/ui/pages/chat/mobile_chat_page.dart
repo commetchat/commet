@@ -2,6 +2,7 @@
 
 import 'package:commet/client/timeline.dart';
 import 'package:commet/ui/molecules/direct_message_list.dart';
+import 'package:commet/ui/molecules/emoji_picker.dart';
 import 'package:commet/ui/molecules/timeline_viewer.dart';
 import 'package:commet/ui/molecules/timeline_event.dart';
 import 'package:commet/ui/pages/chat/chat_page.dart';
@@ -263,6 +264,7 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
                   children: [
                     Expanded(
                         child: TimelineViewer(
+                      doMessageOverlayMenu: false,
                       markAsRead:
                           widget.state.selectedRoom!.timeline!.markAsRead,
                       key: widget
@@ -366,6 +368,33 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
     );
   }
 
+  void showReactionMenu(TimelineEvent event) {
+    m.showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return DraggableScrollableSheet(
+          expand: false,
+          initialChildSize: 0.6,
+          minChildSize: 0.6,
+          builder: (context, scrollController) {
+            return SizedBox(
+              height: 700,
+              child: EmojiPicker(
+                widget.state.selectedRoom!.roomEmoticons!.availableEmoji,
+                size: 48,
+                packButtonSize: 40,
+                onEmoticonPressed: (emoticon) {
+                  widget.state.addReaction(event, emoticon);
+                  Navigator.pop(context);
+                },
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   Widget buildMessageMenu(BuildContext context, TimelineEvent event) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
@@ -419,6 +448,7 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
                 icon: m.Icons.add_reaction_rounded,
                 onTap: () {
                   Navigator.pop(context);
+                  showReactionMenu(event);
                 },
               ),
             ),

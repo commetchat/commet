@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/ui/molecules/message_popup_menu.dart';
 import 'package:commet/ui/molecules/timeline_event.dart';
 import 'package:flutter/material.dart';
 import '../../client/client.dart';
+import '../../client/components/emoticon/emoticon.dart';
 
 /* Note: This aint your mother's timeline viewer...
 This file contains some unusual hacks in order to achieve a smoother experience
@@ -38,15 +40,19 @@ class TimelineViewer extends StatefulWidget {
       this.onEventDoubleTap,
       this.setEditingEvent,
       this.onEventLongPress,
+      this.onAddReaction,
+      this.doMessageOverlayMenu = true,
       Key? key})
       : super(key: key);
 
+  final bool doMessageOverlayMenu;
   final Timeline timeline;
   final Function(TimelineEvent event)? markAsRead;
   final Function(TimelineEvent? event)? setReplyingEvent;
   final Function(TimelineEvent? event)? setEditingEvent;
   final Function(TimelineEvent event)? onEventDoubleTap;
   final Function(TimelineEvent event)? onEventLongPress;
+  final Function(TimelineEvent event, Emoticon emote)? onAddReaction;
 
   @override
   State<TimelineViewer> createState() => TimelineViewerState();
@@ -59,6 +65,7 @@ class TimelineViewerState extends State<TimelineViewer> {
 
   int recentItemsCount = 0;
   int historyItemsCount = 0;
+  int hoveredIndex = -1;
 
   bool animatingToBottom = false;
   bool get attachedToBottom =>
@@ -68,9 +75,13 @@ class TimelineViewerState extends State<TimelineViewer> {
   Future? loadingHistory;
   bool toBeDisposed = false;
 
+  StreamController<int> onHoveredMessageChanged = StreamController.broadcast();
+
   late StreamSubscription eventAdded;
   late StreamSubscription eventChanged;
   late StreamSubscription eventRemoved;
+  final LayerLink messageLayerLink = LayerLink();
+  OverlayEntry? messageOverlay;
 
   @override
   void initState() {
@@ -88,6 +99,43 @@ class TimelineViewerState extends State<TimelineViewer> {
     eventChanged.cancel();
     eventRemoved.cancel();
     super.dispose();
+  }
+
+  void createOverlay() {
+    if (!widget.doMessageOverlayMenu) return;
+
+    var overlay = Overlay.of(context);
+    messageOverlay = OverlayEntry(
+      builder: (context) {
+        return buildOverlay();
+      },
+    );
+
+    overlay.insert(messageOverlay!);
+  }
+
+  Widget buildOverlay() {
+    return Positioned(
+        height: 50,
+        child: CompositedTransformFollower(
+            targetAnchor: Alignment.topRight,
+            followerAnchor: Alignment.topRight,
+            showWhenUnlinked: false,
+            offset: const Offset(-20, -40),
+            link: messageLayerLink,
+            child: MessagePopupMenu(
+              widget.timeline.events[hoveredIndex],
+              widget.timeline,
+              isEditable:
+                  canUserEditEvent(widget.timeline.events[hoveredIndex]),
+              onMessageChanged: onHoveredMessageChanged.stream,
+              addReaction: widget.onAddReaction,
+            )));
+  }
+
+  bool canUserEditEvent(TimelineEvent event) {
+    return widget.timeline.room.permissions.canUserEditMessages &&
+        event.senderId == widget.timeline.room.client.user!.identifier;
   }
 
   void onAfterFirstFrame(_) {
@@ -209,16 +257,49 @@ class TimelineViewerState extends State<TimelineViewer> {
   }
 
   Widget buildEvent(int displayIndex, int actualIndex) {
-    return TimelineEventView(
-      event: widget.timeline.events[displayIndex],
-      timeline: widget.timeline,
-      showSender: shouldShowSender(displayIndex),
-      setEditingEvent: () =>
-          widget.setEditingEvent?.call(widget.timeline.events[displayIndex]),
-      setReplyingEvent: () =>
-          widget.setReplyingEvent?.call(widget.timeline.events[displayIndex]),
-      onLongPress: () =>
-          widget.onEventLongPress?.call(widget.timeline.events[displayIndex]),
+    if (displayIndex == hoveredIndex) {
+      return CompositedTransformTarget(
+        link: messageLayerLink,
+        child: buildTimelineEvent(displayIndex),
+      );
+    }
+
+    return buildTimelineEvent(displayIndex);
+  }
+
+  Widget buildTimelineEvent(int index) {
+    return MouseRegion(
+      onEnter: (event) {
+        if (index == hoveredIndex) return;
+
+        setState(() {
+          hoveredIndex = index;
+
+          if (!widget.doMessageOverlayMenu) return;
+
+          messageOverlay?.markNeedsBuild();
+          onHoveredMessageChanged.add(index);
+          if (messageOverlay == null) {
+            createOverlay();
+          }
+        });
+      },
+      child: Container(
+        color: hoveredIndex == index
+            ? Theme.of(context).hoverColor
+            : Colors.transparent,
+        child: TimelineEventView(
+          event: widget.timeline.events[index],
+          timeline: widget.timeline,
+          showSender: shouldShowSender(index),
+          setEditingEvent: () =>
+              widget.setEditingEvent?.call(widget.timeline.events[index]),
+          setReplyingEvent: () =>
+              widget.setReplyingEvent?.call(widget.timeline.events[index]),
+          onLongPress: () =>
+              widget.onEventLongPress?.call(widget.timeline.events[index]),
+        ),
+      ),
     );
   }
 

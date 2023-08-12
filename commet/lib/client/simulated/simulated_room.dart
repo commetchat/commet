@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/client/simulated/simulated_peer.dart';
 import 'package:commet/client/simulated/simulated_room_permissions.dart';
@@ -155,6 +156,12 @@ class SimulatedRoom extends Room {
   @override
   Future<TimelineEvent?> sendGif(
       GifSearchResult gif, TimelineEvent? inReplyTo) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<TimelineEvent?> addReaction(
+      TimelineEvent reactingTo, Emoticon reaction) {
     throw UnimplementedError();
   }
 }

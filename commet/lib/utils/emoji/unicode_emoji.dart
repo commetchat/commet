@@ -170,6 +170,9 @@ class UnicodeEmoticon extends Emoticon {
   late String slug;
 
   @override
+  String get key => slug;
+
+  @override
   ImageProvider<Object> get image => _image;
 
   @override

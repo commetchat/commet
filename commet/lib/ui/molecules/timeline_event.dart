@@ -170,7 +170,7 @@ class _TimelineEventState extends State<TimelineEventView> {
                 widget.setReplyingEvent!.call();
               }),
               buildMenuEntry(m.Icons.add_reaction, "Add Reaction", () => null),
-              if (canUserEditEvent())
+              if (canUserEditEvent() && widget.event.editable)
                 buildMenuEntry(m.Icons.edit, "Edit", () {
                   widget.setEditingEvent?.call();
                 }),

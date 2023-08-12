@@ -9,6 +9,7 @@ import 'package:commet/ui/atoms/rich_text/matrix_html_parser.dart';
 import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:commet/utils/mime.dart';
 import 'package:commet/utils/text_utils.dart';
+import 'package:flutter/foundation.dart';
 
 import '../client.dart';
 import 'package:matrix/matrix.dart' as matrix;
@@ -115,9 +116,14 @@ class MatrixTimeline extends Timeline {
       }
 
       return e;
-    } catch (identifier) {
+    } catch (error) {
       var result = TimelineEvent();
       result.type = EventType.unknown;
+
+      if (kDebugMode) {
+        rethrow;
+      }
+
       return result;
     }
   }
@@ -247,7 +253,7 @@ class MatrixTimeline extends Timeline {
 
     if (key.startsWith("mxc://")) {
       return MatrixEmoticon(Uri.parse(key), _matrixRoom.client,
-          shortcode: event.content['shortcode']);
+          shortcode: event.content.tryGet("shortcode") ?? "");
     }
 
     return UnicodeEmoticon(key, shortcode: event.content['shortcode']);

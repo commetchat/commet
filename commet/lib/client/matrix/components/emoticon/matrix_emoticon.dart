@@ -68,4 +68,7 @@ class MatrixEmoticon implements Emoticon {
   void markPackAsSticker(bool value) {
     _isStickerPack = value;
   }
+
+  @override
+  String get key => emojiUrl.toString();
 }
