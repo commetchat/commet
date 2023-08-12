@@ -11,9 +11,6 @@ abstract class Emoticon {
   ImageProvider get image;
   String get slug;
   String? get shortcode;
-  String get identifier;
-
-  static Map<String, Emoji> knownEmoji = {};
 
   bool get isMarkedEmoji;
   bool get isMarkedSticker;

@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'package:commet/client/attachment.dart';
+import 'package:commet/client/components/emoticon/emoticon.dart';
+import 'package:commet/client/matrix/components/emoticon/matrix_emoticon.dart';
 import 'package:commet/client/matrix/extensions/matrix_event_extensions.dart';
 import 'package:commet/client/matrix/matrix_mxc_file_provider.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/ui/atoms/rich_text/matrix_html_parser.dart';
-import 'package:commet/utils/emoji/emoji.dart';
-import 'package:commet/utils/emoji/matrix_emoji.dart';
 import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:commet/utils/mime.dart';
 import 'package:commet/utils/text_utils.dart';
@@ -242,17 +242,15 @@ class MatrixTimeline extends Timeline {
     }
   }
 
-  Emoji getEmojiFromEvent(matrix.Event event) {
+  Emoticon getEmojiFromEvent(matrix.Event event) {
     var key = event.content["m.relates_to"]['key'] as String;
 
-    if (Emoji.knownEmoji.containsKey(key)) return Emoji.knownEmoji[key]!;
-
     if (key.startsWith("mxc://")) {
-      return MatrixEmoji(Uri.parse(key), _matrixRoom.client,
+      return MatrixEmoticon(Uri.parse(key), _matrixRoom.client,
           shortcode: event.content['shortcode']);
     }
 
-    return UnicodeEmoji(key, shortcode: event.content['shortcode']);
+    return UnicodeEmoticon(key, shortcode: event.content['shortcode']);
   }
 
   void parseAnyAttachments(matrix.Event matrixEvent, TimelineEvent e) {
@@ -350,5 +348,6 @@ class MatrixTimeline extends Timeline {
 
   void parseSticker(TimelineEvent e, matrix.Event event) {
     parseAnyAttachments(event, e);
+    handleReactions(event, e);
   }
 }

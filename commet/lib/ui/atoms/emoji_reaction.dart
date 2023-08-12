@@ -1,4 +1,4 @@
-import 'package:commet/utils/emoji/emoji.dart';
+import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 
@@ -14,7 +14,7 @@ class EmojiReaction extends StatelessWidget {
       this.highlighted = false,
       super.key});
 
-  final Emoji emoji;
+  final Emoticon emoji;
   final int numReactions;
   final bool highlighted;
 

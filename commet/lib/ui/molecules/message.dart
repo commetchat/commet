@@ -1,6 +1,6 @@
+import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/atoms/emoji_reaction.dart';
-import 'package:commet/utils/emoji/emoji.dart';
 import 'package:commet/utils/text_utils.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tiamat/tiamat.dart';
@@ -48,7 +48,7 @@ class Message extends StatefulWidget {
 
   final Widget body;
 
-  final Map<Emoji, Set<String>>? reactions;
+  final Map<Emoticon, Set<String>>? reactions;
 
   final Function()? onLongPress;
   final Function()? onDoubleTap;

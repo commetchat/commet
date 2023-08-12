@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:commet/client/attachment.dart';
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/main.dart';
-import 'package:commet/utils/emoji/emoji.dart';
 import 'package:commet/utils/notification/notification_manager.dart';
 import 'package:flutter/material.dart';
 
@@ -101,7 +101,7 @@ class TimelineEvent {
   String? relatedEventId;
   EventRelationshipType? relationshipType;
 
-  Map<Emoji, Set<String>>? reactions;
+  Map<Emoticon, Set<String>>? reactions;
 
   late StreamController onChange = StreamController.broadcast();
 }
