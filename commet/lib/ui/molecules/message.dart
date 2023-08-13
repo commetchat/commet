@@ -25,6 +25,7 @@ class Message extends StatefulWidget {
       this.edited = false,
       this.onDoubleTap,
       this.reactions,
+      this.onReactionTapped,
       this.onLongPress,
       this.isInReply = false,
       this.showSender = true});
@@ -52,6 +53,7 @@ class Message extends StatefulWidget {
 
   final Function()? onLongPress;
   final Function()? onDoubleTap;
+  final Function(Emoticon emote)? onReactionTapped;
 
   final Widget Function(BuildContext context)? menuBuilder;
 
@@ -210,6 +212,7 @@ class _MessageState extends State<Message> {
           var value = widget.reactions![key]!;
           return EmojiReaction(
               emoji: key,
+              onTapped: widget.onReactionTapped,
               numReactions: value.length,
               highlighted: value.contains(widget.currentUserIdentifier));
         }).toList());

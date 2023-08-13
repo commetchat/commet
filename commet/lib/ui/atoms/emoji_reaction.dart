@@ -12,8 +12,10 @@ class EmojiReaction extends StatelessWidget {
       {required this.emoji,
       required this.numReactions,
       this.highlighted = false,
+      this.onTapped,
       super.key});
 
+  final Function(Emoticon emote)? onTapped;
   final Emoticon emoji;
   final int numReactions;
   final bool highlighted;
@@ -27,25 +29,29 @@ class EmojiReaction extends StatelessWidget {
           material.Theme.of(context).extension<ExtraColors>()!.surfaceLow3;
     }
 
-    return DecoratedBox(
-      decoration: BoxDecoration(
-          color: bgColor.withAlpha(70),
-          border: Border.all(color: bgColor, width: 1),
-          borderRadius: BorderRadius.circular(5)),
-      child: Padding(
-        padding: const EdgeInsets.all(5.0),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            EmojiWidget(
-              emoji,
-              height: 20,
-            ),
-            const SizedBox(
-              width: 5,
-            ),
-            tiamat.Text.label(numReactions.toString())
-          ],
+    return material.InkWell(
+      onTap: () => onTapped?.call(emoji),
+      borderRadius: BorderRadius.circular(5),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+            color: bgColor.withAlpha(70),
+            border: Border.all(color: bgColor, width: 1),
+            borderRadius: BorderRadius.circular(5)),
+        child: Padding(
+          padding: const EdgeInsets.all(3.0),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              EmojiWidget(
+                emoji,
+                height: 17,
+              ),
+              const SizedBox(
+                width: 5,
+              ),
+              tiamat.Text.label(numReactions.toString())
+            ],
+          ),
         ),
       ),
     );

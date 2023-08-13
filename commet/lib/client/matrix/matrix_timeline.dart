@@ -356,4 +356,27 @@ class MatrixTimeline extends Timeline {
     parseAnyAttachments(event, e);
     handleReactions(event, e);
   }
+
+  Future<void> removeReaction(
+      TimelineEvent reactingTo, Emoticon reaction) async {
+    var event = await _matrixRoom.getEventById(reactingTo.eventId);
+    if (event == null) return;
+
+    if (!event.hasAggregatedEvents(
+        _matrixTimeline!, matrix.RelationshipTypes.reaction)) return;
+
+    var events = event
+        .aggregatedEvents(_matrixTimeline!, matrix.RelationshipTypes.reaction)
+        .where((element) => element.senderId == _matrixRoom.client.userID);
+
+    for (var e in events) {
+      if (!e.content.containsKey("m.relates_to")) continue;
+      var content = e.content["m.relates_to"];
+
+      if (content.containsKey("key") && content["key"] == reaction.key) {
+        await _matrixRoom.redactEvent(e.eventId);
+        return;
+      }
+    }
+  }
 }

@@ -159,9 +159,8 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
                         setEditingEvent: (event) => widget.state
                             .setInteractingEvent(event,
                                 type: EventInteractionType.edit),
-                        onAddReaction: (event, emote) {
-                          widget.state.addReaction(event, emote);
-                        },
+                        onAddReaction: widget.state.addReaction,
+                        onReactionTapped: widget.state.onReactionTapped,
                       )),
                       Tile(
                         child: MessageInput(

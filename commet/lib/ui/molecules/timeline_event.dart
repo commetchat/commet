@@ -8,6 +8,7 @@ import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 import '../../client/client.dart';
+import '../../client/components/emoticon/emoticon.dart';
 import '../../generated/l10n.dart';
 import '../atoms/message_attachment.dart';
 import '../atoms/tooltip.dart' as t;
@@ -23,6 +24,7 @@ class TimelineEventView extends StatefulWidget {
       this.setReplyingEvent,
       this.setEditingEvent,
       this.onDoubleTap,
+      this.onReactionTapped,
       this.onLongPress,
       this.debugInfo});
   final TimelineEvent event;
@@ -35,6 +37,7 @@ class TimelineEventView extends StatefulWidget {
   final Function()? onLongPress;
   final Function()? setReplyingEvent;
   final Function()? setEditingEvent;
+  final Function(Emoticon emote)? onReactionTapped;
 
   @override
   State<TimelineEventView> createState() => _TimelineEventState();
@@ -115,6 +118,7 @@ class _TimelineEventState extends State<TimelineEventView> {
           replySenderColor: color,
           isInReply: widget.event.relatedEventId != null,
           edited: widget.event.edited,
+          onReactionTapped: widget.onReactionTapped,
           body: buildBody(),
           menuBuilder: BuildConfig.DESKTOP ? buildMenu : null,
         );

@@ -271,6 +271,8 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
                           .state.timelines[widget.state.selectedRoom!.localId],
                       timeline: widget.state.selectedRoom!.timeline!,
                       onEventLongPress: showMessageMenu,
+                      onAddReaction: widget.state.addReaction,
+                      onReactionTapped: widget.state.onReactionTapped,
                     )),
                     Padding(
                       padding: EdgeInsets.fromLTRB(0, 0, 0, 0),

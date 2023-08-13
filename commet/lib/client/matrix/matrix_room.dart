@@ -285,4 +285,10 @@ class MatrixRoom extends Room {
 
     return null;
   }
+
+  @override
+  Future<void> removeReaction(
+      TimelineEvent reactingTo, Emoticon reaction) async {
+    return (timeline! as MatrixTimeline).removeReaction(reactingTo, reaction);
+  }
 }

@@ -52,6 +52,8 @@ abstract class Room {
   Future<TimelineEvent?> addReaction(
       TimelineEvent reactingTo, Emoticon reaction);
 
+  Future<void> removeReaction(TimelineEvent reactingTo, Emoticon reaction);
+
   Future<TimelineEvent?> sendGif(GifSearchResult gif, TimelineEvent? inReplyTo);
 
   Future<List<ProcessedAttachment>> processAttachments(

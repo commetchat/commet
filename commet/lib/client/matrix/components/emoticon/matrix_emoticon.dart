@@ -71,4 +71,20 @@ class MatrixEmoticon implements Emoticon {
 
   @override
   String get key => emojiUrl.toString();
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    if (other is! MatrixEmoticon) {
+      return false;
+    }
+
+    return other.key == other.key;
+  }
+
+  @override
+  int get hashCode {
+    return key.hashCode;
+  }
 }

@@ -164,4 +164,9 @@ class SimulatedRoom extends Room {
       TimelineEvent reactingTo, Emoticon reaction) {
     throw UnimplementedError();
   }
+
+  @override
+  Future<void> removeReaction(TimelineEvent reactingTo, Emoticon reaction) {
+    throw UnimplementedError();
+  }
 }

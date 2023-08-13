@@ -41,6 +41,7 @@ class TimelineViewer extends StatefulWidget {
       this.setEditingEvent,
       this.onEventLongPress,
       this.onAddReaction,
+      this.onReactionTapped,
       this.doMessageOverlayMenu = true,
       Key? key})
       : super(key: key);
@@ -53,6 +54,7 @@ class TimelineViewer extends StatefulWidget {
   final Function(TimelineEvent event)? onEventDoubleTap;
   final Function(TimelineEvent event)? onEventLongPress;
   final Function(TimelineEvent event, Emoticon emote)? onAddReaction;
+  final Function(TimelineEvent event, Emoticon emote)? onReactionTapped;
 
   @override
   State<TimelineViewer> createState() => TimelineViewerState();
@@ -291,6 +293,8 @@ class TimelineViewerState extends State<TimelineViewer> {
         child: TimelineEventView(
           event: widget.timeline.events[index],
           timeline: widget.timeline,
+          onReactionTapped: (emote) => widget.onReactionTapped
+              ?.call(widget.timeline.events[index], emote),
           showSender: shouldShowSender(index),
           setEditingEvent: () =>
               widget.setEditingEvent?.call(widget.timeline.events[index]),
