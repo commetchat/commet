@@ -246,82 +246,87 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
       child: m.Scaffold(
         backgroundColor: m.Theme.of(context).colorScheme.surface,
         body: SafeArea(
-          child: Column(
-            children: [
-              SizedBox(
-                  height: 50,
-                  child: RoomHeader(
-                    widget.state.selectedRoom!,
-                    onTap: widget.state.selectedRoom?.permissions
-                                .canEditAnything ==
-                            true
-                        ? () => widget.state.navigateRoomSettings()
-                        : null,
-                  )),
-              Flexible(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Expanded(
-                        child: TimelineViewer(
-                      doMessageOverlayMenu: false,
-                      markAsRead:
-                          widget.state.selectedRoom!.timeline!.markAsRead,
-                      key: widget
-                          .state.timelines[widget.state.selectedRoom!.localId],
-                      timeline: widget.state.selectedRoom!.timeline!,
-                      onEventLongPress: showMessageMenu,
-                      onAddReaction: widget.state.addReaction,
-                      onReactionTapped: widget.state.onReactionTapped,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(0, 30, 0, 0),
+            child: Column(
+              children: [
+                SizedBox(
+                    height: 50,
+                    child: RoomHeader(
+                      widget.state.selectedRoom!,
+                      onTap: widget.state.selectedRoom?.permissions
+                                  .canEditAnything ==
+                              true
+                          ? () => widget.state.navigateRoomSettings()
+                          : null,
                     )),
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                      child: MessageInput(
-                          key: messageInput,
-                          isRoomE2EE: widget.state.selectedRoom!.isE2EE,
-                          readIndicator: ReadIndicator(
-                            room: widget.state.selectedRoom!,
-                            initialList:
-                                widget.state.selectedRoom?.timeline?.receipts,
-                          ),
-                          onSendMessage: (message) {
-                            widget.state.sendMessage(message);
-                            return MessageInputSendResult.success;
-                          },
-                          relatedEventBody: widget.state.interactingEvent?.body,
-                          attachments: widget.state.attachments,
-                          isProcessing: widget.state.processing,
-                          setInputText: widget.state.setMessageInputText.stream,
-                          relatedEventSenderName:
-                              widget.state.relatedEventSenderName,
-                          relatedEventSenderColor:
-                              widget.state.relatedEventSenderColor,
-                          interactionType: widget.state.interactionType,
-                          addAttachment: widget.state.addAttachment,
-                          onTextUpdated: widget.state.onInputTextUpdated,
-                          typingUsernames: widget
-                              .state.selectedRoom!.typingPeers
-                              .map((e) => e.displayName)
-                              .toList(),
-                          removeAttachment: widget.state.removeAttachment,
-                          focusKeyboard:
-                              widget.state.onFocusMessageInput.stream,
-                          availibleEmoticons: widget.state.selectedRoom!
-                              .roomEmoticons!.availableEmoji,
-                          availibleStickers: widget.state.selectedRoom!
-                              .roomEmoticons!.availableStickers,
-                          sendGif: widget.state.sendGif,
-                          sendSticker: widget.state.sendSticker,
-                          cancelReply: () {
-                            widget.state.setInteractingEvent(
-                              null,
-                            );
-                          }),
-                    )
-                  ],
+                Flexible(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Expanded(
+                          child: TimelineViewer(
+                        doMessageOverlayMenu: false,
+                        markAsRead:
+                            widget.state.selectedRoom!.timeline!.markAsRead,
+                        key: widget.state
+                            .timelines[widget.state.selectedRoom!.localId],
+                        timeline: widget.state.selectedRoom!.timeline!,
+                        onEventLongPress: showMessageMenu,
+                        onAddReaction: widget.state.addReaction,
+                        onReactionTapped: widget.state.onReactionTapped,
+                      )),
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                        child: MessageInput(
+                            key: messageInput,
+                            isRoomE2EE: widget.state.selectedRoom!.isE2EE,
+                            readIndicator: ReadIndicator(
+                              room: widget.state.selectedRoom!,
+                              initialList:
+                                  widget.state.selectedRoom?.timeline?.receipts,
+                            ),
+                            onSendMessage: (message) {
+                              widget.state.sendMessage(message);
+                              return MessageInputSendResult.success;
+                            },
+                            relatedEventBody:
+                                widget.state.interactingEvent?.body,
+                            attachments: widget.state.attachments,
+                            isProcessing: widget.state.processing,
+                            setInputText:
+                                widget.state.setMessageInputText.stream,
+                            relatedEventSenderName:
+                                widget.state.relatedEventSenderName,
+                            relatedEventSenderColor:
+                                widget.state.relatedEventSenderColor,
+                            interactionType: widget.state.interactionType,
+                            addAttachment: widget.state.addAttachment,
+                            onTextUpdated: widget.state.onInputTextUpdated,
+                            typingUsernames: widget
+                                .state.selectedRoom!.typingPeers
+                                .map((e) => e.displayName)
+                                .toList(),
+                            removeAttachment: widget.state.removeAttachment,
+                            focusKeyboard:
+                                widget.state.onFocusMessageInput.stream,
+                            availibleEmoticons: widget.state.selectedRoom!
+                                .roomEmoticons!.availableEmoji,
+                            availibleStickers: widget.state.selectedRoom!
+                                .roomEmoticons!.availableStickers,
+                            sendGif: widget.state.sendGif,
+                            sendSticker: widget.state.sendSticker,
+                            cancelReply: () {
+                              widget.state.setInteractingEvent(
+                                null,
+                              );
+                            }),
+                      )
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

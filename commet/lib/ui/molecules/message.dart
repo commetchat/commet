@@ -29,7 +29,7 @@ class Message extends StatefulWidget {
       this.onLongPress,
       this.isInReply = false,
       this.showSender = true});
-  final double avatarSize = 48;
+  final double avatarSize = 32;
 
   final bool showSender;
   final String senderName;
@@ -85,7 +85,7 @@ class _MessageState extends State<Message> {
 
   Widget buildContent() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 4, 8, 4),
+      padding: const EdgeInsets.fromLTRB(16, 2, 8, 2),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -96,14 +96,14 @@ class _MessageState extends State<Message> {
               avatar(),
               Flexible(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+                  padding: const EdgeInsets.fromLTRB(12, 0, 0, 0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       if (widget.showSender)
                         Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 0, 0, 4),
+                          padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                           child: Row(
                             children: [
                               senderName(),
@@ -141,7 +141,7 @@ class _MessageState extends State<Message> {
 
   Widget senderName() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
+      padding: const EdgeInsets.fromLTRB(0, 0, 4, 1),
       child: SizedBox(
         child: tiamat.Text.name(
           widget.senderName,

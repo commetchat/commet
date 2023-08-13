@@ -1,6 +1,7 @@
 // Based on https://github.com/blackmann/overlapping_panels
 // Copyright 2022 De-Great Yartey. All rights reserved.
 
+import 'package:commet/main.dart';
 import 'package:flutter/material.dart';
 import 'dart:core';
 
@@ -65,7 +66,7 @@ class OverlappingPanelsState extends State<OverlappingPanels>
   }
 
   void _onApplyTranslation() {
-    final mediaWidth = MediaQuery.of(context).size.width;
+    final mediaWidth = MediaQuery.of(context).size.width / preferences.appScale;
     final animationController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 300));
 

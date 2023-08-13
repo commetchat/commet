@@ -53,11 +53,9 @@ void main() async {
   double scale = preferences.appScale;
   var theme = preferences.theme;
 
-  if (BuildConfig.DESKTOP) {
-    ScaledWidgetsFlutterBinding.instance.scaleFactor = (deviceSize) {
-      return scale;
-    };
-  }
+  ScaledWidgetsFlutterBinding.instance.scaleFactor = (deviceSize) {
+    return scale;
+  };
 
   runApp(App(
     clientManager: clientManager!,

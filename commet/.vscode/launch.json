@@ -9,8 +9,10 @@
             "request": "launch",
             "type": "dart",
             "toolArgs": [
-                "--dart-define", "PLATFORM=linux",
-                "--dart-define", "BUILD_MODE=debug"
+                "--dart-define",
+                "PLATFORM=linux",
+                "--dart-define",
+                "BUILD_MODE=debug"
             ],
         },
         {
@@ -18,8 +20,10 @@
             "request": "launch",
             "type": "dart",
             "toolArgs": [
-                "--dart-define", "PLATFORM=windows",
-                "--dart-define", "BUILD_MODE=debug"
+                "--dart-define",
+                "PLATFORM=windows",
+                "--dart-define",
+                "BUILD_MODE=debug"
             ],
         },
         {
@@ -27,8 +31,10 @@
             "request": "launch",
             "type": "dart",
             "toolArgs": [
-                "--dart-define", "PLATFORM=mobile",
-                "--dart-define", "BUILD_MODE=debug"
+                "--dart-define",
+                "PLATFORM=mobile",
+                "--dart-define",
+                "BUILD_MODE=debug"
             ],
         },
         {
@@ -36,8 +42,10 @@
             "request": "launch",
             "type": "dart",
             "toolArgs": [
-                "--dart-define", "PLATFORM=web",
-                "--dart-define", "BUILD_MODE=debug"
+                "--dart-define",
+                "PLATFORM=web",
+                "--dart-define",
+                "BUILD_MODE=debug"
             ],
         },
         {
@@ -45,8 +53,10 @@
             "request": "launch",
             "type": "dart",
             "toolArgs": [
-                "--dart-define", "PLATFORM=web",
-                "--dart-define", "BUILD_MODE=release"
+                "--dart-define",
+                "PLATFORM=web",
+                "--dart-define",
+                "BUILD_MODE=release"
             ],
             "flutterMode": "release"
         },
@@ -55,8 +65,10 @@
             "request": "launch",
             "type": "dart",
             "toolArgs": [
-                "--dart-define", "PLATFORM=android",
-                "--dart-define", "BUILD_MODE=debug"
+                "--dart-define",
+                "PLATFORM=android",
+                "--dart-define",
+                "BUILD_MODE=debug"
             ],
         },
         {
@@ -70,8 +82,22 @@
             "request": "launch",
             "type": "dart",
             "toolArgs": [
-                "--dart-define", "PLATFORM=desktop",
-                "--dart-define", "BUILD_MODE=release"
+                "--dart-define",
+                "PLATFORM=desktop",
+                "--dart-define",
+                "BUILD_MODE=release"
+            ],
+            "flutterMode": "release"
+        },
+        {
+            "name": "commet (release mobile)",
+            "request": "launch",
+            "type": "dart",
+            "toolArgs": [
+                "--dart-define",
+                "PLATFORM=mobile",
+                "--dart-define",
+                "BUILD_MODE=release"
             ],
             "flutterMode": "release"
         },
@@ -80,14 +106,12 @@
             "request": "launch",
             "type": "dart",
             "program": "lib/widgetbook_runner.dart"
-
         },
         {
             "name": "tiamat widgetbook",
             "request": "launch",
             "type": "dart",
             "program": "../tiamat/lib/tiamat.widgetbook.dart"
-
         },
     ]
 }

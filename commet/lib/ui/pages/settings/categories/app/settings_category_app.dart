@@ -45,7 +45,7 @@ class SettingsCategoryApp implements SettingsCategory {
             }),
         if (preferences.developerMode)
           SettingsTab(
-            label: "Diagnostics",
+            label: "Developer Utils",
             icon: m.Icons.bug_report,
             pageBuilder: (context) {
               return const DeveloperSettingsPage();
@@ -76,7 +76,7 @@ class SettingsCategoryApp implements SettingsCategory {
         const SizedBox(
           height: 10,
         ),
-        if (BuildConfig.DESKTOP)
+        if (BuildConfig.DESKTOP || preferences.developerMode)
           const Panel(
             header: "UI Scale",
             mode: TileType.surfaceLow2,

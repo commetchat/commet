@@ -78,17 +78,17 @@ class UserPanelView extends material.StatelessWidget {
           splashColor: material.Theme.of(context).highlightColor,
           onTap: onClicked,
           child: Padding(
-            padding: padding ?? const EdgeInsets.fromLTRB(0, 3, 0, 3),
+            padding: padding ?? const EdgeInsets.fromLTRB(0, 0, 0, 0),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Avatar.medium(
+                Avatar.small(
                   image: avatar,
                   placeholderText: displayName,
                 ),
                 Flexible(
                   child: Padding(
-                    padding: const EdgeInsets.all(8),
+                    padding: const EdgeInsets.fromLTRB(8, 3, 8, 3),
                     child: Container(
                       alignment: Alignment.centerLeft,
                       child: Column(

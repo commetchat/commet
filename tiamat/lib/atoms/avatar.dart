@@ -88,7 +88,7 @@ class Avatar extends StatelessWidget {
         height: radius * 2,
         child: DecoratedBox(
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(radius),
+                borderRadius: BorderRadius.circular(radius / 1.25),
                 image: DecorationImage(
                     image: image!,
                     isAntiAlias: true,
@@ -103,7 +103,7 @@ class Avatar extends StatelessWidget {
       child: placeholderText != null
           ? DecoratedBox(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(radius),
+                borderRadius: BorderRadius.circular(radius / 1.25),
                 color: Colors.green,
               ),
               child: Align(
