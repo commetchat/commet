@@ -429,6 +429,15 @@ class ChatPageState extends State<ChatPage> {
             : null);
   }
 
+  void onReactionTapped(TimelineEvent event, Emoticon emote) {
+    if (event.reactions![emote]!
+        .contains(selectedRoom!.client.user!.identifier)) {
+      selectedRoom!.removeReaction(event, emote);
+    } else {
+      selectedRoom!.addReaction(event, emote);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -469,5 +478,9 @@ class ChatPageState extends State<ChatPage> {
     }
 
     throw Exception("Unknown build config");
+  }
+
+  void addReaction(TimelineEvent event, Emoticon emote) {
+    selectedRoom?.addReaction(event, emote);
   }
 }

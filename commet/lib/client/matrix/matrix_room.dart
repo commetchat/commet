@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:ui';
+import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_emoticon_component.dart';
 import 'package:commet/client/matrix/matrix_attachment.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
@@ -271,5 +272,23 @@ class MatrixRoom extends Room {
       }
     }
     throw UnimplementedError();
+  }
+
+  @override
+  Future<TimelineEvent?> addReaction(
+      TimelineEvent reactingTo, Emoticon reaction) async {
+    var id = await _matrixRoom.sendReaction(reactingTo.eventId, reaction.key);
+    if (id != null) {
+      var event = await _matrixRoom.getEventById(id);
+      return (timeline as MatrixTimeline).convertEvent(event!);
+    }
+
+    return null;
+  }
+
+  @override
+  Future<void> removeReaction(
+      TimelineEvent reactingTo, Emoticon reaction) async {
+    return (timeline! as MatrixTimeline).removeReaction(reactingTo, reaction);
   }
 }

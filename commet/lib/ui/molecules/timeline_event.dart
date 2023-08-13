@@ -8,6 +8,7 @@ import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 import '../../client/client.dart';
+import '../../client/components/emoticon/emoticon.dart';
 import '../../generated/l10n.dart';
 import '../atoms/message_attachment.dart';
 import '../atoms/tooltip.dart' as t;
@@ -23,6 +24,7 @@ class TimelineEventView extends StatefulWidget {
       this.setReplyingEvent,
       this.setEditingEvent,
       this.onDoubleTap,
+      this.onReactionTapped,
       this.onLongPress,
       this.debugInfo});
   final TimelineEvent event;
@@ -35,6 +37,7 @@ class TimelineEventView extends StatefulWidget {
   final Function()? onLongPress;
   final Function()? setReplyingEvent;
   final Function()? setEditingEvent;
+  final Function(Emoticon emote)? onReactionTapped;
 
   @override
   State<TimelineEventView> createState() => _TimelineEventState();
@@ -109,6 +112,8 @@ class _TimelineEventState extends State<TimelineEventView> {
           onDoubleTap: widget.onDoubleTap,
           onLongPress: widget.onLongPress,
           showSender: widget.showSender,
+          reactions: widget.event.reactions,
+          currentUserIdentifier: widget.timeline.room.client.user!.identifier,
           replyBody: relatedEvent?.body ??
               (relatedEvent?.type == EventType.sticker
                   ? T.current.messagePlaceholderSticker
@@ -117,6 +122,7 @@ class _TimelineEventState extends State<TimelineEventView> {
           replySenderColor: replyColor,
           isInReply: widget.event.relatedEventId != null,
           edited: widget.event.edited,
+          onReactionTapped: widget.onReactionTapped,
           body: buildBody(),
           menuBuilder: BuildConfig.DESKTOP ? buildMenu : null,
         );
@@ -172,7 +178,7 @@ class _TimelineEventState extends State<TimelineEventView> {
                 widget.setReplyingEvent!.call();
               }),
               buildMenuEntry(m.Icons.add_reaction, "Add Reaction", () => null),
-              if (canUserEditEvent())
+              if (canUserEditEvent() && widget.event.editable)
                 buildMenuEntry(m.Icons.edit, "Edit", () {
                   widget.setEditingEvent?.call();
                 }),

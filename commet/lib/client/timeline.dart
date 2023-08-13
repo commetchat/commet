@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:commet/client/attachment.dart';
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/notification/notification_manager.dart';
 import 'package:flutter/material.dart';
@@ -88,6 +89,7 @@ class TimelineEvent {
   String eventId = "";
   EventType type = EventType.invalid;
   bool edited = false;
+  bool get editable => type == EventType.message;
   late TimelineEventStatus status;
   late String senderId;
   late DateTime originServerTs;
@@ -99,6 +101,8 @@ class TimelineEvent {
   Widget? formattedContent;
   String? relatedEventId;
   EventRelationshipType? relationshipType;
+
+  Map<Emoticon, Set<String>>? reactions;
 
   late StreamController onChange = StreamController.broadcast();
 }

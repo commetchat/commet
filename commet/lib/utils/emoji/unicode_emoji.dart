@@ -170,6 +170,9 @@ class UnicodeEmoticon extends Emoticon {
   late String slug;
 
   @override
+  String get key => slug;
+
+  @override
   ImageProvider<Object> get image => _image;
 
   @override
@@ -225,5 +228,21 @@ class UnicodeEmoticon extends Emoticon {
       }
     }
     return r.join(sep);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    if (other is! UnicodeEmoticon) {
+      return false;
+    }
+
+    return other.slug == slug;
+  }
+
+  @override
+  int get hashCode {
+    return slug.hashCode;
   }
 }

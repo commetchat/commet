@@ -1,11 +1,15 @@
 import 'dart:async';
 import 'package:commet/client/attachment.dart';
+import 'package:commet/client/components/emoticon/emoticon.dart';
+import 'package:commet/client/matrix/components/emoticon/matrix_emoticon.dart';
 import 'package:commet/client/matrix/extensions/matrix_event_extensions.dart';
 import 'package:commet/client/matrix/matrix_mxc_file_provider.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/ui/atoms/rich_text/matrix_html_parser.dart';
+import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:commet/utils/mime.dart';
 import 'package:commet/utils/text_utils.dart';
+import 'package:flutter/foundation.dart';
 
 import '../client.dart';
 import 'package:matrix/matrix.dart' as matrix;
@@ -112,9 +116,14 @@ class MatrixTimeline extends Timeline {
       }
 
       return e;
-    } catch (identifier) {
+    } catch (error) {
       var result = TimelineEvent();
       result.type = EventType.unknown;
+
+      if (kDebugMode) {
+        rethrow;
+      }
+
       return result;
     }
   }
@@ -181,6 +190,7 @@ class MatrixTimeline extends Timeline {
   TimelineEvent parseMessage(TimelineEvent e, matrix.Event matrixEvent) {
     handleFormatting(matrixEvent, e);
     parseAnyAttachments(matrixEvent, e);
+    handleReactions(matrixEvent, e);
 
     // if the message body is the same as a file name we dont want to display that
     if (e.attachments != null &&
@@ -213,6 +223,40 @@ class MatrixTimeline extends Timeline {
       e.formattedContent = TextUtils.manageRtlSpan(matrixEvent.body,
           TextUtils.formatString(matrixEvent.body, allowBigEmoji: true));
     }
+  }
+
+  void handleReactions(matrix.Event matrixEvent, TimelineEvent e) {
+    if (!matrixEvent.hasAggregatedEvents(
+        _matrixTimeline!, matrix.RelationshipTypes.reaction)) return;
+
+    e.reactions = {};
+
+    var events = matrixEvent
+        .aggregatedEvents(_matrixTimeline!, matrix.RelationshipTypes.reaction)
+        .toList();
+
+    events.sort((eventA, eventB) =>
+        eventA.originServerTs.compareTo(eventB.originServerTs));
+
+    for (var event in events) {
+      var emoji = getEmojiFromEvent(event);
+      if (!e.reactions!.containsKey(emoji)) e.reactions![emoji] = {};
+
+      if (e.reactions!.containsKey(emoji)) {
+        e.reactions![emoji]!.add(event.senderId);
+      }
+    }
+  }
+
+  Emoticon getEmojiFromEvent(matrix.Event event) {
+    var key = event.content["m.relates_to"]['key'] as String;
+
+    if (key.startsWith("mxc://")) {
+      return MatrixEmoticon(Uri.parse(key), _matrixRoom.client,
+          shortcode: event.content.tryGet("shortcode") ?? "");
+    }
+
+    return UnicodeEmoticon(key, shortcode: event.content['shortcode']);
   }
 
   void parseAnyAttachments(matrix.Event matrixEvent, TimelineEvent e) {
@@ -310,5 +354,29 @@ class MatrixTimeline extends Timeline {
 
   void parseSticker(TimelineEvent e, matrix.Event event) {
     parseAnyAttachments(event, e);
+    handleReactions(event, e);
+  }
+
+  Future<void> removeReaction(
+      TimelineEvent reactingTo, Emoticon reaction) async {
+    var event = await _matrixRoom.getEventById(reactingTo.eventId);
+    if (event == null) return;
+
+    if (!event.hasAggregatedEvents(
+        _matrixTimeline!, matrix.RelationshipTypes.reaction)) return;
+
+    var events = event
+        .aggregatedEvents(_matrixTimeline!, matrix.RelationshipTypes.reaction)
+        .where((element) => element.senderId == _matrixRoom.client.userID);
+
+    for (var e in events) {
+      if (!e.content.containsKey("m.relates_to")) continue;
+      var content = e.content["m.relates_to"];
+
+      if (content.containsKey("key") && content["key"] == reaction.key) {
+        await _matrixRoom.redactEvent(e.eventId);
+        return;
+      }
+    }
   }
 }
