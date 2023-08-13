@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/utils/gif_search/gif_search_result.dart';
 import 'package:flutter/material.dart';
@@ -47,6 +48,11 @@ abstract class Room {
     TimelineEvent? replaceEvent,
     List<ProcessedAttachment> processedAttachments,
   });
+
+  Future<TimelineEvent?> addReaction(
+      TimelineEvent reactingTo, Emoticon reaction);
+
+  Future<void> removeReaction(TimelineEvent reactingTo, Emoticon reaction);
 
   Future<TimelineEvent?> sendGif(GifSearchResult gif, TimelineEvent? inReplyTo);
 
