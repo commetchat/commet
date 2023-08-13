@@ -88,6 +88,10 @@ class _TimelineEventState extends State<TimelineEventView> {
 
   Color get color => widget.timeline.room.getColorOfUser(widget.event.senderId);
 
+  Color get replyColor => relatedEvent == null
+      ? m.Theme.of(context).colorScheme.onPrimary
+      : widget.timeline.room.getColorOfUser(relatedEvent!.senderId);
+
   String? get relatedEventDisplayName => relatedEvent == null
       ? null
       : widget.timeline.client.fetchPeer(relatedEvent!.senderId).displayName;
@@ -110,7 +114,7 @@ class _TimelineEventState extends State<TimelineEventView> {
                   ? T.current.messagePlaceholderSticker
                   : null),
           replySenderName: relatedEventDisplayName,
-          replySenderColor: color,
+          replySenderColor: replyColor,
           isInReply: widget.event.relatedEventId != null,
           edited: widget.event.edited,
           body: buildBody(),
