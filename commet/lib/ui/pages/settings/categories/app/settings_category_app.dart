@@ -113,9 +113,9 @@ class _UIScaleSelectorState extends State<UIScaleSelector> {
           Expanded(
               child: Slider(
             min: 0.5,
-            max: 2,
+            max: preferences.developerMode ? 3 : 2,
             value: value,
-            divisions: 15,
+            divisions: preferences.developerMode ? 25 : 15,
             onChanged: (value) {
               setState(() {
                 this.value = value;
