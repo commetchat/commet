@@ -279,9 +279,7 @@ class _ImageButtonState extends State<ImageButton> {
 
   InkWell createInkwell() {
     return InkWell(
-      onTap: () {
-        widget.onTap?.call();
-      },
+      onTap: widget.onTap,
       child: widget.image != null
           ? Ink(
               child: Image(

@@ -25,7 +25,6 @@ import '../../molecules/overlapping_panels.dart';
 import '../../molecules/read_indicator.dart';
 import '../../molecules/space_viewer.dart';
 import '../../molecules/user_list.dart';
-import '../../molecules/user_panel.dart';
 import '../../organisms/side_navigation_bar.dart';
 
 import 'package:flutter/material.dart' as m;
@@ -89,20 +88,26 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
     return Row(
       children: [
         Tile.low4(
-          child: SideNavigationBar(
-            onDirectMessagesSelected: () {
-              widget.state.selectDirectMessages();
-            },
-            onSpaceSelected: (index) {
-              widget.state
-                  .selectSpace(widget.state.clientManager.spaces[index]);
-            },
-            clearSpaceSelection: () {
-              widget.state.clearSpaceSelection();
-            },
-            onHomeSelected: () {
-              widget.state.selectHome();
-            },
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
+            child: SafeArea(
+              child: SideNavigationBar(
+                currentUser: widget.state.getCurrentUser(),
+                onDirectMessagesSelected: () {
+                  widget.state.selectDirectMessages();
+                },
+                onSpaceSelected: (index) {
+                  widget.state
+                      .selectSpace(widget.state.clientManager.spaces[index]);
+                },
+                clearSpaceSelection: () {
+                  widget.state.clearSpaceSelection();
+                },
+                onHomeSelected: () {
+                  widget.state.selectHome();
+                },
+              ),
+            ),
           ),
         ),
         if (widget.state.selectedView == SubView.home) homeView(),
@@ -233,20 +238,6 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
                 },
               ),
             )),
-            Tile.low2(
-              child: SizedBox(
-                height: 70,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(8.0, 0, 0, 0),
-                  child: UserPanelView(
-                    displayName:
-                        widget.state.selectedSpace!.client.user!.displayName,
-                    avatar: widget.state.selectedSpace!.client.user!.avatar,
-                    detail: widget.state.selectedSpace!.client.user!.detail,
-                  ),
-                ),
-              ),
-            )
           ],
         ),
       ),

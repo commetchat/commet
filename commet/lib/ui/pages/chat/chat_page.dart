@@ -46,6 +46,9 @@ class ChatPageState extends State<ChatPage> {
   Space? selectedSpace;
   Room? selectedRoom;
 
+  Space? previousSelectedSpace;
+  Room? previousSelectedRoom;
+
   SubView selectedView = SubView.space;
 
   late GlobalKey<TimelineViewerState> timelineKey =
@@ -85,6 +88,19 @@ class ChatPageState extends State<ChatPage> {
   Color? get relatedEventSenderColor => interactingEvent == null
       ? null
       : selectedRoom?.getColorOfUser(interactingEvent!.senderId);
+
+  @override
+  void initState() {
+    super.initState();
+    notificationManager.addModifier(onlyNotifyNonSelectedRooms);
+    onOpenRoomSubscription =
+        NavigationSignals.openRoom.stream.listen(onOpenRoomSignal);
+
+    var user = getCurrentUser();
+    if (user.loading != null) {
+      user.loading!.then((value) => setState(() {}));
+    }
+  }
 
   void onInputTextUpdated(String currentText) {
     if (currentText.isEmpty) {
@@ -207,12 +223,11 @@ class ChatPageState extends State<ChatPage> {
   void clearSpaceSelection() {
     onSpaceUpdateSubscription?.cancel();
     clearRoomSelection();
-    selectSpace(null);
+    _clearSpaceSelection();
   }
 
   void clearRoomSelection() {
     onRoomUpdateSubscription?.cancel();
-
     if (kDebugMode) {
       // Weird hacky work around mentioned in #2
       timelines[selectedRoom?.localId]?.currentState!.prepareForDisposal();
@@ -248,15 +263,15 @@ class ChatPageState extends State<ChatPage> {
       // Weird hacky work around mentioned in #2
       timelines[selectedRoom?.localId]?.currentState!.prepareForDisposal();
       WidgetsBinding.instance.addPostFrameCallback((_) {
+        clearSpaceSelection();
         setState(() {
           selectedView = SubView.home;
-          selectedSpace = null;
         });
       });
     } else {
       setState(() {
         selectedView = SubView.home;
-        selectedSpace = null;
+        clearSpaceSelection();
       });
     }
   }
@@ -285,6 +300,7 @@ class ChatPageState extends State<ChatPage> {
 
   void _setSelectedRoom(Room room) {
     setState(() {
+      previousSelectedRoom = selectedRoom;
       selectedRoom = room;
       interactingEvent = null;
       clearAttachments();
@@ -297,6 +313,7 @@ class ChatPageState extends State<ChatPage> {
 
   void _setSelectedSpace(Space? space) {
     setState(() {
+      previousSelectedSpace = selectedSpace;
       selectedSpace = space;
       selectedView = SubView.space;
       interactingEvent = null;
@@ -307,17 +324,34 @@ class ChatPageState extends State<ChatPage> {
   void _clearRoomSelection() {
     setState(() {
       interactingEvent = null;
+      previousSelectedRoom = selectedRoom;
       selectedRoom = null;
       clearAttachments();
     });
   }
 
-  @override
-  void initState() {
-    super.initState();
-    notificationManager.addModifier(onlyNotifyNonSelectedRooms);
-    onOpenRoomSubscription =
-        NavigationSignals.openRoom.stream.listen(onOpenRoomSignal);
+  void _clearSpaceSelection() {
+    setState(() {
+      interactingEvent = null;
+      previousSelectedRoom = selectedRoom;
+      previousSelectedSpace = selectedSpace;
+      selectedRoom = null;
+      selectedSpace = null;
+      clearAttachments();
+    });
+  }
+
+  Peer getCurrentUser() {
+    if (selectedRoom != null) return selectedRoom!.client.user!;
+
+    if (selectedSpace != null) return selectedSpace!.client.user!;
+
+    if (previousSelectedRoom != null) return previousSelectedRoom!.client.user!;
+
+    if (previousSelectedSpace != null)
+      return previousSelectedSpace!.client.user!;
+
+    return clientManager.clients.first.user!;
   }
 
   void onOpenRoomSignal(String roomId) {

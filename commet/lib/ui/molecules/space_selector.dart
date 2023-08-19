@@ -29,6 +29,8 @@ class SpaceSelector extends StatefulWidget {
   final void Function(int index)? onSelected;
   final void Function()? clearSelection;
 
+  static EdgeInsets get padding => const EdgeInsets.fromLTRB(7, 0, 7, 0);
+
   @override
   State<SpaceSelector> createState() => _SpaceSelectorState();
 }
@@ -70,64 +72,58 @@ class _SpaceSelectorState extends State<SpaceSelector> {
     super.dispose();
   }
 
-  EdgeInsets get padding => const EdgeInsets.fromLTRB(7, 0, 7, 0);
-
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Column(
-        children: [
-          Flexible(
-            child: ScrollConfiguration(
-              behavior:
-                  ScrollConfiguration.of(context).copyWith(scrollbars: false),
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (widget.header != null)
-                        Padding(
-                          padding: padding,
-                          child: widget.header!,
-                        ),
-                      if (widget.header != null) const Seperator(),
-                      AnimatedList(
-                          key: _listKey,
-                          physics: const NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          initialItemCount: _count,
-                          itemBuilder: (context, i, animation) =>
-                              buildSpaceIcon(
-                                animation,
-                                displayName: widget.spaces[i].displayName,
-                                onUpdate: widget.spaces[i].onUpdate.stream,
-                                avatar: widget.spaces[i].avatar,
-                                notificationCount:
-                                    widget.spaces[i].displayNotificationCount,
-                                highlightedNotificationCount: widget.spaces[i]
-                                    .displayHighlightedNotificationCount,
-                                userAvatar:
-                                    widget.spaces[i].client.user!.avatar,
-                                index: i,
-                              )),
-                      if (widget.footer != null) const Seperator(),
-                      if (widget.footer != null)
-                        Padding(
-                          padding: padding,
-                          child: widget.footer!,
-                        ),
-                    ],
-                  ),
+    return Column(
+      children: [
+        Flexible(
+          child: ScrollConfiguration(
+            behavior:
+                ScrollConfiguration.of(context).copyWith(scrollbars: false),
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (widget.header != null)
+                      Padding(
+                        padding: SpaceSelector.padding,
+                        child: widget.header!,
+                      ),
+                    if (widget.header != null) const Seperator(),
+                    AnimatedList(
+                        key: _listKey,
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        initialItemCount: _count,
+                        itemBuilder: (context, i, animation) => buildSpaceIcon(
+                              animation,
+                              displayName: widget.spaces[i].displayName,
+                              onUpdate: widget.spaces[i].onUpdate.stream,
+                              avatar: widget.spaces[i].avatar,
+                              notificationCount:
+                                  widget.spaces[i].displayNotificationCount,
+                              highlightedNotificationCount: widget.spaces[i]
+                                  .displayHighlightedNotificationCount,
+                              userAvatar: widget.spaces[i].client.user!.avatar,
+                              index: i,
+                            )),
+                    if (widget.footer != null) const Seperator(),
+                    if (widget.footer != null)
+                      Padding(
+                        padding: SpaceSelector.padding,
+                        child: widget.footer!,
+                      ),
+                  ],
                 ),
               ),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -145,7 +141,7 @@ class _SpaceSelectorState extends State<SpaceSelector> {
         alignment: Alignment.centerLeft,
         children: [
           Padding(
-            padding: padding,
+            padding: SpaceSelector.padding,
             child: Padding(
               padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
               child: SpaceIcon(
