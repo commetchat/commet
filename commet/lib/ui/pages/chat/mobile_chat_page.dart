@@ -342,11 +342,9 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
   }
 
   void selectRoom(Room room) {
-    Future.delayed(const Duration(milliseconds: 125)).then((value) {
-      panelsKey.currentState!.reveal(RevealSide.main);
-      setState(() {
-        shouldMainIgnoreInput = false;
-      });
+    panelsKey.currentState!.reveal(RevealSide.main);
+    setState(() {
+      shouldMainIgnoreInput = false;
     });
 
     widget.state.selectRoom(room);
