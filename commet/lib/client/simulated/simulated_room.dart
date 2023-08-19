@@ -169,4 +169,7 @@ class SimulatedRoom extends Room {
   Future<void> removeReaction(TimelineEvent reactingTo, Emoticon reaction) {
     throw UnimplementedError();
   }
+
+  @override
+  Color get defaultColor => Colors.redAccent;
 }

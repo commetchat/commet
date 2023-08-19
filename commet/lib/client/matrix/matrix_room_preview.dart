@@ -1,3 +1,4 @@
+import 'package:commet/client/matrix/matrix_peer.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:flutter/widgets.dart';
 import 'package:matrix/matrix.dart';
@@ -24,4 +25,7 @@ class MatrixSpaceRoomChunkPreview implements RoomPreview {
             .toString())
         : null;
   }
+
+  @override
+  Color get color => MatrixPeer.hashColor(roomId);
 }

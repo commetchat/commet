@@ -100,7 +100,6 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
 
   void setAspectRatio(double ratio) async {
     var size = await windowManager.getSize();
-    var titleHeight = await windowManager.getTitleBarHeight();
     var newWidth = size.height * ratio;
     await windowManager.setSize(Size(newWidth, size.height));
   }

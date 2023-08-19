@@ -58,6 +58,11 @@ class MatrixRoom extends Room {
       const JsonEncoder.withIndent('  ').convert(_matrixRoom.states);
 
   @override
+  Color get defaultColor => isDirectMessage
+      ? getColorOfUser(directMessagePartnerID!)
+      : getColorOfUser(identifier);
+
+  @override
   PushRule get pushRule {
     switch (_matrixRoom.pushRuleState) {
       case matrix.PushRuleState.notify:
@@ -91,7 +96,7 @@ class MatrixRoom extends Room {
     var users = room.getParticipants();
     for (var user in users) {
       if (!this.client.peerExists(user.id)) {
-        this.client.addPeer(MatrixPeer(matrixClient, user.id));
+        this.client.addPeer(MatrixPeer(client, matrixClient, user.id));
       }
     }
 

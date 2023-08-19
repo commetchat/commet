@@ -1,10 +1,13 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'dart:async';
+
 import 'package:commet/client/timeline.dart';
 import 'package:commet/ui/molecules/direct_message_list.dart';
 import 'package:commet/ui/molecules/emoji_picker.dart';
 import 'package:commet/ui/molecules/timeline_viewer.dart';
 import 'package:commet/ui/molecules/timeline_event.dart';
+import 'package:commet/ui/navigation/navigation_signals.dart';
 import 'package:commet/ui/pages/chat/chat_page.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart' as material;
@@ -40,6 +43,7 @@ class MobileChatPageView extends StatefulWidget {
 class _MobileChatPageViewState extends State<MobileChatPageView> {
   late GlobalKey<OverlappingPanelsState> panelsKey;
   late GlobalKey<MessageInputState> messageInput = GlobalKey();
+  StreamSubscription? onOpenRoomSubscription;
   bool shouldMainIgnoreInput = false;
   double height = -1;
 
@@ -49,7 +53,15 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
   @override
   void initState() {
     panelsKey = GlobalKey<OverlappingPanelsState>();
+    onOpenRoomSubscription =
+        NavigationSignals.openRoom.stream.listen(onNavigateToRoom);
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    onOpenRoomSubscription?.cancel();
+    super.dispose();
   }
 
   @override
@@ -520,5 +532,9 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
     if (event.type != EventType.message) return false;
 
     return true;
+  }
+
+  void onNavigateToRoom(String id) {
+    panelsKey.currentState?.reveal(RevealSide.main);
   }
 }

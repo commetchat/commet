@@ -11,4 +11,7 @@ class SimulatedPeer extends Peer {
     userName = displayName;
     detail = "simulated";
   }
+
+  @override
+  Color get defaultColor => Colors.redAccent;
 }

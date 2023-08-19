@@ -9,4 +9,5 @@ abstract class Peer {
   Future<void>? loading;
   String? detail;
   ImageProvider? avatar;
+  Color get defaultColor;
 }

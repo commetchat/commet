@@ -176,6 +176,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
                   child: RoomPanel(
                     displayName: room.displayName,
                     avatar: room.avatar,
+                    color: room.defaultColor,
                     showSettingsButton: room.permissions.canEditAnything,
                     onRoomSettingsButtonPressed: () {
                       widget.onRoomSettingsButtonTap?.call(room);
@@ -220,6 +221,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
                 avatar: preview.avatar,
                 topic: preview.topic,
                 showJoinButton: true,
+                color: preview.color,
                 onJoinButtonPressed: () {
                   widget.joinRoom?.call(preview.roomId);
                 },

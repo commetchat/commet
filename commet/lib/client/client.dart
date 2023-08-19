@@ -185,4 +185,6 @@ abstract class Client {
 
   /// Fetches a peer from the server. does not need to implement caching
   Peer fetchPeerInternal(String identifier);
+
+  Future<Room?> createDirectMessage(String userId);
 }

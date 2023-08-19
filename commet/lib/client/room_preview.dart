@@ -1,10 +1,11 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 
 abstract class RoomPreview {
   String get roomId;
   ImageProvider? get avatar;
   String? get displayName;
   String? get topic;
+  Color get color;
 }
 
 class GenericRoomPreview implements RoomPreview {
@@ -21,4 +22,7 @@ class GenericRoomPreview implements RoomPreview {
   String? topic;
 
   GenericRoomPreview(this.roomId, {this.avatar, this.displayName, this.topic});
+
+  @override
+  Color get color => Colors.grey;
 }

@@ -159,4 +159,9 @@ class SimulatedClient extends Client {
   Widget buildDebugInfo() {
     return const Placeholder();
   }
+
+  @override
+  Future<Room?> createDirectMessage(String userId) {
+    throw UnimplementedError();
+  }
 }

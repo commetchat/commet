@@ -100,7 +100,7 @@ class MatrixClient extends Client {
             waitForFirstSync: !loadingFromCache,
             waitUntilLoadCompletedLoaded: true);
       });
-      user = MatrixPeer(_matrixClient, _matrixClient.userID!);
+      user = MatrixPeer(this, _matrixClient, _matrixClient.userID!);
       addPeer(user!);
 
       firstSync = _matrixClient.oneShotSync();
@@ -221,7 +221,7 @@ class MatrixClient extends Client {
 
   void _postLoginSuccess() {
     if (_matrixClient.userID != null) {
-      user = MatrixPeer(_matrixClient, _matrixClient.userID!);
+      user = MatrixPeer(this, _matrixClient, _matrixClient.userID!);
     }
   }
 
@@ -339,7 +339,7 @@ class MatrixClient extends Client {
 
   @override
   Peer fetchPeerInternal(String identifier) {
-    var peer = MatrixPeer(_matrixClient, identifier);
+    var peer = MatrixPeer(this, _matrixClient, identifier);
     return peer;
   }
 
@@ -365,5 +365,18 @@ class MatrixClient extends Client {
         text: const JsonEncoder.withIndent('  ').convert(data),
       ),
     );
+  }
+
+  @override
+  Future<Room?> createDirectMessage(String userId) async {
+    var roomId = await _matrixClient.startDirectChat(userId);
+    if (roomExists(roomId)) return getRoom(roomId);
+
+    var matrixRoom = _matrixClient.getRoomById(roomId);
+    if (matrixRoom == null) return null;
+
+    MatrixRoom room = MatrixRoom(this, matrixRoom, _matrixClient);
+    addRoom(room);
+    return room;
   }
 }
