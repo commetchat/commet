@@ -27,6 +27,7 @@ class SpaceSummaryView extends StatefulWidget {
       this.onRoomAdded,
       this.onRoomRemoved,
       this.visibility,
+      this.spaceColor,
       this.showSpaceSettingsButton = false,
       this.openSpaceSettings,
       this.onAddRoomButtonTap,
@@ -44,6 +45,7 @@ class SpaceSummaryView extends StatefulWidget {
   final Stream<int>? onRoomRemoved;
   final RoomVisibility? visibility;
   final ImageProvider? avatar;
+  final Color? spaceColor;
   final List<Room>? rooms;
   final Function? openSpaceSettings;
   final Function(Room room)? onRoomSettingsButtonTap;
@@ -153,6 +155,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
       child: Avatar.extraLarge(
         image: widget.avatar,
         placeholderText: widget.displayName,
+        placeholderColor: widget.spaceColor,
       ),
     );
   }

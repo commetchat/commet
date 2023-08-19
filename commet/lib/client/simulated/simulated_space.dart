@@ -82,4 +82,7 @@ class SimulatedSpace extends Space {
 
   @override
   EmoticonComponent? get emoticons => null;
+
+  @override
+  Color get color => Colors.redAccent;
 }

@@ -50,6 +50,7 @@ class _UserPanelState extends material.State<UserPanel> {
       avatar: widget.peer.avatar,
       detail: widget.peer.detail,
       color: widget.userColor,
+      padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
       onClicked: onUserPanelClicked,
     );
   }

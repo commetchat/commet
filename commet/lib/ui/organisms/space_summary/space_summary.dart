@@ -54,6 +54,7 @@ class _SpaceSummaryState extends State<SpaceSummary> {
       joinRoom: joinRoom,
       openSpaceSettings: openSpaceSettings,
       onRoomSettingsButtonTap: openRoomSettings,
+      spaceColor: widget.space.color,
       onRoomTap: widget.onRoomTap,
       showSpaceSettingsButton: widget.space.permissions.canEditAnything,
       onAddRoomButtonTap: onAddRoomButtonTap,
