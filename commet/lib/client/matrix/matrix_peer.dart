@@ -1,4 +1,5 @@
 import 'package:commet/client/client.dart';
+import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart' as matrix;
@@ -6,10 +7,11 @@ import 'package:matrix/matrix.dart' as matrix;
 class MatrixPeer extends Peer {
   late matrix.Client _matrixClient;
 
-  MatrixPeer(matrix.Client matrixClient, String userId) {
+  MatrixPeer(MatrixClient client, matrix.Client matrixClient, String userId) {
     _matrixClient = matrixClient;
     identifier = userId;
     displayName = userId;
+    this.client = client;
     loading = init();
   }
 
@@ -65,4 +67,7 @@ class MatrixPeer extends Peer {
 
     return colors[index];
   }
+
+  @override
+  Color get defaultColor => hashColor(identifier);
 }

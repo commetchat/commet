@@ -14,12 +14,14 @@ class RoomPanel extends StatefulWidget {
       this.showJoinButton = false,
       this.showSettingsButton = false,
       this.onTap,
+      this.color,
       super.key});
   final ImageProvider? avatar;
   final String displayName;
   final String? topic;
   final bool showJoinButton;
   final bool showSettingsButton;
+  final Color? color;
   final Function()? onJoinButtonPressed;
   final Function()? onRoomSettingsButtonPressed;
   final Function()? onTap;
@@ -51,6 +53,7 @@ class _RoomPanelState extends State<RoomPanel> {
                       Avatar.medium(
                         image: widget.avatar,
                         placeholderText: widget.displayName,
+                        placeholderColor: widget.color,
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),

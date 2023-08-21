@@ -24,6 +24,7 @@ abstract class Room {
   late Permissions permissions;
   bool get isMember => false;
   bool get isE2EE;
+  Color get defaultColor;
   StreamController<void> onUpdate = StreamController.broadcast();
   PushRule get pushRule;
 

@@ -76,22 +76,6 @@ class SimulatedClient extends Client {
       space.addRoom(room);
     }
     addSpace(space);
-    addSpace(SimulatedSpace("Simulated Space 2", this));
-    addSpace(SimulatedSpace("Simulated Space 3", this));
-    addSpace(SimulatedSpace("Simulated Space 4", this));
-    addSpace(SimulatedSpace("Simulated Space 5", this));
-    addSpace(SimulatedSpace("Simulated Space 6", this));
-    addSpace(SimulatedSpace("Simulated Space 7", this));
-    addSpace(SimulatedSpace("Simulated Space 8", this));
-    addSpace(SimulatedSpace("Simulated Space 9", this));
-    addSpace(SimulatedSpace("Simulated Space 10", this));
-
-    Future.delayed(const Duration(seconds: 10), () {
-      if (_isLogged) {
-        addSpace(SimulatedSpace("Simulated Space 11", this));
-        addSpace(SimulatedSpace("Simulated Space 12", this));
-      }
-    });
   }
 
   @override
@@ -116,15 +100,11 @@ class SimulatedClient extends Client {
 
   @override
   Future<RoomPreview?> getRoomPreviewInternal(String address) {
-    // ignore: todo
-// TODO: implement getRoomPreviewInternal
     throw UnimplementedError();
   }
 
   @override
   Future<RoomPreview?> getSpacePreviewInternal(String address) {
-    // ignore: todo
-// TODO: implement getSpacePreviewInternal
     throw UnimplementedError();
   }
 
@@ -158,5 +138,10 @@ class SimulatedClient extends Client {
   @override
   Widget buildDebugInfo() {
     return const Placeholder();
+  }
+
+  @override
+  Future<Room?> createDirectMessage(String userId) {
+    throw UnimplementedError();
   }
 }

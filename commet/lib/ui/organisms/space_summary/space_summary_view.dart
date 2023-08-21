@@ -27,6 +27,7 @@ class SpaceSummaryView extends StatefulWidget {
       this.onRoomAdded,
       this.onRoomRemoved,
       this.visibility,
+      this.spaceColor,
       this.showSpaceSettingsButton = false,
       this.openSpaceSettings,
       this.onAddRoomButtonTap,
@@ -44,6 +45,7 @@ class SpaceSummaryView extends StatefulWidget {
   final Stream<int>? onRoomRemoved;
   final RoomVisibility? visibility;
   final ImageProvider? avatar;
+  final Color? spaceColor;
   final List<Room>? rooms;
   final Function? openSpaceSettings;
   final Function(Room room)? onRoomSettingsButtonTap;
@@ -153,6 +155,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
       child: Avatar.extraLarge(
         image: widget.avatar,
         placeholderText: widget.displayName,
+        placeholderColor: widget.spaceColor,
       ),
     );
   }
@@ -176,6 +179,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
                   child: RoomPanel(
                     displayName: room.displayName,
                     avatar: room.avatar,
+                    color: room.defaultColor,
                     showSettingsButton: room.permissions.canEditAnything,
                     onRoomSettingsButtonPressed: () {
                       widget.onRoomSettingsButtonTap?.call(room);
@@ -220,6 +224,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
                 avatar: preview.avatar,
                 topic: preview.topic,
                 showJoinButton: true,
+                color: preview.color,
                 onJoinButtonPressed: () {
                   widget.joinRoom?.call(preview.roomId);
                 },

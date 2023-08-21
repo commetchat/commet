@@ -1,10 +1,13 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'dart:async';
+
 import 'package:commet/client/timeline.dart';
 import 'package:commet/ui/molecules/direct_message_list.dart';
 import 'package:commet/ui/molecules/emoji_picker.dart';
 import 'package:commet/ui/molecules/timeline_viewer.dart';
 import 'package:commet/ui/molecules/timeline_event.dart';
+import 'package:commet/ui/navigation/navigation_signals.dart';
 import 'package:commet/ui/pages/chat/chat_page.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart' as material;
@@ -22,7 +25,6 @@ import '../../molecules/overlapping_panels.dart';
 import '../../molecules/read_indicator.dart';
 import '../../molecules/space_viewer.dart';
 import '../../molecules/user_list.dart';
-import '../../molecules/user_panel.dart';
 import '../../organisms/side_navigation_bar.dart';
 
 import 'package:flutter/material.dart' as m;
@@ -40,6 +42,7 @@ class MobileChatPageView extends StatefulWidget {
 class _MobileChatPageViewState extends State<MobileChatPageView> {
   late GlobalKey<OverlappingPanelsState> panelsKey;
   late GlobalKey<MessageInputState> messageInput = GlobalKey();
+  StreamSubscription? onOpenRoomSubscription;
   bool shouldMainIgnoreInput = false;
   double height = -1;
 
@@ -49,7 +52,15 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
   @override
   void initState() {
     panelsKey = GlobalKey<OverlappingPanelsState>();
+    onOpenRoomSubscription =
+        NavigationSignals.openRoom.stream.listen(onNavigateToRoom);
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    onOpenRoomSubscription?.cancel();
+    super.dispose();
   }
 
   @override
@@ -77,20 +88,26 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
     return Row(
       children: [
         Tile.low4(
-          child: SideNavigationBar(
-            onDirectMessagesSelected: () {
-              widget.state.selectDirectMessages();
-            },
-            onSpaceSelected: (index) {
-              widget.state
-                  .selectSpace(widget.state.clientManager.spaces[index]);
-            },
-            clearSpaceSelection: () {
-              widget.state.clearSpaceSelection();
-            },
-            onHomeSelected: () {
-              widget.state.selectHome();
-            },
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
+            child: SafeArea(
+              child: SideNavigationBar(
+                currentUser: widget.state.getCurrentUser(),
+                onDirectMessagesSelected: () {
+                  widget.state.selectDirectMessages();
+                },
+                onSpaceSelected: (index) {
+                  widget.state
+                      .selectSpace(widget.state.clientManager.spaces[index]);
+                },
+                clearSpaceSelection: () {
+                  widget.state.clearSpaceSelection();
+                },
+                onHomeSelected: () {
+                  widget.state.selectHome();
+                },
+              ),
+            ),
           ),
         ),
         if (widget.state.selectedView == SubView.home) homeView(),
@@ -221,20 +238,6 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
                 },
               ),
             )),
-            Tile.low2(
-              child: SizedBox(
-                height: 70,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(8.0, 0, 0, 0),
-                  child: UserPanelView(
-                    displayName:
-                        widget.state.selectedSpace!.client.user!.displayName,
-                    avatar: widget.state.selectedSpace!.client.user!.avatar,
-                    detail: widget.state.selectedSpace!.client.user!.detail,
-                  ),
-                ),
-              ),
-            )
           ],
         ),
       ),
@@ -339,11 +342,9 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
   }
 
   void selectRoom(Room room) {
-    Future.delayed(const Duration(milliseconds: 125)).then((value) {
-      panelsKey.currentState!.reveal(RevealSide.main);
-      setState(() {
-        shouldMainIgnoreInput = false;
-      });
+    panelsKey.currentState!.reveal(RevealSide.main);
+    setState(() {
+      shouldMainIgnoreInput = false;
     });
 
     widget.state.selectRoom(room);
@@ -520,5 +521,9 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
     if (event.type != EventType.message) return false;
 
     return true;
+  }
+
+  void onNavigateToRoom(String id) {
+    panelsKey.currentState?.reveal(RevealSide.main);
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/pages/add_space_or_room/add_space_or_room.dart';
@@ -17,6 +18,7 @@ import '../navigation/navigation_utils.dart';
 class SideNavigationBar extends StatefulWidget {
   const SideNavigationBar(
       {super.key,
+      required this.currentUser,
       this.onSpaceSelected,
       this.onDirectMessagesSelected,
       this.onSettingsSelected,
@@ -26,6 +28,7 @@ class SideNavigationBar extends StatefulWidget {
   static ValueKey settingsKey =
       const ValueKey("SIDE_NAVIGATION_SETTINGS_BUTTON");
 
+  final Peer currentUser;
   final void Function(int index)? onSpaceSelected;
   final void Function()? clearSpaceSelection;
   final void Function()? onDirectMessagesSelected;
@@ -78,82 +81,99 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
   Widget build(BuildContext context) {
     return SizedBox(
         width: 70.0,
-        child: SpaceSelector(
-          _clientManager.spaces,
-          width: 70,
-          onSpaceInsert: _clientManager.onSpaceAdded.stream,
-          onSpaceRemoved: _clientManager.onSpaceRemoved.stream,
-          clearSelection: widget.clearSpaceSelection,
-          header: Column(
-            children: [
-              SideNavigationBar.tooltip(
-                  T.of(context).home,
+        child: Column(
+          children: [
+            Padding(
+              padding: SpaceSelector.padding,
+              child: SideNavigationBar.tooltip(
+                  widget.currentUser.displayName,
                   ImageButton(
                     size: 70,
-                    icon: Icons.home,
-                    onTap: () {
-                      widget.onHomeSelected?.call();
-                    },
+                    image: widget.currentUser.avatar,
                   ),
                   context),
-              const SizedBox(
-                height: 3,
-              ),
-              SideNavigationBar.tooltip(
-                  "Direct Messages",
-                  ImageButton(
-                    size: 70,
-                    icon: Icons.person,
-                    onTap: () {
-                      widget.onDirectMessagesSelected?.call();
-                    },
-                  ),
-                  context)
-            ],
-          ),
-          footer: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
-                child: SideNavigationBar.tooltip(
-                    T.of(context).addSpace,
-                    ImageButton(
-                      // tooltip: "Add a Space",
-                      size: 70,
-                      icon: Icons.add,
-                      onTap: () {
-                        AdaptiveDialog.show(context,
-                            builder: (_) => AddSpaceOrRoom(
-                                  clients: _clientManager.clients,
-                                ),
-                            title: T.of(context).addSpace);
-                      },
+            ),
+            const Seperator(),
+            Expanded(
+              child: SpaceSelector(
+                _clientManager.spaces,
+                width: 70,
+                onSpaceInsert: _clientManager.onSpaceAdded.stream,
+                onSpaceRemoved: _clientManager.onSpaceRemoved.stream,
+                clearSelection: widget.clearSpaceSelection,
+                header: Column(
+                  children: [
+                    SideNavigationBar.tooltip(
+                        T.of(context).home,
+                        ImageButton(
+                          size: 70,
+                          icon: Icons.home,
+                          onTap: () {
+                            widget.onHomeSelected?.call();
+                          },
+                        ),
+                        context),
+                    const SizedBox(
+                      height: 3,
                     ),
-                    context),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
-                child: SideNavigationBar.tooltip(
-                  T.of(context).settings,
-                  ImageButton(
-                    // tooltip: "Settings",
-                    key: SideNavigationBar.settingsKey,
-                    size: 70,
-                    icon: Icons.settings,
-                    onTap: () {
-                      NavigationUtils.navigateTo(
-                          context, const AppSettingsPage());
-                    },
-                  ),
-                  context,
+                    SideNavigationBar.tooltip(
+                        "Direct Messages",
+                        ImageButton(
+                          size: 70,
+                          icon: Icons.person,
+                          onTap: () {
+                            widget.onDirectMessagesSelected?.call();
+                          },
+                        ),
+                        context)
+                  ],
                 ),
+                footer: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
+                      child: SideNavigationBar.tooltip(
+                          T.of(context).addSpace,
+                          ImageButton(
+                            // tooltip: "Add a Space",
+                            size: 70,
+                            icon: Icons.add,
+                            onTap: () {
+                              AdaptiveDialog.show(context,
+                                  builder: (_) => AddSpaceOrRoom(
+                                        clients: _clientManager.clients,
+                                      ),
+                                  title: T.of(context).addSpace);
+                            },
+                          ),
+                          context),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
+                      child: SideNavigationBar.tooltip(
+                        T.of(context).settings,
+                        ImageButton(
+                          // tooltip: "Settings",
+                          key: SideNavigationBar.settingsKey,
+                          size: 70,
+                          icon: Icons.settings,
+                          onTap: () {
+                            NavigationUtils.navigateTo(
+                                context, const AppSettingsPage());
+                          },
+                        ),
+                        context,
+                      ),
+                    ),
+                  ],
+                ),
+                showSpaceOwnerAvatar: false,
+                onSelected: (index) {
+                  widget.onSpaceSelected?.call(index);
+                },
               ),
-            ],
-          ),
-          showSpaceOwnerAvatar: false,
-          onSelected: (index) {
-            widget.onSpaceSelected?.call(index);
-          },
+            ),
+          ],
         ));
   }
 }

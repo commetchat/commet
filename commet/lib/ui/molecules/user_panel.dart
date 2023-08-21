@@ -1,4 +1,6 @@
 import 'package:commet/client/client.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
+import 'package:commet/ui/organisms/user_profile/user_profile.dart';
 import 'package:flutter/material.dart' as material;
 import 'package:flutter/widgets.dart';
 import 'package:tiamat/tiamat.dart';
@@ -48,7 +50,18 @@ class _UserPanelState extends material.State<UserPanel> {
       avatar: widget.peer.avatar,
       detail: widget.peer.detail,
       color: widget.userColor,
+      padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+      onClicked: onUserPanelClicked,
     );
+  }
+
+  void onUserPanelClicked() {
+    AdaptiveDialog.show(context,
+        builder: (_) => UserProfile(
+              user: widget.peer,
+              dismiss: () => Navigator.pop(context),
+            ),
+        title: "User");
   }
 }
 
@@ -85,6 +98,7 @@ class UserPanelView extends material.StatelessWidget {
                 Avatar.small(
                   image: avatar,
                   placeholderText: displayName,
+                  placeholderColor: color,
                 ),
                 Flexible(
                   child: Padding(
@@ -98,7 +112,6 @@ class UserPanelView extends material.StatelessWidget {
                         children: [
                           tiamat.Text.name(
                             displayName,
-                            color: color,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),

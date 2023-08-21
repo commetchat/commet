@@ -8,7 +8,6 @@ import 'package:commet/ui/molecules/timeline_viewer.dart';
 import 'package:commet/ui/molecules/read_indicator.dart';
 import 'package:commet/ui/molecules/message_input.dart';
 import 'package:commet/ui/molecules/space_viewer.dart';
-import 'package:commet/ui/molecules/user_panel.dart';
 import 'package:commet/ui/organisms/side_navigation_bar.dart';
 import 'package:commet/ui/pages/chat/chat_page.dart';
 import 'package:desktop_drop/desktop_drop.dart';
@@ -42,20 +41,24 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Tile.low4(
-              child: SideNavigationBar(
-                onSpaceSelected: (index) {
-                  widget.state
-                      .selectSpace(widget.state.clientManager.spaces[index]);
-                },
-                onDirectMessagesSelected: () {
-                  widget.state.selectDirectMessages();
-                },
-                onHomeSelected: () {
-                  widget.state.selectHome();
-                },
-                clearSpaceSelection: () {
-                  widget.state.clearSpaceSelection();
-                },
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
+                child: SideNavigationBar(
+                  currentUser: widget.state.getCurrentUser(),
+                  onSpaceSelected: (index) {
+                    widget.state
+                        .selectSpace(widget.state.clientManager.spaces[index]);
+                  },
+                  onDirectMessagesSelected: () {
+                    widget.state.selectDirectMessages();
+                  },
+                  onHomeSelected: () {
+                    widget.state.selectHome();
+                  },
+                  clearSpaceSelection: () {
+                    widget.state.clearSpaceSelection();
+                  },
+                ),
               ),
             ),
             if (widget.state.selectedView == SubView.directMessages)
@@ -283,20 +286,6 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
                       .selectRoom(widget.state.selectedSpace!.rooms[index]);
                 },
               )),
-              Tile.low2(
-                child: SizedBox(
-                  height: 65,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
-                    child: UserPanelView(
-                      displayName:
-                          widget.state.selectedSpace!.client.user!.displayName,
-                      avatar: widget.state.selectedSpace!.client.user!.avatar,
-                      detail: widget.state.selectedSpace!.client.user!.detail,
-                    ),
-                  ),
-                ),
-              )
             ],
           ),
         ));

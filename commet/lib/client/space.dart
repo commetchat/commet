@@ -28,6 +28,8 @@ abstract class Space {
 
   late RoomVisibility visibility = RoomVisibility.private;
 
+  Color get color;
+
   EmoticonComponent? get emoticons;
 
   String get developerInfo;

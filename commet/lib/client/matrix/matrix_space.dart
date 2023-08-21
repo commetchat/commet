@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
 import 'components/emoticon/matrix_emoticon_pack.dart';
+import 'matrix_peer.dart';
 
 class MatrixSpace extends Space {
   late matrix.Room _matrixRoom;
@@ -31,6 +32,8 @@ class MatrixSpace extends Space {
   @override
   late final MatrixEmoticonComponent emoticons;
 
+  @override
+  Color get color => MatrixPeer.hashColor(_matrixRoom.id);
   @override
   PushRule get pushRule {
     switch (_matrixRoom.pushRuleState) {
