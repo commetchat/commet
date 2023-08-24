@@ -134,6 +134,7 @@ class _MessageState extends State<Message> {
               radius: widget.avatarSize / 2,
               placeholderText: widget.senderName,
               image: widget.senderAvatar,
+              placeholderColor: widget.senderColor,
             )
           : null,
     );
