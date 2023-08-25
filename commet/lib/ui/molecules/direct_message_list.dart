@@ -30,7 +30,7 @@ class _DirectMessageListState extends State<DirectMessageList> {
         return UserPanelView(
           displayName: room.displayName,
           avatar: room.avatar,
-          color: room.defaultColor,
+          avatarColor: room.defaultColor,
           padding: const EdgeInsets.fromLTRB(4, 2, 0, 2),
           onClicked: () {
             setState(() {

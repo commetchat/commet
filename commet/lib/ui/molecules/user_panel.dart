@@ -52,7 +52,7 @@ class _UserPanelState extends material.State<UserPanel> {
       color: widget.userColor,
       avatarColor: widget.userColor,
       nameColor: widget.userColor,
-      padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+      padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
       onClicked: onUserPanelClicked,
     );
   }
