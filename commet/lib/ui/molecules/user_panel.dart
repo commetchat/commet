@@ -50,7 +50,9 @@ class _UserPanelState extends material.State<UserPanel> {
       avatar: widget.peer.avatar,
       detail: widget.peer.detail,
       color: widget.userColor,
-      padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+      avatarColor: widget.userColor,
+      nameColor: widget.userColor,
+      padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
       onClicked: onUserPanelClicked,
     );
   }
@@ -71,12 +73,16 @@ class UserPanelView extends material.StatelessWidget {
       this.avatar,
       required this.displayName,
       this.color,
+      this.avatarColor,
+      this.nameColor,
       this.detail,
       this.padding,
       this.onClicked});
   final ImageProvider? avatar;
   final String displayName;
   final Color? color;
+  final Color? avatarColor;
+  final Color? nameColor;
   final String? detail;
   final EdgeInsets? padding;
   final void Function()? onClicked;
@@ -98,7 +104,7 @@ class UserPanelView extends material.StatelessWidget {
                 Avatar.small(
                   image: avatar,
                   placeholderText: displayName,
-                  placeholderColor: color,
+                  placeholderColor: avatarColor,
                 ),
                 Flexible(
                   child: Padding(
@@ -112,6 +118,7 @@ class UserPanelView extends material.StatelessWidget {
                         children: [
                           tiamat.Text.name(
                             displayName,
+                            color: nameColor,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
