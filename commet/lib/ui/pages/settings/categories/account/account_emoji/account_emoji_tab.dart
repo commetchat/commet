@@ -55,6 +55,8 @@ class _AccountEmojiTabState extends State<AccountEmojiTab> {
     }
 
     return Column(
+      // I dont love using a key here, is there a better way to do this? i dont know
+      key: ValueKey("account_emoji_editor_key_${selectedClient!.identifier}"),
       children: [
         RoomEmojiPackSettingsView(selectedClient!.emoticons!.ownedPacks,
             createNewPack: createPack,
@@ -67,8 +69,9 @@ class _AccountEmojiTabState extends State<AccountEmojiTab> {
         const SizedBox(
           height: 5,
         ),
-        AccountEmojiView(selectedClient!.emoticons!.globalPacks(),
-            selectedClient!.emoticons!.ownedPacks),
+        if (selectedClient!.emoticons!.globalPacks().isNotEmpty)
+          AccountEmojiView(selectedClient!.emoticons!.globalPacks(),
+              selectedClient!.emoticons!.ownedPacks),
       ],
     );
   }
