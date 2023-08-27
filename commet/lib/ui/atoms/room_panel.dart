@@ -96,8 +96,10 @@ class _RoomPanelState extends State<RoomPanel> {
       mainAxisSize: MainAxisSize.min,
       textBaseline: TextBaseline.alphabetic,
       children: [
-        tiamat.Text.name(
+        tiamat.Text(
           widget.recentEventSender!,
+          type: TextType.labelLow,
+          autoAdjustBrightness: true,
           color: widget.recentEventSenderColor,
         ),
         const SizedBox(

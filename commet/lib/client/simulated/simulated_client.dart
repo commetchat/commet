@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 import 'package:commet/client/client.dart';
+import 'package:commet/client/invitation.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/client/simulated/simulated_peer.dart';
 import 'package:commet/client/simulated/simulated_room.dart';
@@ -49,6 +50,9 @@ class SimulatedClient extends Client {
   Future<void> logout() async {
     _isLogged = false;
   }
+
+  @override
+  List<Invitation> get invitations => [];
 
   void _postLoginSuccess() {
     user = SimulatedPeer(this, "simulated@example.com", "Simulated",

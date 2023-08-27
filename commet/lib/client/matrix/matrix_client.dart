@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/emoticon/emoticon_component.dart';
+import 'package:commet/client/invitation.dart';
 import 'package:commet/client/matrix/extensions/matrix_client_extensions.dart';
+import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/config/app_config.dart';
 import 'package:commet/config/build_config.dart';
@@ -61,6 +63,10 @@ class MatrixClient extends Client {
   @override
   int? get maxFileSize => config?.mUploadSize;
 
+  final Map<String, Invitation> _invitations = {};
+  @override
+  List<Invitation> get invitations => _invitations.values.toList();
+
   static Future<void> loadFromDB(ClientManager manager) async {
     await diagnostics.timeAsync("loadFromDB", () async {
       var clients = preferences.getRegisteredMatrixClients();
@@ -91,7 +97,6 @@ class MatrixClient extends Client {
       BuildConfig.WEB
           ? const matrix.NativeImplementationsDummy()
           : matrix.NativeImplementationsIsolate(compute);
-
   @override
   Future<void> init(bool loadingFromCache) async {
     if (!_matrixClient.isLogged()) {
@@ -110,11 +115,11 @@ class MatrixClient extends Client {
       config = value;
     });
 
-    _matrixClient.onSync.stream.listen(
-        (event) => {onSync.add(null), _updateRoomslist(), _updateSpacesList()});
+    _matrixClient.onSync.stream.listen(onMatrixClientSync);
 
     _updateRoomslist();
     _updateSpacesList();
+    _updateInviteList();
     _emoticons =
         MatrixEmoticonComponent(MatrixPersonalEmoticonHelper(this), this);
 
@@ -131,6 +136,13 @@ class MatrixClient extends Client {
             title: "Authentication Request");
       }
     });
+  }
+
+  void onMatrixClientSync(matrix.SyncUpdate update) {
+    onSync.add(null);
+    _updateRoomslist();
+    _updateSpacesList();
+    _updateInviteList();
   }
 
   @override
@@ -225,10 +237,38 @@ class MatrixClient extends Client {
     }
   }
 
-  void _updateRoomslist() {
+  void _updateInviteList() {
     var allRooms = _matrixClient.rooms.where((element) => !element.isSpace);
 
-    for (var room in allRooms) {
+    var invitedRooms = allRooms.where((element) => element.membership.isInvite);
+
+    for (var invite in invitedRooms) {
+      var state =
+          invite.states[matrix.EventTypes.RoomMember]![_matrixClient.userID!]!;
+      var sender = state.senderId;
+
+      var inviteId = state.eventId;
+      if (_invitations.containsKey(inviteId)) continue;
+
+      var avatar = invite.avatar != null
+          ? MatrixMxcImage(invite.avatar!, _matrixClient)
+          : null;
+      var entry = Invitation(
+          senderId: sender,
+          invitedToId: invite.id,
+          invitationId: state.eventId,
+          avatar: avatar,
+          displayName: invite.getLocalizedDisplayname());
+
+      _invitations[inviteId] = entry;
+    }
+  }
+
+  void _updateRoomslist() {
+    var joinedRooms = _matrixClient.rooms
+        .where((element) => !element.isSpace && element.membership.isJoin);
+
+    for (var room in joinedRooms) {
       if (roomExists(room.id)) continue;
       addRoom(MatrixRoom(this, room, _matrixClient));
     }

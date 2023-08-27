@@ -1,3 +1,4 @@
+import 'package:commet/client/invitation.dart';
 import 'package:commet/ui/atoms/room_panel.dart';
 import 'package:flutter/material.dart';
 import 'package:implicitly_animated_list/implicitly_animated_list.dart';
@@ -8,14 +9,23 @@ import '../../../client/room.dart';
 class HomeScreenView extends StatelessWidget {
   final List<Room>? rooms;
   final List<Room>? recentActivity;
+  final List<Invitation>? invitations;
   final Function(Room room)? onRoomClicked;
   const HomeScreenView(
-      {super.key, this.rooms, this.recentActivity, this.onRoomClicked});
+      {super.key,
+      this.rooms,
+      this.recentActivity,
+      this.onRoomClicked,
+      this.invitations});
 
   @override
   Widget build(BuildContext context) {
     return ListView(
-      children: [recentRooms(), roomsList()]
+      children: [
+        if (invitations?.isNotEmpty == true) invitationsList(),
+        recentRooms(),
+        roomsList()
+      ]
           .map((e) => Padding(
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
                 child: e,
@@ -26,7 +36,7 @@ class HomeScreenView extends StatelessWidget {
 
   Widget recentRooms() {
     return Panel(
-        mode: TileType.surfaceLow1,
+        mode: TileType.surface,
         header: "Recent Activity",
         child: ImplicitlyAnimatedList(
           shrinkWrap: true,
@@ -51,7 +61,7 @@ class HomeScreenView extends StatelessWidget {
 
   Widget roomsList() {
     return Panel(
-        mode: TileType.surfaceLow1,
+        mode: TileType.surface,
         header: "Rooms",
         child: ImplicitlyAnimatedList(
           physics: const NeverScrollableScrollPhysics(),
@@ -71,6 +81,27 @@ class HomeScreenView extends StatelessWidget {
                   ? room.getColorOfUser(room.lastEvent!.senderId)
                   : null,
               onTap: () => onRoomClicked?.call(room),
+            );
+          },
+        ));
+  }
+
+  Widget invitationsList() {
+    return Panel(
+        mode: TileType.surfaceLow1,
+        header: "Invitations",
+        child: ImplicitlyAnimatedList(
+          physics: const NeverScrollableScrollPhysics(),
+          initialAnimation: false,
+          shrinkWrap: true,
+          itemData: invitations!,
+          itemBuilder: (context, invitation) {
+            return RoomPanel(
+              displayName: invitation.displayName!,
+              avatar: invitation.avatar,
+              showJoinButton: true,
+              recentEventSender: invitation.senderId,
+              recentEventBody: "Invited you to a room",
             );
           },
         ));

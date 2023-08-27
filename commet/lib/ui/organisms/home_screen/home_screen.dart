@@ -60,6 +60,12 @@ class _HomeScreenState extends State<HomeScreen> {
       rooms: widget.clientManager.singleRooms,
       recentActivity: recentActivity,
       onRoomClicked: (room) => NavigationSignals.openRoom.add(room.identifier),
+      invitations: widget.clientManager.clients
+          .map((e) => e.invitations)
+          .fold(List.empty(growable: true), (previousValue, element) {
+        previousValue!.addAll(element);
+        return previousValue;
+      }),
     );
   }
 }
