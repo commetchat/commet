@@ -29,10 +29,10 @@ class _WindowSettingsPageState extends State<WindowSettingsPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Flexible(
+            const Flexible(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children: [
                   tiamat.Text.labelEmphasised("Minimize on close"),
                   tiamat.Text.labelLow(
                       "When closing the window, the app will be minimized instead of exited")

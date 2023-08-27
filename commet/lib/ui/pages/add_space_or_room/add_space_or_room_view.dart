@@ -485,11 +485,11 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
             SizedBox(
               height: 100,
               child: loadingSpacePreview
-                  ? Column(
+                  ? const Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
                       mainAxisSize: MainAxisSize.min,
-                      children: const [
+                      children: [
                         CircularProgressIndicator(),
                       ],
                     )

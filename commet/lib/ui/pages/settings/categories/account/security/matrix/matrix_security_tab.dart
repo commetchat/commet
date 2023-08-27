@@ -108,11 +108,11 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Flexible(
+        const Flexible(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
+            children: [
               tiamat.Text.label("Cross Signing"),
               tiamat.Text.labelLow(
                   "Setup to verify and keep track of all your sessions")
@@ -151,11 +151,11 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Flexible(
+        const Flexible(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
+            children: [
               tiamat.Text.label("Message Backup"),
               tiamat.Text.labelLow(
                   "Maintains a backup of your message history, in case you lose all your sessions. Your messages will be encrypted before uploading")

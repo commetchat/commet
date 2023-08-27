@@ -271,9 +271,9 @@ class _MatrixCrossSigningViewState extends State<MatrixCrossSigningView> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          m.Column(
+          const m.Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
+            children: [
               tiamat.Text.label(
                   "Are you sure you want to wipe your cross signing keys?"),
               SizedBox(
@@ -326,10 +326,10 @@ class _MatrixCrossSigningViewState extends State<MatrixCrossSigningView> {
               ),
             ],
           ),
-          Row(
+          const Row(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
-            children: const [
+            children: [
               SizedBox(
                 width: 100,
                 height: 10,
@@ -428,9 +428,9 @@ class _MatrixCrossSigningViewState extends State<MatrixCrossSigningView> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          m.Column(
+          const m.Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
+            children: [
               tiamat.Text.label("Existing signing keys have been found!"),
               SizedBox(
                 height: 20,
@@ -469,9 +469,9 @@ class _MatrixCrossSigningViewState extends State<MatrixCrossSigningView> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        m.Column(
+        const m.Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
+          children: [
             tiamat.Text.label("Existing keys found, would you like to reset?"),
             SizedBox(
               height: 20,
@@ -512,9 +512,9 @@ class _MatrixCrossSigningViewState extends State<MatrixCrossSigningView> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        m.Column(
+        const m.Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
+          children: [
             tiamat.Text.label("Would you like to enable online key backup?"),
             SizedBox(
               height: 20,
@@ -599,9 +599,9 @@ class _MatrixCrossSigningViewState extends State<MatrixCrossSigningView> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        m.Column(
+        const m.Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
+          children: [
             tiamat.Text.label("Existing backup found!"),
             SizedBox(
               height: 20,

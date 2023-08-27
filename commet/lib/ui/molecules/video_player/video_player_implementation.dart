@@ -40,11 +40,11 @@ class _VideoPlayerImplementationState extends State<VideoPlayerImplementation> {
         seekTo: seekTo,
         getLength: getLength);
 
-    player.streams.position.listen((event) {
+    player.stream.position.listen((event) {
       widget.controller.setProgress(event);
     });
 
-    player.streams.completed.listen(
+    player.stream.completed.listen(
       (completed) {
         widget.controller.setCompleted(completed);
       },

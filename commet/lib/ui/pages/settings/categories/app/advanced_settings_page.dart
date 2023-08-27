@@ -29,9 +29,9 @@ class _AdvancedSettingsPageState extends State<AdvancedSettingsPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Column(
+            const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
+              children: [
                 tiamat.Text.labelEmphasised("Developer mode"),
                 tiamat.Text.labelLow(
                     "Shows extra information, useful for developers")
