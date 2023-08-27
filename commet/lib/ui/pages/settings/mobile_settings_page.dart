@@ -61,6 +61,7 @@ class _MobileSettingsPageState extends State<MobileSettingsPage> {
                           ListView.builder(
                             shrinkWrap: true,
                             itemCount: tabs[categoryIndex].tabs.length,
+                            physics: const NeverScrollableScrollPhysics(),
                             itemBuilder: (context, tabIndex) {
                               return SizedBox(
                                   height: 40,

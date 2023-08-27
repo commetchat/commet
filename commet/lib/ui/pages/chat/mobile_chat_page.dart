@@ -8,12 +8,13 @@ import 'package:commet/ui/molecules/emoji_picker.dart';
 import 'package:commet/ui/molecules/timeline_viewer.dart';
 import 'package:commet/ui/molecules/timeline_event.dart';
 import 'package:commet/ui/navigation/navigation_signals.dart';
+import 'package:commet/ui/organisms/home_screen/home_screen.dart';
 import 'package:commet/ui/pages/chat/chat_page.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart' as material;
 import 'package:tiamat/config/config.dart';
 import 'package:tiamat/tiamat.dart';
-
+import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:flutter/services.dart' as services;
 
 import '../../../client/room.dart';
@@ -46,7 +47,6 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
   bool shouldMainIgnoreInput = false;
   double height = -1;
 
-  static const Key homeRoomsList = ValueKey("MOBILE_HOME_ROOMS_LIST");
   static const Key directRoomsList = ValueKey("MOBILE_DIRECT_ROOMS_LIST");
 
   @override
@@ -93,9 +93,6 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
             child: SafeArea(
               child: SideNavigationBar(
                 currentUser: widget.state.getCurrentUser(),
-                onDirectMessagesSelected: () {
-                  widget.state.selectDirectMessages();
-                },
                 onSpaceSelected: (index) {
                   widget.state
                       .selectSpace(widget.state.clientManager.spaces[index]);
@@ -110,9 +107,7 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
             ),
           ),
         ),
-        if (widget.state.selectedView == SubView.home) homeView(),
-        if (widget.state.selectedView == SubView.directMessages)
-          directMessagesView(),
+        if (widget.state.selectedView == SubView.home) directMessagesView(),
         if (widget.state.selectedView == SubView.space &&
             widget.state.selectedSpace != null)
           spaceRoomSelector(newContext),
@@ -136,7 +131,11 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
       );
     }
 
-    return timelineView();
+    if (widget.state.selectedRoom != null) {
+      return roomChatView();
+    }
+
+    return Tile(child: HomeScreen(clientManager: widget.state.clientManager));
   }
 
   Widget userList() {
@@ -162,50 +161,31 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(0, 0, 50, 0),
-            child: DirectMessageList(
-              key: directRoomsList,
-              directMessages: widget.state.clientManager.directMessages,
-              onSelected: (index) {
-                setState(() {
-                  selectRoom(widget.state.clientManager.directMessages[index]);
-                });
-              },
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: tiamat.Text.labelLow("Direct Messages"),
+                ),
+                Flexible(
+                  child: DirectMessageList(
+                    key: directRoomsList,
+                    directMessages: widget.state.clientManager.directMessages,
+                    onSelected: (index) {
+                      setState(() {
+                        selectRoom(
+                            widget.state.clientManager.directMessages[index]);
+                      });
+                    },
+                  ),
+                ),
+              ],
             ),
           ),
         ),
       ),
-    );
-  }
-
-  Widget homeView() {
-    return Flexible(
-      child: Tile.low1(
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(0, 0, 50, 0),
-            child: DirectMessageList(
-              key: homeRoomsList,
-              directMessages: widget.state.clientManager.singleRooms,
-              onSelected: (index) {
-                setState(() {
-                  selectRoom(widget.state.clientManager.singleRooms[index]);
-                });
-              },
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget timelineView() {
-    if (widget.state.selectedRoom != null) {
-      return roomChatView();
-    }
-
-    return Container(
-      color: m.Colors.red,
-      child: const Placeholder(),
     );
   }
 

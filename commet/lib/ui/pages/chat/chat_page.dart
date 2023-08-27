@@ -30,7 +30,6 @@ enum EventInteractionType {
 
 enum SubView {
   space,
-  directMessages,
   home,
 }
 
@@ -49,7 +48,7 @@ class ChatPageState extends State<ChatPage> {
   Space? previousSelectedSpace;
   Room? previousSelectedRoom;
 
-  SubView selectedView = SubView.space;
+  SubView selectedView = SubView.home;
 
   late GlobalKey<TimelineViewerState> timelineKey =
       GlobalKey<TimelineViewerState>();
@@ -238,25 +237,6 @@ class ChatPageState extends State<ChatPage> {
     }
   }
 
-  void selectDirectMessages() {
-    onRoomUpdateSubscription?.cancel();
-    if (kDebugMode) {
-      // Weird hacky work around mentioned in #2
-      timelines[selectedRoom?.localId]?.currentState!.prepareForDisposal();
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        setState(() {
-          selectedView = SubView.directMessages;
-          selectedSpace = null;
-        });
-      });
-    } else {
-      setState(() {
-        selectedView = SubView.directMessages;
-        selectedSpace = null;
-      });
-    }
-  }
-
   void selectHome() {
     onRoomUpdateSubscription?.cancel();
     if (kDebugMode) {
@@ -324,7 +304,9 @@ class ChatPageState extends State<ChatPage> {
   void _clearRoomSelection() {
     setState(() {
       interactingEvent = null;
-      previousSelectedRoom = selectedRoom;
+      if (selectedRoom != null) {
+        previousSelectedRoom = selectedRoom;
+      }
       selectedRoom = null;
       clearAttachments();
     });
@@ -333,8 +315,12 @@ class ChatPageState extends State<ChatPage> {
   void _clearSpaceSelection() {
     setState(() {
       interactingEvent = null;
-      previousSelectedRoom = selectedRoom;
-      previousSelectedSpace = selectedSpace;
+      if (selectedRoom != null) {
+        previousSelectedRoom = selectedRoom;
+      }
+      if (selectedSpace != null) {
+        previousSelectedSpace = selectedSpace;
+      }
       selectedRoom = null;
       selectedSpace = null;
       clearAttachments();

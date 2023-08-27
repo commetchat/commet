@@ -172,4 +172,8 @@ class SimulatedRoom extends Room {
 
   @override
   Color get defaultColor => Colors.redAccent;
+
+  @override
+  TimelineEvent? get lastEvent =>
+      timeline!.events.isEmpty ? null : timeline!.events.first;
 }

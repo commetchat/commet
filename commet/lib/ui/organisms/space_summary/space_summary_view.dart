@@ -189,6 +189,15 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
                             widget.onRoomTap?.call(room);
                           }
                         : null,
+                    recentEventBody: room.lastEvent?.body,
+                    recentEventSender: room.lastEvent != null
+                        ? room.client
+                            .fetchPeer(room.lastEvent!.senderId)
+                            .displayName
+                        : null,
+                    recentEventSenderColor: room.lastEvent != null
+                        ? room.getColorOfUser(room.lastEvent!.senderId)
+                        : null,
                   ));
             },
           ),

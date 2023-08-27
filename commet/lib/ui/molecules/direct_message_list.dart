@@ -27,17 +27,20 @@ class _DirectMessageListState extends State<DirectMessageList> {
       initialItemCount: numDMs,
       itemBuilder: (context, index, animation) {
         var room = widget.directMessages[index];
-        return UserPanelView(
-          displayName: room.displayName,
-          avatar: room.avatar,
-          avatarColor: room.defaultColor,
-          padding: const EdgeInsets.fromLTRB(4, 2, 0, 2),
-          onClicked: () {
-            setState(() {
-              selectedIndex = index;
-              widget.onSelected?.call(index);
-            });
-          },
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
+          child: UserPanelView(
+            displayName: room.displayName,
+            avatar: room.avatar,
+            avatarColor: room.defaultColor,
+            padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
+            onClicked: () {
+              setState(() {
+                selectedIndex = index;
+                widget.onSelected?.call(index);
+              });
+            },
+          ),
         );
       },
     );
