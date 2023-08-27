@@ -61,6 +61,7 @@ class SingleUserReadIndicator extends StatefulWidget {
       {required this.identifier, required this.room, super.key});
   final String identifier;
   final Room room;
+
   @override
   State<SingleUserReadIndicator> createState() =>
       _SingleUserReadIndicatorState();
@@ -72,7 +73,9 @@ class _SingleUserReadIndicatorState extends State<SingleUserReadIndicator> {
   void initState() {
     peer = widget.room.client.fetchPeer(widget.identifier);
     peer.loading?.then((_) {
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     });
     super.initState();
   }
@@ -82,6 +85,7 @@ class _SingleUserReadIndicatorState extends State<SingleUserReadIndicator> {
     return Avatar(
       radius: 10,
       image: peer.avatar,
+      placeholderColor: widget.room.getColorOfUser(widget.identifier),
       placeholderText: peer.displayName,
     );
   }

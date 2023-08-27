@@ -263,6 +263,8 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
                           key: messageInput,
                           isRoomE2EE: widget.state.selectedRoom!.isE2EE,
                           readIndicator: ReadIndicator(
+                            key: ValueKey(
+                                "room_read_indicator_key_${widget.state.selectedRoom!.identifier}"),
                             room: widget.state.selectedRoom!,
                             initialList:
                                 widget.state.selectedRoom?.timeline?.receipts,

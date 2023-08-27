@@ -177,6 +177,8 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
                               widget.state.onFocusMessageInput.stream,
                           attachments: widget.state.attachments,
                           readIndicator: ReadIndicator(
+                            key: ValueKey(
+                                "room_read_indicator_key_${widget.state.selectedRoom!.identifier}"),
                             room: widget.state.selectedRoom!,
                             initialList:
                                 widget.state.selectedRoom?.timeline?.receipts,
