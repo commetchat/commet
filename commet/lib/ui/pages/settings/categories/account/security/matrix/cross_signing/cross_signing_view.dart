@@ -8,8 +8,7 @@ import 'package:matrix/encryption.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 
-@WidgetbookUseCase(
-    name: 'Ask Setup Cross Signing', type: MatrixCrossSigningView)
+@UseCase(name: 'Ask Setup Cross Signing', type: MatrixCrossSigningView)
 @Deprecated("widgetbook")
 Widget wbCrossSigningViewAskSetup(BuildContext context) {
   return const m.Scaffold(
@@ -24,7 +23,7 @@ Widget wbCrossSigningViewAskSetup(BuildContext context) {
   );
 }
 
-@WidgetbookUseCase(name: 'Loading', type: MatrixCrossSigningView)
+@UseCase(name: 'Loading', type: MatrixCrossSigningView)
 @Deprecated("widgetbook")
 Widget wbCrossSigningViewLoading(BuildContext context) {
   return const m.Scaffold(
@@ -39,7 +38,7 @@ Widget wbCrossSigningViewLoading(BuildContext context) {
   );
 }
 
-@WidgetbookUseCase(name: 'Ask New Ssss', type: MatrixCrossSigningView)
+@UseCase(name: 'Ask New Ssss', type: MatrixCrossSigningView)
 @Deprecated("widgetbook")
 Widget wbCrossSigningAskNewSsss(BuildContext context) {
   return const m.Scaffold(
@@ -54,8 +53,7 @@ Widget wbCrossSigningAskNewSsss(BuildContext context) {
   );
 }
 
-@WidgetbookUseCase(
-    name: 'Ask Setup online backup', type: MatrixCrossSigningView)
+@UseCase(name: 'Ask Setup online backup', type: MatrixCrossSigningView)
 @Deprecated("widgetbook")
 Widget wbCrossSigningaskSetupOnlineKeyBackup(BuildContext context) {
   return const m.Scaffold(
@@ -70,7 +68,7 @@ Widget wbCrossSigningaskSetupOnlineKeyBackup(BuildContext context) {
   );
 }
 
-@WidgetbookUseCase(name: 'Ask Use Existing Ssss', type: MatrixCrossSigningView)
+@UseCase(name: 'Ask Use Existing Ssss', type: MatrixCrossSigningView)
 @Deprecated("widgetbook")
 Widget wbCrossSigningaskUseExistingSsss(BuildContext context) {
   return const m.Scaffold(

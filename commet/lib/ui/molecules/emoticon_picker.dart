@@ -12,7 +12,7 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 import '../../client/components/emoticon/emoji_pack.dart';
 import '../../client/components/emoticon/emoticon.dart';
 
-@WidgetbookUseCase(name: 'Emoticon Picker', type: EmoticonPicker)
+@UseCase(name: 'Emoticon Picker', type: EmoticonPicker)
 @Deprecated("widgetbook")
 Widget wbEmoticonPicker(BuildContext context) {
   return Center(
@@ -33,7 +33,7 @@ Widget wbEmoticonPicker(BuildContext context) {
   );
 }
 
-@WidgetbookUseCase(name: 'Emoticon Picker With Gif', type: EmoticonPicker)
+@UseCase(name: 'Emoticon Picker With Gif', type: EmoticonPicker)
 @Deprecated("widgetbook")
 Widget wbEmoticonPickerWithGif(BuildContext context) {
   return Center(

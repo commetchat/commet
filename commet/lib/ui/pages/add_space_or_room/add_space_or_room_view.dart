@@ -14,8 +14,7 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 import '../../../generated/l10n.dart';
 import '../../molecules/account_selector.dart';
 
-@WidgetbookUseCase(
-    name: 'Add Space Multiple Accounts', type: AddSpaceOrRoomView)
+@UseCase(name: 'Add Space Multiple Accounts', type: AddSpaceOrRoomView)
 @Deprecated("widgetbook")
 Widget wbAddSpacePageMultiAccount(BuildContext context) {
   var clients = [SimulatedClient(), SimulatedClient(), SimulatedClient()];
@@ -32,7 +31,7 @@ Widget wbAddSpacePageMultiAccount(BuildContext context) {
           )));
 }
 
-@WidgetbookUseCase(name: 'Add Space Single Account', type: AddSpaceOrRoomView)
+@UseCase(name: 'Add Space Single Account', type: AddSpaceOrRoomView)
 @Deprecated("widgetbook")
 Widget wbAddSpacePageSingleAccount(BuildContext context) {
   var client = SimulatedClient();
@@ -49,7 +48,7 @@ Widget wbAddSpacePageSingleAccount(BuildContext context) {
   ));
 }
 
-@WidgetbookUseCase(name: 'Ask add space', type: AddSpaceOrRoomView)
+@UseCase(name: 'Ask add space', type: AddSpaceOrRoomView)
 @Deprecated("widgetbook")
 Widget wbAddSpacePagePrompt(BuildContext context) {
   var client = SimulatedClient();
@@ -66,7 +65,7 @@ Widget wbAddSpacePagePrompt(BuildContext context) {
   ));
 }
 
-@WidgetbookUseCase(name: 'Ask add room', type: AddSpaceOrRoomView)
+@UseCase(name: 'Ask add room', type: AddSpaceOrRoomView)
 @Deprecated("widgetbook")
 Widget wbAddRoomPagePrompt(BuildContext context) {
   var clients = [SimulatedClient()];
@@ -86,7 +85,7 @@ Widget wbAddRoomPagePrompt(BuildContext context) {
   ));
 }
 
-@WidgetbookUseCase(name: 'Join Space', type: AddSpaceOrRoomView)
+@UseCase(name: 'Join Space', type: AddSpaceOrRoomView)
 @Deprecated("widgetbook")
 Widget wbAddRoomJoinSpace(BuildContext context) {
   var client = SimulatedClient();
@@ -104,7 +103,7 @@ Widget wbAddRoomJoinSpace(BuildContext context) {
   ));
 }
 
-@WidgetbookUseCase(name: 'Join Room', type: AddSpaceOrRoomView)
+@UseCase(name: 'Join Room', type: AddSpaceOrRoomView)
 @Deprecated("widgetbook")
 Widget wbAddRoomJoinRoom(BuildContext context) {
   var client = SimulatedClient();
@@ -123,7 +122,7 @@ Widget wbAddRoomJoinRoom(BuildContext context) {
   ));
 }
 
-@WidgetbookUseCase(name: 'Add Room Single Account', type: AddSpaceOrRoomView)
+@UseCase(name: 'Add Room Single Account', type: AddSpaceOrRoomView)
 @Deprecated("widgetbook")
 Widget wbAddRoomPageSingleAccount(BuildContext context) {
   var client = SimulatedClient();
@@ -141,7 +140,7 @@ Widget wbAddRoomPageSingleAccount(BuildContext context) {
   ));
 }
 
-@WidgetbookUseCase(name: 'Add Room Multi Account', type: AddSpaceOrRoomView)
+@UseCase(name: 'Add Room Multi Account', type: AddSpaceOrRoomView)
 @Deprecated("widgetbook")
 Widget wbAddRoomPageMultiAccount(BuildContext context) {
   var clients = [SimulatedClient(), SimulatedClient(), SimulatedClient()];
@@ -161,8 +160,7 @@ Widget wbAddRoomPageMultiAccount(BuildContext context) {
   ));
 }
 
-@WidgetbookUseCase(
-    name: 'Ask create or use existing room', type: AddSpaceOrRoomView)
+@UseCase(name: 'Ask create or use existing room', type: AddSpaceOrRoomView)
 @Deprecated("widgetbook")
 Widget wbAddRoomPromptUseOrCreateMultiAccount(BuildContext context) {
   var client = SimulatedClient();
@@ -179,7 +177,7 @@ Widget wbAddRoomPromptUseOrCreateMultiAccount(BuildContext context) {
   ));
 }
 
-@WidgetbookUseCase(name: 'Pick existing room', type: AddSpaceOrRoomView)
+@UseCase(name: 'Pick existing room', type: AddSpaceOrRoomView)
 @Deprecated("widgetbook")
 Widget wbAddRoomPickExistingRoom(BuildContext context) {
   var client = SimulatedClient();

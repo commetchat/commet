@@ -6,7 +6,7 @@ import 'package:tiamat/atoms/tile.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 
-@WidgetbookUseCase(name: 'Login Page', type: LoginPageView)
+@UseCase(name: 'Login Page', type: LoginPageView)
 @Deprecated("widgetbook")
 Widget wbLoginPage(BuildContext context) {
   return const LoginPageView();

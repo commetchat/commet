@@ -4,7 +4,7 @@ import 'package:commet/ui/organisms/user_profile/user_profile_view.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 
-@WidgetbookUseCase(name: 'User Profile', type: UserProfile)
+@UseCase(name: 'User Profile', type: UserProfile)
 @Deprecated("widgetbook")
 Widget wbUserProfile(BuildContext context) {
   return const Center(

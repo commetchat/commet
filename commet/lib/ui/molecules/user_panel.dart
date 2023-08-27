@@ -8,13 +8,13 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 
-@WidgetbookUseCase(name: 'No Avatar', type: UserPanelView)
+@UseCase(name: 'No Avatar', type: UserPanelView)
 @Deprecated("widgetbook")
 Widget wbUserPanelDefault(BuildContext context) {
   return const Center(child: UserPanelView(displayName: "User"));
 }
 
-@WidgetbookUseCase(name: 'With Avatar', type: UserPanelView)
+@UseCase(name: 'With Avatar', type: UserPanelView)
 @Deprecated("widgetbook")
 Widget wbUserPanelWithAvatar(BuildContext context) {
   return const Center(

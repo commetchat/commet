@@ -346,18 +346,6 @@ class MatrixClient extends Client {
   Widget buildDebugInfo() {
     var data = _matrixClient.accountData.copy();
 
-    // is this really necessary? i dont know
-    for (var event in data.values) {
-      if (event.type.startsWith("m.secret_storage.key") ||
-          event.type == matrix.EventTypes.SecretStorageDefaultKey ||
-          event.type == matrix.EventTypes.MegolmBackup ||
-          event.type.startsWith("m.cross_signing")) {
-        for (var key in event.content.keys) {
-          event.content[key] = "[REDACTED BY COMMET]";
-        }
-      }
-    }
-
     return SelectionArea(
       child: Codeblock(
         language: "json",

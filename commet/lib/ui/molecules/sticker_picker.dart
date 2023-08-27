@@ -9,7 +9,7 @@ import '../../config/build_config.dart';
 import '../../client/components/emoticon/emoticon.dart';
 import '../../utils/emoji/unicode_emoji.dart';
 
-@WidgetbookUseCase(name: 'Sticker Picker', type: StickerPicker)
+@UseCase(name: 'Sticker Picker', type: StickerPicker)
 @Deprecated("widgetbook")
 Widget wbStickerPickerDefault(BuildContext context) {
   return Center(
@@ -36,7 +36,7 @@ Widget wbStickerPickerDefault(BuildContext context) {
   );
 }
 
-@WidgetbookUseCase(name: 'Sticker Picker Search Disabled', type: StickerPicker)
+@UseCase(name: 'Sticker Picker Search Disabled', type: StickerPicker)
 @Deprecated("widgetbook")
 Widget wbStickerPickerNoSearch(BuildContext context) {
   return Center(

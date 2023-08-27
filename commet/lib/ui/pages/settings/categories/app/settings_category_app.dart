@@ -8,12 +8,12 @@ import 'package:commet/ui/pages/settings/categories/app/window_settings.dart';
 import 'package:commet/ui/pages/settings/categories/developer/developer_settings_page.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
 import 'package:commet/ui/pages/settings/settings_tab.dart';
+import 'package:commet/utils/scaled_app.dart';
 import 'package:flutter/material.dart' as m;
 import 'package:flutter/widgets.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/config/config.dart';
-import 'package:scaled_app/scaled_app.dart';
 
 class SettingsCategoryApp implements SettingsCategory {
   @override

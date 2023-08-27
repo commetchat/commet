@@ -105,7 +105,7 @@
             "name": "commet widgetbook",
             "request": "launch",
             "type": "dart",
-            "program": "lib/widgetbook_runner.dart"
+            "program": "lib/widgetbook.dart"
         },
         {
             "name": "tiamat widgetbook",
