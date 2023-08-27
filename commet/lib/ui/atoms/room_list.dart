@@ -115,14 +115,14 @@ class _RoomListState extends State<RoomList>
   }
 
   Widget header() {
-    return Padding(
-      padding: const EdgeInsets.all(2.0),
+    return const Padding(
+      padding: EdgeInsets.all(2.0),
       child: SizedBox(
         height: 40,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: const [
+          children: [
             tiamat.Text.label("Rooms"),
           ],
         ),

@@ -18,7 +18,7 @@ class Preferences {
   static const String _minimizeOnCloseKey = "minimize_on_close";
   static const String _developerMode = "developer_mode";
   static const String _tenorGifSearch = "enable_tenor_gif_search";
-
+  static const String _gifSearchProxyUrl = "gif_search_proxy_url";
   final StreamController _onSettingChanged = StreamController.broadcast();
   Stream get onSettingChanged => _onSettingChanged.stream;
 
@@ -99,6 +99,9 @@ class Preferences {
   }
 
   bool get developerMode => _preferences?.getBool(_developerMode) ?? false;
+
+  String get gifProxyUrl =>
+      _preferences?.getString(_gifSearchProxyUrl) ?? "proxy.commet.chat";
 
   Future<void> setDeveloperMode(bool value) async {
     await _preferences!.setBool(_developerMode, value);

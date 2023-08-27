@@ -10,7 +10,7 @@ class TenorSearch {
     if (!preferences.tenorGifSearchEnabled) return [];
 
     var uri = Uri.https(
-        "proxy.commet.chat", "/proxy/tenor/api/v2/search", {"q": query});
+        preferences.gifProxyUrl, "/proxy/tenor/api/v2/search", {"q": query});
 
     var result = await http.get(uri);
     if (result.statusCode == 200) {
