@@ -44,6 +44,13 @@ class MatrixRoom extends Room {
   matrix.Room get matrixRoom => _matrixRoom;
 
   @override
+  TimelineEvent? get lastEvent => _matrixRoom.lastEvent != null
+      ? timeline?.tryGetEvent(_matrixRoom.lastEvent!.eventId)
+      : timeline?.events.isNotEmpty == true
+          ? timeline!.events[0]
+          : null;
+
+  @override
   Iterable<String> get memberIds =>
       _matrixRoom.getParticipants().map((e) => e.id);
 
