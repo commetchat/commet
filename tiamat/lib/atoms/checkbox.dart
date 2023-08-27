@@ -5,7 +5,7 @@ import 'package:tiamat/atoms/seperator.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 import 'package:flutter/material.dart' as material;
 
-@WidgetbookUseCase(name: 'Large', type: Checkbox)
+@UseCase(name: 'Large', type: Checkbox)
 Widget wbCheckBox(BuildContext context) {
   return Center(
       child: Column(

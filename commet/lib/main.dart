@@ -9,6 +9,7 @@ import 'package:commet/ui/pages/login/login_page.dart';
 import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:commet/utils/notification/notification_manager.dart';
 import 'package:commet/utils/notification/notifier.dart';
+import 'package:commet/utils/scaled_app.dart';
 import 'package:commet/utils/window_management.dart';
 
 import 'package:flutter/material.dart';
@@ -16,13 +17,10 @@ import 'package:hive_flutter/adapters.dart';
 import 'package:media_kit/media_kit.dart';
 
 import 'package:provider/provider.dart';
-import 'package:scaled_app/scaled_app.dart';
 import 'package:tiamat/config/style/theme_changer.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:tiamat/config/style/theme_dark.dart';
-import 'package:tiamat/config/style/theme_glass.dart';
 import 'package:tiamat/config/style/theme_light.dart';
-import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 
 import 'cache/cached_file.dart';
 import 'client/simulated/simulated_client.dart';
@@ -101,23 +99,6 @@ Future<ClientManager> initApp() async {
   return clientManager;
 }
 
-@WidgetbookTheme(name: 'Dark')
-ThemeData commetDarkTheme() => ThemeDark.theme;
-
-@WidgetbookTheme(name: 'Light')
-ThemeData commetLightTheme() => ThemeLight.theme;
-
-@WidgetbookTheme(name: 'Glass')
-ThemeData commetGlassTheme() => ThemeGlass.theme;
-
-@WidgetbookApp.material(name: 'Commet', devices: [
-  Apple.iPhone12,
-  Apple.macBook13Inch,
-  Device.desktop(
-      name: "720p",
-      resolution: Resolution(
-          nativeSize: DeviceSize(width: 1280, height: 720), scaleFactor: 1))
-])
 class App extends StatelessWidget {
   const App(
       {Key? key,

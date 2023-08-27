@@ -3,7 +3,7 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 
 import '../config/style/theme_extensions.dart';
 
-@WidgetbookUseCase(name: 'Default', type: CircleButton)
+@UseCase(name: 'Default', type: CircleButton)
 Widget wbcircleButton(BuildContext context) {
   return const Center(
       child: CircleButton(
@@ -21,7 +21,11 @@ class CircleButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-          shape: BoxShape.circle, border: Border.all(color: Theme.of(context).extension<ExtraColors>()!.outline, width: 1.2),),
+        shape: BoxShape.circle,
+        border: Border.all(
+            color: Theme.of(context).extension<ExtraColors>()!.outline,
+            width: 1.2),
+      ),
       child: ClipOval(
         child: Material(
           color: Theme.of(context).extension<ExtraColors>()!.surfaceLow3,

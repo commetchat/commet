@@ -29,10 +29,10 @@ class _GeneralSettingsPage extends State<GeneralSettingsPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Flexible(
+            const Flexible(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children: [
                   tiamat.Text.labelEmphasised("Gif search"),
                   tiamat.Text.labelLow(
                       "Enable use of Tenor gif search. Requests will be proxied via proxy.commet.chat")

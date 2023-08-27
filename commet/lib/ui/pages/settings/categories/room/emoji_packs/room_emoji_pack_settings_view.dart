@@ -542,9 +542,9 @@ class _EmoticonCreatorState extends State<EmoticonCreator> {
   @override
   Widget build(BuildContext context) {
     if (loading)
-      return Column(
+      return const Column(
         mainAxisSize: MainAxisSize.min,
-        children: const [
+        children: [
           SizedBox(width: 50, height: 50, child: CircularProgressIndicator()),
         ],
       );

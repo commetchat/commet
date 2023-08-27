@@ -7,7 +7,7 @@ import 'icon_button.dart' as icon;
 
 import 'package:flutter/material.dart' as m;
 
-@WidgetbookUseCase(name: 'Default', type: IconToggle)
+@UseCase(name: 'Default', type: IconToggle)
 Widget wbIconToggle(BuildContext context) {
   return Center(
     child: Column(
@@ -29,7 +29,7 @@ Widget wbIconToggle(BuildContext context) {
   );
 }
 
-@WidgetbookUseCase(name: 'On', type: IconToggle)
+@UseCase(name: 'On', type: IconToggle)
 Widget wbIconToggleOn(BuildContext context) {
   return Center(
     child: Column(

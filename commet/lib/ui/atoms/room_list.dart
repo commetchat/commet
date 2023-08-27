@@ -160,6 +160,7 @@ class _RoomListState extends State<RoomList>
       scrollDirection: Axis.vertical,
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
+      padding: const EdgeInsets.all(0),
       itemBuilder: (context, i, animation) => SizeTransition(
         sizeFactor: animation,
         child: Padding(

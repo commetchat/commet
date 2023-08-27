@@ -7,7 +7,7 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:flutter/material.dart' as material;
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 
-@WidgetbookUseCase(name: 'Wait for user', type: MatrixUIARequestView)
+@UseCase(name: 'Wait for user', type: MatrixUIARequestView)
 @Deprecated("widgetbook")
 Widget wbUIARequestView(BuildContext context) {
   return const material.Scaffold(
@@ -18,7 +18,7 @@ Widget wbUIARequestView(BuildContext context) {
   );
 }
 
-@WidgetbookUseCase(name: 'Loading', type: MatrixUIARequestView)
+@UseCase(name: 'Loading', type: MatrixUIARequestView)
 @Deprecated("widgetbook")
 Widget wbUIARequestViewLoading(BuildContext context) {
   return const material.Scaffold(
@@ -29,7 +29,7 @@ Widget wbUIARequestViewLoading(BuildContext context) {
   );
 }
 
-@WidgetbookUseCase(name: 'Done', type: MatrixUIARequestView)
+@UseCase(name: 'Done', type: MatrixUIARequestView)
 @Deprecated("widgetbook")
 Widget wbUIARequestViewDone(BuildContext context) {
   return const material.Scaffold(
@@ -40,7 +40,7 @@ Widget wbUIARequestViewDone(BuildContext context) {
   );
 }
 
-@WidgetbookUseCase(name: 'Fail', type: MatrixUIARequestView)
+@UseCase(name: 'Fail', type: MatrixUIARequestView)
 @Deprecated("widgetbook")
 Widget wbUIARequestViewError(BuildContext context) {
   return const material.Scaffold(

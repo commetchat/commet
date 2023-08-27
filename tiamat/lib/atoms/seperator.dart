@@ -4,7 +4,7 @@ import 'package:tiamat/atoms/text.dart' as tiamat;
 
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 
-@WidgetbookUseCase(name: 'Default', type: Seperator)
+@UseCase(name: 'Default', type: Seperator)
 Widget wbseperatorUseCase(BuildContext context) {
   return Align(
     alignment: Alignment.center,

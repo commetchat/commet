@@ -9,7 +9,7 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:tiamat/tiamat.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 
-@WidgetbookUseCase(name: 'Check Emojis', type: MatrixVerificationPageView)
+@UseCase(name: 'Check Emojis', type: MatrixVerificationPageView)
 @Deprecated("widgetbook")
 Widget wbSASCheckEmojis(BuildContext context) {
   return Scaffold(
@@ -33,7 +33,7 @@ Widget wbSASCheckEmojis(BuildContext context) {
   );
 }
 
-@WidgetbookUseCase(name: 'Loading', type: MatrixVerificationPageView)
+@UseCase(name: 'Loading', type: MatrixVerificationPageView)
 @Deprecated("widgetbook")
 Widget sbVerificationLoading(BuildContext context) {
   return Scaffold(
@@ -57,7 +57,7 @@ Widget sbVerificationLoading(BuildContext context) {
   );
 }
 
-@WidgetbookUseCase(name: 'Request Received', type: MatrixVerificationPageView)
+@UseCase(name: 'Request Received', type: MatrixVerificationPageView)
 @Deprecated("widgetbook")
 Widget wbSASRequestReceived(BuildContext context) {
   return Scaffold(
@@ -81,7 +81,7 @@ Widget wbSASRequestReceived(BuildContext context) {
   );
 }
 
-@WidgetbookUseCase(name: 'Done', type: MatrixVerificationPageView)
+@UseCase(name: 'Done', type: MatrixVerificationPageView)
 @Deprecated("widgetbook")
 Widget wbVerificationSuccess(BuildContext context) {
   return Scaffold(

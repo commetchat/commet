@@ -32,8 +32,8 @@ class LODImageProvider extends ImageProvider<LODImageProvider> {
   }
 
   @override
-  ImageStreamCompleter loadBuffer(
-      LODImageProvider key, DecoderBufferCallback decode) {
+  ImageStreamCompleter loadImage(
+      LODImageProvider key, ImageDecoderCallback decode) {
     completer = LODImageCompleter(
         blurhash: blurhash,
         loadThumbnail: loadThumbnail,

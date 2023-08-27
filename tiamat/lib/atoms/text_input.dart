@@ -4,7 +4,7 @@ import 'package:flutter/material.dart' as material;
 import 'package:flutter/widgets.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 
-@WidgetbookUseCase(name: 'Default', type: TextInput)
+@UseCase(name: 'Default', type: TextInput)
 Widget wbTextInput(BuildContext context) {
   return Center(
     child: Column(
@@ -21,7 +21,7 @@ Widget wbTextInput(BuildContext context) {
   );
 }
 
-@WidgetbookUseCase(name: 'With Icon', type: TextInput)
+@UseCase(name: 'With Icon', type: TextInput)
 Widget wbTextInputWithIcon(BuildContext context) {
   return Center(
     child: Column(
@@ -39,7 +39,7 @@ Widget wbTextInputWithIcon(BuildContext context) {
   );
 }
 
-@WidgetbookUseCase(name: 'Multiline', type: TextInput)
+@UseCase(name: 'Multiline', type: TextInput)
 Widget wbTextInputMultiline(BuildContext context) {
   return Center(
     child: Column(
@@ -57,7 +57,7 @@ Widget wbTextInputMultiline(BuildContext context) {
   );
 }
 
-@WidgetbookUseCase(name: 'Multiline with Icon', type: TextInput)
+@UseCase(name: 'Multiline with Icon', type: TextInput)
 Widget wbTextInputMultilineWithIcon(BuildContext context) {
   return Center(
     child: Column(

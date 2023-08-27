@@ -11,7 +11,7 @@ import '../atoms/tooltip.dart' as t;
 
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 
-@WidgetbookUseCase(name: 'Emoji Picker', type: EmojiPicker)
+@UseCase(name: 'Emoji Picker', type: EmojiPicker)
 @Deprecated("widgetbook")
 Widget wbEmojiPickerDefault(BuildContext context) {
   return Center(

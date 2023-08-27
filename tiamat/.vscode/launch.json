@@ -8,8 +8,7 @@
             "name": "tiamat widgetbook",
             "request": "launch",
             "type": "dart",
-            "program": "lib/tiamat.widgetbook.dart"
-
+            "program": "lib/widgetbook.dart"
         },
     ]
 }

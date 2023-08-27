@@ -68,8 +68,8 @@ class MatrixEmoticonComponent implements EmoticonComponent {
     if (!matrixClient.accountData.containsKey("im.ponies.emote_rooms"))
       return [];
 
-    var rooms =
-        matrixClient.accountData["im.ponies.emote_rooms"]!.content['rooms'];
+    var rooms = matrixClient.accountData["im.ponies.emote_rooms"]!
+        .content['rooms'] as Map<String, Object?>;
 
     var packs = List<EmoticonPack>.empty(growable: true);
 

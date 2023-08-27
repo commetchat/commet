@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 import 'package:flutter/material.dart' as material;
 
-@WidgetbookUseCase(name: 'Default', type: IconButton)
+@UseCase(name: 'Default', type: IconButton)
 Widget wbIconButton(BuildContext context) {
   return Center(
     child: Column(

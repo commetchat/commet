@@ -249,14 +249,15 @@ class MatrixTimeline extends Timeline {
   }
 
   Emoticon getEmojiFromEvent(matrix.Event event) {
-    var key = event.content["m.relates_to"]['key'] as String;
+    var content = event.content["m.relates_to"] as Map<String, Object?>;
+    var key = content['key'] as String;
 
     if (key.startsWith("mxc://")) {
       return MatrixEmoticon(Uri.parse(key), _matrixRoom.client,
           shortcode: event.content.tryGet("shortcode") ?? "");
     }
 
-    return UnicodeEmoticon(key, shortcode: event.content['shortcode']);
+    return UnicodeEmoticon(key, shortcode: content['shortcode'] as String?);
   }
 
   void parseAnyAttachments(matrix.Event matrixEvent, TimelineEvent e) {
@@ -371,7 +372,7 @@ class MatrixTimeline extends Timeline {
 
     for (var e in events) {
       if (!e.content.containsKey("m.relates_to")) continue;
-      var content = e.content["m.relates_to"];
+      var content = e.content["m.relates_to"] as Map<String, Object?>;
 
       if (content.containsKey("key") && content["key"] == reaction.key) {
         await _matrixRoom.redactEvent(e.eventId);
