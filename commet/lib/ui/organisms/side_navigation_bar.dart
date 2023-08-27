@@ -86,14 +86,21 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
             Padding(
               padding: SpaceSelector.padding,
               child: SideNavigationBar.tooltip(
-                  widget.currentUser.displayName,
+                  T.current.settings,
                   ImageButton(
                     size: 70,
                     image: widget.currentUser.avatar,
+                    key: SideNavigationBar.settingsKey,
+                    onTap: () {
+                      NavigationUtils.navigateTo(
+                          context, const AppSettingsPage());
+                    },
                   ),
                   context),
             ),
-            const Seperator(),
+            const SizedBox(
+              height: 4,
+            ),
             Expanded(
               child: SpaceSelector(
                 _clientManager.spaces,
@@ -113,19 +120,6 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                           },
                         ),
                         context),
-                    const SizedBox(
-                      height: 3,
-                    ),
-                    SideNavigationBar.tooltip(
-                        "Direct Messages",
-                        ImageButton(
-                          size: 70,
-                          icon: Icons.person,
-                          onTap: () {
-                            widget.onDirectMessagesSelected?.call();
-                          },
-                        ),
-                        context)
                   ],
                 ),
                 footer: Column(
@@ -135,7 +129,6 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                       child: SideNavigationBar.tooltip(
                           T.of(context).addSpace,
                           ImageButton(
-                            // tooltip: "Add a Space",
                             size: 70,
                             icon: Icons.add,
                             onTap: () {
@@ -147,23 +140,6 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                             },
                           ),
                           context),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
-                      child: SideNavigationBar.tooltip(
-                        T.of(context).settings,
-                        ImageButton(
-                          // tooltip: "Settings",
-                          key: SideNavigationBar.settingsKey,
-                          size: 70,
-                          icon: Icons.settings,
-                          onTap: () {
-                            NavigationUtils.navigateTo(
-                                context, const AppSettingsPage());
-                          },
-                        ),
-                        context,
-                      ),
                     ),
                   ],
                 ),

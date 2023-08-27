@@ -8,13 +8,14 @@ import 'package:commet/ui/molecules/timeline_viewer.dart';
 import 'package:commet/ui/molecules/read_indicator.dart';
 import 'package:commet/ui/molecules/message_input.dart';
 import 'package:commet/ui/molecules/space_viewer.dart';
+import 'package:commet/ui/organisms/home_screen/home_screen.dart';
 import 'package:commet/ui/organisms/side_navigation_bar.dart';
 import 'package:commet/ui/pages/chat/chat_page.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart';
-
+import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:mime/mime.dart' as mime;
 
 import '../../../client/attachment.dart';
@@ -30,15 +31,13 @@ class DesktopChatPageView extends StatefulWidget {
 
 class _DesktopChatPageViewState extends State<DesktopChatPageView> {
   static const Key homeRoomsList = ValueKey("DESKTOP_HOME_ROOMS_LIST");
-  static const Key directRoomsList = ValueKey("DESKTOP_DIRECT_ROOMS_LIST");
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.max,
           children: [
             Tile.low4(
               child: Padding(
@@ -49,9 +48,6 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
                     widget.state
                         .selectSpace(widget.state.clientManager.spaces[index]);
                   },
-                  onDirectMessagesSelected: () {
-                    widget.state.selectDirectMessages();
-                  },
                   onHomeSelected: () {
                     widget.state.selectHome();
                   },
@@ -61,13 +57,14 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
                 ),
               ),
             ),
-            if (widget.state.selectedView == SubView.directMessages)
-              directMessagesView(),
             if (widget.state.selectedView == SubView.space &&
                 widget.state.selectedSpace != null)
               spaceRoomSelector(),
-            if (widget.state.selectedView == SubView.home) homeView(),
-            if (widget.state.selectedRoom != null) roomChatView(),
+            if (widget.state.selectedView == SubView.home)
+              Expanded(child: homeView()),
+            if (widget.state.selectedRoom != null &&
+                widget.state.selectedView != SubView.home)
+              roomChatView(),
             if (widget.state.selectedSpace != null &&
                 widget.state.selectedRoom == null)
               Expanded(
@@ -91,39 +88,47 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
     );
   }
 
-  Widget directMessagesView() {
-    return Tile.low1(
-      child: SizedBox(
-        width: 250,
-        child: DirectMessageList(
-          key: directRoomsList,
-          directMessages: widget.state.clientManager.directMessages,
-          onSelected: (index) {
-            setState(() {
-              widget.state
-                  .selectRoom(widget.state.clientManager.directMessages[index]);
-            });
-          },
-        ),
-      ),
-    );
-  }
-
   Widget homeView() {
-    return Tile.low1(
-      child: SizedBox(
-        width: 250,
-        child: DirectMessageList(
-          key: homeRoomsList,
-          directMessages: widget.state.clientManager.singleRooms,
-          onSelected: (index) {
-            setState(() {
-              widget.state
-                  .selectRoom(widget.state.clientManager.singleRooms[index]);
-            });
-          },
+    return Row(
+      children: [
+        Tile.low1(
+          borderRight: true,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(4, 0, 8, 0),
+            child: SizedBox(
+              width: 250,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: tiamat.Text.labelLow("Direct Messages"),
+                  ),
+                  Flexible(
+                    child: DirectMessageList(
+                      key: homeRoomsList,
+                      directMessages: widget.state.clientManager.directMessages,
+                      onSelected: (index) {
+                        setState(() {
+                          widget.state.selectRoom(
+                              widget.state.clientManager.directMessages[index]);
+                        });
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
-      ),
+        if (widget.state.selectedRoom == null)
+          Expanded(
+            child: Tile(
+              child: HomeScreen(clientManager: widget.state.clientManager),
+            ),
+          ),
+        if (widget.state.selectedRoom != null) roomChatView()
+      ],
     );
   }
 

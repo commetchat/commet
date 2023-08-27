@@ -185,6 +185,7 @@ abstract class Timeline {
 
   void notifyChanged(int index) {
     onChange.add(index);
+    _eventsDict[events[index].eventId] = events[index];
     events[index].onChange.add(null);
   }
 

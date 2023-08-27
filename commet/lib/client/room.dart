@@ -98,4 +98,6 @@ abstract class Room {
   Color getColorOfUser(String userId);
 
   Future<void> enableE2EE();
+
+  TimelineEvent? get lastEvent;
 }

@@ -58,36 +58,39 @@ class MessagePopupMenuState extends State<MessagePopupMenu> {
             shadow: const Shadow(color: Colors.transparent),
             backgroundColor:
                 kDebugMode ? Colors.red.withAlpha(40) : Colors.transparent,
-            content: MouseRegion(
-              child: PageStorage(
-                bucket: storage,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(boxShadow: [
-                      BoxShadow(
-                          blurRadius: 10,
-                          spreadRadius: 2,
-                          color: Theme.of(context).shadowColor),
-                    ]),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(5),
-                      child: Container(
-                        color: Theme.of(context).colorScheme.surface,
-                        child: SizedBox(
-                          width: 300,
-                          height: 300,
-                          child: EmojiPicker(
-                            widget.timeline.room.roomEmoticons!.availableEmoji,
-                            onEmoticonPressed: onEmoticonPicked,
+            content: widget.timeline.room.roomEmoticons == null
+                ? Container()
+                : MouseRegion(
+                    child: PageStorage(
+                      bucket: storage,
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(boxShadow: [
+                            BoxShadow(
+                                blurRadius: 10,
+                                spreadRadius: 2,
+                                color: Theme.of(context).shadowColor),
+                          ]),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(5),
+                            child: Container(
+                              color: Theme.of(context).colorScheme.surface,
+                              child: SizedBox(
+                                width: 300,
+                                height: 300,
+                                child: EmojiPicker(
+                                  widget.timeline.room.roomEmoticons!
+                                      .availableEmoji,
+                                  onEmoticonPressed: onEmoticonPicked,
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ),
-            ),
             preferredDirection: AxisDirection.up,
             child: buildMenu(context)));
   }

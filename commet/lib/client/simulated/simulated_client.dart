@@ -63,11 +63,6 @@ class SimulatedClient extends Client {
   void _updateRoomslist() {
     addRoom(SimulatedRoom("Simulated Room", this));
     addRoom(SimulatedRoom("Simulated Room 2", this));
-    addRoom(SimulatedRoom("Simulated Room 3", this));
-    addRoom(SimulatedRoom("Simulated Room 4", this));
-    addRoom(SimulatedRoom("Simulated Room 5", this));
-    addRoom(SimulatedRoom("Simulated Room 6", this));
-    addRoom(SimulatedRoom("Simulated Room 7", this));
   }
 
   void _updateSpacesList() {

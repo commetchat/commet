@@ -230,7 +230,6 @@ class MatrixClient extends Client {
 
     for (var room in allRooms) {
       if (roomExists(room.id)) continue;
-
       addRoom(MatrixRoom(this, room, _matrixClient));
     }
   }
