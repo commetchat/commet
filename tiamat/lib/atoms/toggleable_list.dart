@@ -5,7 +5,7 @@ import 'package:tiamat/atoms/checkbox.dart';
 import 'package:tiamat/atoms/text_button.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 
-@WidgetbookUseCase(name: 'Toggleable String', type: ToggleableList)
+@UseCase(name: 'Toggleable String', type: ToggleableList)
 Widget wbToggleableList(BuildContext context) {
   return Center(
     child: SizedBox(

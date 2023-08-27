@@ -6,7 +6,7 @@ import 'package:tiamat/config/config.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
-@WidgetbookUseCase(name: 'String Selector', type: DropdownSelector)
+@UseCase(name: 'String Selector', type: DropdownSelector)
 Widget wbDropdownSelector(BuildContext context) {
   return tiamat.Tile.low2(
     child: Padding(
@@ -35,7 +35,7 @@ Widget wbDropdownSelector(BuildContext context) {
   );
 }
 
-@WidgetbookUseCase(name: 'Multi Line Text', type: DropdownSelector)
+@UseCase(name: 'Multi Line Text', type: DropdownSelector)
 Widget wbDropdownSelectorMultiLine(BuildContext context) {
   return tiamat.Tile.low2(
     child: Padding(
@@ -65,7 +65,7 @@ Widget wbDropdownSelectorMultiLine(BuildContext context) {
   );
 }
 
-@WidgetbookUseCase(name: 'Avatar Selector', type: DropdownSelector)
+@UseCase(name: 'Avatar Selector', type: DropdownSelector)
 Widget wbDropdownAvatarSelector(BuildContext context) {
   return tiamat.Tile(
     child: Padding(
@@ -80,10 +80,14 @@ Widget wbDropdownAvatarSelector(BuildContext context) {
                 child: DropdownSelector<ImageProvider>(
                   itemHeight: 70,
                   items: [
-                    AssetImage("assets/images/placeholder/generic/checker_purple.png"),
-                    AssetImage("assets/images/placeholder/generic/checker_red.png"),
-                    AssetImage("assets/images/placeholder/generic/checker_green.png"),
-                    AssetImage("assets/images/placeholder/generic/checker_orange.png")
+                    AssetImage(
+                        "assets/images/placeholder/generic/checker_purple.png"),
+                    AssetImage(
+                        "assets/images/placeholder/generic/checker_red.png"),
+                    AssetImage(
+                        "assets/images/placeholder/generic/checker_green.png"),
+                    AssetImage(
+                        "assets/images/placeholder/generic/checker_orange.png")
                   ],
                   itemBuilder: (item) {
                     return Row(
@@ -140,23 +144,32 @@ class _DropdownSelectorState<T> extends State<DropdownSelector<T>> {
       child: Material(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
-          side: BorderSide(color: Theme.of(context).extension<ExtraColors>()!.outline, width: 1.4),
+          side: BorderSide(
+              color: Theme.of(context).extension<ExtraColors>()!.outline,
+              width: 1.4),
         ),
         color: Colors.transparent,
-        child: LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
+        child: LayoutBuilder(
+            builder: (BuildContext context, BoxConstraints constraints) {
           return DropdownButtonHideUnderline(
               child: DropdownButton2(
             menuItemStyleData: MenuItemStyleData(height: widget.itemHeight),
             value: value,
             dropdownStyleData: DropdownStyleData(
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.only(bottomRight: Radius.circular(10), bottomLeft: Radius.circular(10)),
-                    color: Theme.of(context).extension<ExtraColors>()!.surfaceHigh1)),
+                    borderRadius: BorderRadius.only(
+                        bottomRight: Radius.circular(10),
+                        bottomLeft: Radius.circular(10)),
+                    color: Theme.of(context)
+                        .extension<ExtraColors>()!
+                        .surfaceHigh1)),
             items: widget.items.map((value) {
               return DropdownMenuItem(
                 alignment: Alignment.centerLeft,
                 value: value,
-                child: SizedBox(width: constraints.maxWidth - 60, child: widget.itemBuilder(value)),
+                child: SizedBox(
+                    width: constraints.maxWidth - 60,
+                    child: widget.itemBuilder(value)),
               );
             }).toList(),
             onChanged: (newValue) {

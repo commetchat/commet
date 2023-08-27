@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 import './text.dart' as tiamat;
 
-@WidgetbookUseCase(name: 'Default', type: TextButton)
+@UseCase(name: 'Default', type: TextButton)
 Widget wbiconUseCase(BuildContext context) {
   return Center(
     child: Column(

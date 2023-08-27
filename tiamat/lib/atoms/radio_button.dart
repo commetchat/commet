@@ -6,7 +6,7 @@ import './text.dart' as t;
 
 enum Names { alice, bob, charlie }
 
-@WidgetbookUseCase(name: 'Default', type: RadioButton)
+@UseCase(name: 'Default', type: RadioButton)
 Widget wbRadioButton(BuildContext context) {
   return Center(
     child: Column(

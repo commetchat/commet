@@ -3,7 +3,7 @@ import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
-@WidgetbookUseCase(name: 'Default', type: Button)
+@UseCase(name: 'Default', type: Button)
 Widget wbButton(BuildContext context) {
   return Center(
     child: Column(

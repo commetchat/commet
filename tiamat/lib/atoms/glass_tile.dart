@@ -5,7 +5,7 @@ import 'package:tiamat/atoms/shader_background.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
-@WidgetbookUseCase(name: 'Default', type: GlassTile)
+@UseCase(name: 'Default', type: GlassTile)
 Widget wbtileGlass(BuildContext context) {
   return Center(
     child: Column(
@@ -16,17 +16,26 @@ Widget wbtileGlass(BuildContext context) {
         Padding(
           padding: EdgeInsets.all(8.0),
           child: SizedBox(
-              width: 200, height: 200, child: GlassTile(child: Center(child: tiamat.Text.body("Hello, World!")))),
+              width: 200,
+              height: 200,
+              child: GlassTile(
+                  child: Center(child: tiamat.Text.body("Hello, World!")))),
         ),
         Padding(
           padding: EdgeInsets.all(8.0),
           child: SizedBox(
-              width: 200, height: 200, child: GlassTile(child: Center(child: tiamat.Text.body("Hello, World!")))),
+              width: 200,
+              height: 200,
+              child: GlassTile(
+                  child: Center(child: tiamat.Text.body("Hello, World!")))),
         ),
         Padding(
           padding: EdgeInsets.all(8.0),
           child: SizedBox(
-              width: 200, height: 200, child: GlassTile(child: Center(child: tiamat.Text.body("Hello, World!")))),
+              width: 200,
+              height: 200,
+              child: GlassTile(
+                  child: Center(child: tiamat.Text.body("Hello, World!")))),
         ),
       ],
     ),
@@ -34,7 +43,12 @@ Widget wbtileGlass(BuildContext context) {
 }
 
 class GlassTile extends StatelessWidget {
-  const GlassTile({Key? key, this.child, this.opacity = 0.2, this.sigma = 1, this.color = Colors.transparent})
+  const GlassTile(
+      {Key? key,
+      this.child,
+      this.opacity = 0.2,
+      this.sigma = 1,
+      this.color = Colors.transparent})
       : super(key: key);
   final double sigma;
   final double opacity;
@@ -47,8 +61,10 @@ class GlassTile extends StatelessWidget {
       children: [
         ClipRect(
             child: ImageFiltered(
-                imageFilter: ImageFilter.blur(sigmaX: sigma, sigmaY: sigma), child: const ShaderBackground())),
-        Container(color: color.withAlpha((opacity * 255.0).toInt()), child: child!),
+                imageFilter: ImageFilter.blur(sigmaX: sigma, sigmaY: sigma),
+                child: const ShaderBackground())),
+        Container(
+            color: color.withAlpha((opacity * 255.0).toInt()), child: child!),
       ],
     );
   }

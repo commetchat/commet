@@ -4,7 +4,7 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 import 'package:flutter/material.dart' as m;
 import './text.dart' as tiamat;
 
-@WidgetbookUseCase(name: 'Default', type: ImageButton)
+@UseCase(name: 'Default', type: ImageButton)
 Widget wbimageButton(BuildContext context) {
   return Center(
     child: Column(
@@ -57,7 +57,7 @@ Widget wbimageButton(BuildContext context) {
   );
 }
 
-@WidgetbookUseCase(name: 'Icon', type: ImageButton)
+@UseCase(name: 'Icon', type: ImageButton)
 Widget wbimageButtonIcon(BuildContext context) {
   return Center(
     child: Column(
@@ -121,7 +121,7 @@ Widget wbimageButtonIcon(BuildContext context) {
   );
 }
 
-@WidgetbookUseCase(name: 'Icon with Shadow', type: ImageButton)
+@UseCase(name: 'Icon with Shadow', type: ImageButton)
 Widget wbimageButtonIconWithShadow(BuildContext context) {
   return Center(
     child: Column(

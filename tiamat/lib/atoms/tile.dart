@@ -4,42 +4,42 @@ import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
-@WidgetbookUseCase(name: 'Default', type: Tile)
+@UseCase(name: 'Default', type: Tile)
 Widget wbtileSurface(BuildContext context) {
   return const Tile(child: Center(child: tiamat.Text.body("Hello, World!")));
 }
 
-@WidgetbookUseCase(name: 'Low 1', type: Tile)
+@UseCase(name: 'Low 1', type: Tile)
 Widget wbtileSurfaceLow1(BuildContext context) {
   return const Tile.low1(
       child: Center(child: tiamat.Text.body("Hello, World!")));
 }
 
-@WidgetbookUseCase(name: 'Low 2', type: Tile)
+@UseCase(name: 'Low 2', type: Tile)
 Widget wbtileSurfaceLow2(BuildContext context) {
   return const Tile.low2(
       child: Center(child: tiamat.Text.body("Hello, World!")));
 }
 
-@WidgetbookUseCase(name: 'Low 3', type: Tile)
+@UseCase(name: 'Low 3', type: Tile)
 Widget wbtileSurfaceLow3(BuildContext context) {
   return const Tile.low3(
       child: Center(child: tiamat.Text.body("Hello, World!")));
 }
 
-@WidgetbookUseCase(name: 'Low 4', type: Tile)
+@UseCase(name: 'Low 4', type: Tile)
 Widget wbtileSurfaceLow4(BuildContext context) {
   return const Tile.low4(
       child: Center(child: tiamat.Text.body("Hello, World!")));
 }
 
-@WidgetbookUseCase(name: 'High', type: Tile)
+@UseCase(name: 'High', type: Tile)
 Widget wbtileSurfaceHigh(BuildContext context) {
   return const Tile.high(
       child: Center(child: tiamat.Text.body("Hello, World!")));
 }
 
-@WidgetbookUseCase(name: 'All', type: Tile)
+@UseCase(name: 'All', type: Tile)
 Widget tileAll(BuildContext context) {
   return Column(
     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -88,7 +88,7 @@ Widget tileAll(BuildContext context) {
   );
 }
 
-@WidgetbookUseCase(name: 'All with border', type: Tile)
+@UseCase(name: 'All with border', type: Tile)
 Widget tileAllBorders(BuildContext context) {
   return Column(
     mainAxisAlignment: MainAxisAlignment.spaceEvenly,

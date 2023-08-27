@@ -9,35 +9,35 @@ const String exampleText = "The quick brown fox jumped over the lazy dog";
 const String loremIpsum =
     "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua";
 
-@WidgetbookUseCase(name: 'Label', type: Text)
+@UseCase(name: 'Label', type: Text)
 Widget wbtextLabelUseCase(BuildContext context) {
   return const material.Center(
     child: Text.label(exampleText),
   );
 }
 
-@WidgetbookUseCase(name: 'Tiny', type: Text)
+@UseCase(name: 'Tiny', type: Text)
 Widget wbtextTinyUseCase(BuildContext context) {
   return const material.Center(
     child: Text.tiny(exampleText),
   );
 }
 
-@WidgetbookUseCase(name: 'Body', type: Text)
+@UseCase(name: 'Body', type: Text)
 Widget wbtextBodyUseCase(BuildContext context) {
   return const material.Center(
     child: Text.body(exampleText),
   );
 }
 
-@WidgetbookUseCase(name: 'Error', type: Text)
+@UseCase(name: 'Error', type: Text)
 Widget wbtextErrorUseCase(BuildContext context) {
   return const material.Center(
     child: Text.error(exampleText),
   );
 }
 
-@WidgetbookUseCase(name: 'Title', type: Text)
+@UseCase(name: 'Title', type: Text)
 Widget wbtextTitleUseCase(BuildContext context) {
   return const material.Center(
     child: material.Padding(
@@ -47,7 +47,7 @@ Widget wbtextTitleUseCase(BuildContext context) {
   );
 }
 
-@WidgetbookUseCase(name: 'Name', type: Text)
+@UseCase(name: 'Name', type: Text)
 Widget wbtextNameUseCase(BuildContext context) {
   return const material.Center(
     child: material.Padding(
@@ -60,7 +60,7 @@ Widget wbtextNameUseCase(BuildContext context) {
   );
 }
 
-@WidgetbookUseCase(name: 'All', type: Text)
+@UseCase(name: 'All', type: Text)
 Widget wbtextAllUseCase(BuildContext context) {
   return material.Padding(
     padding: const EdgeInsets.all(16.0),

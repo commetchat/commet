@@ -2,7 +2,7 @@ import 'package:flutter/material.dart' as material;
 import 'package:flutter/widgets.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 
-@WidgetbookUseCase(name: 'Default', type: Switch)
+@UseCase(name: 'Default', type: Switch)
 Widget wbswitch(BuildContext context) {
   return const Center(
       child: material.Padding(
@@ -11,7 +11,7 @@ Widget wbswitch(BuildContext context) {
   ));
 }
 
-@WidgetbookUseCase(name: 'No Icons', type: Switch)
+@UseCase(name: 'No Icons', type: Switch)
 Widget wbswitchNoIcons(BuildContext context) {
   return const Center(
       child: material.Padding(

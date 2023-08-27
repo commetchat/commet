@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 
-@WidgetbookUseCase(name: 'Default', type: Avatar)
+@UseCase(name: 'Default', type: Avatar)
 Widget wbavatarDefault(BuildContext context) {
   return const Center(
       child: Avatar(
@@ -9,7 +9,7 @@ Widget wbavatarDefault(BuildContext context) {
   ));
 }
 
-@WidgetbookUseCase(name: 'Large', type: Avatar)
+@UseCase(name: 'Large', type: Avatar)
 Widget wbavatarLarge(BuildContext context) {
   return const Center(
       child: Avatar.large(
@@ -17,7 +17,7 @@ Widget wbavatarLarge(BuildContext context) {
   ));
 }
 
-@WidgetbookUseCase(name: 'Placeholder', type: Avatar)
+@UseCase(name: 'Placeholder', type: Avatar)
 Widget wbavatarPlaceholder(BuildContext context) {
   return const Center(
       child: Avatar(
@@ -25,7 +25,7 @@ Widget wbavatarPlaceholder(BuildContext context) {
   ));
 }
 
-@WidgetbookUseCase(name: 'Placeholder Large', type: Avatar)
+@UseCase(name: 'Placeholder Large', type: Avatar)
 Widget wbavatarPlaceholderLarge(BuildContext context) {
   return const Center(
       child: Avatar.large(

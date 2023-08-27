@@ -2,7 +2,7 @@ import 'package:flutter/material.dart' as material;
 import 'package:flutter/widgets.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 
-@WidgetbookUseCase(name: 'Default', type: Slider)
+@UseCase(name: 'Default', type: Slider)
 Widget wbslider(BuildContext context) {
   return const Center(
       child: material.Padding(
@@ -11,7 +11,7 @@ Widget wbslider(BuildContext context) {
   ));
 }
 
-@WidgetbookUseCase(name: 'Divided', type: Slider)
+@UseCase(name: 'Divided', type: Slider)
 Widget wbsliderDivided(BuildContext context) {
   return const Center(
       child: material.Padding(

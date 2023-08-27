@@ -3,7 +3,7 @@ import 'package:tiamat/atoms/button.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
-@WidgetbookUseCase(name: 'Default', type: PopupDialog)
+@UseCase(name: 'Default', type: PopupDialog)
 Widget wbpopupDialog(BuildContext context) {
   return Container(
     child: Stack(
