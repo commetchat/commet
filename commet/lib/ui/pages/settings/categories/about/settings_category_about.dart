@@ -1,12 +1,16 @@
 import 'package:commet/config/build_config.dart';
 import 'package:commet/generated/l10n.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
 import 'package:commet/ui/pages/settings/settings_tab.dart';
 import 'package:commet/utils/link_utils.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tiamat/atoms/panel.dart';
+import 'package:tiamat/atoms/seperator.dart';
 import 'package:tiamat/atoms/tile.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -26,8 +30,27 @@ class SettingsCategoryAbout implements SettingsCategory {
   String? get title => null;
 }
 
-class _AppInfo extends StatelessWidget {
+class _AppInfo extends StatefulWidget {
   const _AppInfo({super.key});
+
+  @override
+  State<_AppInfo> createState() => _AppInfoState();
+}
+
+class _AppInfoState extends State<_AppInfo> {
+  BaseDeviceInfo? deviceInfo;
+  @override
+  void initState() {
+    super.initState();
+    loadDeviceInfo();
+  }
+
+  Future<void> loadDeviceInfo() async {
+    var info = await DeviceInfoPlugin().deviceInfo;
+    setState(() {
+      deviceInfo = info;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,23 +72,43 @@ class _AppInfo extends StatelessWidget {
               ),
             ),
             Flexible(
-              child: const Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Row(
                 children: [
-                  tiamat.Text.largeTitle(BuildConfig.appName),
-                  tiamat.Text.labelEmphasised(BuildConfig.VERSION_TAG),
-                  tiamat.Text.labelLow(BuildConfig.GIT_HASH)
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const tiamat.Text.largeTitle(BuildConfig.appName),
+                      const tiamat.Text.labelEmphasised(
+                          BuildConfig.VERSION_TAG),
+                      const tiamat.Text.labelLow(
+                          "${BuildConfig.GIT_HASH} ${BuildConfig.BUILD_DETAIL}"),
+                      if (deviceInfo != null)
+                        Row(
+                          children: [
+                            if (deviceInfo!.data["name"] is String)
+                              tiamat.Text.labelLow(
+                                  deviceInfo!.data["name"]!.toString()),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            if (deviceInfo!.data["version"] is String)
+                              tiamat.Text.labelLow(
+                                  deviceInfo!.data["version"]!.toString())
+                          ],
+                        )
+                    ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: tiamat.IconButton(
+                      icon: Icons.copy,
+                      onPressed: copySystemInfo,
+                    ),
+                  )
                 ],
               ),
             ),
-            Padding(
-              padding: EdgeInsets.all(16),
-              child: tiamat.IconButton(
-                size: 20,
-                icon: Icons.copy,
-              ),
-            )
           ],
         ),
         Panel(
@@ -79,5 +122,28 @@ class _AppInfo extends StatelessWidget {
             ))
       ],
     );
+  }
+
+  copySystemInfo() {
+    var data = """
+<details open>
+<summary>Device Information</summary>
+<br>
+
+**Device**
+Platform: `${BuildConfig.PLATFORM}`
+Version: `${BuildConfig.VERSION_TAG}`
+Git Hash: `${BuildConfig.GIT_HASH}`
+Detail: `${BuildConfig.BUILD_DETAIL}`
+
+
+**System Info**
+${deviceInfo?.data["name"] is String ? "Name: `${deviceInfo!.data["name"]}`" : ""}
+${deviceInfo?.data["version"] is String ? "Version: `${deviceInfo!.data["version"]}`" : ""}
+${deviceInfo?.data["product"] is String ? "Product: `${deviceInfo!.data["product"]}`" : ""}
+</details>
+""";
+
+    Clipboard.setData(ClipboardData(text: data));
   }
 }
