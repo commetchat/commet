@@ -72,7 +72,7 @@ class _RoomPanelState extends State<RoomPanel> {
                                 nameAndTopic(),
                                 if (widget.recentEventBody != null &&
                                     widget.recentEventSender != null)
-                                  Flexible(child: recentEvent())
+                                  recentEvent()
                               ],
                             ),
                           ),
@@ -91,7 +91,7 @@ class _RoomPanelState extends State<RoomPanel> {
   }
 
   Widget recentEvent() {
-    return Row(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.baseline,
       mainAxisSize: MainAxisSize.min,
       textBaseline: TextBaseline.alphabetic,
@@ -100,16 +100,14 @@ class _RoomPanelState extends State<RoomPanel> {
           widget.recentEventSender!,
           type: TextType.labelLow,
           autoAdjustBrightness: true,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
           color: widget.recentEventSenderColor,
         ),
-        const SizedBox(
-          width: 10,
-        ),
-        Flexible(
-          child: tiamat.Text.labelLow(
-            widget.recentEventBody!,
-            overflow: TextOverflow.fade,
-          ),
+        tiamat.Text.labelLow(
+          widget.recentEventBody!,
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
         )
       ],
     );
