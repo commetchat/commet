@@ -1,6 +1,4 @@
 import 'package:commet/config/build_config.dart';
-import 'package:commet/generated/l10n.dart';
-import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
 import 'package:commet/ui/pages/settings/settings_tab.dart';
 import 'package:commet/utils/link_utils.dart';
@@ -10,8 +8,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tiamat/atoms/panel.dart';
-import 'package:tiamat/atoms/seperator.dart';
-import 'package:tiamat/atoms/tile.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;
 
@@ -22,7 +18,7 @@ class SettingsCategoryAbout implements SettingsCategory {
             label: "About",
             icon: Icons.info_outline,
             pageBuilder: (context) {
-              return _AppInfo();
+              return const _AppInfo();
             }),
       ]);
 
@@ -31,7 +27,7 @@ class SettingsCategoryAbout implements SettingsCategory {
 }
 
 class _AppInfo extends StatefulWidget {
-  const _AppInfo({super.key});
+  const _AppInfo();
 
   @override
   State<_AppInfo> createState() => _AppInfoState();
@@ -89,14 +85,14 @@ class _AppInfoState extends State<_AppInfo> {
                             if (deviceInfo!.data["name"] is String)
                               tiamat.Text.labelLow(
                                   deviceInfo!.data["name"]!.toString()),
-                            SizedBox(
+                            const SizedBox(
                               width: 10,
                             ),
                             if (deviceInfo!.data["version"] is String)
                               tiamat.Text.labelLow(
                                   deviceInfo!.data["version"]!.toString())
                           ],
-                        )
+                        ),
                     ],
                   ),
                   Padding(
@@ -105,7 +101,7 @@ class _AppInfoState extends State<_AppInfo> {
                       icon: Icons.copy,
                       onPressed: copySystemInfo,
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -119,7 +115,7 @@ class _AppInfoState extends State<_AppInfo> {
               data: """
 [Twemoji](https://twemoji.twitter.com/) © Copyright 2020 Twitter, Inc and other contributors used under the terms of CC-BY 4.0.
 """,
-            ))
+            )),
       ],
     );
   }
