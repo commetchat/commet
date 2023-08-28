@@ -139,7 +139,9 @@ abstract class Timeline {
   }
 
   void insertNewEvent(int index, TimelineEvent event) {
-    if (shouldDisplayNotification(event)) displayNotification(event);
+    if (index == 0) {
+      if (shouldDisplayNotification(event)) displayNotification(event);
+    }
 
     insertEvent(index, event);
   }
@@ -164,8 +166,9 @@ abstract class Timeline {
         .where((element) => element.containsRoom(room.identifier))
         .toList();
 
-    if (containingSpaces
-        .every((space) => space.pushRule == PushRule.dontNotify)) {
+    if (containingSpaces.isNotEmpty &&
+        containingSpaces
+            .every((space) => space.pushRule == PushRule.dontNotify)) {
       return false;
     }
 
