@@ -95,7 +95,9 @@ class DesktopSettingsPageState extends State<DesktopSettingsPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           if (categoryIndex != 0) const tiamat.Seperator(),
-                          tiamat.Text.labelLow(categories[categoryIndex].title),
+                          if (categories[categoryIndex].title != null)
+                            tiamat.Text.labelLow(
+                                categories[categoryIndex].title!),
                           tabListBuilder(categoryIndex)
                         ],
                       );

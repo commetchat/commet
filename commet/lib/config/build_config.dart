@@ -1,11 +1,19 @@
 // ignore_for_file: constant_identifier_names
 
+import 'package:flutter/foundation.dart';
+
 class BuildConfig {
   static const String _buildMode =
       String.fromEnvironment('BUILD_MODE', defaultValue: _Constants.release);
 
   static const String _platform =
       String.fromEnvironment('PLATFORM', defaultValue: _Constants._desktop);
+
+  static const String GIT_HASH =
+      String.fromEnvironment('GIT_HASH', defaultValue: "unknown");
+
+  static const String VERSION_TAG =
+      String.fromEnvironment('VERSION_TAG', defaultValue: "development");
 
   static const bool DEBUG = _buildMode == _Constants._debug;
 
@@ -16,7 +24,7 @@ class BuildConfig {
       _platform == _Constants._windows ||
       _platform == _Constants._macos;
 
-  static const bool WEB = _platform == _Constants._web;
+  static const bool WEB = _platform == _Constants._web || kIsWeb;
 
   static const bool MOBILE = _platform == _Constants._mobile ||
       _platform == _Constants._android ||

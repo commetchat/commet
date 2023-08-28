@@ -55,9 +55,10 @@ class _MobileSettingsPageState extends State<MobileSettingsPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           if (categoryIndex != 0) const tiamat.Seperator(),
-                          tiamat.Text.labelLow(
-                            tabs[categoryIndex].title,
-                          ),
+                          if (tabs[categoryIndex].title != null)
+                            tiamat.Text.labelLow(
+                              tabs[categoryIndex].title!,
+                            ),
                           ListView.builder(
                             shrinkWrap: true,
                             itemCount: tabs[categoryIndex].tabs.length,

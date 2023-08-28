@@ -1,3 +1,4 @@
+import 'package:commet/ui/pages/settings/categories/about/settings_category_about.dart';
 import 'package:commet/ui/pages/settings/settings_page.dart';
 import 'package:flutter/widgets.dart';
 
@@ -12,6 +13,7 @@ class AppSettingsPage extends StatelessWidget {
     return SettingsPage(settings: [
       SettingsCategoryAccount(),
       SettingsCategoryApp(),
+      SettingsCategoryAbout()
     ]);
   }
 }
