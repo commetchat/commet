@@ -49,27 +49,39 @@ class _TimelineEventState extends State<TimelineEventView> {
 
   String messagePlaceholderSticker(String user) =>
       Intl.message("$user sent a sticker",
-          desc: "Message body for when a user sends a sticker");
+          desc: "Message body for when a user sends a sticker",
+          args: [user],
+          name: "messagePlaceholderSticker");
 
   String messagePlaceholderUserCreatedRoom(String user) =>
       Intl.message("$user created the room!",
-          desc: "Message body for when a user created the room");
+          desc: "Message body for when a user created the room",
+          args: [user],
+          name: "messagePlaceholderUserCreatedRoom");
 
   String messagePlaceholderUserJoinedRoom(String user) =>
       Intl.message("$user joined the room!",
-          desc: "Message body for when a user joins the room");
+          desc: "Message body for when a user joins the room",
+          args: [user],
+          name: "messagePlaceholderUserJoinedRoom");
 
   String messagePlaceholderUserLeftRoom(String user) =>
       Intl.message("$user left the room",
-          desc: "Message body for when a user leaves the room");
+          desc: "Message body for when a user leaves the room",
+          args: [user],
+          name: "messagePlaceholderUserLeftRoom");
 
   String messagePlaceholderUserUpdatedAvatar(String user) =>
       Intl.message("$user updated their avatar",
-          desc: "Message body for when a user updates their avatar");
+          desc: "Message body for when a user updates their avatar",
+          args: [user],
+          name: "messagePlaceholderUserUpdatedAvatar");
 
   String messagePlaceholderUserUpdatedName(String user) =>
       Intl.message("$user updated their display name",
-          desc: "Message body for when a user updates their display name");
+          desc: "Message body for when a user updates their display name",
+          args: [user],
+          name: "messagePlaceholderUserUpdatedName");
 
   @override
   void initState() {

@@ -102,7 +102,7 @@ class MessageInputState extends State<MessageInput> {
           other: "Several people are typing...",
           desc: "Text to display which users are currently typing",
           name: "typingUsers",
-          args: [user1, user2, user3]);
+          args: [howMany, user1, user2, user3]);
 
   void unfocus() {
     textFocus.unfocus();

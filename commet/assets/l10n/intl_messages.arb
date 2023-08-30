@@ -1,10 +1,58 @@
 {
-  "@@last_modified": "2023-08-30T23:25:42.494596",
+  "@@last_modified": "2023-08-31T00:02:18.093881",
   "Drop a file to upload...": "Drop a file to upload...",
   "@Drop a file to upload...": {
     "description": "Text that is shown when a user is dragging a file",
     "type": "text",
     "placeholders": {}
+  },
+  "messagePlaceholderSticker": "{user} sent a sticker",
+  "@messagePlaceholderSticker": {
+    "description": "Message body for when a user sends a sticker",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messagePlaceholderUserCreatedRoom": "{user} created the room!",
+  "@messagePlaceholderUserCreatedRoom": {
+    "description": "Message body for when a user created the room",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messagePlaceholderUserJoinedRoom": "{user} joined the room!",
+  "@messagePlaceholderUserJoinedRoom": {
+    "description": "Message body for when a user joins the room",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messagePlaceholderUserLeftRoom": "{user} left the room",
+  "@messagePlaceholderUserLeftRoom": {
+    "description": "Message body for when a user leaves the room",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messagePlaceholderUserUpdatedAvatar": "{user} updated their avatar",
+  "@messagePlaceholderUserUpdatedAvatar": {
+    "description": "Message body for when a user updates their avatar",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messagePlaceholderUserUpdatedName": "{user} updated their display name",
+  "@messagePlaceholderUserUpdatedName": {
+    "description": "Message body for when a user updates their display name",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
   },
   "(Edited)": "(Edited)",
   "@(Edited)": {
@@ -23,6 +71,17 @@
     "description": "Placeholder text for message input in an unencrypted room",
     "type": "text",
     "placeholders": {}
+  },
+  "typingUsers": "{howMany,plural, =1{{user1} is typing...}=2{{user1} and {user2} are typing...}few{{user1}, {user2}, and {user3} are typing...}other{Several people are typing...}}",
+  "@typingUsers": {
+    "description": "Text to display which users are currently typing",
+    "type": "text",
+    "placeholders": {
+      "howMany": {},
+      "user1": {},
+      "user2": {},
+      "user3": {}
+    }
   },
   "Add Space": "Add Space",
   "@Add Space": {
@@ -481,6 +540,12 @@
   "Delete": "Delete",
   "@Delete": {
     "description": "Generic prompt to delete something",
+    "type": "text",
+    "placeholders": {}
+  },
+  "NotificationModifiers_privacyEnhanced": "Sent a message",
+  "@NotificationModifiers_privacyEnhanced": {
+    "description": "Placeholder text to put in a notification when the user has privacy enhanced notifications enabled.",
     "type": "text",
     "placeholders": {}
   }

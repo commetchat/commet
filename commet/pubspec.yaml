@@ -95,11 +95,6 @@ flutter_icons:
     generate: true
     image_path: "assets/images/app_icon/icon_square_512.png"
 
-flutter_intl:
-  enabled: true # Required. Must be set to true to activate the plugin. Default: false
-  class_name: T # Optional. Sets the name for the generated localization class. Default: S
-  main_locale: en # Optional. Sets the main locale used for generating localization files. Provided value should consist of language code and optional script and country codes separated with underscore (e.g. 'en', 'en_GB', 'zh_Hans', 'zh_Hans_CN'). Default: en
-  arb-dir: lib/l10n
 
 flutter:
   uses-material-design: true
