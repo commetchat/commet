@@ -645,6 +645,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.18.1"
+  intl_translation:
+    dependency: "direct main"
+    description:
+      name: intl_translation
+      sha256: c8dce69cd7ce7ffea26126c32d284c829a94f08c13e4322ec0d98753dde6baff
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.18.2"
   intl_utils:
     dependency: "direct main"
     description:

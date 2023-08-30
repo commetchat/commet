@@ -11,13 +11,13 @@ import 'package:file_picker/file_picker.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
 import 'package:pasteboard/pasteboard.dart';
 import 'package:tiamat/config/config.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import '../../client/attachment.dart';
-import '../../generated/l10n.dart';
 import '../../client/components/emoticon/emoticon.dart';
 
 enum MessageInputSendResult { success, unhandled }
@@ -86,6 +86,23 @@ class MessageInputState extends State<MessageInput> {
   OverlayEntry? entry;
   final layerLink = LayerLink();
   bool showEmotePicker = false;
+
+  String get sendEncryptedMessagePrompt =>
+      Intl.message("Send an encrypted message",
+          desc: "Placeholder text for message input in an encrypted room");
+
+  String get sendUnencryptedMessagePrompt => Intl.message("Send a message",
+      desc: "Placeholder text for message input in an unencrypted room");
+
+  String typingUsers(int howMany, String user1, String user2, String user3) =>
+      Intl.plural(howMany,
+          one: "$user1 is typing...",
+          two: "$user1 and $user2 are typing...",
+          few: "$user1, $user2, and $user3 are typing...",
+          other: "Several people are typing...",
+          desc: "Text to display which users are currently typing",
+          name: "typingUsers",
+          args: [user1, user2, user3]);
 
   void unfocus() {
     textFocus.unfocus();
@@ -182,7 +199,7 @@ class MessageInputState extends State<MessageInput> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                typingUsers(),
+                typingUsersWidget(),
                 if (widget.interactionType != null) interactionText(),
                 if (widget.attachments != null &&
                     widget.attachments!.isNotEmpty)
@@ -240,10 +257,8 @@ class MessageInputState extends State<MessageInput> {
                                                   height: 10,
                                                 ),
                                                 hintText: widget.isRoomE2EE
-                                                    ? T.current
-                                                        .sendEncryptedMessagePrompt
-                                                    : T.current
-                                                        .sendAMessagePrompt,
+                                                    ? sendEncryptedMessagePrompt
+                                                    : sendUnencryptedMessagePrompt,
                                               ),
                                               //decoration: null,
                                               maxLines: null,
@@ -514,7 +529,7 @@ class MessageInputState extends State<MessageInput> {
     );
   }
 
-  Widget typingUsers() {
+  Widget typingUsersWidget() {
     String text = getTypingText();
 
     return Align(
@@ -526,26 +541,11 @@ class MessageInputState extends State<MessageInput> {
   }
 
   String getTypingText() {
-    if (widget.typingUsernames == null) return "";
-
-    if (widget.typingUsernames!.length == 1) {
-      return T.current.singleUserTyping(widget.typingUsernames![0]);
-    }
-    if (widget.typingUsernames!.length == 2) {
-      return T.current.twoUsersTyping(
-          widget.typingUsernames![0], widget.typingUsernames![1]);
-    }
-
-    if (widget.typingUsernames!.length == 3) {
-      return T.current.threeUsersTyping(widget.typingUsernames![0],
-          widget.typingUsernames![1], widget.typingUsernames![2]);
-    }
-
-    if (widget.typingUsernames!.length > 3) {
-      return T.current.multipleUsersTyping(widget.typingUsernames![0],
-          widget.typingUsernames![1], widget.typingUsernames![2]);
-    }
-
-    return "";
+    String user1 = widget.typingUsernames![0];
+    String user2 =
+        widget.typingUsernames!.length >= 2 ? widget.typingUsernames![1] : "";
+    String user3 =
+        widget.typingUsernames!.length >= 3 ? widget.typingUsernames![2] : "";
+    return typingUsers(widget.typingUsernames!.length, user1, user2, user3);
   }
 }

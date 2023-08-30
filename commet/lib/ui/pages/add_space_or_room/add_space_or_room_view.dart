@@ -6,12 +6,12 @@ import 'package:commet/ui/atoms/room_panel.dart';
 import 'package:commet/ui/atoms/room_preview.dart';
 import 'package:commet/utils/debounce.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 
-import '../../../generated/l10n.dart';
 import '../../molecules/account_selector.dart';
 
 @UseCase(name: 'Add Space Multiple Accounts', type: AddSpaceOrRoomView)
@@ -259,6 +259,91 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
   Debouncer spacePreviewDebounce =
       Debouncer(delay: const Duration(milliseconds: 500));
 
+  String get promptRoomName => Intl.message("Room Name",
+      desc: "Prompt to enter a room name, placeholder text for text input");
+
+  String get promptSpaceName => Intl.message("Space Name",
+      desc: "Prompt to enter a space name, placeholder text for text input");
+
+  String get promptTopic => Intl.message("Topic (Optional)",
+      desc:
+          "Prompt to enter a topic for room or space, specifying that doing so is optional");
+
+  String get roomVisibilityPrivateExplanation =>
+      Intl.message("This room will only be accessible by invitation",
+          desc: "Explains what 'private' room visibility means");
+
+  String get roomVisibilityPublicExplanation => Intl.message(
+      "This room will be publically accessible by anyone on the internet");
+
+  String get spaceVisibilityPrivateExplanation =>
+      Intl.message("This room will only be accessible by invitation",
+          desc: "Explains what 'private' room visibility means");
+
+  String get spaceVisibilityPublicExplanation => Intl.message(
+      "This room will be publically accessible by anyone on the internet");
+
+  String get labelVisibilityPrivate =>
+      Intl.message("Private", desc: "Short label for room visibility private");
+
+  String get labelVisibilityPublic =>
+      Intl.message("Public", desc: "Short label for room visibility public");
+
+  String get promptEnableEncryption => Intl.message("Enable Encryption",
+      desc: "Short prompt to enable encryption for a room");
+
+  String get encryptionCannotBeDisabledExplanation =>
+      Intl.message("If enabled, encryption cannot be disabled later",
+          desc: "Explains that encryption cannot be disabled once enabled");
+
+  String get promptConfirmRoomCreation => Intl.message("Create Room!",
+      desc: "Label for a button which confirms the creation of a room");
+
+  String get promptConfirmSpaceCreation => Intl.message("Create Space!",
+      desc: "Label for a button which confirms the creation of a space");
+
+  String get promptConfirmRoomJoin => Intl.message("Join Room!",
+      desc: "Label for a button which confirms the joining of a room");
+
+  String get promptConfirmSpaceJoin => Intl.message("Join Space!",
+      desc: "Label for a button which confirms the joining of a space");
+
+  String get promptRoomAddress => Intl.message("Room Address:",
+      desc: "Short label to prompt for the input of a room address");
+
+  String get promptSpaceAddress => Intl.message("Space Address:",
+      desc: "Short label to prompt for the input of a space address");
+
+  String get placeholderRoomAddress => Intl.message("#awesome-room:matrix.org",
+      desc: "Placeholder / Example for a room address");
+
+  String get placeholderSpaceAddress =>
+      Intl.message("#awesome-space:matrix.org",
+          desc: "Placeholder / Example for a space address");
+
+  String get labelCouldNotLoadRoomPreview => Intl.message(
+      "Could not load a preview of the room",
+      desc: "Error message for when a room preview was not able to be loaded");
+
+  String get promptAddSelectedRooms => Intl.message("Add selected rooms",
+      desc: "Prompt to add the selected rooms to a space");
+
+  String get promptCreateNewSpace =>
+      Intl.message("Create new space", desc: "Prompt to create a new space");
+
+  String get promptJoinExistingSpace => Intl.message("Join existing space",
+      desc: "Prompt to join a space which already exists");
+
+  String get promptCreateNewRoom =>
+      Intl.message("Create new room", desc: "Prompt to create a new room");
+
+  String get promptJoinExistingRoom => Intl.message("Join existing room",
+      desc: "Prompt to join a room which already exists");
+
+  String get promptUseExistingRoom => Intl.message("Use existing room",
+      desc:
+          "Button text to choose to use an existing room when adding a room to a space");
+
   void getSpacePreview() async {
     var preview =
         await selectedClient.getSpacePreview(spaceAddressController.text);
@@ -337,16 +422,14 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
               userSelector(),
             tiamat.TextInput(
               controller: nameController,
-              placeholder: widget.roomMode
-                  ? T.current.roomNamePrompt
-                  : T.current.spaceNamePrompt,
+              placeholder: widget.roomMode ? promptRoomName : promptSpaceName,
             ),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
                 child: tiamat.TextInput(
                   controller: topicController,
-                  placeholder: T.current.spaceTopicPrompt,
+                  placeholder: promptTopic,
                   maxLines: 100,
                 ),
               ),
@@ -367,20 +450,20 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
                   String subtitle;
                   switch (item) {
                     case RoomVisibility.public:
-                      title = T.current.roomVisibilityPublic;
+                      title = labelVisibilityPublic;
                       icon = Icons.public;
                       subtitle = widget.roomMode
-                          ? T.current.roomVisibilityPublicExplanation
-                          : T.current.spaceVisibilityPublicExplanation;
+                          ? roomVisibilityPublicExplanation
+                          : spaceVisibilityPublicExplanation;
                       break;
                     case RoomVisibility.private:
                     case RoomVisibility.invite:
                     case RoomVisibility.knock:
-                      title = T.current.roomVisibilityPrivate;
+                      title = labelVisibilityPrivate;
                       icon = Icons.lock;
                       subtitle = widget.roomMode
-                          ? T.current.roomVisibilityPrivateExplanation
-                          : T.current.spaceVisibilityPrivateExplanation;
+                          ? roomVisibilityPrivateExplanation
+                          : spaceVisibilityPrivateExplanation;
                       break;
                   }
 
@@ -422,10 +505,9 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          tiamat.Text.labelEmphasised(
-                              T.current.enableEncryptionPrompt),
+                          tiamat.Text.labelEmphasised(promptEnableEncryption),
                           tiamat.Text.labelLow(
-                              T.current.encryptionCannotBeDisabled)
+                              encryptionCannotBeDisabledExplanation)
                         ],
                       ),
                     ),
@@ -444,8 +526,8 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
               padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
               child: tiamat.Button.success(
                 text: widget.roomMode
-                    ? T.current.addSpaceViewCreateRoomButton
-                    : T.current.addSpaceViewCreateSpaceButton,
+                    ? promptConfirmRoomCreation
+                    : promptConfirmSpaceCreation,
                 onTap: () => widget.onCreate?.call(selectedClient,
                     nameController.text, visibility, enableE2EE),
               ),
@@ -471,14 +553,13 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                tiamat.Text.label(widget.roomMode
-                    ? T.current.roomAddressPrompt
-                    : T.current.spaceAddressPrompt),
+                tiamat.Text.label(
+                    widget.roomMode ? promptRoomAddress : promptSpaceAddress),
                 TextInput(
                   controller: spaceAddressController,
                   placeholder: widget.roomMode
-                      ? "#awesome-room:example.com"
-                      : "#awesome-space:example.com",
+                      ? placeholderRoomAddress
+                      : placeholderSpaceAddress,
                 ),
               ],
             ),
@@ -496,13 +577,13 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
                   : spacePreview != null
                       ? RoomPreviewView(previewData: spacePreview!)
                       : Center(
-                          child: tiamat.Text.label(
-                              T.current.couldNotLoadRoomPreview)),
+                          child:
+                              tiamat.Text.label(labelCouldNotLoadRoomPreview)),
             ),
             tiamat.Button.success(
               text: widget.roomMode
-                  ? T.current.joinRoomPrompt
-                  : T.current.joinSpacePrompt,
+                  ? promptConfirmRoomJoin
+                  : promptConfirmSpaceJoin,
               onTap: () {
                 widget.onJoin
                     ?.call(selectedClient, spaceAddressController.text);
@@ -551,8 +632,8 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
 
   Widget promptJoinOrCreateSpace(BuildContext context) {
     return buildTwoChoicePrompt(context,
-        option1: T.current.createNewSpace,
-        option2: T.current.joinExistingSpace, onOption1Tap: () {
+        option1: promptCreateNewSpace,
+        option2: promptJoinExistingSpace, onOption1Tap: () {
       setState(() {
         phase = AddSpaceOrRoomPhase.create;
       });
@@ -565,8 +646,8 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
 
   Widget promptJoinOrCreateRoom(BuildContext context) {
     return buildTwoChoicePrompt(context,
-        option1: "Create New room",
-        option2: "Join existing room", onOption1Tap: () {
+        option1: promptCreateNewRoom,
+        option2: promptJoinExistingRoom, onOption1Tap: () {
       setState(() {
         phase = AddSpaceOrRoomPhase.create;
       });
@@ -579,8 +660,8 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
 
   Widget promptCreateOrUseExisting(BuildContext context) {
     return buildTwoChoicePrompt(context,
-        option1: "Create New room",
-        option2: "Use existing room", onOption1Tap: () {
+        option1: promptCreateNewRoom,
+        option2: promptUseExistingRoom, onOption1Tap: () {
       setState(() {
         phase = AddSpaceOrRoomPhase.create;
       });

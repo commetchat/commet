@@ -1,0 +1,487 @@
+{
+  "@@last_modified": "2023-08-30T23:25:42.494596",
+  "Drop a file to upload...": "Drop a file to upload...",
+  "@Drop a file to upload...": {
+    "description": "Text that is shown when a user is dragging a file",
+    "type": "text",
+    "placeholders": {}
+  },
+  "(Edited)": "(Edited)",
+  "@(Edited)": {
+    "description": "Short text to mark that a message has been edited",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Send an encrypted message": "Send an encrypted message",
+  "@Send an encrypted message": {
+    "description": "Placeholder text for message input in an encrypted room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Send a message": "Send a message",
+  "@Send a message": {
+    "description": "Placeholder text for message input in an unencrypted room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Add Space": "Add Space",
+  "@Add Space": {
+    "description": "Prompt to add a new space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "General": "General",
+  "@General": {
+    "description": "Label for the App General settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Appearance": "Appearance",
+  "@Appearance": {
+    "description": "Label for the App Appearance settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Emoticons": "Emoticons",
+  "@Emoticons": {
+    "description": "Label for the Emoticons settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Developer": "Developer",
+  "@Developer": {
+    "description": "Label for the Developer settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Space Settings": "Space Settings",
+  "@Space Settings": {
+    "description": "Label for the overall space settings category",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Enable Encryption": "Enable Encryption",
+  "@Enable Encryption": {
+    "description": "Short prompt to enable encryption for a room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "If enabled, encryption cannot be disabled later": "If enabled, encryption cannot be disabled later",
+  "@If enabled, encryption cannot be disabled later": {
+    "description": "Explains that encryption cannot be disabled once enabled",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Create pack": "Create pack",
+  "@Create pack": {
+    "description": "Prompt to create a new emoticon pack, for emoji or stickers",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmDeleteEmoticonPack": "Are you sure you want to delete the **{packName}** pack?",
+  "@promptConfirmDeleteEmoticonPack": {
+    "description": "Prompt to confirm deletion of an emoticon pack, supports markdown to emphasise the pack name",
+    "type": "text",
+    "placeholders": {
+      "packName": {}
+    }
+  },
+  "Create Emote": "Create Emote",
+  "@Create Emote": {
+    "description": "Title of a dialog that pops up when choosing to create a new emoticon",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmDeleteEmoticon": "Are you sure you want to delete **{emoticon}**?",
+  "@promptConfirmDeleteEmoticon": {
+    "description": "Prompt to confirm deletion of an emoticon pack, supports markdown to emphasise the emote name",
+    "type": "text",
+    "placeholders": {
+      "emoticon": {}
+    }
+  },
+  "Rename emote": "Rename emote",
+  "@Rename emote": {
+    "description": "Tooltip for button to rename emoticon",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Pack name": "Pack name",
+  "@Pack name": {
+    "description": "Prompt for the input of the name of an emoticon pack",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Emoji name": "Emoji name",
+  "@Emoji name": {
+    "description": "Prompt for the input of the name of an emoji",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Sticker name": "Sticker name",
+  "@Sticker name": {
+    "description": "Prompt for the input of a sticker",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Create!": "Create!",
+  "@Create!": {
+    "description": "Prompt to confirm the creation of an Emoticon Pack, Emoji, or Sticker",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Security": "Security",
+  "@Security": {
+    "description": "Label for the Security settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Room Settings": "Room Settings",
+  "@Room Settings": {
+    "description": "Label for the overall settings category of a room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Manage Accounts": "Manage Accounts",
+  "@Manage Accounts": {
+    "description": "Label for the Manage Accounts settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Profile": "Profile",
+  "@Profile": {
+    "description": "Label for the Profile settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Account": "Account",
+  "@Account": {
+    "description": "Label for the settings category Account",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Window Behaviour": "Window Behaviour",
+  "@Window Behaviour": {
+    "description": "Label for the Window Behaviour settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Advanced": "Advanced",
+  "@Advanced": {
+    "description": "Label for the App Advanced settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Developer Utils": "Developer Utils",
+  "@Developer Utils": {
+    "description": "Label for the developer utils settings page, usually hidden unless developer mode is turned on",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Theme": "Theme",
+  "@Theme": {
+    "description": "Label for theme section of app appearance",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Dark Theme": "Dark Theme",
+  "@Dark Theme": {
+    "description": "Label for the dark theme",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Light Theme": "Light Theme",
+  "@Light Theme": {
+    "description": "Label for the light theme",
+    "type": "text",
+    "placeholders": {}
+  },
+  "App Scale": "App Scale",
+  "@App Scale": {
+    "description": "Label for the setting which controls the UI scale of the overall app",
+    "type": "text",
+    "placeholders": {}
+  },
+  "App Settings": "App Settings",
+  "@App Settings": {
+    "description": "Label for the settings category of the overall App settings/",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Login Failed...": "Login Failed...",
+  "@Login Failed...": {
+    "description": "Generic text to show that an attempted login has failed",
+    "type": "text",
+    "placeholders": {}
+  },
+  "An error occured": "An error occured",
+  "@An error occured": {
+    "description": "A generic error message to convey that an error occured when attempting to login",
+    "type": "text",
+    "placeholders": {}
+  },
+  "An error message displayed when the user attempts to add an account which has already been logged in to on this device": "An error message displayed when the user attempts to add an account which has already been logged in to on this device",
+  "@An error message displayed when the user attempts to add an account which has already been logged in to on this device": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "Homeserver": "Homeserver",
+  "@Homeserver": {
+    "description": "Placeholder text for homeserver field on login form",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Username": "Username",
+  "@Username": {
+    "description": "Placeholder text for username field on login form",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Password": "Password",
+  "@Password": {
+    "description": "Placeholder text for password field on login form",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Login": "Login",
+  "@Login": {
+    "description": "Prompt to submit the username and password, and attempt to login",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Room Name": "Room Name",
+  "@Room Name": {
+    "description": "Prompt to enter a room name, placeholder text for text input",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Space Name": "Space Name",
+  "@Space Name": {
+    "description": "Prompt to enter a space name, placeholder text for text input",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Topic (Optional)": "Topic (Optional)",
+  "@Topic (Optional)": {
+    "description": "Prompt to enter a topic for room or space, specifying that doing so is optional",
+    "type": "text",
+    "placeholders": {}
+  },
+  "This room will only be accessible by invitation": "This room will only be accessible by invitation",
+  "@This room will only be accessible by invitation": {
+    "description": "Explains what 'private' room visibility means",
+    "type": "text",
+    "placeholders": {}
+  },
+  "This room will be publically accessible by anyone on the internet": "This room will be publically accessible by anyone on the internet",
+  "@This room will be publically accessible by anyone on the internet": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "Private": "Private",
+  "@Private": {
+    "description": "Short label for room visibility private",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Public": "Public",
+  "@Public": {
+    "description": "Short label for room visibility public",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Create Room!": "Create Room!",
+  "@Create Room!": {
+    "description": "Label for a button which confirms the creation of a room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Create Space!": "Create Space!",
+  "@Create Space!": {
+    "description": "Label for a button which confirms the creation of a space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Join Room!": "Join Room!",
+  "@Join Room!": {
+    "description": "Label for a button which confirms the joining of a room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Join Space!": "Join Space!",
+  "@Join Space!": {
+    "description": "Label for a button which confirms the joining of a space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Room Address:": "Room Address:",
+  "@Room Address:": {
+    "description": "Short label to prompt for the input of a room address",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Space Address:": "Space Address:",
+  "@Space Address:": {
+    "description": "Short label to prompt for the input of a space address",
+    "type": "text",
+    "placeholders": {}
+  },
+  "#awesome-room:matrix.org": "#awesome-room:matrix.org",
+  "@#awesome-room:matrix.org": {
+    "description": "Placeholder / Example for a room address",
+    "type": "text",
+    "placeholders": {}
+  },
+  "#awesome-space:matrix.org": "#awesome-space:matrix.org",
+  "@#awesome-space:matrix.org": {
+    "description": "Placeholder / Example for a space address",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Could not load a preview of the room": "Could not load a preview of the room",
+  "@Could not load a preview of the room": {
+    "description": "Error message for when a room preview was not able to be loaded",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Add selected rooms": "Add selected rooms",
+  "@Add selected rooms": {
+    "description": "Prompt to add the selected rooms to a space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Create new space": "Create new space",
+  "@Create new space": {
+    "description": "Prompt to create a new space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Join existing space": "Join existing space",
+  "@Join existing space": {
+    "description": "Prompt to join a space which already exists",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Create new room": "Create new room",
+  "@Create new room": {
+    "description": "Prompt to create a new room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Join existing room": "Join existing room",
+  "@Join existing room": {
+    "description": "Prompt to join a room which already exists",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Use existing room": "Use existing room",
+  "@Use existing room": {
+    "description": "Button text to choose to use an existing room when adding a room to a space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Waiting for the other device to accept the request": "Waiting for the other device to accept the request",
+  "@Waiting for the other device to accept the request": {
+    "description": "Message to show while waiting for another device to accept a matrix session verification request",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageMatrixSessionVerificationRequest": "**{username}** has requested to verify your session",
+  "@messageMatrixSessionVerificationRequest": {
+    "description": "Message to show when another user has requested to verify your matrix session. Supports markdown to emphasise the user name",
+    "type": "text",
+    "placeholders": {
+      "username": {}
+    }
+  },
+  "Check that the emoji are the same, and in the same order as on the other device": "Check that the emoji are the same, and in the same order as on the other device",
+  "@Check that the emoji are the same, and in the same order as on the other device": {
+    "description": "Explains what to look for when verifying using emoji. Needs to portray that the emoji MUST be the same AND in the same order",
+    "type": "text",
+    "placeholders": {}
+  },
+  "They match!": "They match!",
+  "@They match!": {
+    "description": "Button text to confirm that the emoji matches",
+    "type": "text",
+    "placeholders": {}
+  },
+  "They don't match": "They don't match",
+  "@They don't match": {
+    "description": "Button text to confirm that the emoji do NOT match",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Verification Complete!": "Verification Complete!",
+  "@Verification Complete!": {
+    "description": "Message to show when verification was completed successfully, and the session has been verified",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Sent a message": "Sent a message",
+  "@Sent a message": {
+    "description": "Placeholder text for the body of a notification, when the message either doesnt contain a displayable body, or the body has been hidden by notification settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Reply": "Reply",
+  "@Reply": {
+    "description": "Generic prompt to reply to a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Add Reaction": "Add Reaction",
+  "@Add Reaction": {
+    "description": "Generic prompt to add reaction to a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Edit": "Edit",
+  "@Edit": {
+    "description": "Generic prompt to edit something",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Options": "Options",
+  "@Options": {
+    "description": "Generic prompt for options, generally would be used to open a settings menu, extra details or similar",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Settings": "Settings",
+  "@Settings": {
+    "description": "Generic prompt for settings, usually will open a settings menu or similar",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Home": "Home",
+  "@Home": {
+    "description": "Generic prompt to go home, usually will go back to a main menu, or similar",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Accept": "Accept",
+  "@Accept": {
+    "description": "Generic prompt to accept something, probably a request of some kind",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Reject": "Reject",
+  "@Reject": {
+    "description": "Generic prompt to reject something, probably a request of some kind",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Apply": "Apply",
+  "@Apply": {
+    "description": "Generic prompt to apply something, probably a setting",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Delete": "Delete",
+  "@Delete": {
+    "description": "Generic prompt to delete something",
+    "type": "text",
+    "placeholders": {}
+  }
+}

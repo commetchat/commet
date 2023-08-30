@@ -1,6 +1,7 @@
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/generated/l10n.dart';
 import 'package:commet/ui/pages/matrix/verification/matrix_verification_page.dart';
+import 'package:commet/utils/common_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:matrix/encryption/utils/key_verification.dart';
@@ -36,7 +37,7 @@ void main() {
     await tester.pumpAndSettle();
 
     var button =
-        find.widgetWithText(ElevatedButton, T.current.genericAcceptButton);
+        find.widgetWithText(ElevatedButton, CommonStrings.promptAccept);
     await tester.tap(button);
 
     await tester.waitFor(() => find

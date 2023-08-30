@@ -5,13 +5,14 @@ import 'package:commet/client/client_manager.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/pages/add_space_or_room/add_space_or_room.dart';
 import 'package:commet/ui/pages/settings/app_settings_page.dart';
+import 'package:commet/utils/common_strings.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
 import 'package:provider/provider.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
-import '../../generated/l10n.dart';
 import '../molecules/space_selector.dart';
 import '../navigation/navigation_utils.dart';
 
@@ -61,6 +62,10 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
   late ClientManager _clientManager;
   StreamSubscription? onSpaceUpdated;
   StreamSubscription? onSpaceChildUpdated;
+
+  String get promptAddSpace =>
+      Intl.message("Add Space", desc: "Prompt to add a new space");
+
   @override
   void initState() {
     _clientManager = Provider.of<ClientManager>(context, listen: false);
@@ -86,7 +91,7 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
             Padding(
               padding: SpaceSelector.padding,
               child: SideNavigationBar.tooltip(
-                  T.current.settings,
+                  CommonStrings.promptSettings,
                   ImageButton(
                     size: 70,
                     image: widget.currentUser.avatar,
@@ -111,7 +116,7 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                 header: Column(
                   children: [
                     SideNavigationBar.tooltip(
-                        T.of(context).home,
+                        CommonStrings.promptHome,
                         ImageButton(
                           size: 70,
                           icon: Icons.home,
@@ -127,7 +132,7 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
                       child: SideNavigationBar.tooltip(
-                          T.of(context).addSpace,
+                          promptAddSpace,
                           ImageButton(
                             size: 70,
                             icon: Icons.add,
@@ -136,7 +141,7 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                                   builder: (_) => AddSpaceOrRoom(
                                         clients: _clientManager.clients,
                                       ),
-                                  title: T.of(context).addSpace);
+                                  title: promptAddSpace);
                             },
                           ),
                           context),

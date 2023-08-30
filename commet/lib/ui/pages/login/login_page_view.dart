@@ -1,7 +1,7 @@
 import 'package:commet/client/client.dart';
-import 'package:commet/generated/l10n.dart';
 import 'package:commet/ui/pages/login/login_page.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:tiamat/atoms/tile.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
@@ -29,6 +29,28 @@ class _LoginPageViewState extends State<LoginPageView> {
 
   bool _loading = false;
 
+  String get messageLoginFailed => Intl.message("Login Failed...",
+      desc: "Generic text to show that an attempted login has failed");
+
+  String get messageLoginError => Intl.message("An error occured",
+      desc:
+          "A generic error message to convey that an error occured when attempting to login");
+
+  String get messageAlreadyLoggedIn => Intl.message(
+      "An error message displayed when the user attempts to add an account which has already been logged in to on this device");
+
+  String get promptHomeserver => Intl.message("Homeserver",
+      desc: "Placeholder text for homeserver field on login form");
+
+  String get promptUsername => Intl.message("Username",
+      desc: "Placeholder text for username field on login form");
+
+  String get promptPassword => Intl.message("Password",
+      desc: "Placeholder text for password field on login form");
+
+  String get promptSubmitLogin => Intl.message("Login",
+      desc: "Prompt to submit the username and password, and attempt to login");
+
   void doLogin() async {
     setState(() {
       _loading = true;
@@ -47,13 +69,13 @@ class _LoginPageViewState extends State<LoginPageView> {
       case LoginResult.success:
         break;
       case LoginResult.failed:
-        message = T.current.loginResultFailedMessage;
+        message = messageLoginFailed;
         break;
       case LoginResult.error:
-        message = T.current.loginResultErrorMessage;
+        message = messageLoginError;
         break;
       case LoginResult.alreadyLoggedIn:
-        message = T.current.loginResultAlreadyLoggedInMessage;
+        message = messageAlreadyLoggedIn;
         break;
     }
 
@@ -101,10 +123,10 @@ class _LoginPageViewState extends State<LoginPageView> {
                           autocorrect: false,
                           controller: _homeserverTextField,
                           readOnly: _loading,
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             prefixText: 'https://',
-                            border: OutlineInputBorder(),
-                            labelText: 'Homeserver',
+                            border: const OutlineInputBorder(),
+                            labelText: promptHomeserver,
                           ),
                         ),
                         const SizedBox(height: 16),
@@ -112,9 +134,9 @@ class _LoginPageViewState extends State<LoginPageView> {
                           autocorrect: false,
                           controller: _usernameTextField,
                           readOnly: _loading,
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'Username',
+                          decoration: InputDecoration(
+                            border: const OutlineInputBorder(),
+                            labelText: promptUsername,
                           ),
                         ),
                         const SizedBox(height: 16),
@@ -123,9 +145,9 @@ class _LoginPageViewState extends State<LoginPageView> {
                           controller: _passwordTextField,
                           obscureText: true,
                           readOnly: _loading,
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'Password',
+                          decoration: InputDecoration(
+                            border: const OutlineInputBorder(),
+                            labelText: promptPassword,
                           ),
                         ),
                         const SizedBox(height: 16),
@@ -136,7 +158,7 @@ class _LoginPageViewState extends State<LoginPageView> {
                             onPressed: doLogin,
                             child: _loading
                                 ? const LinearProgressIndicator()
-                                : const Text('Login'),
+                                : Text(promptSubmitLogin),
                           ),
                         ),
                       ]),

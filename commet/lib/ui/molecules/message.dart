@@ -3,11 +3,10 @@ import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/atoms/emoji_reaction.dart';
 import 'package:commet/utils/text_utils.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:flutter/material.dart' as material;
-
-import '../../generated/l10n.dart';
 
 class Message extends StatefulWidget {
   const Message(
@@ -64,6 +63,9 @@ class Message extends StatefulWidget {
 class _MessageState extends State<Message> {
   bool hovered = false;
   bool editMode = false;
+
+  String get messageEditedMarker => Intl.message("(Edited)",
+      desc: "Short text to mark that a message has been edited");
 
   @override
   Widget build(BuildContext context) {
@@ -201,7 +203,7 @@ class _MessageState extends State<Message> {
   }
 
   Widget edited() {
-    return tiamat.Text.labelLow(T.current.messageEditedMarker);
+    return tiamat.Text.labelLow(messageEditedMarker);
   }
 
   Widget reactions() {

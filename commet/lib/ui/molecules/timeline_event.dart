@@ -1,15 +1,16 @@
 import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/atoms/generic_room_event.dart';
 import 'package:commet/ui/molecules/message.dart';
+import 'package:commet/utils/common_strings.dart';
 import 'package:flutter/material.dart' as m;
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 import 'package:tiamat/atoms/icon_button.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 import '../../client/client.dart';
 import '../../client/components/emoticon/emoticon.dart';
-import '../../generated/l10n.dart';
 import '../atoms/message_attachment.dart';
 import '../atoms/tooltip.dart' as t;
 
@@ -45,6 +46,30 @@ class TimelineEventView extends StatefulWidget {
 
 class _TimelineEventState extends State<TimelineEventView> {
   TimelineEvent? relatedEvent;
+
+  String messagePlaceholderSticker(String user) =>
+      Intl.message("$user sent a sticker",
+          desc: "Message body for when a user sends a sticker");
+
+  String messagePlaceholderUserCreatedRoom(String user) =>
+      Intl.message("$user created the room!",
+          desc: "Message body for when a user created the room");
+
+  String messagePlaceholderUserJoinedRoom(String user) =>
+      Intl.message("$user joined the room!",
+          desc: "Message body for when a user joins the room");
+
+  String messagePlaceholderUserLeftRoom(String user) =>
+      Intl.message("$user left the room",
+          desc: "Message body for when a user leaves the room");
+
+  String messagePlaceholderUserUpdatedAvatar(String user) =>
+      Intl.message("$user updated their avatar",
+          desc: "Message body for when a user updates their avatar");
+
+  String messagePlaceholderUserUpdatedName(String user) =>
+      Intl.message("$user updated their display name",
+          desc: "Message body for when a user updates their display name");
 
   @override
   void initState() {
@@ -116,7 +141,7 @@ class _TimelineEventState extends State<TimelineEventView> {
           currentUserIdentifier: widget.timeline.room.client.user!.identifier,
           replyBody: relatedEvent?.body ??
               (relatedEvent?.type == EventType.sticker
-                  ? T.current.messagePlaceholderSticker
+                  ? messagePlaceholderSticker(displayName)
                   : null),
           replySenderName: relatedEventDisplayName,
           replySenderColor: replyColor,
@@ -127,20 +152,20 @@ class _TimelineEventState extends State<TimelineEventView> {
           menuBuilder: BuildConfig.DESKTOP ? buildMenu : null,
         );
       case EventType.roomCreated:
-        return GenericRoomEvent(T.current.userCreatedRoom(displayName),
+        return GenericRoomEvent(messagePlaceholderUserCreatedRoom(displayName),
             m.Icons.room_preferences_outlined);
       case EventType.memberJoined:
-        return GenericRoomEvent(
-            T.current.userJoinedRoom(displayName), m.Icons.waving_hand_rounded);
+        return GenericRoomEvent(messagePlaceholderUserJoinedRoom(displayName),
+            m.Icons.waving_hand_rounded);
       case EventType.memberLeft:
-        return GenericRoomEvent(T.current.userLeftRoom(displayName),
+        return GenericRoomEvent(messagePlaceholderUserLeftRoom(displayName),
             m.Icons.subdirectory_arrow_left_rounded);
       case EventType.memberAvatar:
         return GenericRoomEvent(
-            T.current.userUpdatedAvatar(displayName), m.Icons.person);
+            messagePlaceholderUserUpdatedAvatar(displayName), m.Icons.person);
       case EventType.memberDisplayName:
         return GenericRoomEvent(
-            T.current.userUpdatedDisplayName(displayName), m.Icons.edit);
+            messagePlaceholderUserUpdatedName(displayName), m.Icons.edit);
       default:
         break;
     }
@@ -174,15 +199,17 @@ class _TimelineEventState extends State<TimelineEventView> {
           padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
           child: Row(
             children: [
-              buildMenuEntry(m.Icons.reply, "Reply", () {
+              buildMenuEntry(m.Icons.reply, CommonStrings.promptReply, () {
                 widget.setReplyingEvent!.call();
               }),
-              buildMenuEntry(m.Icons.add_reaction, "Add Reaction", () => null),
+              buildMenuEntry(m.Icons.add_reaction,
+                  CommonStrings.promptAddReaction, () => null),
               if (canUserEditEvent() && widget.event.editable)
-                buildMenuEntry(m.Icons.edit, "Edit", () {
+                buildMenuEntry(m.Icons.edit, CommonStrings.promptEdit, () {
                   widget.setEditingEvent?.call();
                 }),
-              buildMenuEntry(m.Icons.more_vert, "Options", () => null)
+              buildMenuEntry(
+                  m.Icons.more_vert, CommonStrings.promptOptions, () => null)
             ],
           ),
         ),
