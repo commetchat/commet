@@ -30,25 +30,35 @@ class _LoginPageViewState extends State<LoginPageView> {
   bool _loading = false;
 
   String get messageLoginFailed => Intl.message("Login Failed...",
+      name: "messageLoginFailed",
       desc: "Generic text to show that an attempted login has failed");
 
   String get messageLoginError => Intl.message("An error occured",
+      name: "messageLoginError",
       desc:
           "A generic error message to convey that an error occured when attempting to login");
 
   String get messageAlreadyLoggedIn => Intl.message(
-      "An error message displayed when the user attempts to add an account which has already been logged in to on this device");
+        "You have already logged in to this account",
+        name: "messageAlreadyLoggedIn",
+        desc:
+            "An error message displayed when the user attempts to add an account which has already been logged in to on this device",
+      );
 
   String get promptHomeserver => Intl.message("Homeserver",
+      name: "promptHomeserver",
       desc: "Placeholder text for homeserver field on login form");
 
   String get promptUsername => Intl.message("Username",
+      name: "promptUsername",
       desc: "Placeholder text for username field on login form");
 
   String get promptPassword => Intl.message("Password",
+      name: "promptPassword",
       desc: "Placeholder text for password field on login form");
 
   String get promptSubmitLogin => Intl.message("Login",
+      name: "promptSubmitLogin",
       desc: "Prompt to submit the username and password, and attempt to login");
 
   void doLogin() async {

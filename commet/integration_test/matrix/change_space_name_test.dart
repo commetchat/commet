@@ -1,4 +1,3 @@
-import 'package:commet/generated/l10n.dart';
 import 'package:commet/ui/atoms/space_header.dart';
 import 'package:commet/ui/atoms/space_icon.dart';
 import 'package:commet/ui/organisms/space_summary/space_summary_view.dart';
@@ -11,6 +10,7 @@ import 'package:integration_test/integration_test.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;
 import '../extensions/common_flows.dart';
+import '../generated/l10n.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();

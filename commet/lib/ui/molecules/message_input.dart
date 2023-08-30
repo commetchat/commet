@@ -89,9 +89,11 @@ class MessageInputState extends State<MessageInput> {
 
   String get sendEncryptedMessagePrompt =>
       Intl.message("Send an encrypted message",
+          name: "sendEncryptedMessagePrompt",
           desc: "Placeholder text for message input in an encrypted room");
 
   String get sendUnencryptedMessagePrompt => Intl.message("Send a message",
+      name: "sendUnencryptedMessagePrompt",
       desc: "Placeholder text for message input in an unencrypted room");
 
   String typingUsers(int howMany, String user1, String user2, String user3) =>

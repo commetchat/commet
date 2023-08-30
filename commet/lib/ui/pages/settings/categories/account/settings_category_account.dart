@@ -14,22 +14,28 @@ import 'security/security_tab.dart';
 
 class SettingsCategoryAccount implements SettingsCategory {
   String get labelSettingsTabManageAccounts => Intl.message("Manage Accounts",
+      name: "labelSettingsTabManageAccounts",
       desc: "Label for the Manage Accounts settings");
 
-  String get labelSettingsTabProfile =>
-      Intl.message("Profile", desc: "Label for the Profile settings page");
+  String get labelSettingsTabProfile => Intl.message("Profile",
+      name: "labelSettingsTabProfile",
+      desc: "Label for the Profile settings page");
 
-  String get labelSettingsTabSecurity =>
-      Intl.message("Security", desc: "Label for the Security settings page");
+  String get labelSettingsTabSecurity => Intl.message("Security",
+      name: "labelSettingsTabSecurity",
+      desc: "Label for the Security settings page");
 
-  String get labelSettingsTabEmoticons =>
-      Intl.message("Emoticons", desc: "Label for the Emoticons settings page");
+  String get labelSettingsTabEmoticons => Intl.message("Emoticons",
+      name: "labelSettingsTabEmoticons",
+      desc: "Label for the Emoticons settings page");
 
-  String get labelSettingsTabDeveloper =>
-      Intl.message("Developer", desc: "Label for the Developer settings page");
+  String get labelSettingsTabDeveloper => Intl.message("Developer",
+      name: "labelSettingsTabDeveloper",
+      desc: "Label for the Developer settings page");
 
-  String get labelSettingsCategoryAccount =>
-      Intl.message("Account", desc: "Label for the settings category Account");
+  String get labelSettingsCategoryAccount => Intl.message("Account",
+      name: "labelSettingsCategoryAccount",
+      desc: "Label for the settings category Account");
 
   @override
   String get title => labelSettingsCategoryAccount;

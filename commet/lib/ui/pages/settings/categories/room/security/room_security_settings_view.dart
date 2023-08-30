@@ -23,10 +23,12 @@ class _RoomSecuritySettingsViewState extends State<RoomSecuritySettingsView> {
 
   String get promptEnableEncryptionRoomSettings =>
       Intl.message("Enable Encryption",
+          name: "promptEnableEncryptionRoomSettings",
           desc: "Short prompt to enable encryption for a room");
 
   String get encryptionCannotBeDisabledExplanationRoomSettings =>
       Intl.message("If enabled, encryption cannot be disabled later",
+          name: "encryptionCannotBeDisabledExplanationRoomSettings",
           desc: "Explains that encryption cannot be disabled once enabled");
 
   @override

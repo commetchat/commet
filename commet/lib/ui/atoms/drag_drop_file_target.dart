@@ -14,6 +14,7 @@ class _DragDropFileTargetState extends State<DragDropFileTarget> {
   bool isFileHovered = false;
 
   String get fileDragDropPrompt => Intl.message("Drop a file to upload...",
+      name: "fileDragDropPrompt",
       desc: "Text that is shown when a user is dragging a file");
 
   @override

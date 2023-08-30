@@ -1,5 +1,4 @@
 import 'package:commet/client/room.dart';
-import 'package:commet/generated/l10n.dart';
 import 'package:commet/ui/molecules/space_selector.dart';
 import 'package:commet/utils/rng.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +8,8 @@ import 'package:integration_test/integration_test.dart';
 
 import '../extensions/common_flows.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
+
+import '../generated/l10n.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();

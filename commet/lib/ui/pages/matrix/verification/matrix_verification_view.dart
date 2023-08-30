@@ -132,6 +132,7 @@ class MatrixVerificationPageView extends StatelessWidget {
 
   String get messageWaitingOtherDeviceToAccept => Intl.message(
       "Waiting for the other device to accept the request",
+      name: "messageWaitingOtherDeviceToAccept",
       desc:
           "Message to show while waiting for another device to accept a matrix session verification request");
 
@@ -144,17 +145,21 @@ class MatrixVerificationPageView extends StatelessWidget {
 
   String get messageSasEmojiVerificationPrompt => Intl.message(
       "Check that the emoji are the same, and in the same order as on the other device",
+      name: "messageSasEmojiVerificationPrompt",
       desc:
           "Explains what to look for when verifying using emoji. Needs to portray that the emoji MUST be the same AND in the same order");
 
   String get promptConfirmEmojiMatches => Intl.message("They match!",
+      name: "promptConfirmEmojiMatches",
       desc: "Button text to confirm that the emoji matches");
 
   String get promptEmojiDoNotMatch => Intl.message("They don't match",
+      name: "promptEmojiDoNotMatch",
       desc: "Button text to confirm that the emoji do NOT match");
 
   String get messageVerificationComplete => Intl.message(
       "Verification Complete!",
+      name: "messageVerificationComplete",
       desc:
           "Message to show when verification was completed successfully, and the session has been verified");
 

@@ -17,36 +17,44 @@ import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/config/config.dart';
 
 class SettingsCategoryApp implements SettingsCategory {
-  String get labelSettingsAppGeneral =>
-      Intl.message("General", desc: "Label for the App General settings page");
+  String get labelSettingsAppGeneral => Intl.message("General",
+      name: "labelSettingsAppGeneral",
+      desc: "Label for the App General settings page");
 
   String get labelSettingsAppAppearance => Intl.message("Appearance",
+      name: "labelSettingsAppAppearance",
       desc: "Label for the App Appearance settings page");
 
   String get labelSettingsWindowBehaviour => Intl.message("Window Behaviour",
+      name: "labelSettingsWindowBehaviour",
       desc: "Label for the Window Behaviour settings page");
 
   String get labelSettingsAppAdvanced => Intl.message("Advanced",
+      name: "labelSettingsAppAdvanced",
       desc: "Label for the App Advanced settings page");
 
   String get labelSettingsAppDeveloperUtils => Intl.message("Developer Utils",
+      name: "labelSettingsAppDeveloperUtils",
       desc:
           "Label for the developer utils settings page, usually hidden unless developer mode is turned on");
 
-  String get labelSettingsAppTheme =>
-      Intl.message("Theme", desc: "Label for theme section of app appearance");
+  String get labelSettingsAppTheme => Intl.message("Theme",
+      name: "labelSettingsAppTheme",
+      desc: "Label for theme section of app appearance");
 
-  String get labelThemeDark =>
-      Intl.message("Dark Theme", desc: "Label for the dark theme");
+  String get labelThemeDark => Intl.message("Dark Theme",
+      name: "labelThemeDark", desc: "Label for the dark theme");
 
-  String get labelThemeLight =>
-      Intl.message("Light Theme", desc: "Label for the light theme");
+  String get labelThemeLight => Intl.message("Light Theme",
+      name: "labelThemeLight", desc: "Label for the light theme");
 
   String get labelAppScale => Intl.message("App Scale",
+      name: 'labelAppScale',
       desc:
           "Label for the setting which controls the UI scale of the overall app");
 
   String get labelSettingsCategoryApp => Intl.message("App Settings",
+      name: "labelSettingsCategoryApp",
       desc: "Label for the settings category of the overall App settings/");
 
   @override

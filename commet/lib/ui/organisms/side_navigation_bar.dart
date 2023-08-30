@@ -63,8 +63,8 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
   StreamSubscription? onSpaceUpdated;
   StreamSubscription? onSpaceChildUpdated;
 
-  String get promptAddSpace =>
-      Intl.message("Add Space", desc: "Prompt to add a new space");
+  String get promptAddSpace => Intl.message("Add Space",
+      name: "promptAddSpace", desc: "Prompt to add a new space");
 
   @override
   void initState() {

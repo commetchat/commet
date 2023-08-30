@@ -65,6 +65,7 @@ class _MessageState extends State<Message> {
   bool editMode = false;
 
   String get messageEditedMarker => Intl.message("(Edited)",
+      name: "messageEditedMarker",
       desc: "Short text to mark that a message has been edited");
 
   @override

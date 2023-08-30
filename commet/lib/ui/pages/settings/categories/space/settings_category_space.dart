@@ -14,19 +14,24 @@ class SettingsCategorySpace implements SettingsCategory {
   SettingsCategorySpace(this.space);
   Space space;
 
-  String get labelSpaceSettingsGeneral =>
-      Intl.message("General", desc: "Label for general space settings");
+  String get labelSpaceSettingsGeneral => Intl.message("General",
+      name: "labelSpaceSettingsGeneral",
+      desc: "Label for general space settings");
 
-  String get labelSpaceAppearanceSettings =>
-      Intl.message("Appearance", desc: "Label for space appearance settings");
+  String get labelSpaceAppearanceSettings => Intl.message("Appearance",
+      name: "labelSpaceAppearanceSettings",
+      desc: "Label for space appearance settings");
 
-  String get labelSpaceEmoticonSettings =>
-      Intl.message("Emoticons", desc: "Label for space emoticon settings");
+  String get labelSpaceEmoticonSettings => Intl.message("Emoticons",
+      name: "labelSpaceEmoticonSettings",
+      desc: "Label for space emoticon settings");
 
-  String get labelSpaceDeveloperSettings =>
-      Intl.message("Developer", desc: "Label for space developer settings");
+  String get labelSpaceDeveloperSettings => Intl.message("Developer",
+      name: "labelSpaceDeveloperSettings",
+      desc: "Label for space developer settings");
 
   String get labelSettingsCategorySpace => Intl.message("Space Settings",
+      name: "labelSettingsCategorySpace",
       desc: "Label for the overall space settings category");
 
   @override

@@ -1,4 +1,3 @@
-import 'package:commet/generated/l10n.dart';
 import 'package:commet/ui/pages/settings/categories/account/account_management/account_management_tab.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -6,6 +5,8 @@ import 'package:integration_test/integration_test.dart';
 import '../extensions/wait_for.dart';
 import '../extensions/common_flows.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
+
+import '../generated/l10n.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();

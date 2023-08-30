@@ -176,6 +176,7 @@ abstract class Timeline {
 
   String get notificationReceivedMessagePlaceholder => Intl.message(
       "Sent a message",
+      name: "notificationReceivedMessagePlaceholder",
       desc:
           "Placeholder text for the body of a notification, when the message either doesnt contain a displayable body, or the body has been hidden by notification settings");
 

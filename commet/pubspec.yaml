@@ -80,6 +80,12 @@ dev_dependencies:
   flutter_launcher_icons:
   flutter_lints: ^2.0.0
 
+flutter_intl:
+  class_name: T
+  main_locale: en 
+  arb_dir: assets/l10n
+  output_dir: integration_test/generated
+
 flutter_icons:
   android: "launcher_icon"
   ios: true
@@ -101,7 +107,7 @@ flutter:
   uses-material-design: true
   generate: true
   assets:
-    - assets/
+    - assets/l10n/
     - assets/images/placeholder/avatars/
     - assets/images/placeholder/generic/
     - assets/images/app_icon/

@@ -52,6 +52,7 @@ class _RoomEmojiPackSettingsViewState extends State<RoomEmojiPackSettingsView> {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
   StreamSubscription? onItemAddedSubscription;
   String get promptCreateEmoticonPack => Intl.message("Create pack",
+      name: "promptCreateEmoticonPack",
       desc: "Prompt to create a new emoticon pack, for emoji or stickers");
 
   @override
@@ -191,6 +192,7 @@ class _EmojiPackEditorState extends State<EmojiPackEditor> {
           "Prompt to confirm deletion of an emoticon pack, supports markdown to emphasise the pack name");
 
   String get createEmoticonDialogTitle => Intl.message("Create Emote",
+      name: "createEmoticonDialogTitle",
       desc:
           "Title of a dialog that pops up when choosing to create a new emoticon");
 
@@ -443,6 +445,7 @@ class _EmojiEditorState extends State<EmojiEditor> {
           "Prompt to confirm deletion of an emoticon pack, supports markdown to emphasise the emote name");
 
   String get promptRenameEmoticon => Intl.message("Rename emote",
+      name: "promptRenameEmoticon",
       desc: "Tooltip for button to rename emoticon");
 
   @override
@@ -564,15 +567,18 @@ class _EmoticonCreatorState extends State<EmoticonCreator> {
   bool loading = false;
 
   String get promptEmoticonPackName => Intl.message("Pack name",
+      name: "promptEmoticonPackName",
       desc: "Prompt for the input of the name of an emoticon pack");
 
   String get promptEmojiName => Intl.message("Emoji name",
+      name: "promptEmojiName",
       desc: "Prompt for the input of the name of an emoji");
 
-  String get promptStickerName =>
-      Intl.message("Sticker name", desc: "Prompt for the input of a sticker");
+  String get promptStickerName => Intl.message("Sticker name",
+      name: "promptStickerName", desc: "Prompt for the input of a sticker");
 
   String get promptConfirmCreateEmoticon => Intl.message("Create!",
+      name: "promptConfirmCreateEmoticon",
       desc:
           "Prompt to confirm the creation of an Emoticon Pack, Emoji, or Sticker");
 

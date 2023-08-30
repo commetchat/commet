@@ -14,22 +14,28 @@ class SettingsCategoryRoom implements SettingsCategory {
   SettingsCategoryRoom(this.room);
   Room room;
 
-  String get labelRoomSettingsGeneral =>
-      Intl.message("General", desc: "Label for general room settings");
+  String get labelRoomSettingsGeneral => Intl.message("General",
+      name: "labelRoomSettingsGeneral",
+      desc: "Label for general room settings");
 
-  String get labelRoomSettingsAppearance =>
-      Intl.message("Appearance", desc: "Label for room appearance settings");
+  String get labelRoomSettingsAppearance => Intl.message("Appearance",
+      name: "labelRoomSettingsAppearance",
+      desc: "Label for room appearance settings");
 
-  String get labelRoomSettingsSecurity =>
-      Intl.message("Security", desc: "Label for room security settings");
+  String get labelRoomSettingsSecurity => Intl.message("Security",
+      name: "labelRoomSettingsSecurity",
+      desc: "Label for room security settings");
 
-  String get labelRoomSettingsEmoticons =>
-      Intl.message("Emoticons", desc: "Label for room Emoticon settings");
+  String get labelRoomSettingsEmoticons => Intl.message("Emoticons",
+      name: "labelRoomSettingsEmoticons",
+      desc: "Label for room Emoticon settings");
 
-  String get labelRoomSettingsDeveloper =>
-      Intl.message("Developer", desc: "Label for room developer settings");
+  String get labelRoomSettingsDeveloper => Intl.message("Developer",
+      name: "labelRoomSettingsDeveloper",
+      desc: "Label for room developer settings");
 
   String get labelRoomSettingsCategory => Intl.message("Room Settings",
+      name: "labelRoomSettingsCategory",
       desc: "Label for the overall settings category of a room");
 
   @override
