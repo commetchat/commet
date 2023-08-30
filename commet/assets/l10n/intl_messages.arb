@@ -1,5 +1,6 @@
 {
   "@@last_modified": "2023-08-31T00:02:18.093881",
+  "@@locale": "en",
   "Drop a file to upload...": "Drop a file to upload...",
   "@Drop a file to upload...": {
     "description": "Text that is shown when a user is dragging a file",
