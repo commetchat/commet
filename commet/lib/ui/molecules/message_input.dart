@@ -543,6 +543,8 @@ class MessageInputState extends State<MessageInput> {
   }
 
   String getTypingText() {
+    if (widget.typingUsernames?.isEmpty == true) return "";
+
     String user1 = widget.typingUsernames![0];
     String user2 =
         widget.typingUsernames!.length >= 2 ? widget.typingUsernames![1] : "";
