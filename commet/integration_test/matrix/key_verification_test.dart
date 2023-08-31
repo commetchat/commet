@@ -41,21 +41,22 @@ void main() {
     await tester.tap(button);
 
     await tester.waitFor(() => find
-        .widgetWithText(ElevatedButton, T.current.sasEmojiVerificationMatches)
+        .widgetWithText(
+            ElevatedButton, T.current.messageSasEmojiVerificationPrompt)
         .evaluate()
         .isNotEmpty);
 
     await tester.pumpAndSettle();
 
     button = find.widgetWithText(
-        ElevatedButton, T.current.sasEmojiVerificationMatches);
+        ElevatedButton, T.current.promptConfirmEmojiMatches);
 
     await tester.tap(button);
 
     await verification.acceptSas();
 
     await tester.waitFor(() => find
-        .widgetWithText(ElevatedButton, T.current.sasVerificationDone)
+        .widgetWithText(ElevatedButton, T.current.messageVerificationComplete)
         .evaluate()
         .isNotEmpty);
 

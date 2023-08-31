@@ -24,12 +24,13 @@ void main() {
     await tester.openSettings(app);
 
     await tester.waitFor(() => find
-        .widgetWithText(tiamat.TextButton, T.current.settingsTabManageAccounts)
+        .widgetWithText(
+            tiamat.TextButton, T.current.labelSettingsTabManageAccounts)
         .evaluate()
         .isNotEmpty);
 
     await tester.tap(find.widgetWithText(
-        tiamat.TextButton, T.current.settingsTabManageAccounts));
+        tiamat.TextButton, T.current.labelSettingsTabManageAccounts));
 
     await tester.waitFor(() => find
         .byKey(AccountManagementSettingsTab.addAccountKey)
@@ -67,12 +68,13 @@ void main() {
     await tester.openSettings(app);
 
     await tester.waitFor(() => find
-        .widgetWithText(tiamat.TextButton, T.current.settingsTabManageAccounts)
+        .widgetWithText(
+            tiamat.TextButton, T.current.labelSettingsTabManageAccounts)
         .evaluate()
         .isNotEmpty);
 
     await tester.tap(find.widgetWithText(
-        tiamat.TextButton, T.current.settingsTabManageAccounts));
+        tiamat.TextButton, T.current.labelSettingsTabManageAccounts));
 
     await tester.waitFor(() => find
         .byKey(AccountManagementSettingsTab.addAccountKey)
@@ -83,10 +85,8 @@ void main() {
 
     await tester.login(app);
 
-    await tester.waitFor(() => find
-        .text(T.current.loginResultAlreadyLoggedInMessage)
-        .evaluate()
-        .isNotEmpty);
+    await tester.waitFor(() =>
+        find.text(T.current.messageAlreadyLoggedIn).evaluate().isNotEmpty);
 
     expect(app.clientManager.clients.length, equals(1));
 

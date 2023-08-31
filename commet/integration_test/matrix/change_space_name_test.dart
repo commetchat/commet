@@ -64,6 +64,6 @@ Future<void> _openSpaceSettings(WidgetTester tester) async {
 
 Future<void> _openSpaceAppearanceSettings(WidgetTester tester) async {
   await tester.tap(find.widgetWithText(
-      tiamat.TextButton, T.current.spaceSettingsSpaceAppearance));
+      tiamat.TextButton, T.current.labelSpaceAppearanceSettings));
   await tester.pumpAndSettle();
 }

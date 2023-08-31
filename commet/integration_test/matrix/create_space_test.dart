@@ -67,7 +67,7 @@ void main() {
 
 Future<void> _confirmCreateSpace(WidgetTester tester) async {
   await tester.tap(find
-      .widgetWithText(tiamat.Button, T.current.addSpaceViewCreateSpaceButton)
+      .widgetWithText(tiamat.Button, T.current.promptConfirmSpaceCreation)
       .first);
 
   await tester.pumpAndSettle();
@@ -77,7 +77,7 @@ Future<void> _setSpaceName(WidgetTester tester, String spaceName) async {
   await tester.enterText(
       find.widgetWithText(
         tiamat.TextInput,
-        T.current.spaceNamePrompt,
+        T.current.promptSpaceName,
       ),
       spaceName);
 }
@@ -122,7 +122,8 @@ Future<void> _openMenu(WidgetTester tester, App app) async {
 
   await tester.pumpAndSettle();
 
-  await tester.tap(find.widgetWithText(InkWell, T.current.createNewSpace));
+  await tester
+      .tap(find.widgetWithText(InkWell, T.current.promptCreateNewSpace));
 
   await tester.pumpAndSettle();
 }

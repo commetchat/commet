@@ -1,5 +1,5 @@
 arb-dir: assets/l10n
-template-arb-file: intl_messages.arb
+template-arb-file: intl_en.arb
 output-localization-file: l10n.dart
 output-class: T
 preferred-supported-locales: ["en"]

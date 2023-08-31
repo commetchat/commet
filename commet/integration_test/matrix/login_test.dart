@@ -53,8 +53,7 @@ void main() {
 
     await tester.tap(button);
     await tester.waitFor(
-        () =>
-            find.text(T.current.loginResultFailedMessage).evaluate().isNotEmpty,
+        () => find.text(T.current.messageLoginFailed).evaluate().isNotEmpty,
         skipPumpAndSettle: false,
         timeout: const Duration(seconds: 5));
     await tester.pumpFrames(app, const Duration(seconds: 1));
