@@ -41,15 +41,13 @@ void main() {
     await tester.tap(button);
 
     await tester.waitFor(() => find
-        .widgetWithText(
-            ElevatedButton, T.current.messageSasEmojiVerificationPrompt)
+        .widgetWithText(ElevatedButton, T.current.promptConfirmEmojiMatches)
         .evaluate()
         .isNotEmpty);
 
     await tester.pumpAndSettle();
 
-    button = find.widgetWithText(
-        ElevatedButton, T.current.promptConfirmEmojiMatches);
+    button = find.text(T.current.promptConfirmEmojiMatches);
 
     await tester.tap(button);
 

@@ -43,7 +43,7 @@ class SettingsCategoryAccount implements SettingsCategory {
   @override
   List<SettingsTab> get tabs => List.from([
         SettingsTab(
-            label: labelSettingsCategoryAccount,
+            label: labelSettingsTabManageAccounts,
             icon: Icons.person,
             pageBuilder: (context) {
               return AccountManagementSettingsTab(
