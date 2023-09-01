@@ -64,6 +64,8 @@ dependencies:
   widgetbook: ^3.2.0
   flutter_svg: ^2.0.7
   device_info_plus: ^9.0.3
+  intl_translation: ^0.18.2
+  flutter_gen: ^5.3.1
 
 dev_dependencies:
   build_runner:
@@ -77,6 +79,12 @@ dev_dependencies:
 
   flutter_launcher_icons:
   flutter_lints: ^2.0.0
+
+flutter_intl:
+  class_name: T
+  main_locale: en 
+  arb_dir: assets/l10n
+  output_dir: integration_test/generated
 
 flutter_icons:
   android: "launcher_icon"
@@ -94,16 +102,12 @@ flutter_icons:
     generate: true
     image_path: "assets/images/app_icon/icon_square_512.png"
 
-flutter_intl:
-  enabled: true # Required. Must be set to true to activate the plugin. Default: false
-  class_name: T # Optional. Sets the name for the generated localization class. Default: S
-  main_locale: en # Optional. Sets the main locale used for generating localization files. Provided value should consist of language code and optional script and country codes separated with underscore (e.g. 'en', 'en_GB', 'zh_Hans', 'zh_Hans_CN'). Default: en
-  arb-dir: lib/l10n
 
 flutter:
   uses-material-design: true
   generate: true
   assets:
+    - assets/l10n/
     - assets/images/placeholder/avatars/
     - assets/images/placeholder/generic/
     - assets/images/app_icon/

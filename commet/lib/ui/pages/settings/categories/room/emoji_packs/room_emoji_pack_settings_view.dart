@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:commet/generated/l10n.dart';
 import 'package:commet/ui/atoms/emoji_widget.dart';
 import 'package:commet/ui/molecules/editable_label.dart';
 import 'package:commet/ui/molecules/image_picker.dart';
@@ -9,7 +8,9 @@ import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/utils/common_animation.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/components/emoticon/emoji_pack.dart';
+import 'package:commet/utils/common_strings.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:tiamat/atoms/circle_button.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -50,6 +51,9 @@ class _RoomEmojiPackSettingsViewState extends State<RoomEmojiPackSettingsView> {
   int itemCount = 0;
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
   StreamSubscription? onItemAddedSubscription;
+  String get promptCreateEmoticonPack => Intl.message("Create pack",
+      name: "promptCreateEmoticonPack",
+      desc: "Prompt to create a new emoticon pack, for emoji or stickers");
 
   @override
   void initState() {
@@ -140,7 +144,7 @@ class _RoomEmojiPackSettingsViewState extends State<RoomEmojiPackSettingsView> {
   void promptNewPack() async {
     await AdaptiveDialog.show(
       context,
-      title: "Create pack",
+      title: promptCreateEmoticonPack,
       builder: (context) {
         return EmoticonCreator(
           pack: true,
@@ -179,6 +183,18 @@ class _EmojiPackEditorState extends State<EmojiPackEditor> {
   late bool isPackEmoji;
   late bool isPackSticker;
   late bool isGlobalPack;
+
+  String promptConfirmDeleteEmoticonPack(packName) => Intl.message(
+      "Are you sure you want to delete the **$packName** pack?",
+      args: [packName],
+      name: "promptConfirmDeleteEmoticonPack",
+      desc:
+          "Prompt to confirm deletion of an emoticon pack, supports markdown to emphasise the pack name");
+
+  String get createEmoticonDialogTitle => Intl.message("Create Emote",
+      name: "createEmoticonDialogTitle",
+      desc:
+          "Title of a dialog that pops up when choosing to create a new emoticon");
 
   @override
   void initState() {
@@ -360,12 +376,12 @@ class _EmojiPackEditorState extends State<EmojiPackEditor> {
                     children: [
                       if (widget.showDeleteButton)
                         tiamat.Button.danger(
-                            text: "Delete",
+                            text: CommonStrings.promptDelete,
                             onTap: () async {
                               var result = await AdaptiveDialog.confirmation(
                                   context,
                                   dangerous: true,
-                                  prompt: T.current.promptEmoticonPackDelete(
+                                  prompt: promptConfirmDeleteEmoticonPack(
                                       widget.pack.displayName));
 
                               if (result == true) widget.deletePack?.call();
@@ -394,7 +410,7 @@ class _EmojiPackEditorState extends State<EmojiPackEditor> {
                     .addEmoticon(slug: name, shortcode: name, data: data!);
               },
             ),
-        title: "Create emoji");
+        title: createEmoticonDialogTitle);
   }
 }
 
@@ -420,6 +436,17 @@ class EmojiEditor extends StatefulWidget {
 class _EmojiEditorState extends State<EmojiEditor> {
   late bool isSticker;
   late bool isEmoji;
+
+  String promptConfirmDeleteEmoticon(emoticon) => Intl.message(
+      "Are you sure you want to delete **$emoticon**?",
+      args: [emoticon],
+      name: "promptConfirmDeleteEmoticon",
+      desc:
+          "Prompt to confirm deletion of an emoticon pack, supports markdown to emphasise the emote name");
+
+  String get promptRenameEmoticon => Intl.message("Rename emote",
+      name: "promptRenameEmoticon",
+      desc: "Tooltip for button to rename emoticon");
 
   @override
   void initState() {
@@ -460,8 +487,8 @@ class _EmojiEditorState extends State<EmojiEditor> {
                 size: 20,
                 onPressed: () async {
                   var result = await AdaptiveDialog.confirmation(context,
-                      prompt: T.current
-                          .promptEmoticonDelete(widget.emoji.shortcode!),
+                      prompt:
+                          promptConfirmDeleteEmoticon(widget.emoji.shortcode!),
                       dangerous: true);
 
                   if (result == true) {
@@ -480,7 +507,7 @@ class _EmojiEditorState extends State<EmojiEditor> {
             widget.editable
                 ? EditableLabel(
                     initialText: widget.emoji.shortcode!,
-                    changeTooltip: "Rename emoji",
+                    changeTooltip: promptRenameEmoticon,
                     onTextConfirmed: (newText) =>
                         widget.renameEmoji?.call(newText!),
                   )
@@ -539,6 +566,22 @@ class _EmoticonCreatorState extends State<EmoticonCreator> {
   TextEditingController controller = TextEditingController();
   bool loading = false;
 
+  String get promptEmoticonPackName => Intl.message("Pack name",
+      name: "promptEmoticonPackName",
+      desc: "Prompt for the input of the name of an emoticon pack");
+
+  String get promptEmojiName => Intl.message("Emoji name",
+      name: "promptEmojiName",
+      desc: "Prompt for the input of the name of an emoji");
+
+  String get promptStickerName => Intl.message("Sticker name",
+      name: "promptStickerName", desc: "Prompt for the input of a sticker");
+
+  String get promptConfirmCreateEmoticon => Intl.message("Create!",
+      name: "promptConfirmCreateEmoticon",
+      desc:
+          "Prompt to confirm the creation of an Emoticon Pack, Emoji, or Sticker");
+
   @override
   Widget build(BuildContext context) {
     if (loading)
@@ -584,10 +627,10 @@ class _EmoticonCreatorState extends State<EmoticonCreator> {
                     constraints: const BoxConstraints(minWidth: 300),
                     child: tiamat.TextInput(
                       placeholder: widget.pack == true
-                          ? "Pack name"
+                          ? promptEmoticonPackName
                           : widget.emoji == true
-                              ? "Emoji name"
-                              : "Sticker name",
+                              ? promptEmojiName
+                              : promptStickerName,
                       controller: controller,
                     ),
                   ),
@@ -600,7 +643,7 @@ class _EmoticonCreatorState extends State<EmoticonCreator> {
             child: SizedBox(
               height: 48,
               child: tiamat.Button(
-                text: "Create!",
+                text: promptConfirmCreateEmoticon,
                 onTap: () {
                   if (controller.text.isNotEmpty) {
                     setState(() {

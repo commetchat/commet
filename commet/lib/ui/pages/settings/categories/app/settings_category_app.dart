@@ -1,6 +1,5 @@
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/preferences.dart';
-import 'package:commet/generated/l10n.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/settings/categories/app/advanced_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/app/general_settings_page.dart';
@@ -8,44 +7,89 @@ import 'package:commet/ui/pages/settings/categories/app/window_settings.dart';
 import 'package:commet/ui/pages/settings/categories/developer/developer_settings_page.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
 import 'package:commet/ui/pages/settings/settings_tab.dart';
+import 'package:commet/utils/common_strings.dart';
 import 'package:commet/utils/scaled_app.dart';
 import 'package:flutter/material.dart' as m;
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/config/config.dart';
 
 class SettingsCategoryApp implements SettingsCategory {
+  String get labelSettingsAppGeneral => Intl.message("General",
+      name: "labelSettingsAppGeneral",
+      desc: "Label for the App General settings page");
+
+  String get labelSettingsAppAppearance => Intl.message("Appearance",
+      name: "labelSettingsAppAppearance",
+      desc: "Label for the App Appearance settings page");
+
+  String get labelSettingsWindowBehaviour => Intl.message("Window Behaviour",
+      name: "labelSettingsWindowBehaviour",
+      desc: "Label for the Window Behaviour settings page");
+
+  String get labelSettingsAppAdvanced => Intl.message("Advanced",
+      name: "labelSettingsAppAdvanced",
+      desc: "Label for the App Advanced settings page");
+
+  String get labelSettingsAppDeveloperUtils => Intl.message("Developer Utils",
+      name: "labelSettingsAppDeveloperUtils",
+      desc:
+          "Label for the developer utils settings page, usually hidden unless developer mode is turned on");
+
+  String get labelSettingsAppTheme => Intl.message("Theme",
+      name: "labelSettingsAppTheme",
+      desc: "Label for theme section of app appearance");
+
+  String get labelThemeDark => Intl.message("Dark Theme",
+      name: "labelThemeDark", desc: "Label for the dark theme");
+
+  String get labelThemeLight => Intl.message("Light Theme",
+      name: "labelThemeLight", desc: "Label for the light theme");
+
+  String get labelAppScale => Intl.message("App Scale",
+      name: 'labelAppScale',
+      desc:
+          "Label for the setting which controls the UI scale of the overall app");
+
+  String get labelSettingsCategoryApp => Intl.message("App Settings",
+      name: "labelSettingsCategoryApp",
+      desc: "Label for the settings category of the overall App settings/");
+
+  @override
+  String get title => labelSettingsCategoryApp;
+
   @override
   List<SettingsTab> get tabs => List.from([
         SettingsTab(
-            label: "General",
+            label: labelSettingsAppGeneral,
             icon: m.Icons.settings,
             pageBuilder: (context) {
               return const GeneralSettingsPage();
             }),
         SettingsTab(
-            label: T.current.settingsTabAppearance,
+            label: labelSettingsAppAppearance,
             icon: m.Icons.style,
             pageBuilder: (context) {
               return themeSettings(context);
             }),
         if (BuildConfig.DESKTOP)
           SettingsTab(
-              label: "Window Behaviour",
+              label: labelSettingsWindowBehaviour,
               icon: m.Icons.window,
               pageBuilder: (context) {
                 return const WindowSettingsPage();
               }),
         SettingsTab(
-            label: "Advanced",
+            label: labelSettingsAppAdvanced,
             icon: m.Icons.code,
             pageBuilder: (context) {
               return const AdvancedSettingsPage();
             }),
         if (preferences.developerMode)
           SettingsTab(
-            label: "Developer Utils",
+            label: labelSettingsAppDeveloperUtils,
             icon: m.Icons.bug_report,
             pageBuilder: (context) {
               return const DeveloperSettingsPage();
@@ -53,21 +97,18 @@ class SettingsCategoryApp implements SettingsCategory {
           )
       ]);
 
-  @override
-  String get title => T.current.settingsCategoryApp;
-
   Widget themeSettings(BuildContext context) {
     return Column(
       children: [
         Panel(
-          header: "Theme",
+          header: labelSettingsAppTheme,
           mode: TileType.surfaceLow2,
           child: Column(children: [
-            TextButton(T.of(context).themeLight, onTap: () {
+            TextButton(labelThemeLight, onTap: () {
               preferences.setTheme(AppTheme.light);
               ThemeChanger.setTheme(context, ThemeLight.theme);
             }),
-            TextButton(T.of(context).themeDark, onTap: () {
+            TextButton(labelThemeDark, onTap: () {
               preferences.setTheme(AppTheme.dark);
               ThemeChanger.setTheme(context, ThemeDark.theme);
             }),
@@ -77,10 +118,10 @@ class SettingsCategoryApp implements SettingsCategory {
           height: 10,
         ),
         if (BuildConfig.DESKTOP || preferences.developerMode)
-          const Panel(
-            header: "UI Scale",
+          Panel(
+            header: labelAppScale,
             mode: TileType.surfaceLow2,
-            child: UIScaleSelector(),
+            child: const UIScaleSelector(),
           )
       ],
     );
@@ -123,7 +164,7 @@ class _UIScaleSelectorState extends State<UIScaleSelector> {
             },
           )),
           Button.secondary(
-            text: "Apply",
+            text: CommonStrings.promptApply,
             onTap: () {
               double newValue = value;
               preferences.setAppScale(newValue);

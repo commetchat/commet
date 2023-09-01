@@ -1,4 +1,3 @@
-import 'package:commet/generated/l10n.dart';
 import 'package:commet/ui/pages/settings/categories/account/account_management/account_management_tab.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -6,6 +5,8 @@ import 'package:integration_test/integration_test.dart';
 import '../extensions/wait_for.dart';
 import '../extensions/common_flows.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
+
+import '../generated/l10n.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -23,12 +24,13 @@ void main() {
     await tester.openSettings(app);
 
     await tester.waitFor(() => find
-        .widgetWithText(tiamat.TextButton, T.current.settingsTabManageAccounts)
+        .widgetWithText(
+            tiamat.TextButton, T.current.labelSettingsTabManageAccounts)
         .evaluate()
         .isNotEmpty);
 
     await tester.tap(find.widgetWithText(
-        tiamat.TextButton, T.current.settingsTabManageAccounts));
+        tiamat.TextButton, T.current.labelSettingsTabManageAccounts));
 
     await tester.waitFor(() => find
         .byKey(AccountManagementSettingsTab.addAccountKey)
@@ -66,12 +68,13 @@ void main() {
     await tester.openSettings(app);
 
     await tester.waitFor(() => find
-        .widgetWithText(tiamat.TextButton, T.current.settingsTabManageAccounts)
+        .widgetWithText(
+            tiamat.TextButton, T.current.labelSettingsTabManageAccounts)
         .evaluate()
         .isNotEmpty);
 
     await tester.tap(find.widgetWithText(
-        tiamat.TextButton, T.current.settingsTabManageAccounts));
+        tiamat.TextButton, T.current.labelSettingsTabManageAccounts));
 
     await tester.waitFor(() => find
         .byKey(AccountManagementSettingsTab.addAccountKey)
@@ -82,10 +85,8 @@ void main() {
 
     await tester.login(app);
 
-    await tester.waitFor(() => find
-        .text(T.current.loginResultAlreadyLoggedInMessage)
-        .evaluate()
-        .isNotEmpty);
+    await tester.waitFor(() =>
+        find.text(T.current.messageAlreadyLoggedIn).evaluate().isNotEmpty);
 
     expect(app.clientManager.clients.length, equals(1));
 

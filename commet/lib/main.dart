@@ -25,7 +25,6 @@ import 'package:tiamat/config/style/theme_light.dart';
 import 'cache/cached_file.dart';
 import 'client/simulated/simulated_client.dart';
 import 'config/app_config.dart';
-import 'generated/l10n.dart';
 
 final GlobalKey<NavigatorState> navigator = GlobalKey();
 FileCacheInstance fileCache = FileCacheInstance();
@@ -119,12 +118,10 @@ class App extends StatelessWidget {
             theme: theme,
             navigatorKey: navigator,
             localizationsDelegates: const [
-              T.delegate,
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: T.delegate.supportedLocales,
             builder: (context, child) => Provider<ClientManager>(
               create: (context) => clientManager,
               child: child,

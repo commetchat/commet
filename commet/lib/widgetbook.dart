@@ -1,4 +1,3 @@
-import 'package:commet/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:widgetbook/widgetbook.dart';
@@ -27,12 +26,10 @@ class WidgetbookApp extends StatelessWidget {
     return MaterialApp(
       title: 'Commet',
       localizationsDelegates: const [
-        T.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: T.delegate.supportedLocales,
       home: Widgetbook.material(
         // Use the generated directories variable
         directories: directories,

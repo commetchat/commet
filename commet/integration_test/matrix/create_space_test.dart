@@ -1,5 +1,4 @@
 import 'package:commet/client/room.dart';
-import 'package:commet/generated/l10n.dart';
 import 'package:commet/ui/molecules/space_selector.dart';
 import 'package:commet/utils/rng.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +8,8 @@ import 'package:integration_test/integration_test.dart';
 
 import '../extensions/common_flows.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
+
+import '../generated/l10n.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -66,7 +67,7 @@ void main() {
 
 Future<void> _confirmCreateSpace(WidgetTester tester) async {
   await tester.tap(find
-      .widgetWithText(tiamat.Button, T.current.addSpaceViewCreateSpaceButton)
+      .widgetWithText(tiamat.Button, T.current.promptConfirmSpaceCreation)
       .first);
 
   await tester.pumpAndSettle();
@@ -76,7 +77,7 @@ Future<void> _setSpaceName(WidgetTester tester, String spaceName) async {
   await tester.enterText(
       find.widgetWithText(
         tiamat.TextInput,
-        T.current.spaceNamePrompt,
+        T.current.promptSpaceName,
       ),
       spaceName);
 }
@@ -121,7 +122,8 @@ Future<void> _openMenu(WidgetTester tester, App app) async {
 
   await tester.pumpAndSettle();
 
-  await tester.tap(find.widgetWithText(InkWell, T.current.createNewSpace));
+  await tester
+      .tap(find.widgetWithText(InkWell, T.current.promptCreateNewSpace));
 
   await tester.pumpAndSettle();
 }

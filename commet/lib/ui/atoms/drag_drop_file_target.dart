@@ -1,6 +1,6 @@
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
-import '../../generated/l10n.dart';
+import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class DragDropFileTarget extends StatefulWidget {
@@ -12,6 +12,10 @@ class DragDropFileTarget extends StatefulWidget {
 
 class _DragDropFileTargetState extends State<DragDropFileTarget> {
   bool isFileHovered = false;
+
+  String get fileDragDropPrompt => Intl.message("Drop a file to upload...",
+      name: "fileDragDropPrompt",
+      desc: "Text that is shown when a user is dragging a file");
 
   @override
   Widget build(BuildContext context) {
@@ -42,8 +46,7 @@ class _DragDropFileTargetState extends State<DragDropFileTarget> {
                 opacity: isFileHovered ? 1 : 0,
                 child: Align(
                     alignment: Alignment.center,
-                    child: tiamat.Text.largeTitle(
-                        T.of(context).fileDragDropPrompt)),
+                    child: tiamat.Text.largeTitle(fileDragDropPrompt)),
               ),
             ],
           )),

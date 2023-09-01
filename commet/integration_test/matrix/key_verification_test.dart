@@ -1,11 +1,12 @@
 import 'package:commet/client/matrix/matrix_client.dart';
-import 'package:commet/generated/l10n.dart';
 import 'package:commet/ui/pages/matrix/verification/matrix_verification_page.dart';
+import 'package:commet/utils/common_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:matrix/encryption/utils/key_verification.dart';
 import '../extensions/wait_for.dart';
 import '../extensions/common_flows.dart';
+import '../generated/l10n.dart';
 
 void main() {
   testWidgets('Test emoji verification started from another device',
@@ -36,25 +37,24 @@ void main() {
     await tester.pumpAndSettle();
 
     var button =
-        find.widgetWithText(ElevatedButton, T.current.genericAcceptButton);
+        find.widgetWithText(ElevatedButton, CommonStrings.promptAccept);
     await tester.tap(button);
 
     await tester.waitFor(() => find
-        .widgetWithText(ElevatedButton, T.current.sasEmojiVerificationMatches)
+        .widgetWithText(ElevatedButton, T.current.promptConfirmEmojiMatches)
         .evaluate()
         .isNotEmpty);
 
     await tester.pumpAndSettle();
 
-    button = find.widgetWithText(
-        ElevatedButton, T.current.sasEmojiVerificationMatches);
+    button = find.text(T.current.promptConfirmEmojiMatches);
 
     await tester.tap(button);
 
     await verification.acceptSas();
 
     await tester.waitFor(() => find
-        .widgetWithText(ElevatedButton, T.current.sasVerificationDone)
+        .widgetWithText(ElevatedButton, T.current.messageVerificationComplete)
         .evaluate()
         .isNotEmpty);
 

@@ -1,5 +1,4 @@
 import 'package:commet/client/client.dart';
-import 'package:commet/generated/l10n.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/settings/categories/room/developer/room_developer_settings_view.dart';
 import 'package:commet/ui/pages/settings/categories/space/space_emoji_pack_settings.dart';
@@ -7,6 +6,7 @@ import 'package:commet/ui/pages/settings/categories/space/space_general_settings
 import 'package:commet/ui/pages/settings/settings_category.dart';
 import 'package:commet/ui/pages/settings/settings_tab.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import 'space_appearance_settings_page.dart';
 
@@ -14,10 +14,33 @@ class SettingsCategorySpace implements SettingsCategory {
   SettingsCategorySpace(this.space);
   Space space;
 
+  String get labelSpaceSettingsGeneral => Intl.message("General",
+      name: "labelSpaceSettingsGeneral",
+      desc: "Label for general space settings");
+
+  String get labelSpaceAppearanceSettings => Intl.message("Appearance",
+      name: "labelSpaceAppearanceSettings",
+      desc: "Label for space appearance settings");
+
+  String get labelSpaceEmoticonSettings => Intl.message("Emoticons",
+      name: "labelSpaceEmoticonSettings",
+      desc: "Label for space emoticon settings");
+
+  String get labelSpaceDeveloperSettings => Intl.message("Developer",
+      name: "labelSpaceDeveloperSettings",
+      desc: "Label for space developer settings");
+
+  String get labelSettingsCategorySpace => Intl.message("Space Settings",
+      name: "labelSettingsCategorySpace",
+      desc: "Label for the overall space settings category");
+
+  @override
+  String get title => labelSettingsCategorySpace;
+
   @override
   List<SettingsTab> get tabs => List.from([
         SettingsTab(
-            label: T.current.settingsGeneral,
+            label: labelSpaceSettingsGeneral,
             icon: Icons.settings,
             pageBuilder: (context) {
               return SpaceGeneralSettingsPage(
@@ -26,7 +49,7 @@ class SettingsCategorySpace implements SettingsCategory {
             }),
         if (shouldShowAppearanceSettings())
           SettingsTab(
-              label: T.current.spaceSettingsSpaceAppearance,
+              label: labelSpaceAppearanceSettings,
               icon: Icons.style,
               pageBuilder: (context) {
                 return SpaceAppearanceSettingsPage(
@@ -37,23 +60,20 @@ class SettingsCategorySpace implements SettingsCategory {
                 space.emoticons!.ownedPacks.isNotEmpty) &&
             space.emoticons != null)
           SettingsTab(
-              label: T.current.settingsEmoji,
+              label: labelSpaceEmoticonSettings,
               icon: Icons.emoji_emotions,
               pageBuilder: (context) {
                 return SpaceEmojiPackSettings(space);
               }),
         if (preferences.developerMode)
           SettingsTab(
-            label: T.current.settingsDeveloper,
+            label: labelSpaceDeveloperSettings,
             icon: Icons.code,
             pageBuilder: (context) {
               return RoomDeveloperSettingsView(space.developerInfo);
             },
           ),
       ]);
-
-  @override
-  String get title => T.current.spaceSettingsHeader;
 
   bool shouldShowAppearanceSettings() {
     return space.permissions.canEditAvatar || space.permissions.canEditName;

@@ -6,8 +6,7 @@ import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/notification/notification_manager.dart';
 import 'package:flutter/material.dart';
-
-import '../generated/l10n.dart';
+import 'package:intl/intl.dart';
 
 enum TimelineEventStatus {
   removed,
@@ -175,11 +174,17 @@ abstract class Timeline {
     return true;
   }
 
+  String get notificationReceivedMessagePlaceholder => Intl.message(
+      "Sent a message",
+      name: "notificationReceivedMessagePlaceholder",
+      desc:
+          "Placeholder text for the body of a notification, when the message either doesnt contain a displayable body, or the body has been hidden by notification settings");
+
   @protected
   void displayNotification(TimelineEvent event) {
     notificationManager.notify(NotificationContent(
         room.client.fetchPeer(event.senderId).displayName,
-        event.body ?? T.current.notificationReceivedMessagePlaceholder,
+        event.body ?? notificationReceivedMessagePlaceholder,
         NotificationType.messageReceived,
         sentFrom: room,
         image: room.client.fetchPeer(event.senderId).avatar,

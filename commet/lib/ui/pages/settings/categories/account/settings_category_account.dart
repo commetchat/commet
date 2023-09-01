@@ -1,5 +1,4 @@
 import 'package:commet/client/client_manager.dart';
-import 'package:commet/generated/l10n.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/settings/categories/account/account_emoji/account_emoji_tab.dart';
 import 'package:commet/ui/pages/settings/categories/account/account_state/account_state_tab.dart';
@@ -7,16 +6,44 @@ import 'package:commet/ui/pages/settings/categories/account/profile/profile_edit
 import 'package:commet/ui/pages/settings/settings_category.dart';
 import 'package:commet/ui/pages/settings/settings_tab.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import 'account_management/account_management_tab.dart';
 import 'security/security_tab.dart';
 
 class SettingsCategoryAccount implements SettingsCategory {
+  String get labelSettingsTabManageAccounts => Intl.message("Manage Accounts",
+      name: "labelSettingsTabManageAccounts",
+      desc: "Label for the Manage Accounts settings");
+
+  String get labelSettingsTabProfile => Intl.message("Profile",
+      name: "labelSettingsTabProfile",
+      desc: "Label for the Profile settings page");
+
+  String get labelSettingsTabSecurity => Intl.message("Security",
+      name: "labelSettingsTabSecurity",
+      desc: "Label for the Security settings page");
+
+  String get labelSettingsTabEmoticons => Intl.message("Emoticons",
+      name: "labelSettingsTabEmoticons",
+      desc: "Label for the Emoticons settings page");
+
+  String get labelSettingsTabDeveloper => Intl.message("Developer",
+      name: "labelSettingsTabDeveloper",
+      desc: "Label for the Developer settings page");
+
+  String get labelSettingsCategoryAccount => Intl.message("Account",
+      name: "labelSettingsCategoryAccount",
+      desc: "Label for the settings category Account");
+
+  @override
+  String get title => labelSettingsCategoryAccount;
+
   @override
   List<SettingsTab> get tabs => List.from([
         SettingsTab(
-            label: T.current.settingsTabManageAccounts,
+            label: labelSettingsTabManageAccounts,
             icon: Icons.person,
             pageBuilder: (context) {
               return AccountManagementSettingsTab(
@@ -24,7 +51,7 @@ class SettingsCategoryAccount implements SettingsCategory {
               );
             }),
         SettingsTab(
-            label: "Profile",
+            label: labelSettingsTabProfile,
             icon: Icons.account_circle,
             pageBuilder: (context) {
               return ProfileEditTab(
@@ -32,7 +59,7 @@ class SettingsCategoryAccount implements SettingsCategory {
               );
             }),
         SettingsTab(
-            label: T.current.settingsTabAccountSecurity,
+            label: labelSettingsTabSecurity,
             icon: Icons.security,
             pageBuilder: (context) {
               return SecuritySettingsTab(
@@ -40,7 +67,7 @@ class SettingsCategoryAccount implements SettingsCategory {
               );
             }),
         SettingsTab(
-          label: "Emoji",
+          label: labelSettingsTabEmoticons,
           icon: Icons.emoji_emotions,
           pageBuilder: (context) {
             return AccountEmojiTab(
@@ -49,7 +76,7 @@ class SettingsCategoryAccount implements SettingsCategory {
         ),
         if (preferences.developerMode)
           SettingsTab(
-            label: "Developer",
+            label: labelSettingsTabDeveloper,
             icon: Icons.code,
             pageBuilder: (context) {
               return AccountStateTab(
@@ -58,7 +85,4 @@ class SettingsCategoryAccount implements SettingsCategory {
             },
           )
       ]);
-
-  @override
-  String get title => T.current.settingsCategoryAccount;
 }

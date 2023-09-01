@@ -1,5 +1,5 @@
-import 'package:commet/generated/l10n.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;
 
@@ -20,6 +20,16 @@ class RoomSecuritySettingsView extends StatefulWidget {
 
 class _RoomSecuritySettingsViewState extends State<RoomSecuritySettingsView> {
   late bool isE2EEEnabled;
+
+  String get promptEnableEncryptionRoomSettings =>
+      Intl.message("Enable Encryption",
+          name: "promptEnableEncryptionRoomSettings",
+          desc: "Short prompt to enable encryption for a room");
+
+  String get encryptionCannotBeDisabledExplanationRoomSettings =>
+      Intl.message("If enabled, encryption cannot be disabled later",
+          name: "encryptionCannotBeDisabledExplanationRoomSettings",
+          desc: "Explains that encryption cannot be disabled once enabled");
 
   @override
   void initState() {
@@ -46,8 +56,9 @@ class _RoomSecuritySettingsViewState extends State<RoomSecuritySettingsView> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                tiamat.Text.labelEmphasised(T.current.enableEncryptionPrompt),
-                tiamat.Text.labelLow(T.current.encryptionCannotBeDisabled)
+                tiamat.Text.labelEmphasised(promptEnableEncryptionRoomSettings),
+                tiamat.Text.labelLow(
+                    encryptionCannotBeDisabledExplanationRoomSettings)
               ]),
           IgnorePointer(
             ignoring: isE2EEEnabled,
