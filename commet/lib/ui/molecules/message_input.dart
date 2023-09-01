@@ -45,6 +45,7 @@ class MessageInput extends StatefulWidget {
       this.typingUsernames,
       this.availibleEmoticons,
       this.availibleStickers,
+      this.onReadReceiptsClicked,
       this.sendGif,
       this.sendSticker,
       this.cancelReply});
@@ -64,6 +65,7 @@ class MessageInput extends StatefulWidget {
   final List<String>? typingUsernames;
   final List<EmoticonPack>? availibleEmoticons;
   final List<EmoticonPack>? availibleStickers;
+  final void Function()? onReadReceiptsClicked;
   final void Function(Emoticon sticker)? sendSticker;
   final Future<void> Function(GifSearchResult gif)? sendGif;
   final void Function(bool focused)? onFocusChanged;
@@ -304,7 +306,6 @@ class MessageInputState extends State<MessageInput> {
                   ),
                 ),
                 SizedBox(
-                  height: 25,
                   child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -312,11 +313,20 @@ class MessageInputState extends State<MessageInput> {
                           child: SizedBox(),
                         ),
                         if (widget.readIndicator != null)
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
-                            child: SizedBox(
-                              width: 150,
-                              child: widget.readIndicator!,
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(4),
+                            child: Material(
+                              child: InkWell(
+                                onTap: widget.onReadReceiptsClicked,
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(8, 2, 2, 2),
+                                  child: SizedBox(
+                                    width: 150,
+                                    child: widget.readIndicator!,
+                                  ),
+                                ),
+                              ),
                             ),
                           )
                       ]),
