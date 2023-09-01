@@ -1,4 +1,6 @@
+import 'package:commet/utils/common_animation.dart';
 import 'package:flutter/material.dart';
+import 'package:implicitly_animated_list/implicitly_animated_list.dart';
 import 'package:tiamat/tiamat.dart';
 
 import '../../client/peer.dart';
@@ -8,7 +10,7 @@ class ReadIndicator extends StatefulWidget {
   const ReadIndicator(
       {super.key, required this.room, this.onMessageRead, this.initialList});
   final Stream<Peer>? onMessageRead;
-  final Iterable<String>? initialList;
+  final List<String>? initialList;
   final Room room;
   @override
   State<ReadIndicator> createState() => ReadIndicatorState();
@@ -40,14 +42,23 @@ class ReadIndicatorState extends State<ReadIndicator> {
                   ).createShader(rect);
                 },
                 blendMode: BlendMode.dstOut,
-                child: ListView.builder(
-                  itemCount: widget.initialList!.length,
+                child: ImplicitlyAnimatedList(
+                  itemData: widget.initialList!,
                   scrollDirection: Axis.horizontal,
                   reverse: true,
+                  initialAnimation: false,
+                  deleteDuration: Duration.zero,
                   physics: const NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) {
+                  insertAnimation: (context, child, animation) {
+                    return SizeTransition(
+                      sizeFactor: CommonAnimations.easeOut(animation),
+                      axis: Axis.horizontal,
+                      child: child,
+                    );
+                  },
+                  itemBuilder: (context, data) {
                     return SingleUserReadIndicator(
-                      identifier: widget.initialList!.elementAt(index),
+                      identifier: data,
                       room: widget.room,
                     );
                   },

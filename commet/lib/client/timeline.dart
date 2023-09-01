@@ -115,7 +115,7 @@ abstract class Timeline {
   late Client client;
   late Room room;
 
-  Iterable<String>? get receipts;
+  List<String>? get receipts;
 
   void markAsRead(TimelineEvent event);
 
