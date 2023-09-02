@@ -63,7 +63,7 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
   late ClientManager _clientManager;
   StreamSubscription? onSpaceUpdated;
   StreamSubscription? onSpaceChildUpdated;
-  late List<StreamSubscription> onDirectMessageUpdatedSubscriptions;
+  StreamSubscription? onDirectMessageUpdatedSubscription;
 
   String get promptAddSpace => Intl.message("Add Space",
       name: "promptAddSpace", desc: "Prompt to add a new space");
@@ -77,10 +77,9 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
     onSpaceUpdated =
         _clientManager.onSpaceUpdated.stream.listen((_) => onSpaceUpdate());
 
-    onDirectMessageUpdatedSubscriptions = _clientManager.directMessages
-        .map((e) => e.onUpdate.stream.listen(onDirectMessageUpdated))
-        .toList();
-
+    onDirectMessageUpdatedSubscription = _clientManager
+        .onDirectMessageRoomUpdated.stream
+        .listen(onDirectMessageUpdated);
     super.initState();
   }
 
@@ -88,7 +87,7 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
     setState(() {});
   }
 
-  void onDirectMessageUpdated(void event) {
+  void onDirectMessageUpdated(Room room) {
     setState(() {});
   }
 
@@ -96,7 +95,7 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
   void dispose() {
     onSpaceUpdated?.cancel();
     onSpaceChildUpdated?.cancel();
-    onDirectMessageUpdatedSubscriptions.map((e) => e.cancel());
+    onDirectMessageUpdatedSubscription?.cancel();
     super.dispose();
   }
 
@@ -146,7 +145,7 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                             ),
                             if (_clientManager.directMessagesNotificationCount >
                                 0)
-                              DotIndicator()
+                              const DotIndicator()
                           ],
                         ),
                         context),

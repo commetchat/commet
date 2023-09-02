@@ -176,4 +176,7 @@ class SimulatedRoom extends Room {
   @override
   TimelineEvent? get lastEvent =>
       timeline!.events.isEmpty ? null : timeline!.events.first;
+
+  @override
+  DateTime get lastEventTimestamp => DateTime.fromMicrosecondsSinceEpoch(0);
 }

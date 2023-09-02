@@ -9,6 +9,7 @@ class ClientManager {
 
   List<Room> rooms = List.empty(growable: true);
   List<Room> directMessages = List.empty(growable: true);
+
   List<Room> singleRooms = List.empty(growable: true);
   List<Space> spaces = List.empty(growable: true);
   final List<Client> _clientsList = List.empty(growable: true);
@@ -35,6 +36,9 @@ class ClientManager {
 
   late StreamController<Space> onSpaceUpdated = StreamController.broadcast();
   late StreamController<Space> onSpaceChildUpdated =
+      StreamController.broadcast();
+
+  late StreamController<Room> onDirectMessageRoomUpdated =
       StreamController.broadcast();
 
   int get directMessagesNotificationCount => directMessages.fold(
@@ -64,6 +68,8 @@ class ClientManager {
 
     if (client.rooms[index].isDirectMessage) {
       directMessages.add(client.rooms[index]);
+      client.rooms[index].onUpdate.stream
+          .listen((_) => directMessageRoomUpdated(client.rooms[index]));
       onDirectMessageRoomAdded.add(directMessages.length - 1);
     } else if (!client.spaces.any(
         (element) => element.containsRoom(client.rooms[index].identifier))) {
@@ -86,6 +92,10 @@ class ClientManager {
 
   void spaceChildUpdated(Space space) {
     onSpaceChildUpdated.add(space);
+  }
+
+  void directMessageRoomUpdated(Room room) {
+    onDirectMessageRoomUpdated.add(room);
   }
 
   Future<void> logoutClient(Client client) async {

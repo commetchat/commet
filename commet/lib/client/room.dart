@@ -27,6 +27,7 @@ abstract class Room {
   Color get defaultColor;
   StreamController<void> onUpdate = StreamController.broadcast();
   PushRule get pushRule;
+  DateTime get lastEventTimestamp;
 
   RoomEmoticonComponent? get roomEmoticons;
 

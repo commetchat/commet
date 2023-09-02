@@ -172,7 +172,7 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
                 Flexible(
                   child: DirectMessageList(
                     key: directRoomsList,
-                    directMessages: widget.state.clientManager.directMessages,
+                    clientManager: widget.state.clientManager,
                     onSelected: (room) {
                       setState(() {
                         selectRoom(room);

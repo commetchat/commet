@@ -107,7 +107,7 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
                   Flexible(
                     child: DirectMessageList(
                       key: homeRoomsList,
-                      directMessages: widget.state.clientManager.directMessages,
+                      clientManager: widget.state.clientManager,
                       onSelected: (room) {
                         setState(() {
                           widget.state.selectRoom(room);

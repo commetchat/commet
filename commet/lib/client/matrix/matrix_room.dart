@@ -43,6 +43,11 @@ class MatrixRoom extends Room {
 
   matrix.Room get matrixRoom => _matrixRoom;
 
+  late DateTime _lastStateEventTimestamp;
+  @override
+  DateTime get lastEventTimestamp =>
+      lastEvent == null ? _lastStateEventTimestamp : lastEvent!.originServerTs;
+
   @override
   TimelineEvent? get lastEvent => _matrixRoom.lastEvent != null
       ? timeline?.tryGetEvent(_matrixRoom.lastEvent!.eventId)
@@ -88,6 +93,16 @@ class MatrixRoom extends Room {
     if (room.avatar != null) {
       avatar = MatrixMxcImage(room.avatar!, _matrixRoom.client,
           autoLoadFullRes: false);
+    }
+
+    _lastStateEventTimestamp = DateTime.fromMillisecondsSinceEpoch(0);
+
+    for (var e in room.states.values) {
+      for (var event in e.values) {
+        if (event.originServerTs.isAfter(_lastStateEventTimestamp)) {
+          _lastStateEventTimestamp = event.originServerTs;
+        }
+      }
     }
 
     isDirectMessage = _matrixRoom.isDirectChat;
