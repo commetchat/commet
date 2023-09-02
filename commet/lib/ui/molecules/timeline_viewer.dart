@@ -198,6 +198,8 @@ class TimelineViewerState extends State<TimelineViewer> {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           animateAndSnapToBottom();
         });
+
+        widget.markAsRead?.call(widget.timeline.events[0]);
       }
     }
   }

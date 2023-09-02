@@ -96,6 +96,18 @@ class MatrixRoom extends Room {
       directMessagePartnerID = _matrixRoom.directChatMatrixID!;
     }
 
+    var memberStates = _matrixRoom.states["m.room.member"];
+    if (memberStates?.length == 2 && !isDirectMessage) {
+      //this might be a direct message room that hasnt been added to account data properly
+      for (var key in memberStates!.keys) {
+        var state = memberStates[key];
+        if (state?.prevContent?["is_direct"] == true) {
+          isDirectMessage = true;
+          directMessagePartnerID = key;
+        }
+      }
+    }
+
     displayName = room.getLocalizedDisplayname();
 
     // Note this is not necessarily all users, this has the most effect on smaller rooms

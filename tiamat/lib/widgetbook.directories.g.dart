@@ -77,6 +77,14 @@ final directories = <WidgetbookNode>[
             name: 'Default',
             builder: (context) => wbiconUseCase(context),
           ),
+          WidgetbookUseCase(
+            name: 'With Image',
+            builder: (context) => wbiconUseCaseWithImage(context),
+          ),
+          WidgetbookUseCase(
+            name: 'With Avatar Placeholder',
+            builder: (context) => wbiconUseCaseWithAvatarPlaceholder(context),
+          ),
         ],
       ),
       WidgetbookComponent(

@@ -173,10 +173,9 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
                   child: DirectMessageList(
                     key: directRoomsList,
                     directMessages: widget.state.clientManager.directMessages,
-                    onSelected: (index) {
+                    onSelected: (room) {
                       setState(() {
-                        selectRoom(
-                            widget.state.clientManager.directMessages[index]);
+                        selectRoom(room);
                       });
                     },
                   ),

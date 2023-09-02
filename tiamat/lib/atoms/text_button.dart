@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart' as material;
 import 'package:flutter/material.dart';
+import 'package:tiamat/tiamat.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 import './text.dart' as tiamat;
 
@@ -39,6 +40,118 @@ Widget wbiconUseCase(BuildContext context) {
   );
 }
 
+@UseCase(name: 'With Image', type: TextButton)
+Widget wbiconUseCaseWithImage(BuildContext context) {
+  return Center(
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: const [
+        material.Padding(
+          padding: EdgeInsets.all(8.0),
+          child: material.SizedBox(
+              height: 30,
+              child: TextButton("Height: 30",
+                  avatar: AssetImage(
+                      "assets/images/placeholder/generic/checker_purple.png"),
+                  icon: Icons.tag)),
+        ),
+        material.Padding(
+          padding: EdgeInsets.all(8.0),
+          child: material.SizedBox(
+              height: 35,
+              child: TextButton("Height: 35",
+                  avatar: AssetImage(
+                      "assets/images/placeholder/generic/checker_purple.png"),
+                  icon: Icons.tag)),
+        ),
+        material.Padding(
+          padding: EdgeInsets.all(8.0),
+          child: material.SizedBox(
+              height: 40,
+              child: TextButton("Height: 40",
+                  avatar: AssetImage(
+                      "assets/images/placeholder/generic/checker_purple.png"),
+                  icon: Icons.tag)),
+        ),
+        material.Padding(
+          padding: EdgeInsets.all(8.0),
+          child: material.SizedBox(
+              height: 45,
+              child: TextButton("Height: 45",
+                  avatar: AssetImage(
+                      "assets/images/placeholder/generic/checker_purple.png"),
+                  icon: Icons.tag)),
+        ),
+        material.Padding(
+          padding: EdgeInsets.all(8.0),
+          child: material.SizedBox(
+              height: 50,
+              child: TextButton("Height: 50",
+                  avatar: AssetImage(
+                      "assets/images/placeholder/generic/checker_purple.png"),
+                  icon: Icons.tag)),
+        )
+      ],
+    ),
+  );
+}
+
+@UseCase(name: 'With Avatar Placeholder', type: TextButton)
+Widget wbiconUseCaseWithAvatarPlaceholder(BuildContext context) {
+  return Center(
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: const [
+        material.Padding(
+          padding: EdgeInsets.all(8.0),
+          child: material.SizedBox(
+              height: 30,
+              child: TextButton("Height: 30",
+                  avatarPlaceholderText: "A",
+                  avatarPlaceholderColor: Colors.amber,
+                  icon: Icons.tag)),
+        ),
+        material.Padding(
+          padding: EdgeInsets.all(8.0),
+          child: material.SizedBox(
+              height: 35,
+              child: TextButton("Height: 35",
+                  avatarPlaceholderText: "A",
+                  avatarPlaceholderColor: Colors.amber,
+                  icon: Icons.tag)),
+        ),
+        material.Padding(
+          padding: EdgeInsets.all(8.0),
+          child: material.SizedBox(
+              height: 40,
+              child: TextButton("Height: 40",
+                  avatarPlaceholderText: "A",
+                  avatarPlaceholderColor: Colors.amber,
+                  icon: Icons.tag)),
+        ),
+        material.Padding(
+          padding: EdgeInsets.all(8.0),
+          child: material.SizedBox(
+              height: 45,
+              child: TextButton("Height: 45",
+                  avatarPlaceholderText: "A",
+                  avatarPlaceholderColor: Colors.amber,
+                  icon: Icons.tag)),
+        ),
+        material.Padding(
+          padding: EdgeInsets.all(8.0),
+          child: material.SizedBox(
+              height: 50,
+              child: TextButton("Height: 50",
+                  avatarPlaceholderText: "A",
+                  avatarPlaceholderColor: Colors.amber,
+                  icon: Icons.tag)),
+        )
+      ],
+    ),
+  );
+}
+
 class TextButton extends StatelessWidget {
   const TextButton(this.text,
       {super.key,
@@ -47,15 +160,28 @@ class TextButton extends StatelessWidget {
       this.highlighted = false,
       this.textColor,
       this.iconColor,
+      this.avatar,
+      this.iconSize = 20,
+      this.avatarRadius = 12,
+      this.avatarPlaceholderColor,
+      this.avatarPlaceholderText,
       this.footer});
   final String text;
 
   final IconData? icon;
+  final ImageProvider? avatar;
+  final String? avatarPlaceholderText;
+  final Color? avatarPlaceholderColor;
   final bool highlighted;
+  final double iconSize;
+  final double avatarRadius;
   final void Function()? onTap;
   final Widget? footer;
   final Color? textColor;
   final Color? iconColor;
+
+  bool get useAvatar => avatar != null || avatarPlaceholderText != null;
+
   @override
   Widget build(BuildContext context) {
     return material.TextButton(
@@ -71,16 +197,27 @@ class TextButton extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (icon != null)
+                  if (icon != null || useAvatar)
                     Padding(
                       padding: const EdgeInsets.all(1.0),
                       child: Align(
                         alignment: Alignment.center,
-                        child: Icon(
-                          size: 20,
-                          icon!,
-                          weight: 0.5,
-                          color: iconColor,
+                        child: SizedBox(
+                          width: avatarRadius * 2,
+                          height: avatarRadius * 2,
+                          child: useAvatar
+                              ? Avatar(
+                                  radius: avatarRadius,
+                                  image: avatar,
+                                  placeholderColor: avatarPlaceholderColor,
+                                  placeholderText: avatarPlaceholderText,
+                                )
+                              : Icon(
+                                  size: iconSize,
+                                  icon!,
+                                  weight: 0.5,
+                                  color: iconColor,
+                                ),
                         ),
                       ),
                     ),

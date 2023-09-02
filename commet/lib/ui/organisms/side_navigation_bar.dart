@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
+import 'package:commet/ui/atoms/dot_indicator.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/pages/add_space_or_room/add_space_or_room.dart';
 import 'package:commet/ui/pages/settings/app_settings_page.dart';
@@ -62,6 +63,7 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
   late ClientManager _clientManager;
   StreamSubscription? onSpaceUpdated;
   StreamSubscription? onSpaceChildUpdated;
+  late List<StreamSubscription> onDirectMessageUpdatedSubscriptions;
 
   String get promptAddSpace => Intl.message("Add Space",
       name: "promptAddSpace", desc: "Prompt to add a new space");
@@ -75,11 +77,27 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
     onSpaceUpdated =
         _clientManager.onSpaceUpdated.stream.listen((_) => onSpaceUpdate());
 
+    onDirectMessageUpdatedSubscriptions = _clientManager.directMessages
+        .map((e) => e.onUpdate.stream.listen(onDirectMessageUpdated))
+        .toList();
+
     super.initState();
   }
 
   void onSpaceUpdate() {
     setState(() {});
+  }
+
+  void onDirectMessageUpdated(void event) {
+    setState(() {});
+  }
+
+  @override
+  void dispose() {
+    onSpaceUpdated?.cancel();
+    onSpaceChildUpdated?.cancel();
+    onDirectMessageUpdatedSubscriptions.map((e) => e.cancel());
+    super.dispose();
   }
 
   @override
@@ -117,12 +135,19 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                   children: [
                     SideNavigationBar.tooltip(
                         CommonStrings.promptHome,
-                        ImageButton(
-                          size: 70,
-                          icon: Icons.home,
-                          onTap: () {
-                            widget.onHomeSelected?.call();
-                          },
+                        Stack(
+                          children: [
+                            ImageButton(
+                              size: 70,
+                              icon: Icons.home,
+                              onTap: () {
+                                widget.onHomeSelected?.call();
+                              },
+                            ),
+                            if (_clientManager.directMessagesNotificationCount >
+                                0)
+                              DotIndicator()
+                          ],
                         ),
                         context),
                   ],

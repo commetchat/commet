@@ -108,10 +108,9 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
                     child: DirectMessageList(
                       key: homeRoomsList,
                       directMessages: widget.state.clientManager.directMessages,
-                      onSelected: (index) {
+                      onSelected: (room) {
                         setState(() {
-                          widget.state.selectRoom(
-                              widget.state.clientManager.directMessages[index]);
+                          widget.state.selectRoom(room);
                         });
                       },
                     ),

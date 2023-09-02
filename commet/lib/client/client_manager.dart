@@ -37,6 +37,11 @@ class ClientManager {
   late StreamController<Space> onSpaceChildUpdated =
       StreamController.broadcast();
 
+  int get directMessagesNotificationCount => directMessages.fold(
+      0,
+      (previousValue, element) =>
+          previousValue + element.displayNotificationCount);
+
   void addClient(Client client) {
     _clients[client.identifier] = client;
 
