@@ -43,6 +43,11 @@ class MatrixRoom extends Room {
 
   matrix.Room get matrixRoom => _matrixRoom;
 
+  late DateTime _lastStateEventTimestamp;
+  @override
+  DateTime get lastEventTimestamp =>
+      lastEvent == null ? _lastStateEventTimestamp : lastEvent!.originServerTs;
+
   @override
   TimelineEvent? get lastEvent => _matrixRoom.lastEvent != null
       ? timeline?.tryGetEvent(_matrixRoom.lastEvent!.eventId)
@@ -90,10 +95,32 @@ class MatrixRoom extends Room {
           autoLoadFullRes: false);
     }
 
+    _lastStateEventTimestamp = DateTime.fromMillisecondsSinceEpoch(0);
+
+    for (var e in room.states.values) {
+      for (var event in e.values) {
+        if (event.originServerTs.isAfter(_lastStateEventTimestamp)) {
+          _lastStateEventTimestamp = event.originServerTs;
+        }
+      }
+    }
+
     isDirectMessage = _matrixRoom.isDirectChat;
 
     if (isDirectMessage) {
       directMessagePartnerID = _matrixRoom.directChatMatrixID!;
+    }
+
+    var memberStates = _matrixRoom.states["m.room.member"];
+    if (memberStates?.length == 2 && !isDirectMessage) {
+      //this might be a direct message room that hasnt been added to account data properly
+      for (var key in memberStates!.keys) {
+        var state = memberStates[key];
+        if (state?.prevContent?["is_direct"] == true) {
+          isDirectMessage = true;
+          directMessagePartnerID = key;
+        }
+      }
     }
 
     displayName = room.getLocalizedDisplayname();

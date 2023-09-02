@@ -1,45 +1,99 @@
+import 'dart:async';
+
 import 'package:commet/client/client.dart';
-import 'package:commet/ui/molecules/user_panel.dart';
+import 'package:commet/client/client_manager.dart';
 import 'package:flutter/widgets.dart';
+import 'package:implicitly_animated_list/implicitly_animated_list.dart';
+import 'package:tiamat/tiamat.dart';
+
+import '../atoms/dot_indicator.dart';
 
 class DirectMessageList extends StatefulWidget {
   const DirectMessageList(
-      {required this.directMessages, this.onSelected, super.key});
-  final List<Room> directMessages;
+      {required this.clientManager, this.onSelected, super.key});
+  final ClientManager clientManager;
   @override
   State<DirectMessageList> createState() => _DirectMessageListState();
-  final Function(int index)? onSelected;
+  final Function(Room room)? onSelected;
 }
 
 class _DirectMessageListState extends State<DirectMessageList> {
   int numDMs = 0;
-  int selectedIndex = -1;
+  Room? selectedRoom;
+  late StreamSubscription? onDmUpdatedSubscription;
+  late List<Room> rooms;
 
   @override
   void initState() {
-    numDMs = widget.directMessages.length;
+    onDmUpdatedSubscription = widget
+        .clientManager.onDirectMessageRoomUpdated.stream
+        .listen(onRoomUpdated);
+
+    widget.clientManager.onDirectMessageRoomAdded.stream.listen(onRoomAdded);
+
+    updateRoomsList();
+
     super.initState();
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  void onRoomAdded(int index) {
+    setState(() {
+      updateRoomsList();
+    });
+  }
+
+  void onRoomUpdated(Room room) {
+    if (mounted)
+      setState(() {
+        sortRooms();
+      });
+  }
+
+  void sortRooms() {
+    rooms.sort((a, b) {
+      return b.lastEventTimestamp.compareTo(a.lastEventTimestamp);
+    });
+  }
+
+  void updateRoomsList() {
+    rooms = List.from(widget.clientManager.directMessages);
+    sortRooms();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return AnimatedList(
-      initialItemCount: numDMs,
-      itemBuilder: (context, index, animation) {
-        var room = widget.directMessages[index];
+    return ImplicitlyAnimatedList(
+      itemData: rooms,
+      initialAnimation: false,
+      itemBuilder: (context, room) {
         return Padding(
-          padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
-          child: UserPanelView(
-            displayName: room.displayName,
-            avatar: room.avatar,
-            avatarColor: room.defaultColor,
-            padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
-            onClicked: () {
-              setState(() {
-                selectedIndex = index;
-                widget.onSelected?.call(index);
-              });
-            },
+          padding: const EdgeInsets.fromLTRB(4, 1, 0, 1),
+          child: SizedBox(
+            height: 55,
+            child: TextButton(
+              room.displayName,
+              avatar: room.avatar,
+              avatarRadius: 18,
+              avatarPlaceholderColor: room.defaultColor,
+              avatarPlaceholderText: room.displayName,
+              footer: room.displayNotificationCount > 0
+                  ? const Padding(
+                      padding: EdgeInsets.all(2.0),
+                      child: DotIndicator(),
+                    )
+                  : null,
+              onTap: () {
+                setState(() {
+                  selectedRoom = room;
+                  widget.onSelected?.call(room);
+                });
+              },
+            ),
           ),
         );
       },

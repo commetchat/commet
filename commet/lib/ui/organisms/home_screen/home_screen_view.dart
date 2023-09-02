@@ -66,11 +66,13 @@ class HomeScreenView extends StatelessWidget {
               displayName: room.displayName,
               avatar: room.avatar,
               color: room.defaultColor,
-              recentEventBody: room.lastEvent!.body,
-              recentEventSender:
-                  room.client.fetchPeer(room.lastEvent!.senderId).displayName,
-              recentEventSenderColor:
-                  room.getColorOfUser(room.lastEvent!.senderId),
+              recentEventBody: room.lastEvent?.body,
+              recentEventSender: room.lastEvent != null
+                  ? room.client.fetchPeer(room.lastEvent!.senderId).displayName
+                  : null,
+              recentEventSenderColor: room.lastEvent != null
+                  ? room.getColorOfUser(room.lastEvent!.senderId)
+                  : null,
               onTap: () => onRoomClicked?.call(room),
             );
           },

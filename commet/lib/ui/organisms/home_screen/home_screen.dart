@@ -57,12 +57,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void updateRecent() {
-    recentActivity = widget.clientManager.rooms
-        .where((element) => element.lastEvent != null)
-        .toList();
+    recentActivity = widget.clientManager.rooms;
 
     recentActivity.sort((a, b) {
-      return b.lastEvent!.originServerTs.compareTo(a.lastEvent!.originServerTs);
+      return b.lastEventTimestamp.compareTo(a.lastEventTimestamp);
     });
 
     if (recentActivity.length > widget.numRecentRooms) {
