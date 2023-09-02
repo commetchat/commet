@@ -5,6 +5,7 @@ class Invitation {
   String invitedToId;
   String invitationId;
   String? displayName;
+  Color? color;
   ImageProvider? avatar;
 
   Invitation(
@@ -12,6 +13,7 @@ class Invitation {
       required this.invitedToId,
       required this.invitationId,
       this.displayName,
+      this.color,
       this.avatar});
 
   @override

@@ -30,6 +30,7 @@ class _InvitationDisplayState extends State<InvitationDisplay> {
       displayName: widget.invitation.displayName!,
       avatar: widget.invitation.avatar,
       recentEventSender: widget.invitation.senderId,
+      color: widget.invitation.color,
       recentEventBody: labelHomeInvitationBody,
       primaryButtonLabel: CommonStrings.promptAccept,
       onPrimaryButtonPressed: acceptInvitation,

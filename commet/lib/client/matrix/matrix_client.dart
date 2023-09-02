@@ -257,6 +257,7 @@ class MatrixClient extends Client {
           invitedToId: invite.id,
           invitationId: state.eventId,
           avatar: avatar,
+          color: MatrixPeer.hashColor(sender),
           displayName: invite.getLocalizedDisplayname());
 
       _invitations[inviteId] = entry;
