@@ -377,7 +377,8 @@ class MatrixTimeline extends Timeline {
         .toList(growable: true);
 
     if (latestDisplayableEvent != null &&
-        latestDisplayableEvent.senderId != client.user!.identifier)
+        latestDisplayableEvent.senderId != client.user!.identifier &&
+        !receipts.contains(latestDisplayableEvent.senderId))
       receipts.add(latestDisplayableEvent.senderId);
 
     return receipts;
