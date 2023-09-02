@@ -1,6 +1,6 @@
 import 'package:commet/client/invitation.dart';
 import 'package:commet/ui/atoms/room_panel.dart';
-import 'package:commet/utils/common_strings.dart';
+import 'package:commet/ui/molecules/invitation_display.dart';
 import 'package:flutter/material.dart';
 import 'package:implicitly_animated_list/implicitly_animated_list.dart';
 import 'package:intl/intl.dart';
@@ -13,11 +13,16 @@ class HomeScreenView extends StatelessWidget {
   final List<Room>? recentActivity;
   final List<Invitation>? invitations;
   final Function(Room room)? onRoomClicked;
+  final Future<void> Function(Invitation invite)? acceptInvite;
+  final Future<void> Function(Invitation invite)? rejectInvite;
+
   const HomeScreenView(
       {super.key,
       this.rooms,
       this.recentActivity,
       this.onRoomClicked,
+      this.acceptInvite,
+      this.rejectInvite,
       this.invitations});
 
   String get labelHomeRecentActivity => Intl.message("Recent Activity",
@@ -30,11 +35,6 @@ class HomeScreenView extends StatelessWidget {
   String get labelHomeInvitations => Intl.message("Invitations",
       name: "labelHomeInvitations",
       desc: "Short label for header of invitations list");
-
-  String get labelHomeInvitationBody => Intl.message("Invited you to a room",
-      name: "labelHomeInvitationBody",
-      desc:
-          "Displays a short description explaining that an invitation to a room was received. Does not need to contain the name of the room or inviter");
 
   @override
   Widget build(BuildContext context) {
@@ -114,15 +114,10 @@ class HomeScreenView extends StatelessWidget {
           shrinkWrap: true,
           itemData: invitations!,
           itemBuilder: (context, invitation) {
-            return RoomPanel(
-              displayName: invitation.displayName!,
-              avatar: invitation.avatar,
-              recentEventSender: invitation.senderId,
-              recentEventBody: labelHomeInvitationBody,
-              primaryButtonLabel: CommonStrings.promptAccept,
-              onPrimaryButtonPressed: () {},
-              secondaryButtonLabel: CommonStrings.promptReject,
-              onSecondaryButtonPressed: () {},
+            return InvitationDisplay(
+              invitation,
+              acceptInvitation: acceptInvite,
+              rejectInvitation: rejectInvite,
             );
           },
         ));

@@ -190,4 +190,8 @@ abstract class Client {
   Peer fetchPeerInternal(String identifier);
 
   Future<Room?> createDirectMessage(String userId);
+
+  Future<void> acceptInvitation(Invitation invitation);
+
+  Future<void> rejectInvitation(Invitation invitation);
 }

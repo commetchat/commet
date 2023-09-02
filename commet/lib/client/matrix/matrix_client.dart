@@ -239,7 +239,6 @@ class MatrixClient extends Client {
 
   void _updateInviteList() {
     var allRooms = _matrixClient.rooms.where((element) => !element.isSpace);
-
     var invitedRooms = allRooms.where((element) => element.membership.isInvite);
 
     for (var invite in invitedRooms) {
@@ -405,5 +404,28 @@ class MatrixClient extends Client {
     MatrixRoom room = MatrixRoom(this, matrixRoom, _matrixClient);
     addRoom(room);
     return room;
+  }
+
+  @override
+  Future<void> acceptInvitation(Invitation invitation) async {
+    if (!invitations.contains(invitation)) {
+      throw Exception(
+          "Tried to accept an invitation that does not belong to this client");
+    }
+
+    _invitations.remove(invitation.invitationId);
+    await joinRoom(invitation.invitedToId);
+    _updateInviteList();
+  }
+
+  @override
+  Future<void> rejectInvitation(Invitation invitation) async {
+    if (!invitations.contains(invitation)) {
+      throw Exception(
+          "Tried to reject an invitation that does not belong to this client");
+    }
+
+    _invitations.remove(invitation.invitationId);
+    await _matrixClient.leaveRoom(invitation.invitedToId);
   }
 }

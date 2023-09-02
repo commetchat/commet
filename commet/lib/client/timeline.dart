@@ -31,6 +31,8 @@ enum EventType {
   memberLeft,
   memberAvatar,
   memberDisplayName,
+  memberInvited,
+  memberInvitationRejected,
   encryptionEnabled,
 }
 
@@ -99,6 +101,7 @@ class TimelineEvent {
   String? formattedBody;
   Widget? formattedContent;
   String? relatedEventId;
+  String? stateKey;
   EventRelationshipType? relationshipType;
 
   Map<Emoticon, Set<String>>? reactions;

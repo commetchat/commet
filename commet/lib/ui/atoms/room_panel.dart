@@ -11,8 +11,10 @@ class RoomPanel extends StatefulWidget {
       this.topic,
       this.onPrimaryButtonPressed,
       this.primaryButtonLabel,
+      this.primaryButtonLoading = false,
       this.onSecondaryButtonPressed,
       this.secondaryButtonLabel,
+      this.secondaryButtonLoading = false,
       this.onRoomSettingsButtonPressed,
       this.showSettingsButton = false,
       this.onTap,
@@ -30,16 +32,33 @@ class RoomPanel extends StatefulWidget {
   final String? recentEventSender;
   final Color? recentEventSenderColor;
   final String? primaryButtonLabel;
+  final bool primaryButtonLoading;
   final Function()? onPrimaryButtonPressed;
   final Function()? onRoomSettingsButtonPressed;
   final Function()? onTap;
   final String? secondaryButtonLabel;
+  final bool secondaryButtonLoading;
   final Function()? onSecondaryButtonPressed;
   @override
   State<RoomPanel> createState() => _RoomPanelState();
 }
 
 class _RoomPanelState extends State<RoomPanel> {
+  bool get showPrimaryButton =>
+      widget.primaryButtonLabel != null &&
+      widget.onPrimaryButtonPressed != null;
+
+  bool get showSecondaryButton =>
+      widget.secondaryButtonLabel != null &&
+      widget.onSecondaryButtonPressed != null;
+
+  bool get showOnlyPrimaryButton =>
+      showPrimaryButton &&
+      !showSecondaryButton &&
+      widget.showSettingsButton != true;
+
+  bool get showAnyButton => showPrimaryButton || showSecondaryButton;
+
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
@@ -104,13 +123,6 @@ class _RoomPanelState extends State<RoomPanel> {
     );
   }
 
-  bool get showOnlyPrimaryButton =>
-      widget.primaryButtonLabel != null &&
-      widget.onPrimaryButtonPressed != null &&
-      widget.secondaryButtonLabel == null &&
-      widget.onSecondaryButtonPressed == null &&
-      widget.showSettingsButton != true;
-
   Widget recentEvent() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.baseline,
@@ -137,28 +149,28 @@ class _RoomPanelState extends State<RoomPanel> {
   Widget actionButtons(bool includeSettings) {
     return Row(
       mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        if (widget.onPrimaryButtonPressed != null &&
-            widget.primaryButtonLabel != null)
+        if (showPrimaryButton)
           Expanded(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
               child: Button(
                 text: widget.primaryButtonLabel!,
+                isLoading: widget.primaryButtonLoading,
                 onTap: () {
                   widget.onPrimaryButtonPressed?.call();
                 },
               ),
             ),
           ),
-        if (widget.onSecondaryButtonPressed != null &&
-            widget.secondaryButtonLabel != null)
+        if (showSecondaryButton)
           Expanded(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
               child: Button.secondary(
                 text: widget.secondaryButtonLabel!,
+                isLoading: widget.secondaryButtonLoading,
                 onTap: () {
                   widget.onSecondaryButtonPressed?.call();
                 },

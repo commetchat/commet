@@ -207,6 +207,7 @@ class LODImageCompleter extends ImageStreamCompleter {
   }
 
   void _emitFrame(ImageInfo imageInfo) {
+    if (!hasListeners) return;
     setImage(imageInfo);
     _framesEmitted += 1;
   }

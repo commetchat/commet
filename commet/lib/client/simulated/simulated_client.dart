@@ -143,4 +143,14 @@ class SimulatedClient extends Client {
   Future<Room?> createDirectMessage(String userId) {
     throw UnimplementedError();
   }
+
+  @override
+  Future<void> acceptInvitation(Invitation invitation) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> rejectInvitation(Invitation invitation) {
+    throw UnimplementedError();
+  }
 }
