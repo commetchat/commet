@@ -6,6 +6,7 @@ import 'package:commet/client/stale_info.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/atoms/room_panel.dart';
 import 'package:commet/utils/common_animation.dart';
+import 'package:commet/utils/common_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart';
 import '../../atoms/tooltip.dart' as t;
@@ -232,9 +233,9 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
                 displayName: preview.displayName!,
                 avatar: preview.avatar,
                 topic: preview.topic,
-                showJoinButton: true,
+                primaryButtonLabel: CommonStrings.promptJoin,
                 color: preview.color,
-                onJoinButtonPressed: () {
+                onPrimaryButtonPressed: () {
                   widget.joinRoom?.call(preview.roomId);
                 },
               ));
@@ -285,7 +286,8 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
               displayName: staleRoomInfo.name!,
               avatar: staleRoomInfo.avatar,
               topic: staleRoomInfo.topic,
-              showJoinButton: true,
+              primaryButtonLabel: CommonStrings.promptJoin,
+              onPrimaryButtonPressed: () => null,
             )));
   }
 

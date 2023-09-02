@@ -1,7 +1,9 @@
 import 'package:commet/client/invitation.dart';
 import 'package:commet/ui/atoms/room_panel.dart';
+import 'package:commet/utils/common_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:implicitly_animated_list/implicitly_animated_list.dart';
+import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart';
 
 import '../../../client/room.dart';
@@ -17,6 +19,22 @@ class HomeScreenView extends StatelessWidget {
       this.recentActivity,
       this.onRoomClicked,
       this.invitations});
+
+  String get labelHomeRecentActivity => Intl.message("Recent Activity",
+      name: "labelHomeRecentActivity",
+      desc: "Short label for header of recent room activity");
+
+  String get labelHomeRoomsList => Intl.message("Rooms",
+      name: "labelHomeRoomsList", desc: "Short label for header of rooms list");
+
+  String get labelHomeInvitations => Intl.message("Invitations",
+      name: "labelHomeInvitations",
+      desc: "Short label for header of invitations list");
+
+  String get labelHomeInvitationBody => Intl.message("Invited you to a room",
+      name: "labelHomeInvitationBody",
+      desc:
+          "Displays a short description explaining that an invitation to a room was received. Does not need to contain the name of the room or inviter");
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +55,7 @@ class HomeScreenView extends StatelessWidget {
   Widget recentRooms() {
     return Panel(
         mode: TileType.surface,
-        header: "Recent Activity",
+        header: labelHomeRecentActivity,
         child: ImplicitlyAnimatedList(
           shrinkWrap: true,
           itemData: recentActivity!,
@@ -62,7 +80,7 @@ class HomeScreenView extends StatelessWidget {
   Widget roomsList() {
     return Panel(
         mode: TileType.surface,
-        header: "Rooms",
+        header: labelHomeRoomsList,
         child: ImplicitlyAnimatedList(
           physics: const NeverScrollableScrollPhysics(),
           initialAnimation: false,
@@ -89,7 +107,7 @@ class HomeScreenView extends StatelessWidget {
   Widget invitationsList() {
     return Panel(
         mode: TileType.surfaceLow1,
-        header: "Invitations",
+        header: labelHomeInvitations,
         child: ImplicitlyAnimatedList(
           physics: const NeverScrollableScrollPhysics(),
           initialAnimation: false,
@@ -99,9 +117,12 @@ class HomeScreenView extends StatelessWidget {
             return RoomPanel(
               displayName: invitation.displayName!,
               avatar: invitation.avatar,
-              showJoinButton: true,
               recentEventSender: invitation.senderId,
-              recentEventBody: "Invited you to a room",
+              recentEventBody: labelHomeInvitationBody,
+              primaryButtonLabel: CommonStrings.promptAccept,
+              onPrimaryButtonPressed: () {},
+              secondaryButtonLabel: CommonStrings.promptReject,
+              onSecondaryButtonPressed: () {},
             );
           },
         ));
