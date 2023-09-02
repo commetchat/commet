@@ -4,6 +4,7 @@ import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/config/app_config.dart';
 import 'package:commet/ui/organisms/side_navigation_bar.dart';
 import 'package:commet/ui/pages/login/login_page.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:commet/main.dart';
@@ -34,8 +35,19 @@ extension CommonFlows on WidgetTester {
     }
 
     dir = await getApplicationSupportDirectory();
-    if (await dir.exists()) {
-      await dir.delete(recursive: true);
+
+    if (!await dir.exists()) return;
+
+    var files = await dir.list(recursive: true).toList();
+    for (var file in files) {
+      try {
+        if (!await file.exists()) continue;
+
+        await file.delete();
+      } catch (exception) {
+        // ignore: avoid_print
+        print("Could not delete file: ${file.uri.toString()}");
+      }
     }
   }
 
