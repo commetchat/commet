@@ -4,7 +4,6 @@ import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/config/app_config.dart';
 import 'package:commet/ui/organisms/side_navigation_bar.dart';
 import 'package:commet/ui/pages/login/login_page.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:commet/main.dart';
