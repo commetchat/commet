@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:commet/client/components/emoticon/emoticon_component.dart';
+import 'package:commet/client/invitation.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/client/space.dart';
@@ -59,6 +60,8 @@ abstract class Client {
   List<Room> rooms = List.empty(growable: true);
   List<Space> spaces = List.empty(growable: true);
   List<Peer> peers = List.empty(growable: true);
+
+  List<Invitation> get invitations;
 
   EmoticonComponent? emoticons;
 
@@ -187,4 +190,8 @@ abstract class Client {
   Peer fetchPeerInternal(String identifier);
 
   Future<Room?> createDirectMessage(String userId);
+
+  Future<void> acceptInvitation(Invitation invitation);
+
+  Future<void> rejectInvitation(Invitation invitation);
 }

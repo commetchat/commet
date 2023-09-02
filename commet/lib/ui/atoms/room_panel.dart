@@ -9,9 +9,13 @@ class RoomPanel extends StatefulWidget {
       {required this.displayName,
       this.avatar,
       this.topic,
-      this.onJoinButtonPressed,
+      this.onPrimaryButtonPressed,
+      this.primaryButtonLabel,
+      this.primaryButtonLoading = false,
+      this.onSecondaryButtonPressed,
+      this.secondaryButtonLabel,
+      this.secondaryButtonLoading = false,
       this.onRoomSettingsButtonPressed,
-      this.showJoinButton = false,
       this.showSettingsButton = false,
       this.onTap,
       this.color,
@@ -22,20 +26,39 @@ class RoomPanel extends StatefulWidget {
   final ImageProvider? avatar;
   final String displayName;
   final String? topic;
-  final bool showJoinButton;
   final bool showSettingsButton;
   final Color? color;
   final String? recentEventBody;
   final String? recentEventSender;
   final Color? recentEventSenderColor;
-  final Function()? onJoinButtonPressed;
+  final String? primaryButtonLabel;
+  final bool primaryButtonLoading;
+  final Function()? onPrimaryButtonPressed;
   final Function()? onRoomSettingsButtonPressed;
   final Function()? onTap;
+  final String? secondaryButtonLabel;
+  final bool secondaryButtonLoading;
+  final Function()? onSecondaryButtonPressed;
   @override
   State<RoomPanel> createState() => _RoomPanelState();
 }
 
 class _RoomPanelState extends State<RoomPanel> {
+  bool get showPrimaryButton =>
+      widget.primaryButtonLabel != null &&
+      widget.onPrimaryButtonPressed != null;
+
+  bool get showSecondaryButton =>
+      widget.secondaryButtonLabel != null &&
+      widget.onSecondaryButtonPressed != null;
+
+  bool get showOnlyPrimaryButton =>
+      showPrimaryButton &&
+      !showSecondaryButton &&
+      widget.showSettingsButton != true;
+
+  bool get showAnyButton => showPrimaryButton || showSecondaryButton;
+
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
@@ -48,39 +71,49 @@ class _RoomPanelState extends State<RoomPanel> {
             decoration: BoxDecoration(borderRadius: BorderRadius.circular(15)),
             child: Padding(
               padding: const EdgeInsets.all(2.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Column(
                 children: [
-                  Flexible(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Avatar.medium(
-                          image: widget.avatar,
-                          placeholderText: widget.displayName,
-                          placeholderColor: widget.color,
-                        ),
-                        Flexible(
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                nameAndTopic(),
-                                if (widget.recentEventBody != null &&
-                                    widget.recentEventSender != null)
-                                  Flexible(child: recentEvent())
-                              ],
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Flexible(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Avatar.medium(
+                              image: widget.avatar,
+                              placeholderText: widget.displayName,
+                              placeholderColor: widget.color,
                             ),
-                          ),
+                            Flexible(
+                              child: Padding(
+                                padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    nameAndTopic(),
+                                    if (widget.recentEventBody != null &&
+                                        widget.recentEventSender != null)
+                                      recentEvent()
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                      if (BuildConfig.DESKTOP || showOnlyPrimaryButton)
+                        Flexible(
+                            child: actionButtons(widget.showSettingsButton)),
+                      if (BuildConfig.MOBILE && widget.showSettingsButton)
+                        settingsButton(),
+                    ],
                   ),
-                  actionButtons()
+                  if (BuildConfig.MOBILE && !showOnlyPrimaryButton)
+                    actionButtons(false)
                 ],
               ),
             ),
@@ -91,50 +124,69 @@ class _RoomPanelState extends State<RoomPanel> {
   }
 
   Widget recentEvent() {
-    return Row(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.baseline,
       mainAxisSize: MainAxisSize.min,
       textBaseline: TextBaseline.alphabetic,
       children: [
-        tiamat.Text.name(
+        tiamat.Text(
           widget.recentEventSender!,
+          type: TextType.labelLow,
+          autoAdjustBrightness: true,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
           color: widget.recentEventSenderColor,
         ),
-        const SizedBox(
-          width: 10,
-        ),
-        Flexible(
-          child: tiamat.Text.labelLow(
-            widget.recentEventBody!,
-            overflow: TextOverflow.fade,
-          ),
+        tiamat.Text.labelLow(
+          widget.recentEventBody!,
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
         )
       ],
     );
   }
 
-  Widget actionButtons() {
+  Widget actionButtons(bool includeSettings) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.end,
+      mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        if (widget.showJoinButton)
-          Padding(
-            padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
-            child: Button(
-              text: "Join",
-              onTap: () {
-                widget.onJoinButtonPressed?.call();
-              },
+        if (showPrimaryButton)
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+              child: Button(
+                text: widget.primaryButtonLabel!,
+                isLoading: widget.primaryButtonLoading,
+                onTap: () {
+                  widget.onPrimaryButtonPressed?.call();
+                },
+              ),
             ),
           ),
-        if (widget.showSettingsButton)
-          tiamat.CircleButton(
-            icon: Icons.settings,
-            radius: BuildConfig.MOBILE ? 24 : 16,
-            onPressed: widget.onRoomSettingsButtonPressed,
-          )
+        if (showSecondaryButton)
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+              child: Button.secondary(
+                text: widget.secondaryButtonLabel!,
+                isLoading: widget.secondaryButtonLoading,
+                onTap: () {
+                  widget.onSecondaryButtonPressed?.call();
+                },
+              ),
+            ),
+          ),
+        if (includeSettings) settingsButton(),
       ],
+    );
+  }
+
+  Widget settingsButton() {
+    return tiamat.CircleButton(
+      icon: Icons.settings,
+      radius: BuildConfig.MOBILE ? 24 : 16,
+      onPressed: widget.onRoomSettingsButtonPressed,
     );
   }
 

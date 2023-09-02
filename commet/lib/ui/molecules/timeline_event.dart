@@ -83,6 +83,18 @@ class _TimelineEventState extends State<TimelineEventView> {
           args: [user],
           name: "messagePlaceholderUserUpdatedName");
 
+  String messagePlaceholderUserInvited(String sender, String invitedUser) =>
+      Intl.message("$sender invited $invitedUser",
+          desc: "Message body for when a user invites another user to the room",
+          args: [sender, invitedUser],
+          name: "messagePlaceholderUserInvited");
+
+  String messagePlaceholderUserRejectedInvite(String user) =>
+      Intl.message("$user rejected the invitation",
+          desc: "Message body for when a user rejected an invitation to a room",
+          args: [user],
+          name: "messagePlaceholderUserRejectedInvite");
+
   @override
   void initState() {
     if (widget.event.relatedEventId != null) {
@@ -178,6 +190,14 @@ class _TimelineEventState extends State<TimelineEventView> {
       case EventType.memberDisplayName:
         return GenericRoomEvent(
             messagePlaceholderUserUpdatedName(displayName), m.Icons.edit);
+      case EventType.memberInvited:
+        return GenericRoomEvent(
+            messagePlaceholderUserInvited(displayName, event.stateKey!),
+            m.Icons.person_add);
+      case EventType.memberInvitationRejected:
+        return GenericRoomEvent(
+            messagePlaceholderUserRejectedInvite(displayName),
+            m.Icons.subdirectory_arrow_left_rounded);
       default:
         break;
     }

@@ -109,6 +109,8 @@ class MatrixTimeline extends Timeline {
           break;
       }
 
+      e.stateKey = event.stateKey;
+
       e.status = convertStatus(event.status);
 
       if (displayEvent.redacted) {
@@ -151,6 +153,7 @@ class MatrixTimeline extends Timeline {
   }
 
   EventType convertMembershipEvent(matrix.Event event) {
+    var prevMembership = event.prevContent?['membership'];
     switch (event.content['membership'] as String) {
       case "join":
         if (event.prevContent != null) {
@@ -168,7 +171,12 @@ class MatrixTimeline extends Timeline {
         return EventType.memberJoined;
 
       case "leave":
+        if (prevMembership == "invite") {
+          return EventType.memberInvitationRejected;
+        }
         return EventType.memberLeft;
+      case "invite":
+        return EventType.memberInvited;
     }
 
     return EventType.unknown;

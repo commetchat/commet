@@ -1,68 +1,406 @@
 {
-  "@@last_modified": "2023-08-31T17:59:31.572583",
-  "promptReply": "Reply",
-  "@promptReply": {
-    "description": "Generic prompt to reply to a message",
+  "@@last_modified": "2023-09-02T11:59:59.598736",
+  "fileDragDropPrompt": "Drop a file to upload...",
+  "@fileDragDropPrompt": {
+    "description": "Text that is shown when a user is dragging a file",
     "type": "text",
     "placeholders": {}
   },
-  "promptAddReaction": "Add Reaction",
-  "@promptAddReaction": {
-    "description": "Generic prompt to add reaction to a message",
+  "messagePlaceholderSticker": "{user} sent a sticker",
+  "@messagePlaceholderSticker": {
+    "description": "Message body for when a user sends a sticker",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messagePlaceholderUserCreatedRoom": "{user} created the room!",
+  "@messagePlaceholderUserCreatedRoom": {
+    "description": "Message body for when a user created the room",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messagePlaceholderUserJoinedRoom": "{user} joined the room!",
+  "@messagePlaceholderUserJoinedRoom": {
+    "description": "Message body for when a user joins the room",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messagePlaceholderUserLeftRoom": "{user} left the room",
+  "@messagePlaceholderUserLeftRoom": {
+    "description": "Message body for when a user leaves the room",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messagePlaceholderUserUpdatedAvatar": "{user} updated their avatar",
+  "@messagePlaceholderUserUpdatedAvatar": {
+    "description": "Message body for when a user updates their avatar",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messagePlaceholderUserUpdatedName": "{user} updated their display name",
+  "@messagePlaceholderUserUpdatedName": {
+    "description": "Message body for when a user updates their display name",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messagePlaceholderUserInvited": "{sender} invited {invitedUser}",
+  "@messagePlaceholderUserInvited": {
+    "description": "Message body for when a user invites another user to the room",
+    "type": "text",
+    "placeholders": {
+      "sender": {},
+      "invitedUser": {}
+    }
+  },
+  "messagePlaceholderUserRejectedInvite": "{user} rejected the invitation",
+  "@messagePlaceholderUserRejectedInvite": {
+    "description": "Message body for when a user rejected an invitation to a room",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "labelHomeInvitationBody": "Invited you to a room",
+  "@labelHomeInvitationBody": {
+    "description": "Displays a short description explaining that an invitation to a room was received. Does not need to contain the name of the room or inviter",
     "type": "text",
     "placeholders": {}
   },
-  "promptEdit": "Edit",
-  "@promptEdit": {
-    "description": "Generic prompt to edit something",
+  "messageEditedMarker": "(Edited)",
+  "@messageEditedMarker": {
+    "description": "Short text to mark that a message has been edited",
     "type": "text",
     "placeholders": {}
   },
-  "promptOptions": "Options",
-  "@promptOptions": {
-    "description": "Generic prompt for options, generally would be used to open a settings menu, extra details or similar",
+  "sendEncryptedMessagePrompt": "Send an encrypted message",
+  "@sendEncryptedMessagePrompt": {
+    "description": "Placeholder text for message input in an encrypted room",
     "type": "text",
     "placeholders": {}
   },
-  "promptSettings": "Settings",
-  "@promptSettings": {
-    "description": "Generic prompt for settings, usually will open a settings menu or similar",
+  "sendUnencryptedMessagePrompt": "Send a message",
+  "@sendUnencryptedMessagePrompt": {
+    "description": "Placeholder text for message input in an unencrypted room",
     "type": "text",
     "placeholders": {}
   },
-  "promptHome": "Home",
-  "@promptHome": {
-    "description": "Generic prompt to go home, usually will go back to a main menu, or similar",
+  "typingUsers": "{howMany,plural, =1{{user1} is typing...}=2{{user1} and {user2} are typing...}few{{user1}, {user2}, and {user3} are typing...}other{Several people are typing...}}",
+  "@typingUsers": {
+    "description": "Text to display which users are currently typing",
+    "type": "text",
+    "placeholders": {
+      "howMany": {},
+      "user1": {},
+      "user2": {},
+      "user3": {}
+    }
+  },
+  "labelHomeRecentActivity": "Recent Activity",
+  "@labelHomeRecentActivity": {
+    "description": "Short label for header of recent room activity",
     "type": "text",
     "placeholders": {}
   },
-  "promptAccept": "Accept",
-  "@promptAccept": {
-    "description": "Generic prompt to accept something, probably a request of some kind",
+  "labelHomeRoomsList": "Rooms",
+  "@labelHomeRoomsList": {
+    "description": "Short label for header of rooms list",
     "type": "text",
     "placeholders": {}
   },
-  "promptReject": "Reject",
-  "@promptReject": {
-    "description": "Generic prompt to reject something, probably a request of some kind",
+  "labelHomeInvitations": "Invitations",
+  "@labelHomeInvitations": {
+    "description": "Short label for header of invitations list",
     "type": "text",
     "placeholders": {}
   },
-  "promptApply": "Apply",
-  "@promptApply": {
-    "description": "Generic prompt to apply something, probably a setting",
+  "promptAddSpace": "Add Space",
+  "@promptAddSpace": {
+    "description": "Prompt to add a new space",
     "type": "text",
     "placeholders": {}
   },
-  "promptDelete": "Delete",
-  "@promptDelete": {
-    "description": "Generic prompt to delete something",
+  "labelSpaceSettingsGeneral": "General",
+  "@labelSpaceSettingsGeneral": {
+    "description": "Label for general space settings",
     "type": "text",
     "placeholders": {}
   },
-  "notificationModifiersPrivacyEnhanced": "Sent a message",
-  "@notificationModifiersPrivacyEnhanced": {
-    "description": "Placeholder text to put in a notification when the user has privacy enhanced notifications enabled.",
+  "labelSpaceAppearanceSettings": "Appearance",
+  "@labelSpaceAppearanceSettings": {
+    "description": "Label for space appearance settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceEmoticonSettings": "Emoticons",
+  "@labelSpaceEmoticonSettings": {
+    "description": "Label for space emoticon settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceDeveloperSettings": "Developer",
+  "@labelSpaceDeveloperSettings": {
+    "description": "Label for space developer settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsCategorySpace": "Space Settings",
+  "@labelSettingsCategorySpace": {
+    "description": "Label for the overall space settings category",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptEnableEncryptionRoomSettings": "Enable Encryption",
+  "@promptEnableEncryptionRoomSettings": {
+    "description": "Short prompt to enable encryption for a room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "encryptionCannotBeDisabledExplanationRoomSettings": "If enabled, encryption cannot be disabled later",
+  "@encryptionCannotBeDisabledExplanationRoomSettings": {
+    "description": "Explains that encryption cannot be disabled once enabled",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptCreateEmoticonPack": "Create pack",
+  "@promptCreateEmoticonPack": {
+    "description": "Prompt to create a new emoticon pack, for emoji or stickers",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmDeleteEmoticonPack": "Are you sure you want to delete the **{packName}** pack?",
+  "@promptConfirmDeleteEmoticonPack": {
+    "description": "Prompt to confirm deletion of an emoticon pack, supports markdown to emphasise the pack name",
+    "type": "text",
+    "placeholders": {
+      "packName": {}
+    }
+  },
+  "createEmoticonDialogTitle": "Create Emote",
+  "@createEmoticonDialogTitle": {
+    "description": "Title of a dialog that pops up when choosing to create a new emoticon",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmDeleteEmoticon": "Are you sure you want to delete **{emoticon}**?",
+  "@promptConfirmDeleteEmoticon": {
+    "description": "Prompt to confirm deletion of an emoticon pack, supports markdown to emphasise the emote name",
+    "type": "text",
+    "placeholders": {
+      "emoticon": {}
+    }
+  },
+  "promptRenameEmoticon": "Rename emote",
+  "@promptRenameEmoticon": {
+    "description": "Tooltip for button to rename emoticon",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptEmoticonPackName": "Pack name",
+  "@promptEmoticonPackName": {
+    "description": "Prompt for the input of the name of an emoticon pack",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptEmojiName": "Emoji name",
+  "@promptEmojiName": {
+    "description": "Prompt for the input of the name of an emoji",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptStickerName": "Sticker name",
+  "@promptStickerName": {
+    "description": "Prompt for the input of a sticker",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmCreateEmoticon": "Create!",
+  "@promptConfirmCreateEmoticon": {
+    "description": "Prompt to confirm the creation of an Emoticon Pack, Emoji, or Sticker",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsGeneral": "General",
+  "@labelRoomSettingsGeneral": {
+    "description": "Label for general room settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsAppearance": "Appearance",
+  "@labelRoomSettingsAppearance": {
+    "description": "Label for room appearance settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsSecurity": "Security",
+  "@labelRoomSettingsSecurity": {
+    "description": "Label for room security settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsEmoticons": "Emoticons",
+  "@labelRoomSettingsEmoticons": {
+    "description": "Label for room Emoticon settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsDeveloper": "Developer",
+  "@labelRoomSettingsDeveloper": {
+    "description": "Label for room developer settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsCategory": "Room Settings",
+  "@labelRoomSettingsCategory": {
+    "description": "Label for the overall settings category of a room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsTabManageAccounts": "Manage Accounts",
+  "@labelSettingsTabManageAccounts": {
+    "description": "Label for the Manage Accounts settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsTabProfile": "Profile",
+  "@labelSettingsTabProfile": {
+    "description": "Label for the Profile settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsTabSecurity": "Security",
+  "@labelSettingsTabSecurity": {
+    "description": "Label for the Security settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsTabEmoticons": "Emoticons",
+  "@labelSettingsTabEmoticons": {
+    "description": "Label for the Emoticons settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsTabDeveloper": "Developer",
+  "@labelSettingsTabDeveloper": {
+    "description": "Label for the Developer settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsCategoryAccount": "Account",
+  "@labelSettingsCategoryAccount": {
+    "description": "Label for the settings category Account",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsAppGeneral": "General",
+  "@labelSettingsAppGeneral": {
+    "description": "Label for the App General settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsAppAppearance": "Appearance",
+  "@labelSettingsAppAppearance": {
+    "description": "Label for the App Appearance settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsWindowBehaviour": "Window Behaviour",
+  "@labelSettingsWindowBehaviour": {
+    "description": "Label for the Window Behaviour settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsAppAdvanced": "Advanced",
+  "@labelSettingsAppAdvanced": {
+    "description": "Label for the App Advanced settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsAppDeveloperUtils": "Developer Utils",
+  "@labelSettingsAppDeveloperUtils": {
+    "description": "Label for the developer utils settings page, usually hidden unless developer mode is turned on",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsAppTheme": "Theme",
+  "@labelSettingsAppTheme": {
+    "description": "Label for theme section of app appearance",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelThemeDark": "Dark Theme",
+  "@labelThemeDark": {
+    "description": "Label for the dark theme",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelThemeLight": "Light Theme",
+  "@labelThemeLight": {
+    "description": "Label for the light theme",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelAppScale": "App Scale",
+  "@labelAppScale": {
+    "description": "Label for the setting which controls the UI scale of the overall app",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsCategoryApp": "App Settings",
+  "@labelSettingsCategoryApp": {
+    "description": "Label for the settings category of the overall App settings/",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageLoginFailed": "Login Failed...",
+  "@messageLoginFailed": {
+    "description": "Generic text to show that an attempted login has failed",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageLoginError": "An error occured",
+  "@messageLoginError": {
+    "description": "A generic error message to convey that an error occured when attempting to login",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageAlreadyLoggedIn": "You have already logged in to this account",
+  "@messageAlreadyLoggedIn": {
+    "description": "An error message displayed when the user attempts to add an account which has already been logged in to on this device",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptHomeserver": "Homeserver",
+  "@promptHomeserver": {
+    "description": "Placeholder text for homeserver field on login form",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptUsername": "Username",
+  "@promptUsername": {
+    "description": "Placeholder text for username field on login form",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptPassword": "Password",
+  "@promptPassword": {
+    "description": "Placeholder text for password field on login form",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptSubmitLogin": "Login",
+  "@promptSubmitLogin": {
+    "description": "Prompt to submit the username and password, and attempt to login",
     "type": "text",
     "placeholders": {}
   },
@@ -222,280 +560,6 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelSettingsAppGeneral": "General",
-  "@labelSettingsAppGeneral": {
-    "description": "Label for the App General settings page",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelSettingsAppAppearance": "Appearance",
-  "@labelSettingsAppAppearance": {
-    "description": "Label for the App Appearance settings page",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelSettingsWindowBehaviour": "Window Behaviour",
-  "@labelSettingsWindowBehaviour": {
-    "description": "Label for the Window Behaviour settings page",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelSettingsAppAdvanced": "Advanced",
-  "@labelSettingsAppAdvanced": {
-    "description": "Label for the App Advanced settings page",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelSettingsAppDeveloperUtils": "Developer Utils",
-  "@labelSettingsAppDeveloperUtils": {
-    "description": "Label for the developer utils settings page, usually hidden unless developer mode is turned on",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelSettingsAppTheme": "Theme",
-  "@labelSettingsAppTheme": {
-    "description": "Label for theme section of app appearance",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelThemeDark": "Dark Theme",
-  "@labelThemeDark": {
-    "description": "Label for the dark theme",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelThemeLight": "Light Theme",
-  "@labelThemeLight": {
-    "description": "Label for the light theme",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelAppScale": "App Scale",
-  "@labelAppScale": {
-    "description": "Label for the setting which controls the UI scale of the overall app",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelSettingsCategoryApp": "App Settings",
-  "@labelSettingsCategoryApp": {
-    "description": "Label for the settings category of the overall App settings/",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelRoomSettingsGeneral": "General",
-  "@labelRoomSettingsGeneral": {
-    "description": "Label for general room settings",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelRoomSettingsAppearance": "Appearance",
-  "@labelRoomSettingsAppearance": {
-    "description": "Label for room appearance settings",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelRoomSettingsSecurity": "Security",
-  "@labelRoomSettingsSecurity": {
-    "description": "Label for room security settings",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelRoomSettingsEmoticons": "Emoticons",
-  "@labelRoomSettingsEmoticons": {
-    "description": "Label for room Emoticon settings",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelRoomSettingsDeveloper": "Developer",
-  "@labelRoomSettingsDeveloper": {
-    "description": "Label for room developer settings",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelRoomSettingsCategory": "Room Settings",
-  "@labelRoomSettingsCategory": {
-    "description": "Label for the overall settings category of a room",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptEnableEncryptionRoomSettings": "Enable Encryption",
-  "@promptEnableEncryptionRoomSettings": {
-    "description": "Short prompt to enable encryption for a room",
-    "type": "text",
-    "placeholders": {}
-  },
-  "encryptionCannotBeDisabledExplanationRoomSettings": "If enabled, encryption cannot be disabled later",
-  "@encryptionCannotBeDisabledExplanationRoomSettings": {
-    "description": "Explains that encryption cannot be disabled once enabled",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptCreateEmoticonPack": "Create pack",
-  "@promptCreateEmoticonPack": {
-    "description": "Prompt to create a new emoticon pack, for emoji or stickers",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptConfirmDeleteEmoticonPack": "Are you sure you want to delete the **{packName}** pack?",
-  "@promptConfirmDeleteEmoticonPack": {
-    "description": "Prompt to confirm deletion of an emoticon pack, supports markdown to emphasise the pack name",
-    "type": "text",
-    "placeholders": {
-      "packName": {}
-    }
-  },
-  "createEmoticonDialogTitle": "Create Emote",
-  "@createEmoticonDialogTitle": {
-    "description": "Title of a dialog that pops up when choosing to create a new emoticon",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptConfirmDeleteEmoticon": "Are you sure you want to delete **{emoticon}**?",
-  "@promptConfirmDeleteEmoticon": {
-    "description": "Prompt to confirm deletion of an emoticon pack, supports markdown to emphasise the emote name",
-    "type": "text",
-    "placeholders": {
-      "emoticon": {}
-    }
-  },
-  "promptRenameEmoticon": "Rename emote",
-  "@promptRenameEmoticon": {
-    "description": "Tooltip for button to rename emoticon",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptEmoticonPackName": "Pack name",
-  "@promptEmoticonPackName": {
-    "description": "Prompt for the input of the name of an emoticon pack",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptEmojiName": "Emoji name",
-  "@promptEmojiName": {
-    "description": "Prompt for the input of the name of an emoji",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptStickerName": "Sticker name",
-  "@promptStickerName": {
-    "description": "Prompt for the input of a sticker",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptConfirmCreateEmoticon": "Create!",
-  "@promptConfirmCreateEmoticon": {
-    "description": "Prompt to confirm the creation of an Emoticon Pack, Emoji, or Sticker",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelSettingsTabManageAccounts": "Manage Accounts",
-  "@labelSettingsTabManageAccounts": {
-    "description": "Label for the Manage Accounts settings",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelSettingsTabProfile": "Profile",
-  "@labelSettingsTabProfile": {
-    "description": "Label for the Profile settings page",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelSettingsTabSecurity": "Security",
-  "@labelSettingsTabSecurity": {
-    "description": "Label for the Security settings page",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelSettingsTabEmoticons": "Emoticons",
-  "@labelSettingsTabEmoticons": {
-    "description": "Label for the Emoticons settings page",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelSettingsTabDeveloper": "Developer",
-  "@labelSettingsTabDeveloper": {
-    "description": "Label for the Developer settings page",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelSettingsCategoryAccount": "Account",
-  "@labelSettingsCategoryAccount": {
-    "description": "Label for the settings category Account",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelSpaceSettingsGeneral": "General",
-  "@labelSpaceSettingsGeneral": {
-    "description": "Label for general space settings",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelSpaceAppearanceSettings": "Appearance",
-  "@labelSpaceAppearanceSettings": {
-    "description": "Label for space appearance settings",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelSpaceEmoticonSettings": "Emoticons",
-  "@labelSpaceEmoticonSettings": {
-    "description": "Label for space emoticon settings",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelSpaceDeveloperSettings": "Developer",
-  "@labelSpaceDeveloperSettings": {
-    "description": "Label for space developer settings",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelSettingsCategorySpace": "Space Settings",
-  "@labelSettingsCategorySpace": {
-    "description": "Label for the overall space settings category",
-    "type": "text",
-    "placeholders": {}
-  },
-  "messageLoginFailed": "Login Failed...",
-  "@messageLoginFailed": {
-    "description": "Generic text to show that an attempted login has failed",
-    "type": "text",
-    "placeholders": {}
-  },
-  "messageLoginError": "An error occured",
-  "@messageLoginError": {
-    "description": "A generic error message to convey that an error occured when attempting to login",
-    "type": "text",
-    "placeholders": {}
-  },
-  "messageAlreadyLoggedIn": "You have already logged in to this account",
-  "@messageAlreadyLoggedIn": {
-    "description": "An error message displayed when the user attempts to add an account which has already been logged in to on this device",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptHomeserver": "Homeserver",
-  "@promptHomeserver": {
-    "description": "Placeholder text for homeserver field on login form",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptUsername": "Username",
-  "@promptUsername": {
-    "description": "Placeholder text for username field on login form",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptPassword": "Password",
-  "@promptPassword": {
-    "description": "Placeholder text for password field on login form",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptSubmitLogin": "Login",
-  "@promptSubmitLogin": {
-    "description": "Prompt to submit the username and password, and attempt to login",
-    "type": "text",
-    "placeholders": {}
-  },
   "messageWaitingOtherDeviceToAccept": "Waiting for the other device to accept the request",
   "@messageWaitingOtherDeviceToAccept": {
     "description": "Message to show while waiting for another device to accept a matrix session verification request",
@@ -534,98 +598,81 @@
     "type": "text",
     "placeholders": {}
   },
-  "fileDragDropPrompt": "Drop a file to upload...",
-  "@fileDragDropPrompt": {
-    "description": "Text that is shown when a user is dragging a file",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptAddSpace": "Add Space",
-  "@promptAddSpace": {
-    "description": "Prompt to add a new space",
-    "type": "text",
-    "placeholders": {}
-  },
-  "messageEditedMarker": "(Edited)",
-  "@messageEditedMarker": {
-    "description": "Short text to mark that a message has been edited",
-    "type": "text",
-    "placeholders": {}
-  },
-  "sendEncryptedMessagePrompt": "Send an encrypted message",
-  "@sendEncryptedMessagePrompt": {
-    "description": "Placeholder text for message input in an encrypted room",
-    "type": "text",
-    "placeholders": {}
-  },
-  "sendUnencryptedMessagePrompt": "Send a message",
-  "@sendUnencryptedMessagePrompt": {
-    "description": "Placeholder text for message input in an unencrypted room",
-    "type": "text",
-    "placeholders": {}
-  },
-  "typingUsers": "{howMany,plural, =1{{user1} is typing...}=2{{user1} and {user2} are typing...}few{{user1}, {user2}, and {user3} are typing...}other{Several people are typing...}}",
-  "@typingUsers": {
-    "description": "Text to display which users are currently typing",
-    "type": "text",
-    "placeholders": {
-      "howMany": {},
-      "user1": {},
-      "user2": {},
-      "user3": {}
-    }
-  },
-  "messagePlaceholderSticker": "{user} sent a sticker",
-  "@messagePlaceholderSticker": {
-    "description": "Message body for when a user sends a sticker",
-    "type": "text",
-    "placeholders": {
-      "user": {}
-    }
-  },
-  "messagePlaceholderUserCreatedRoom": "{user} created the room!",
-  "@messagePlaceholderUserCreatedRoom": {
-    "description": "Message body for when a user created the room",
-    "type": "text",
-    "placeholders": {
-      "user": {}
-    }
-  },
-  "messagePlaceholderUserJoinedRoom": "{user} joined the room!",
-  "@messagePlaceholderUserJoinedRoom": {
-    "description": "Message body for when a user joins the room",
-    "type": "text",
-    "placeholders": {
-      "user": {}
-    }
-  },
-  "messagePlaceholderUserLeftRoom": "{user} left the room",
-  "@messagePlaceholderUserLeftRoom": {
-    "description": "Message body for when a user leaves the room",
-    "type": "text",
-    "placeholders": {
-      "user": {}
-    }
-  },
-  "messagePlaceholderUserUpdatedAvatar": "{user} updated their avatar",
-  "@messagePlaceholderUserUpdatedAvatar": {
-    "description": "Message body for when a user updates their avatar",
-    "type": "text",
-    "placeholders": {
-      "user": {}
-    }
-  },
-  "messagePlaceholderUserUpdatedName": "{user} updated their display name",
-  "@messagePlaceholderUserUpdatedName": {
-    "description": "Message body for when a user updates their display name",
-    "type": "text",
-    "placeholders": {
-      "user": {}
-    }
-  },
   "notificationReceivedMessagePlaceholder": "Sent a message",
   "@notificationReceivedMessagePlaceholder": {
     "description": "Placeholder text for the body of a notification, when the message either doesnt contain a displayable body, or the body has been hidden by notification settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptReply": "Reply",
+  "@promptReply": {
+    "description": "Generic prompt to reply to a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptAddReaction": "Add Reaction",
+  "@promptAddReaction": {
+    "description": "Generic prompt to add reaction to a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptEdit": "Edit",
+  "@promptEdit": {
+    "description": "Generic prompt to edit something",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptOptions": "Options",
+  "@promptOptions": {
+    "description": "Generic prompt for options, generally would be used to open a settings menu, extra details or similar",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptSettings": "Settings",
+  "@promptSettings": {
+    "description": "Generic prompt for settings, usually will open a settings menu or similar",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptHome": "Home",
+  "@promptHome": {
+    "description": "Generic prompt to go home, usually will go back to a main menu, or similar",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptAccept": "Accept",
+  "@promptAccept": {
+    "description": "Generic prompt to accept something, probably a request of some kind",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptReject": "Reject",
+  "@promptReject": {
+    "description": "Generic prompt to reject something, probably a request of some kind",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptApply": "Apply",
+  "@promptApply": {
+    "description": "Generic prompt to apply something, probably a setting",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptDelete": "Delete",
+  "@promptDelete": {
+    "description": "Generic prompt to delete something",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptJoin": "Join",
+  "@promptJoin": {
+    "description": "Generic prompt to join a room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "notificationModifiersPrivacyEnhanced": "Sent a message",
+  "@notificationModifiersPrivacyEnhanced": {
+    "description": "Placeholder text to put in a notification when the user has privacy enhanced notifications enabled.",
     "type": "text",
     "placeholders": {}
   }
