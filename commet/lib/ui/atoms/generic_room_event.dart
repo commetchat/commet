@@ -21,12 +21,15 @@ class GenericRoomEvent extends StatelessWidget {
               children: [
                 Padding(
                   padding: const EdgeInsets.fromLTRB(44, 0, 8, 0),
-                  child: Icon(icon),
+                  child: Icon(
+                    icon,
+                    size: 20,
+                  ),
                 ),
                 Flexible(
                   child: Row(
                     children: [
-                      Flexible(child: tiamat.Text.label(text)),
+                      Flexible(child: tiamat.Text.labelLow(text)),
                     ],
                   ),
                 )

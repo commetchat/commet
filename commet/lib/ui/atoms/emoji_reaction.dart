@@ -20,6 +20,8 @@ class EmojiReaction extends StatelessWidget {
   final int numReactions;
   final bool highlighted;
 
+  BorderRadius get borderRadius => BorderRadius.circular(12);
+
   @override
   Widget build(BuildContext context) {
     var bgColor = material.Theme.of(context).colorScheme.primary;
@@ -31,14 +33,14 @@ class EmojiReaction extends StatelessWidget {
 
     return material.InkWell(
       onTap: () => onTapped?.call(emoji),
-      borderRadius: BorderRadius.circular(5),
+      borderRadius: borderRadius,
       child: DecoratedBox(
         decoration: BoxDecoration(
             color: bgColor.withAlpha(70),
             border: Border.all(color: bgColor, width: 1),
-            borderRadius: BorderRadius.circular(5)),
+            borderRadius: borderRadius),
         child: Padding(
-          padding: const EdgeInsets.all(3.0),
+          padding: const EdgeInsets.fromLTRB(5, 3, 5, 3),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -49,7 +51,7 @@ class EmojiReaction extends StatelessWidget {
               const SizedBox(
                 width: 5,
               ),
-              tiamat.Text.label(numReactions.toString())
+              tiamat.Text.label(numReactions.toString()),
             ],
           ),
         ),
