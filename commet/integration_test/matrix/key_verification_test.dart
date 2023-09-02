@@ -36,8 +36,11 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    var button =
-        find.widgetWithText(ElevatedButton, CommonStrings.promptAccept);
+    var button = find.descendant(
+        of: find.byType(MatrixVerificationPage),
+        matching:
+            find.widgetWithText(ElevatedButton, CommonStrings.promptAccept));
+
     await tester.tap(button);
 
     await tester.waitFor(() => find
