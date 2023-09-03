@@ -77,7 +77,7 @@ dev_dependencies:
   integration_test:
     sdk: flutter
 
-  flutter_launcher_icons:
+  flutter_launcher_icons: "^0.13.1"
   flutter_lints: ^2.0.0
 
 flutter_intl:
@@ -86,21 +86,24 @@ flutter_intl:
   arb_dir: assets/l10n
   output_dir: integration_test/generated
 
-flutter_icons:
-  android: "launcher_icon"
-  ios: true
-  image_path: "assets/images/app_icon/icon_square_512.png"
-  min_sdk_android: 21 # android min sdk min:16, default 21
+flutter_launcher_icons:
+  image_path: "assets/images/app_icon/app_icon_filled.png"
   web:
     generate: true
-    image_path: "assets/images/app_icon/icon_circle_512.png"
+    image_path: "assets/images/app_icon/app_icon_transparent_cropped.png"
   windows:
     generate: true
-    image_path: "assets/images/app_icon/icon_circle_512.png"
+    image_path: "assets/images/app_icon/app_icon_rounded.png"
     icon_size: 48 # min:48, max:256, default: 48
   macos:
     generate: true
-    image_path: "assets/images/app_icon/icon_square_512.png"
+    image_path: "assets/images/app_icon/app_icon_rounded.png"
+  ios:
+  remove_alpha_ios: true
+  android: true
+  min_sdk_android: 16 # android min sdk min:16, default 21
+  adaptive_icon_background: "#534CDD"
+  adaptive_icon_foreground: "assets/images/app_icon/app_icon_transparent.png"
 
 
 flutter:
