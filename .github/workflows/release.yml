@@ -36,10 +36,15 @@ jobs:
       - name: Build Windows App
         run: |
           cd .\commet
-          flutter build windows --dart-define BUILD_MODE=release --dart-define PLATFORM=windows --release
+          flutter build windows --dart-define BUILD_MODE=release --dart-define PLATFORM=windows --release --dart-define GIT_HASH=${{ github.sha }} --dart-define VERSION_TAG=${{ github.event.release.tag_name || 'v0.0.0' }}
 
       - name: Include libolm
-        run: move .\olm\build\Debug\olm.dll .\commet\commet\build\windows\runner\Release\libolm.dll
+        run: |
+          dir
+          dir .\olm
+          dir .\commet
+          dir .\commet\commet\build\windows
+          move .\olm\build\Debug\olm.dll .\commet\commet\build\windows\runner\Release\libolm.dll
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
