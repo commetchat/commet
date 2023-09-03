@@ -31,7 +31,7 @@ jobs:
       - name: Code Generation
         run: |
           cd .\commet
-          .\scripts\codegen.sh
+          .\scripts\codegen.bat
 
       - name: Build Windows App
         run: |
