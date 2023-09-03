@@ -2,9 +2,9 @@
     package="com.example.commet">
     <uses-permission android:name="android.permission.INTERNET"/>
    <application
-        android:label="commet"
+        android:label="Commet"
         android:name="${applicationName}"
-        android:icon="@mipmap/launcher_icon">
+        android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
             android:exported="true"
