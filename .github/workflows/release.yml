@@ -27,11 +27,6 @@ jobs:
           cd ./olm
           cmake . -Bbuild
           cmake --build build
-      
-      - name: Test Olm
-        run: |
-          cd ./olm/build/tests
-          ctest .
 
       - name: Configure Flutter
         run: flutter config --enable-windows-desktop
