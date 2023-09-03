@@ -1,10 +1,12 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/ui/pages/login/login_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:tiamat/atoms/tile.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
+import 'package:tiamat/tiamat.dart' as tiamat;
 
 @UseCase(name: 'Login Page', type: LoginPageView)
 @Deprecated("widgetbook")
@@ -107,78 +109,129 @@ class _LoginPageViewState extends State<LoginPageView> {
         color: Theme.of(context).extension<ExtraColors>()!.surfaceLow4,
         child: Padding(
           padding: const EdgeInsets.all(8),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 500),
-              child: Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(13),
-                    border: Border.all(
-                        color:
-                            Theme.of(context).extension<ExtraColors>()!.outline,
-                        width: 1),
-                    boxShadow: [
-                      BoxShadow(
-                          blurRadius: 50,
-                          color: Theme.of(context).shadowColor.withAlpha(50))
-                    ]),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(13),
-                  child: Tile.low2(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(mainAxisSize: MainAxisSize.min, children: [
-                        const SizedBox(height: 16),
-                        TextField(
-                          autocorrect: false,
-                          controller: _homeserverTextField,
-                          readOnly: _loading,
-                          decoration: InputDecoration(
-                            prefixText: 'https://',
-                            border: const OutlineInputBorder(),
-                            labelText: promptHomeserver,
-                          ),
+          child: Stack(
+            children: [
+              Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 500),
+                  child: Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(13),
+                        border: Border.all(
+                            color: Theme.of(context)
+                                .extension<ExtraColors>()!
+                                .outline,
+                            width: 1),
+                        boxShadow: [
+                          BoxShadow(
+                              blurRadius: 50,
+                              color:
+                                  Theme.of(context).shadowColor.withAlpha(50))
+                        ]),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(13),
+                      child: Tile.low2(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child:
+                              Column(mainAxisSize: MainAxisSize.min, children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                appIcon(context),
+                                const SizedBox(
+                                  width: 8,
+                                ),
+                                appName(),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            homeserverEntry(),
+                            const SizedBox(height: 16),
+                            usernameEntry(),
+                            const SizedBox(height: 16),
+                            passwordEntry(),
+                            const SizedBox(height: 16),
+                            loginButton(),
+                          ]),
                         ),
-                        const SizedBox(height: 16),
-                        TextField(
-                          autocorrect: false,
-                          controller: _usernameTextField,
-                          readOnly: _loading,
-                          decoration: InputDecoration(
-                            border: const OutlineInputBorder(),
-                            labelText: promptUsername,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        TextField(
-                          autocorrect: false,
-                          controller: _passwordTextField,
-                          obscureText: true,
-                          readOnly: _loading,
-                          decoration: InputDecoration(
-                            border: const OutlineInputBorder(),
-                            labelText: promptPassword,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        SizedBox(
-                          width: double.infinity,
-                          height: 50,
-                          child: ElevatedButton(
-                            onPressed: doLogin,
-                            child: _loading
-                                ? const LinearProgressIndicator()
-                                : Text(promptSubmitLogin),
-                          ),
-                        ),
-                      ]),
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
+            ],
           ),
         ),
+      ),
+    );
+  }
+
+  Text appName() {
+    return Text(
+      "Commet",
+      style: TextStyle(fontFamily: 'Jellee', fontSize: 30),
+    );
+  }
+
+  SizedBox loginButton() {
+    return SizedBox(
+      width: double.infinity,
+      height: 50,
+      child: tiamat.Button(
+        isLoading: _loading,
+        text: promptSubmitLogin,
+        onTap: doLogin,
+      ),
+    );
+  }
+
+  TextField passwordEntry() {
+    return TextField(
+      autocorrect: false,
+      controller: _passwordTextField,
+      obscureText: true,
+      readOnly: _loading,
+      decoration: InputDecoration(
+        border: const OutlineInputBorder(),
+        labelText: promptPassword,
+      ),
+    );
+  }
+
+  TextField usernameEntry() {
+    return TextField(
+      autocorrect: false,
+      controller: _usernameTextField,
+      readOnly: _loading,
+      decoration: InputDecoration(
+        border: const OutlineInputBorder(),
+        labelText: promptUsername,
+      ),
+    );
+  }
+
+  TextField homeserverEntry() {
+    return TextField(
+      autocorrect: false,
+      controller: _homeserverTextField,
+      readOnly: _loading,
+      decoration: InputDecoration(
+        prefixText: 'https://',
+        border: const OutlineInputBorder(),
+        labelText: promptHomeserver,
+      ),
+    );
+  }
+
+  SizedBox appIcon(BuildContext context) {
+    return SizedBox(
+      width: 50,
+      height: 50,
+      child: SvgPicture.asset(
+        "assets/images/app_icon/icon.svg",
+        theme: SvgTheme(currentColor: Theme.of(context).colorScheme.onPrimary),
       ),
     );
   }
