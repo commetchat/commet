@@ -1,0 +1,26 @@
+on: push
+name: release
+
+env:
+  PROJECT_PATH: commet
+
+jobs:
+  release-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: 'true'
+        
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2.8.0
+        with:
+          flutter-version: '3.13.1'
+          channel: 'stable'
+
+      - name: Setup CMake
+        uses: threeal/cmake-action@v1.3.0
+
+      - name: Clone Olm
+        run: git clone https://gitlab.matrix.org/matrix-org/olm.git
