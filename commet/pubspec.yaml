@@ -118,6 +118,11 @@ flutter:
   shaders:
     - assets/shader/texture_coordinate.frag
 
+  fonts:
+    - family: Jellee
+      fonts: 
+        - asset: assets/font/jellee/Jellee-Bold.ttf
+
 msix_config:
   display_name: Commet
   identity_name: chat.commet.app.windows-a33bc9ba
