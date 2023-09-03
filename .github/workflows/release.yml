@@ -22,8 +22,27 @@ jobs:
       - name: Clone Olm
         run: git clone https://gitlab.matrix.org/matrix-org/olm.git
 
-      - name: Check Code Style
+      - name: Build Olm
         run: |
           cd ./olm
           cmake . -Bbuild
           cmake --build build
+      
+      - name: Test Olm
+        run: |
+          cd ./olm/build/tests
+          ctest .
+
+      - name: Configure Flutter
+        run: flutter config --enable-windows-desktop
+        
+      - name: Code Generation
+        shell: bash
+        run: |
+          cd $PROJECT_PATH
+          scripts/codegen.sh
+
+      - name: Build Windows App
+        run: |
+          cd $PROJECT_PATH
+          flutter build windows --dart-define BUILD_MODE=release --dart-define PLATFORM=windows --release
