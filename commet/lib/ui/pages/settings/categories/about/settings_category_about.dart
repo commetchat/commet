@@ -1,4 +1,5 @@
 import 'package:commet/config/build_config.dart';
+import 'package:commet/main.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
 import 'package:commet/ui/pages/settings/settings_tab.dart';
 import 'package:commet/utils/link_utils.dart';
@@ -10,6 +11,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tiamat/atoms/panel.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;
+// ignore: depend_on_referenced_packages
+import 'package:olm/olm.dart' as olm;
 
 class SettingsCategoryAbout implements SettingsCategory {
   @override
@@ -93,6 +96,8 @@ class _AppInfoState extends State<_AppInfo> {
                                   deviceInfo!.data["version"]!.toString())
                           ],
                         ),
+                      if (preferences.developerMode)
+                        tiamat.Text.labelLow(getOlmVersion())
                     ],
                   ),
                   Padding(
@@ -118,6 +123,15 @@ class _AppInfoState extends State<_AppInfo> {
             )),
       ],
     );
+  }
+
+  String getOlmVersion() {
+    try {
+      var version = olm.get_library_version();
+      return "Olm: ${version.join(".")}";
+    } catch (Exception) {
+      return "No Olm version found";
+    }
   }
 
   copySystemInfo() {
