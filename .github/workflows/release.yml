@@ -43,11 +43,11 @@ jobs:
           dir
           dir .\olm
           dir .\commet
-          dir .\commet\commet\build\windows
-          move .\olm\build\Debug\olm.dll .\commet\commet\build\windows\runner\Release\libolm.dll
+          dir .\commet\build\windows
+          move .\olm\build\Debug\olm.dll .\commet\build\windows\runner\Release\libolm.dll
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
           name: build
-          path: .\commet\commet\build\windows\runner\Release
+          path: .\commet\build\windows\runner\Release
