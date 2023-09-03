@@ -19,8 +19,11 @@ jobs:
           flutter-version: '3.13.1'
           channel: 'stable'
 
-      - name: Setup CMake
-        uses: threeal/cmake-action@v1.3.0
-
       - name: Clone Olm
         run: git clone https://gitlab.matrix.org/matrix-org/olm.git
+
+      - name: Check Code Style
+        run: |
+          cd ./olm
+          cmake . -Bbuild
+          cmake --build build
