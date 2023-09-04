@@ -25,6 +25,10 @@ class MatrixSessionView extends StatelessWidget {
   final Function? beginVerification;
   final Function? removeSession;
 
+  String get promptMatrixVerifySession => Intl.message("Verify",
+      desc: "Text on the button to verify a session",
+      name: "promptMatrixVerifySession");
+
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(
@@ -107,7 +111,7 @@ class MatrixSessionView extends StatelessWidget {
       children: [
         if (verified == false)
           tiamat.Button.secondary(
-            text: "Verify",
+            text: promptMatrixVerifySession,
             onTap: () => beginVerification?.call(),
           ),
         if (!isThisDevice)

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class UserProfileView extends StatefulWidget {
@@ -25,6 +26,10 @@ class UserProfileView extends StatefulWidget {
 
 class _UserProfileViewState extends State<UserProfileView> {
   bool isLoadingDirectMessage = false;
+
+  String get promptOpenDirectMessage => Intl.message("Message",
+      desc: "Prompt on the button to open a direct message with another user",
+      name: "promptOpenDirectMessage");
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +67,7 @@ class _UserProfileViewState extends State<UserProfileView> {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         tiamat.Button(
-          text: "Message",
+          text: promptOpenDirectMessage,
           onTap: clickMessageButton,
           isLoading: isLoadingDirectMessage,
         ),

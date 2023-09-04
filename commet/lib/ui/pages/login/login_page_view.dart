@@ -169,7 +169,7 @@ class _LoginPageViewState extends State<LoginPageView> {
   }
 
   Text appName() {
-    return Text(
+    return const Text(
       "Commet",
       style: TextStyle(fontFamily: 'Jellee', fontSize: 30),
     );

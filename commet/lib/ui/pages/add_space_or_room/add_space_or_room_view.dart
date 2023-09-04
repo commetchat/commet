@@ -642,7 +642,7 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: tiamat.Button(
-            text: "Add Selected Rooms",
+            text: promptAddSelectedRooms,
             onTap: () {
               if (selectedRoomsState.currentState != null) {
                 widget.onRoomsSelected?.call(selectedRoomsState

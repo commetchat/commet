@@ -1,7 +1,9 @@
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/pages/settings/categories/account/security/matrix/session/matrix_session.dart';
+import 'package:commet/utils/common_strings.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:matrix/matrix.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -19,6 +21,46 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
   bool crossSigningEnabled = false;
   bool? messageBackupEnabled;
   List<Device>? devices;
+
+  String get labelMatrixCrossSigning => Intl.message("Cross signing",
+      desc: "Title label for matrix cross signing",
+      name: "labelMatrixCrossSigning");
+
+  String get labelMatrixCrossSigningAndBackup => Intl.message(
+      "Cross Signing & Backup",
+      desc: "Header label for matrix cross signing and message backup section",
+      name: "labelMatrixCrossSigningAndBackup");
+
+  String get labelMatrixAccountSessions => Intl.message("Sessions",
+      desc: "Title label for account sessions",
+      name: "labelMatrixAccountSessions");
+
+  String get labelMatrixCrossSigningExplanation =>
+      Intl.message("Setup to verify and keep track of all your sessions",
+          desc: "Explains what matrix cross signing does",
+          name: "labelMatrixCrossSigningExplanation");
+
+  String get labelMatrixResetCrossSigningTitle =>
+      Intl.message("Reset cross signing",
+          desc: "Title for the popup dialog when resetting cross signing",
+          name: "labelMatrixResetCrossSigningTitle");
+
+  String get labelMatrixMessageBackup => Intl.message("Message backup",
+      desc: "TItle label for matrix message backup settings",
+      name: "labelMatrixMessageBackup");
+
+  String get labelMatrixMessageBackupExplanation => Intl.message(
+      "Maintains a backup of your message history, in case you lose all your sessions. Your messages will be encrypted before uploading",
+      desc: "Explains what matrix message backup does",
+      name: "labelMatrixMessageBackupExplanation");
+
+  String get promptSetupMatrixMessageBackup => Intl.message("Setup backup",
+      desc: "Text on the button to begin the setup process for message backup",
+      name: "promptSetupMatrixMessageBackup");
+
+  String get labelRestoreMatrixBackupTitle => Intl.message("Restore backup",
+      desc: "Title of the popup dialog for restoring message backup",
+      name: "labelRestoreMatrixBackupTitle");
 
   @override
   void initState() {
@@ -62,7 +104,7 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
 
   Panel sessionsPanel() {
     return Panel(
-      header: "Sessions",
+      header: labelMatrixAccountSessions,
       mode: TileType.surfaceLow2,
       child: devices == null
           ? const CircularProgressIndicator()
@@ -90,7 +132,7 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
 
   Panel crossSigningPanel() {
     return Panel(
-        header: "Cross Signing & Backup",
+        header: labelMatrixCrossSigningAndBackup,
         mode: TileType.surfaceLow2,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
@@ -108,14 +150,13 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const Flexible(
+        Flexible(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              tiamat.Text.label("Cross Signing"),
-              tiamat.Text.labelLow(
-                  "Setup to verify and keep track of all your sessions")
+              tiamat.Text.label(labelMatrixCrossSigning),
+              tiamat.Text.labelLow(labelMatrixCrossSigningExplanation)
             ],
           ),
         ),
@@ -123,7 +164,7 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
             padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),
             child: crossSigningEnabled
                 ? tiamat.Button.danger(
-                    text: "Reset",
+                    text: CommonStrings.promptReset,
                     onTap: () => AdaptiveDialog.show(context,
                         builder: (_) => MatrixCrossSigningPage(
                               client: widget.client,
@@ -131,17 +172,17 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
                               onComplete: checkState,
                             ),
                         dismissible: true,
-                        title: "Reset Cross Signing"),
+                        title: labelMatrixResetCrossSigningTitle),
                   )
                 : tiamat.Button.secondary(
-                    text: "Enable",
+                    text: CommonStrings.promptEnable,
                     onTap: () => AdaptiveDialog.show(context,
                         builder: (_) => MatrixCrossSigningPage(
                               client: widget.client,
                               onComplete: checkState,
                             ),
                         dismissible: true,
-                        title: "Cross Signing"),
+                        title: labelMatrixCrossSigning),
                   )),
       ],
     );
@@ -151,14 +192,13 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const Flexible(
+        Flexible(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              tiamat.Text.label("Message Backup"),
-              tiamat.Text.labelLow(
-                  "Maintains a backup of your message history, in case you lose all your sessions. Your messages will be encrypted before uploading")
+              tiamat.Text.label(labelMatrixMessageBackup),
+              tiamat.Text.labelLow(labelMatrixMessageBackupExplanation)
             ],
           ),
         ),
@@ -166,7 +206,7 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
             padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),
             child: messageBackupEnabled == true
                 ? tiamat.Button.secondary(
-                    text: "Restore",
+                    text: CommonStrings.promptRestore,
                     onTap: () => AdaptiveDialog.show(context,
                         builder: (_) => MatrixCrossSigningPage(
                               client: widget.client,
@@ -174,11 +214,11 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
                               mode: MatrixCrossSigningMode.restoreBackup,
                             ),
                         dismissible: true,
-                        title: "Restore Backup"),
+                        title: labelRestoreMatrixBackupTitle),
                   )
                 : messageBackupEnabled == false
                     ? tiamat.Button.secondary(
-                        text: "Enable",
+                        text: CommonStrings.promptEnable,
                         onTap: () => AdaptiveDialog.show(context,
                             builder: (_) => MatrixCrossSigningPage(
                                   client: widget.client,
@@ -186,7 +226,7 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
                                   mode: MatrixCrossSigningMode.enableBackup,
                                 ),
                             dismissible: true,
-                            title: "Setup Backup"),
+                            title: promptSetupMatrixMessageBackup),
                       )
                     : const CircularProgressIndicator())
       ],
