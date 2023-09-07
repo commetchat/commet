@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-09-08T03:31:34.427295",
+  "@@last_modified": "2023-09-07T18:08:23.068466",
   "promptReply": "Reply",
   "@promptReply": {
     "description": "Generic prompt to reply to a message",
@@ -660,8 +660,8 @@
     "type": "text",
     "placeholders": {}
   },
-  "To unlock your old messages, please enter your recovery key that has been generated in a previous session. Your recovery key is NOT your password.": "To unlock your old messages, please enter your recovery key that has been generated in a previous session. Your recovery key is NOT your password.",
-  "@To unlock your old messages, please enter your recovery key that has been generated in a previous session. Your recovery key is NOT your password.": {
+  "labelMatrixRecoveryKeyPromptExplanation": "To unlock your old messages, please enter your recovery key that has been generated in a previous session. Your recovery key is NOT your password.",
+  "@labelMatrixRecoveryKeyPromptExplanation": {
     "description": "Shown when a user is attempting to recover their old messages, explains that they need the recovery key",
     "type": "text",
     "placeholders": {}
