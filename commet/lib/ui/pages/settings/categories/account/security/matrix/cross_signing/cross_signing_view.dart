@@ -180,6 +180,7 @@ class _MatrixCrossSigningViewState extends State<MatrixCrossSigningView> {
 
   String get labelMatrixRecoveryKeyPromptExplanation => Intl.message(
       "To unlock your old messages, please enter your recovery key that has been generated in a previous session. Your recovery key is NOT your password.",
+      name: "labelMatrixRecoveryKeyPromptExplanation",
       desc:
           "Shown when a user is attempting to recover their old messages, explains that they need the recovery key");
 
