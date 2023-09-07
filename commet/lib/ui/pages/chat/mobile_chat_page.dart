@@ -12,6 +12,7 @@ import 'package:commet/ui/organisms/home_screen/home_screen.dart';
 import 'package:commet/ui/pages/chat/chat_page.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart' as material;
+import 'package:intl/intl.dart';
 import 'package:tiamat/config/config.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -48,6 +49,10 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
   double height = -1;
 
   static const Key directRoomsList = ValueKey("MOBILE_DIRECT_ROOMS_LIST");
+
+  String get directMessagesListHeaderMobile => Intl.message("Direct Messages",
+      desc: "The header for the direct messages list on desktop",
+      name: "directMessagesListHeaderMobile");
 
   @override
   void initState() {
@@ -165,9 +170,9 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: tiamat.Text.labelLow("Direct Messages"),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: tiamat.Text.labelLow(directMessagesListHeaderMobile),
                 ),
                 Flexible(
                   child: DirectMessageList(

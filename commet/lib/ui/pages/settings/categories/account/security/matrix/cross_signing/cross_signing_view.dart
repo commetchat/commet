@@ -497,7 +497,7 @@ class _MatrixCrossSigningViewState extends State<MatrixCrossSigningView> {
                     labelMatrixSecurityPhraseShouldNotBePassword),
               ),
               Padding(
-                padding: EdgeInsets.fromLTRB(0, 0, 0, 4),
+                padding: const EdgeInsets.fromLTRB(0, 0, 0, 4),
                 child: tiamat.Text.labelLow(labelMatrixPromptPassphrase),
               ),
               tiamat.TextInput(

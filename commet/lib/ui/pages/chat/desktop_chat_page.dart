@@ -13,6 +13,7 @@ import 'package:commet/ui/organisms/side_navigation_bar.dart';
 import 'package:commet/ui/pages/chat/chat_page.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -31,6 +32,10 @@ class DesktopChatPageView extends StatefulWidget {
 
 class _DesktopChatPageViewState extends State<DesktopChatPageView> {
   static const Key homeRoomsList = ValueKey("DESKTOP_HOME_ROOMS_LIST");
+
+  String get directMessagesListHeaderDesktop => Intl.message("Direct Messages",
+      desc: "The header for the direct messages list on desktop",
+      name: "directMessagesListHeaderDesktop");
 
   @override
   Widget build(BuildContext context) {
@@ -100,9 +105,10 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: tiamat.Text.labelLow("Direct Messages"),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child:
+                        tiamat.Text.labelLow(directMessagesListHeaderDesktop),
                   ),
                   Flexible(
                     child: DirectMessageList(

@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-09-05T08:39:34.946501",
+  "@@last_modified": "2023-09-08T03:31:34.427295",
   "promptReply": "Reply",
   "@promptReply": {
     "description": "Generic prompt to reply to a message",
@@ -300,6 +300,18 @@
     "type": "text",
     "placeholders": {}
   },
+  "directMessagesListHeaderMobile": "Direct Messages",
+  "@directMessagesListHeaderMobile": {
+    "description": "The header for the direct messages list on desktop",
+    "type": "text",
+    "placeholders": {}
+  },
+  "directMessagesListHeaderDesktop": "Direct Messages",
+  "@directMessagesListHeaderDesktop": {
+    "description": "The header for the direct messages list on desktop",
+    "type": "text",
+    "placeholders": {}
+  },
   "labelChatPageFileTooLarge": "This file is too large to upload!",
   "@labelChatPageFileTooLarge": {
     "description": "Text that is shown when the user attempts to upload a file that is greater than the allowed size",
@@ -311,6 +323,56 @@
     "description": "Title for the dialog that is shown when the user attempts to upload a file that is greater than the allowed size",
     "type": "text",
     "placeholders": {}
+  },
+  "labelSettingsDeveloperMode": "Developer mode",
+  "@labelSettingsDeveloperMode": {
+    "description": "Header for the settings to enable developer mode",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsDeveloperModeExplanation": "Shows extra information, useful for developers",
+  "@labelSettingsDeveloperModeExplanation": {
+    "description": "Explains what developer mode does",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsWindowBehaviourTitle": "Window behaviour",
+  "@labelSettingsWindowBehaviourTitle": {
+    "description": "Header for the window behaviour section of settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsMinimizeOnCloseToggle": "Minimize on close",
+  "@labelSettingsMinimizeOnCloseToggle": {
+    "description": "Label for the toggle to turn on and off minimize on close",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsMinimizeOnCloseExplanation": "When closing the window, the app will be minimized instead of exited",
+  "@labelSettingsMinimizeOnCloseExplanation": {
+    "description": "Explains what the 'minimize on close' setting does",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelThirdPartyServicesTitle": "Third party services",
+  "@labelThirdPartyServicesTitle": {
+    "description": "Header for the third party services section in settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelGifSearchToggle": "Gif search",
+  "@labelGifSearchToggle": {
+    "description": "Label for the toggle for enabling and disabling gif search",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelGifSearchDescription": "Enable use of Tenor gif search. Requests will be proxied via {proxyUrl}",
+  "@labelGifSearchDescription": {
+    "description": "Explains that gifs will be fetched via proxy",
+    "type": "text",
+    "placeholders": {
+      "proxyUrl": {}
+    }
   },
   "labelSettingsAppGeneral": "General",
   "@labelSettingsAppGeneral": {

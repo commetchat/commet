@@ -1,5 +1,6 @@
 import 'package:commet/main.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:tiamat/tiamat.dart';
@@ -14,6 +15,21 @@ class GeneralSettingsPage extends StatefulWidget {
 class _GeneralSettingsPage extends State<GeneralSettingsPage> {
   bool enableTenor = false;
 
+  String get labelThirdPartyServicesTitle =>
+      Intl.message("Third party services",
+          desc: "Header for the third party services section in settings",
+          name: "labelThirdPartyServicesTitle");
+
+  String get labelGifSearchToggle => Intl.message("Gif search",
+      desc: "Label for the toggle for enabling and disabling gif search",
+      name: "labelGifSearchToggle");
+
+  String labelGifSearchDescription(proxyUrl) => Intl.message(
+      "Enable use of Tenor gif search. Requests will be proxied via $proxyUrl",
+      desc: "Explains that gifs will be fetched via proxy",
+      args: [proxyUrl],
+      name: "labelGifSearchDescription");
+
   @override
   void initState() {
     enableTenor = preferences.tenorGifSearchEnabled;
@@ -23,7 +39,7 @@ class _GeneralSettingsPage extends State<GeneralSettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Panel(
-      header: "Third party services",
+      header: labelThirdPartyServicesTitle,
       mode: TileType.surfaceLow2,
       child: Column(children: [
         Row(
@@ -33,9 +49,9 @@ class _GeneralSettingsPage extends State<GeneralSettingsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const tiamat.Text.labelEmphasised("Gif search"),
+                  tiamat.Text.labelEmphasised(labelGifSearchToggle),
                   tiamat.Text.labelLow(
-                      "Enable use of Tenor gif search. Requests will be proxied via ${preferences.gifProxyUrl}")
+                      labelGifSearchDescription(preferences.gifProxyUrl))
                 ],
               ),
             ),
