@@ -6,6 +6,7 @@ import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:commet/utils/gif_search/gif_search_result.dart';
 import 'package:commet/utils/gif_search/tenor_search.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
@@ -86,6 +87,18 @@ class _EmoticonPickerState extends State<EmoticonPicker>
     with TickerProviderStateMixin {
   late TabController controller;
 
+  String get labelEmojiPickerEmojiTab => Intl.message("Emoji",
+      desc: "Label for the emoji tab in emoji picker",
+      name: "labelEmojiPickerEmojiTab");
+
+  String get labelEmojiPickerStickerTab => Intl.message("Sticker",
+      desc: "Label for the sticker tab in the emoji picker",
+      name: "labelEmojiPickerStickerTab");
+
+  String get labelEmojiPickerGifTab => Intl.message("Gif",
+      desc: "Label for the gif search tab in the emoji picker",
+      name: "labelEmojiPickerGifTab");
+
   @override
   void initState() {
     controller = TabController(length: 3, vsync: this);
@@ -132,11 +145,11 @@ class _EmoticonPickerState extends State<EmoticonPicker>
             child: SizedBox(
               height: 40,
               child: TabBar(controller: controller, tabs: [
-                const Tab(
-                  text: "Emoji",
+                Tab(
+                  text: labelEmojiPickerEmojiTab,
                 ),
-                const Tab(text: "Sticker"),
-                if (widget.allowGifSearch) const Tab(text: "Gif")
+                Tab(text: labelEmojiPickerStickerTab),
+                if (widget.allowGifSearch) Tab(text: labelEmojiPickerGifTab)
               ]),
             ),
           ),

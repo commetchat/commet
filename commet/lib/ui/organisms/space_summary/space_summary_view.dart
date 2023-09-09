@@ -8,6 +8,8 @@ import 'package:commet/ui/atoms/room_panel.dart';
 import 'package:commet/utils/common_animation.dart';
 import 'package:commet/utils/common_strings.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart';
 import '../../atoms/tooltip.dart' as t;
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -72,6 +74,37 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
   StreamSubscription? previewAddedSubscription;
   StreamSubscription? previewRemovedSubscription;
   StreamSubscription? roomAddedSubscription;
+
+  String get tooltipSpaceSettings => Intl.message("Space settings",
+      desc: "Tooltip for the button that opens space settings",
+      name: "tooltipSpaceSettings");
+
+  String get tooltipAddRoom => Intl.message("Add room",
+      desc: "Tooltip for the button that adds a new room to a space",
+      name: "tooltipAddRoom");
+
+  String get labelSpaceRoomsList => Intl.message("Rooms",
+      desc: "Header label for the list of rooms in a space",
+      name: "labelSpaceRoomsList");
+
+  String get labelSpaceAvailableRoomsList => Intl.message("Available rooms",
+      desc:
+          "Header label for the list of rooms in a space, which the user has not yet joined but are available",
+      name: "labelSpaceAvailableRoomsList");
+
+  String get labelSpaceVisibilityPublic => Intl.message("Public space",
+      desc: "Label to display that the space is publically available",
+      name: "labelSpaceVisibilityPublic");
+
+  String get labelSpaceVisibilityPrivate => Intl.message("Private space",
+      desc: "Label to display that the space is private",
+      name: "labelSpaceVisibilityPrivate");
+
+  String labelSpaceGettingText(spaceName) =>
+      Intl.message("Welcome to \n\n # $spaceName",
+          args: [spaceName],
+          desc: "Greeting to the space, supports markdown formatting",
+          name: "labelSpaceGettingText");
 
   @override
   void initState() {
@@ -138,7 +171,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: t.Tooltip(
-        text: "Space settings",
+        text: tooltipSpaceSettings,
         preferredDirection: AxisDirection.left,
         child: tiamat.CircleButton(
           key: spaceSettingsButtonKey,
@@ -163,7 +196,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
 
   Widget buildRoomList() {
     return Panel(
-      header: "Rooms",
+      header: labelSpaceRoomsList,
       mode: TileType.surfaceLow1,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -203,7 +236,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
             },
           ),
           t.Tooltip(
-            text: "Add Room",
+            text: tooltipAddRoom,
             preferredDirection: AxisDirection.left,
             child: tiamat.CircleButton(
               radius: BuildConfig.MOBILE ? 24 : 16,
@@ -218,7 +251,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
 
   Widget buildPreviewList() {
     return Panel(
-      header: "Available rooms",
+      header: labelSpaceAvailableRoomsList,
       mode: TileType.surfaceLow1,
       child: AnimatedList(
         initialItemCount: childPreviewCount,
@@ -246,8 +279,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
 
   Widget buildHeader() {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      const tiamat.Text.label("Welcome to"),
-      tiamat.Text.largeTitle(widget.displayName),
+      MarkdownBody(data: labelSpaceGettingText(widget.displayName)),
       if (widget.topic != null) tiamat.Text.label(widget.topic!),
     ]);
   }
@@ -256,8 +288,8 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
     IconData data =
         widget.visibility == RoomVisibility.public ? Icons.public : Icons.lock;
     String text = widget.visibility == RoomVisibility.public
-        ? "Public space"
-        : "Private space";
+        ? labelSpaceVisibilityPublic
+        : labelSpaceVisibilityPrivate;
     return Row(
       children: [
         Icon(data),

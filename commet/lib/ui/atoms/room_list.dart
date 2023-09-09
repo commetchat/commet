@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:commet/ui/atoms/dot_indicator.dart';
 import 'package:commet/ui/atoms/notification_badge.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 import 'package:tiamat/atoms/text_button.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:flutter/material.dart' as m;
@@ -46,6 +47,9 @@ class _RoomListState extends State<RoomList>
   bool expanded = false;
   bool editMode = false;
   int _selectedIndex = -1;
+
+  String get labelRoomsList => Intl.message("Rooms",
+      desc: "Header label for the list of rooms", name: "labelRoomsList");
 
   @override
   void initState() {
@@ -115,15 +119,15 @@ class _RoomListState extends State<RoomList>
   }
 
   Widget header() {
-    return const Padding(
-      padding: EdgeInsets.all(2.0),
+    return Padding(
+      padding: const EdgeInsets.all(2.0),
       child: SizedBox(
         height: 40,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            tiamat.Text.label("Rooms"),
+            tiamat.Text.label(labelRoomsList),
           ],
         ),
       ),

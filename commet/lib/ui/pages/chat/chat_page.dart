@@ -14,6 +14,7 @@ import 'package:commet/utils/notification/notification_manager.dart';
 import 'package:commet/utils/orientation.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:window_manager/window_manager.dart';
 import '../../../client/attachment.dart';
@@ -76,6 +77,18 @@ class ChatPageState extends State<ChatPage> {
   StreamSubscription? onRoomUpdateSubscription;
 
   StreamSubscription? onOpenRoomSubscription;
+
+  String get labelChatPageFileTooLarge => Intl.message(
+      "This file is too large to upload!",
+      desc:
+          "Text that is shown when the user attempts to upload a file that is greater than the allowed size",
+      name: "labelChatPageFileTooLarge");
+
+  String get labelChatPageFileTooLargeTitle => Intl.message(
+      "Max file size exceeded",
+      desc:
+          "Title for the dialog that is shown when the user attempts to upload a file that is greater than the allowed size",
+      name: "labelChatPageFileTooLargeTitle");
 
   String? get relatedEventSenderName => interactingEvent == null
       ? null
@@ -172,12 +185,11 @@ class ChatPageState extends State<ChatPage> {
       if (attachment.size != null &&
           attachment.size! > selectedRoom!.client.maxFileSize!) {
         AdaptiveDialog.show(context, builder: (_) {
-          return const SizedBox(
+          return SizedBox(
               height: 100,
-              child: Center(
-                  child:
-                      tiamat.Text.label("This file is too large to upload!")));
-        }, title: "Max file size exceeded");
+              child:
+                  Center(child: tiamat.Text.label(labelChatPageFileTooLarge)));
+        }, title: labelChatPageFileTooLargeTitle);
 
         return;
       }

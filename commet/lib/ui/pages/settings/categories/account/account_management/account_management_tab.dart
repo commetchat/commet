@@ -5,6 +5,7 @@ import 'package:commet/client/stale_info.dart';
 import 'package:commet/ui/molecules/user_panel.dart';
 import 'package:commet/ui/pages/login/login_page.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
 import 'package:provider/provider.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -27,6 +28,18 @@ class _AccountManagementSettingsTabState
   StreamSubscription<StalePeerInfo>? onClientRemovedListener;
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
   late int _numClients;
+
+  String get promptAddAccount => Intl.message("Add Account",
+      desc: "Label for button in settings to add another account",
+      name: "promptAddAccount");
+
+  String get promptLogoutSingleAccount => Intl.message("Logout",
+      desc: "Label for button in settings to log out of an account",
+      name: "promptLogoutSingleAccount");
+
+  String get labelCurrentAccountsHeader => Intl.message("Current Accounts",
+      desc: "Label for header of accounts list",
+      name: "labelCurrentAccountsHeader");
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +91,7 @@ class _AccountManagementSettingsTabState
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Panel(
-              header: "Current accounts",
+              header: labelCurrentAccountsHeader,
               mode: TileType.surfaceLow2,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -132,7 +145,7 @@ class _AccountManagementSettingsTabState
             detail: detail,
           ),
           tiamat.Button.danger(
-            text: "Logout",
+            text: promptLogoutSingleAccount,
             onTap: () {
               onLogoutClicked?.call();
             },
@@ -148,9 +161,9 @@ class _AccountManagementSettingsTabState
       child: Align(
           alignment: Alignment.centerRight,
           child: JustTheTooltip(
-            content: const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: tiamat.Text("Add Account"),
+            content: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: tiamat.Text(promptAddAccount),
             ),
             preferredDirection: AxisDirection.down,
             offset: 5,

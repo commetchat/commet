@@ -129,7 +129,7 @@ class _AppInfoState extends State<_AppInfo> {
     try {
       var version = olm.get_library_version();
       return "Olm: ${version.join(".")}";
-    } catch (Exception) {
+    } catch (exception) {
       return "No Olm version found";
     }
   }

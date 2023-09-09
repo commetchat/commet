@@ -1,3 +1,4 @@
+import 'package:commet/utils/common_strings.dart';
 import 'package:flutter/widgets.dart';
 // have to do it this way to avoid some widgetbook codegen issue
 // ignore: implementation_imports
@@ -104,7 +105,7 @@ class _MatrixUIARequestViewState extends State<MatrixUIARequestView> {
                   width: 100,
                   height: 40,
                   child: Button(
-                    text: "Submit",
+                    text: CommonStrings.promptSubmit,
                     onTap: () => widget.onSubmitAuthentication
                         ?.call(passwordFieldController.text),
                   )),
@@ -142,7 +143,7 @@ class _MatrixUIARequestViewState extends State<MatrixUIARequestView> {
           height: 40,
           width: 200,
           child: tiamat.Button.success(
-            text: "Continue",
+            text: CommonStrings.promptContinue,
             onTap: () => widget.onSuccess?.call(),
           ),
         )
@@ -172,7 +173,7 @@ class _MatrixUIARequestViewState extends State<MatrixUIARequestView> {
           height: 40,
           width: 200,
           child: tiamat.Button.danger(
-            text: "Continue",
+            text: CommonStrings.promptContinue,
             onTap: () => widget.onFail?.call(),
           ),
         )

@@ -1,5 +1,6 @@
 import 'package:commet/main.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:tiamat/tiamat.dart';
@@ -14,6 +15,21 @@ class WindowSettingsPage extends StatefulWidget {
 class _WindowSettingsPageState extends State<WindowSettingsPage> {
   bool minimizeOnClose = false;
 
+  String get labelSettingsWindowBehaviourTitle =>
+      Intl.message("Window behaviour",
+          desc: "Header for the window behaviour section of settings",
+          name: "labelSettingsWindowBehaviourTitle");
+
+  String get labelSettingsMinimizeOnCloseToggle =>
+      Intl.message("Minimize on close",
+          desc: "Label for the toggle to turn on and off minimize on close",
+          name: "labelSettingsMinimizeOnCloseToggle");
+
+  String get labelSettingsMinimizeOnCloseExplanation => Intl.message(
+      "When closing the window, the app will be minimized instead of exited",
+      desc: "Explains what the 'minimize on close' setting does",
+      name: "labelSettingsMinimizeOnCloseExplanation");
+
   @override
   void initState() {
     minimizeOnClose = preferences.minimizeOnClose;
@@ -23,19 +39,19 @@ class _WindowSettingsPageState extends State<WindowSettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Panel(
-      header: "Window behaviour",
+      header: labelSettingsWindowBehaviourTitle,
       mode: TileType.surfaceLow2,
       child: Column(children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Flexible(
+            Flexible(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  tiamat.Text.labelEmphasised("Minimize on close"),
-                  tiamat.Text.labelLow(
-                      "When closing the window, the app will be minimized instead of exited")
+                  tiamat.Text.labelEmphasised(
+                      labelSettingsMinimizeOnCloseToggle),
+                  tiamat.Text.labelLow(labelSettingsMinimizeOnCloseExplanation)
                 ],
               ),
             ),
