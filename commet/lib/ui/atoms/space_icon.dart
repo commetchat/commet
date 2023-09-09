@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:commet/ui/atoms/notification_badge.dart';
 import 'package:commet/ui/organisms/side_navigation_bar.dart';
 import 'package:flutter/material.dart';
@@ -30,13 +32,21 @@ class SpaceIcon extends StatefulWidget {
 }
 
 class _SpaceIconState extends State<SpaceIcon> {
+  StreamSubscription? subscription;
+
   @override
   void initState() {
-    widget.onUpdate?.listen((event) {
+    subscription = widget.onUpdate?.listen((event) {
       setState(() {});
     });
 
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    subscription?.cancel();
+    super.dispose();
   }
 
   @override

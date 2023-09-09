@@ -24,7 +24,7 @@ class _SpaceSummaryState extends State<SpaceSummary> {
 
   @override
   void initState() {
-    onUpdateSubscription = widget.space.onUpdate.stream.listen((_) {
+    onUpdateSubscription = widget.space.onUpdate.listen((_) {
       setState(() {});
     });
 
@@ -46,9 +46,9 @@ class _SpaceSummaryState extends State<SpaceSummary> {
     return SpaceSummaryView(
       displayName: widget.space.displayName,
       childPreviews: widget.space.childPreviews,
-      onChildPreviewAdded: widget.space.onChildPreviewAdded.stream,
-      onChildPreviewRemoved: widget.space.onChildPreviewRemoved.stream,
-      onRoomAdded: widget.space.onRoomAdded.stream,
+      onChildPreviewAdded: widget.space.onChildPreviewAdded,
+      onChildPreviewRemoved: widget.space.onChildPreviewRemoved,
+      onRoomAdded: widget.space.onRoomAdded,
       avatar: widget.space.avatar,
       rooms: widget.space.rooms,
       joinRoom: joinRoom,
@@ -75,22 +75,18 @@ class _SpaceSummaryState extends State<SpaceSummary> {
 
   onAddRoomButtonTap() {
     AdaptiveDialog.show(context,
-        builder: (_) => AddSpaceOrRoom.askCreateOrExistingRoom(
+        builder: (dialogContext) => AddSpaceOrRoom.askCreateOrExistingRoom(
               client: widget.space.client,
               rooms: widget.space.client
                   .getEligibleRoomsForSpace(widget.space)
                   .toList(),
               onRoomCreated: (Room room) async {
                 widget.space.setSpaceChildRoom(room);
-                if (mounted) {
-                  Navigator.pop(context);
-                }
               },
               onRoomsSelected: (rooms) {
                 for (var room in rooms) {
                   widget.space.setSpaceChildRoom(room);
                 }
-                Navigator.pop(context);
               },
             ),
         title: "Add Room to Space");

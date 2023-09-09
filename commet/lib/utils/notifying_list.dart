@@ -64,7 +64,7 @@ class NotifyingList<T> implements List<T> {
     _onListUpdated.add(null);
   }
 
-  factory NotifyingList.empty({bool growable = false, bool sync = false}) {
+  factory NotifyingList.empty({bool growable = false, bool sync = true}) {
     List<T> internalList = List.empty(growable: growable);
     return NotifyingList._internal(internalList, sync);
   }

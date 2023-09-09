@@ -213,10 +213,10 @@ class ChatPageState extends State<ChatPage> {
   void selectSpace(Space? space) {
     if (space == selectedSpace) return;
 
-    if (space != null && !space.loaded) space.loadExtra();
+    if (space != null && !space.fullyLoaded) space.loadExtra();
 
     onSpaceUpdateSubscription?.cancel();
-    onSpaceUpdateSubscription = space?.onUpdate.stream.listen(onSpaceUpdated);
+    onSpaceUpdateSubscription = space?.onUpdate.listen(onSpaceUpdated);
 
     clearRoomSelection();
     if (kDebugMode) {

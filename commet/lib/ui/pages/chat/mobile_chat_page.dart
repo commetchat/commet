@@ -214,7 +214,7 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
               child: SpaceViewer(
                 widget.state.selectedSpace!,
                 key: widget.state.selectedSpace!.key,
-                onRoomInsert: widget.state.selectedSpace!.onRoomAdded.stream,
+                onRoomInsert: widget.state.selectedSpace!.onRoomAdded,
                 onRoomSelectionChanged:
                     widget.state.onRoomSelectionChanged.stream,
                 onRoomSelected: (index) async {

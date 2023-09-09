@@ -42,7 +42,7 @@ class SpaceSummaryView extends StatefulWidget {
   final List<RoomPreview>? childPreviews;
   final Stream<void>? onSpaceUpdated;
   final Stream<int>? onChildPreviewAdded;
-  final Stream<StaleRoomInfo>? onChildPreviewRemoved;
+  final Stream<int>? onChildPreviewRemoved;
   final Stream<int>? onChildPreviewsUpdated;
   final Stream<int>? onRoomAdded;
   final Stream<int>? onRoomRemoved;
@@ -308,16 +308,23 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
     });
   }
 
-  void onPreviewRemoved(StaleRoomInfo staleRoomInfo) {
+  void onPreviewRemoved(int index) {
     childPreviewCount--;
+    var toBeRemoved = widget.childPreviews![index];
+
+    var info = StaleRoomInfo(
+        name: toBeRemoved.displayName,
+        avatar: toBeRemoved.avatar,
+        topic: toBeRemoved.topic);
+
     _previewListKey.currentState?.removeItem(
-        staleRoomInfo.index,
+        index,
         (context, animation) => SizeTransition(
             sizeFactor: CommonAnimations.easeIn(animation),
             child: RoomPanel(
-              displayName: staleRoomInfo.name!,
-              avatar: staleRoomInfo.avatar,
-              topic: staleRoomInfo.topic,
+              displayName: info.name!,
+              avatar: info.avatar,
+              topic: info.topic,
               primaryButtonLabel: CommonStrings.promptJoin,
               onPrimaryButtonPressed: () => null,
             )));

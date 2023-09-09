@@ -293,7 +293,7 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
                 key: widget.state.selectedSpace!.key,
                 onRoomSelectionChanged:
                     widget.state.onRoomSelectionChanged.stream,
-                onRoomInsert: widget.state.selectedSpace!.onRoomAdded.stream,
+                onRoomInsert: widget.state.selectedSpace!.onRoomAdded,
                 onRoomSelected: (index) {
                   widget.state
                       .selectRoom(widget.state.selectedSpace!.rooms[index]);

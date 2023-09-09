@@ -21,14 +21,26 @@ class SimulatedRoom extends Room {
   late SimulatedPeer bob = SimulatedPeer(client, "bob@commet.chat", "bob",
       const AssetImage("assets/images/placeholder/generic/checker_orange.png"));
 
+  late String _identifier;
   late SimulatedRoomPermissions _permissions;
   late String _displayName;
   late bool _isDirectMessage;
   late String? _directMessagePartnerId;
-  StreamController<void> _onUpdate = StreamController.broadcast();
+  late SimulatedClient _client;
+  late SimulatedTimeline _timeline;
+  final StreamController<void> _onUpdate = StreamController.broadcast();
 
   @override
-  bool get isMember => true;
+  ImageProvider<Object>? get avatar => null;
+
+  @override
+  Client get client => _client;
+
+  @override
+  String get identifier => _identifier;
+
+  @override
+  Timeline? get timeline => _timeline;
 
   @override
   bool get isE2EE => false;
@@ -68,10 +80,20 @@ class SimulatedRoom extends Room {
   @override
   Permissions get permissions => _permissions;
 
-  SimulatedRoom(String displayName, SimulatedClient client, {bool isDm = false})
-      : super(RandomUtils.getRandomString(20), client) {
-    identifier = RandomUtils.getRandomString(20);
+  @override
+  Color get defaultColor => Colors.redAccent;
 
+  @override
+  TimelineEvent? get lastEvent =>
+      timeline!.events.isEmpty ? null : timeline!.events.first;
+
+  @override
+  DateTime get lastEventTimestamp => DateTime.fromMicrosecondsSinceEpoch(0);
+
+  SimulatedRoom(String displayName, SimulatedClient client,
+      {bool isDm = false}) {
+    _identifier = RandomUtils.getRandomString(20);
+    _client = client;
     _permissions = SimulatedRoomPermissions();
 
     if (isDm) {
@@ -98,7 +120,7 @@ class SimulatedRoom extends Room {
       notificationCount++;
     }
 
-    timeline = SimulatedTimeline(this.client, this);
+    _timeline = SimulatedTimeline(this.client, this);
     addMessage();
   }
 
@@ -194,16 +216,6 @@ class SimulatedRoom extends Room {
   Future<void> removeReaction(TimelineEvent reactingTo, Emoticon reaction) {
     throw UnimplementedError();
   }
-
-  @override
-  Color get defaultColor => Colors.redAccent;
-
-  @override
-  TimelineEvent? get lastEvent =>
-      timeline!.events.isEmpty ? null : timeline!.events.first;
-
-  @override
-  DateTime get lastEventTimestamp => DateTime.fromMicrosecondsSinceEpoch(0);
 
   @override
   Future<void> setDisplayName(String newName) async {

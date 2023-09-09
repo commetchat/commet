@@ -35,6 +35,12 @@ class MatrixRoom extends Room {
 
   final StreamController<void> _onUpdate = StreamController.broadcast();
 
+  ImageProvider? _avatar;
+
+  late MatrixClient _client;
+
+  late MatrixTimeline _timeline;
+
   matrix.Room get matrixRoom => _matrixRoom;
 
   @override
@@ -51,9 +57,6 @@ class MatrixRoom extends Room {
 
   @override
   Permissions get permissions => _permissions;
-
-  @override
-  bool get isMember => _matrixRoom.membership == matrix.Membership.join;
 
   @override
   bool get isE2EE => _matrixRoom.encrypted;
@@ -107,14 +110,27 @@ class MatrixRoom extends Room {
     }
   }
 
-  MatrixRoom(client, matrix.Room room, matrix.Client matrixClient)
-      : super(room.id, client) {
+  @override
+  ImageProvider<Object>? get avatar => _avatar;
+
+  @override
+  Client get client => _client;
+
+  @override
+  String get identifier => _matrixRoom.id;
+
+  @override
+  Timeline? get timeline => _timeline;
+
+  MatrixRoom(
+      MatrixClient client, matrix.Room room, matrix.Client matrixClient) {
     _matrixRoom = room;
+    _client = client;
 
     _displayName = room.getLocalizedDisplayname();
 
     if (room.avatar != null) {
-      avatar = MatrixMxcImage(room.avatar!, _matrixRoom.client,
+      _avatar = MatrixMxcImage(room.avatar!, _matrixRoom.client,
           autoLoadFullRes: false);
     }
 
@@ -153,7 +169,7 @@ class MatrixRoom extends Room {
       this.client.getPeer(user.id);
     }
 
-    timeline = MatrixTimeline(client, this, room);
+    _timeline = MatrixTimeline(client, this, room);
 
     _matrixRoom.onUpdate.stream.listen(onMatrixRoomUpdate);
 
@@ -247,11 +263,6 @@ class MatrixRoom extends Room {
   }
 
   @override
-  Future<void> setDisplayNameInternal(String name) async {
-    await _matrixRoom.setName(name);
-  }
-
-  @override
   Future<void> enableE2EE() async {
     await _matrixRoom.enableEncryption();
   }
@@ -279,6 +290,13 @@ class MatrixRoom extends Room {
 
     await _matrixRoom.setPushRuleState(newRule);
     _onUpdate.add(null);
+  }
+
+  @override
+  Future<void> setDisplayName(String newName) async {
+    _displayName = newName;
+    _onUpdate.add(null);
+    await _matrixRoom.setName(newName);
   }
 
   @override
@@ -343,11 +361,5 @@ class MatrixRoom extends Room {
   Future<void> removeReaction(
       TimelineEvent reactingTo, Emoticon reaction) async {
     return (timeline! as MatrixTimeline).removeReaction(reactingTo, reaction);
-  }
-
-  @override
-  Future<void> setDisplayName(String newName) {
-    // TODO: implement setDisplayName
-    throw UnimplementedError();
   }
 }
