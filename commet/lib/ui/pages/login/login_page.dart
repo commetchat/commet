@@ -1,6 +1,7 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/ui/pages/login/login_page_view.dart';
+import 'package:commet/utils/rng.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -22,12 +23,12 @@ class LoginPageState extends State<LoginPage> {
 
       if (manager.clients
           .where((element) =>
-              element.user?.identifier == "@$userNameInput:$homeserverInput")
+              element.self?.identifier == "@$userNameInput:$homeserverInput")
           .isNotEmpty) {
         return LoginResult.alreadyLoggedIn;
       }
-
-      var client = MatrixClient();
+      var internalId = RandomUtils.getRandomString(20);
+      var client = MatrixClient(identifier: internalId);
 
       var result = await client.login(
           LoginType.loginPassword, userNameInput, homeserverInput.trim(),

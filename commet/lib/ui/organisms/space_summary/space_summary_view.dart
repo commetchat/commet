@@ -226,7 +226,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
                     recentEventBody: room.lastEvent?.body,
                     recentEventSender: room.lastEvent != null
                         ? room.client
-                            .fetchPeer(room.lastEvent!.senderId)
+                            .getPeer(room.lastEvent!.senderId)
                             .displayName
                         : null,
                     recentEventSenderColor: room.lastEvent != null

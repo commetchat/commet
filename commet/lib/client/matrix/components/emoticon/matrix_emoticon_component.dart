@@ -16,7 +16,7 @@ import '../../matrix_mxc_image_provider.dart';
 import '../../matrix_timeline.dart';
 import 'matrix_emoticon.dart';
 import 'matrix_emoticon_pack.dart';
-
+/*
 class MatrixEmoticonComponent implements EmoticonComponent {
   MatrixEmoticonHelper helper;
   MatrixClient client;
@@ -216,3 +216,4 @@ class MatrixRoomEmoticonComponent extends MatrixEmoticonComponent
   @override
   bool get canCreatePack => true;
 }
+*/

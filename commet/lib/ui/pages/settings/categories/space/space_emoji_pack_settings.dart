@@ -1,4 +1,5 @@
-import 'dart:typed_data';
+// TODO: reimplement emoticons 
+/*import 'dart:typed_data';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/ui/pages/settings/categories/room/emoji_packs/room_emoji_pack_settings_view.dart';
@@ -49,3 +50,4 @@ class _SpaceEmojiPackSettingsState extends State<SpaceEmojiPackSettings> {
     await pack.renameEmoticon(emoticon, name);
   }
 }
+*/

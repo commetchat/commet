@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
-import 'package:commet/client/components/emoticon/emoticon_component.dart';
+import 'package:commet/client/permissions.dart';
+import 'package:commet/client/simulated/simulated_client.dart';
 import 'package:commet/client/simulated/simulated_peer.dart';
 import 'package:commet/client/simulated/simulated_room_permissions.dart';
 import 'package:commet/client/simulated/simulated_timeline.dart';
@@ -13,10 +15,17 @@ import 'package:flutter/material.dart';
 import '../attachment.dart';
 
 class SimulatedRoom extends Room {
-  late Peer alice = SimulatedPeer(client, "alice@commet.chat", "alice",
+  late SimulatedPeer alice = SimulatedPeer(client, "alice@commet.chat", "alice",
       const AssetImage("assets/images/placeholder/generic/checker_green.png"));
-  late Peer bob = SimulatedPeer(client, "bob@commet.chat", "bob",
+
+  late SimulatedPeer bob = SimulatedPeer(client, "bob@commet.chat", "bob",
       const AssetImage("assets/images/placeholder/generic/checker_orange.png"));
+
+  late SimulatedRoomPermissions _permissions;
+  late String _displayName;
+  late bool _isDirectMessage;
+  late String? _directMessagePartnerId;
+  StreamController<void> _onUpdate = StreamController.broadcast();
 
   @override
   bool get isMember => true;
@@ -42,27 +51,43 @@ class SimulatedRoom extends Room {
   List<Peer> get typingPeers => List.from([alice, bob]);
 
   @override
-  RoomEmoticonComponent? get roomEmoticons => null;
-
-  @override
   String get developerInfo => "";
 
-  SimulatedRoom(displayName, client, {bool isDm = false})
+  @override
+  String? get directMessagePartnerID => _directMessagePartnerId;
+
+  @override
+  String get displayName => _displayName;
+
+  @override
+  bool get isDirectMessage => _isDirectMessage;
+
+  @override
+  Stream<void> get onUpdate => _onUpdate.stream;
+
+  @override
+  Permissions get permissions => _permissions;
+
+  SimulatedRoom(String displayName, SimulatedClient client, {bool isDm = false})
       : super(RandomUtils.getRandomString(20), client) {
     identifier = RandomUtils.getRandomString(20);
 
-    permissions = SimulatedRoomPermissions();
+    _permissions = SimulatedRoomPermissions();
 
     if (isDm) {
-      isDirectMessage = true;
-      directMessagePartnerID = bob.identifier;
+      _isDirectMessage = true;
+      _directMessagePartnerId = bob.identifier;
       _participants.add(bob);
-      this.displayName = bob.displayName;
+      client.addPeer(bob);
+      _displayName = bob.displayName;
     } else {
       _participants.add(alice);
       _participants.add(bob);
-      _participants.add((client as Client).user!);
-      this.displayName = displayName;
+      _participants.add((client as Client).self!);
+      client.addPeer(bob);
+      client.addPeer(alice);
+      _displayName = displayName;
+      _isDirectMessage = false;
     }
 
     if (Random().nextInt(10) > 5) {
@@ -90,7 +115,7 @@ class SimulatedRoom extends Room {
     e.status = TimelineEventStatus.sent;
     e.type = EventType.message;
     e.originServerTs = DateTime.now();
-    e.senderId = client.user!.identifier;
+    e.senderId = client.self!.identifier;
     e.body = message;
     timeline!.insertEvent(0, e);
     return e;
@@ -125,7 +150,7 @@ class SimulatedRoom extends Room {
 
   @override
   Future<void> setDisplayNameInternal(String name) async {
-    displayName = name;
+    _displayName = name;
   }
 
   @override
@@ -136,7 +161,7 @@ class SimulatedRoom extends Room {
   @override
   Future<void> setPushRule(PushRule rule) async {
     pushRule = rule;
-    onUpdate.add(null);
+    _onUpdate.add(null);
   }
 
   @override
@@ -179,4 +204,9 @@ class SimulatedRoom extends Room {
 
   @override
   DateTime get lastEventTimestamp => DateTime.fromMicrosecondsSinceEpoch(0);
+
+  @override
+  Future<void> setDisplayName(String newName) async {
+    _displayName = newName;
+  }
 }

@@ -295,10 +295,11 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
                           removeAttachment: widget.state.removeAttachment,
                           focusKeyboard:
                               widget.state.onFocusMessageInput.stream,
-                          availibleEmoticons: widget.state.selectedRoom!
-                              .roomEmoticons?.availableEmoji,
-                          availibleStickers: widget.state.selectedRoom!
-                              .roomEmoticons?.availableStickers,
+                          // TODO: reimplement emoticons
+                          // availibleEmoticons: widget.state.selectedRoom!
+                          //     .roomEmoticons?.availableEmoji,
+                          // availibleStickers: widget.state.selectedRoom!
+                          //     .roomEmoticons?.availableStickers,
                           sendGif: widget.state.sendGif,
                           sendSticker: widget.state.sendSticker,
                           cancelReply: () {
@@ -367,17 +368,17 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
           minChildSize: 0.6,
           builder: (context, scrollController) {
             return SizedBox(
-              height: 700,
-              child: EmojiPicker(
+                height: 700,
+                // TODO: reimplement emoticons
+                child: /*EmojiPicker(
                 widget.state.selectedRoom!.roomEmoticons!.availableEmoji,
                 size: 48,
                 packButtonSize: 40,
                 onEmoticonPressed: (emoticon) {
                   widget.state.addReaction(event, emoticon);
                   Navigator.pop(context);
-                },
-              ),
-            );
+                }),*/
+                    Placeholder());
           },
         );
       },
@@ -489,7 +490,7 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
     if (widget.state.selectedRoom?.permissions.canUserEditMessages != true)
       return false;
 
-    if (event.senderId != widget.state.selectedRoom!.client.user!.identifier)
+    if (event.senderId != widget.state.selectedRoom!.client.self!.identifier)
       return false;
 
     if (event.type != EventType.message) return false;
@@ -501,7 +502,7 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
     if (widget.state.selectedRoom?.permissions.canUserDeleteMessages != true)
       return false;
 
-    if (event.senderId != widget.state.selectedRoom!.client.user!.identifier)
+    if (event.senderId != widget.state.selectedRoom!.client.self!.identifier)
       return false;
 
     if (event.type != EventType.message) return false;

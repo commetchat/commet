@@ -23,175 +23,120 @@ enum LoginType {
 enum LoginResult { success, failed, error, alreadyLoggedIn }
 
 abstract class Client {
+  Future<LoginResult> login(
+      LoginType type, String userIdentifier, String server,
+      {String? password, String? token});
+
   Future<void> init(bool loadingFromCache);
 
+  /// Logout and invalidate the current session
   Future<void> logout();
 
-  final String identifier;
+  /// Local identifier for this client instance
+  String get identifier;
 
-  Peer? user;
-
-  Client(this.identifier);
+  /// The Peer owned by the current user session
+  Peer? self;
 
   bool isLoggedIn();
 
   ValueKey get key => ValueKey(identifier);
 
+  /// True if the client protocol supports End to End Encryption
   bool get supportsE2EE;
 
+  /// Max size in bytes for uploaded files
   int? get maxFileSize;
 
-  Future<LoginResult> login(
-      LoginType type, String userIdentifier, String server,
-      {String? password, String? token});
+  /// Gets a list of rooms which are direct messages between two users
+  List<Room> get directMessages;
 
-  final Map<String, Room> _rooms = {};
-  final Map<String, Space> _spaces = {};
-  final Map<String, Peer> _peers = {};
+  /// Gets a list of rooms which do not belong to any spaces
+  List<Room> get singleRooms;
 
-  final Map<String, RoomPreview> _spacePreviews = {};
+  /// Gets list of all rooms
+  List<Room> get rooms;
 
-  //Key is user ID
-  final Map<String, Room> _directMessages = {};
+  /// Gets list of all spaces
+  List<Space> get spaces;
 
-  List<Room> directMessages = List.empty(growable: true);
-  List<Room> singleRooms = List.empty(growable: true);
+  /// Gets list of all currently known users
+  List<Peer> get peers;
 
-  List<Room> rooms = List.empty(growable: true);
-  List<Space> spaces = List.empty(growable: true);
-  List<Peer> peers = List.empty(growable: true);
-
+  /// Gets a list of invitations to join other rooms or spaces
   List<Invitation> get invitations;
 
-  EmoticonComponent? emoticons;
+  /// When a room is added, this will be called with the index of the new room
+  Stream<int> get onRoomAdded;
 
-  late StreamController<int> onRoomAdded = StreamController.broadcast();
-  late StreamController<int> onSpaceAdded = StreamController.broadcast();
-  late StreamController<int> onPeerAdded = StreamController.broadcast();
-  late StreamController<int> onEmojiPackAdded = StreamController.broadcast();
-  late StreamController<void> onSync = StreamController.broadcast();
+  /// When a space is added, this will be called with the index of the new space
+  Stream<int> get onSpaceAdded;
 
-  bool spaceExists(String identifier) {
-    return _spaces.containsKey(identifier);
-  }
+  /// When a new peer is found, this will be called with the index of the new peer
+  Stream<int> get onPeerAdded;
 
-  bool roomExists(String identifier) {
-    return _rooms.containsKey(identifier);
-  }
+  /// When the client receives an update from the server, this will be called
+  Stream<void> get onSync;
 
-  bool peerExists(String identifier) {
-    return _peers.containsKey(identifier);
-  }
+  /// Returns true if the client is a member of the given space
+  bool hasSpace(String identifier);
 
-  Room? getRoom(String identifier) {
-    return _rooms[identifier];
-  }
+  /// Returns true if the client is a member of the given room
+  bool hasRoom(String identifier);
 
-  Space? getSpace(String identifier) {
-    return _spaces[identifier];
-  }
+  /// Returns true if the client knows of this peer
+  bool hasPeer(String identifier);
 
-  /// Fetches a peer from the server, handling any caching
-  Peer fetchPeer(String identifier) {
-    if (_peers.containsKey(identifier)) return _peers[identifier]!;
+  /// Gets a room by ID. only returns rooms which the client is a member of, otherwise null
+  Room? getRoom(String identifier);
 
-    var result = fetchPeerInternal(identifier);
-    _peers[identifier] = result;
+  /// Gets a space by ID. only returns spaces which the client is a member of, otherwise null
+  Space? getSpace(String identifier);
 
-    return result;
-  }
+  /// Gets a peer by ID. will return a peer object for any given ID and then load the data from the server.
+  /// This is so that you can display any given peer without having to load the data for it
+  Peer getPeer(String identifier);
 
-  void addRoom(Room room) {
-    if (!_rooms.containsKey(room.identifier)) {
-      _rooms[room.identifier] = room;
-      rooms.add(room);
-      int index = rooms.length - 1;
-
-      if (room.isDirectMessage) {
-        if (!_directMessages.containsKey(room.directMessagePartnerID!)) {
-          _directMessages[room.directMessagePartnerID!] = room;
-          directMessages.add(room);
-        }
-      }
-
-      for (var space in spaces) {
-        if (space.childPreviews
-            .any((element) => element.roomId == room.identifier)) {
-          space.addRoom(room);
-        }
-      }
-
-      if (!spaces.any((space) => space.containsRoom(room.identifier))) {
-        singleRooms.add(room);
-      }
-
-      onRoomAdded.add(index);
-    }
-  }
-
-  void addSpace(Space space) {
-    if (!_spaces.containsKey(space.identifier)) {
-      _spaces[space.identifier] = space;
-      spaces.add(space);
-      int index = spaces.length - 1;
-      onSpaceAdded.add(index);
-    }
-  }
-
-  void addPeer(Peer peer) {
-    if (!_peers.containsKey(peer.identifier)) {
-      _peers[peer.identifier] = peer;
-      peers.add(peer);
-      int index = spaces.length - 1;
-      onPeerAdded.add(index);
-    }
-  }
-
+  /// Create a new room
   Future<Room> createRoom(String name, RoomVisibility visibility,
       {bool enableE2EE = true});
 
+  /// Create a new space
   Future<Space> createSpace(String name, RoomVisibility visibility);
 
+  /// Join an existing space by address
   Future<Space> joinSpace(String address);
 
+  /// Join an existing room by address
   Future<Room> joinRoom(String address);
 
-  Future<RoomPreview?> getSpacePreview(String address) async {
-    if (_spacePreviews.containsKey(address)) {
-      return _spacePreviews[address];
-    }
+  /// Queries the server for information about a space which this client is not a member of
+  Future<RoomPreview?> getSpacePreview(String address);
 
-    var preview = await getSpacePreviewInternal(address);
-    if (preview != null) {
-      _spacePreviews[address] = preview;
-      return preview;
-    }
+  /// Queries the server for information about a room which this client is not a member of
+  Future<RoomPreview?> getRoomPreview(String address);
 
-    return null;
-  }
-
-  Future<RoomPreview?> getRoomPreviewInternal(String address);
-
-  Future<RoomPreview?> getSpacePreviewInternal(String address);
-
+  /// Update the current user avatar
   Future<void> setAvatar(Uint8List bytes, String mimeType);
 
+  /// Set the display name of the current user
   Future<void> setDisplayName(String name);
 
-  Future<void> close() async {}
+  /// End the current session and prepare for disposal
+  Future<void> close();
 
+  /// Find all the rooms which could be added to a given space
   Iterable<Room> getEligibleRoomsForSpace(Space space);
 
+  /// Build a widget for display in the developer options debug menu
   Widget buildDebugInfo();
 
-  @protected
-
-  /// Fetches a peer from the server. does not need to implement caching
-  Peer fetchPeerInternal(String identifier);
-
+  /// Open a new direct message with another user
   Future<Room?> createDirectMessage(String userId);
 
+  /// Accept an invitation to join a room or space which this client is not yet a member of
   Future<void> acceptInvitation(Invitation invitation);
 
+  /// Reject an invitation to join a room or space which this client is not yet a member of
   Future<void> rejectInvitation(Invitation invitation);
 }

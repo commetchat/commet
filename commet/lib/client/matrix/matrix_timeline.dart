@@ -338,7 +338,7 @@ class MatrixTimeline extends Timeline {
 
   @override
   void markAsRead(TimelineEvent event) async {
-    if (event.senderId == client.user!.identifier) return;
+    if (event.senderId == client.self!.identifier) return;
 
     if (event.type == EventType.edit ||
         event.status == TimelineEventStatus.synced) {
@@ -377,7 +377,7 @@ class MatrixTimeline extends Timeline {
         .toList(growable: true);
 
     if (latestDisplayableEvent != null &&
-        latestDisplayableEvent.senderId != client.user!.identifier &&
+        latestDisplayableEvent.senderId != client.self!.identifier &&
         !receipts.contains(latestDisplayableEvent.senderId))
       receipts.add(latestDisplayableEvent.senderId);
 

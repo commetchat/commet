@@ -33,9 +33,9 @@ class _ProfileEditTabState extends State<ProfileEditTab> {
         return Column(
           children: [
             ProfileEditView(
-              avatar: client.user?.avatar,
-              displayName: client.user!.displayName,
-              identifier: client.user!.identifier,
+              avatar: client.self?.avatar,
+              displayName: client.self!.displayName,
+              identifier: client.self!.identifier,
               pickAvatar: (bytes, type) => pickAvatar(client, bytes, type),
               setDisplayName: (name) => setDisplayName(client, name),
               canEditName: true,

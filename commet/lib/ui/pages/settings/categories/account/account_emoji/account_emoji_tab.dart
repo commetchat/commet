@@ -1,3 +1,6 @@
+// TODO: reimplement emoticons 
+
+/*
 import 'dart:typed_data';
 
 import 'package:commet/client/client.dart';
@@ -9,7 +12,6 @@ import 'package:commet/ui/pages/settings/categories/room/emoji_packs/room_emoji_
 import 'package:flutter/widgets.dart';
 
 import '../../../../../molecules/account_selector.dart';
-
 class AccountEmojiTab extends StatefulWidget {
   const AccountEmojiTab(
       {required this.clientManager, this.selectedClientIndex = 0, super.key});
@@ -93,3 +95,4 @@ class _AccountEmojiTabState extends State<AccountEmojiTab> {
     return selectedClient!.emoticons!.deleteEmoticonPack(pack);
   }
 }
+*/

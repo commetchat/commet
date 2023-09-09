@@ -82,7 +82,7 @@ class _SingleUserReadIndicatorState extends State<SingleUserReadIndicator> {
   late Peer peer;
   @override
   void initState() {
-    peer = widget.room.client.fetchPeer(widget.identifier);
+    peer = widget.room.client.getPeer(widget.identifier);
     peer.loading?.then((_) {
       if (mounted) {
         setState(() {});

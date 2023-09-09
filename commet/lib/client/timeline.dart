@@ -160,7 +160,7 @@ abstract class Timeline {
   bool shouldDisplayNotification(TimelineEvent event) {
     if (event.type != EventType.message) return false;
 
-    if (event.senderId == client.user!.identifier) return false;
+    if (event.senderId == client.self!.identifier) return false;
 
     if (room.pushRule == PushRule.dontNotify) return false;
 
@@ -186,11 +186,11 @@ abstract class Timeline {
   @protected
   void displayNotification(TimelineEvent event) {
     notificationManager.notify(NotificationContent(
-        room.client.fetchPeer(event.senderId).displayName,
+        room.client.getPeer(event.senderId).displayName,
         event.body ?? notificationReceivedMessagePlaceholder,
         NotificationType.messageReceived,
         sentFrom: room,
-        image: room.client.fetchPeer(event.senderId).avatar,
+        image: room.client.getPeer(event.senderId).avatar,
         event: event));
   }
 

@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
-import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/utils/gif_search/gif_search_result.dart';
 import 'package:flutter/material.dart';
 import 'attachment.dart';
@@ -15,21 +14,25 @@ abstract class Room {
   late String identifier;
   late Client client;
   final Key key = UniqueKey();
+
   Timeline? timeline;
   late ImageProvider? avatar;
   Iterable<String> get memberIds;
-  late String displayName;
-  late bool isDirectMessage;
-  late String? directMessagePartnerID;
-  late Permissions permissions;
+
+  String get displayName;
+
+  bool get isDirectMessage;
+
+  String? get directMessagePartnerID;
+
+  Permissions get permissions;
+
   bool get isMember => false;
   bool get isE2EE;
   Color get defaultColor;
-  StreamController<void> onUpdate = StreamController.broadcast();
+  Stream<void> get onUpdate;
   PushRule get pushRule;
   DateTime get lastEventTimestamp;
-
-  RoomEmoticonComponent? get roomEmoticons;
 
   List<Peer> get typingPeers;
 
@@ -43,6 +46,12 @@ abstract class Room {
 
   int get displayHighlightedNotificationCount =>
       pushRule != PushRule.dontNotify ? highlightedNotificationCount : 0;
+
+  Room(this.identifier, this.client) {
+    identifier = identifier;
+    client = client;
+    avatar = null;
+  }
 
   Future<TimelineEvent?> sendMessage({
     String? message,
@@ -63,19 +72,7 @@ abstract class Room {
 
   String get localId => "${client.identifier}:$identifier";
 
-  Room(this.identifier, this.client) {
-    identifier = identifier;
-    client = client;
-    avatar = null;
-    isDirectMessage = false;
-    directMessagePartnerID = null;
-  }
-
-  Future<void> setDisplayName(String newName) async {
-    await setDisplayNameInternal(newName);
-    displayName = newName;
-    onUpdate.add(null);
-  }
+  Future<void> setDisplayName(String newName);
 
   @protected
   Future<void> setDisplayNameInternal(String name);
@@ -83,6 +80,12 @@ abstract class Room {
   Future<void> setPushRule(PushRule rule);
 
   Future<void> setTypingStatus(bool typing);
+
+  Color getColorOfUser(String userId);
+
+  Future<void> enableE2EE();
+
+  TimelineEvent? get lastEvent;
 
   @override
   bool operator ==(Object other) {
@@ -95,10 +98,4 @@ abstract class Room {
 
   @override
   int get hashCode => identifier.hashCode;
-
-  Color getColorOfUser(String userId);
-
-  Future<void> enableE2EE();
-
-  TimelineEvent? get lastEvent;
 }

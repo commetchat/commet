@@ -251,12 +251,12 @@ class MatrixPersonalEmoticonHelper extends MatrixEmoticonHelper {
 
   @override
   String getDefaultDisplayName() {
-    return client.user?.displayName ?? "Personal";
+    return client.self?.displayName ?? "Personal";
   }
 
   @override
   String getOwnerId() {
-    return client.user!.identifier;
+    return client.self!.identifier;
   }
 
   @override

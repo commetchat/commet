@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'package:commet/client/client_manager.dart';
-import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/client/invitation.dart';
-import 'package:commet/client/matrix/extensions/matrix_client_extensions.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/config/app_config.dart';
@@ -10,22 +8,21 @@ import 'package:commet/config/build_config.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/pages/matrix/authentication/matrix_uia_request.dart';
+import 'package:commet/utils/list_extension.dart';
+import 'package:commet/utils/notifying_list.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:crypto/crypto.dart';
-import 'dart:convert'; // for the utf8.encode method
+import 'dart:convert';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/matrix/matrix_peer.dart';
-import 'package:commet/utils/rng.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart' as matrix;
 import 'package:matrix/encryption.dart';
 
 import '../../ui/atoms/code_block.dart';
 import '../../ui/pages/matrix/verification/matrix_verification_page.dart';
-import 'components/emoticon/matrix_emoticon_component.dart';
-import 'components/emoticon/matrix_emoticon_pack.dart';
 import 'matrix_room.dart';
 import 'matrix_space.dart';
 
@@ -33,23 +30,36 @@ class MatrixClient extends Client {
   late matrix.Client _matrixClient;
 
   Future? firstSync;
-  MatrixEmoticonComponent? _emoticons;
 
   matrix.ServerConfig? config;
+
+  late String _id;
+
+  final NotifyingList<Room> _rooms = NotifyingList.empty(
+    growable: true,
+  );
+  final NotifyingList<Space> _spaces = NotifyingList.empty(
+    growable: true,
+  );
+
+  final NotifyingList<Peer> _peers = NotifyingList.empty(
+    growable: true,
+  );
+
+  final Map<String, Peer> _peersMap = {};
+
+  final StreamController _onSync = StreamController.broadcast();
 
   matrix.NativeImplementations get nativeImplentations => BuildConfig.WEB
       ? const matrix.NativeImplementationsDummy()
       : matrix.NativeImplementationsIsolate(compute);
 
-  MatrixClient({String? name, String? identifier})
-      : super(identifier ?? RandomUtils.getRandomString(20)) {
+  MatrixClient({String? name, required String identifier}) {
+    _id = identifier;
     if (name != null) {
       _matrixClient = _createMatrixClient(name);
     }
   }
-
-  @override
-  EmoticonComponent? get emoticons => _emoticons;
 
   static String hash(String name) {
     var bytes = utf8.encode(name);
@@ -66,6 +76,33 @@ class MatrixClient extends Client {
   final Map<String, Invitation> _invitations = {};
   @override
   List<Invitation> get invitations => _invitations.values.toList();
+
+  @override
+  String get identifier => _id;
+
+  @override
+  Stream<int> get onPeerAdded => _peers.onAdd;
+
+  @override
+  Stream<int> get onRoomAdded => _rooms.onAdd;
+
+  @override
+  Stream<int> get onSpaceAdded => _spaces.onAdd;
+
+  @override
+  Stream<void> get onSync => _onSync.stream;
+
+  @override
+  List<Peer> get peers => _peers;
+
+  @override
+  List<Room> get rooms => _rooms;
+
+  @override
+  List<Room> get singleRooms => throw UnimplementedError();
+
+  @override
+  List<Space> get spaces => _spaces;
 
   static Future<void> loadFromDB(ClientManager manager) async {
     await diagnostics.timeAsync("loadFromDB", () async {
@@ -105,8 +142,8 @@ class MatrixClient extends Client {
             waitForFirstSync: !loadingFromCache,
             waitUntilLoadCompletedLoaded: true);
       });
-      user = MatrixPeer(this, _matrixClient, _matrixClient.userID!);
-      addPeer(user!);
+      self = MatrixPeer(this, _matrixClient, _matrixClient.userID!);
+      peers.add(self!);
 
       firstSync = _matrixClient.oneShotSync();
     }
@@ -120,8 +157,6 @@ class MatrixClient extends Client {
     _updateRoomslist();
     _updateSpacesList();
     _updateInviteList();
-    _emoticons =
-        MatrixEmoticonComponent(MatrixPersonalEmoticonHelper(this), this);
 
     _matrixClient.onKeyVerificationRequest.stream.listen((event) {
       AdaptiveDialog.show(navigator.currentContext!,
@@ -139,7 +174,7 @@ class MatrixClient extends Client {
   }
 
   void onMatrixClientSync(matrix.SyncUpdate update) {
-    onSync.add(null);
+    _onSync.add(null);
     _updateRoomslist();
     _updateSpacesList();
     _updateInviteList();
@@ -233,7 +268,7 @@ class MatrixClient extends Client {
 
   void _postLoginSuccess() {
     if (_matrixClient.userID != null) {
-      user = MatrixPeer(this, _matrixClient, _matrixClient.userID!);
+      self = MatrixPeer(this, _matrixClient, _matrixClient.userID!);
     }
   }
 
@@ -269,8 +304,8 @@ class MatrixClient extends Client {
         .where((element) => !element.isSpace && element.membership.isJoin);
 
     for (var room in joinedRooms) {
-      if (roomExists(room.id)) continue;
-      addRoom(MatrixRoom(this, room, _matrixClient));
+      if (hasRoom(room.id)) continue;
+      rooms.add(MatrixRoom(this, room, _matrixClient));
     }
   }
 
@@ -278,9 +313,8 @@ class MatrixClient extends Client {
     var allSpaces = _matrixClient.rooms.where((element) => element.isSpace);
 
     for (var space in allSpaces) {
-      if (spaceExists(space.id)) continue;
-
-      addSpace(MatrixSpace(this, space, _matrixClient));
+      if (hasSpace(space.id)) continue;
+      spaces.add(MatrixSpace(this, space, _matrixClient));
     }
   }
 
@@ -297,9 +331,9 @@ class MatrixClient extends Client {
       await matrixRoom.enableEncryption();
     }
 
-    if (roomExists(id)) return getRoom(id)!;
+    if (hasRoom(id)) return getRoom(id)!;
     var room = MatrixRoom(this, matrixRoom, _matrixClient);
-    addRoom(room);
+    rooms.add(room);
     return room;
   }
 
@@ -312,10 +346,10 @@ class MatrixClient extends Client {
             ? matrix.Visibility.private
             : matrix.Visibility.public);
 
-    if (spaceExists(id)) return getSpace(id)!;
+    if (hasSpace(id)) return getSpace(id)!;
     var space =
         MatrixSpace(this, _matrixClient.getRoomById(id)!, _matrixClient);
-    addSpace(space);
+    spaces.add(space);
     return space;
   }
 
@@ -323,63 +357,46 @@ class MatrixClient extends Client {
   Future<Space> joinSpace(String address) async {
     var id = await _matrixClient.joinRoom(address);
     await _matrixClient.waitForRoomInSync(id);
-    if (spaceExists(id)) return getSpace(id)!;
+    if (hasSpace(id)) return getSpace(id)!;
 
     var space =
         MatrixSpace(this, _matrixClient.getRoomById(id)!, _matrixClient);
-    addSpace(space);
+    spaces.add(space);
     return space;
-  }
-
-  @override
-  Future<RoomPreview?> getRoomPreviewInternal(String address) async {
-    return await _matrixClient.getRoomPreview(address);
-  }
-
-  @override
-  Future<RoomPreview?> getSpacePreviewInternal(String address) {
-    return getRoomPreviewInternal(address);
   }
 
   @override
   Future<Room> joinRoom(String address) async {
     var id = await _matrixClient.joinRoom(address);
     await _matrixClient.waitForRoomInSync(id);
-    if (roomExists(id)) return getRoom(id)!;
+    if (hasRoom(id)) return getRoom(id)!;
 
     var room = MatrixRoom(this, _matrixClient.getRoomById(id)!, _matrixClient);
-    addRoom(room);
+    rooms.add(room);
     return room;
   }
 
   @override
   Future<void> close() async {
     await _matrixClient.dispose();
-    await super.close();
   }
 
   @override
   Future<void> setAvatar(Uint8List bytes, String mimeType) async {
     await _matrixClient.setAvatar(matrix.MatrixImageFile(
         bytes: bytes, name: "avatar", mimeType: mimeType));
-    await (user as MatrixPeer).refreshAvatar();
+    await (self as MatrixPeer).refreshAvatar();
   }
 
   @override
   Future<void> setDisplayName(String name) async {
     await _matrixClient.setDisplayName(_matrixClient.userID!, name);
-    user!.displayName = name;
+    self!.displayName = name;
   }
 
   @override
   Iterable<Room> getEligibleRoomsForSpace(Space space) {
     return rooms.where((room) => !space.containsRoom(room.identifier));
-  }
-
-  @override
-  Peer fetchPeerInternal(String identifier) {
-    var peer = MatrixPeer(this, _matrixClient, identifier);
-    return peer;
   }
 
   @override
@@ -397,13 +414,13 @@ class MatrixClient extends Client {
   @override
   Future<Room?> createDirectMessage(String userId) async {
     var roomId = await _matrixClient.startDirectChat(userId);
-    if (roomExists(roomId)) return getRoom(roomId);
+    if (hasRoom(roomId)) return getRoom(roomId);
 
     var matrixRoom = _matrixClient.getRoomById(roomId);
     if (matrixRoom == null) return null;
 
     MatrixRoom room = MatrixRoom(this, matrixRoom, _matrixClient);
-    addRoom(room);
+    rooms.add(room);
     return room;
   }
 
@@ -428,5 +445,56 @@ class MatrixClient extends Client {
 
     _invitations.remove(invitation.invitationId);
     await _matrixClient.leaveRoom(invitation.invitedToId);
+  }
+
+  @override
+  List<Room> get directMessages => throw UnimplementedError();
+
+  @override
+  Peer getPeer(String identifier) {
+    var result = _peersMap[identifier];
+    if (result != null) return result;
+
+    var peer = MatrixPeer(this, _matrixClient, identifier);
+    _peersMap[identifier] = peer;
+    _peers.add(peer);
+    return peer;
+  }
+
+  @override
+  Room? getRoom(String identifier) {
+    return _rooms.tryFirstWhere((element) => element.identifier == identifier);
+  }
+
+  @override
+  Space? getSpace(String identifier) {
+    return _spaces.tryFirstWhere((element) => element.identifier == identifier);
+  }
+
+  @override
+  bool hasPeer(String identifier) {
+    return _peersMap.containsKey(identifier);
+  }
+
+  @override
+  bool hasRoom(String identifier) {
+    return _rooms.any((element) => element.identifier == identifier);
+  }
+
+  @override
+  bool hasSpace(String identifier) {
+    return _spaces.any((element) => element.identifier == identifier);
+  }
+
+  @override
+  Future<RoomPreview?> getRoomPreview(String address) {
+    // TODO: implement getRoomPreview
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<RoomPreview?> getSpacePreview(String address) {
+    // TODO: implement getSpacePreview
+    throw UnimplementedError();
   }
 }

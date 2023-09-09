@@ -58,7 +58,9 @@ class MessagePopupMenuState extends State<MessagePopupMenu> {
             shadow: const Shadow(color: Colors.transparent),
             backgroundColor:
                 kDebugMode ? Colors.red.withAlpha(40) : Colors.transparent,
-            content: widget.timeline.room.roomEmoticons == null
+            content: Container(),
+            // TODO: reimplement emoticons
+            /* widget.timeline.room.roomEmoticons == null
                 ? Container()
                 : MouseRegion(
                     child: PageStorage(
@@ -91,6 +93,7 @@ class MessagePopupMenuState extends State<MessagePopupMenu> {
                       ),
                     ),
                   ),
+                  */
             preferredDirection: AxisDirection.up,
             child: buildMenu(context)));
   }

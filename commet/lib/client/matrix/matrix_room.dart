@@ -1,13 +1,14 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:ui';
 import 'package:commet/client/components/emoticon/emoticon.dart';
-import 'package:commet/client/matrix/components/emoticon/matrix_emoticon_component.dart';
 import 'package:commet/client/matrix/matrix_attachment.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/matrix/matrix_peer.dart';
 import 'package:commet/client/matrix/matrix_room_permissions.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
+import 'package:commet/client/permissions.dart';
 import 'package:commet/utils/gif_search/gif_search_result.dart';
 import 'package:commet/utils/image_utils.dart';
 import 'package:commet/utils/mime.dart';
@@ -21,13 +22,35 @@ import '../attachment.dart';
 import '../client.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
-import 'components/emoticon/matrix_emoticon_pack.dart';
-
 class MatrixRoom extends Room {
   late matrix.Room _matrixRoom;
 
+  late String _displayName;
+
+  late bool _isDirectMessage;
+
+  late String? _directPartnerId;
+
+  late MatrixRoomPermissions _permissions;
+
+  final StreamController<void> _onUpdate = StreamController.broadcast();
+
+  matrix.Room get matrixRoom => _matrixRoom;
+
   @override
-  late final MatrixRoomEmoticonComponent roomEmoticons;
+  String? get directMessagePartnerID => _directPartnerId;
+
+  @override
+  String get displayName => _displayName;
+
+  @override
+  bool get isDirectMessage => _isDirectMessage;
+
+  @override
+  Stream<void> get onUpdate => _onUpdate.stream;
+
+  @override
+  Permissions get permissions => _permissions;
 
   @override
   bool get isMember => _matrixRoom.membership == matrix.Membership.join;
@@ -40,8 +63,6 @@ class MatrixRoom extends Room {
 
   @override
   int get notificationCount => _matrixRoom.notificationCount;
-
-  matrix.Room get matrixRoom => _matrixRoom;
 
   late DateTime _lastStateEventTimestamp;
   @override
@@ -61,8 +82,8 @@ class MatrixRoom extends Room {
 
   @override
   List<Peer> get typingPeers => _matrixRoom.typingUsers
-      .where((element) => element.id != client.user!.identifier)
-      .map((e) => client.fetchPeer(e.id))
+      .where((element) => element.id != client.self!.identifier)
+      .map((e) => client.getPeer(e.id))
       .toList();
 
   @override
@@ -90,6 +111,8 @@ class MatrixRoom extends Room {
       : super(room.id, client) {
     _matrixRoom = room;
 
+    _displayName = room.getLocalizedDisplayname();
+
     if (room.avatar != null) {
       avatar = MatrixMxcImage(room.avatar!, _matrixRoom.client,
           autoLoadFullRes: false);
@@ -105,10 +128,10 @@ class MatrixRoom extends Room {
       }
     }
 
-    isDirectMessage = _matrixRoom.isDirectChat;
+    _isDirectMessage = _matrixRoom.isDirectChat;
 
     if (isDirectMessage) {
-      directMessagePartnerID = _matrixRoom.directChatMatrixID!;
+      _directPartnerId = _matrixRoom.directChatMatrixID!;
     }
 
     var memberStates = _matrixRoom.states["m.room.member"];
@@ -117,33 +140,24 @@ class MatrixRoom extends Room {
       for (var key in memberStates!.keys) {
         var state = memberStates[key];
         if (state?.prevContent?["is_direct"] == true) {
-          isDirectMessage = true;
-          directMessagePartnerID = key;
+          _isDirectMessage = true;
+          _directPartnerId = key;
         }
       }
     }
-
-    displayName = room.getLocalizedDisplayname();
 
     // Note this is not necessarily all users, this has the most effect on smaller rooms
     // Where it is more likely that we are preloading important users
     var users = room.getParticipants();
     for (var user in users) {
-      if (!this.client.peerExists(user.id)) {
-        this.client.addPeer(MatrixPeer(client, matrixClient, user.id));
-      }
+      this.client.getPeer(user.id);
     }
 
     timeline = MatrixTimeline(client, this, room);
 
     _matrixRoom.onUpdate.stream.listen(onMatrixRoomUpdate);
 
-    roomEmoticons = MatrixRoomEmoticonComponent(
-        MatrixRoomEmoticonHelper(_matrixRoom),
-        this.client as MatrixClient,
-        this);
-
-    permissions = MatrixRoomPermissions(_matrixRoom);
+    _permissions = MatrixRoomPermissions(_matrixRoom);
   }
 
   @override
@@ -210,8 +224,8 @@ class MatrixRoom extends Room {
       };
 
       final html = mx_markdown.markdown(message,
-          getEmotePacks: () =>
-              roomEmoticons.getEmotePacksFlat(matrix.ImagePackUsage.emoticon),
+          // getEmotePacks: () =>
+          //     roomEmoticons.getEmotePacksFlat(matrix.ImagePackUsage.emoticon),
           getMention: _matrixRoom.getMention);
 
       if (HtmlUnescape().convert(html.replaceAll(RegExp(r'<br />\n?'), '\n')) !=
@@ -243,8 +257,8 @@ class MatrixRoom extends Room {
   }
 
   void onMatrixRoomUpdate(String event) async {
-    displayName = _matrixRoom.getLocalizedDisplayname();
-    onUpdate.add(null);
+    _displayName = _matrixRoom.getLocalizedDisplayname();
+    _onUpdate.add(null);
   }
 
   @override
@@ -264,7 +278,7 @@ class MatrixRoom extends Room {
     }
 
     await _matrixRoom.setPushRuleState(newRule);
-    onUpdate.add(null);
+    _onUpdate.add(null);
   }
 
   @override
@@ -329,5 +343,11 @@ class MatrixRoom extends Room {
   Future<void> removeReaction(
       TimelineEvent reactingTo, Emoticon reaction) async {
     return (timeline! as MatrixTimeline).removeReaction(reactingTo, reaction);
+  }
+
+  @override
+  Future<void> setDisplayName(String newName) {
+    // TODO: implement setDisplayName
+    throw UnimplementedError();
   }
 }

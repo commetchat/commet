@@ -47,7 +47,7 @@ void main() {
     expect(
         app.clientManager.clients
             .where((client) =>
-                client.user!.identifier.contains(tester.userTwoName))
+                client.self!.identifier.contains(tester.userTwoName))
             .isNotEmpty,
         isTrue);
 

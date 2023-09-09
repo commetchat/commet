@@ -52,12 +52,11 @@ class ClientManager {
     _clientsList.add(client);
     onClientAdded.add(_clients.length - 1);
 
-    client.onSync.stream.listen((_) => _synced());
+    client.onSync.listen((_) => _synced());
 
-    client.onRoomAdded.stream
-        .listen((index) => _onClientAddedRoom(client, index));
+    client.onRoomAdded.listen((index) => _onClientAddedRoom(client, index));
 
-    client.onSpaceAdded.stream.listen((i) {
+    client.onSpaceAdded.listen((i) {
       addSpace(client, i);
     });
   }
@@ -68,7 +67,7 @@ class ClientManager {
 
     if (client.rooms[index].isDirectMessage) {
       directMessages.add(client.rooms[index]);
-      client.rooms[index].onUpdate.stream
+      client.rooms[index].onUpdate
           .listen((_) => directMessageRoomUpdated(client.rooms[index]));
       onDirectMessageRoomAdded.add(directMessages.length - 1);
     } else if (!client.spaces.any(
@@ -103,9 +102,9 @@ class ClientManager {
 
     var clientInfo = StalePeerInfo(
         index: clientIndex,
-        displayName: client.user!.displayName,
-        identifier: client.user!.identifier,
-        avatar: client.user!.avatar);
+        displayName: client.self!.displayName,
+        identifier: client.self!.identifier,
+        avatar: client.self!.avatar);
 
     for (int i = rooms.length - 1; i >= 0; i--) {
       if (rooms[i].client == client) {
@@ -120,7 +119,7 @@ class ClientManager {
             index: i,
             name: spaces[i].displayName,
             avatar: spaces[i].avatar,
-            userAvatar: spaces[i].client.user!.avatar);
+            userAvatar: spaces[i].client.self!.avatar);
         spaces.removeAt(i);
         onSpaceRemoved.add(info);
       }

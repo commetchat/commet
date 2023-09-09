@@ -108,7 +108,7 @@ class _SpaceSelectorState extends State<SpaceSelector> {
                                   widget.spaces[i].displayNotificationCount,
                               highlightedNotificationCount: widget.spaces[i]
                                   .displayHighlightedNotificationCount,
-                              userAvatar: widget.spaces[i].client.user!.avatar,
+                              userAvatar: widget.spaces[i].client.self!.avatar,
                               index: i,
                             )),
                     if (widget.footer != null) const Seperator(),

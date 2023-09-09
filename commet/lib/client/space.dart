@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:commet/client/client.dart';
-import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/client/permissions.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/client/stale_info.dart';
@@ -29,8 +28,6 @@ abstract class Space {
   late RoomVisibility visibility = RoomVisibility.private;
 
   Color get color;
-
-  EmoticonComponent? get emoticons;
 
   String get developerInfo;
 
@@ -74,7 +71,6 @@ abstract class Space {
   bool loaded = false;
 
   @override
-  // ignore: hash_and_equals
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other is! Space) return false;
@@ -102,7 +98,7 @@ abstract class Space {
     if (!containsRoom(room.identifier)) {
       rooms.add(room);
 
-      room.onUpdate.stream.listen((event) {
+      room.onUpdate.listen((event) {
         onChildUpdated.add(room);
       });
 

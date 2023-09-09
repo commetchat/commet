@@ -56,15 +56,16 @@ class SettingsCategorySpace implements SettingsCategory {
                   space: space,
                 );
               }),
-        if ((space.permissions.canEditRoomEmoticons ||
-                space.emoticons!.ownedPacks.isNotEmpty) &&
-            space.emoticons != null)
-          SettingsTab(
-              label: labelSpaceEmoticonSettings,
-              icon: Icons.emoji_emotions,
-              pageBuilder: (context) {
-                return SpaceEmojiPackSettings(space);
-              }),
+        // TODO: reimplement emoticons
+        // if ((space.permissions.canEditRoomEmoticons ||
+        //         space.emoticons!.ownedPacks.isNotEmpty) &&
+        //     space.emoticons != null)
+        //   SettingsTab(
+        //       label: labelSpaceEmoticonSettings,
+        //       icon: Icons.emoji_emotions,
+        //       pageBuilder: (context) {
+        //         return SpaceEmojiPackSettings(space);
+        //       }),
         if (preferences.developerMode)
           SettingsTab(
             label: labelSpaceDeveloperSettings,

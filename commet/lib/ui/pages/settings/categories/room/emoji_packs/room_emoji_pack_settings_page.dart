@@ -1,3 +1,5 @@
+// TODO: reimplement emoticons 
+/*
 import 'dart:typed_data';
 
 import 'package:commet/client/client.dart';
@@ -47,3 +49,4 @@ class _RoomEmojiPackSettingsPageState extends State<RoomEmojiPackSettingsPage> {
     await pack.renameEmoticon(emoticon, name);
   }
 }
+*/

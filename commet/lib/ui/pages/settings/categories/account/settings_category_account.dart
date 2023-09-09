@@ -66,14 +66,15 @@ class SettingsCategoryAccount implements SettingsCategory {
                 clientManager: Provider.of<ClientManager>(context),
               );
             }),
-        SettingsTab(
-          label: labelSettingsTabEmoticons,
-          icon: Icons.emoji_emotions,
-          pageBuilder: (context) {
-            return AccountEmojiTab(
-                clientManager: Provider.of<ClientManager>(context));
-          },
-        ),
+        // TODO: reimplement emoticons
+        // SettingsTab(
+        //   label: labelSettingsTabEmoticons,
+        //   icon: Icons.emoji_emotions,
+        //   pageBuilder: (context) {
+        //     return AccountEmojiTab(
+        //         clientManager: Provider.of<ClientManager>(context));
+        //   },
+        // ),
         if (preferences.developerMode)
           SettingsTab(
             label: labelSettingsTabDeveloper,

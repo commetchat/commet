@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:commet/client/components/component.dart';
 import 'package:commet/client/timeline.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
 
 import 'emoji_pack.dart';
 
-abstract class EmoticonComponent {
+abstract class EmoticonComponent implements Component {
   List<EmoticonPack> globalPacks();
   List<EmoticonPack> get ownedPacks;
   bool get canCreatePack;

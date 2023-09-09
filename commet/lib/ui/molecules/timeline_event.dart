@@ -104,7 +104,7 @@ class _TimelineEventState extends State<TimelineEventView> {
       }
     }
 
-    widget.timeline.client.fetchPeer(widget.event.senderId).loading?.then((_) {
+    widget.timeline.client.getPeer(widget.event.senderId).loading?.then((_) {
       if (mounted) setState(() {});
     });
 
@@ -133,10 +133,10 @@ class _TimelineEventState extends State<TimelineEventView> {
   }
 
   String get displayName =>
-      widget.timeline.room.client.fetchPeer(widget.event.senderId).displayName;
+      widget.timeline.room.client.getPeer(widget.event.senderId).displayName;
 
   ImageProvider? get avatar =>
-      widget.timeline.room.client.fetchPeer(widget.event.senderId).avatar;
+      widget.timeline.room.client.getPeer(widget.event.senderId).avatar;
 
   Color get color => widget.timeline.room.getColorOfUser(widget.event.senderId);
 
@@ -146,7 +146,7 @@ class _TimelineEventState extends State<TimelineEventView> {
 
   String? get relatedEventDisplayName => relatedEvent == null
       ? null
-      : widget.timeline.client.fetchPeer(relatedEvent!.senderId).displayName;
+      : widget.timeline.client.getPeer(relatedEvent!.senderId).displayName;
 
   Widget? eventToWidget(TimelineEvent event) {
     if (event.status == TimelineEventStatus.removed) return const SizedBox();
@@ -162,7 +162,7 @@ class _TimelineEventState extends State<TimelineEventView> {
           onLongPress: widget.onLongPress,
           showSender: widget.showSender,
           reactions: widget.event.reactions,
-          currentUserIdentifier: widget.timeline.room.client.user!.identifier,
+          currentUserIdentifier: widget.timeline.room.client.self!.identifier,
           replyBody: relatedEvent?.body ??
               (relatedEvent?.type == EventType.sticker
                   ? messagePlaceholderSticker(displayName)
@@ -270,7 +270,7 @@ class _TimelineEventState extends State<TimelineEventView> {
 
   bool canUserEditEvent() {
     return widget.timeline.room.permissions.canUserEditMessages &&
-        widget.event.senderId == widget.timeline.room.client.user!.identifier;
+        widget.event.senderId == widget.timeline.room.client.self!.identifier;
   }
 
   Widget buildBody() {

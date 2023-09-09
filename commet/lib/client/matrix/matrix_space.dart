@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:commet/client/client.dart';
-import 'package:commet/client/matrix/components/emoticon/matrix_emoticon_component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
@@ -12,7 +11,6 @@ import 'package:commet/client/room_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
-import 'components/emoticon/matrix_emoticon_pack.dart';
 import 'matrix_peer.dart';
 
 class MatrixSpace extends Space {
@@ -28,9 +26,6 @@ class MatrixSpace extends Space {
   @override
   String get developerInfo =>
       const JsonEncoder.withIndent('  ').convert(_matrixRoom.states);
-
-  @override
-  late final MatrixEmoticonComponent emoticons;
 
   @override
   Color get color => MatrixPeer.hashColor(_matrixRoom.id);
@@ -62,7 +57,7 @@ class MatrixSpace extends Space {
     }
   }
 
-  MatrixSpace(client, matrix.Room room, matrix.Client matrixClient)
+  MatrixSpace(MatrixClient client, matrix.Room room, matrix.Client matrixClient)
       : super(room.id, client) {
     _matrixRoom = room;
     _matrixClient = matrixClient;
@@ -75,14 +70,11 @@ class MatrixSpace extends Space {
       onUpdate.add(null);
     });
 
-    client.onSync.stream.listen((event) {
+    client.onSync.listen((event) {
       refresh();
     });
 
     permissions = MatrixRoomPermissions(_matrixRoom);
-
-    emoticons = MatrixEmoticonComponent(
-        MatrixRoomEmoticonHelper(_matrixRoom), this.client as MatrixClient);
 
     refresh();
   }

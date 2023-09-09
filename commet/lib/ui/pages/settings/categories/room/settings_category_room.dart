@@ -70,15 +70,16 @@ class SettingsCategoryRoom implements SettingsCategory {
                   room: room,
                 );
               }),
-        if ((room.permissions.canEditRoomEmoticons ||
-                room.roomEmoticons!.ownedPacks.isNotEmpty) &&
-            room.roomEmoticons != null)
-          SettingsTab(
-              label: labelRoomSettingsEmoticons,
-              icon: Icons.emoji_emotions,
-              pageBuilder: (context) {
-                return RoomEmojiPackSettingsPage(room);
-              }),
+        // TODO: reimplement emoticons
+        // if ((room.permissions.canEditRoomEmoticons ||
+        //         room.roomEmoticons!.ownedPacks.isNotEmpty) &&
+        //     room.roomEmoticons != null)
+        //   SettingsTab(
+        //       label: labelRoomSettingsEmoticons,
+        //       icon: Icons.emoji_emotions,
+        //       pageBuilder: (context) {
+        //         return RoomEmojiPackSettingsPage(room);
+        //       }),
         if (preferences.developerMode)
           SettingsTab(
               label: labelRoomSettingsDeveloper,
