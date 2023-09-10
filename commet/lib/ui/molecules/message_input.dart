@@ -88,6 +88,7 @@ class MessageInputState extends State<MessageInput> {
   OverlayEntry? entry;
   final layerLink = LayerLink();
   bool showEmotePicker = false;
+  bool hasEmotePickerOpened = false;
 
   String get sendEncryptedMessagePrompt =>
       Intl.message("Send an encrypted message",
@@ -164,6 +165,9 @@ class MessageInputState extends State<MessageInput> {
   void toggleEmojiOverlay() {
     setState(() {
       showEmotePicker = !showEmotePicker;
+      if (showEmotePicker) {
+        hasEmotePickerOpened = true;
+      }
     });
   }
 
@@ -356,26 +360,29 @@ class MessageInputState extends State<MessageInput> {
         minHeight: emotePickerHeight,
         maxHeight: emotePickerHeight,
         alignment: Alignment.topCenter,
-        child: EmoticonPicker(
-            emoji: widget.availibleEmoticons!,
-            stickers: widget.availibleStickers ?? [],
-            onEmojiPressed: insertEmoticon,
-            emojiSize: BuildConfig.MOBILE ? 48 : 38,
-            packSize: BuildConfig.MOBILE ? 4 : 38,
-            packListAxis: BuildConfig.DESKTOP ? Axis.vertical : Axis.horizontal,
-            allowGifSearch: preferences.tenorGifSearchEnabled,
-            onStickerPressed: (emoticon) {
-              widget.sendSticker?.call(emoticon);
-              setState(() {
-                showEmotePicker = false;
-              });
-            },
-            onGifPressed: (gif) async {
-              await widget.sendGif?.call(gif);
-              setState(() {
-                showEmotePicker = false;
-              });
-            }));
+        child: !hasEmotePickerOpened
+            ? Container()
+            : EmoticonPicker(
+                emoji: widget.availibleEmoticons!,
+                stickers: widget.availibleStickers ?? [],
+                onEmojiPressed: insertEmoticon,
+                emojiSize: BuildConfig.MOBILE ? 48 : 38,
+                packSize: BuildConfig.MOBILE ? 4 : 38,
+                packListAxis:
+                    BuildConfig.DESKTOP ? Axis.vertical : Axis.horizontal,
+                allowGifSearch: preferences.tenorGifSearchEnabled,
+                onStickerPressed: (emoticon) {
+                  widget.sendSticker?.call(emoticon);
+                  setState(() {
+                    showEmotePicker = false;
+                  });
+                },
+                onGifPressed: (gif) async {
+                  await widget.sendGif?.call(gif);
+                  setState(() {
+                    showEmotePicker = false;
+                  });
+                }));
   }
 
   void addAttachment() async {

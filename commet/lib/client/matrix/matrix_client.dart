@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:commet/client/client_manager.dart';
+import 'package:commet/client/components/component.dart';
+import 'package:commet/client/components/component_registry.dart';
 import 'package:commet/client/invitation.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/room_preview.dart';
@@ -28,6 +30,7 @@ import 'matrix_space.dart';
 
 class MatrixClient extends Client {
   late matrix.Client _matrixClient;
+  late final List<Component<MatrixClient>> _components;
 
   Future? firstSync;
 
@@ -59,6 +62,8 @@ class MatrixClient extends Client {
     if (name != null) {
       _matrixClient = _createMatrixClient(name);
     }
+
+    _components = ComponentRegistry.getMatrixComponents(this);
   }
 
   static String hash(String name) {
@@ -496,5 +501,14 @@ class MatrixClient extends Client {
   Future<RoomPreview?> getSpacePreview(String address) {
     // TODO: implement getSpacePreview
     throw UnimplementedError();
+  }
+
+  @override
+  T? getComponent<T extends Component>() {
+    for (var component in _components) {
+      if (component is T) return component as T;
+    }
+
+    return null;
   }
 }

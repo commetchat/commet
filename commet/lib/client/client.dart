@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:commet/client/components/emoticon/emoticon_component.dart';
+import 'package:commet/client/components/component.dart';
 import 'package:commet/client/invitation.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/client/room.dart';
@@ -27,18 +27,11 @@ abstract class Client {
       LoginType type, String userIdentifier, String server,
       {String? password, String? token});
 
-  Future<void> init(bool loadingFromCache);
-
-  /// Logout and invalidate the current session
-  Future<void> logout();
-
   /// Local identifier for this client instance
   String get identifier;
 
   /// The Peer owned by the current user session
   Peer? self;
-
-  bool isLoggedIn();
 
   ValueKey get key => ValueKey(identifier);
 
@@ -77,6 +70,13 @@ abstract class Client {
 
   /// When the client receives an update from the server, this will be called
   Stream<void> get onSync;
+
+  Future<void> init(bool loadingFromCache);
+
+  /// Logout and invalidate the current session
+  Future<void> logout();
+
+  bool isLoggedIn();
 
   /// Returns true if the client is a member of the given space
   bool hasSpace(String identifier);
@@ -139,4 +139,6 @@ abstract class Client {
 
   /// Reject an invitation to join a room or space which this client is not yet a member of
   Future<void> rejectInvitation(Invitation invitation);
+
+  T? getComponent<T extends Component>();
 }

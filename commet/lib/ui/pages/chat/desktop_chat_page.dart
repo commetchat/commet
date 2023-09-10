@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/ui/atoms/drag_drop_file_target.dart';
 import 'package:commet/ui/atoms/room_header.dart';
 import 'package:commet/ui/atoms/space_header.dart';
@@ -38,6 +39,11 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
       name: "directMessagesListHeaderDesktop");
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
@@ -69,7 +75,7 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
               Expanded(child: homeView()),
             if (widget.state.selectedRoom != null &&
                 widget.state.selectedView != SubView.home)
-              roomChatView(),
+              chatView(),
             if (widget.state.selectedSpace != null &&
                 widget.state.selectedRoom == null)
               Expanded(
@@ -132,9 +138,101 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
               child: HomeScreen(clientManager: widget.state.clientManager),
             ),
           ),
-        if (widget.state.selectedRoom != null) roomChatView()
+        if (widget.state.selectedRoom != null) chatView()
       ],
     );
+  }
+
+  Widget chatView() {
+    return _RoomChatView(widget.state,
+        key: ValueKey("room-chat-view_${widget.state.selectedRoom!.localId}"));
+  }
+
+  void onFileDrop(DropDoneDetails details) async {
+    const int fiftyMb = 52428800;
+
+    for (var file in details.files) {
+      debugPrint(file.path);
+
+      var length = await file.length();
+
+      Uint8List? data;
+      String? name = file.name;
+      String? mimeType = mime.lookupMimeType(file.path, headerBytes: data);
+
+      if (length < fiftyMb) {
+        data = await file.readAsBytes();
+      }
+
+      var attachment = PendingFileAttachment(
+          name: name,
+          path: file.path,
+          data: data,
+          mimeType: mimeType,
+          size: length);
+
+      widget.state.addAttachment(attachment);
+    }
+  }
+
+  SizedBox spaceRoomSelector() {
+    return SizedBox(
+        width: 250,
+        child: Tile.low1(
+          child: Column(
+            children: [
+              SizedBox(
+                  height: 80,
+                  child: Tile.low2(
+                    borderBottom: true,
+                    child: SpaceHeader(
+                      widget.state.selectedSpace!,
+                      onTap: widget.state.clearRoomSelection,
+                      backgroundColor: Theme.of(context)
+                          .extension<ExtraColors>()!
+                          .surfaceLow1,
+                    ),
+                  )),
+              Expanded(
+                  child: SpaceViewer(
+                widget.state.selectedSpace!,
+                key: widget.state.selectedSpace!.key,
+                onRoomSelectionChanged:
+                    widget.state.onRoomSelectionChanged.stream,
+                onRoomInsert: widget.state.selectedSpace!.onRoomAdded,
+                onRoomSelected: (index) {
+                  widget.state
+                      .selectRoom(widget.state.selectedSpace!.rooms[index]);
+                },
+              )),
+            ],
+          ),
+        ));
+  }
+}
+
+class _RoomChatView extends StatefulWidget {
+  final ChatPageState state;
+  const _RoomChatView(this.state, {super.key});
+
+  @override
+  State<_RoomChatView> createState() => __RoomChatViewState();
+}
+
+class __RoomChatViewState extends State<_RoomChatView> {
+  @override
+  Widget build(BuildContext context) {
+    return roomChatView();
+  }
+
+  RoomEmoticonComponent? emoticons;
+
+  @override
+  void initState() {
+    emoticons =
+        widget.state.selectedRoom!.getComponent<RoomEmoticonComponent>();
+
+    super.initState();
   }
 
   Flexible roomChatView() {
@@ -203,11 +301,8 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
                           relatedEventSenderColor:
                               widget.state.relatedEventSenderColor,
                           setInputText: widget.state.setMessageInputText.stream,
-                          // TODO: reimplement emoticons
-                          // availibleEmoticons: widget.state.selectedRoom!
-                          //     .roomEmoticons?.availableEmoji,
-                          // availibleStickers: widget.state.selectedRoom!
-                          //     .roomEmoticons?.availableStickers,
+                          availibleEmoticons: emoticons?.availableEmoji,
+                          availibleStickers: emoticons?.availableStickers,
                           sendSticker: widget.state.sendSticker,
                           sendGif: widget.state.sendGif,
                           typingUsernames: widget
@@ -240,67 +335,5 @@ class _DesktopChatPageViewState extends State<DesktopChatPageView> {
         ],
       ),
     ));
-  }
-
-  void onFileDrop(DropDoneDetails details) async {
-    const int fiftyMb = 52428800;
-
-    for (var file in details.files) {
-      debugPrint(file.path);
-
-      var length = await file.length();
-
-      Uint8List? data;
-      String? name = file.name;
-      String? mimeType = mime.lookupMimeType(file.path, headerBytes: data);
-
-      if (length < fiftyMb) {
-        data = await file.readAsBytes();
-      }
-
-      var attachment = PendingFileAttachment(
-          name: name,
-          path: file.path,
-          data: data,
-          mimeType: mimeType,
-          size: length);
-
-      widget.state.addAttachment(attachment);
-    }
-  }
-
-  SizedBox spaceRoomSelector() {
-    return SizedBox(
-        width: 250,
-        child: Tile.low1(
-          child: Column(
-            children: [
-              SizedBox(
-                  height: 80,
-                  child: Tile.low2(
-                    borderBottom: true,
-                    child: SpaceHeader(
-                      widget.state.selectedSpace!,
-                      onTap: widget.state.clearRoomSelection,
-                      backgroundColor: Theme.of(context)
-                          .extension<ExtraColors>()!
-                          .surfaceLow1,
-                    ),
-                  )),
-              Expanded(
-                  child: SpaceViewer(
-                widget.state.selectedSpace!,
-                key: widget.state.selectedSpace!.key,
-                onRoomSelectionChanged:
-                    widget.state.onRoomSelectionChanged.stream,
-                onRoomInsert: widget.state.selectedSpace!.onRoomAdded,
-                onRoomSelected: (index) {
-                  widget.state
-                      .selectRoom(widget.state.selectedSpace!.rooms[index]);
-                },
-              )),
-            ],
-          ),
-        ));
   }
 }

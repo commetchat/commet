@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/space_component.dart';
 import 'package:commet/client/permissions.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/client/simulated/simulated_client.dart';
@@ -17,7 +18,7 @@ class SimulatedSpace extends Space {
   late String _displayName;
   late SimulatedRoomPermissions _permissions;
   final StreamController<void> _onUpdate = StreamController.broadcast();
-
+  final StreamController<Room> _onChildUpdated = StreamController.broadcast();
   final NotifyingList<Room> _rooms = NotifyingList.empty(growable: true);
 
   final NotifyingList<RoomPreview> _previewRooms =
@@ -88,7 +89,7 @@ class SimulatedSpace extends Space {
   Stream<void> get onChildPreviewsUpdated => _previewRooms.onListUpdated;
 
   @override
-  Stream<Room> get onChildUpdated => throw UnimplementedError();
+  Stream<Room> get onChildUpdated => _onChildUpdated.stream;
 
   @override
   Stream<void> get onChildrenUpdated => _rooms.onListUpdated;
@@ -133,4 +134,9 @@ class SimulatedSpace extends Space {
 
   @override
   bool get fullyLoaded => true;
+
+  @override
+  T? getComponent<T extends SpaceComponent<Client, Space>>() {
+    return null;
+  }
 }

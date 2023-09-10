@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
+import 'package:commet/client/components/room_component.dart';
 import 'package:commet/client/permissions.dart';
 import 'package:commet/client/simulated/simulated_client.dart';
 import 'package:commet/client/simulated/simulated_peer.dart';
@@ -105,7 +106,7 @@ class SimulatedRoom extends Room {
     } else {
       _participants.add(alice);
       _participants.add(bob);
-      _participants.add((client as Client).self!);
+      _participants.add(client.self!);
       client.addPeer(bob);
       client.addPeer(alice);
       _displayName = displayName;
@@ -171,11 +172,6 @@ class SimulatedRoom extends Room {
   }
 
   @override
-  Future<void> setDisplayNameInternal(String name) async {
-    _displayName = name;
-  }
-
-  @override
   Future<void> enableE2EE() {
     throw UnimplementedError();
   }
@@ -220,5 +216,10 @@ class SimulatedRoom extends Room {
   @override
   Future<void> setDisplayName(String newName) async {
     _displayName = newName;
+  }
+
+  @override
+  T? getComponent<T extends RoomComponent>() {
+    return null;
   }
 }

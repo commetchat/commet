@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/component_registry.dart';
+import 'package:commet/client/components/space_component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/matrix/matrix_room_permissions.dart';
@@ -36,6 +38,9 @@ class MatrixSpace extends Space {
 
   bool _fullyLoaded = false;
 
+  late final List<SpaceComponent<MatrixClient, MatrixSpace>> _components;
+
+  matrix.Room get matrixRoom => _matrixRoom;
   @override
   String get topic => _matrixRoom.topic;
 
@@ -126,6 +131,7 @@ class MatrixSpace extends Space {
     _displayName = room.getLocalizedDisplayname();
 
     _matrixRoom.postLoad();
+    _components = ComponentRegistry.getMatrixSpaceComponents(client, this);
 
     room.onUpdate.stream.listen((event) {
       refresh();
@@ -272,5 +278,14 @@ class MatrixSpace extends Space {
   @override
   bool containsRoom(String identifier) {
     return _rooms.any((element) => element.identifier == identifier);
+  }
+
+  @override
+  T? getComponent<T extends SpaceComponent>() {
+    for (var component in _components) {
+      if (component is T) return component as T;
+    }
+
+    return null;
   }
 }

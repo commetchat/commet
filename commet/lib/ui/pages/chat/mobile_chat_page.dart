@@ -2,6 +2,7 @@
 
 import 'dart:async';
 
+import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/client/timeline.dart';
 import 'package:commet/ui/molecules/direct_message_list.dart';
 import 'package:commet/ui/molecules/emoji_picker.dart';
@@ -43,7 +44,6 @@ class MobileChatPageView extends StatefulWidget {
 
 class _MobileChatPageViewState extends State<MobileChatPageView> {
   late GlobalKey<OverlappingPanelsState> panelsKey;
-  late GlobalKey<MessageInputState> messageInput = GlobalKey();
   StreamSubscription? onOpenRoomSubscription;
   bool shouldMainIgnoreInput = false;
   double height = -1;
@@ -78,9 +78,7 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
                 child: mainPanel(),
               )
             : mainPanel(),
-        onDragStart: () {
-          messageInput.currentState?.unfocus();
-        },
+        onDragStart: () {},
         onSideChange: (side) {
           setState(() {
             shouldMainIgnoreInput = side != RevealSide.main;
@@ -141,6 +139,13 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
     }
 
     return Tile(child: HomeScreen(clientManager: widget.state.clientManager));
+  }
+
+  Widget roomChatView() {
+    return _RoomChatView(
+      widget.state,
+      key: ValueKey("room-chat-view-${widget.state.selectedRoom!.localId}"),
+    );
   }
 
   Widget userList() {
@@ -228,6 +233,54 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
     );
   }
 
+  void clearSelectedRoom() {
+    Future.delayed(const Duration(milliseconds: 125)).then((value) {
+      panelsKey.currentState!.reveal(RevealSide.main);
+      setState(() {
+        shouldMainIgnoreInput = false;
+      });
+    });
+    widget.state.clearRoomSelection();
+  }
+
+  void selectRoom(Room room) {
+    panelsKey.currentState!.reveal(RevealSide.main);
+    setState(() {
+      shouldMainIgnoreInput = false;
+    });
+
+    widget.state.selectRoom(room);
+  }
+
+  void onNavigateToRoom(String id) {
+    panelsKey.currentState?.reveal(RevealSide.main);
+  }
+}
+
+class _RoomChatView extends StatefulWidget {
+  final ChatPageState state;
+  const _RoomChatView(this.state, {super.key});
+
+  @override
+  State<_RoomChatView> createState() => __RoomChatViewState();
+}
+
+class __RoomChatViewState extends State<_RoomChatView> {
+  late GlobalKey<MessageInputState> messageInput = GlobalKey();
+  RoomEmoticonComponent? emoticons;
+
+  @override
+  void initState() {
+    emoticons =
+        widget.state.selectedRoom?.getComponent<RoomEmoticonComponent>();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return roomChatView();
+  }
+
   Widget roomChatView() {
     return Tile(
       child: m.Scaffold(
@@ -295,11 +348,8 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
                           removeAttachment: widget.state.removeAttachment,
                           focusKeyboard:
                               widget.state.onFocusMessageInput.stream,
-                          // TODO: reimplement emoticons
-                          // availibleEmoticons: widget.state.selectedRoom!
-                          //     .roomEmoticons?.availableEmoji,
-                          // availibleStickers: widget.state.selectedRoom!
-                          //     .roomEmoticons?.availableStickers,
+                          availibleEmoticons: emoticons?.availableEmoji,
+                          availibleStickers: emoticons?.availableStickers,
                           sendGif: widget.state.sendGif,
                           sendSticker: widget.state.sendSticker,
                           cancelReply: () {
@@ -316,25 +366,6 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
         ),
       ),
     );
-  }
-
-  void clearSelectedRoom() {
-    Future.delayed(const Duration(milliseconds: 125)).then((value) {
-      panelsKey.currentState!.reveal(RevealSide.main);
-      setState(() {
-        shouldMainIgnoreInput = false;
-      });
-    });
-    widget.state.clearRoomSelection();
-  }
-
-  void selectRoom(Room room) {
-    panelsKey.currentState!.reveal(RevealSide.main);
-    setState(() {
-      shouldMainIgnoreInput = false;
-    });
-
-    widget.state.selectRoom(room);
   }
 
   void showMessageMenu(TimelineEvent event) {
@@ -369,16 +400,12 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
           builder: (context, scrollController) {
             return SizedBox(
                 height: 700,
-                // TODO: reimplement emoticons
-                child: /*EmojiPicker(
-                widget.state.selectedRoom!.roomEmoticons!.availableEmoji,
-                size: 48,
-                packButtonSize: 40,
-                onEmoticonPressed: (emoticon) {
+                child: EmojiPicker(emoticons!.availableEmoji,
+                    size: 48,
+                    packButtonSize: 40, onEmoticonPressed: (emoticon) {
                   widget.state.addReaction(event, emoticon);
                   Navigator.pop(context);
-                }),*/
-                    Placeholder());
+                }));
           },
         );
       },
@@ -508,9 +535,5 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
     if (event.type != EventType.message) return false;
 
     return true;
-  }
-
-  void onNavigateToRoom(String id) {
-    panelsKey.currentState?.reveal(RevealSide.main);
   }
 }

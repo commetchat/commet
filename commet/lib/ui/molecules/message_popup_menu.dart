@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:commet/client/components/emoticon/emoticon.dart';
+import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/client/timeline.dart';
 import 'package:commet/ui/molecules/emoji_picker.dart';
 import 'package:flutter/foundation.dart';
@@ -39,11 +40,13 @@ class MessagePopupMenu extends StatefulWidget {
 class MessagePopupMenuState extends State<MessagePopupMenu> {
   JustTheController controller = JustTheController();
   PageStorageBucket storage = PageStorageBucket();
+  RoomEmoticonComponent? emoticons;
   StreamSubscription? sub;
 
   @override
   void initState() {
     super.initState();
+    emoticons = widget.timeline.room.getComponent<RoomEmoticonComponent>();
     sub = widget.onMessageChanged?.listen(onMessageChanged);
   }
 
@@ -58,42 +61,36 @@ class MessagePopupMenuState extends State<MessagePopupMenu> {
             shadow: const Shadow(color: Colors.transparent),
             backgroundColor:
                 kDebugMode ? Colors.red.withAlpha(40) : Colors.transparent,
-            content: Container(),
-            // TODO: reimplement emoticons
-            /* widget.timeline.room.roomEmoticons == null
-                ? Container()
-                : MouseRegion(
-                    child: PageStorage(
-                      bucket: storage,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(boxShadow: [
-                            BoxShadow(
-                                blurRadius: 10,
-                                spreadRadius: 2,
-                                color: Theme.of(context).shadowColor),
-                          ]),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(5),
-                            child: Container(
-                              color: Theme.of(context).colorScheme.surface,
-                              child: SizedBox(
-                                width: 300,
-                                height: 300,
-                                child: EmojiPicker(
-                                  widget.timeline.room.roomEmoticons!
-                                      .availableEmoji,
-                                  onEmoticonPressed: onEmoticonPicked,
-                                ),
-                              ),
-                            ),
+            content: MouseRegion(
+              child: PageStorage(
+                bucket: storage,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(boxShadow: [
+                      BoxShadow(
+                          blurRadius: 10,
+                          spreadRadius: 2,
+                          color: Theme.of(context).shadowColor),
+                    ]),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(5),
+                      child: Container(
+                        color: Theme.of(context).colorScheme.surface,
+                        child: SizedBox(
+                          width: 300,
+                          height: 300,
+                          child: EmojiPicker(
+                            emoticons!.availableEmoji,
+                            onEmoticonPressed: onEmoticonPicked,
                           ),
                         ),
                       ),
                     ),
                   ),
-                  */
+                ),
+              ),
+            ),
             preferredDirection: AxisDirection.up,
             child: buildMenu(context)));
   }

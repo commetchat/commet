@@ -1,4 +1,5 @@
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/settings/categories/room/developer/room_developer_settings_view.dart';
 import 'package:commet/ui/pages/settings/categories/space/space_emoji_pack_settings.dart';
@@ -38,43 +39,48 @@ class SettingsCategorySpace implements SettingsCategory {
   String get title => labelSettingsCategorySpace;
 
   @override
-  List<SettingsTab> get tabs => List.from([
+  List<SettingsTab> get tabs => getTabs();
+
+  List<SettingsTab> getTabs() {
+    SpaceEmoticonComponent? emoticons =
+        space.getComponent<SpaceEmoticonComponent>();
+    return List.from([
+      SettingsTab(
+          label: labelSpaceSettingsGeneral,
+          icon: Icons.settings,
+          pageBuilder: (context) {
+            return SpaceGeneralSettingsPage(
+              space: space,
+            );
+          }),
+      if (shouldShowAppearanceSettings())
         SettingsTab(
-            label: labelSpaceSettingsGeneral,
-            icon: Icons.settings,
+            label: labelSpaceAppearanceSettings,
+            icon: Icons.style,
             pageBuilder: (context) {
-              return SpaceGeneralSettingsPage(
+              return SpaceAppearanceSettingsPage(
                 space: space,
               );
             }),
-        if (shouldShowAppearanceSettings())
-          SettingsTab(
-              label: labelSpaceAppearanceSettings,
-              icon: Icons.style,
-              pageBuilder: (context) {
-                return SpaceAppearanceSettingsPage(
-                  space: space,
-                );
-              }),
-        // TODO: reimplement emoticons
-        // if ((space.permissions.canEditRoomEmoticons ||
-        //         space.emoticons!.ownedPacks.isNotEmpty) &&
-        //     space.emoticons != null)
-        //   SettingsTab(
-        //       label: labelSpaceEmoticonSettings,
-        //       icon: Icons.emoji_emotions,
-        //       pageBuilder: (context) {
-        //         return SpaceEmojiPackSettings(space);
-        //       }),
-        if (preferences.developerMode)
-          SettingsTab(
-            label: labelSpaceDeveloperSettings,
-            icon: Icons.code,
+      if (emoticons != null &&
+          (space.permissions.canEditRoomEmoticons ||
+              emoticons.ownedPacks.isNotEmpty))
+        SettingsTab(
+            label: labelSpaceEmoticonSettings,
+            icon: Icons.emoji_emotions,
             pageBuilder: (context) {
-              return RoomDeveloperSettingsView(space.developerInfo);
-            },
-          ),
-      ]);
+              return SpaceEmojiPackSettings(space);
+            }),
+      if (preferences.developerMode)
+        SettingsTab(
+          label: labelSpaceDeveloperSettings,
+          icon: Icons.code,
+          pageBuilder: (context) {
+            return RoomDeveloperSettingsView(space.developerInfo);
+          },
+        ),
+    ]);
+  }
 
   bool shouldShowAppearanceSettings() {
     return space.permissions.canEditAvatar || space.permissions.canEditName;

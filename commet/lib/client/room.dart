@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
+import 'package:commet/client/components/room_component.dart';
 import 'package:commet/utils/gif_search/gif_search_result.dart';
 import 'package:flutter/material.dart';
 import 'attachment.dart';
@@ -115,6 +116,8 @@ abstract class Room {
 
   /// The last known event in the room timeline
   TimelineEvent? get lastEvent;
+
+  T? getComponent<T extends RoomComponent>();
 
   @override
   bool operator ==(Object other) {

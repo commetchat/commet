@@ -1,13 +1,15 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:commet/client/client.dart';
 import 'package:commet/client/components/component.dart';
-import 'package:commet/client/timeline.dart';
+import 'package:commet/client/components/room_component.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
+import 'package:commet/client/components/space_component.dart';
 
 import 'emoji_pack.dart';
 
-abstract class EmoticonComponent implements Component {
+abstract class EmoticonComponent<T extends Client> implements Component<T> {
   List<EmoticonPack> globalPacks();
   List<EmoticonPack> get ownedPacks;
   bool get canCreatePack;
@@ -18,7 +20,8 @@ abstract class EmoticonComponent implements Component {
   Future<void> deleteEmoticonPack(EmoticonPack pack);
 }
 
-abstract class RoomEmoticonComponent extends EmoticonComponent {
+abstract class RoomEmoticonComponent<R extends Client, T extends Room>
+    extends EmoticonComponent<R> implements RoomComponent<R, T> {
   Future<TimelineEvent?> sendSticker(
       Emoticon sticker, TimelineEvent? inReplyTo);
 
@@ -26,3 +29,6 @@ abstract class RoomEmoticonComponent extends EmoticonComponent {
   List<EmoticonPack> get availableEmoji;
   List<EmoticonPack> get availableStickers;
 }
+
+abstract class SpaceEmoticonComponent<R extends Client, T extends Space>
+    extends EmoticonComponent<R> implements SpaceComponent<R, T> {}

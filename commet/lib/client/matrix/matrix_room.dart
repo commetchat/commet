@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:ui';
+import 'package:commet/client/components/component_registry.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
+import 'package:commet/client/components/room_component.dart';
 import 'package:commet/client/matrix/matrix_attachment.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
@@ -34,6 +36,8 @@ class MatrixRoom extends Room {
   late MatrixRoomPermissions _permissions;
 
   final StreamController<void> _onUpdate = StreamController.broadcast();
+
+  late final List<RoomComponent<MatrixClient, MatrixRoom>> _components;
 
   ImageProvider? _avatar;
 
@@ -128,6 +132,7 @@ class MatrixRoom extends Room {
     _client = client;
 
     _displayName = room.getLocalizedDisplayname();
+    _components = ComponentRegistry.getMatrixRoomComponents(client, this);
 
     if (room.avatar != null) {
       _avatar = MatrixMxcImage(room.avatar!, _matrixRoom.client,
@@ -361,5 +366,14 @@ class MatrixRoom extends Room {
   Future<void> removeReaction(
       TimelineEvent reactingTo, Emoticon reaction) async {
     return (timeline! as MatrixTimeline).removeReaction(reactingTo, reaction);
+  }
+
+  @override
+  T? getComponent<T extends RoomComponent>() {
+    for (var component in _components) {
+      if (component is T) return component as T;
+    }
+
+    return null;
   }
 }

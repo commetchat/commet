@@ -1,8 +1,7 @@
-// TODO: reimplement emoticons 
-/*
 import 'dart:typed_data';
 
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/ui/pages/settings/categories/room/emoji_packs/room_emoji_pack_settings_view.dart';
 import 'package:commet/client/components/emoticon/emoji_pack.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
@@ -18,26 +17,34 @@ class RoomEmojiPackSettingsPage extends StatefulWidget {
 }
 
 class _RoomEmojiPackSettingsPageState extends State<RoomEmojiPackSettingsPage> {
+  late RoomEmoticonComponent component;
+
+  @override
+  void initState() {
+    component = widget.room.getComponent<RoomEmoticonComponent>()!;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return RoomEmojiPackSettingsView(
-      widget.room.roomEmoticons!.ownedPacks,
+      component.ownedPacks,
       createNewPack: createNewPack,
-      onPackCreated: widget.room.roomEmoticons!.onOwnedPackAdded,
+      onPackCreated: component.onOwnedPackAdded,
       deletePack: deletePack,
       deleteEmoticon: deleteEmoticon,
-      canCreatePack: widget.room.roomEmoticons!.canCreatePack,
+      canCreatePack: component.canCreatePack,
       renameEmoticon: renameEmoticon,
       editable: widget.room.permissions.canEditRoomEmoticons,
     );
   }
 
   Future<void> createNewPack(String name, Uint8List? avatarData) async {
-    await widget.room.roomEmoticons?.createEmoticonPack(name, avatarData);
+    await component.createEmoticonPack(name, avatarData);
   }
 
   Future<void> deletePack(EmoticonPack pack) async {
-    await widget.room.roomEmoticons?.deleteEmoticonPack(pack);
+    await component.deleteEmoticonPack(pack);
   }
 
   Future<void> deleteEmoticon(EmoticonPack pack, Emoticon emoticon) async {
@@ -49,4 +56,3 @@ class _RoomEmojiPackSettingsPageState extends State<RoomEmojiPackSettingsPage> {
     await pack.renameEmoticon(emoticon, name);
   }
 }
-*/

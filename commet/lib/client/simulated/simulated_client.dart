@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:typed_data';
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/component.dart';
+import 'package:commet/client/components/component_registry.dart';
 import 'package:commet/client/invitation.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/client/simulated/simulated_peer.dart';
@@ -17,6 +19,8 @@ class SimulatedClient extends Client {
   bool _isLogged = false;
   late String _id;
 
+  late List<Component<SimulatedClient>> _components;
+
   final NotifyingList<Room> _rooms = NotifyingList.empty(
     growable: true,
   );
@@ -32,6 +36,8 @@ class SimulatedClient extends Client {
 
   SimulatedClient() {
     _id = RandomUtils.getRandomString(20);
+
+    _components = ComponentRegistry.getSimulatedComponents(this);
   }
 
   @override
@@ -146,9 +152,10 @@ class SimulatedClient extends Client {
   }
 
   @override
-  Future<Room> joinRoom(String address) {
-    // TODO: implement joinRoom
-    throw UnimplementedError();
+  Future<Room> joinRoom(String address) async {
+    var room = SimulatedRoom("New Room", this);
+    _rooms.add(room);
+    return room;
   }
 
   @override
@@ -245,5 +252,14 @@ class SimulatedClient extends Client {
 
   void addPeer(SimulatedPeer peer) {
     _peers.add(peer);
+  }
+
+  @override
+  T? getComponent<T extends Component>() {
+    for (var component in _components) {
+      if (component is T) return component as T;
+    }
+
+    return null;
   }
 }

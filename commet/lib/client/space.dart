@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/space_component.dart';
 import 'package:commet/client/permissions.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:flutter/foundation.dart';
@@ -85,6 +86,8 @@ abstract class Space {
   Future<void> changeAvatar(Uint8List bytes, String? mimeType);
 
   Future<void> setPushRule(PushRule rule);
+
+  T? getComponent<T extends SpaceComponent>();
 
   @override
   bool operator ==(Object other) {

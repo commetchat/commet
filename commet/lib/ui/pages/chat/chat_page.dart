@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:commet/client/client_manager.dart';
+import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/navigation/navigation_signals.dart';
@@ -444,12 +445,11 @@ class ChatPageState extends State<ChatPage> {
   }
 
   void sendSticker(Emoticon sticker) {
-    // TODO: reimplement emoticons
-    //selectedRoom!.roomEmoticons!.sendSticker(
-    //    sticker,
-    //    interactionType == EventInteractionType.reply
-    //        ? interactingEvent
-    //        : null);
+    selectedRoom!.getComponent<RoomEmoticonComponent>()?.sendSticker(
+        sticker,
+        interactionType == EventInteractionType.reply
+            ? interactingEvent
+            : null);
   }
 
   Future<void> sendGif(GifSearchResult gif) async {
