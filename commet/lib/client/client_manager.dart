@@ -10,7 +10,11 @@ class ClientManager {
   List<Room> rooms = List.empty(growable: true);
   List<Room> directMessages = List.empty(growable: true);
 
-  List<Room> singleRooms = List.empty(growable: true);
+  List<Room> get singleRooms => rooms
+      .where(
+          (room) => !spaces.any((space) => space.containsRoom(room.identifier)))
+      .toList();
+
   List<Space> spaces = List.empty(growable: true);
   final List<Client> _clientsList = List.empty(growable: true);
 
@@ -20,11 +24,6 @@ class ClientManager {
 
   late StreamController<int> onRoomAdded = StreamController.broadcast();
   late StreamController<int> onRoomRemoved = StreamController.broadcast();
-
-  late StreamController<int> onDirectMessageRoomAdded =
-      StreamController.broadcast();
-
-  late StreamController<int> onSingleRoomAdded = StreamController.broadcast();
 
   late StreamController<int> onSpaceAdded = StreamController.broadcast();
   late StreamController<StaleSpaceInfo> onSpaceRemoved =
@@ -39,6 +38,9 @@ class ClientManager {
       StreamController.broadcast();
 
   late StreamController<Room> onDirectMessageRoomUpdated =
+      StreamController.broadcast();
+
+  late StreamController<int> onDirectMessageRoomAdded =
       StreamController.broadcast();
 
   int get directMessagesNotificationCount => directMessages.fold(
@@ -70,10 +72,6 @@ class ClientManager {
       client.rooms[index].onUpdate
           .listen((_) => directMessageRoomUpdated(client.rooms[index]));
       onDirectMessageRoomAdded.add(directMessages.length - 1);
-    } else if (!client.spaces.any(
-        (element) => element.containsRoom(client.rooms[index].identifier))) {
-      singleRooms.add(client.rooms[index]);
-      onSingleRoomAdded.add(singleRooms.length - 1);
     }
   }
 

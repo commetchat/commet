@@ -80,10 +80,12 @@ class MessagePopupMenuState extends State<MessagePopupMenu> {
                         child: SizedBox(
                           width: 300,
                           height: 300,
-                          child: EmojiPicker(
-                            emoticons!.availableEmoji,
-                            onEmoticonPressed: onEmoticonPicked,
-                          ),
+                          child: emoticons != null
+                              ? EmojiPicker(
+                                  emoticons!.availableEmoji,
+                                  onEmoticonPressed: onEmoticonPicked,
+                                )
+                              : Container(),
                         ),
                       ),
                     ),

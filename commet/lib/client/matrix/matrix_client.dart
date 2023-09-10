@@ -57,11 +57,9 @@ class MatrixClient extends Client {
       ? const matrix.NativeImplementationsDummy()
       : matrix.NativeImplementationsIsolate(compute);
 
-  MatrixClient({String? name, required String identifier}) {
+  MatrixClient({required String identifier}) {
     _id = identifier;
-    if (name != null) {
-      _matrixClient = _createMatrixClient(name);
-    }
+    _matrixClient = _createMatrixClient(identifier);
 
     _components = ComponentRegistry.getMatrixComponents(this);
   }
@@ -117,7 +115,7 @@ class MatrixClient extends Client {
 
       if (clients != null) {
         for (var clientName in clients) {
-          var client = MatrixClient(name: clientName, identifier: clientName);
+          var client = MatrixClient(identifier: clientName);
           try {
             manager.addClient(client);
             futures.add(diagnostics.timeAsync("Initializing client $clientName",
