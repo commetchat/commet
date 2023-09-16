@@ -12,7 +12,6 @@ import 'package:commet/client/matrix/matrix_peer.dart';
 import 'package:commet/client/matrix/matrix_room_permissions.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
 import 'package:commet/client/permissions.dart';
-import 'package:commet/utils/gif_search/gif_search_result.dart';
 import 'package:commet/utils/image_utils.dart';
 import 'package:commet/utils/mime.dart';
 import 'package:flutter/material.dart';
@@ -313,42 +312,6 @@ class MatrixRoom extends Room {
   @override
   Color getColorOfUser(String userId) {
     return MatrixPeer.hashColor(userId);
-  }
-
-  @override
-  Future<TimelineEvent?> sendGif(
-      GifSearchResult gif, TimelineEvent? inReplyTo) async {
-    var response = await _matrixRoom.client.httpClient.get(gif.fullResUrl);
-    if (response.statusCode == 200) {
-      var data = response.bodyBytes;
-
-      matrix.Event? replyingTo;
-      var uri = await _matrixRoom.client
-          .uploadContent(data, filename: "sticker", contentType: "image/gif");
-
-      var content = {
-        "body": "gif",
-        "url": uri.toString(),
-        "info": {
-          "w": gif.x.toInt(),
-          "h": gif.y.toInt(),
-          "mimetype": "image/gif"
-        }
-      };
-
-      if (inReplyTo != null) {
-        replyingTo = await _matrixRoom.getEventById(inReplyTo.eventId);
-      }
-
-      var id = await _matrixRoom.sendEvent(content,
-          type: matrix.EventTypes.Sticker, inReplyTo: replyingTo);
-
-      if (id != null) {
-        var event = await _matrixRoom.getEventById(id);
-        return (timeline as MatrixTimeline).convertEvent(event!);
-      }
-    }
-    throw UnimplementedError();
   }
 
   @override

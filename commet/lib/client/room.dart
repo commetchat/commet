@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/components/room_component.dart';
-import 'package:commet/utils/gif_search/gif_search_result.dart';
 import 'package:flutter/material.dart';
 import 'attachment.dart';
 import 'permissions.dart';
@@ -88,9 +87,6 @@ abstract class Room {
 
   /// Remove an emoticon reaction to a message
   Future<void> removeReaction(TimelineEvent reactingTo, Emoticon reaction);
-
-  /// Send a gif in this room
-  Future<TimelineEvent?> sendGif(GifSearchResult gif, TimelineEvent? inReplyTo);
 
   /// Processes files before sending as attachment
   Future<List<ProcessedAttachment>> processAttachments(

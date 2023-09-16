@@ -1,12 +1,13 @@
 import 'dart:async';
 
+import 'package:commet/client/components/gif/gif_component.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/molecules/attachment_icon.dart';
 import 'package:commet/ui/molecules/emoticon_picker.dart';
 import 'package:commet/ui/pages/chat/chat_page.dart';
 import 'package:commet/client/components/emoticon/emoji_pack.dart';
-import 'package:commet/utils/gif_search/gif_search_result.dart';
+import 'package:commet/client/components/gif/gif_search_result.dart';
 import 'package:file_picker/file_picker.dart';
 
 import 'package:flutter/material.dart';
@@ -45,6 +46,7 @@ class MessageInput extends StatefulWidget {
       this.typingUsernames,
       this.availibleEmoticons,
       this.availibleStickers,
+      this.gifComponent,
       this.onReadReceiptsClicked,
       this.sendGif,
       this.sendSticker,
@@ -65,6 +67,7 @@ class MessageInput extends StatefulWidget {
   final List<String>? typingUsernames;
   final List<EmoticonPack>? availibleEmoticons;
   final List<EmoticonPack>? availibleStickers;
+  final GifComponent? gifComponent;
   final void Function()? onReadReceiptsClicked;
   final void Function(Emoticon sticker)? sendSticker;
   final Future<void> Function(GifSearchResult gif)? sendGif;
@@ -371,6 +374,7 @@ class MessageInputState extends State<MessageInput> {
                 packListAxis:
                     BuildConfig.DESKTOP ? Axis.vertical : Axis.horizontal,
                 allowGifSearch: preferences.tenorGifSearchEnabled,
+                gifComponent: widget.gifComponent,
                 onStickerPressed: (emoticon) {
                   widget.sendSticker?.call(emoticon);
                   setState(() {

@@ -6,7 +6,6 @@ import 'package:commet/client/matrix/components/emoticon/matrix_emoticon_pack.da
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:flutter/material.dart';
-import 'package:matrix/matrix.dart';
 
 /// Manages custom emoticon packs from the matrix user account state
 class MatrixEmoticonComponent extends EmoticonComponent<MatrixClient> {

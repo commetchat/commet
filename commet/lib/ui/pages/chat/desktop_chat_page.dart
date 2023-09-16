@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:commet/client/components/emoticon/emoticon_component.dart';
+import 'package:commet/client/components/gif/gif_component.dart';
 import 'package:commet/ui/atoms/drag_drop_file_target.dart';
 import 'package:commet/ui/atoms/room_header.dart';
 import 'package:commet/ui/atoms/space_header.dart';
@@ -226,11 +227,14 @@ class __RoomChatViewState extends State<_RoomChatView> {
   }
 
   RoomEmoticonComponent? emoticons;
+  GifComponent? gifs;
 
   @override
   void initState() {
     emoticons =
         widget.state.selectedRoom!.getComponent<RoomEmoticonComponent>();
+
+    gifs = widget.state.selectedRoom!.getComponent<GifComponent>();
 
     super.initState();
   }
@@ -287,6 +291,7 @@ class __RoomChatViewState extends State<_RoomChatView> {
                                 widget.state.selectedRoom?.timeline?.receipts,
                           ),
                           interactionType: widget.state.interactionType,
+                          gifComponent: gifs,
                           onSendMessage: (message) {
                             widget.state.sendMessage(message);
                             return MessageInputSendResult.success;

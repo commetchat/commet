@@ -6,12 +6,18 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;
 import '../../utils/debounce.dart';
-import '../../utils/gif_search/gif_search_result.dart';
+import '../../client/components/gif/gif_search_result.dart';
 
 class GifPicker extends StatefulWidget {
-  const GifPicker({super.key, this.gifPicked, this.search});
+  const GifPicker(
+      {super.key,
+      this.gifPicked,
+      this.search,
+      this.placeholderText = "Search Gif"});
   final Future<void> Function(GifSearchResult gif)? gifPicked;
   final Future<List<GifSearchResult>> Function(String query)? search;
+
+  final String placeholderText;
 
   @override
   State<GifPicker> createState() => _GifPickerState();
@@ -108,8 +114,9 @@ class _GifPickerState extends State<GifPicker> {
             height: BuildConfig.DESKTOP ? 30 : null,
             child: TextField(
               controller: _textController,
-              decoration: const InputDecoration(
-                  icon: Icon(Icons.search), hintText: "Search Tenor..."),
+              decoration: InputDecoration(
+                  icon: const Icon(Icons.search),
+                  hintText: widget.placeholderText),
             )),
       ),
     );

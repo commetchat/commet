@@ -9,7 +9,6 @@ import 'package:commet/client/simulated/simulated_client.dart';
 import 'package:commet/client/simulated/simulated_peer.dart';
 import 'package:commet/client/simulated/simulated_room_permissions.dart';
 import 'package:commet/client/simulated/simulated_timeline.dart';
-import 'package:commet/utils/gif_search/gif_search_result.dart';
 import 'package:commet/utils/rng.dart';
 import 'package:flutter/material.dart';
 
@@ -194,12 +193,6 @@ class SimulatedRoom extends Room {
   @override
   Color getColorOfUser(String userId) {
     return Colors.red;
-  }
-
-  @override
-  Future<TimelineEvent?> sendGif(
-      GifSearchResult gif, TimelineEvent? inReplyTo) {
-    throw UnimplementedError();
   }
 
   @override

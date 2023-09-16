@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/emoticon/emoticon_component.dart';
+import 'package:commet/client/components/gif/gif_component.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/navigation/navigation_signals.dart';
@@ -10,7 +11,7 @@ import 'package:commet/ui/pages/chat/desktop_chat_page.dart';
 import 'package:commet/ui/pages/chat/mobile_chat_page.dart';
 import 'package:commet/ui/pages/settings/room_settings_page.dart';
 import 'package:commet/utils/debounce.dart';
-import 'package:commet/utils/gif_search/gif_search_result.dart';
+import 'package:commet/client/components/gif/gif_search_result.dart';
 import 'package:commet/utils/notification/notification_manager.dart';
 import 'package:commet/utils/orientation.dart';
 import 'package:flutter/foundation.dart';
@@ -453,7 +454,8 @@ class ChatPageState extends State<ChatPage> {
   }
 
   Future<void> sendGif(GifSearchResult gif) async {
-    await selectedRoom!.sendGif(
+    var component = selectedRoom!.getComponent<GifComponent>();
+    await component?.sendGif(
         gif,
         interactionType == EventInteractionType.reply
             ? interactingEvent

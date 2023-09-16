@@ -3,6 +3,7 @@
 import 'dart:async';
 
 import 'package:commet/client/components/emoticon/emoticon_component.dart';
+import 'package:commet/client/components/gif/gif_component.dart';
 import 'package:commet/client/timeline.dart';
 import 'package:commet/ui/molecules/direct_message_list.dart';
 import 'package:commet/ui/molecules/emoji_picker.dart';
@@ -268,11 +269,14 @@ class _RoomChatView extends StatefulWidget {
 class __RoomChatViewState extends State<_RoomChatView> {
   late GlobalKey<MessageInputState> messageInput = GlobalKey();
   RoomEmoticonComponent? emoticons;
+  GifComponent? gifs;
 
   @override
   void initState() {
     emoticons =
         widget.state.selectedRoom?.getComponent<RoomEmoticonComponent>();
+
+    gifs = widget.state.selectedRoom?.getComponent<GifComponent>();
     super.initState();
   }
 
@@ -350,6 +354,7 @@ class __RoomChatViewState extends State<_RoomChatView> {
                               widget.state.onFocusMessageInput.stream,
                           availibleEmoticons: emoticons?.availableEmoji,
                           availibleStickers: emoticons?.availableStickers,
+                          gifComponent: gifs,
                           sendGif: widget.state.sendGif,
                           sendSticker: widget.state.sendSticker,
                           cancelReply: () {

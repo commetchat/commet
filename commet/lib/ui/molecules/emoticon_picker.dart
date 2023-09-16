@@ -1,10 +1,10 @@
+import 'package:commet/client/components/gif/gif_component.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/molecules/emoji_picker.dart';
 import 'package:commet/ui/molecules/gif_picker.dart';
 import 'package:commet/ui/molecules/sticker_picker.dart';
 import 'package:commet/utils/emoji/unicode_emoji.dart';
-import 'package:commet/utils/gif_search/gif_search_result.dart';
-import 'package:commet/utils/gif_search/tenor_search.dart';
+import 'package:commet/client/components/gif/gif_search_result.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
@@ -67,10 +67,12 @@ class EmoticonPicker extends StatefulWidget {
     this.onGifPressed,
     this.emojiSize = 38,
     this.packSize = 32,
+    this.gifComponent,
     this.packListAxis = Axis.vertical,
   });
   final List<EmoticonPack> emoji;
   final List<EmoticonPack> stickers;
+  final GifComponent? gifComponent;
   final bool allowGifSearch;
   final void Function(Emoticon emoticon)? onEmojiPressed;
   final void Function(Emoticon emoticon)? onStickerPressed;
@@ -125,17 +127,16 @@ class _EmoticonPickerState extends State<EmoticonPicker>
               ),
               Tab(
                 child: StickerPicker(
-                  canSearchGif: widget.allowGifSearch,
                   packs: widget.stickers,
-                  search: TenorSearch.search,
                   stickerPicked: (sticker) =>
                       widget.onStickerPressed?.call(sticker),
                 ),
               ),
-              if (widget.allowGifSearch)
+              if (widget.allowGifSearch && widget.gifComponent != null)
                 Tab(
                   child: GifPicker(
-                    search: TenorSearch.search,
+                    search: widget.gifComponent!.search,
+                    placeholderText: widget.gifComponent!.searchPlaceholder,
                     gifPicked: widget.onGifPressed,
                   ),
                 )
