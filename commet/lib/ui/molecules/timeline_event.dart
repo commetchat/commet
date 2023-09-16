@@ -95,6 +95,11 @@ class _TimelineEventState extends State<TimelineEventView> {
           args: [user],
           name: "messagePlaceholderUserRejectedInvite");
 
+  String get errorMessageFailedToSend => Intl.message("Failed to send",
+      desc:
+          "Text that is placed below a message when the message fails to send",
+      name: "errorMessageFailedToSend");
+
   @override
   void initState() {
     if (widget.event.relatedEventId != null) {
@@ -127,9 +132,12 @@ class _TimelineEventState extends State<TimelineEventView> {
         duration: const Duration(milliseconds: 100),
         color: widget.hovered ? m.Colors.red : m.Colors.transparent,
         child: Opacity(
-            opacity:
-                widget.event.status == TimelineEventStatus.sending ? 0.5 : 1,
-            child: display));
+          opacity: [TimelineEventStatus.sending, TimelineEventStatus.error]
+                  .contains(widget.event.status)
+              ? 0.5
+              : 1,
+          child: display,
+        ));
   }
 
   String get displayName =>
@@ -168,6 +176,9 @@ class _TimelineEventState extends State<TimelineEventView> {
                   ? messagePlaceholderSticker(displayName)
                   : null),
           replySenderName: relatedEventDisplayName,
+          child: event.status == TimelineEventStatus.error
+              ? tiamat.Text.error(errorMessageFailedToSend)
+              : null,
           replySenderColor: replyColor,
           isInReply: widget.event.relatedEventId != null,
           edited: widget.event.edited,

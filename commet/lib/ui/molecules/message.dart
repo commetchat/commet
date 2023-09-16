@@ -27,6 +27,7 @@ class Message extends StatefulWidget {
       this.onReactionTapped,
       this.onLongPress,
       this.isInReply = false,
+      this.child,
       this.showSender = true});
   final double avatarSize = 32;
 
@@ -47,6 +48,8 @@ class Message extends StatefulWidget {
   final bool edited;
 
   final Widget body;
+
+  final Widget? child;
 
   final Map<Emoticon, Set<String>>? reactions;
 
@@ -116,6 +119,7 @@ class _MessageState extends State<Message> {
                         ),
                       body(),
                       if (widget.edited) edited(),
+                      if (widget.child != null) widget.child!,
                       if (widget.reactions != null) reactions(),
                     ],
                   ),
