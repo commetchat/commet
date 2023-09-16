@@ -60,8 +60,6 @@ class MatrixClient extends Client {
   MatrixClient({required String identifier}) {
     _id = identifier;
     _matrixClient = _createMatrixClient(identifier);
-
-    _components = ComponentRegistry.getMatrixComponents(this);
   }
 
   static String hash(String name) {
@@ -160,6 +158,8 @@ class MatrixClient extends Client {
     _updateRoomslist();
     _updateSpacesList();
     _updateInviteList();
+
+    _components = ComponentRegistry.getMatrixComponents(this);
 
     _matrixClient.onKeyVerificationRequest.stream.listen((event) {
       AdaptiveDialog.show(navigator.currentContext!,
