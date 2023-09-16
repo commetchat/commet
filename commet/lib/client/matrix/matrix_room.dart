@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:commet/client/components/component_registry.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/components/room_component.dart';
+import 'package:commet/client/matrix/components/emoticon/matrix_room_emoticon_component.dart';
 import 'package:commet/client/matrix/matrix_attachment.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
@@ -236,17 +237,17 @@ class MatrixRoom extends Room {
     }
 
     if (message != null && message.trim().isNotEmpty) {
-      // String? id = await _matrixRoom.sendTextEvent(message,
-      //     inReplyTo: replyingTo, editEventId: replaceEvent?.eventId);
-
       final event = <String, dynamic>{
         'msgtype': matrix.MessageTypes.Text,
         'body': message
       };
 
+      var emoticons = getComponent<MatrixRoomEmoticonComponent>();
       final html = mx_markdown.markdown(message,
-          // getEmotePacks: () =>
-          //     roomEmoticons.getEmotePacksFlat(matrix.ImagePackUsage.emoticon),
+          getEmotePacks: emoticons != null
+              ? () =>
+                  emoticons.getEmotePacksFlat(matrix.ImagePackUsage.emoticon)
+              : null,
           getMention: _matrixRoom.getMention);
 
       if (HtmlUnescape().convert(html.replaceAll(RegExp(r'<br />\n?'), '\n')) !=

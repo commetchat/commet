@@ -174,4 +174,22 @@ class MatrixRoomEmoticonComponent extends MatrixEmoticonComponent
     return room.matrixRoom.client
         .removeEmoticonRoomPack(room.matrixRoom.id, packKey);
   }
+
+  Map<String, Map<String, String>> getEmotePacksFlat(
+      matrix.ImagePackUsage emoticon) {
+    var packs = availablePacks;
+
+    var result = <String, Map<String, String>>{};
+
+    for (var pack in packs) {
+      var key = "${pack.displayName}-${pack.hashCode}";
+      result[key] = <String, String>{};
+      for (var emote in pack.emotes) {
+        result[key]![emote.shortcode!] =
+            (emote as MatrixEmoticon).emojiUrl.toString();
+      }
+    }
+
+    return result;
+  }
 }
