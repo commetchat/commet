@@ -20,7 +20,6 @@ class Message extends StatefulWidget {
       this.replyBody,
       this.replySenderColor,
       this.replySenderName,
-      this.menuBuilder,
       this.edited = false,
       this.onDoubleTap,
       this.reactions,
@@ -56,8 +55,6 @@ class Message extends StatefulWidget {
   final Function()? onLongPress;
   final Function()? onDoubleTap;
   final Function(Emoticon emote)? onReactionTapped;
-
-  final Widget Function(BuildContext context)? menuBuilder;
 
   @override
   State<Message> createState() => _MessageState();

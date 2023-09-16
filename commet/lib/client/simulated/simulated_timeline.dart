@@ -23,4 +23,12 @@ class SimulatedTimeline extends Timeline {
   Future<TimelineEvent?> fetchEventByIdInternal(String eventId) async {
     return tryGetEvent(eventId);
   }
+
+  @override
+  bool canDeleteEvent(TimelineEvent event) {
+    return true;
+  }
+
+  @override
+  void deleteEvent(TimelineEvent event) {}
 }

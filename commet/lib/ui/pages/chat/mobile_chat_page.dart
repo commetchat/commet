@@ -12,6 +12,7 @@ import 'package:commet/ui/molecules/timeline_event.dart';
 import 'package:commet/ui/navigation/navigation_signals.dart';
 import 'package:commet/ui/organisms/home_screen/home_screen.dart';
 import 'package:commet/ui/pages/chat/chat_page.dart';
+import 'package:commet/utils/common_strings.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart' as material;
 import 'package:intl/intl.dart';
@@ -454,7 +455,7 @@ class __RoomChatViewState extends State<_RoomChatView> {
             SizedBox(
               height: 50,
               child: TextButton(
-                "Reply",
+                CommonStrings.promptReply,
                 icon: m.Icons.reply,
                 onTap: () {
                   widget.state.setInteractingEvent(event,
@@ -466,7 +467,7 @@ class __RoomChatViewState extends State<_RoomChatView> {
             SizedBox(
               height: 50,
               child: TextButton(
-                "Add Reaction",
+                CommonStrings.promptAddReaction,
                 icon: m.Icons.add_reaction_rounded,
                 onTap: () {
                   Navigator.pop(context);
@@ -478,7 +479,7 @@ class __RoomChatViewState extends State<_RoomChatView> {
               SizedBox(
                 height: 50,
                 child: TextButton(
-                  "Edit Message",
+                  CommonStrings.promptEdit,
                   icon: m.Icons.edit,
                   onTap: () {
                     widget.state.setInteractingEvent(event,
@@ -487,15 +488,14 @@ class __RoomChatViewState extends State<_RoomChatView> {
                   },
                 ),
               ),
-            if (canDeleteMessage(event))
+            if (widget.state.selectedRoom!.timeline!.canDeleteEvent(event))
               SizedBox(
                 height: 50,
                 child: TextButton(
-                  "Delete Message",
+                  CommonStrings.promptDelete,
                   icon: m.Icons.delete_forever,
                   onTap: () {
-                    widget.state.selectedRoom?.timeline
-                        ?.deleteEvent(event.eventId);
+                    widget.state.selectedRoom?.timeline?.deleteEvent(event);
                     Navigator.pop(context);
                   },
                 ),
@@ -503,7 +503,7 @@ class __RoomChatViewState extends State<_RoomChatView> {
             SizedBox(
               height: 50,
               child: TextButton(
-                "Copy Text",
+                CommonStrings.promptCopy,
                 icon: m.Icons.copy,
                 onTap: () {
                   services.Clipboard.setData(
@@ -520,18 +520,6 @@ class __RoomChatViewState extends State<_RoomChatView> {
 
   bool canEditMessage(TimelineEvent event) {
     if (widget.state.selectedRoom?.permissions.canUserEditMessages != true)
-      return false;
-
-    if (event.senderId != widget.state.selectedRoom!.client.self!.identifier)
-      return false;
-
-    if (event.type != EventType.message) return false;
-
-    return true;
-  }
-
-  bool canDeleteMessage(TimelineEvent event) {
-    if (widget.state.selectedRoom?.permissions.canUserDeleteMessages != true)
       return false;
 
     if (event.senderId != widget.state.selectedRoom!.client.self!.identifier)

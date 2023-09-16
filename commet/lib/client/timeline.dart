@@ -200,11 +200,7 @@ abstract class Timeline {
     events[index].onChange.add(null);
   }
 
-  void deleteEvent(String eventId) {
-    throw UnimplementedError();
-  }
+  bool canDeleteEvent(TimelineEvent event);
 
-  void deleteEventByIndex(int index) {
-    throw UnimplementedError();
-  }
+  void deleteEvent(TimelineEvent event);
 }

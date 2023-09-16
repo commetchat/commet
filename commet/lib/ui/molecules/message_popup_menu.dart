@@ -4,6 +4,7 @@ import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/client/timeline.dart';
 import 'package:commet/ui/molecules/emoji_picker.dart';
+import 'package:commet/utils/common_strings.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
@@ -19,6 +20,7 @@ class MessagePopupMenu extends StatefulWidget {
   final TimelineEvent event;
   final Timeline timeline;
   final bool isEditable;
+  final bool isDeletable;
   final Stream<int>? onMessageChanged;
 
   const MessagePopupMenu(this.event, this.timeline,
@@ -26,9 +28,12 @@ class MessagePopupMenu extends StatefulWidget {
       this.setEditingEvent,
       this.onMessageChanged,
       this.setReplyingEvent,
+      this.isDeletable = false,
+      this.deleteEvent,
       this.addReaction,
       this.isEditable = false});
 
+  final Function(TimelineEvent event)? deleteEvent;
   final Function(TimelineEvent? event)? setReplyingEvent;
   final Function(TimelineEvent? event)? setEditingEvent;
   final Function(TimelineEvent event, Emoticon emoticon)? addReaction;
@@ -120,16 +125,21 @@ class MessagePopupMenuState extends State<MessagePopupMenu> {
           padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
           child: Row(
             children: [
-              buildMenuEntry(m.Icons.reply, "Reply", () {
+              buildMenuEntry(m.Icons.reply, CommonStrings.promptReply, () {
                 widget.setReplyingEvent?.call(widget.event);
               }),
-              buildMenuEntry(
-                  m.Icons.add_reaction, "Add Reaction", toggleTooltipMenu),
+              buildMenuEntry(m.Icons.add_reaction,
+                  CommonStrings.promptAddReaction, toggleTooltipMenu),
               if (widget.isEditable && widget.event.editable)
-                buildMenuEntry(m.Icons.edit, "Edit", () {
+                buildMenuEntry(m.Icons.edit, CommonStrings.promptEdit, () {
                   widget.setEditingEvent?.call(widget.event);
                 }),
-              buildMenuEntry(m.Icons.more_vert, "Options", () => null)
+              if (widget.isDeletable && widget.deleteEvent != null)
+                buildMenuEntry(m.Icons.delete, CommonStrings.promptDelete, () {
+                  widget.deleteEvent?.call(widget.event);
+                }),
+              buildMenuEntry(
+                  m.Icons.more_vert, CommonStrings.promptOptions, () => null),
             ],
           ),
         ),
