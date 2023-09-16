@@ -31,6 +31,9 @@ class MatrixRoomEmoticonComponent extends MatrixEmoticonComponent
       _getAvailablePacks(includeUnicode: false);
 
   @override
+  bool get canCreatePack => room.permissions.canEditRoomEmoticons;
+
+  @override
   List<EmoticonPack> get availablePacks {
     List<EmoticonPack> packs = List.from(ownedPacks, growable: true);
 

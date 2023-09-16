@@ -9,6 +9,9 @@ class MatrixSpaceEmoticonComponent extends MatrixEmoticonComponent
   @override
   MatrixSpace space;
 
+  @override
+  bool get canCreatePack => space.permissions.canEditRoomEmoticons;
+
   MatrixSpaceEmoticonComponent(
     super.client,
     this.space,
