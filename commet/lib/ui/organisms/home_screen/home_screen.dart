@@ -1,12 +1,11 @@
 import 'dart:async';
 
+import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/invitation.dart';
 import 'package:commet/ui/navigation/navigation_signals.dart';
 import 'package:commet/ui/organisms/home_screen/home_screen_view.dart';
 import 'package:flutter/material.dart';
-
-import '../../../client/room.dart';
 
 class HomeScreen extends StatefulWidget {
   final ClientManager clientManager;
@@ -71,11 +70,14 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return HomeScreenView(
+      clientManager: widget.clientManager,
       rooms: widget.clientManager.singleRooms,
       recentActivity: recentActivity,
       onRoomClicked: (room) => NavigationSignals.openRoom.add(room.identifier),
       acceptInvite: acceptInvitation,
       rejectInvite: rejectInvitation,
+      joinRoom: joinRoom,
+      createRoom: createRoom,
       invitations: invitations,
     );
   }
@@ -104,5 +106,14 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       refreshInvitations();
     });
+  }
+
+  Future<void> joinRoom(Client client, String address) async {
+    await client.joinRoom(address);
+  }
+
+  Future<void> createRoom(Client client, String name, RoomVisibility visibility,
+      bool enableE2EE) async {
+    await client.createRoom(name, visibility, enableE2EE: enableE2EE);
   }
 }

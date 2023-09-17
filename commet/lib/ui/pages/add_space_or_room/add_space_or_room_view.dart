@@ -632,9 +632,12 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
             itemCount: widget.rooms!.length,
             itemBuilder: (context, index) {
               var room = widget.rooms![index];
-              return RoomPanel(
-                displayName: room.displayName,
-                avatar: room.avatar,
+              return Expanded(
+                child: RoomPanel(
+                  displayName: room.displayName,
+                  avatar: room.avatar,
+                  color: room.defaultColor,
+                ),
               );
             },
           ),

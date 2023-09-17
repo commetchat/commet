@@ -65,6 +65,13 @@ class _SpaceSummaryState extends State<SpaceSummary> {
     return widget.space.client.joinRoom(roomId);
   }
 
+  Future<void> createRoom(Client client, String name, RoomVisibility visibility,
+      bool enableE2EE) async {
+    var room =
+        await client.createRoom(name, visibility, enableE2EE: enableE2EE);
+    await widget.space.setSpaceChildRoom(room);
+  }
+
   void openSpaceSettings() {
     NavigationUtils.navigateTo(context, SpaceSettingsPage(space: widget.space));
   }
@@ -80,12 +87,13 @@ class _SpaceSummaryState extends State<SpaceSummary> {
               rooms: widget.space.client
                   .getEligibleRoomsForSpace(widget.space)
                   .toList(),
-              onRoomCreated: (Room room) async {
-                widget.space.setSpaceChildRoom(room);
-              },
+              createRoom: createRoom,
               onRoomsSelected: (rooms) {
                 for (var room in rooms) {
                   widget.space.setSpaceChildRoom(room);
+                }
+                if (mounted) {
+                  Navigator.pop(dialogContext);
                 }
               },
             ),

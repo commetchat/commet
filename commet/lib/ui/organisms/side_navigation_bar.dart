@@ -164,6 +164,14 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                               AdaptiveDialog.show(context,
                                   builder: (_) => AddSpaceOrRoom(
                                         clients: _clientManager.clients,
+                                        createSpace: (client, name, visibility,
+                                            enableE2EE) async {
+                                          await client.createSpace(
+                                              name, visibility);
+                                        },
+                                        joinSpace: (client, address) async {
+                                          await client.joinSpace(address);
+                                        },
                                       ),
                                   title: promptAddSpace);
                             },

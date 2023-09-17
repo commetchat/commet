@@ -3,6 +3,7 @@ import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/component.dart';
 import 'package:commet/client/components/component_registry.dart';
 import 'package:commet/client/invitation.dart';
+import 'package:commet/client/matrix/extensions/matrix_client_extensions.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/config/app_config.dart';
@@ -490,15 +491,21 @@ class MatrixClient extends Client {
   }
 
   @override
-  Future<RoomPreview?> getRoomPreview(String address) {
-    // TODO: implement getRoomPreview
-    throw UnimplementedError();
+  Future<RoomPreview?> getRoomPreview(String address) async {
+    try {
+      return await _matrixClient.getRoomPreview(address);
+    } catch (exception) {
+      return null;
+    }
   }
 
   @override
-  Future<RoomPreview?> getSpacePreview(String address) {
-    // TODO: implement getSpacePreview
-    throw UnimplementedError();
+  Future<RoomPreview?> getSpacePreview(String address) async {
+    try {
+      return await _matrixClient.getRoomPreview(address);
+    } catch (exception) {
+      return null;
+    }
   }
 
   @override
