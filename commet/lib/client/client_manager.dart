@@ -11,8 +11,9 @@ class ClientManager {
   List<Room> directMessages = List.empty(growable: true);
 
   List<Room> get singleRooms => rooms
-      .where(
-          (room) => !spaces.any((space) => space.containsRoom(room.identifier)))
+      .where((room) =>
+          !room.isDirectMessage &&
+          !spaces.any((space) => space.containsRoom(room.identifier)))
       .toList();
 
   List<Space> spaces = List.empty(growable: true);
