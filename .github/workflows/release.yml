@@ -51,3 +51,40 @@ jobs:
         with:
           name: build
           path: .\commet\build\windows\runner\Release
+
+  release-android:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: 'true'
+        
+      - name: Setup Flutter 
+        uses: subosito/flutter-action@v2.8.0
+        with:
+          flutter-version: '3.13.1'
+          channel: 'stable'
+
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v3
+        with:
+          java-version: 1.8
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2
+
+      - name: Setup Tools
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ninja-build libgtk-3-dev libolm3 libmpv-dev mpv ffmpeg
+        
+      - name: Code Generation
+        run: |
+          cd $PROJECT_PATH
+          scripts/codegen.sh
+          
+      - name: Build APK
+        run: |
+          cd .\commet
+          flutter build apk --dart-define BUILD_MODE=release --dart-define PLATFORM=android --release --dart-define GIT_HASH=${{ github.sha }} --dart-define VERSION_TAG=${{ github.event.release.tag_name || 'v0.0.0' }}
