@@ -128,13 +128,13 @@ jobs:
       - name: Create archive
         run: |
           cd $PROJECT_PATH/build/linux/x64/release
-          tar -czf commet-linux-x64.tar.gz -C bundle
+          tar -czf commet-linux-x64.tar.gz bundle
       
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
           name: commet-linux-x64.tar.gz
-          path: commet-linux-x64.tar.gz
+          path: $PROJECT_PATH/build/linux/x64/release/commet-linux-x64.tar.gz
 
   release-web:
     runs-on: ubuntu-latest
@@ -168,10 +168,10 @@ jobs:
       - name: Create archive
         run: |
           cd $PROJECT_PATH/build
-          tar -czf commet-web.tar.gz -C web
+          tar -czf commet-web.tar.gz web
       
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
           name: commet-web.tar.gz
-          path: commet-web.tar.gz
+          path: $PROJECT_PATH/build/commet-web.tar.gz
