@@ -80,8 +80,8 @@ class _AppInfoState extends State<_AppInfo> {
                       const tiamat.Text.largeTitle(BuildConfig.appName),
                       const tiamat.Text.labelEmphasised(
                           BuildConfig.VERSION_TAG),
-                      const tiamat.Text.labelLow(
-                          "${BuildConfig.GIT_HASH} ${BuildConfig.BUILD_DETAIL}"),
+                      tiamat.Text.labelLow(
+                          "${BuildConfig.GIT_HASH.substring(0, 7)} ${BuildConfig.BUILD_DETAIL}"),
                       if (deviceInfo != null)
                         Row(
                           children: [

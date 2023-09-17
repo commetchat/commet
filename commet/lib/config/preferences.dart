@@ -87,7 +87,7 @@ class Preferences {
   }
 
   bool get minimizeOnClose =>
-      _preferences!.getBool(_minimizeOnCloseKey) ?? true;
+      _preferences!.getBool(_minimizeOnCloseKey) ?? false;
 
   Future<void> setMinimizeOnClose(bool value) async {
     if (BuildConfig.DESKTOP) {
