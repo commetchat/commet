@@ -124,6 +124,8 @@ abstract class Timeline {
 
   Future<void> loadMoreHistory();
 
+  Future<void> close();
+
   @protected
   Future<TimelineEvent?> fetchEventByIdInternal(String eventId);
 

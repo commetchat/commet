@@ -420,4 +420,12 @@ class MatrixTimeline extends Timeline {
 
     return true;
   }
+
+  @override
+  Future<void> close() async {
+    _matrixTimeline?.cancelSubscriptions();
+    await onEventAdded.close();
+    await onChange.close();
+    await onRemove.close();
+  }
 }

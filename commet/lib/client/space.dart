@@ -37,6 +37,8 @@ abstract class Space {
 
   Stream<int> get onRoomAdded;
 
+  Stream<int> get onRoomRemoved;
+
   Stream<void> get onChildrenUpdated;
 
   Stream<int> get onChildPreviewAdded;
@@ -80,6 +82,8 @@ abstract class Space {
 
   /// Load extra information about the space, that is not necessarily required for functionality
   Future<void> loadExtra();
+
+  Future<void> close();
 
   Future<void> setDisplayName(String newName);
 

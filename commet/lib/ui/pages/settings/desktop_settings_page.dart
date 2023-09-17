@@ -1,3 +1,4 @@
+import 'package:commet/ui/pages/settings/settings_button.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart' as m;
@@ -6,8 +7,9 @@ import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class DesktopSettingsPage extends StatefulWidget {
-  const DesktopSettingsPage({required this.settings, super.key});
+  const DesktopSettingsPage({required this.settings, this.buttons, super.key});
   final List<SettingsCategory> settings;
+  final List<SettingsButton>? buttons;
   @override
   State<DesktopSettingsPage> createState() => DesktopSettingsPageState();
 }
@@ -88,22 +90,40 @@ class DesktopSettingsPageState extends State<DesktopSettingsPage> {
               Flexible(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: ListView.builder(
-                    itemBuilder: (context, categoryIndex) {
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          if (categoryIndex != 0) const tiamat.Seperator(),
-                          if (categories[categoryIndex].title != null)
-                            tiamat.Text.labelLow(
-                                categories[categoryIndex].title!),
-                          tabListBuilder(categoryIndex)
-                        ],
-                      );
-                    },
-                    itemCount: categories.length,
-                  ),
+                  child: ListView(children: [
+                    ListView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: categories.length,
+                      itemBuilder: (context, categoryIndex) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            if (categoryIndex != 0) const tiamat.Seperator(),
+                            if (categories[categoryIndex].title != null)
+                              tiamat.Text.labelLow(
+                                  categories[categoryIndex].title!),
+                            tabListBuilder(categoryIndex)
+                          ],
+                        );
+                      },
+                    ),
+                    if (widget.buttons != null) const Seperator(),
+                    if (widget.buttons != null)
+                      ListView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: widget.buttons!.length,
+                        itemBuilder: (context, index) {
+                          return button(
+                              label: widget.buttons![index].label,
+                              icon: widget.buttons![index].icon,
+                              onTap: widget.buttons![index].onPress,
+                              color: widget.buttons![index].color);
+                        },
+                      ),
+                  ]),
                 ),
               ),
             ],
@@ -117,26 +137,41 @@ class DesktopSettingsPageState extends State<DesktopSettingsPage> {
     return ListView.builder(
       shrinkWrap: true,
       itemBuilder: (context, tabIndex) {
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
-          child: SizedBox(
-              height: 40,
-              width: 200,
-              child: TextButton(
-                categories[categoryIndex].tabs[tabIndex].label!,
-                icon: categories[categoryIndex].tabs[tabIndex].icon,
-                highlighted: categoryIndex == selectedCategoryIndex &&
-                    tabIndex == selectedTabIndex,
-                onTap: () {
-                  setState(() {
-                    selectedCategoryIndex = categoryIndex;
-                    selectedTabIndex = tabIndex;
-                  });
-                },
-              )),
-        );
+        return button(
+            label: categories[categoryIndex].tabs[tabIndex].label!,
+            icon: categories[categoryIndex].tabs[tabIndex].icon,
+            highlighted: categoryIndex == selectedCategoryIndex &&
+                tabIndex == selectedTabIndex,
+            onTap: () {
+              setState(() {
+                selectedCategoryIndex = categoryIndex;
+                selectedTabIndex = tabIndex;
+              });
+            });
       },
       itemCount: categories[categoryIndex].tabs.length,
+    );
+  }
+
+  Widget button(
+      {required String label,
+      IconData? icon,
+      bool highlighted = false,
+      Color? color,
+      Function()? onTap}) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
+      child: SizedBox(
+          height: 40,
+          width: 200,
+          child: TextButton(
+            label,
+            icon: icon,
+            highlighted: highlighted,
+            onTap: onTap,
+            textColor: color,
+            iconColor: color,
+          )),
     );
   }
 

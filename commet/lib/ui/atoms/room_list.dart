@@ -15,6 +15,7 @@ class RoomList extends StatefulWidget {
       this.onInsertStream,
       this.onUpdateStream,
       this.onRoomSelected,
+      this.onRemoveStream,
       this.onRoomReordered,
       this.expandable = false,
       this.showHeader = false,
@@ -27,6 +28,7 @@ class RoomList extends StatefulWidget {
   final Stream<void>? onUpdateStream;
   final Stream<Room>? onChildUpdatedStream;
   final Stream<int>? onInsertStream;
+  final Stream<int>? onRemoveStream;
   final String? expanderText;
   final void Function(int)? onRoomSelected;
   final void Function(int oldIndex, int newIndex)? onRoomReordered;
@@ -40,6 +42,7 @@ class _RoomListState extends State<RoomList>
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
   int _count = 0;
   StreamSubscription<int>? onInsertListener;
+  StreamSubscription<int>? onRemoveListener;
   StreamSubscription<void>? onUpdateListener;
   StreamSubscription<Room>? onChildUpdatedListener;
   StreamSubscription<Room>? onRoomSelectionChangedListener;
@@ -61,6 +64,8 @@ class _RoomListState extends State<RoomList>
       _listKey.currentState?.insertItem(index);
       _count++;
     });
+
+    onRemoveListener = widget.onRemoveStream?.listen(onRoomRemoved);
 
     onChildUpdatedListener = widget.onChildUpdatedStream?.listen((event) {
       _listKey.currentState?.setState(() {});
@@ -165,35 +170,55 @@ class _RoomListState extends State<RoomList>
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       padding: const EdgeInsets.all(0),
-      itemBuilder: (context, i, animation) => SizeTransition(
-        sizeFactor: animation,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(0, 2, 0, 0),
-          child: SizedBox(
-            height: 37,
-            child: TextButton(
-              widget.rooms[i].displayName,
-              highlighted: _selectedIndex == i,
+      itemBuilder: (context, i, animation) {
+        var room = widget.rooms[i];
+        return buildRoomButton(
+          animation,
+          room,
+          context,
+          iconColor: getIconColor(context, i),
+          textColor: getTextColor(context, i),
+          highlighted: _selectedIndex == i,
+          onTap: () {
+            widget.onRoomSelected?.call(i);
+            setState(() {
+              _selectedIndex = i;
+            });
+          },
+        );
+      },
+    );
+  }
+
+  SizeTransition buildRoomButton(
+    Animation<double> animation,
+    Room room,
+    BuildContext context, {
+    Color? iconColor,
+    Color? textColor,
+    bool highlighted = false,
+    void Function()? onTap,
+  }) {
+    return SizeTransition(
+      sizeFactor: animation,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(0, 2, 0, 0),
+        child: SizedBox(
+          height: 37,
+          child: TextButton(room.displayName,
+              highlighted: highlighted,
               icon: m.Icons.tag,
-              iconColor: getIconColor(context, i),
-              textColor: getTextColor(context, i),
-              footer: widget.rooms[i].displayHighlightedNotificationCount > 0
-                  ? NotificationBadge(
-                      widget.rooms[i].displayHighlightedNotificationCount)
-                  : widget.rooms[i].displayNotificationCount > 0
+              iconColor: iconColor,
+              textColor: textColor,
+              footer: room.displayHighlightedNotificationCount > 0
+                  ? NotificationBadge(room.displayHighlightedNotificationCount)
+                  : room.displayNotificationCount > 0
                       ? const Padding(
                           padding: EdgeInsets.all(2.0),
                           child: DotIndicator(),
                         )
                       : null,
-              onTap: () {
-                widget.onRoomSelected?.call(i);
-                setState(() {
-                  _selectedIndex = i;
-                });
-              },
-            ),
-          ),
+              onTap: onTap),
         ),
       ),
     );
@@ -226,5 +251,23 @@ class _RoomListState extends State<RoomList>
       return m.Theme.of(context).colorScheme.onSurface;
 
     return m.Theme.of(context).colorScheme.secondary;
+  }
+
+  void onRoomRemoved(int index) {
+    if (mounted) {
+      var room = widget.rooms[index];
+      var iconColor = getIconColor(context, index);
+      var color = getTextColor(context, index);
+
+      if (index == _selectedIndex) {
+        _selectedIndex = -1;
+      }
+
+      _listKey.currentState?.removeItem(
+          index,
+          (context, animation) => buildRoomButton(animation, room, context,
+              iconColor: iconColor, textColor: color));
+      _count--;
+    }
   }
 }

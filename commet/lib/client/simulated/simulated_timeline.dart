@@ -31,4 +31,7 @@ class SimulatedTimeline extends Timeline {
 
   @override
   void deleteEvent(TimelineEvent event) {}
+
+  @override
+  Future<void> close() async {}
 }

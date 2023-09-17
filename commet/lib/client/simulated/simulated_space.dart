@@ -95,6 +95,9 @@ class SimulatedSpace extends Space {
   Stream<void> get onChildrenUpdated => _rooms.onListUpdated;
 
   @override
+  Stream<int> get onRoomRemoved => _rooms.onRemove;
+
+  @override
   Stream<int> get onRoomAdded => _rooms.onAdd;
 
   @override
@@ -139,4 +142,7 @@ class SimulatedSpace extends Space {
   T? getComponent<T extends SpaceComponent<Client, Space>>() {
     return null;
   }
+
+  @override
+  Future<void> close() async {}
 }

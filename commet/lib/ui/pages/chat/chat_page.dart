@@ -77,9 +77,10 @@ class ChatPageState extends State<ChatPage> {
 
   StreamSubscription? onSpaceUpdateSubscription;
   StreamSubscription? onRoomUpdateSubscription;
-
   StreamSubscription? onOpenRoomSubscription;
 
+  StreamSubscription? onRoomRemovedSubscription;
+  StreamSubscription? onSpaceRemovedSubscription;
   String get labelChatPageFileTooLarge => Intl.message(
       "This file is too large to upload!",
       desc:
@@ -107,6 +108,12 @@ class ChatPageState extends State<ChatPage> {
     notificationManager.addModifier(onlyNotifyNonSelectedRooms);
     onOpenRoomSubscription =
         NavigationSignals.openRoom.stream.listen(onOpenRoomSignal);
+
+    onRoomRemovedSubscription =
+        clientManager.onRoomRemoved.listen(onRoomRemoved);
+
+    onSpaceRemovedSubscription =
+        clientManager.onSpaceRemoved.listen(onSpaceRemoved);
 
     var user = getCurrentUser();
     if (user.loading != null) {
@@ -335,6 +342,7 @@ class ChatPageState extends State<ChatPage> {
       }
       selectedRoom = null;
       selectedSpace = null;
+      selectedView = SubView.home;
       clearAttachments();
     });
   }
@@ -515,5 +523,19 @@ class ChatPageState extends State<ChatPage> {
 
   void addReaction(TimelineEvent event, Emoticon emote) {
     selectedRoom?.addReaction(event, emote);
+  }
+
+  void onRoomRemoved(int index) {
+    var removedRoom = clientManager.rooms[index];
+    if (selectedRoom == removedRoom) {
+      clearRoomSelection();
+    }
+  }
+
+  void onSpaceRemoved(int index) {
+    var space = clientManager.spaces[index];
+    if (selectedSpace == space) {
+      clearSpaceSelection();
+    }
   }
 }

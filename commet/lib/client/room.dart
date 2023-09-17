@@ -110,6 +110,8 @@ abstract class Room {
   /// Enables end to end encryption in a room
   Future<void> enableE2EE();
 
+  Future<void> close();
+
   /// The last known event in the room timeline
   TimelineEvent? get lastEvent;
 

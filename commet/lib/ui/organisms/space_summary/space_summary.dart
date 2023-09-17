@@ -48,6 +48,7 @@ class _SpaceSummaryState extends State<SpaceSummary> {
       childPreviews: widget.space.childPreviews,
       onChildPreviewAdded: widget.space.onChildPreviewAdded,
       onChildPreviewRemoved: widget.space.onChildPreviewRemoved,
+      onRoomRemoved: widget.space.onRoomRemoved,
       onRoomAdded: widget.space.onRoomAdded,
       avatar: widget.space.avatar,
       rooms: widget.space.rooms,

@@ -20,16 +20,17 @@ class DirectMessageList extends StatefulWidget {
 class _DirectMessageListState extends State<DirectMessageList> {
   int numDMs = 0;
   Room? selectedRoom;
-  late StreamSubscription? onDmUpdatedSubscription;
+  late List<StreamSubscription> subscriptions;
   late List<Room> rooms;
 
   @override
   void initState() {
-    onDmUpdatedSubscription = widget
-        .clientManager.onDirectMessageRoomUpdated.stream
-        .listen(onRoomUpdated);
-
-    widget.clientManager.onDirectMessageRoomAdded.stream.listen(onRoomAdded);
+    subscriptions = [
+      widget.clientManager.onDirectMessageRoomUpdated.stream
+          .listen(onRoomUpdated),
+      widget.clientManager.onDirectMessageAdded.listen(onRoomAdded),
+      widget.clientManager.onDirectMessageRemoved.listen(onRoomRemoved),
+    ];
 
     updateRoomsList();
 
@@ -38,12 +39,23 @@ class _DirectMessageListState extends State<DirectMessageList> {
 
   @override
   void dispose() {
+    for (var element in subscriptions) {
+      element.cancel();
+    }
     super.dispose();
   }
 
   void onRoomAdded(int index) {
     setState(() {
       updateRoomsList();
+    });
+  }
+
+  void onRoomRemoved(int index) {
+    var room = widget.clientManager.directMessages[index];
+    setState(() {
+      rooms.remove(room);
+      sortRooms();
     });
   }
 

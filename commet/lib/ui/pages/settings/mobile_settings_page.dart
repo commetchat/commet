@@ -1,3 +1,4 @@
+import 'package:commet/ui/pages/settings/settings_button.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
 import 'package:flutter/material.dart' as m;
 import 'package:flutter/widgets.dart';
@@ -7,7 +8,8 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 import '../../navigation/navigation_utils.dart';
 
 class MobileSettingsPage extends StatefulWidget {
-  const MobileSettingsPage({required this.settings, super.key});
+  const MobileSettingsPage({required this.settings, this.buttons, super.key});
+  final List<SettingsButton>? buttons;
   final List<SettingsCategory> settings;
 
   @override

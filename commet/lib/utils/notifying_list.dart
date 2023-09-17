@@ -32,6 +32,13 @@ class NotifyingList<T> implements List<T> {
   @override
   int get length => _internalList.length;
 
+  void close() {
+    _onAdd.close();
+    _onRemove.close();
+    _onListUpdated.close();
+    _onItemUpdated.close();
+  }
+
   @override
   set first(T value) {
     _internalList.first = value;

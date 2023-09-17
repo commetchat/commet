@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:commet/client/client.dart';
-import 'package:commet/client/stale_info.dart';
 import 'package:commet/ui/atoms/dot_indicator.dart';
 
 import 'package:flutter/material.dart';
@@ -20,7 +19,7 @@ class SpaceSelector extends StatefulWidget {
       this.header,
       this.footer});
   final Stream<int>? onSpaceInsert;
-  final Stream<StaleSpaceInfo>? onSpaceRemoved;
+  final Stream<int>? onSpaceRemoved;
   final List<Space> spaces;
   final bool showSpaceOwnerAvatar;
   final double width;
@@ -38,10 +37,9 @@ class SpaceSelector extends StatefulWidget {
 class _SpaceSelectorState extends State<SpaceSelector> {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
   int _count = 0;
-  int _selectedIndex = -1;
 
   StreamSubscription<int>? onInsertListener;
-  StreamSubscription<StaleSpaceInfo>? onRemovedListener;
+  StreamSubscription<int>? onRemovedListener;
 
   @override
   void initState() {
@@ -50,15 +48,18 @@ class _SpaceSelectorState extends State<SpaceSelector> {
       _count++;
     });
 
-    onRemovedListener = widget.onSpaceRemoved?.listen((info) {
+    onRemovedListener = widget.onSpaceRemoved?.listen((index) {
+      var space = widget.spaces[index];
+      var name = space.displayName;
+      var avatar = space.avatar;
       setState(() {
-        if (info.index == _selectedIndex) widget.clearSelection?.call();
         _listKey.currentState?.removeItem(
-            info.index,
-            (context, animation) => buildSpaceIcon(animation,
-                displayName: info.name!,
-                avatar: info.avatar,
-                userAvatar: info.userAvatar));
+            index,
+            (context, animation) => buildSpaceIcon(
+                  animation,
+                  displayName: name,
+                  avatar: avatar,
+                ));
       });
     });
 
@@ -154,9 +155,6 @@ class _SpaceSelectorState extends State<SpaceSelector> {
                 width: widget.width,
                 onTap: () {
                   if (index != null) {
-                    setState(() {
-                      _selectedIndex = index;
-                    });
                     widget.onSelected?.call(index);
                   }
                 },

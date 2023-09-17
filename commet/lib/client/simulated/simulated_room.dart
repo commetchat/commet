@@ -215,4 +215,7 @@ class SimulatedRoom extends Room {
   T? getComponent<T extends RoomComponent>() {
     return null;
   }
+
+  @override
+  Future<void> close() async {}
 }
