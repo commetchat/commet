@@ -46,56 +46,89 @@ class _MobileSettingsPageState extends State<MobileSettingsPage> {
                     )),
               ),
               Flexible(
-                child: ListView.builder(
-                  physics: const BouncingScrollPhysics(),
-                  itemCount: tabs.length,
-                  itemBuilder: (context, categoryIndex) {
-                    return m.Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: m.Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          if (categoryIndex != 0) const tiamat.Seperator(),
-                          if (tabs[categoryIndex].title != null)
-                            tiamat.Text.labelLow(
-                              tabs[categoryIndex].title!,
-                            ),
-                          ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: tabs[categoryIndex].tabs.length,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemBuilder: (context, tabIndex) {
-                              return SizedBox(
-                                  height: 40,
-                                  child: TextButton(
-                                    tabs[categoryIndex].tabs[tabIndex].label!,
-                                    icon:
-                                        tabs[categoryIndex].tabs[tabIndex].icon,
-                                    onTap: () {
-                                      setState(() {
-                                        NavigationUtils.navigateTo(
-                                            context,
-                                            SettingsSubPage(
-                                                builder: tabs[categoryIndex]
-                                                    .tabs[tabIndex]
-                                                    .pageBuilder!));
-                                      });
-                                    },
-                                  ));
-                            },
-                          )
-                        ],
-                      ),
-                    );
-                  },
-                ),
+                child: ListView(children: [
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: tabs.length,
+                    itemBuilder: (context, categoryIndex) {
+                      return m.Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: m.Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            if (categoryIndex != 0) const tiamat.Seperator(),
+                            if (tabs[categoryIndex].title != null)
+                              tiamat.Text.labelLow(
+                                tabs[categoryIndex].title!,
+                              ),
+                            ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: tabs[categoryIndex].tabs.length,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemBuilder: (context, tabIndex) {
+                                return button(
+                                  label:
+                                      tabs[categoryIndex].tabs[tabIndex].label!,
+                                  icon: tabs[categoryIndex].tabs[tabIndex].icon,
+                                  onTap: () {
+                                    setState(() {
+                                      NavigationUtils.navigateTo(
+                                          context,
+                                          SettingsSubPage(
+                                              builder: tabs[categoryIndex]
+                                                  .tabs[tabIndex]
+                                                  .pageBuilder!));
+                                    });
+                                  },
+                                );
+                              },
+                            )
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                  if (widget.buttons != null) const Seperator(),
+                  if (widget.buttons != null)
+                    ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: widget.buttons!.length,
+                      itemBuilder: (context, index) {
+                        var b = widget.buttons![index];
+                        return button(
+                            label: b.label,
+                            icon: b.icon,
+                            color: b.color,
+                            onTap: b.onPress);
+                      },
+                    )
+                ]),
               ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  Widget button(
+      {required String label,
+      IconData? icon,
+      bool highlighted = false,
+      Color? color,
+      Function()? onTap}) {
+    return SizedBox(
+        height: 40,
+        child: TextButton(
+          label,
+          icon: icon,
+          highlighted: highlighted,
+          onTap: onTap,
+          textColor: color,
+          iconColor: color,
+        ));
   }
 }
 
