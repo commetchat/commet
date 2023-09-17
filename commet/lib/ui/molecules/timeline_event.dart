@@ -1,12 +1,10 @@
 import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/atoms/generic_room_event.dart';
 import 'package:commet/ui/molecules/message.dart';
-import 'package:commet/utils/common_strings.dart';
 import 'package:flutter/material.dart' as m;
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:tiamat/atoms/icon_button.dart';
-import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 import '../../client/client.dart';
@@ -27,6 +25,8 @@ class TimelineEventView extends StatefulWidget {
       this.onDoubleTap,
       this.onReactionTapped,
       this.onLongPress,
+      this.deleteEvent,
+      this.canDeleteEvent = false,
       this.debugInfo});
   final TimelineEvent event;
   final bool hovered;
@@ -38,6 +38,8 @@ class TimelineEventView extends StatefulWidget {
   final Function()? onLongPress;
   final Function()? setReplyingEvent;
   final Function()? setEditingEvent;
+  final Function()? deleteEvent;
+  final bool canDeleteEvent;
   final Function(Emoticon emote)? onReactionTapped;
 
   @override
@@ -95,6 +97,11 @@ class _TimelineEventState extends State<TimelineEventView> {
           args: [user],
           name: "messagePlaceholderUserRejectedInvite");
 
+  String get errorMessageFailedToSend => Intl.message("Failed to send",
+      desc:
+          "Text that is placed below a message when the message fails to send",
+      name: "errorMessageFailedToSend");
+
   @override
   void initState() {
     if (widget.event.relatedEventId != null) {
@@ -104,7 +111,7 @@ class _TimelineEventState extends State<TimelineEventView> {
       }
     }
 
-    widget.timeline.client.fetchPeer(widget.event.senderId).loading?.then((_) {
+    widget.timeline.client.getPeer(widget.event.senderId).loading?.then((_) {
       if (mounted) setState(() {});
     });
 
@@ -127,16 +134,19 @@ class _TimelineEventState extends State<TimelineEventView> {
         duration: const Duration(milliseconds: 100),
         color: widget.hovered ? m.Colors.red : m.Colors.transparent,
         child: Opacity(
-            opacity:
-                widget.event.status == TimelineEventStatus.sending ? 0.5 : 1,
-            child: display));
+          opacity: [TimelineEventStatus.sending, TimelineEventStatus.error]
+                  .contains(widget.event.status)
+              ? 0.5
+              : 1,
+          child: display,
+        ));
   }
 
   String get displayName =>
-      widget.timeline.room.client.fetchPeer(widget.event.senderId).displayName;
+      widget.timeline.room.client.getPeer(widget.event.senderId).displayName;
 
   ImageProvider? get avatar =>
-      widget.timeline.room.client.fetchPeer(widget.event.senderId).avatar;
+      widget.timeline.room.client.getPeer(widget.event.senderId).avatar;
 
   Color get color => widget.timeline.room.getColorOfUser(widget.event.senderId);
 
@@ -146,7 +156,7 @@ class _TimelineEventState extends State<TimelineEventView> {
 
   String? get relatedEventDisplayName => relatedEvent == null
       ? null
-      : widget.timeline.client.fetchPeer(relatedEvent!.senderId).displayName;
+      : widget.timeline.client.getPeer(relatedEvent!.senderId).displayName;
 
   Widget? eventToWidget(TimelineEvent event) {
     if (event.status == TimelineEventStatus.removed) return const SizedBox();
@@ -162,7 +172,7 @@ class _TimelineEventState extends State<TimelineEventView> {
           onLongPress: widget.onLongPress,
           showSender: widget.showSender,
           reactions: widget.event.reactions,
-          currentUserIdentifier: widget.timeline.room.client.user!.identifier,
+          currentUserIdentifier: widget.timeline.room.client.self!.identifier,
           replyBody: relatedEvent?.body ??
               (relatedEvent?.type == EventType.sticker
                   ? messagePlaceholderSticker(displayName)
@@ -173,7 +183,9 @@ class _TimelineEventState extends State<TimelineEventView> {
           edited: widget.event.edited,
           onReactionTapped: widget.onReactionTapped,
           body: buildBody(),
-          menuBuilder: BuildConfig.DESKTOP ? buildMenu : null,
+          child: event.status == TimelineEventStatus.error
+              ? tiamat.Text.error(errorMessageFailedToSend)
+              : null,
         );
       case EventType.roomCreated:
         return GenericRoomEvent(messagePlaceholderUserCreatedRoom(displayName),
@@ -216,39 +228,6 @@ class _TimelineEventState extends State<TimelineEventView> {
     return null;
   }
 
-  Widget buildMenu(BuildContext context) {
-    return m.Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            color: m.Theme.of(context).colorScheme.surface,
-            border: Border.all(
-                color:
-                    m.Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
-                width: 1)),
-        child: m.Padding(
-          padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
-          child: Row(
-            children: [
-              buildMenuEntry(m.Icons.reply, CommonStrings.promptReply, () {
-                widget.setReplyingEvent!.call();
-              }),
-              buildMenuEntry(m.Icons.add_reaction,
-                  CommonStrings.promptAddReaction, () => null),
-              if (canUserEditEvent() && widget.event.editable)
-                buildMenuEntry(m.Icons.edit, CommonStrings.promptEdit, () {
-                  widget.setEditingEvent?.call();
-                }),
-              buildMenuEntry(
-                  m.Icons.more_vert, CommonStrings.promptOptions, () => null)
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget buildMenuEntry(IconData icon, String label, Function()? callback) {
     const double size = 32;
     return t.Tooltip(
@@ -270,7 +249,7 @@ class _TimelineEventState extends State<TimelineEventView> {
 
   bool canUserEditEvent() {
     return widget.timeline.room.permissions.canUserEditMessages &&
-        widget.event.senderId == widget.timeline.room.client.user!.identifier;
+        widget.event.senderId == widget.timeline.room.client.self!.identifier;
   }
 
   Widget buildBody() {

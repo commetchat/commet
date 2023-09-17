@@ -1,75 +1,108 @@
-import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:commet/client/client.dart';
-import 'package:commet/client/components/emoticon/emoticon_component.dart';
-import 'package:commet/client/matrix/matrix_client.dart';
-import 'package:commet/client/matrix/matrix_room.dart';
-import 'package:commet/client/timeline.dart';
 import 'package:commet/client/components/emoticon/emoji_pack.dart';
-import 'package:commet/client/components/emoticon/emoticon.dart';
-import 'package:matrix/matrix.dart' as matrix;
+import 'package:commet/client/components/emoticon/emoticon_component.dart';
+import 'package:commet/client/matrix/components/emoticon/matrix_emoticon_pack.dart';
+import 'package:commet/client/matrix/matrix_client.dart';
+import 'package:commet/utils/notifying_list.dart';
+import 'package:flutter/material.dart';
 
-import '../../../../utils/emoji/unicode_emoji.dart';
-import '../../../../utils/image_utils.dart';
-import '../../matrix_mxc_image_provider.dart';
-import '../../matrix_timeline.dart';
-import 'matrix_emoticon.dart';
-import 'matrix_emoticon_pack.dart';
+/// Manages custom emoticon packs from the matrix user account state
+class MatrixEmoticonComponent extends EmoticonComponent<MatrixClient> {
+  static const roomEmotesStateKey = "im.ponies.room_emotes";
+  static const emoteRoomsStateKey = "im.ponies.emote_rooms";
 
-class MatrixEmoticonComponent implements EmoticonComponent {
-  MatrixEmoticonHelper helper;
+  @override
+  bool get canCreatePack => ownedPacks.isEmpty;
+
+  @override
   MatrixClient client;
 
-  @override
-  late List<EmoticonPack> ownedPacks;
+  final NotifyingList<EmoticonPack> _packs =
+      NotifyingList.empty(growable: true);
 
-  final StreamController<int> _onOwnedPackAdded = StreamController.broadcast();
-
-  @override
-  Stream<int> get onOwnedPackAdded {
-    return _onOwnedPackAdded.stream;
-  }
-
-  MatrixEmoticonComponent(this.helper, this.client) {
-    var state = helper.getAllStates();
-    ownedPacks = List.empty(growable: true);
+  MatrixEmoticonComponent(this.client) {
+    var state = getAllStates();
 
     if (state.isEmpty) return;
 
     for (var key in state.keys) {
       var value = state[key]!;
       if (value['pack'] == null && value['images'] == null) continue;
-      var pack = MatrixEmoticonPack(key, helper);
-      ownedPacks.add(pack);
+      var pack = MatrixEmoticonPack(this, key, value);
+      _packs.add(pack);
     }
   }
 
   @override
-  Future<void> createEmoticonPack(String name, Uint8List? avatarData) async {
-    var data = await helper.createEmoticonPack(name, avatarData);
-    if (data != null) {
-      var pack = MatrixEmoticonPack(data['key'], helper);
-      ownedPacks.add(pack);
-      _onOwnedPackAdded.add(ownedPacks.length - 1);
-    }
+  Stream<int> get onOwnedPackAdded => _packs.onAdd;
+
+  @override
+  List<EmoticonPack> get ownedPacks => _packs;
+
+  String getDefaultDisplayName() {
+    return "Personal";
+  }
+
+  ImageProvider? getDefaultImage() {
+    return null;
+  }
+
+  IconData? getDefaultIcon() {
+    return Icons.star;
+  }
+
+  bool isGloballyAvailable(String packId) {
+    return true;
   }
 
   @override
-  Future<void> deleteEmoticonPack(EmoticonPack pack) async {
-    (pack as MatrixEmoticonPack).helper.deleteEmotionPack(pack.identifier);
-    ownedPacks.remove(pack);
+  Future<EmoticonPack> createEmoticonPack(
+      String name, Uint8List? avatarData) async {
+    Uri? avatar;
+    if (avatarData != null) {
+      avatar = await client.getMatrixClient().uploadContent(avatarData);
+    }
+
+    var content = {
+      "pack": {
+        "display_name": name,
+        if (avatar != null) "avatar_url": avatar.toString()
+      }
+    };
+
+    String stateKey = name;
+    var states = getAllStates();
+
+    // Check for existing and empty state keys, and reuse those keys first
+    for (var pair in states.entries) {
+      if (pair.value.isEmpty) {
+        stateKey = pair.key;
+        break;
+      }
+    }
+
+    await setState(stateKey, content);
+    var pack = MatrixEmoticonPack(this, stateKey, content);
+    _packs.add(pack);
+    return pack;
+  }
+
+  @override
+  Future<void> deleteEmoticonPack(EmoticonPack pack) {
+    _packs.remove(pack);
+    var matrixPack = pack as MatrixEmoticonPack;
+    return setState(matrixPack.stateKey, {});
   }
 
   @override
   List<EmoticonPack> globalPacks() {
     var matrixClient = client.getMatrixClient();
 
-    if (!matrixClient.accountData.containsKey("im.ponies.emote_rooms"))
-      return [];
+    if (!matrixClient.accountData.containsKey(emoteRoomsStateKey)) return [];
 
-    var rooms = matrixClient.accountData["im.ponies.emote_rooms"]!
-        .content['rooms'] as Map<String, Object?>;
+    var rooms = matrixClient.accountData[emoteRoomsStateKey]!.content['rooms']
+        as Map<String, Object?>;
 
     var packs = List<EmoticonPack>.empty(growable: true);
 
@@ -82,9 +115,21 @@ class MatrixEmoticonComponent implements EmoticonComponent {
       var packKeys = rooms[roomId] as Map<String, dynamic>;
 
       for (var packKey in packKeys.keys) {
-        List emoji = room != null
-            ? room.roomEmoticons!.ownedPacks
-            : space!.emoticons!.ownedPacks;
+        List? emoji;
+
+        if (room != null) {
+          var component = room.getComponent<RoomEmoticonComponent>();
+          if (component != null) {
+            emoji = component.ownedPacks;
+          }
+        } else if (space != null) {
+          var component = space.getComponent<SpaceEmoticonComponent>();
+          if (component != null) {
+            emoji = component.ownedPacks;
+          }
+        }
+
+        if (emoji == null) continue;
 
         var matchingPacks =
             emoji.where((element) => element.identifier == packKey);
@@ -98,121 +143,117 @@ class MatrixEmoticonComponent implements EmoticonComponent {
     return packs;
   }
 
-  @override
-  bool get canCreatePack => ownedPacks.isEmpty;
-}
+  Map<String, dynamic> getState(String packKey) {
+    return client
+            .getMatrixClient()
+            .accountData['im.ponies.user_emotes']
+            ?.content ??
+        {};
+  }
 
-class MatrixRoomEmoticonComponent extends MatrixEmoticonComponent
-    implements RoomEmoticonComponent {
-  MatrixRoom room;
-  MatrixRoomEmoticonComponent(super.helper, super.client, this.room);
+  Map<String, dynamic> getAllStates() {
+    //These keys are kind of irrelevant, since they dont actually get used for
+    //the state, its just easier this way because it makes it similar to rooms state
+    var state = getState("personal");
+    if (state.isEmpty) return {};
+    return {"personal": state};
+  }
 
-  @override
-  Future<TimelineEvent?> sendSticker(
-      Emoticon sticker, TimelineEvent? inReplyTo) async {
-    if (sticker is! MatrixEmoticon) return null;
+  Future<void> setState(String packKey, Map<String, dynamic> content) {
+    return client.getMatrixClient().setAccountData(
+        client.getMatrixClient().userID!, "im.ponies.user_emotes", content);
+  }
 
-    var image = await ImageUtils.imageProviderToImage(sticker.image);
+  Future<void> deleteEmoticon(String packKey, String emoteName) async {
+    var content = getState(packKey);
 
-    matrix.Event? replyingTo;
-
-    if (inReplyTo != null) {
-      replyingTo = await room.matrixRoom.getEventById(inReplyTo.eventId);
+    if (content.containsKey('images')) {
+      var images = content['images'] as Map<String, dynamic>;
+      images.remove(emoteName);
+      content['images'] = images;
     }
-    String? mimeType;
-    if (sticker.image is MatrixMxcImage) {
-      mimeType = (sticker.image as MatrixMxcImage).mimeType;
-    }
 
-    var content = {
-      "body": sticker.shortcode!,
-      "url": sticker.emojiUrl.toString(),
-      "info": {
-        "w": image.width,
-        "h": image.height,
-        if (mimeType != null) "mimetype": mimeType
+    return setState(packKey, content);
+  }
+
+  Future<void> renameEmoticon(
+      String packKey, String emoteName, String newName) async {
+    var content = getState(packKey);
+
+    if (content.containsKey('images')) {
+      var images = content['images'] as Map<String, dynamic>;
+      var image = images[emoteName] as Map<String, dynamic>?;
+      images.remove(emoteName);
+
+      if (image != null) {
+        image['display_name'] = newName;
+        images[newName] = image;
       }
-    };
 
-    var id = await room.matrixRoom.sendEvent(content,
-        type: matrix.EventTypes.Sticker, inReplyTo: replyingTo);
-
-    if (id != null) {
-      var event = await room.matrixRoom.getEventById(id);
-      return (room.timeline! as MatrixTimeline).convertEvent(event!);
+      content['images'] = images;
     }
 
-    return null;
+    return setState(packKey, content);
   }
 
-  @override
-  List<EmoticonPack> get availableEmoji =>
-      _getAvailablePacks(includeUnicode: true);
+  Future<void> setEmoticonUsages(
+      String packKey, String emoteName, List<String>? usages) async {
+    var content = getState(packKey);
 
-  @override
-  List<EmoticonPack> get availableStickers =>
-      _getAvailablePacks(includeUnicode: false);
+    if (content.containsKey('images')) {
+      var images = content['images'] as Map<String, dynamic>;
 
-  @override
-  List<EmoticonPack> get availablePacks {
-    List<EmoticonPack> packs = List.from(ownedPacks, growable: true);
+      if (images.containsKey(emoteName)) {
+        var emote = images[emoteName] as Map<String, dynamic>;
 
-    for (var space in room.client.spaces
-        .where((element) => element.containsRoom(room.identifier))) {
-      packs.addAll(space.emoticons!.ownedPacks);
-    }
+        emote.remove('usage');
 
-    if (room.client.emoticons == null) return packs;
+        if (usages != null && usages.isNotEmpty) {
+          emote['usage'] = usages;
+        }
 
-    packs.addAll(room.client.emoticons!
-        .globalPacks()
-        .where((element) => !packs.contains(element)));
-
-    packs.addAll(room.client.emoticons!.ownedPacks
-        .where((element) => !packs.contains(element)));
-
-    return packs;
-  }
-
-  Map<String, Map<String, String>> getEmotePacksFlat(
-      matrix.ImagePackUsage emoticon) {
-    var packs = availablePacks.whereType<MatrixEmoticonPack>();
-
-    var result = <String, Map<String, String>>{};
-
-    for (var pack in packs) {
-      var key = "${pack.displayName}-${pack.ownerId}";
-      result[key] = <String, String>{};
-      for (var emote in pack.emotes) {
-        result[key]![emote.shortcode!] =
-            (emote as MatrixEmoticon).emojiUrl.toString();
+        images[emoteName] = emote;
       }
+
+      content['images'] = images;
     }
 
-    return result;
+    return setState(packKey, content);
   }
 
-  List<EmoticonPack> _getAvailablePacks({bool includeUnicode = false}) {
-    var result = List<EmoticonPack>.of(ownedPacks);
+  Future<void> setPackUsages(String packKey, List<String>? usages) async {
+    var content = getState(packKey);
 
-    for (var space in room.client.spaces
-        .where((element) => element.containsRoom(room.identifier))) {
-      result.addAll(space.emoticons!.ownedPacks);
-    }
+    var pack = content['pack'] as Map<String, dynamic>?;
 
-    for (var pack in room.client.emoticons!.globalPacks()) {
-      if (!result.contains(pack)) {
-        result.add(pack);
-      }
-    }
+    if (pack == null) return;
 
-    result.addAll(room.client.emoticons!.ownedPacks);
+    pack['usage'] = usages?.isEmpty == true ? null : usages;
+    content['pack'] = pack;
 
-    if (includeUnicode) result.addAll(UnicodeEmojis.packs!);
-
-    return result;
+    return setState(packKey, content);
   }
 
-  @override
-  bool get canCreatePack => true;
+  Future<Map<String, dynamic>>? createEmoticon(
+    String packKey,
+    String emoteName,
+    Uint8List data,
+  ) async {
+    var content = getState(packKey);
+
+    Uri url = await client.getMatrixClient().uploadContent(data);
+
+    if (content['images'] == null) {
+      content['images'] = {};
+    }
+
+    if (content['images'][emoteName] == null) {
+      content['images'][emoteName] = {};
+    }
+    content['images'][emoteName]['url'] = url.toString();
+    content['images'][emoteName]['display_name'] = emoteName;
+
+    await setState(packKey, content);
+    return content;
+  }
 }

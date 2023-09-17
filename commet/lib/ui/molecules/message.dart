@@ -20,13 +20,13 @@ class Message extends StatefulWidget {
       this.replyBody,
       this.replySenderColor,
       this.replySenderName,
-      this.menuBuilder,
       this.edited = false,
       this.onDoubleTap,
       this.reactions,
       this.onReactionTapped,
       this.onLongPress,
       this.isInReply = false,
+      this.child,
       this.showSender = true});
   final double avatarSize = 32;
 
@@ -48,13 +48,13 @@ class Message extends StatefulWidget {
 
   final Widget body;
 
+  final Widget? child;
+
   final Map<Emoticon, Set<String>>? reactions;
 
   final Function()? onLongPress;
   final Function()? onDoubleTap;
   final Function(Emoticon emote)? onReactionTapped;
-
-  final Widget Function(BuildContext context)? menuBuilder;
 
   @override
   State<Message> createState() => _MessageState();
@@ -116,6 +116,7 @@ class _MessageState extends State<Message> {
                         ),
                       body(),
                       if (widget.edited) edited(),
+                      if (widget.child != null) widget.child!,
                       if (widget.reactions != null) reactions(),
                     ],
                   ),

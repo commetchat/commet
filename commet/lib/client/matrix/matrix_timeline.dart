@@ -321,24 +321,8 @@ class MatrixTimeline extends Timeline {
   }
 
   @override
-  void deleteEventByIndex(int index) async {
-    var event = _matrixTimeline!.events[index];
-    var status = event.status;
-
-    if (status == matrix.EventStatus.sent ||
-        status == matrix.EventStatus.synced && event.canRedact) {
-      events[index].status = TimelineEventStatus.removed;
-      await _matrixRoom.redactEvent(event.eventId);
-    } else {
-      events.removeAt(index);
-      _matrixTimeline!.events[index].remove();
-      onRemove.add(index);
-    }
-  }
-
-  @override
   void markAsRead(TimelineEvent event) async {
-    if (event.senderId == client.user!.identifier) return;
+    if (event.senderId == client.self!.identifier) return;
 
     if (event.type == EventType.edit ||
         event.status == TimelineEventStatus.synced) {
@@ -377,7 +361,7 @@ class MatrixTimeline extends Timeline {
         .toList(growable: true);
 
     if (latestDisplayableEvent != null &&
-        latestDisplayableEvent.senderId != client.user!.identifier &&
+        latestDisplayableEvent.senderId != client.self!.identifier &&
         !receipts.contains(latestDisplayableEvent.senderId))
       receipts.add(latestDisplayableEvent.senderId);
 
@@ -417,5 +401,23 @@ class MatrixTimeline extends Timeline {
         return;
       }
     }
+  }
+
+  @override
+  Future<void> deleteEvent(TimelineEvent event) async {
+    await _matrixRoom.redactEvent(event.eventId);
+    var matrixEvent = await _matrixTimeline!.getEventById(event.eventId);
+    matrixEvent?.remove();
+  }
+
+  @override
+  bool canDeleteEvent(TimelineEvent event) {
+    if (event.senderId != room.client.self!.identifier &&
+        room.permissions.canDeleteOtherUserMessages != true) return false;
+
+    if (![EventType.message, EventType.sticker].contains(event.type))
+      return false;
+
+    return true;
   }
 }

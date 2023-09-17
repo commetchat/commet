@@ -1,4 +1,5 @@
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/settings/categories/room/appearance/room_appearance_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/room/developer/room_developer_settings_view.dart';
@@ -42,49 +43,55 @@ class SettingsCategoryRoom implements SettingsCategory {
   String get title => labelRoomSettingsCategory;
 
   @override
-  List<SettingsTab> get tabs => List.from([
+  List<SettingsTab> get tabs => getTabs();
+
+  List<SettingsTab> getTabs() {
+    RoomEmoticonComponent? emoticons =
+        room.getComponent<RoomEmoticonComponent>();
+    return List.from([
+      SettingsTab(
+        label: labelRoomSettingsGeneral,
+        icon: Icons.settings,
+        pageBuilder: (context) {
+          return RoomGeneralSettingsPage(
+            room: room,
+          );
+        },
+      ),
+      if (room.permissions.canEditAppearance)
         SettingsTab(
-          label: labelRoomSettingsGeneral,
-          icon: Icons.settings,
-          pageBuilder: (context) {
-            return RoomGeneralSettingsPage(
-              room: room,
-            );
-          },
-        ),
-        if (room.permissions.canEditAppearance)
-          SettingsTab(
-              label: labelRoomSettingsAppearance,
-              icon: Icons.style,
-              pageBuilder: (context) {
-                return RoomAppearanceSettingsPage(
-                  room: room,
-                );
-              }),
-        if (room.permissions.canEditRoomSecurity)
-          SettingsTab(
-              label: labelRoomSettingsSecurity,
-              icon: Icons.lock,
-              pageBuilder: (context) {
-                return RoomSecuritySettingsPage(
-                  room: room,
-                );
-              }),
-        if ((room.permissions.canEditRoomEmoticons ||
-                room.roomEmoticons!.ownedPacks.isNotEmpty) &&
-            room.roomEmoticons != null)
-          SettingsTab(
-              label: labelRoomSettingsEmoticons,
-              icon: Icons.emoji_emotions,
-              pageBuilder: (context) {
-                return RoomEmojiPackSettingsPage(room);
-              }),
-        if (preferences.developerMode)
-          SettingsTab(
-              label: labelRoomSettingsDeveloper,
-              icon: Icons.code,
-              pageBuilder: (context) {
-                return RoomDeveloperSettingsView(room.developerInfo);
-              }),
-      ]);
+            label: labelRoomSettingsAppearance,
+            icon: Icons.style,
+            pageBuilder: (context) {
+              return RoomAppearanceSettingsPage(
+                room: room,
+              );
+            }),
+      if (room.permissions.canEditRoomSecurity)
+        SettingsTab(
+            label: labelRoomSettingsSecurity,
+            icon: Icons.lock,
+            pageBuilder: (context) {
+              return RoomSecuritySettingsPage(
+                room: room,
+              );
+            }),
+      if (emoticons != null &&
+          (room.permissions.canEditRoomEmoticons ||
+              emoticons.ownedPacks.isNotEmpty))
+        SettingsTab(
+            label: labelRoomSettingsEmoticons,
+            icon: Icons.emoji_emotions,
+            pageBuilder: (context) {
+              return RoomEmojiPackSettingsPage(room);
+            }),
+      if (preferences.developerMode)
+        SettingsTab(
+            label: labelRoomSettingsDeveloper,
+            icon: Icons.code,
+            pageBuilder: (context) {
+              return RoomDeveloperSettingsView(room.developerInfo);
+            }),
+    ]);
+  }
 }

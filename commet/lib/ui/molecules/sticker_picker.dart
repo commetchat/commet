@@ -1,7 +1,6 @@
 import 'package:commet/ui/molecules/emoji_picker.dart';
 import 'package:commet/client/components/emoticon/emoji_pack.dart';
-import 'package:commet/utils/gif_search/gif_search_result.dart';
-import 'package:commet/utils/gif_search/tenor_search.dart';
+import 'package:commet/client/components/gif/gif_search_result.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 
@@ -21,7 +20,6 @@ Widget wbStickerPickerDefault(BuildContext context) {
                 snapshot.hasData
                     ? StickerPicker(
                         packs: snapshot.data as List<EmoticonPack>,
-                        search: TenorSearch.search,
                         canSearchGif: true,
                         stickerPicked: (sticker) =>
                             // ignore: avoid_print

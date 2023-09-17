@@ -102,13 +102,13 @@ class _SpaceSelectorState extends State<SpaceSelector> {
                         itemBuilder: (context, i, animation) => buildSpaceIcon(
                               animation,
                               displayName: widget.spaces[i].displayName,
-                              onUpdate: widget.spaces[i].onUpdate.stream,
+                              onUpdate: widget.spaces[i].onUpdate,
                               avatar: widget.spaces[i].avatar,
                               notificationCount:
                                   widget.spaces[i].displayNotificationCount,
                               highlightedNotificationCount: widget.spaces[i]
                                   .displayHighlightedNotificationCount,
-                              userAvatar: widget.spaces[i].client.user!.avatar,
+                              userAvatar: widget.spaces[i].client.self!.avatar,
                               index: i,
                             )),
                     if (widget.footer != null) const Seperator(),

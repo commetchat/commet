@@ -2,6 +2,8 @@
 
 import 'dart:async';
 
+import 'package:commet/client/components/emoticon/emoticon_component.dart';
+import 'package:commet/client/components/gif/gif_component.dart';
 import 'package:commet/client/timeline.dart';
 import 'package:commet/ui/molecules/direct_message_list.dart';
 import 'package:commet/ui/molecules/emoji_picker.dart';
@@ -10,6 +12,7 @@ import 'package:commet/ui/molecules/timeline_event.dart';
 import 'package:commet/ui/navigation/navigation_signals.dart';
 import 'package:commet/ui/organisms/home_screen/home_screen.dart';
 import 'package:commet/ui/pages/chat/chat_page.dart';
+import 'package:commet/utils/common_strings.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart' as material;
 import 'package:intl/intl.dart';
@@ -43,7 +46,6 @@ class MobileChatPageView extends StatefulWidget {
 
 class _MobileChatPageViewState extends State<MobileChatPageView> {
   late GlobalKey<OverlappingPanelsState> panelsKey;
-  late GlobalKey<MessageInputState> messageInput = GlobalKey();
   StreamSubscription? onOpenRoomSubscription;
   bool shouldMainIgnoreInput = false;
   double height = -1;
@@ -78,9 +80,7 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
                 child: mainPanel(),
               )
             : mainPanel(),
-        onDragStart: () {
-          messageInput.currentState?.unfocus();
-        },
+        onDragStart: () {},
         onSideChange: (side) {
           setState(() {
             shouldMainIgnoreInput = side != RevealSide.main;
@@ -141,6 +141,13 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
     }
 
     return Tile(child: HomeScreen(clientManager: widget.state.clientManager));
+  }
+
+  Widget roomChatView() {
+    return _RoomChatView(
+      widget.state,
+      key: ValueKey("room-chat-view-${widget.state.selectedRoom!.localId}"),
+    );
   }
 
   Widget userList() {
@@ -214,7 +221,7 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
               child: SpaceViewer(
                 widget.state.selectedSpace!,
                 key: widget.state.selectedSpace!.key,
-                onRoomInsert: widget.state.selectedSpace!.onRoomAdded.stream,
+                onRoomInsert: widget.state.selectedSpace!.onRoomAdded,
                 onRoomSelectionChanged:
                     widget.state.onRoomSelectionChanged.stream,
                 onRoomSelected: (index) async {
@@ -226,6 +233,57 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
         ),
       ),
     );
+  }
+
+  void clearSelectedRoom() {
+    Future.delayed(const Duration(milliseconds: 125)).then((value) {
+      panelsKey.currentState!.reveal(RevealSide.main);
+      setState(() {
+        shouldMainIgnoreInput = false;
+      });
+    });
+    widget.state.clearRoomSelection();
+  }
+
+  void selectRoom(Room room) {
+    panelsKey.currentState!.reveal(RevealSide.main);
+    setState(() {
+      shouldMainIgnoreInput = false;
+    });
+
+    widget.state.selectRoom(room);
+  }
+
+  void onNavigateToRoom(String id) {
+    panelsKey.currentState?.reveal(RevealSide.main);
+  }
+}
+
+class _RoomChatView extends StatefulWidget {
+  final ChatPageState state;
+  const _RoomChatView(this.state, {super.key});
+
+  @override
+  State<_RoomChatView> createState() => __RoomChatViewState();
+}
+
+class __RoomChatViewState extends State<_RoomChatView> {
+  late GlobalKey<MessageInputState> messageInput = GlobalKey();
+  RoomEmoticonComponent? emoticons;
+  GifComponent? gifs;
+
+  @override
+  void initState() {
+    emoticons =
+        widget.state.selectedRoom?.getComponent<RoomEmoticonComponent>();
+
+    gifs = widget.state.selectedRoom?.getComponent<GifComponent>();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return roomChatView();
   }
 
   Widget roomChatView() {
@@ -295,10 +353,9 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
                           removeAttachment: widget.state.removeAttachment,
                           focusKeyboard:
                               widget.state.onFocusMessageInput.stream,
-                          availibleEmoticons: widget.state.selectedRoom!
-                              .roomEmoticons?.availableEmoji,
-                          availibleStickers: widget.state.selectedRoom!
-                              .roomEmoticons?.availableStickers,
+                          availibleEmoticons: emoticons?.availableEmoji,
+                          availibleStickers: emoticons?.availableStickers,
+                          gifComponent: gifs,
                           sendGif: widget.state.sendGif,
                           sendSticker: widget.state.sendSticker,
                           cancelReply: () {
@@ -315,25 +372,6 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
         ),
       ),
     );
-  }
-
-  void clearSelectedRoom() {
-    Future.delayed(const Duration(milliseconds: 125)).then((value) {
-      panelsKey.currentState!.reveal(RevealSide.main);
-      setState(() {
-        shouldMainIgnoreInput = false;
-      });
-    });
-    widget.state.clearRoomSelection();
-  }
-
-  void selectRoom(Room room) {
-    panelsKey.currentState!.reveal(RevealSide.main);
-    setState(() {
-      shouldMainIgnoreInput = false;
-    });
-
-    widget.state.selectRoom(room);
   }
 
   void showMessageMenu(TimelineEvent event) {
@@ -367,17 +405,13 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
           minChildSize: 0.6,
           builder: (context, scrollController) {
             return SizedBox(
-              height: 700,
-              child: EmojiPicker(
-                widget.state.selectedRoom!.roomEmoticons!.availableEmoji,
-                size: 48,
-                packButtonSize: 40,
-                onEmoticonPressed: (emoticon) {
+                height: 700,
+                child: EmojiPicker(emoticons!.availableEmoji,
+                    size: 48,
+                    packButtonSize: 40, onEmoticonPressed: (emoticon) {
                   widget.state.addReaction(event, emoticon);
                   Navigator.pop(context);
-                },
-              ),
-            );
+                }));
           },
         );
       },
@@ -421,7 +455,7 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
             SizedBox(
               height: 50,
               child: TextButton(
-                "Reply",
+                CommonStrings.promptReply,
                 icon: m.Icons.reply,
                 onTap: () {
                   widget.state.setInteractingEvent(event,
@@ -433,7 +467,7 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
             SizedBox(
               height: 50,
               child: TextButton(
-                "Add Reaction",
+                CommonStrings.promptAddReaction,
                 icon: m.Icons.add_reaction_rounded,
                 onTap: () {
                   Navigator.pop(context);
@@ -445,7 +479,7 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
               SizedBox(
                 height: 50,
                 child: TextButton(
-                  "Edit Message",
+                  CommonStrings.promptEdit,
                   icon: m.Icons.edit,
                   onTap: () {
                     widget.state.setInteractingEvent(event,
@@ -454,15 +488,14 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
                   },
                 ),
               ),
-            if (canDeleteMessage(event))
+            if (widget.state.selectedRoom!.timeline!.canDeleteEvent(event))
               SizedBox(
                 height: 50,
                 child: TextButton(
-                  "Delete Message",
+                  CommonStrings.promptDelete,
                   icon: m.Icons.delete_forever,
                   onTap: () {
-                    widget.state.selectedRoom?.timeline
-                        ?.deleteEvent(event.eventId);
+                    widget.state.selectedRoom?.timeline?.deleteEvent(event);
                     Navigator.pop(context);
                   },
                 ),
@@ -470,7 +503,7 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
             SizedBox(
               height: 50,
               child: TextButton(
-                "Copy Text",
+                CommonStrings.promptCopy,
                 icon: m.Icons.copy,
                 onTap: () {
                   services.Clipboard.setData(
@@ -489,27 +522,11 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
     if (widget.state.selectedRoom?.permissions.canUserEditMessages != true)
       return false;
 
-    if (event.senderId != widget.state.selectedRoom!.client.user!.identifier)
+    if (event.senderId != widget.state.selectedRoom!.client.self!.identifier)
       return false;
 
     if (event.type != EventType.message) return false;
 
     return true;
-  }
-
-  bool canDeleteMessage(TimelineEvent event) {
-    if (widget.state.selectedRoom?.permissions.canUserDeleteMessages != true)
-      return false;
-
-    if (event.senderId != widget.state.selectedRoom!.client.user!.identifier)
-      return false;
-
-    if (event.type != EventType.message) return false;
-
-    return true;
-  }
-
-  void onNavigateToRoom(String id) {
-    panelsKey.currentState?.reveal(RevealSide.main);
   }
 }

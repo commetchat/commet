@@ -21,9 +21,9 @@ class AccountSelector extends StatelessWidget {
         return Padding(
           padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
           child: UserPanelView(
-            displayName: item.user!.displayName,
-            detail: item.user!.detail,
-            avatar: item.user!.avatar,
+            displayName: item.self!.displayName,
+            detail: item.self!.detail,
+            avatar: item.self!.avatar,
           ),
         );
       },

@@ -10,7 +10,12 @@ class ClientManager {
   List<Room> rooms = List.empty(growable: true);
   List<Room> directMessages = List.empty(growable: true);
 
-  List<Room> singleRooms = List.empty(growable: true);
+  List<Room> get singleRooms => rooms
+      .where((room) =>
+          !room.isDirectMessage &&
+          !spaces.any((space) => space.containsRoom(room.identifier)))
+      .toList();
+
   List<Space> spaces = List.empty(growable: true);
   final List<Client> _clientsList = List.empty(growable: true);
 
@@ -20,11 +25,6 @@ class ClientManager {
 
   late StreamController<int> onRoomAdded = StreamController.broadcast();
   late StreamController<int> onRoomRemoved = StreamController.broadcast();
-
-  late StreamController<int> onDirectMessageRoomAdded =
-      StreamController.broadcast();
-
-  late StreamController<int> onSingleRoomAdded = StreamController.broadcast();
 
   late StreamController<int> onSpaceAdded = StreamController.broadcast();
   late StreamController<StaleSpaceInfo> onSpaceRemoved =
@@ -41,6 +41,9 @@ class ClientManager {
   late StreamController<Room> onDirectMessageRoomUpdated =
       StreamController.broadcast();
 
+  late StreamController<int> onDirectMessageRoomAdded =
+      StreamController.broadcast();
+
   int get directMessagesNotificationCount => directMessages.fold(
       0,
       (previousValue, element) =>
@@ -52,12 +55,11 @@ class ClientManager {
     _clientsList.add(client);
     onClientAdded.add(_clients.length - 1);
 
-    client.onSync.stream.listen((_) => _synced());
+    client.onSync.listen((_) => _synced());
 
-    client.onRoomAdded.stream
-        .listen((index) => _onClientAddedRoom(client, index));
+    client.onRoomAdded.listen((index) => _onClientAddedRoom(client, index));
 
-    client.onSpaceAdded.stream.listen((i) {
+    client.onSpaceAdded.listen((i) {
       addSpace(client, i);
     });
   }
@@ -68,20 +70,16 @@ class ClientManager {
 
     if (client.rooms[index].isDirectMessage) {
       directMessages.add(client.rooms[index]);
-      client.rooms[index].onUpdate.stream
+      client.rooms[index].onUpdate
           .listen((_) => directMessageRoomUpdated(client.rooms[index]));
       onDirectMessageRoomAdded.add(directMessages.length - 1);
-    } else if (!client.spaces.any(
-        (element) => element.containsRoom(client.rooms[index].identifier))) {
-      singleRooms.add(client.rooms[index]);
-      onSingleRoomAdded.add(singleRooms.length - 1);
     }
   }
 
   void addSpace(Client client, int index) {
     var space = client.spaces[index];
-    space.onUpdate.stream.listen((_) => spaceUpdated(space));
-    space.onChildUpdated.stream.listen((_) => spaceChildUpdated(space));
+    space.onUpdate.listen((_) => spaceUpdated(space));
+    space.onChildUpdated.listen((_) => spaceChildUpdated(space));
     spaces.add(client.spaces[index]);
     onSpaceAdded.add(spaces.length - 1);
   }
@@ -103,9 +101,9 @@ class ClientManager {
 
     var clientInfo = StalePeerInfo(
         index: clientIndex,
-        displayName: client.user!.displayName,
-        identifier: client.user!.identifier,
-        avatar: client.user!.avatar);
+        displayName: client.self!.displayName,
+        identifier: client.self!.identifier,
+        avatar: client.self!.avatar);
 
     for (int i = rooms.length - 1; i >= 0; i--) {
       if (rooms[i].client == client) {
@@ -120,7 +118,7 @@ class ClientManager {
             index: i,
             name: spaces[i].displayName,
             avatar: spaces[i].avatar,
-            userAvatar: spaces[i].client.user!.avatar);
+            userAvatar: spaces[i].client.self!.avatar);
         spaces.removeAt(i);
         onSpaceRemoved.add(info);
       }

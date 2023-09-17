@@ -29,16 +29,13 @@ class _SpaceViewerState extends State<SpaceViewer>
         child: RoomList(
           widget.space.rooms,
           expanderText: "Test Expander",
-          onInsertStream: widget.space.onRoomAdded.stream,
-          onUpdateStream: widget.space.onUpdate.stream,
-          onChildUpdatedStream: widget.space.onChildUpdated.stream,
+          onInsertStream: widget.space.onRoomAdded,
+          onUpdateStream: widget.space.onUpdate,
+          onChildUpdatedStream: widget.space.onChildUpdated,
           onRoomSelected: widget.onRoomSelected,
           onRoomSelectionChanged: widget.onRoomSelectionChanged,
           expandable: false,
           showHeader: true,
-          onRoomReordered: (oldIndex, newIndex) {
-            widget.space.reorderRooms(oldIndex, newIndex);
-          },
         ));
   }
 }

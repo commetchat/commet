@@ -1,4 +1,5 @@
 import 'package:commet/cache/cache_file_provider.dart';
+import 'package:commet/client/matrix/components/emoticon/matrix_emoticon_component.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart';
@@ -48,10 +49,11 @@ extension MatrixExtensions on Client {
   }
 
   Future<void> addEmoticonRoomPack(String roomId, String packKey) async {
-    var state = BasicEvent(type: "im.ponies.emote_rooms", content: {});
+    var state = BasicEvent(
+        type: MatrixEmoticonComponent.roomEmotesStateKey, content: {});
 
-    if (accountData.containsKey("im.ponies.emote_rooms")) {
-      state = accountData["im.ponies.emote_rooms"]!;
+    if (accountData.containsKey(MatrixEmoticonComponent.roomEmotesStateKey)) {
+      state = accountData[MatrixEmoticonComponent.roomEmotesStateKey]!;
     }
 
     if (!state.content.containsKey("rooms")) {
@@ -66,14 +68,16 @@ extension MatrixExtensions on Client {
     var roomPacks = rooms[roomId] as Map;
     roomPacks[packKey] = {};
 
-    await setAccountData(userID!, "im.ponies.emote_rooms", state.content);
+    await setAccountData(
+        userID!, MatrixEmoticonComponent.roomEmotesStateKey, state.content);
   }
 
   Future<void> removeEmoticonRoomPack(String roomId, String packKey) async {
-    var state = BasicEvent(type: "im.ponies.emote_rooms", content: {});
+    var state = BasicEvent(
+        type: MatrixEmoticonComponent.roomEmotesStateKey, content: {});
 
-    if (accountData.containsKey("im.ponies.emote_rooms")) {
-      state = accountData["im.ponies.emote_rooms"]!;
+    if (accountData.containsKey(MatrixEmoticonComponent.roomEmotesStateKey)) {
+      state = accountData[MatrixEmoticonComponent.roomEmotesStateKey]!;
     }
 
     if (!state.content.containsKey("rooms")) {
@@ -88,15 +92,17 @@ extension MatrixExtensions on Client {
     var roomPacks = rooms[roomId] as Map;
     roomPacks.remove(packKey);
 
-    await setAccountData(userID!, "im.ponies.emote_rooms", state.content);
+    await setAccountData(
+        userID!, MatrixEmoticonComponent.roomEmotesStateKey, state.content);
   }
 
   bool isEmoticonPackGloballyAvailable(String roomId, String packKey) {
-    if (!accountData.containsKey("im.ponies.emote_rooms")) {
+    if (!accountData.containsKey(MatrixEmoticonComponent.roomEmotesStateKey)) {
       return false;
     }
 
-    var state = accountData["im.ponies.emote_rooms"]!.content;
+    var state =
+        accountData[MatrixEmoticonComponent.roomEmotesStateKey]!.content;
     if (!state.containsKey("rooms")) {
       return false;
     }

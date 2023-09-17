@@ -27,4 +27,7 @@ class MatrixRoomPermissions extends Permissions {
 
   @override
   bool get canEditRoomEmoticons => room.canSendDefaultStates;
+
+  @override
+  bool get canDeleteOtherUserMessages => room.canRedact;
 }

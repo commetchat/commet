@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:commet/client/components/emoticon/emoticon.dart';
+import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/client/timeline.dart';
 import 'package:commet/ui/molecules/emoji_picker.dart';
+import 'package:commet/utils/common_strings.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
@@ -18,6 +20,7 @@ class MessagePopupMenu extends StatefulWidget {
   final TimelineEvent event;
   final Timeline timeline;
   final bool isEditable;
+  final bool isDeletable;
   final Stream<int>? onMessageChanged;
 
   const MessagePopupMenu(this.event, this.timeline,
@@ -25,9 +28,12 @@ class MessagePopupMenu extends StatefulWidget {
       this.setEditingEvent,
       this.onMessageChanged,
       this.setReplyingEvent,
+      this.isDeletable = false,
+      this.deleteEvent,
       this.addReaction,
       this.isEditable = false});
 
+  final Function(TimelineEvent event)? deleteEvent;
   final Function(TimelineEvent? event)? setReplyingEvent;
   final Function(TimelineEvent? event)? setEditingEvent;
   final Function(TimelineEvent event, Emoticon emoticon)? addReaction;
@@ -39,11 +45,13 @@ class MessagePopupMenu extends StatefulWidget {
 class MessagePopupMenuState extends State<MessagePopupMenu> {
   JustTheController controller = JustTheController();
   PageStorageBucket storage = PageStorageBucket();
+  RoomEmoticonComponent? emoticons;
   StreamSubscription? sub;
 
   @override
   void initState() {
     super.initState();
+    emoticons = widget.timeline.room.getComponent<RoomEmoticonComponent>();
     sub = widget.onMessageChanged?.listen(onMessageChanged);
   }
 
@@ -58,39 +66,38 @@ class MessagePopupMenuState extends State<MessagePopupMenu> {
             shadow: const Shadow(color: Colors.transparent),
             backgroundColor:
                 kDebugMode ? Colors.red.withAlpha(40) : Colors.transparent,
-            content: widget.timeline.room.roomEmoticons == null
-                ? Container()
-                : MouseRegion(
-                    child: PageStorage(
-                      bucket: storage,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(boxShadow: [
-                            BoxShadow(
-                                blurRadius: 10,
-                                spreadRadius: 2,
-                                color: Theme.of(context).shadowColor),
-                          ]),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(5),
-                            child: Container(
-                              color: Theme.of(context).colorScheme.surface,
-                              child: SizedBox(
-                                width: 300,
-                                height: 300,
-                                child: EmojiPicker(
-                                  widget.timeline.room.roomEmoticons!
-                                      .availableEmoji,
+            content: MouseRegion(
+              child: PageStorage(
+                bucket: storage,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(boxShadow: [
+                      BoxShadow(
+                          blurRadius: 10,
+                          spreadRadius: 2,
+                          color: Theme.of(context).shadowColor),
+                    ]),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(5),
+                      child: Container(
+                        color: Theme.of(context).colorScheme.surface,
+                        child: SizedBox(
+                          width: 300,
+                          height: 300,
+                          child: emoticons != null
+                              ? EmojiPicker(
+                                  emoticons!.availableEmoji,
                                   onEmoticonPressed: onEmoticonPicked,
-                                ),
-                              ),
-                            ),
-                          ),
+                                )
+                              : Container(),
                         ),
                       ),
                     ),
                   ),
+                ),
+              ),
+            ),
             preferredDirection: AxisDirection.up,
             child: buildMenu(context)));
   }
@@ -118,16 +125,21 @@ class MessagePopupMenuState extends State<MessagePopupMenu> {
           padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
           child: Row(
             children: [
-              buildMenuEntry(m.Icons.reply, "Reply", () {
+              buildMenuEntry(m.Icons.reply, CommonStrings.promptReply, () {
                 widget.setReplyingEvent?.call(widget.event);
               }),
-              buildMenuEntry(
-                  m.Icons.add_reaction, "Add Reaction", toggleTooltipMenu),
+              buildMenuEntry(m.Icons.add_reaction,
+                  CommonStrings.promptAddReaction, toggleTooltipMenu),
               if (widget.isEditable && widget.event.editable)
-                buildMenuEntry(m.Icons.edit, "Edit", () {
+                buildMenuEntry(m.Icons.edit, CommonStrings.promptEdit, () {
                   widget.setEditingEvent?.call(widget.event);
                 }),
-              buildMenuEntry(m.Icons.more_vert, "Options", () => null)
+              if (widget.isDeletable && widget.deleteEvent != null)
+                buildMenuEntry(m.Icons.delete, CommonStrings.promptDelete, () {
+                  widget.deleteEvent?.call(widget.event);
+                }),
+              buildMenuEntry(
+                  m.Icons.more_vert, CommonStrings.promptOptions, () => null),
             ],
           ),
         ),

@@ -117,6 +117,7 @@ class TimelineViewerState extends State<TimelineViewer> {
   }
 
   Widget buildOverlay() {
+    var event = widget.timeline.events[hoveredIndex];
     return Positioned(
         height: 50,
         child: CompositedTransformFollower(
@@ -126,10 +127,11 @@ class TimelineViewerState extends State<TimelineViewer> {
             offset: const Offset(-20, -40),
             link: messageLayerLink,
             child: MessagePopupMenu(
-              widget.timeline.events[hoveredIndex],
+              event,
               widget.timeline,
-              isEditable:
-                  canUserEditEvent(widget.timeline.events[hoveredIndex]),
+              isEditable: canUserEditEvent(event),
+              isDeletable: widget.timeline.canDeleteEvent(event),
+              deleteEvent: (event) => widget.timeline.deleteEvent(event),
               onMessageChanged: onHoveredMessageChanged.stream,
               addReaction: widget.onAddReaction,
             )));
@@ -137,7 +139,7 @@ class TimelineViewerState extends State<TimelineViewer> {
 
   bool canUserEditEvent(TimelineEvent event) {
     return widget.timeline.room.permissions.canUserEditMessages &&
-        event.senderId == widget.timeline.room.client.user!.identifier;
+        event.senderId == widget.timeline.room.client.self!.identifier;
   }
 
   void onAfterFirstFrame(_) {

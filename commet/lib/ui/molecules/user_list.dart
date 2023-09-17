@@ -31,7 +31,7 @@ class _PeerListState extends State<PeerList> {
       itemBuilder: (context, i, animation) => SizeTransition(
           sizeFactor: animation.drive(CurveTween(curve: Curves.easeOutCubic)),
           child: UserPanel(
-            widget.room.client.fetchPeer(widget.room.memberIds.elementAt(i)),
+            widget.room.client.getPeer(widget.room.memberIds.elementAt(i)),
             userColor:
                 widget.room.getColorOfUser(widget.room.memberIds.elementAt(i)),
           )),

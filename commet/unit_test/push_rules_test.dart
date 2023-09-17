@@ -7,7 +7,7 @@ import 'package:commet/client/simulated/simulated_space.dart';
 import 'package:test/test.dart';
 
 void main() async {
-  Client client = SimulatedClient();
+  SimulatedClient client = SimulatedClient();
   await client.login(LoginType.loginPassword, "sim", "example.com");
 
   SimulatedRoom simulatedRoom = SimulatedRoom("Simulated Room", client);
@@ -99,7 +99,7 @@ void main() async {
 
     TimelineEvent event = TimelineEvent();
     event.type = EventType.message;
-    event.senderId = client.user!.identifier;
+    event.senderId = client.self!.identifier;
 
     expect(room.timeline!.shouldDisplayNotification(event), isFalse);
   });

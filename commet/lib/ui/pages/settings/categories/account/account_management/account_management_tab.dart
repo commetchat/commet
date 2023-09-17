@@ -119,9 +119,9 @@ class _AccountManagementSettingsTabState
         return SizeTransition(
           sizeFactor: animation,
           child: accountListItem(
-              displayName: clients[index].user!.displayName,
-              avatar: clients[index].user!.avatar,
-              detail: clients[index].user!.identifier,
+              displayName: clients[index].self!.displayName,
+              avatar: clients[index].self!.avatar,
+              detail: clients[index].self!.identifier,
               onLogoutClicked: () =>
                   clientmanager.logoutClient(clients[index])),
         );

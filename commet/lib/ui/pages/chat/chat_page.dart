@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:commet/client/client_manager.dart';
+import 'package:commet/client/components/emoticon/emoticon_component.dart';
+import 'package:commet/client/components/gif/gif_component.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/navigation/navigation_signals.dart';
@@ -9,7 +11,7 @@ import 'package:commet/ui/pages/chat/desktop_chat_page.dart';
 import 'package:commet/ui/pages/chat/mobile_chat_page.dart';
 import 'package:commet/ui/pages/settings/room_settings_page.dart';
 import 'package:commet/utils/debounce.dart';
-import 'package:commet/utils/gif_search/gif_search_result.dart';
+import 'package:commet/client/components/gif/gif_search_result.dart';
 import 'package:commet/utils/notification/notification_manager.dart';
 import 'package:commet/utils/orientation.dart';
 import 'package:flutter/foundation.dart';
@@ -92,9 +94,7 @@ class ChatPageState extends State<ChatPage> {
 
   String? get relatedEventSenderName => interactingEvent == null
       ? null
-      : selectedRoom?.client
-              .fetchPeer(interactingEvent!.senderId)
-              .displayName ??
+      : selectedRoom?.client.getPeer(interactingEvent!.senderId).displayName ??
           interactingEvent!.senderId;
 
   Color? get relatedEventSenderColor => interactingEvent == null
@@ -145,7 +145,7 @@ class ChatPageState extends State<ChatPage> {
     for (int i = 0; i < min(20, selectedRoom!.timeline!.events.length); i++) {
       var event = selectedRoom!.timeline!.events[i];
 
-      if (event.senderId != selectedRoom!.client.user!.identifier) continue;
+      if (event.senderId != selectedRoom!.client.self!.identifier) continue;
 
       if (event.type != EventType.message) continue;
 
@@ -215,10 +215,10 @@ class ChatPageState extends State<ChatPage> {
   void selectSpace(Space? space) {
     if (space == selectedSpace) return;
 
-    if (space != null && !space.loaded) space.loadExtra();
+    if (space != null && !space.fullyLoaded) space.loadExtra();
 
     onSpaceUpdateSubscription?.cancel();
-    onSpaceUpdateSubscription = space?.onUpdate.stream.listen(onSpaceUpdated);
+    onSpaceUpdateSubscription = space?.onUpdate.listen(onSpaceUpdated);
 
     clearRoomSelection();
     if (kDebugMode) {
@@ -276,7 +276,7 @@ class ChatPageState extends State<ChatPage> {
     }
 
     onRoomUpdateSubscription?.cancel();
-    onRoomUpdateSubscription = room.onUpdate.stream.listen(onRoomUpdated);
+    onRoomUpdateSubscription = room.onUpdate.listen(onRoomUpdated);
 
     onRoomSelectionChanged.add(room);
 
@@ -340,21 +340,21 @@ class ChatPageState extends State<ChatPage> {
   }
 
   Peer getCurrentUser() {
-    if (selectedRoom != null) return selectedRoom!.client.user!;
+    if (selectedRoom != null) return selectedRoom!.client.self!;
 
-    if (selectedSpace != null) return selectedSpace!.client.user!;
+    if (selectedSpace != null) return selectedSpace!.client.self!;
 
-    if (previousSelectedRoom != null) return previousSelectedRoom!.client.user!;
+    if (previousSelectedRoom != null) return previousSelectedRoom!.client.self!;
 
     if (previousSelectedSpace != null)
-      return previousSelectedSpace!.client.user!;
+      return previousSelectedSpace!.client.self!;
 
-    return clientManager.clients.first.user!;
+    return clientManager.clients.first.self!;
   }
 
   void onOpenRoomSignal(String roomId) {
     for (var client in clientManager.clients) {
-      if (client.roomExists(roomId)) {
+      if (client.hasRoom(roomId)) {
         var room = client.getRoom(roomId);
 
         if (room != null) {
@@ -446,7 +446,7 @@ class ChatPageState extends State<ChatPage> {
   }
 
   void sendSticker(Emoticon sticker) {
-    selectedRoom!.roomEmoticons!.sendSticker(
+    selectedRoom!.getComponent<RoomEmoticonComponent>()?.sendSticker(
         sticker,
         interactionType == EventInteractionType.reply
             ? interactingEvent
@@ -454,7 +454,8 @@ class ChatPageState extends State<ChatPage> {
   }
 
   Future<void> sendGif(GifSearchResult gif) async {
-    await selectedRoom!.sendGif(
+    var component = selectedRoom!.getComponent<GifComponent>();
+    await component?.sendGif(
         gif,
         interactionType == EventInteractionType.reply
             ? interactingEvent
@@ -463,7 +464,7 @@ class ChatPageState extends State<ChatPage> {
 
   void onReactionTapped(TimelineEvent event, Emoticon emote) {
     if (event.reactions![emote]!
-        .contains(selectedRoom!.client.user!.identifier)) {
+        .contains(selectedRoom!.client.self!.identifier)) {
       selectedRoom!.removeReaction(event, emote);
     } else {
       selectedRoom!.addReaction(event, emote);

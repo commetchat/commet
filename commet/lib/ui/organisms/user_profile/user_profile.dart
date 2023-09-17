@@ -31,7 +31,7 @@ class UserProfile extends StatelessWidget {
       displayName: user.displayName,
       identifier: user.identifier,
       userColor: user.defaultColor,
-      isSelf: user.client.user == user,
+      isSelf: user.client.self == user,
       onMessageButtonClicked: openDirectMessage,
     );
   }

@@ -4,6 +4,7 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/components/emoticon/emoji_pack.dart';
+import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/ui/pages/settings/categories/account/account_emoji/account_emoji_view.dart';
 import 'package:commet/ui/pages/settings/categories/room/emoji_packs/room_emoji_pack_settings_view.dart';
 import 'package:flutter/widgets.dart';
@@ -21,10 +22,12 @@ class AccountEmojiTab extends StatefulWidget {
 
 class _AccountEmojiTabState extends State<AccountEmojiTab> {
   Client? selectedClient;
+  EmoticonComponent? component;
 
   @override
   void initState() {
     selectedClient = widget.clientManager.clients[widget.selectedClientIndex];
+    component = selectedClient!.getComponent<EmoticonComponent>();
     super.initState();
   }
 
@@ -38,6 +41,7 @@ class _AccountEmojiTabState extends State<AccountEmojiTab> {
             onClientSelected: (client) {
               setState(() {
                 selectedClient = client;
+                component = selectedClient!.getComponent<EmoticonComponent>();
               });
             },
           ),
@@ -50,7 +54,7 @@ class _AccountEmojiTabState extends State<AccountEmojiTab> {
   }
 
   Widget buildEmojiView(BuildContext context) {
-    if (selectedClient?.emoticons == null) {
+    if (component == null) {
       return const Placeholder();
     }
 
@@ -58,26 +62,25 @@ class _AccountEmojiTabState extends State<AccountEmojiTab> {
       // I dont love using a key here, is there a better way to do this? i dont know
       key: ValueKey("account_emoji_editor_key_${selectedClient!.identifier}"),
       children: [
-        RoomEmojiPackSettingsView(selectedClient!.emoticons!.ownedPacks,
+        RoomEmojiPackSettingsView(component!.ownedPacks,
             createNewPack: createPack,
             defaultExpanded: true,
-            canCreatePack: selectedClient!.emoticons!.canCreatePack,
+            canCreatePack: component!.canCreatePack,
             deleteEmoticon: deleteEmoticon,
             deletePack: deletePack,
             renameEmoticon: renameEmoticon,
-            onPackCreated: selectedClient!.emoticons!.onOwnedPackAdded),
+            onPackCreated: component!.onOwnedPackAdded),
         const SizedBox(
           height: 5,
         ),
-        if (selectedClient!.emoticons!.globalPacks().isNotEmpty)
-          AccountEmojiView(selectedClient!.emoticons!.globalPacks(),
-              selectedClient!.emoticons!.ownedPacks),
+        if (component!.globalPacks().isNotEmpty)
+          AccountEmojiView(component!.globalPacks(), component!.ownedPacks),
       ],
     );
   }
 
   Future<void> createPack(String name, Uint8List? avatarData) {
-    return selectedClient!.emoticons!.createEmoticonPack(name, avatarData);
+    return component!.createEmoticonPack(name, avatarData);
   }
 
   Future<void> renameEmoticon(
@@ -90,6 +93,6 @@ class _AccountEmojiTabState extends State<AccountEmojiTab> {
   }
 
   Future<void> deletePack(EmoticonPack pack) {
-    return selectedClient!.emoticons!.deleteEmoticonPack(pack);
+    return component!.deleteEmoticonPack(pack);
   }
 }

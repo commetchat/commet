@@ -1,36 +1,52 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:commet/client/client.dart';
-import 'package:commet/client/matrix/components/emoticon/matrix_emoticon_component.dart';
+import 'package:commet/client/components/component_registry.dart';
+import 'package:commet/client/components/space_component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
-import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/matrix/matrix_room_permissions.dart';
 import 'package:commet/client/matrix/matrix_room_preview.dart';
+import 'package:commet/client/permissions.dart';
 import 'package:commet/client/room_preview.dart';
+import 'package:commet/utils/notifying_list.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
-import 'components/emoticon/matrix_emoticon_pack.dart';
 import 'matrix_peer.dart';
 
 class MatrixSpace extends Space {
   late matrix.Room _matrixRoom;
   late matrix.Client _matrixClient;
+  late MatrixClient _client;
+  late MatrixRoomPermissions _permissions;
+  late String _displayName;
+
+  final StreamController<void> _onUpdate = StreamController.broadcast();
+  final NotifyingList<Room> _rooms = NotifyingList.empty(growable: true);
+  final NotifyingList<RoomPreview> _previews =
+      NotifyingList.empty(growable: true);
+
+  final StreamController<Room> _onChildUpdated = StreamController.broadcast();
+
+  ImageProvider? _avatar;
 
   Uri? _avatarUrl;
   bool ignoreNextAvatarUpdate = false;
 
+  bool _fullyLoaded = false;
+
+  late final List<SpaceComponent<MatrixClient, MatrixSpace>> _components;
+
+  matrix.Room get matrixRoom => _matrixRoom;
   @override
   String get topic => _matrixRoom.topic;
 
   @override
   String get developerInfo =>
       const JsonEncoder.withIndent('  ').convert(_matrixRoom.states);
-
-  @override
-  late final MatrixEmoticonComponent emoticons;
 
   @override
   Color get color => MatrixPeer.hashColor(_matrixRoom.id);
@@ -62,33 +78,87 @@ class MatrixSpace extends Space {
     }
   }
 
-  MatrixSpace(client, matrix.Room room, matrix.Client matrixClient)
-      : super(room.id, client) {
+  @override
+  ImageProvider<Object>? get avatar => _avatar;
+
+  @override
+  List<RoomPreview> get childPreviews => _previews;
+
+  @override
+  Client get client => _client;
+
+  @override
+  String get displayName => _displayName;
+
+  @override
+  String get identifier => _matrixRoom.id;
+
+  @override
+  Stream<int> get onChildPreviewAdded => _previews.onAdd;
+
+  @override
+  Stream<int> get onChildPreviewRemoved => _previews.onRemove;
+
+  @override
+  Stream<void> get onChildPreviewsUpdated => _previews.onListUpdated;
+
+  @override
+  Stream<Room> get onChildUpdated => _onChildUpdated.stream;
+
+  @override
+  Stream<void> get onChildrenUpdated => _rooms.onListUpdated;
+
+  @override
+  Stream<int> get onRoomAdded => _rooms.onAdd;
+
+  @override
+  Stream<void> get onUpdate => _onUpdate.stream;
+
+  @override
+  Permissions get permissions => _permissions;
+
+  @override
+  List<Room> get rooms => _rooms;
+
+  @override
+  bool get fullyLoaded => _fullyLoaded;
+
+  MatrixSpace(
+      MatrixClient client, matrix.Room room, matrix.Client matrixClient) {
     _matrixRoom = room;
     _matrixClient = matrixClient;
-    displayName = room.getLocalizedDisplayname();
+    _client = client;
+    _displayName = room.getLocalizedDisplayname();
 
     _matrixRoom.postLoad();
+    _components = ComponentRegistry.getMatrixSpaceComponents(client, this);
 
     room.onUpdate.stream.listen((event) {
       refresh();
-      onUpdate.add(null);
+      _onUpdate.add(null);
     });
 
-    client.onSync.stream.listen((event) {
+    client.onSync.listen((event) {
       refresh();
     });
 
-    permissions = MatrixRoomPermissions(_matrixRoom);
+    _permissions = MatrixRoomPermissions(_matrixRoom);
 
-    emoticons = MatrixEmoticonComponent(
-        MatrixRoomEmoticonHelper(_matrixRoom), this.client as MatrixClient);
+    // Subscribe to all child update events
+    _rooms.onAdd.listen(
+      (index) {
+        var room = _rooms[index];
+        room.onUpdate.listen((event) {
+          _onChildUpdated.add(room);
+        });
+      },
+    );
 
     refresh();
   }
 
   void refresh() {
-    displayName = _matrixRoom.getLocalizedDisplayname();
+    _displayName = _matrixRoom.getLocalizedDisplayname();
 
     if (_matrixRoom.avatar != null && _matrixRoom.avatar != _avatarUrl) {
       updateAvatarFromRoomState();
@@ -112,16 +182,16 @@ class MatrixSpace extends Space {
   void updateAvatar() {
     var avatar = MatrixMxcImage(_matrixRoom.avatar!, _matrixClient,
         autoLoadFullRes: false);
-    setAvatar(newAvatar: avatar);
+    _avatar = avatar;
   }
 
   void updateRoomsList() {
     for (var child in _matrixRoom.spaceChildren) {
-      // reuse the existing room object
       var room = client.getRoom(child.roomId!);
       if (room != null) {
+        _previews.removeWhere((element) => element.roomId == room.identifier);
         if (!containsRoom(room.identifier)) {
-          addRoom(room);
+          _rooms.add(room);
         }
       } else {}
     }
@@ -147,32 +217,15 @@ class MatrixSpace extends Space {
   }
 
   @override
-  void onRoomReorderedCallback(int oldIndex, int newIndex) {}
-
-  @override
-  Future<void> setDisplayNameInternal(String name) async {
-    await _matrixRoom.setName(name);
-  }
-
-  @override
   Future<void> changeAvatar(Uint8List bytes, String? mimeType) async {
     var avatar = Image.memory(bytes).image;
     ignoreNextAvatarUpdate = true;
-    setAvatar(newAvatar: avatar, newThumbnail: avatar);
+    _avatar = avatar;
 
     await _matrixRoom.setAvatar(matrix.MatrixImageFile(
         bytes: bytes,
         name: "avatar",
         mimeType: mimeType == "" ? null : mimeType));
-  }
-
-  @override
-  Future<void> setSpaceChildRoomInternal(Room room) async {
-    if (room is! MatrixRoom) {
-      throw Exception("Invalid room type for this client");
-    }
-
-    await _matrixRoom.setSpaceChild(room.identifier);
   }
 
   @override
@@ -192,6 +245,47 @@ class MatrixSpace extends Space {
     }
 
     await _matrixRoom.setPushRuleState(newRule);
-    onUpdate.add(null);
+    _onUpdate.add(null);
+  }
+
+  @override
+  Future<void> loadExtra() async {
+    var response =
+        await _matrixClient.getSpaceHierarchy(identifier, maxDepth: 5);
+
+    // read child rooms
+    response.rooms
+        .where((element) => element.roomId != identifier)
+        .where((element) => !containsRoom(element.roomId))
+        .forEach((element) {
+      _previews.add(MatrixSpaceRoomChunkPreview(element, _matrixClient));
+    });
+
+    _fullyLoaded = true;
+  }
+
+  @override
+  Future<void> setDisplayName(String newName) async {
+    _displayName = newName;
+    await _matrixRoom.setName(newName);
+  }
+
+  @override
+  Future<void> setSpaceChildRoom(Room room) async {
+    await _matrixRoom.setSpaceChild(room.identifier);
+  }
+
+  @override
+  bool containsRoom(String identifier) {
+    return _rooms.any((element) => element.identifier == identifier);
+  }
+
+  @override
+  T? getComponent<T extends SpaceComponent>() {
+    for (var component in _components) {
+      if (component is T) return component as T;
+    }
+
+    return null;
   }
 }

@@ -1,12 +1,13 @@
 import 'dart:async';
 
+import 'package:commet/client/components/gif/gif_component.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/molecules/attachment_icon.dart';
 import 'package:commet/ui/molecules/emoticon_picker.dart';
 import 'package:commet/ui/pages/chat/chat_page.dart';
 import 'package:commet/client/components/emoticon/emoji_pack.dart';
-import 'package:commet/utils/gif_search/gif_search_result.dart';
+import 'package:commet/client/components/gif/gif_search_result.dart';
 import 'package:file_picker/file_picker.dart';
 
 import 'package:flutter/material.dart';
@@ -45,6 +46,7 @@ class MessageInput extends StatefulWidget {
       this.typingUsernames,
       this.availibleEmoticons,
       this.availibleStickers,
+      this.gifComponent,
       this.onReadReceiptsClicked,
       this.sendGif,
       this.sendSticker,
@@ -65,6 +67,7 @@ class MessageInput extends StatefulWidget {
   final List<String>? typingUsernames;
   final List<EmoticonPack>? availibleEmoticons;
   final List<EmoticonPack>? availibleStickers;
+  final GifComponent? gifComponent;
   final void Function()? onReadReceiptsClicked;
   final void Function(Emoticon sticker)? sendSticker;
   final Future<void> Function(GifSearchResult gif)? sendGif;
@@ -88,6 +91,7 @@ class MessageInputState extends State<MessageInput> {
   OverlayEntry? entry;
   final layerLink = LayerLink();
   bool showEmotePicker = false;
+  bool hasEmotePickerOpened = false;
 
   String get sendEncryptedMessagePrompt =>
       Intl.message("Send an encrypted message",
@@ -164,6 +168,9 @@ class MessageInputState extends State<MessageInput> {
   void toggleEmojiOverlay() {
     setState(() {
       showEmotePicker = !showEmotePicker;
+      if (showEmotePicker) {
+        hasEmotePickerOpened = true;
+      }
     });
   }
 
@@ -356,26 +363,30 @@ class MessageInputState extends State<MessageInput> {
         minHeight: emotePickerHeight,
         maxHeight: emotePickerHeight,
         alignment: Alignment.topCenter,
-        child: EmoticonPicker(
-            emoji: widget.availibleEmoticons!,
-            stickers: widget.availibleStickers ?? [],
-            onEmojiPressed: insertEmoticon,
-            emojiSize: BuildConfig.MOBILE ? 48 : 38,
-            packSize: BuildConfig.MOBILE ? 4 : 38,
-            packListAxis: BuildConfig.DESKTOP ? Axis.vertical : Axis.horizontal,
-            allowGifSearch: preferences.tenorGifSearchEnabled,
-            onStickerPressed: (emoticon) {
-              widget.sendSticker?.call(emoticon);
-              setState(() {
-                showEmotePicker = false;
-              });
-            },
-            onGifPressed: (gif) async {
-              await widget.sendGif?.call(gif);
-              setState(() {
-                showEmotePicker = false;
-              });
-            }));
+        child: !hasEmotePickerOpened
+            ? Container()
+            : EmoticonPicker(
+                emoji: widget.availibleEmoticons!,
+                stickers: widget.availibleStickers ?? [],
+                onEmojiPressed: insertEmoticon,
+                emojiSize: BuildConfig.MOBILE ? 48 : 38,
+                packSize: BuildConfig.MOBILE ? 4 : 38,
+                packListAxis:
+                    BuildConfig.DESKTOP ? Axis.vertical : Axis.horizontal,
+                allowGifSearch: preferences.tenorGifSearchEnabled,
+                gifComponent: widget.gifComponent,
+                onStickerPressed: (emoticon) {
+                  widget.sendSticker?.call(emoticon);
+                  setState(() {
+                    showEmotePicker = false;
+                  });
+                },
+                onGifPressed: (gif) async {
+                  await widget.sendGif?.call(gif);
+                  setState(() {
+                    showEmotePicker = false;
+                  });
+                }));
   }
 
   void addAttachment() async {
