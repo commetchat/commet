@@ -69,7 +69,7 @@ class AdaptiveDialog {
       return SizedBox(
         width: showDesktopVersion(context) ? 500 : null,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+          padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.stretch,

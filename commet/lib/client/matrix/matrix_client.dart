@@ -92,6 +92,12 @@ class MatrixClient extends Client {
   Stream<int> get onSpaceAdded => _spaces.onAdd;
 
   @override
+  Stream<int> get onRoomRemoved => _rooms.onRemove;
+
+  @override
+  Stream<int> get onSpaceRemoved => _spaces.onRemove;
+
+  @override
   Stream<void> get onSync => _onSync.stream;
 
   @override
@@ -515,5 +521,19 @@ class MatrixClient extends Client {
     }
 
     return null;
+  }
+
+  @override
+  Future<void> leaveRoom(Room room) async {
+    _rooms.remove(room);
+    await room.close();
+    return _matrixClient.leaveRoom(room.identifier);
+  }
+
+  @override
+  Future<void> leaveSpace(Space space) async {
+    _spaces.remove(space);
+    space.close();
+    return _matrixClient.leaveRoom(space.identifier);
   }
 }

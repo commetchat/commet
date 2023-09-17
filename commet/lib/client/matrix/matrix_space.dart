@@ -112,6 +112,9 @@ class MatrixSpace extends Space {
   Stream<int> get onRoomAdded => _rooms.onAdd;
 
   @override
+  Stream<int> get onRoomRemoved => _rooms.onRemove;
+
+  @override
   Stream<void> get onUpdate => _onUpdate.stream;
 
   @override
@@ -123,6 +126,8 @@ class MatrixSpace extends Space {
   @override
   bool get fullyLoaded => _fullyLoaded;
 
+  late List<StreamSubscription> _subscriptions;
+
   MatrixSpace(
       MatrixClient client, matrix.Room room, matrix.Client matrixClient) {
     _matrixRoom = room;
@@ -133,27 +138,21 @@ class MatrixSpace extends Space {
     _matrixRoom.postLoad();
     _components = ComponentRegistry.getMatrixSpaceComponents(client, this);
 
-    room.onUpdate.stream.listen((event) {
-      refresh();
-      _onUpdate.add(null);
-    });
+    _subscriptions = List.from([
+      room.onUpdate.stream.listen((event) {
+        refresh();
+        _onUpdate.add(null);
+      }),
+      client.onSync.listen((event) {
+        refresh();
+      }),
+      client.onRoomRemoved.listen(onClientRoomRemoved),
 
-    client.onSync.listen((event) {
-      refresh();
-    });
+      // Subscribe to all child update events
+      _rooms.onAdd.listen(_onRoomAdded),
+    ], growable: true);
 
     _permissions = MatrixRoomPermissions(_matrixRoom);
-
-    // Subscribe to all child update events
-    _rooms.onAdd.listen(
-      (index) {
-        var room = _rooms[index];
-        room.onUpdate.listen((event) {
-          _onChildUpdated.add(room);
-        });
-      },
-    );
-
     refresh();
   }
 
@@ -165,6 +164,16 @@ class MatrixSpace extends Space {
     }
 
     updateRoomsList();
+  }
+
+  @override
+  Future<void> close() async {
+    _rooms.close();
+    _onChildUpdated.close();
+    _onUpdate.close();
+    for (var sub in _subscriptions) {
+      sub.cancel();
+    }
   }
 
   void updateAvatarFromRoomState() {
@@ -195,6 +204,13 @@ class MatrixSpace extends Space {
         }
       } else {}
     }
+  }
+
+  void _onRoomAdded(int index) {
+    var room = _rooms[index];
+    _subscriptions.add(room.onUpdate.listen((event) {
+      _onChildUpdated.add(room);
+    }));
   }
 
   @override
@@ -287,5 +303,12 @@ class MatrixSpace extends Space {
     }
 
     return null;
+  }
+
+  void onClientRoomRemoved(int index) {
+    var leftRoom = client.rooms[index];
+    if (containsRoom(leftRoom.identifier)) {
+      _rooms.remove(leftRoom);
+    }
   }
 }

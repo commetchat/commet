@@ -65,6 +65,12 @@ abstract class Client {
   /// When a space is added, this will be called with the index of the new space
   Stream<int> get onSpaceAdded;
 
+  /// When a room is removed, this will be called with the index of the room which was removed
+  Stream<int> get onRoomRemoved;
+
+  /// When a space is removed, this will be called with the index of the space which was removed
+  Stream<int> get onSpaceRemoved;
+
   /// When a new peer is found, this will be called with the index of the new peer
   Stream<int> get onPeerAdded;
 
@@ -109,6 +115,12 @@ abstract class Client {
 
   /// Join an existing room by address
   Future<Room> joinRoom(String address);
+
+  /// Leaves a room
+  Future<void> leaveRoom(Room room);
+
+  /// Leaves a space
+  Future<void> leaveSpace(Space space);
 
   /// Queries the server for information about a space which this client is not a member of
   Future<RoomPreview?> getSpacePreview(String address);

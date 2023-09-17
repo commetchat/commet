@@ -127,8 +127,8 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
               child: SpaceSelector(
                 _clientManager.spaces,
                 width: 70,
-                onSpaceInsert: _clientManager.onSpaceAdded.stream,
-                onSpaceRemoved: _clientManager.onSpaceRemoved.stream,
+                onSpaceInsert: _clientManager.onSpaceAdded,
+                onSpaceRemoved: _clientManager.onSpaceRemoved,
                 clearSelection: widget.clearSpaceSelection,
                 header: Column(
                   children: [

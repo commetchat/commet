@@ -74,6 +74,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
   StreamSubscription? previewAddedSubscription;
   StreamSubscription? previewRemovedSubscription;
   StreamSubscription? roomAddedSubscription;
+  StreamSubscription? roomRemovedSubscription;
 
   String get tooltipSpaceSettings => Intl.message("Space settings",
       desc: "Tooltip for the button that opens space settings",
@@ -121,6 +122,8 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
 
     roomAddedSubscription = widget.onRoomAdded?.listen(onRoomAdded);
 
+    roomRemovedSubscription = widget.onRoomRemoved?.listen(onRoomRemoved);
+
     super.initState();
   }
 
@@ -129,6 +132,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
     previewAddedSubscription?.cancel();
     previewRemovedSubscription?.cancel();
     roomAddedSubscription?.cancel();
+    roomRemovedSubscription?.cancel();
     super.dispose();
   }
 
@@ -208,31 +212,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
             physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, index, animation) {
               var room = widget.rooms![index];
-              return SizeTransition(
-                  sizeFactor: CommonAnimations.easeOut(animation),
-                  child: RoomPanel(
-                    displayName: room.displayName,
-                    avatar: room.avatar,
-                    color: room.defaultColor,
-                    showSettingsButton: room.permissions.canEditAnything,
-                    onRoomSettingsButtonPressed: () {
-                      widget.onRoomSettingsButtonTap?.call(room);
-                    },
-                    onTap: widget.onRoomTap != null
-                        ? () {
-                            widget.onRoomTap?.call(room);
-                          }
-                        : null,
-                    recentEventBody: room.lastEvent?.body,
-                    recentEventSender: room.lastEvent != null
-                        ? room.client
-                            .getPeer(room.lastEvent!.senderId)
-                            .displayName
-                        : null,
-                    recentEventSenderColor: room.lastEvent != null
-                        ? room.getColorOfUser(room.lastEvent!.senderId)
-                        : null,
-                  ));
+              return buildRoomPanel(animation, room);
             },
           ),
           t.Tooltip(
@@ -247,6 +227,32 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
         ],
       ),
     );
+  }
+
+  SizeTransition buildRoomPanel(Animation<double> animation, Room room) {
+    return SizeTransition(
+        sizeFactor: CommonAnimations.easeOut(animation),
+        child: RoomPanel(
+          displayName: room.displayName,
+          avatar: room.avatar,
+          color: room.defaultColor,
+          showSettingsButton: room.permissions.canEditAnything,
+          onRoomSettingsButtonPressed: () {
+            widget.onRoomSettingsButtonTap?.call(room);
+          },
+          onTap: widget.onRoomTap != null
+              ? () {
+                  widget.onRoomTap?.call(room);
+                }
+              : null,
+          recentEventBody: room.lastEvent?.body,
+          recentEventSender: room.lastEvent != null
+              ? room.client.getPeer(room.lastEvent!.senderId).displayName
+              : null,
+          recentEventSenderColor: room.lastEvent != null
+              ? room.getColorOfUser(room.lastEvent!.senderId)
+              : null,
+        ));
   }
 
   Widget buildPreviewList() {
@@ -335,5 +341,15 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
       _roomListKey.currentState?.insertItem(event);
       childCount++;
     });
+  }
+
+  void onRoomRemoved(int event) {
+    var room = widget.rooms![event];
+    if (mounted)
+      setState(() {
+        _roomListKey.currentState?.removeItem(
+            event, (context, animation) => buildRoomPanel(animation, room));
+        childCount--;
+      });
   }
 }

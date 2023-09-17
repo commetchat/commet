@@ -126,6 +126,8 @@ class MatrixRoom extends Room {
   @override
   Timeline? get timeline => _timeline;
 
+  StreamSubscription? _onUpdateSubscription;
+
   MatrixRoom(
       MatrixClient client, matrix.Room room, matrix.Client matrixClient) {
     _matrixRoom = room;
@@ -176,7 +178,8 @@ class MatrixRoom extends Room {
 
     _timeline = MatrixTimeline(client, this, room);
 
-    _matrixRoom.onUpdate.stream.listen(onMatrixRoomUpdate);
+    _onUpdateSubscription =
+        _matrixRoom.onUpdate.stream.listen(onMatrixRoomUpdate);
 
     _permissions = MatrixRoomPermissions(_matrixRoom);
   }
@@ -339,5 +342,12 @@ class MatrixRoom extends Room {
     }
 
     return null;
+  }
+
+  @override
+  Future<void> close() async {
+    await _onUpdate.close();
+    await _onUpdateSubscription?.cancel();
+    await timeline?.close();
   }
 }

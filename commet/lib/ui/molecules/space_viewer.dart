@@ -31,6 +31,7 @@ class _SpaceViewerState extends State<SpaceViewer>
           expanderText: "Test Expander",
           onInsertStream: widget.space.onRoomAdded,
           onUpdateStream: widget.space.onUpdate,
+          onRemoveStream: widget.space.onRoomRemoved,
           onChildUpdatedStream: widget.space.onChildUpdated,
           onRoomSelected: widget.onRoomSelected,
           onRoomSelectionChanged: widget.onRoomSelectionChanged,
