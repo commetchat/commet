@@ -124,9 +124,11 @@ jobs:
         run: |
           cd $PROJECT_PATH
           flutter build linux --dart-define BUILD_MODE=release --dart-define PLATFORM=linux --release --dart-define GIT_HASH=${{ github.sha }} --dart-define VERSION_TAG=${{ github.event.release.tag_name || 'v0.0.0' }} --dart-define BUILD_DETAIL=linux-x64 --target-platform linux-x64
-      
+
       - name: Create archive
-        run: tar -czf commet-linux-x64.tar.gz -C commet/build/linux/x64/release/bundle/ .
+        run: |
+          cd $PROJECT_PATH/build/linux/x64/release
+          tar -czf commet-linux-x64.tar.gz -C bundle
       
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
@@ -164,7 +166,9 @@ jobs:
           flutter build web --dart-define BUILD_MODE=release --dart-define PLATFORM=web --release --dart-define GIT_HASH=${{ github.sha }} --dart-define VERSION_TAG=${{ github.event.release.tag_name || 'v0.0.0' }}
       
       - name: Create archive
-        run: tar -czf commet-web.tar.gz -C commet/build/web/
+        run: |
+          cd $PROJECT_PATH/build
+          tar -czf commet-web.tar.gz -C web
       
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
