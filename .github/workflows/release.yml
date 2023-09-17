@@ -1,5 +1,9 @@
-on: push
+
 name: release
+on:
+  release:
+    types:
+      - created
 
 env:
   PROJECT_PATH: commet
@@ -48,12 +52,19 @@ jobs:
           dir .\commet
           dir .\commet\build\windows
           move .\olm\build\Debug\olm.dll .\commet\build\windows\runner\Release\libolm.dll
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
+      
+      - name: Archive 
+        run: tar -a -c -f commet-windows.zip -C .\commet\build\windows\runner\ Release
+      
+      - name: Upload to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: build
-          path: .\commet\build\windows\runner\Release
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: .\commet-windows.zip
+          asset_name: commet-windows.zip
+          asset_content_type: application/zip
 
 
   release-android:
@@ -90,11 +101,15 @@ jobs:
           cd $PROJECT_PATH
           flutter build apk --dart-define BUILD_MODE=release --dart-define PLATFORM=android --release --dart-define GIT_HASH=${{ github.sha }} --dart-define VERSION_TAG=${{ github.event.release.tag_name || 'v0.0.0' }}
           
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+      - name: Upload to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: app-release.apk
-          path: commet/build/app/outputs/flutter-apk/app-release.apk
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: commet/build/app/outputs/flutter-apk/app-release.apk
+          asset_name: commet-android.apk
+          asset_content_type: application/vnd.android.package-archive
 
   release-linux:
     runs-on: ubuntu-latest
@@ -130,11 +145,15 @@ jobs:
           cd $PROJECT_PATH/build/linux/x64/release
           tar -czf commet-linux-x64.tar.gz bundle
       
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+      - name: Upload to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: commet-linux-x64.tar.gz
-          path: commet/build/linux/x64/release/commet-linux-x64.tar.gz
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: commet/build/linux/x64/release/commet-linux-x64.tar.gz
+          asset_name: commet-linux-x64.tar.gz
+          asset_content_type: application/gzip
 
   release-web:
     runs-on: ubuntu-latest
@@ -170,8 +189,12 @@ jobs:
           cd $PROJECT_PATH/build
           tar -czf commet-web.tar.gz web
       
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+      - name: Upload to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: commet-web.tar.gz
-          path: commet/build/commet-web.tar.gz
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: commet/build/commet-web.tar.gz
+          asset_name: commet-web.tar.gz
+          asset_content_type: application/gzip
