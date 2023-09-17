@@ -1,6 +1,9 @@
 on: push
 name: release
 
+env:
+  PROJECT_PATH: commet
+
 jobs:
   release-android:
     runs-on: ubuntu-latest
@@ -33,5 +36,5 @@ jobs:
           
       - name: Build APK
         run: |
-          cd .\commet
+          cd $PROJECT_PATH
           flutter build apk --dart-define BUILD_MODE=release --dart-define PLATFORM=android --release --dart-define GIT_HASH=${{ github.sha }} --dart-define VERSION_TAG=${{ github.event.release.tag_name || 'v0.0.0' }}
