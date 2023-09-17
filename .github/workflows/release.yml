@@ -29,8 +29,8 @@ jobs:
       - name: Build Olm
         run: |
           cd ./olm
-          cmake . -Bbuild
-          cmake --build build
+          cmake -DCMAKE_BUILD_TYPE=Release . -A x64 -Bbuild
+          cmake --build build --config Release
 
       - name: Configure Flutter
         run: flutter config --enable-windows-desktop
@@ -51,7 +51,7 @@ jobs:
           dir .\olm
           dir .\commet
           dir .\commet\build\windows
-          move .\olm\build\Debug\olm.dll .\commet\build\windows\runner\Release\libolm.dll
+          move .\olm\build\Release\olm.dll .\commet\build\windows\runner\Release\libolm.dll
       
       - name: Archive 
         run: tar -a -c -f commet-windows.zip -C .\commet\build\windows\runner\ Release
