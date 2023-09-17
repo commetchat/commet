@@ -134,7 +134,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: commet-linux-x64.tar.gz
-          path: $PROJECT_PATH/build/linux/x64/release/commet-linux-x64.tar.gz
+          path: commet/build/linux/x64/release/commet-linux-x64.tar.gz
 
   release-web:
     runs-on: ubuntu-latest
@@ -174,4 +174,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: commet-web.tar.gz
-          path: $PROJECT_PATH/build/commet-web.tar.gz
+          path: commet/build/commet-web.tar.gz
