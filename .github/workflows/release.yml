@@ -42,8 +42,10 @@ jobs:
 
       - name: Build Windows App
         run: |
+          set version=${{ github.event.release.tag_name || 'v0.0.0' }}
+          set version=%version:~1%
           cd .\commet
-          flutter build windows --dart-define BUILD_MODE=release --dart-define PLATFORM=windows --release --dart-define GIT_HASH=${{ github.sha }} --dart-define VERSION_TAG=${{ github.event.release.tag_name || 'v0.0.0' }}
+          flutter build windows --build-name=%version% --dart-define BUILD_MODE=release --dart-define PLATFORM=windows --release --dart-define GIT_HASH=${{ github.sha }} --dart-define VERSION_TAG=${{ github.event.release.tag_name || 'v0.0.0' }}
 
       - name: Include libolm
         run: |
@@ -98,8 +100,10 @@ jobs:
           
       - name: Build APK
         run: |
+          version=${{ github.event.release.tag_name || 'v0.0.0' }}
+          version=$(echo $version | perl -pe '($_)=/([0-9]+([.][0-9]+)+)/')
           cd $PROJECT_PATH
-          flutter build apk --dart-define BUILD_MODE=release --dart-define PLATFORM=android --release --dart-define GIT_HASH=${{ github.sha }} --dart-define VERSION_TAG=${{ github.event.release.tag_name || 'v0.0.0' }}
+          flutter build apk --build-name=$version --dart-define BUILD_MODE=release --dart-define PLATFORM=android --release --dart-define GIT_HASH=${{ github.sha }} --dart-define VERSION_TAG=${{ github.event.release.tag_name || 'v0.0.0' }}
           
       - name: Upload to release
         uses: actions/upload-release-asset@v1
@@ -137,8 +141,10 @@ jobs:
           
       - name: Build Linux
         run: |
+          version=${{ github.event.release.tag_name || 'v0.0.0' }}
+          version=$(echo $version | perl -pe '($_)=/([0-9]+([.][0-9]+)+)/')
           cd $PROJECT_PATH
-          flutter build linux --dart-define BUILD_MODE=release --dart-define PLATFORM=linux --release --dart-define GIT_HASH=${{ github.sha }} --dart-define VERSION_TAG=${{ github.event.release.tag_name || 'v0.0.0' }} --dart-define BUILD_DETAIL=linux-x64 --target-platform linux-x64
+          flutter build linux --build-name=$version --dart-define BUILD_MODE=release --dart-define PLATFORM=linux --release --dart-define GIT_HASH=${{ github.sha }} --dart-define VERSION_TAG=${{ github.event.release.tag_name || 'v0.0.0' }} --dart-define BUILD_DETAIL=linux-x64 --target-platform linux-x64
 
       - name: Create archive
         run: |
