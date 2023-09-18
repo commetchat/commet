@@ -46,7 +46,7 @@ jobs:
       - name: Code Generation __φ(．．;)
         run: |
           cd $PROJECT_PATH
-          scripts/codegen.sh
+          dart run scripts/codegen.dart
           
       - name: Run Unit Tests  ε=ε=┌( >_<)┘
         run: |
