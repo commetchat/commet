@@ -38,14 +38,12 @@ jobs:
       - name: Code Generation
         run: |
           cd .\commet
-          .\scripts\codegen.bat
+          dart run scripts/codegen.dart
 
       - name: Build Windows App
         run: |
-          set version=${{ github.event.release.tag_name || 'v0.0.0' }}
-          set version=%version:~1%
           cd .\commet
-          flutter build windows --build-name=%version% --dart-define BUILD_MODE=release --dart-define PLATFORM=windows --release --dart-define GIT_HASH=${{ github.sha }} --dart-define VERSION_TAG=${{ github.event.release.tag_name || 'v0.0.0' }}
+          dart run scripts/build_release.dart --platform windows --version_tag ${{ github.event.release.tag_name || 'v0.0.0' }} --git_hash ${{ github.sha }}
 
       - name: Include libolm
         run: |
@@ -96,15 +94,13 @@ jobs:
       - name: Code Generation
         run: |
           cd $PROJECT_PATH
-          scripts/codegen.sh
+          dart run scripts/codegen.dart
           
       - name: Build APK
         run: |
-          version=${{ github.event.release.tag_name || 'v0.0.0' }}
-          version=$(echo $version | perl -pe '($_)=/([0-9]+([.][0-9]+)+)/')
           cd $PROJECT_PATH
-          flutter build apk --build-name=$version --dart-define BUILD_MODE=release --dart-define PLATFORM=android --release --dart-define GIT_HASH=${{ github.sha }} --dart-define VERSION_TAG=${{ github.event.release.tag_name || 'v0.0.0' }}
-          
+          dart run scripts/build_release.dart --platform android --version_tag ${{ github.event.release.tag_name || 'v0.0.0' }} --git_hash ${{ github.sha }}
+                    
       - name: Upload to release
         uses: actions/upload-release-asset@v1
         env:
@@ -137,14 +133,12 @@ jobs:
       - name: Code Generation
         run: |
           cd $PROJECT_PATH
-          scripts/codegen.sh
+          dart run scripts/codegen.dart
           
       - name: Build Linux
         run: |
-          version=${{ github.event.release.tag_name || 'v0.0.0' }}
-          version=$(echo $version | perl -pe '($_)=/([0-9]+([.][0-9]+)+)/')
           cd $PROJECT_PATH
-          flutter build linux --build-name=$version --dart-define BUILD_MODE=release --dart-define PLATFORM=linux --release --dart-define GIT_HASH=${{ github.sha }} --dart-define VERSION_TAG=${{ github.event.release.tag_name || 'v0.0.0' }} --dart-define BUILD_DETAIL=linux-x64 --target-platform linux-x64
+          dart run scripts/build_release.dart --platform linux --version_tag ${{ github.event.release.tag_name || 'v0.0.0' }} --git_hash ${{ github.sha }} --build_detail linux-x64
 
       - name: Create archive
         run: |
@@ -183,12 +177,12 @@ jobs:
       - name: Code Generation
         run: |
           cd $PROJECT_PATH
-          scripts/codegen.sh
+          dart run scripts/codegen.dart
           
       - name: Build Web
         run: |
           cd $PROJECT_PATH
-          flutter build web --dart-define BUILD_MODE=release --dart-define PLATFORM=web --release --dart-define GIT_HASH=${{ github.sha }} --dart-define VERSION_TAG=${{ github.event.release.tag_name || 'v0.0.0' }}
+          dart run scripts/build_release.dart --platform web --version_tag ${{ github.event.release.tag_name || 'v0.0.0' }} --git_hash ${{ github.sha }}
       
       - name: Create archive
         run: |

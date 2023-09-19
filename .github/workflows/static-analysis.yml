@@ -36,7 +36,7 @@ jobs:
       - name: Code Generation __φ(．．;)
         run: |
           cd $PROJECT_PATH
-          scripts/codegen.sh
+          dart run scripts/codegen.dart
 
       - name: Check Warnings
         run: |
