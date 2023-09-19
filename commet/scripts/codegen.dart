@@ -3,15 +3,29 @@
 import 'dart:io';
 
 getDependencies() async {
-  var process = await Process.run("flutter", ["pub", "get"]);
+  var process = Process.runSync(
+    "flutter",
+    [
+      "pub",
+      "get",
+    ],
+    runInShell: true,
+  );
 
   print(process.stdout);
   print(process.stderr);
 }
 
 intlUtilsGenerate() async {
-  var process =
-      await Process.run("flutter", ["pub", "run", "intl_utils:generate"]);
+  var process = await Process.run(
+    "flutter",
+    [
+      "pub",
+      "run",
+      "intl_utils:generate",
+    ],
+    runInShell: true,
+  );
 
   print(process.stdout);
   print(process.stderr);
@@ -71,28 +85,36 @@ Future<List<File>> generateFileLists() async {
 }
 
 generateFromArb(List<File> files) async {
-  var process = await Process.run("flutter", [
-    "pub",
-    "run",
-    "intl_translation:generate_from_arb",
-    "--sources-list-file",
-    files[0].absolute.path,
-    "--translations-list-file",
-    files[1].absolute.path,
-    "--output-dir=lib/generated/l10n"
-  ]);
+  var process = await Process.run(
+    "flutter",
+    [
+      "pub",
+      "run",
+      "intl_translation:generate_from_arb",
+      "--sources-list-file",
+      files[0].absolute.path,
+      "--translations-list-file",
+      files[1].absolute.path,
+      "--output-dir=lib/generated/l10n"
+    ],
+    runInShell: true,
+  );
 
   print(process.stdout);
   print(process.stderr);
 }
 
 buildRunner() async {
-  var process = await Process.run("flutter", [
-    "pub",
-    "run",
-    "build_runner",
-    "build",
-  ]);
+  var process = await Process.run(
+    "flutter",
+    [
+      "pub",
+      "run",
+      "build_runner",
+      "build",
+    ],
+    runInShell: true,
+  );
 
   print(process.stdout);
   print(process.stderr);
