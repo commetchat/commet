@@ -38,12 +38,13 @@ jobs:
       - name: Code Generation
         run: |
           cd .\commet
-          .\scripts\codegen.bat
+          dart run scripts/codegen.dart
 
       - name: Build Windows App
         run: |
           cd .\commet
           dart run scripts/build_release.dart --platform windows --version_tag ${{ github.event.release.tag_name || 'v0.0.0' }} --git_hash ${{ github.sha }}
+
       - name: Include libolm
         run: |
           dir
@@ -93,7 +94,7 @@ jobs:
       - name: Code Generation
         run: |
           cd $PROJECT_PATH
-          scripts/codegen.sh
+          dart run scripts/codegen.dart
           
       - name: Build APK
         run: |
@@ -132,7 +133,7 @@ jobs:
       - name: Code Generation
         run: |
           cd $PROJECT_PATH
-          scripts/codegen.sh
+          dart run scripts/codegen.dart
           
       - name: Build Linux
         run: |
@@ -176,7 +177,7 @@ jobs:
       - name: Code Generation
         run: |
           cd $PROJECT_PATH
-          scripts/codegen.sh
+          dart run scripts/codegen.dart
           
       - name: Build Web
         run: |
