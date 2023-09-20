@@ -4,7 +4,6 @@ import 'package:commet/client/components/gif/gif_search_result.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 
-import '../../config/build_config.dart';
 import '../../client/components/emoticon/emoticon.dart';
 import '../../utils/emoji/unicode_emoji.dart';
 
