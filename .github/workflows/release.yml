@@ -95,6 +95,11 @@ jobs:
         run: |
           cd $PROJECT_PATH
           dart run scripts/codegen.dart
+
+      - name: Setup Signatures
+        run: |
+          cd $PROJECT_PATH
+          dart run scripts/setup_android_release.dart --key_password ${{ secrets.ANDROID_KEY_PASSWORD }} --key_b64 ${{ secrets.ANDROID_KEY_STORE_B64 }}
           
       - name: Build APK
         run: |
