@@ -225,11 +225,8 @@ class EmojiPicker extends StatelessWidget {
                   onTap: () => onEmoticonPressed?.call(list[index]),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Image(
-                      image: list[index].image,
-                      filterQuality: FilterQuality.medium,
-                      fit: BoxFit.fill,
-                    ),
+                    child: FittedBox(
+                        fit: BoxFit.cover, child: EmojiWidget(list[index])),
                   ));
             },
           )

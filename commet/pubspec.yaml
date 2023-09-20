@@ -111,10 +111,7 @@ flutter:
   generate: true
   assets:
     - assets/l10n/
-    - assets/images/placeholder/avatars/
-    - assets/images/placeholder/generic/
     - assets/images/app_icon/
-    - assets/twemoji/assets/72x72/
     - assets/emoji_data/
     - assets/emoji_data/shortcodes/
 
@@ -125,6 +122,18 @@ flutter:
     - family: Jellee
       fonts: 
         - asset: assets/font/jellee/Jellee-Bold.ttf
+
+    - family: EmojiFont
+      fonts: 
+        - asset: assets/font/emoji-font/NotoColorEmoji.ttf
+
+    - family: RobotoCustom
+      fonts: 
+        - asset: assets/font/roboto/Roboto-Regular.ttf
+        - asset: assets/font/roboto/Roboto-Bold.ttf
+          weight: 700
+
+
 
 msix_config:
   display_name: Commet

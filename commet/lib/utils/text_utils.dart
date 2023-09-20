@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:flutter/material.dart';
 import '../ui/atoms/rich_text/spans/link.dart';
 import 'emoji/emoji_matcher.dart';
@@ -18,17 +17,13 @@ enum NewPasswordResult { valid, tooShort, noNumbers, noSymbols, noMixedCase }
 class TextUtils {
   static List<InlineSpan> formatString(String text,
       {bool allowBigEmoji = false, TextStyle? style}) {
-    bool bigEmoji = allowBigEmoji && shouldDoBigEmoji(text);
-    List<InlineSpan> span = Emoticon.emojifyString(text,
-        emojiHeight: bigEmoji ? 48 : 20, style: style);
-    span = linkifySpan(span, style);
+    var span = linkifySpan([TextSpan(text: text)], style);
 
     return span;
   }
 
   static List<InlineSpan> formatRichText(List<InlineSpan> spans,
       {TextStyle? style}) {
-    spans = Emoticon.emojify(spans);
     spans = linkifySpan(spans, style);
     return spans;
   }

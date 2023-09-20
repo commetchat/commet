@@ -6,10 +6,6 @@ import 'package:build/build.dart';
 import '../utils/emoji/unicode_emoji_data.dart';
 
 class UnicodeEmojiBuilder implements Builder {
-  static String hexCodeToAsset(String hexcode) {
-    return "assets/twemoji/assets/72x72/${hexcode.toLowerCase()}.png";
-  }
-
   @override
   Map<String, List<String>> get buildExtensions => const {
         'assets/emoji_data/data.json': [
@@ -50,12 +46,8 @@ class UnicodeEmojiBuilder implements Builder {
         packs[group] = List.empty(growable: true);
       }
 
-      String assetPath = hexCodeToAsset(hexcode);
-
-      if (!File(assetPath).existsSync()) continue;
-
-      packs[group]!.add(UnicodeEmojiData(
-          unicode: unicode, assetPath: assetPath, shortcode: shortcode));
+      packs[group]!
+          .add(UnicodeEmojiData(unicode: unicode, shortcode: shortcode));
     }
 
     final outputBuffer = StringBuffer('// Generated, do not edit\n');
@@ -71,7 +63,7 @@ class UnicodeEmojiBuilder implements Builder {
 
       for (var emoji in packs[key]!) {
         outputBuffer.write(
-            "    UnicodeEmojiData(unicode: \"${emoji.unicode}\", assetPath: \"${emoji.assetPath}\", shortcode: \"${emoji.shortcode}\"),\n");
+            "    UnicodeEmojiData(unicode: \"${emoji.unicode}\", shortcode: \"${emoji.shortcode}\"),\n");
       }
 
       outputBuffer.write("  ];\n");
