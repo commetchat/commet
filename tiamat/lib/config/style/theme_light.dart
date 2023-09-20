@@ -19,6 +19,8 @@ class ThemeLight {
   static ThemeData get theme => ThemeData(
       brightness: Brightness.light,
       useMaterial3: true,
+      fontFamily: "RobotoCustom",
+      fontFamilyFallback: const ["EmojiFont"],
       extensions: const <ThemeExtension<dynamic>>[
         ExtraColors(
             surfaceHigh1: ThemeLightColors.surfaceHigh1,

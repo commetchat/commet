@@ -5,7 +5,8 @@ import 'package:tiamat/atoms/seperator.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 
-const String exampleText = "The quick brown fox jumped over the lazy dog";
+const String exampleText =
+    "The quick brown fox jumped over the lazy dog 123 🤌👆️👎️🤓🫠😊😇😅😆";
 const String loremIpsum =
     "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua";
 

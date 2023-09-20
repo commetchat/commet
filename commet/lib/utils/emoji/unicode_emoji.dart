@@ -163,7 +163,6 @@ class UnicodeEmoticonPack implements EmoticonPack {
 }
 
 class UnicodeEmoticon extends Emoticon {
-  late ImageProvider _image;
   late String? _shortcode;
 
   @override
@@ -173,7 +172,7 @@ class UnicodeEmoticon extends Emoticon {
   String get key => slug;
 
   @override
-  ImageProvider<Object> get image => _image;
+  ImageProvider? get image => null;
 
   @override
   String? get shortcode => _shortcode;
@@ -191,15 +190,8 @@ class UnicodeEmoticon extends Emoticon {
   bool get isMarkedSticker => false;
 
   UnicodeEmoticon(String text, {String? shortcode}) {
-    String hexcode = emojiToUnicode(text);
-    _image = AssetImage("assets/twemoji/assets/72x72/$hexcode.png");
     _shortcode = shortcode;
     slug = text;
-  }
-
-  static String emojiToAsset(String emojiChar) {
-    String hexcode = emojiToUnicode(emojiChar);
-    return "assets/twemoji/assets/72x72/$hexcode.png";
   }
 
   static final _u200D = String.fromCharCode(0x200D);

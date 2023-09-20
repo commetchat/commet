@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 
@@ -18,6 +20,8 @@ class ThemeDarkColors {
 class ThemeDark {
   static ThemeData get theme => ThemeData(
       brightness: Brightness.dark,
+      fontFamily: "RobotoCustom",
+      fontFamilyFallback: const ["EmojiFont"],
       useMaterial3: true,
       extensions: const <ThemeExtension<dynamic>>[
         ExtraColors(
@@ -73,7 +77,9 @@ class ThemeDark {
         shape: MaterialStatePropertyAll<OutlinedBorder>(
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
         textStyle: const MaterialStatePropertyAll<TextStyle>(
-          TextStyle(color: Colors.white),
+          TextStyle(
+            color: Colors.white,
+          ),
         ),
       )));
 }
