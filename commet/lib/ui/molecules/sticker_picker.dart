@@ -64,11 +64,15 @@ class StickerPicker extends StatefulWidget {
       this.canSearchGif = false,
       this.search,
       this.gifPicked,
+      this.size = 100,
+      this.packSize = 48,
       this.stickerPicked});
   final bool canSearchGif;
   final List<EmoticonPack>? packs;
   final Function(Emoticon sticker)? stickerPicked;
   final Function(GifSearchResult gif)? gifPicked;
+  final double size;
+  final double packSize;
 
   final Future<List<GifSearchResult>> Function(String query)? search;
 
@@ -85,8 +89,8 @@ class _StickerPickerState extends State<StickerPicker> {
   Widget buildStickers() {
     return EmojiPicker(
       widget.packs!,
-      packButtonSize: BuildConfig.MOBILE ? 42 : 32,
-      size: 100,
+      packButtonSize: widget.packSize,
+      size: widget.size,
       staggered: true,
       onlyStickers: true,
       onEmoticonPressed: (e) => widget.stickerPicked?.call(e),

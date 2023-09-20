@@ -355,7 +355,7 @@ class MessageInputState extends State<MessageInput> {
   }
 
   double get emotePickerHeight =>
-      (MediaQuery.of(context).size.height / (BuildConfig.MOBILE ? 1.7 : 3)) /
+      (MediaQuery.of(context).size.height / (BuildConfig.MOBILE ? 2.5 : 3)) /
       preferences.appScale;
 
   Widget buildEmojiPicker() {
@@ -369,8 +369,6 @@ class MessageInputState extends State<MessageInput> {
                 emoji: widget.availibleEmoticons!,
                 stickers: widget.availibleStickers ?? [],
                 onEmojiPressed: insertEmoticon,
-                emojiSize: BuildConfig.MOBILE ? 48 : 38,
-                packSize: BuildConfig.MOBILE ? 4 : 38,
                 packListAxis:
                     BuildConfig.DESKTOP ? Axis.vertical : Axis.horizontal,
                 allowGifSearch: preferences.tenorGifSearchEnabled,
