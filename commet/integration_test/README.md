@@ -2,9 +2,8 @@
 
 To run unit tests, there are a few prerequisites.
 
- - Make sure you have `node` and `ts-node` installed and available on system PATH. [(Info)](./subprocess/README.md)
  - Make sure you have `libolm3` installed `sudo apt install libolm3`
- - Run Code Generation [scripts/codegen.sh](../scripts/codegen.sh)
+ - Run Code Generation [scripts/codegen.dart](../scripts/codegen.dart)
  - Configure environment variables [. scripts/setup-env.sh](../scripts/setup-env.sh)
  - Start the synapse docker server [scripts/integration-server-synapse.sh](../scripts/integration-server-synapse.sh)
  - Configure synapse [scripts/integration-prepare-homeserver.sh](../scripts/integration-server-synapse.sh)
