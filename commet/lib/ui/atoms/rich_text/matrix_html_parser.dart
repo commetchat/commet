@@ -4,7 +4,6 @@ import 'package:commet/ui/atoms/emoji_widget.dart';
 import 'package:commet/ui/atoms/rich_text/spans/link.dart';
 import 'package:commet/utils/text_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:html/parser.dart' as html_parser;
 import 'package:html/dom.dart' as dom;
 import 'package:matrix/matrix.dart' as matrix;
@@ -137,23 +136,22 @@ class MatrixHtmlParser {
   static TextStyle updateStyle(TextStyle style, String type) {
     switch (type) {
       case "h1":
-        return style.copyWith(fontSize: 56, fontWeight: FontWeight.w600);
-      case "h2":
-        return style.copyWith(fontSize: 52, fontWeight: FontWeight.w600);
-      case "h3":
-        return style.copyWith(fontSize: 48, fontWeight: FontWeight.w600);
-      case "h4":
-        return style.copyWith(fontSize: 42, fontWeight: FontWeight.w600);
-      case "h5":
         return style.copyWith(fontSize: 36, fontWeight: FontWeight.w600);
+      case "h2":
+        return style.copyWith(fontSize: 32, fontWeight: FontWeight.w600);
+      case "h3":
+        return style.copyWith(fontSize: 28, fontWeight: FontWeight.w600);
+      case "h4":
+        return style.copyWith(fontSize: 24, fontWeight: FontWeight.w600);
+      case "h5":
+        return style.copyWith(fontSize: 20, fontWeight: FontWeight.w600);
       case "em":
         return style.copyWith(fontStyle: FontStyle.italic);
       case "strong":
         return style.copyWith(fontWeight: FontWeight.bold);
       case "code":
         return style.copyWith(
-            fontFamily: GoogleFonts.robotoMono().fontFamily,
-            backgroundColor: Colors.black.withAlpha(60));
+            fontFamily: "Code", backgroundColor: Colors.black.withAlpha(60));
       default:
     }
 

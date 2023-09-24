@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_highlighter/flutter_highlighter.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 
 const _darkTheme = {
@@ -104,12 +103,10 @@ class Codeblock extends StatelessWidget {
               ? HighlightView(
                   text.trim(),
                   language: language,
-                  textStyle: GoogleFonts.robotoMono(),
                   theme: theme,
                 )
               : Text(
                   text.trim(),
-                  style: GoogleFonts.robotoMono(),
                 ),
         ));
   }

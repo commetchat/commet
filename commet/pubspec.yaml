@@ -13,7 +13,6 @@ dependencies:
     sdk: flutter
 
   provider: ^6.0.0
-  google_fonts: ^4.0.3
   matrix: ^0.22.2
   flutter_olm: ^1.2.0
   flutter_openssl_crypto: ^0.1.0
@@ -134,6 +133,10 @@ flutter:
         - asset: assets/font/roboto/Roboto-Regular.ttf
         - asset: assets/font/roboto/Roboto-Bold.ttf
           weight: 700
+    
+    - family: Code
+      fonts: 
+        - asset: assets/font/code/RobotoMono.ttf
 
 
 
