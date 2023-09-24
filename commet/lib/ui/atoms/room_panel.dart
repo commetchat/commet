@@ -105,7 +105,7 @@ class _RoomPanelState extends State<RoomPanel> {
                           ],
                         ),
                       ),
-                      if (BuildConfig.DESKTOP || showOnlyPrimaryButton)
+                      if (BuildConfig.DESKTOP && showOnlyPrimaryButton)
                         Flexible(
                             child: actionButtons(widget.showSettingsButton)),
                       if (BuildConfig.MOBILE && widget.showSettingsButton)

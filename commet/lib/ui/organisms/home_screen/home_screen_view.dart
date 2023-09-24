@@ -3,6 +3,7 @@ import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/invitation.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/atoms/room_panel.dart';
+import 'package:commet/ui/molecules/alert_view.dart';
 import 'package:commet/ui/molecules/invitation_display.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/pages/add_space_or_room/add_space_or_room.dart';
@@ -40,6 +41,9 @@ class HomeScreenView extends StatelessWidget {
       name: "labelHomeRecentActivity",
       desc: "Short label for header of recent room activity");
 
+  String get labelHomeAlerts => Intl.message("Alerts",
+      name: "labelHomeAlerts", desc: "Short label for header of alerts");
+
   String get labelHomeRoomsList => Intl.message("Rooms",
       name: "labelHomeRoomsList", desc: "Short label for header of rooms list");
 
@@ -51,6 +55,7 @@ class HomeScreenView extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView(
       children: [
+        if (clientManager.alertManager.alerts.isNotEmpty) alerts(),
         if (invitations?.isNotEmpty == true) invitationsList(),
         recentRooms(),
         roomsList(context)
@@ -61,6 +66,21 @@ class HomeScreenView extends StatelessWidget {
               ))
           .toList(),
     );
+  }
+
+  Widget alerts() {
+    return Panel(
+        mode: TileType.surfaceLow2,
+        header: labelHomeAlerts,
+        child: ImplicitlyAnimatedList(
+          shrinkWrap: true,
+          itemData: clientManager.alertManager.alerts,
+          initialAnimation: false,
+          physics: const NeverScrollableScrollPhysics(),
+          itemBuilder: (context, alert) {
+            return AlertView(alert);
+          },
+        ));
   }
 
   Widget recentRooms() {

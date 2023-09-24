@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:commet/client/alert.dart';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/simulated/simulated_client.dart';
 import 'package:commet/client/stale_info.dart';
@@ -13,6 +14,8 @@ class ClientManager {
       NotifyingList.empty(growable: true);
 
   final NotifyingList<Space> _spaces = NotifyingList.empty(growable: true);
+
+  final AlertManager alertManager = AlertManager();
 
   List<Room> get rooms => _rooms;
 
