@@ -188,6 +188,7 @@ jobs:
         run: |
           cd $PROJECT_PATH
           cd assets/js
+          rm -r package
           curl -L 'https://gitlab.com/famedly/company/frontend/libraries/olm/-/jobs/artifacts/master/download?job=build:js' > olm.zip
           unzip olm.zip
           rm olm.zip
