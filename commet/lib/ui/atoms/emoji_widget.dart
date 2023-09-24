@@ -27,7 +27,6 @@ class EmojiWidget extends StatelessWidget {
               )
             : SizedBox(
                 height: height,
-                width: height,
                 child: FittedBox(
                   fit: BoxFit.cover,
                   child: Text(

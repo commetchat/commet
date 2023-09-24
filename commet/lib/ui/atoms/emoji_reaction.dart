@@ -52,6 +52,9 @@ class EmojiReaction extends StatelessWidget {
                 width: 5,
               ),
               tiamat.Text.label(numReactions.toString()),
+              const SizedBox(
+                width: 3,
+              ),
             ],
           ),
         ),
