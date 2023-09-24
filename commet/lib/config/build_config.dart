@@ -61,7 +61,9 @@ class BuildConfig {
                   : MAC
                       ? "$app for MacOS"
                       : "$app for Desktop")
-          : app);
+          : WEB
+              ? "$app for Web"
+              : app);
 }
 
 class _Constants {

@@ -183,6 +183,15 @@ jobs:
         run: |
           cd $PROJECT_PATH
           dart run scripts/codegen.dart
+
+      - name: Include Olm
+        run: |
+          cd $PROJECT_PATH
+          cd assets/js
+          curl -L 'https://gitlab.com/famedly/company/frontend/libraries/olm/-/jobs/artifacts/master/download?job=build:js' > olm.zip
+          unzip olm.zip
+          rm olm.zip
+          mv javascript package
           
       - name: Build Web
         run: |
