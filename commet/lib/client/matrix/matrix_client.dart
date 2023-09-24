@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:commet/client/alert.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/component.dart';
 import 'package:commet/client/components/component_registry.dart';
@@ -21,6 +22,7 @@ import 'dart:convert';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/matrix/matrix_peer.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:matrix/matrix.dart' as matrix;
 import 'package:matrix/encryption.dart';
 
@@ -28,6 +30,7 @@ import '../../ui/atoms/code_block.dart';
 import '../../ui/pages/matrix/verification/matrix_verification_page.dart';
 import 'matrix_room.dart';
 import 'matrix_space.dart';
+import 'package:olm/olm.dart' as olm;
 
 class MatrixClient extends Client {
   late matrix.Client _matrixClient;
@@ -112,11 +115,26 @@ class MatrixClient extends Client {
   @override
   List<Space> get spaces => _spaces;
 
+  static String get matrixClientOlmMissingMessage => Intl.message(
+        "libolm is not installed or was not found. End to End Encryption will not be available until this is resolved",
+        name: "matrixClientOlmMissingMessage",
+        desc:
+            "Text that explains to the user that libolm dependency is not found",
+      );
+
+  static String get matrixClientEncryptionWarningTitle => Intl.message(
+        "Encryption Warning",
+        name: "matrixClientEncryptionWarningTitle",
+        desc: "Title of a warning about encryption",
+      );
+
   static Future<void> loadFromDB(ClientManager manager) async {
     await diagnostics.timeAsync("loadFromDB", () async {
       var clients = preferences.getRegisteredMatrixClients();
 
       List<Future> futures = List.empty(growable: true);
+
+      futures.add(_checkSystem(manager));
 
       if (clients != null) {
         for (var clientName in clients) {
@@ -136,6 +154,18 @@ class MatrixClient extends Client {
 
       await Future.wait(futures);
     });
+  }
+
+  static Future<void> _checkSystem(ClientManager clientManager) async {
+    try {
+      olm.get_library_version();
+    } catch (exception) {
+      clientManager.alertManager.addAlert(Alert(
+        AlertType.warning,
+        titleGetter: () => matrixClientEncryptionWarningTitle,
+        messageGetter: () => matrixClientOlmMissingMessage,
+      ));
+    }
   }
 
   static matrix.NativeImplementations get nativeImplementations =>

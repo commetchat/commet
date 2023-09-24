@@ -11,7 +11,7 @@ String? getArg(List<String> args, String name) {
 void writeEncodedKeyfile(String file) {
   var keyFile = File(file).readAsBytesSync();
   var b64 = base64.encode(keyFile);
-  File(file + ".b64").writeAsString(b64);
+  File("$file.b64").writeAsString(b64);
 }
 
 decodeAndWriteKeyFile(String keyB64) {
