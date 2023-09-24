@@ -115,6 +115,7 @@ flutter:
     - assets/images/app_icon/
     - assets/emoji_data/
     - assets/emoji_data/shortcodes/
+    - assets/js/package/
 
   shaders:
     - assets/shader/texture_coordinate.frag

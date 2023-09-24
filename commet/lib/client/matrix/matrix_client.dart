@@ -158,6 +158,7 @@ class MatrixClient extends Client {
 
   static Future<void> _checkSystem(ClientManager clientManager) async {
     try {
+      await olm.init();
       olm.get_library_version();
     } catch (exception) {
       clientManager.alertManager.addAlert(Alert(
