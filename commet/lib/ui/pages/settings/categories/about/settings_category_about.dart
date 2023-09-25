@@ -2,13 +2,10 @@ import 'package:commet/config/build_config.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
 import 'package:commet/ui/pages/settings/settings_tab.dart';
-import 'package:commet/utils/link_utils.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:tiamat/atoms/panel.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;
 // ignore: depend_on_referenced_packages
@@ -112,15 +109,15 @@ class _AppInfoState extends State<_AppInfo> {
             ),
           ],
         ),
-        Panel(
-            header: "Credits",
-            child: MarkdownBody(
-              onTapLink: (text, href, title) =>
-                  href != null ? LinkUtils.open(Uri.parse(href)) : null,
-              data: """
-[Twemoji](https://twemoji.twitter.com/) © Copyright 2020 Twitter, Inc and other contributors used under the terms of CC-BY 4.0.
-""",
-            )),
+        ExpansionTile(
+          title: const tiamat.Text.labelEmphasised("Licenses"),
+          children: [
+            SizedBox(
+              height: MediaQuery.of(context).size.height,
+              child: const LicensePage(),
+            )
+          ],
+        ),
       ],
     );
   }
