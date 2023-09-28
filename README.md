@@ -15,7 +15,9 @@
     <a href="https://twitter.com/intent/follow?screen_name=commetchat">
         <img alt="Twitter" src="https://img.shields.io/twitter/follow/commetchat?logo=twitter&style=social">
     </a>
+</p>
 
+<img src=".github/assets/banner.png">
 
 Commet is a client for [Matrix](https://matrix.org) focused on providing a feature rich experience while maintaining a simple interface. The goal is to build a secure, privacy respecting app without compromising on the features you have come to expect from a modern chat client.
 
