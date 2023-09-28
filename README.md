@@ -17,7 +17,7 @@
     </a>
 </p>
 
-<img src=".github/assets/banner.png">
+<img src="https://raw.githubusercontent.com/commetchat/.github/main/assets/banner.png">
 
 Commet is a client for [Matrix](https://matrix.org) focused on providing a feature rich experience while maintaining a simple interface. The goal is to build a secure, privacy respecting app without compromising on the features you have come to expect from a modern chat client.
 
