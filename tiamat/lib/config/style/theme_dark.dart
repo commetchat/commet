@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
+import 'dart:io' show Platform;
 
 class ThemeDarkColors {
   static const Color surfaceHigh1 = Color.fromARGB(255, 47, 51, 55);
@@ -21,7 +22,8 @@ class ThemeDark {
   static ThemeData get theme => ThemeData(
       brightness: Brightness.dark,
       fontFamily: "RobotoCustom",
-      fontFamilyFallback: const ["EmojiFont"],
+      // Windows doesnt support the type of font we use :(
+      fontFamilyFallback: Platform.isWindows ? null : const ["EmojiFont"],
       useMaterial3: true,
       extensions: const <ThemeExtension<dynamic>>[
         ExtraColors(
