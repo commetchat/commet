@@ -108,7 +108,7 @@ class MatrixRoom extends Room {
       case matrix.PushRuleState.notify:
         return PushRule.notify;
       case matrix.PushRuleState.mentionsOnly:
-        return PushRule.notify;
+        return PushRule.mentionsOnly;
       case matrix.PushRuleState.dontNotify:
         return PushRule.dontNotify;
     }
