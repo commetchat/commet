@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/molecules/message_popup_menu.dart';
 import 'package:commet/ui/molecules/timeline_event.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
 import '../../client/client.dart';
 import '../../client/components/emoticon/emoticon.dart';
@@ -131,7 +132,9 @@ class TimelineViewerState extends State<TimelineViewer> {
               widget.timeline,
               isEditable: canUserEditEvent(event),
               isDeletable: widget.timeline.canDeleteEvent(event),
-              deleteEvent: (event) => widget.timeline.deleteEvent(event),
+              deleteEvent: (event) => promptDeleteEvent(context, event),
+              setEditingEvent: widget.setEditingEvent,
+              setReplyingEvent: widget.setReplyingEvent,
               onMessageChanged: onHoveredMessageChanged.stream,
               addReaction: widget.onAddReaction,
             )));
@@ -329,5 +332,13 @@ class TimelineViewerState extends State<TimelineViewer> {
 
     return widget.timeline.events[index].senderId !=
         widget.timeline.events[index + 1].senderId;
+  }
+
+  promptDeleteEvent(BuildContext context, TimelineEvent event) {
+    AdaptiveDialog.confirmation(context).then((value) {
+      if (value == true) {
+        widget.timeline.deleteEvent(event);
+      }
+    });
   }
 }
