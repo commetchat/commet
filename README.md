@@ -21,6 +21,15 @@
 
 Commet is a client for [Matrix](https://matrix.org) focused on providing a feature rich experience while maintaining a simple interface. The goal is to build a secure, privacy respecting app without compromising on the features you have come to expect from a modern chat client.
 
+# Features
+- Supports **Windows**, **Linux**, and **Android** (MacOS and iOS planned in future)
+- End to End Ecryption
+- Custom Emoji + Stickers
+- GIF Search
+- Multiple Accounts
+- Spaces
+- Emoji verification & cross signing
+
 # Development
 Commet is built using [Flutter](https://flutter.dev), currently v3.13.5. 
 
