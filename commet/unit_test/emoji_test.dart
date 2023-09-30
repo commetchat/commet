@@ -2,28 +2,52 @@ import 'package:commet/utils/text_utils.dart';
 import 'package:test/test.dart';
 
 void main() async {
-  test("EmojiTest: doBigEmoji '😀'", () async {
-    expect(TextUtils.shouldDoBigEmoji("😀"), isTrue);
+  test("IsEmoji: 😀", () async {
+    expect(TextUtils.isEmoji("😀"), isTrue);
   });
 
-  test("EmojiTest: doBigEmoji '😀😀😀😀😀'", () async {
-    expect(TextUtils.shouldDoBigEmoji("😀😀😀😀😀"), isTrue);
+  test("IsEmoji: 👨‍👨‍👧‍👧", () async {
+    expect(TextUtils.isEmoji("👨‍👨‍👧‍👧"), isTrue);
   });
 
-  test("EmojiTest: doBigEmoji '😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀'", () async {
-    expect(
-        TextUtils.shouldDoBigEmoji("😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀"), isFalse);
+  test("IsEmoji: 1️⃣", () async {
+    expect(TextUtils.isEmoji("1️⃣"), isTrue);
   });
 
-  test("EmojiTest: doBigEmoji 'a😀'", () async {
-    expect(TextUtils.shouldDoBigEmoji("a😀"), isFalse);
+  test("IsEmoji: A", () async {
+    expect(TextUtils.isEmoji("A"), isFalse);
   });
 
-  test("EmojiTest: doBigEmoji '😀a'", () async {
-    expect(TextUtils.shouldDoBigEmoji("😀a"), isFalse);
+  test("IsEmoji: A̛͚̖", () async {
+    expect(TextUtils.isEmoji("A̛͚̖"), isFalse);
   });
 
-  test("EmojiTest: doBigEmoji 'a'", () async {
-    expect(TextUtils.shouldDoBigEmoji("a"), isFalse);
+  test("IsEmoji: A😀", () async {
+    expect(TextUtils.isEmoji("A😀"), isFalse);
+  });
+
+  test("EmojiTest: should do big emoji 'ABCD😀FGH'", () async {
+    var string = "ABCD😀FGH";
+    var spans = TextUtils.formatString(string);
+    expect(TextUtils.shouldDoBigEmoji(spans), isFalse);
+  });
+
+  test("EmojiTest: should do big emoji '😀😀😀'", () async {
+    var string = "😀😀😀";
+    var spans = TextUtils.formatString(string);
+    expect(TextUtils.shouldDoBigEmoji(spans), isTrue);
+  });
+
+  test("EmojiTest: should do big emoji '😀 😀 😀'", () async {
+    var string = "😀 😀 😀";
+    var spans = TextUtils.formatString(string);
+    expect(TextUtils.shouldDoBigEmoji(spans), isTrue);
+  });
+
+  test("EmojiTest: should do big emoji '😀😀😀😀😀😀😀😀😀😀😀😀😀😀'",
+      () async {
+    var string = "😀😀😀😀😀😀😀😀😀😀😀😀😀😀";
+    var spans = TextUtils.formatString(string);
+    expect(TextUtils.shouldDoBigEmoji(spans), isFalse);
   });
 }

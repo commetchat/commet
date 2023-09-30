@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:commet/client/components/emoticon/emoticon.dart';
+import 'package:commet/ui/atoms/emoji_widget.dart';
 import 'package:flutter/material.dart';
 import '../ui/atoms/rich_text/spans/link.dart';
 import 'emoji/emoji_matcher.dart';
@@ -16,8 +18,13 @@ enum NewPasswordResult { valid, tooShort, noNumbers, noSymbols, noMixedCase }
 
 class TextUtils {
   static List<InlineSpan> formatString(String text,
-      {bool allowBigEmoji = false, TextStyle? style}) {
-    var span = linkifySpan([TextSpan(text: text)], style);
+      {TextStyle? style, bool handleBigEmoji = false}) {
+    List<InlineSpan> span = Emoticon.emojifyString(text, style: style);
+    span = linkifySpan(span, style);
+
+    if (handleBigEmoji && shouldDoBigEmoji(span)) {
+      doBigEmoji(span, 48);
+    }
 
     return span;
   }
@@ -34,6 +41,50 @@ class TextUtils {
 
   static bool isRtl(String text, {bool isHtml = false}) {
     return intl.Bidi.detectRtlDirectionality(text, isHtml: isHtml);
+  }
+
+  static bool isEmoji(String text) {
+    var matches = EmojiMatcher.find(text);
+    if (matches.length != 1) return false;
+    return matches.single.start == 0 && matches.single.end == text.length;
+  }
+
+  static bool shouldDoBigEmoji(List<InlineSpan> textSpan) {
+    if (textSpan.length > 10) {
+      return false;
+    }
+    for (var span in textSpan) {
+      if (span is WidgetSpan) {
+        if (span.child is! EmojiWidget) {
+          return false;
+        }
+      } else if (span is TextSpan) {
+        var text = span.text;
+        if (text == null) continue;
+
+        if (!TextUtils.isEmoji(text) && text.trim().isNotEmpty) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
+
+  static List<InlineSpan> doBigEmoji(List<InlineSpan> spans, double size) {
+    for (int i = 0; i < spans.length; i++) {
+      var span = spans[i];
+      if (span is WidgetSpan) {
+        (span.child as EmojiWidget).height = size;
+      } else if (span is TextSpan) {
+        spans[i] = TextSpan(
+            text: span.text,
+            style: span.style?.copyWith(fontSize: size) ??
+                TextStyle(fontSize: size));
+      }
+    }
+
+    return spans;
   }
 
   static Widget manageRtlSpan(String text, List<InlineSpan> spans,
@@ -111,16 +162,6 @@ class TextUtils {
     }
 
     return span;
-  }
-
-  static bool shouldDoBigEmoji(String text) {
-    if (text.characters.length > 10) return false;
-
-    for (var char in text.characters) {
-      if (EmojiMatcher.find(char).isEmpty) return false;
-    }
-
-    return true;
   }
 
   static NewPasswordResult isValidPassword(

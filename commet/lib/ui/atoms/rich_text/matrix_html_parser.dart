@@ -24,40 +24,16 @@ class MatrixHtmlParser {
   }
 
   static List<InlineSpan> handleBigEmoji(List<InlineSpan> spans) {
-    if (doBigEmoji(spans)) {
-      var emojis = spans.where(
-          (element) => element is WidgetSpan && element.child is EmojiWidget);
+    if (!TextUtils.shouldDoBigEmoji(spans)) return spans;
 
-      double size = emojis.length <= 10 ? 48 : 24;
-      return emojis.map((e) {
-        var widget = (e as WidgetSpan).child as EmojiWidget;
-        widget.height = size;
-        return e;
-      }).toList();
-    } else {
-      return spans;
-    }
-  }
-
-  static bool doBigEmoji(List<InlineSpan> spans) {
-    return spans.every((span) {
-      if (span is TextSpan &&
-          (span.text == null || span.text!.trim().isEmpty)) {
-        return true;
-      }
-
-      if (span is WidgetSpan && span.child is EmojiWidget) return true;
-
-      return false;
-    });
+    return TextUtils.doBigEmoji(spans, 48);
   }
 
   static List<InlineSpan> _parseChild(
       dom.Node element, TextStyle currentStyle, matrix.Client client) {
     TextStyle theme = currentStyle;
     if (element is dom.Text) {
-      return TextUtils.formatString(element.data,
-          allowBigEmoji: true, style: theme);
+      return TextUtils.formatString(element.data, style: theme);
     }
 
     List<InlineSpan> parsedText = List.empty(growable: true);
@@ -99,7 +75,9 @@ class MatrixHtmlParser {
           if (uri != null) {
             return WidgetSpan(
                 child: EmojiWidget(MatrixEmoticon(Uri.parse(uri), client,
-                    shortcode: shortcode!)));
+                    shortcode: shortcode!)),
+                baseline: TextBaseline.ideographic,
+                alignment: PlaceholderAlignment.baseline);
           }
         }
 
