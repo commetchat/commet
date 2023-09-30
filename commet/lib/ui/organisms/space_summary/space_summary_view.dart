@@ -245,7 +245,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
                   widget.onRoomTap?.call(room);
                 }
               : null,
-          recentEventBody: room.lastEvent?.body,
+          body: room.lastEvent?.body,
           recentEventSender: room.lastEvent != null
               ? room.client.getPeer(room.lastEvent!.senderId).displayName
               : null,
@@ -271,8 +271,8 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
               child: RoomPanel(
                 displayName: preview.displayName!,
                 avatar: preview.avatar,
-                topic: preview.topic,
                 primaryButtonLabel: CommonStrings.promptJoin,
+                body: preview.topic,
                 color: preview.color,
                 onPrimaryButtonPressed: () {
                   widget.joinRoom?.call(preview.roomId);
@@ -330,7 +330,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
             child: RoomPanel(
               displayName: info.name!,
               avatar: info.avatar,
-              topic: info.topic,
+              body: info.topic,
               primaryButtonLabel: CommonStrings.promptJoin,
               onPrimaryButtonPressed: () => null,
             )));

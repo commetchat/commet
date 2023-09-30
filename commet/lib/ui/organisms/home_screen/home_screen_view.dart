@@ -97,7 +97,7 @@ class HomeScreenView extends StatelessWidget {
               displayName: room.displayName,
               avatar: room.avatar,
               color: room.defaultColor,
-              recentEventBody: room.lastEvent?.body,
+              body: room.lastEvent?.body,
               recentEventSender: room.lastEvent != null
                   ? room.client.getPeer(room.lastEvent!.senderId).displayName
                   : null,
@@ -127,7 +127,7 @@ class HomeScreenView extends StatelessWidget {
                   displayName: room.displayName,
                   avatar: room.avatar,
                   color: room.defaultColor,
-                  recentEventBody: room.lastEvent?.body,
+                  body: room.lastEvent?.body,
                   recentEventSender: room.lastEvent != null
                       ? room.client
                           .getPeer(room.lastEvent!.senderId)
