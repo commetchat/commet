@@ -15,11 +15,17 @@ import 'package:flutter/material.dart';
 import '../attachment.dart';
 
 class SimulatedRoom extends Room {
-  late SimulatedPeer alice = SimulatedPeer(client, "alice@commet.chat", "alice",
-      const AssetImage("assets/images/placeholder/generic/checker_green.png"));
+  late SimulatedPeer alice = SimulatedPeer(
+    client,
+    "alice@commet.chat",
+    "alice",
+  );
 
-  late SimulatedPeer bob = SimulatedPeer(client, "bob@commet.chat", "bob",
-      const AssetImage("assets/images/placeholder/generic/checker_orange.png"));
+  late SimulatedPeer bob = SimulatedPeer(
+    client,
+    "bob@commet.chat",
+    "bob",
+  );
 
   late String _identifier;
   late SimulatedRoomPermissions _permissions;

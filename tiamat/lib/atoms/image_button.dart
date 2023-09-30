@@ -6,16 +6,16 @@ import './text.dart' as tiamat;
 
 @UseCase(name: 'Default', type: ImageButton)
 Widget wbimageButton(BuildContext context) {
-  return Center(
+  return const Center(
     child: Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(8.0),
           child: Column(
-            children: const [
+            children: [
               SizedBox(
                 width: 128,
                 height: 128,
@@ -33,9 +33,9 @@ Widget wbimageButton(BuildContext context) {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(8.0),
           child: Column(
-            children: const [
+            children: [
               SizedBox(
                 width: 64,
                 height: 64,
@@ -59,19 +59,19 @@ Widget wbimageButton(BuildContext context) {
 
 @UseCase(name: 'Icon', type: ImageButton)
 Widget wbimageButtonIcon(BuildContext context) {
-  return Center(
+  return const Center(
     child: Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(8.0),
           child: Column(
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: const [
+                children: [
                   SizedBox(
                     width: 128,
                     height: 128,
@@ -90,7 +90,7 @@ Widget wbimageButtonIcon(BuildContext context) {
                   ),
                 ],
               ),
-              const Padding(
+              Padding(
                 padding: EdgeInsets.all(8.0),
                 child: tiamat.Text.body("128px"),
               )
@@ -98,9 +98,9 @@ Widget wbimageButtonIcon(BuildContext context) {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(8.0),
           child: Column(
-            children: const [
+            children: [
               SizedBox(
                 width: 64,
                 height: 64,
@@ -123,19 +123,19 @@ Widget wbimageButtonIcon(BuildContext context) {
 
 @UseCase(name: 'Icon with Shadow', type: ImageButton)
 Widget wbimageButtonIconWithShadow(BuildContext context) {
-  return Center(
+  return const Center(
     child: Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(8.0),
           child: Column(
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: const [
+                children: [
                   SizedBox(
                     width: 128,
                     height: 128,
@@ -156,7 +156,7 @@ Widget wbimageButtonIconWithShadow(BuildContext context) {
                   ),
                 ],
               ),
-              const Padding(
+              Padding(
                 padding: EdgeInsets.all(8.0),
                 child: tiamat.Text.body("128px"),
               )
@@ -164,9 +164,9 @@ Widget wbimageButtonIconWithShadow(BuildContext context) {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(8.0),
           child: Column(
-            children: const [
+            children: [
               SizedBox(
                 width: 64,
                 height: 64,
@@ -188,6 +188,73 @@ Widget wbimageButtonIconWithShadow(BuildContext context) {
   );
 }
 
+@UseCase(name: 'Placeholder', type: ImageButton)
+Widget wbImageButtonPlaceholder(BuildContext context) {
+  return const Center(
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  SizedBox(
+                    width: 128,
+                    height: 128,
+                    child: ImageButton(
+                      size: 128,
+                      placeholderColor: Colors.amberAccent,
+                      placeholderText: "Abcdefg",
+                    ),
+                  ),
+                  SizedBox(
+                    width: 128,
+                    height: 128,
+                    child: ImageButton(
+                      size: 128,
+                      placeholderColor: Colors.amberAccent,
+                      placeholderText: "Abcdefg",
+                    ),
+                  ),
+                ],
+              ),
+              Padding(
+                padding: EdgeInsets.all(8.0),
+                child: tiamat.Text.body("128px"),
+              )
+            ],
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              SizedBox(
+                width: 64,
+                height: 64,
+                child: ImageButton(
+                  size: 64,
+                  placeholderColor: Colors.amberAccent,
+                  placeholderText: "Abcdefg",
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.all(8.0),
+                child: tiamat.Text.body("64px"),
+              )
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
 class ImageButton extends StatefulWidget {
   const ImageButton(
       {super.key,
@@ -195,12 +262,16 @@ class ImageButton extends StatefulWidget {
       this.image,
       this.doShadow = false,
       this.iconSize,
+      this.placeholderColor,
+      this.placeholderText,
       required this.size,
       this.icon});
   final void Function()? onTap;
   final ImageProvider? image;
   final double size;
   final double? iconSize;
+  final String? placeholderText;
+  final Color? placeholderColor;
   final IconData? icon;
   final bool doShadow;
 
@@ -279,21 +350,36 @@ class _ImageButtonState extends State<ImageButton> {
 
   InkWell createInkwell() {
     return InkWell(
-      onTap: widget.onTap,
-      child: widget.image != null
-          ? Ink(
-              child: Image(
-                filterQuality: FilterQuality.medium,
-                image: widget.image!,
-                fit: BoxFit.cover,
-              ),
-            )
-          : widget.icon != null
-              ? Icon(
-                  widget.icon,
-                  size: widget.iconSize ?? widget.size / 2.5,
-                )
-              : null,
-    );
+        onTap: widget.onTap,
+        child: widget.image != null
+            ? Ink(
+                child: Image(
+                  filterQuality: FilterQuality.medium,
+                  image: widget.image!,
+                  fit: BoxFit.cover,
+                ),
+              )
+            : widget.icon != null
+                ? Icon(
+                    widget.icon,
+                    size: widget.iconSize ?? widget.size / 2.5,
+                  )
+                : widget.placeholderText != null
+                    ? Container(
+                        color: widget.placeholderColor,
+                        child: Align(
+                            alignment: Alignment.center,
+                            child: widget.placeholderText != null
+                                ? Text(
+                                    widget.placeholderText!
+                                        .substring(0, 1)
+                                        .toUpperCase(),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineSmall!
+                                        .copyWith(fontSize: widget.size / 4),
+                                  )
+                                : null))
+                    : null);
   }
 }

@@ -115,8 +115,11 @@ class SimulatedClient extends Client {
   List<Invitation> get invitations => [];
 
   void _postLoginSuccess() {
-    self = SimulatedPeer(this, "simulated@example.com", "Simulated",
-        const AssetImage("assets/images/placeholder/generic/checker_red.png"));
+    self = SimulatedPeer(
+      this,
+      "simulated@example.com",
+      "Simulated",
+    );
     peers.add(self!);
 
     _updateRoomslist();

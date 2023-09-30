@@ -112,6 +112,8 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                   ImageButton(
                     size: 70,
                     image: widget.currentUser.avatar,
+                    placeholderColor: widget.currentUser.defaultColor,
+                    placeholderText: widget.currentUser.displayName,
                     key: SideNavigationBar.settingsKey,
                     onTap: () {
                       NavigationUtils.navigateTo(
