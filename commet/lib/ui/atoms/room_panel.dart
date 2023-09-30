@@ -162,16 +162,14 @@ class _RoomPanelState extends State<RoomPanel> {
             ),
           ),
         if (showSecondaryButton)
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
-              child: Button.secondary(
-                text: widget.secondaryButtonLabel!,
-                isLoading: widget.secondaryButtonLoading,
-                onTap: () {
-                  widget.onSecondaryButtonPressed?.call();
-                },
-              ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+            child: Button.secondary(
+              text: widget.secondaryButtonLabel!,
+              isLoading: widget.secondaryButtonLoading,
+              onTap: () {
+                widget.onSecondaryButtonPressed?.call();
+              },
             ),
           ),
         if (includeSettings) settingsButton(),
