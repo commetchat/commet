@@ -9,6 +9,7 @@ import 'package:commet/ui/molecules/direct_message_list.dart';
 import 'package:commet/ui/molecules/emoji_picker.dart';
 import 'package:commet/ui/molecules/timeline_viewer.dart';
 import 'package:commet/ui/molecules/timeline_event.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/navigation/navigation_signals.dart';
 import 'package:commet/ui/organisms/home_screen/home_screen.dart';
 import 'package:commet/ui/pages/chat/chat_page.dart';
@@ -495,8 +496,12 @@ class __RoomChatViewState extends State<_RoomChatView> {
                   CommonStrings.promptDelete,
                   icon: m.Icons.delete_forever,
                   onTap: () {
-                    widget.state.selectedRoom?.timeline?.deleteEvent(event);
                     Navigator.pop(context);
+                    AdaptiveDialog.confirmation(context).then((value) {
+                      if (value == true) {
+                        widget.state.selectedRoom?.timeline?.deleteEvent(event);
+                      }
+                    });
                   },
                 ),
               ),
