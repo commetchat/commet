@@ -319,8 +319,8 @@ class TimelineViewerState extends State<TimelineViewer> {
     if (widget.timeline.events[index].relationshipType ==
         EventRelationshipType.reply) return true;
 
-    if (widget.timeline.events[index + 1].type != EventType.message)
-      return true;
+    if ([EventType.message, EventType.encrypted]
+        .contains(widget.timeline.events[index + 1].type)) return true;
 
     if (widget.timeline.events[index].originServerTs
             .difference(widget.timeline.events[index + 1].originServerTs)

@@ -136,6 +136,7 @@ class MatrixTimeline extends Timeline {
       matrix.EventTypes.Reaction: EventType.redaction,
       matrix.EventTypes.Sticker: EventType.sticker,
       matrix.EventTypes.RoomCreate: EventType.roomCreated,
+      matrix.EventTypes.Encrypted: EventType.encrypted,
     };
 
     var result = dict[event.type];

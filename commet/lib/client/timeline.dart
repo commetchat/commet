@@ -24,6 +24,7 @@ enum EventType {
   redaction,
   edit,
   invalid,
+  encrypted,
   setRoomName,
   setRoomAvatar,
   roomCreated,
