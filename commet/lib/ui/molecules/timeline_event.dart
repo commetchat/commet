@@ -55,6 +55,10 @@ class _TimelineEventState extends State<TimelineEventView> {
           args: [user],
           name: "messagePlaceholderSticker");
 
+  String get messageFailedToDecrypt => Intl.message("Failed to decrypt event",
+      desc: "Placeholde text for when a message fails to decrypt",
+      name: "messageFailedToDecrypt");
+
   String messagePlaceholderUserCreatedRoom(String user) =>
       Intl.message("$user created the room!",
           desc: "Message body for when a user created the room",
@@ -187,6 +191,15 @@ class _TimelineEventState extends State<TimelineEventView> {
               ? tiamat.Text.error(errorMessageFailedToSend)
               : null,
         );
+      case EventType.encrypted:
+        return Message(
+            senderName: displayName,
+            senderColor: color,
+            senderAvatar: avatar,
+            showSender: widget.showSender,
+            body: tiamat.Text.error(messageFailedToDecrypt),
+            currentUserIdentifier: widget.timeline.room.client.self!.identifier,
+            sentTimeStamp: widget.event.originServerTs);
       case EventType.roomCreated:
         return GenericRoomEvent(messagePlaceholderUserCreatedRoom(displayName),
             m.Icons.room_preferences_outlined);
