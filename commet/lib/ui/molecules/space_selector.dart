@@ -110,6 +110,7 @@ class _SpaceSelectorState extends State<SpaceSelector> {
                               highlightedNotificationCount: widget.spaces[i]
                                   .displayHighlightedNotificationCount,
                               userAvatar: widget.spaces[i].client.self!.avatar,
+                              placeholderColor: widget.spaces[i].color,
                               index: i,
                             )),
                     if (widget.footer != null) const Seperator(),
@@ -133,6 +134,7 @@ class _SpaceSelectorState extends State<SpaceSelector> {
       Stream<void>? onUpdate,
       ImageProvider? avatar,
       ImageProvider? userAvatar,
+      Color? placeholderColor,
       int highlightedNotificationCount = 0,
       int notificationCount = 0,
       int? index}) {
@@ -153,6 +155,7 @@ class _SpaceSelectorState extends State<SpaceSelector> {
                 highlightedNotificationCount: highlightedNotificationCount,
                 notificationCount: notificationCount,
                 width: widget.width,
+                placeholderColor: placeholderColor,
                 onTap: () {
                   if (index != null) {
                     widget.onSelected?.call(index);

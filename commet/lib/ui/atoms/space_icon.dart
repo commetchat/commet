@@ -13,6 +13,7 @@ class SpaceIcon extends StatefulWidget {
       this.showUser = false,
       this.onUpdate,
       this.avatar,
+      this.placeholderColor,
       this.notificationCount = 0,
       this.highlightedNotificationCount = 0,
       required this.displayName,
@@ -22,6 +23,7 @@ class SpaceIcon extends StatefulWidget {
   final bool showUser;
   final Stream<void>? onUpdate;
   final String displayName;
+  final Color? placeholderColor;
   final int notificationCount;
   final int highlightedNotificationCount;
   final ImageProvider? avatar;
@@ -52,14 +54,14 @@ class _SpaceIconState extends State<SpaceIcon> {
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
-      //if (widget.notificationCount > 0) messageOverlay(),
       SideNavigationBar.tooltip(
           widget.displayName,
           ImageButton(
-            //tooltip: widget.space.displayName,
             image: widget.avatar,
             onTap: widget.onTap,
             size: widget.width,
+            placeholderColor: widget.placeholderColor,
+            placeholderText: widget.displayName,
           ),
           context),
       if (widget.showUser && widget.userAvatar != null) avatarOverlay(),

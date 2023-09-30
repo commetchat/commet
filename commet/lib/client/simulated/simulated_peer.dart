@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class SimulatedPeer extends Peer {
   SimulatedPeer(Client client, String identifier, String displayName,
-      ImageProvider? avatar) {
+      {ImageProvider? avatar}) {
     this.client = client;
     this.identifier = identifier;
     this.displayName = displayName;
