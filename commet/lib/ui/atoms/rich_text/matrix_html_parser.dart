@@ -2,7 +2,6 @@ import 'package:commet/client/matrix/components/emoticon/matrix_emoticon.dart';
 import 'package:commet/ui/atoms/code_block.dart';
 import 'package:commet/ui/atoms/emoji_widget.dart';
 import 'package:commet/ui/atoms/rich_text/spans/link.dart';
-import 'package:commet/utils/emoji/emoji_matcher.dart';
 import 'package:commet/utils/text_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:html/parser.dart' as html_parser;

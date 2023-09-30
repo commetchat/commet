@@ -1,5 +1,4 @@
 import 'dart:core';
-import 'package:commet/ui/atoms/emoji_widget.dart';
 import 'package:commet/utils/emoji/emoji_matcher.dart';
 import 'package:commet/utils/text_utils.dart';
 import 'package:flutter/material.dart';
