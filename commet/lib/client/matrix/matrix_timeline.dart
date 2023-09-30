@@ -230,7 +230,7 @@ class MatrixTimeline extends Timeline {
       e.bodyFormat = "chat.commet.default";
 
       e.formattedContent = TextUtils.manageRtlSpan(matrixEvent.body,
-          TextUtils.formatString(matrixEvent.body, allowBigEmoji: true));
+          TextUtils.formatString(matrixEvent.body, handleBigEmoji: true));
     }
   }
 
@@ -406,9 +406,10 @@ class MatrixTimeline extends Timeline {
 
   @override
   Future<void> deleteEvent(TimelineEvent event) async {
-    await _matrixRoom.redactEvent(event.eventId);
     var matrixEvent = await _matrixTimeline!.getEventById(event.eventId);
-    matrixEvent?.remove();
+    if (await matrixEvent?.remove() == false) {
+      await _matrixRoom.redactEvent(event.eventId);
+    }
   }
 
   @override

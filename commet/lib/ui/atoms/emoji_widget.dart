@@ -31,7 +31,6 @@ class EmojiWidget extends StatelessWidget {
                   fit: BoxFit.cover,
                   child: Text(
                     emoji.slug,
-                    //              style: TextStyle(fontSize: height * 0.5),
                   ),
                 ),
               ));
