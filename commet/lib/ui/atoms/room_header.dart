@@ -28,13 +28,13 @@ class RoomHeader extends StatelessWidget {
                           ? m.Icons.alternate_email_rounded
                           : m.Icons.tag,
                     )),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    m.Text(room.displayName,
-                        style: m.Theme.of(context).textTheme.titleMedium),
-                  ],
+                Flexible(
+                  child: m.Text(
+                    room.displayName,
+                    style: m.Theme.of(context).textTheme.titleMedium,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ],
             ),
