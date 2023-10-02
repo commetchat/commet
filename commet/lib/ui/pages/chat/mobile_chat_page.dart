@@ -73,21 +73,37 @@ class _MobileChatPageViewState extends State<MobileChatPageView> {
 
   @override
   Widget build(BuildContext newContext) {
-    return OverlappingPanels(
-        key: panelsKey,
-        left: navigation(newContext),
-        main: shouldMainIgnoreInput
-            ? IgnorePointer(
-                child: mainPanel(),
-              )
-            : mainPanel(),
-        onDragStart: () {},
-        onSideChange: (side) {
-          setState(() {
-            shouldMainIgnoreInput = side != RevealSide.main;
-          });
+    return WillPopScope(
+        onWillPop: () async {
+          switch (panelsKey.currentState?.currentSide) {
+            case RevealSide.right:
+              panelsKey.currentState?.reveal(RevealSide.main);
+              return false;
+            case RevealSide.main:
+              panelsKey.currentState?.reveal(RevealSide.left);
+              return false;
+            case RevealSide.left:
+              return true;
+            case null:
+              //idk in what case this will ever happen...
+              return true;
+          }
         },
-        right: widget.state.selectedRoom != null ? userList() : null);
+        child: OverlappingPanels(
+            key: panelsKey,
+            left: navigation(newContext),
+            main: shouldMainIgnoreInput
+                ? IgnorePointer(
+                    child: mainPanel(),
+                  )
+                : mainPanel(),
+            onDragStart: () {},
+            onSideChange: (side) {
+              setState(() {
+                shouldMainIgnoreInput = side != RevealSide.main;
+              });
+            },
+            right: widget.state.selectedRoom != null ? userList() : null));
   }
 
   Widget navigation(BuildContext newContext) {
