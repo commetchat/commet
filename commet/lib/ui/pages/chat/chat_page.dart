@@ -399,7 +399,7 @@ class ChatPageState extends State<ChatPage> {
       }
     }
 
-    if (content.sentFrom == selectedRoom) {
+    if (content.sentFrom != null && content.sentFrom == selectedRoom) {
       return null;
     }
 

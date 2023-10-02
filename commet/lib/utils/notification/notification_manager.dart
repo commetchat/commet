@@ -45,6 +45,7 @@ class NotificationManager {
 
   Future<void> notify(NotificationContent notification) async {
     NotificationContent? content = notification;
+    print("Sending notification");
 
     for (var modifier in _modifiers) {
       content = await modifier(content!);
