@@ -481,28 +481,23 @@ class ChatPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-        onWillPop: () async {
-          return false;
+    return NotificationListener(
+        onNotification: (SizeChangedLayoutNotification notification) {
+          var prevHeight = height;
+          height = MediaQuery.of(context).size.height;
+          if (prevHeight == -1) return true;
+
+          var diff = prevHeight - height;
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+            var state = timelines[selectedRoom?.localId]?.currentState;
+            if (state != null) {
+              state.controller.jumpTo(state.controller.offset + diff);
+            }
+          });
+
+          return true;
         },
-        // Listen to size change and offset the scroll view, so that we maintain timeline position when window changes size
-        child: NotificationListener(
-            onNotification: (SizeChangedLayoutNotification notification) {
-              var prevHeight = height;
-              height = MediaQuery.of(context).size.height;
-              if (prevHeight == -1) return true;
-
-              var diff = prevHeight - height;
-              WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                var state = timelines[selectedRoom?.localId]?.currentState;
-                if (state != null) {
-                  state.controller.jumpTo(state.controller.offset + diff);
-                }
-              });
-
-              return true;
-            },
-            child: SizeChangedLayoutNotifier(child: pickChatView())));
+        child: SizeChangedLayoutNotifier(child: pickChatView()));
   }
 
   Widget pickChatView() {
