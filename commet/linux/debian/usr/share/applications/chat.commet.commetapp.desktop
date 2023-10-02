@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Commet
+Exec=/usr/lib/chat.commet.commetapp/commet %U
+Terminal=false
+Type=Application
+Icon=commet-desktop
+StartupWMClass=Commet
+Comment=Your space to connect!
+Categories=Network;InstantMessaging;Chat;

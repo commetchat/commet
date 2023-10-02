@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>chat.commet.commetapp</id>
+  <name>Commet</name>
+  <summary>Your space to connect!</summary>
+  <developer_name>Airyz</developer_name>
+  <url type="homepage">https://commet.chat</url>
+  <metadata_license>AGPL-3.0</metadata_license>
+  <project_license>AGPL-3.0</project_license>
+  <supports>
+    <control>pointing</control>
+    <control>keyboard</control>
+    <control>touch</control>
+  </supports>
+  <description>
+    <p>Commet is a client for Matrix focused on providing a feature rich experience while maintaining a simple interface. The goal is to build a secure, privacy respecting app without compromising on the features you have come to expect from a modern chat client. </p>
+  </description>
+  <launchable type="desktop-id">chat.commet.commetapp.desktop</launchable>
+  <content_rating type="oars-1.1" />
+  <releases>
+    <release version="{{VERSION_TAG}}" />
+  </releases>
+</component>

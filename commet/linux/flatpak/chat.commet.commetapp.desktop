@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version={{VERSION_TAG}}
+Type=Application
+
+Name=Commet
+Comment=Your space to connect!
+Categories=Utility;Amusement;
+
+Icon=chat.commet.commetapp
+Exec=commet
+Terminal=false
+StartupWMClass=commet
