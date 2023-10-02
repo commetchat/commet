@@ -10,7 +10,7 @@ class MatrixSpaceRoomChunkPreview implements RoomPreview {
   ImageProvider? avatar;
 
   @override
-  String? get displayName => chunk.name;
+  String get displayName => chunk.name ?? chunk.canonicalAlias ?? roomId;
 
   @override
   String get roomId => chunk.roomId;

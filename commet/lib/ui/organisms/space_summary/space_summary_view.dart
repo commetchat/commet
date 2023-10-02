@@ -269,7 +269,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
           return SizeTransition(
               sizeFactor: CommonAnimations.easeOut(animation),
               child: RoomPanel(
-                displayName: preview.displayName!,
+                displayName: preview.displayName,
                 avatar: preview.avatar,
                 primaryButtonLabel: CommonStrings.promptJoin,
                 body: preview.topic,

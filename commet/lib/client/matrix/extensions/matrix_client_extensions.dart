@@ -45,7 +45,7 @@ extension MatrixExtensions on Client {
       topic = topicState.first.content['topic'] as String?;
 
     return GenericRoomPreview(roomId,
-        avatar: avatar, displayName: displayName, topic: topic);
+        avatar: avatar, displayName: displayName!, topic: topic);
   }
 
   Future<void> addEmoticonRoomPack(String roomId, String packKey) async {

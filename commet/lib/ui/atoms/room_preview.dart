@@ -19,9 +19,7 @@ class RoomPreviewView extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (previewData.displayName != null)
-                Flexible(
-                    child: tiamat.Text.largeTitle(previewData.displayName!)),
+              Flexible(child: tiamat.Text.largeTitle(previewData.displayName)),
               if (previewData.topic != null)
                 Flexible(child: tiamat.Text.label(previewData.topic!))
             ],
