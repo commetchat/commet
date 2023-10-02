@@ -46,3 +46,7 @@ app.*.map.json
 /android/app/release
 /lib/generated
 /integration_test/generated
+/linux/flatpak/.flatpak-builder
+/linux/flatpak/commet/bundle
+/linux/flatpak/repo
+*.flatpak

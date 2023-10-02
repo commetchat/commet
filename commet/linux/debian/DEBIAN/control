@@ -1,0 +1,8 @@
+Package: commet
+Version: {{VERSION_TAG}}
+Architecture: all
+Essential: no
+Priority: optional
+Depends: 
+Maintainer: Airyz
+Description: Your space to connect!

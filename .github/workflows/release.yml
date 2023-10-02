@@ -4,6 +4,7 @@ on:
   release:
     types:
       - created
+  workflow_dispatch:
 
 env:
   PROJECT_PATH: commet
@@ -57,6 +58,7 @@ jobs:
         run: tar -a -c -f commet-windows.zip -C .\commet\build\windows\runner\ Release
       
       - name: Upload to release
+        if: github.event_name == 'release'
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -107,6 +109,7 @@ jobs:
           dart run scripts/build_release.dart --platform android --version_tag ${{ github.event.release.tag_name || 'v0.0.0' }} --git_hash ${{ github.sha }}
                     
       - name: Upload to release
+        if: github.event_name == 'release'
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -116,7 +119,111 @@ jobs:
           asset_name: commet-android.apk
           asset_content_type: application/vnd.android.package-archive
 
-  release-linux:
+  release-linux-debian:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: 'true'
+        
+      - name: Setup Flutter 
+        uses: subosito/flutter-action@v2.8.0
+        with:
+          flutter-version: '3.13.5'
+          channel: 'stable'
+
+      - name: Setup Tools
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ninja-build libgtk-3-dev libolm3 libmpv-dev mpv ffmpeg libmimalloc-dev
+        
+      - name: Code Generation
+        run: |
+          cd $PROJECT_PATH
+          dart run scripts/codegen.dart
+          
+      - name: Build Linux
+        run: |
+          cd $PROJECT_PATH
+          dart run scripts/build_release.dart --platform linux --version_tag ${{ github.event.release.tag_name || 'v0.0.0' }} --git_hash ${{ github.sha }} --build_detail debian
+
+      - name: Create Package
+        run: | 
+          cp -r $PROJECT_PATH/linux/debian ./commet-pkg
+          cp -r $PROJECT_PATH/build/linux/x64/release/bundle ./commet-pkg/usr/lib/chat.commet.commetapp
+          version=$(echo ${{ github.event.release.tag_name || 'v0.0.0' }} | grep -oP '[0-9]+([.][0-9]+)+')
+          echo $version
+          cd ./commet-pkg
+          sed -i "s/{{VERSION_TAG}}/$version/g" ./DEBIAN/control
+          dpkg-deb --build ./ commet-linux-x64.deb
+      
+      - name: Upload to release
+        if: github.event_name == 'release'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: commet-pkg/commet-linux-x64.deb
+          asset_name: commet-linux-x64.deb
+          asset_content_type: application/vnd.debian.binary-package
+
+  release-linux-flatpak:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: 'true'
+        
+      - name: Setup Flutter 
+        uses: subosito/flutter-action@v2.8.0
+        with:
+          flutter-version: '3.13.5'
+          channel: 'stable'
+
+      - name: Setup Tools
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ninja-build libgtk-3-dev libolm3 libmpv-dev mpv ffmpeg libmimalloc-dev flatpak-builder flatpak
+        
+      - name: Code Generation
+        run: |
+          cd $PROJECT_PATH
+          dart run scripts/codegen.dart
+          
+      - name: Build Linux
+        run: |
+          cd $PROJECT_PATH
+          dart run scripts/build_release.dart --platform linux --version_tag ${{ github.event.release.tag_name || 'v0.0.0' }} --git_hash ${{ github.sha }} --build_detail flatpak
+
+      - name: Create Flatpak
+        run: | 
+          sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+          sudo flatpak install -y flathub org.freedesktop.Platform//22.08 org.freedesktop.Sdk//22.08
+          mkdir -p commet/linux/flatpak/commet
+          cp -r $PROJECT_PATH/build/linux/x64/release/bundle $PROJECT_PATH/linux/flatpak/commet/bundle
+          version=$(echo ${{ github.event.release.tag_name || 'v0.0.0' }} | grep -oP '[0-9]+([.][0-9]+)+')
+          echo $version
+          cd $PROJECT_PATH/linux/flatpak
+          sed -i "s/{{VERSION_TAG}}/$version/g" ./chat.commet.commetapp.desktop
+          sed -i "s/{{VERSION_TAG}}/$version/g" ./chat.commet.commetapp.metainfo.xml
+          flatpak-builder --force-clean build-dir chat.commet.commetapp.json --repo=repo
+          flatpak build-bundle repo chat.commet.commetapp.flatpak chat.commet.commetapp
+      
+      - name: Upload to release
+        if: github.event_name == 'release'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: commet/linux/flatpak/chat.commet.commetapp.flatpak
+          asset_name: chat.commet.commetapp.flatpak
+          asset_content_type: application/octet-stream
+
+  release-linux-portable:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -148,16 +255,17 @@ jobs:
       - name: Create archive
         run: |
           cd $PROJECT_PATH/build/linux/x64/release
-          tar -czf commet-linux-x64.tar.gz bundle
+          tar -czf commet-linux-portable-x64.tar.gz bundle
       
       - name: Upload to release
+        if: github.event_name == 'release'
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: commet/build/linux/x64/release/commet-linux-x64.tar.gz
-          asset_name: commet-linux-x64.tar.gz
+          asset_path: commet/build/linux/x64/release/commet-linux-portable-x64.tar.gz
+          asset_name: commet-linux-portable-x64.tar.gz
           asset_content_type: application/gzip
 
   release-web:
@@ -205,6 +313,7 @@ jobs:
           tar -czf commet-web.tar.gz web
       
       - name: Upload to release
+        if: github.event_name == 'release'
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
