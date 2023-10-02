@@ -11,9 +11,11 @@ import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/matrix/matrix_peer.dart';
 import 'package:commet/client/matrix/matrix_room_permissions.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
+import 'package:commet/client/matrix/matrix_timeline_event.dart';
 import 'package:commet/client/permissions.dart';
 import 'package:commet/utils/image_utils.dart';
 import 'package:commet/utils/mime.dart';
+import 'package:commet/utils/notifying_list.dart';
 import 'package:flutter/material.dart';
 import 'package:html_unescape/html_unescape.dart';
 
@@ -39,11 +41,16 @@ class MatrixRoom extends Room {
 
   late final List<RoomComponent<MatrixClient, MatrixRoom>> _components;
 
+  final NotifyingList<String> _memberIds = NotifyingList.empty(growable: true);
+
+  @override
+  Stream<void> get membersUpdated => _memberIds.onListUpdated;
+
   ImageProvider? _avatar;
 
   late MatrixClient _client;
 
-  late MatrixTimeline _timeline;
+  MatrixTimeline? _timeline;
 
   matrix.Room get matrixRoom => _matrixRoom;
 
@@ -73,19 +80,15 @@ class MatrixRoom extends Room {
 
   late DateTime _lastStateEventTimestamp;
   @override
-  DateTime get lastEventTimestamp =>
-      lastEvent == null ? _lastStateEventTimestamp : lastEvent!.originServerTs;
+  DateTime get lastEventTimestamp => lastEvent == null
+      ? _lastStateEventTimestamp
+      : lastEvent?.originServerTs ?? DateTime.fromMillisecondsSinceEpoch(0);
 
   @override
-  TimelineEvent? get lastEvent => _matrixRoom.lastEvent != null
-      ? timeline?.tryGetEvent(_matrixRoom.lastEvent!.eventId)
-      : timeline?.events.isNotEmpty == true
-          ? timeline!.events[0]
-          : null;
+  TimelineEvent? lastEvent;
 
   @override
-  Iterable<String> get memberIds =>
-      _matrixRoom.getParticipants().map((e) => e.id);
+  Iterable<String> get memberIds => _memberIds;
 
   @override
   List<Peer> get typingPeers => _matrixRoom.typingUsers
@@ -124,7 +127,8 @@ class MatrixRoom extends Room {
   String get identifier => _matrixRoom.id;
 
   @override
-  Timeline? get timeline => _timeline;
+  Timeline? get timeline =>
+      _timeline ?? (_timeline = MatrixTimeline(client, this, matrixRoom));
 
   StreamSubscription? _onUpdateSubscription;
 
@@ -142,13 +146,18 @@ class MatrixRoom extends Room {
     }
 
     _lastStateEventTimestamp = DateTime.fromMillisecondsSinceEpoch(0);
-
+    matrix.Event? latest;
     for (var e in room.states.values) {
       for (var event in e.values) {
         if (event.originServerTs.isAfter(_lastStateEventTimestamp)) {
           _lastStateEventTimestamp = event.originServerTs;
+          latest = event;
         }
       }
+    }
+
+    if (latest != null) {
+      lastEvent = MatrixTimelineEvent(latest, _matrixRoom.client);
     }
 
     _isDirectMessage = _matrixRoom.isDirectChat;
@@ -169,19 +178,31 @@ class MatrixRoom extends Room {
       }
     }
 
-    // Note this is not necessarily all users, this has the most effect on smaller rooms
-    // Where it is more likely that we are preloading important users
-    var users = room.getParticipants();
+    var users = _matrixRoom.getParticipants();
     for (var user in users) {
-      this.client.getPeer(user.id);
+      // Note this is not necessarily all users, this has the most effect on smaller rooms
+      // Where it is more likely that we are preloading important users
+      client.getPeer(user.id);
     }
 
-    _timeline = MatrixTimeline(client, this, room);
+    _memberIds.addAll(users.map((e) => e.id));
 
     _onUpdateSubscription =
         _matrixRoom.onUpdate.stream.listen(onMatrixRoomUpdate);
 
+    _matrixRoom.client.onRoomState.stream.listen(onRoomStateUpdated);
+
     _permissions = MatrixRoomPermissions(_matrixRoom);
+  }
+
+  void onRoomStateUpdated(matrix.Event event) {
+    if (event.roomId != identifier) return;
+
+    if (event is matrix.User) {
+      if (event.membership == matrix.Membership.join) {
+        _memberIds.add(event.senderId);
+      }
+    }
   }
 
   @override
@@ -263,7 +284,8 @@ class MatrixRoom extends Room {
 
       if (id != null) {
         var event = await _matrixRoom.getEventById(id);
-        return (timeline as MatrixTimeline).convertEvent(event!);
+        return MatrixTimelineEvent(event!, _matrixRoom.client,
+            timeline: _timeline?.matrixTimeline);
       }
     }
 
@@ -323,7 +345,8 @@ class MatrixRoom extends Room {
     var id = await _matrixRoom.sendReaction(reactingTo.eventId, reaction.key);
     if (id != null) {
       var event = await _matrixRoom.getEventById(id);
-      return (timeline as MatrixTimeline).convertEvent(event!);
+      return MatrixTimelineEvent(event!, _matrixRoom.client,
+          timeline: _timeline?.matrixTimeline);
     }
 
     return null;

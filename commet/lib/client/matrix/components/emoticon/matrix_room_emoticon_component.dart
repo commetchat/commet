@@ -10,6 +10,7 @@ import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
+import 'package:commet/client/matrix/matrix_timeline_event.dart';
 import 'package:commet/client/timeline.dart';
 import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:commet/utils/image_utils.dart';
@@ -89,7 +90,8 @@ class MatrixRoomEmoticonComponent extends MatrixEmoticonComponent
 
     if (id != null) {
       var event = await room.matrixRoom.getEventById(id);
-      return (room.timeline! as MatrixTimeline).convertEvent(event!);
+      return MatrixTimelineEvent(event!, room.matrixRoom.client,
+          timeline: (room.timeline as MatrixTimeline?)?.matrixTimeline);
     }
 
     return null;

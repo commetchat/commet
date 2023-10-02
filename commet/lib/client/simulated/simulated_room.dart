@@ -9,6 +9,7 @@ import 'package:commet/client/simulated/simulated_client.dart';
 import 'package:commet/client/simulated/simulated_peer.dart';
 import 'package:commet/client/simulated/simulated_room_permissions.dart';
 import 'package:commet/client/simulated/simulated_timeline.dart';
+import 'package:commet/client/simulated/simulated_timeline_event.dart';
 import 'package:commet/utils/rng.dart';
 import 'package:flutter/material.dart';
 
@@ -35,7 +36,8 @@ class SimulatedRoom extends Room {
   late SimulatedClient _client;
   late SimulatedTimeline _timeline;
   final StreamController<void> _onUpdate = StreamController.broadcast();
-
+  final StreamController<void> _onMembersListUpdated =
+      StreamController.broadcast();
   @override
   ImageProvider<Object>? get avatar => null;
 
@@ -138,13 +140,12 @@ class SimulatedRoom extends Room {
     List<PendingFileAttachment>? attachments,
     dynamic processedAttachments,
   }) async {
-    TimelineEvent e = TimelineEvent();
-    e.eventId = RandomUtils.getRandomString(20);
-    e.status = TimelineEventStatus.sent;
-    e.type = EventType.message;
-    e.originServerTs = DateTime.now();
-    e.senderId = client.self!.identifier;
-    e.body = message;
+    TimelineEvent e = SimulatedTimelineEvent(
+        eventId: RandomUtils.getRandomString(20),
+        originServerTs: DateTime.now(),
+        senderId: client.self!.identifier,
+        body: message);
+
     timeline!.insertEvent(0, e);
     return e;
   }
@@ -153,13 +154,11 @@ class SimulatedRoom extends Room {
     Peer sender = Random().nextDouble() > 0.5 ? alice : bob;
 
     if (isDirectMessage) sender = bob;
-    TimelineEvent e = TimelineEvent();
-    e.eventId = RandomUtils.getRandomString(20);
-    e.status = TimelineEventStatus.synced;
-    e.type = EventType.message;
-    e.originServerTs = DateTime.now();
-    e.senderId = sender.identifier;
-    e.body = RandomUtils.getRandomSentence(Random().nextInt(10) + 10);
+    TimelineEvent e = SimulatedTimelineEvent(
+        eventId: RandomUtils.getRandomString(20),
+        originServerTs: DateTime.now(),
+        senderId: sender.identifier,
+        body: RandomUtils.getRandomSentence(Random().nextInt(10) + 10));
     return e;
   }
 
@@ -224,4 +223,7 @@ class SimulatedRoom extends Room {
 
   @override
   Future<void> close() async {}
+
+  @override
+  Stream<void> get membersUpdated => _onMembersListUpdated.stream;
 }

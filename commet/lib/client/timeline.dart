@@ -87,27 +87,25 @@ extension EventStatusExtension on TimelineEventStatus {
 
 enum EventRelationshipType { reply }
 
-class TimelineEvent {
-  String eventId = "";
-  EventType type = EventType.invalid;
-  bool edited = false;
+abstract class TimelineEvent {
+  String get eventId;
+  EventType get type;
+  bool get edited;
   bool get editable => type == EventType.message;
-  late TimelineEventStatus status;
-  late String senderId;
-  late DateTime originServerTs;
-  String? body;
-  late String? source = "";
-  List<Attachment>? attachments;
-  String? bodyFormat;
-  String? formattedBody;
-  Widget? formattedContent;
-  String? relatedEventId;
-  String? stateKey;
-  EventRelationshipType? relationshipType;
+  TimelineEventStatus get status;
+  String get senderId;
+  DateTime get originServerTs;
+  String? get body;
+  String? get source;
+  List<Attachment>? get attachments;
+  String? get bodyFormat;
+  String? get formattedBody;
+  Widget? get formattedContent;
+  String? get relatedEventId;
+  String? get stateKey;
+  EventRelationshipType? get relationshipType;
 
-  Map<Emoticon, Set<String>>? reactions;
-
-  late StreamController onChange = StreamController.broadcast();
+  Map<Emoticon, Set<String>>? get reactions;
 }
 
 abstract class Timeline {
@@ -200,7 +198,6 @@ abstract class Timeline {
   void notifyChanged(int index) {
     onChange.add(index);
     _eventsDict[events[index].eventId] = events[index];
-    events[index].onChange.add(null);
   }
 
   bool canDeleteEvent(TimelineEvent event);

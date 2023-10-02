@@ -4,6 +4,7 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/simulated/simulated_client.dart';
 import 'package:commet/client/simulated/simulated_room.dart';
 import 'package:commet/client/simulated/simulated_space.dart';
+import 'package:commet/client/simulated/simulated_timeline_event.dart';
 import 'package:test/test.dart';
 
 void main() async {
@@ -97,9 +98,11 @@ void main() async {
     simulatedRoom.setPushRule(PushRule.notify);
     simulatedSpace.setPushRule(PushRule.notify);
 
-    TimelineEvent event = TimelineEvent();
-    event.type = EventType.message;
-    event.senderId = client.self!.identifier;
+    TimelineEvent event = SimulatedTimelineEvent(
+        senderId: client.self!.identifier,
+        originServerTs: DateTime.now(),
+        body: "Test Message",
+        eventId: "DUMMY_ID");
 
     expect(room.timeline!.shouldDisplayNotification(event), isFalse);
   });
@@ -109,9 +112,11 @@ void main() async {
     simulatedRoom.setPushRule(PushRule.notify);
     simulatedSpace.setPushRule(PushRule.notify);
 
-    TimelineEvent event = TimelineEvent();
-    event.type = EventType.message;
-    event.senderId = simulatedRoom.bob.identifier;
+    TimelineEvent event = SimulatedTimelineEvent(
+        senderId: simulatedRoom.bob.identifier,
+        originServerTs: DateTime.now(),
+        body: "Test Message",
+        eventId: "DUMMY_ID");
 
     expect(room.timeline!.shouldDisplayNotification(event), isTrue);
   });
@@ -122,10 +127,11 @@ void main() async {
     simulatedRoom.setPushRule(PushRule.dontNotify);
     simulatedSpace.setPushRule(PushRule.notify);
 
-    TimelineEvent event = TimelineEvent();
-    event.type = EventType.message;
-    event.senderId = simulatedRoom.bob.identifier;
-
+    TimelineEvent event = SimulatedTimelineEvent(
+        senderId: simulatedRoom.bob.identifier,
+        originServerTs: DateTime.now(),
+        body: "Test Message",
+        eventId: "DUMMY_ID");
     expect(room.timeline!.shouldDisplayNotification(event), isFalse);
   });
 
@@ -135,9 +141,11 @@ void main() async {
     simulatedRoom.setPushRule(PushRule.notify);
     simulatedSpace.setPushRule(PushRule.dontNotify);
 
-    TimelineEvent event = TimelineEvent();
-    event.type = EventType.message;
-    event.senderId = simulatedRoom.bob.identifier;
+    TimelineEvent event = SimulatedTimelineEvent(
+        senderId: simulatedRoom.bob.identifier,
+        originServerTs: DateTime.now(),
+        body: "Test Message",
+        eventId: "DUMMY_ID");
 
     expect(room.timeline!.shouldDisplayNotification(event), isFalse);
   });

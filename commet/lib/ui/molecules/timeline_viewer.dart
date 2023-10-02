@@ -151,6 +151,8 @@ class TimelineViewerState extends State<TimelineViewer> {
     controller.addListener(onScroll);
     setState(() {
       firstFrame = false;
+      if (widget.timeline.events.isEmpty) return;
+
       widget.markAsRead?.call(widget.timeline.events.first);
     });
   }

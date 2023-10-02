@@ -306,7 +306,8 @@ class _TimelineEventState extends State<TimelineEventView> {
   Widget buildMessageText() {
     const bool selectableText = BuildConfig.DESKTOP || BuildConfig.WEB;
 
-    if (widget.event.bodyFormat != null)
+    if (widget.event.bodyFormat != null &&
+        widget.event.formattedContent != null)
       return selectableText
           ? m.SelectionArea(child: widget.event.formattedContent!)
           : widget.event.formattedContent!;
