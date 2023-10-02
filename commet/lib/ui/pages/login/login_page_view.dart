@@ -1,6 +1,7 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/ui/pages/login/login_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:tiamat/atoms/tile.dart';
@@ -205,6 +206,8 @@ class _LoginPageViewState extends State<LoginPageView> {
       autocorrect: false,
       controller: _usernameTextField,
       readOnly: _loading,
+      inputFormatters: [FilteringTextInputFormatter.deny(RegExp("[ ]"))],
+      onChanged: (value) => _usernameTextField.text = value.toLowerCase(),
       decoration: InputDecoration(
         border: const OutlineInputBorder(),
         labelText: promptUsername,
@@ -216,7 +219,9 @@ class _LoginPageViewState extends State<LoginPageView> {
     return TextField(
       autocorrect: false,
       controller: _homeserverTextField,
+      onChanged: (value) => _homeserverTextField.text = value.toLowerCase(),
       readOnly: _loading,
+      inputFormatters: [FilteringTextInputFormatter.deny(RegExp("[ ]"))],
       decoration: InputDecoration(
         prefixText: 'https://',
         border: const OutlineInputBorder(),
