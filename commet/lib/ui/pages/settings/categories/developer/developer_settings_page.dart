@@ -1,4 +1,5 @@
 import 'package:commet/main.dart';
+import 'package:commet/utils/notification/notification_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -15,7 +16,8 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Column(
-        children: [performance(), windowSize()].map<Widget>((e) {
+        children:
+            [performance(), windowSize(), notificationTests()].map<Widget>((e) {
       return Padding(
         padding: const EdgeInsets.fromLTRB(0, 3, 0, 3),
         child: ClipRRect(borderRadius: BorderRadius.circular(10), child: e),
@@ -54,8 +56,9 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
         collapsedBackgroundColor:
             Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
         children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
             children: [
               tiamat.Button(
                 text: "1280x720",
@@ -82,8 +85,9 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
           const SizedBox(
             height: 5,
           ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
             children: [
               tiamat.Button(
                 text: "1:1",
@@ -102,5 +106,26 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
     var size = await windowManager.getSize();
     var newWidth = size.height * ratio;
     await windowManager.setSize(Size(newWidth, size.height));
+  }
+
+  Widget notificationTests() {
+    return ExpansionTile(
+      title: const tiamat.Text.labelEmphasised("Notifications"),
+      backgroundColor: Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+      collapsedBackgroundColor:
+          Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+      children: [
+        Wrap(spacing: 8, runSpacing: 8, children: [
+          tiamat.Button(
+            text: "Message Notification",
+            onTap: () => notificationManager.notify(NotificationContent(
+                "Message",
+                "Message received!",
+                NotificationType.messageReceived,
+                image: clientManager?.clients.first.self?.avatar)),
+          ),
+        ])
+      ],
+    );
   }
 }
