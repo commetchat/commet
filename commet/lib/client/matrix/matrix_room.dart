@@ -145,15 +145,7 @@ class MatrixRoom extends Room {
     }
 
     _lastStateEventTimestamp = DateTime.fromMillisecondsSinceEpoch(0);
-    matrix.Event? latest;
-    for (var e in room.states.values) {
-      for (var event in e.values) {
-        if (event.originServerTs.isAfter(_lastStateEventTimestamp)) {
-          _lastStateEventTimestamp = event.originServerTs;
-          latest = event;
-        }
-      }
-    }
+    matrix.Event? latest = room.states[matrix.EventTypes.Message]?[""];
 
     if (latest != null) {
       lastEvent = MatrixTimelineEvent(latest, _matrixRoom.client);
@@ -201,6 +193,12 @@ class MatrixRoom extends Room {
       if (event.membership == matrix.Membership.join) {
         _memberIds.add(event.senderId);
       }
+    }
+
+    if (event.type == matrix.EventTypes.Message) {
+      lastEvent = MatrixTimelineEvent(event, _matrixRoom.client);
+      _lastStateEventTimestamp = event.originServerTs;
+      _onUpdate.add(null);
     }
   }
 
