@@ -207,7 +207,6 @@ class _LoginPageViewState extends State<LoginPageView> {
       controller: _usernameTextField,
       readOnly: _loading,
       inputFormatters: [FilteringTextInputFormatter.deny(RegExp("[ ]"))],
-      onChanged: (value) => _usernameTextField.text = value.toLowerCase(),
       decoration: InputDecoration(
         border: const OutlineInputBorder(),
         labelText: promptUsername,
@@ -219,7 +218,6 @@ class _LoginPageViewState extends State<LoginPageView> {
     return TextField(
       autocorrect: false,
       controller: _homeserverTextField,
-      onChanged: (value) => _homeserverTextField.text = value.toLowerCase(),
       readOnly: _loading,
       inputFormatters: [FilteringTextInputFormatter.deny(RegExp("[ ]"))],
       decoration: InputDecoration(
