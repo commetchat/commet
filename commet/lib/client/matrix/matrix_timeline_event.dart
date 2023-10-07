@@ -307,4 +307,7 @@ class MatrixTimelineEvent implements TimelineEvent {
 
     return UnicodeEmoticon(key, shortcode: content['shortcode'] as String?);
   }
+
+  @override
+  bool get highlight => false;
 }

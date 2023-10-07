@@ -45,7 +45,7 @@ class MatrixTimeline extends Timeline {
 
   void onEventInserted(index) {
     if (_matrixTimeline == null) return;
-    insertNewEvent(
+    insertEvent(
         index,
         MatrixTimelineEvent(
             _matrixTimeline!.events[index], _matrixTimeline!.room.client,

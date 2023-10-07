@@ -118,6 +118,9 @@ abstract class Room {
 
   Future<void> close();
 
+  // Returns true if a notification should be sent for a given event
+  bool shouldNotify(TimelineEvent event);
+
   /// The last known event in the room timeline
   TimelineEvent? get lastEvent;
 

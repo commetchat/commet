@@ -55,6 +55,9 @@ class SimulatedTimelineEvent implements TimelineEvent {
   @override
   EventType get type => EventType.message;
 
+  @override
+  bool get highlight => false;
+
   SimulatedTimelineEvent({
     required this.body,
     required this.eventId,

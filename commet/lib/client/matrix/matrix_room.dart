@@ -13,8 +13,10 @@ import 'package:commet/client/matrix/matrix_room_permissions.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
 import 'package:commet/client/matrix/matrix_timeline_event.dart';
 import 'package:commet/client/permissions.dart';
+import 'package:commet/main.dart';
 import 'package:commet/utils/image_utils.dart';
 import 'package:commet/utils/mime.dart';
+import 'package:commet/utils/notification/notification_manager.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:flutter/material.dart';
 import 'package:html_unescape/html_unescape.dart';
@@ -198,8 +200,52 @@ class MatrixRoom extends Room {
     if (event.type == matrix.EventTypes.Message) {
       lastEvent = MatrixTimelineEvent(event, _matrixRoom.client);
       _lastStateEventTimestamp = event.originServerTs;
+      handleNotification(lastEvent!);
       _onUpdate.add(null);
     }
+  }
+
+  Future<void> handleNotification(TimelineEvent event) async {
+    if (!shouldNotify(event)) {
+      return;
+    }
+
+    var sender = client.getPeer(event.senderId);
+
+    if (sender.loading != null) {
+      await sender.loading;
+    }
+
+    notificationManager.notify(NotificationContent(
+      isDirectMessage
+          ? sender.displayName
+          : "${sender.displayName} ($displayName)",
+      NotificationType.messageReceived,
+      content: event.body,
+      sentFrom: this,
+      event: event,
+      image: sender.avatar,
+    ));
+  }
+
+  @override
+  bool shouldNotify(TimelineEvent event) {
+    // never notify for a message that came from an account we are logged in to!
+    if (clientManager?.clients
+            .any((element) => element.self?.identifier == event.senderId) ==
+        true) {
+      return true;
+    }
+
+    if (pushRule == PushRule.dontNotify) {
+      return false;
+    }
+
+    if (pushRule == PushRule.mentionsOnly && !event.highlight) {
+      return false;
+    }
+
+    return true;
   }
 
   @override

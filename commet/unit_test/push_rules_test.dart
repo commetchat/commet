@@ -104,7 +104,7 @@ void main() async {
         body: "Test Message",
         eventId: "DUMMY_ID");
 
-    expect(room.timeline!.shouldDisplayNotification(event), isFalse);
+    expect(room.shouldNotify(event), isFalse);
   });
 
   test("shouldDisplayNotification: message from other (PushRule.notify)",
@@ -118,7 +118,7 @@ void main() async {
         body: "Test Message",
         eventId: "DUMMY_ID");
 
-    expect(room.timeline!.shouldDisplayNotification(event), isTrue);
+    expect(room.shouldNotify(event), isTrue);
   });
 
   test(
@@ -132,7 +132,7 @@ void main() async {
         originServerTs: DateTime.now(),
         body: "Test Message",
         eventId: "DUMMY_ID");
-    expect(room.timeline!.shouldDisplayNotification(event), isFalse);
+    expect(room.shouldNotify(event), isFalse);
   });
 
   test(
@@ -147,6 +147,6 @@ void main() async {
         body: "Test Message",
         eventId: "DUMMY_ID");
 
-    expect(room.timeline!.shouldDisplayNotification(event), isFalse);
+    expect(room.shouldNotify(event), isFalse);
   });
 }

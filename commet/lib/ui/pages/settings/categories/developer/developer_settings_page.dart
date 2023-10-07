@@ -119,9 +119,8 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
           tiamat.Button(
             text: "Message Notification",
             onTap: () => notificationManager.notify(NotificationContent(
-                "Message",
-                "Message received!",
-                NotificationType.messageReceived,
+                "Message", NotificationType.messageReceived,
+                content: "Message received!",
                 image: clientManager?.clients.first.self?.avatar)),
           ),
         ])

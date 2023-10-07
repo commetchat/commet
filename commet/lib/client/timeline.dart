@@ -3,10 +3,7 @@ import 'dart:async';
 import 'package:commet/client/attachment.dart';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
-import 'package:commet/main.dart';
-import 'package:commet/utils/notification/notification_manager.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 enum TimelineEventStatus {
   removed,
@@ -104,6 +101,7 @@ abstract class TimelineEvent {
   String? get relatedEventId;
   String? get stateKey;
   EventRelationshipType? get relationshipType;
+  bool get highlight;
 
   Map<Emoticon, Set<String>>? get reactions;
 }
@@ -141,58 +139,12 @@ abstract class Timeline {
     onEventAdded.add(index);
   }
 
-  void insertNewEvent(int index, TimelineEvent event) {
-    if (index == 0) {
-      if (shouldDisplayNotification(event)) displayNotification(event);
-    }
-
-    insertEvent(index, event);
-  }
-
   bool hasEvent(String eventId) {
     return _eventsDict.containsKey(eventId);
   }
 
   TimelineEvent? tryGetEvent(String eventId) {
     return _eventsDict[eventId];
-  }
-
-  @protected
-  bool shouldDisplayNotification(TimelineEvent event) {
-    if (event.type != EventType.message) return false;
-
-    if (event.senderId == client.self!.identifier) return false;
-
-    if (room.pushRule == PushRule.dontNotify) return false;
-
-    var containingSpaces = room.client.spaces
-        .where((element) => element.containsRoom(room.identifier))
-        .toList();
-
-    if (containingSpaces.isNotEmpty &&
-        containingSpaces
-            .every((space) => space.pushRule == PushRule.dontNotify)) {
-      return false;
-    }
-
-    return true;
-  }
-
-  String get notificationReceivedMessagePlaceholder => Intl.message(
-      "Sent a message",
-      name: "notificationReceivedMessagePlaceholder",
-      desc:
-          "Placeholder text for the body of a notification, when the message either doesnt contain a displayable body, or the body has been hidden by notification settings");
-
-  @protected
-  void displayNotification(TimelineEvent event) {
-    notificationManager.notify(NotificationContent(
-        room.client.getPeer(event.senderId).displayName,
-        event.body ?? notificationReceivedMessagePlaceholder,
-        NotificationType.messageReceived,
-        sentFrom: room,
-        image: room.client.getPeer(event.senderId).avatar,
-        event: event));
   }
 
   void notifyChanged(int index) {

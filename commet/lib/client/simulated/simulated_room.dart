@@ -231,4 +231,9 @@ class SimulatedRoom extends Room {
   Future<Timeline> loadTimeline() async {
     return _timeline;
   }
+
+  @override
+  bool shouldNotify(TimelineEvent event) {
+    return false;
+  }
 }

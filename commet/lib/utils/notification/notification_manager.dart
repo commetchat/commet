@@ -13,14 +13,14 @@ enum NotificationType {
 
 class NotificationContent {
   String title;
-  String content;
   NotificationType type;
+  String? content;
   Room? sentFrom;
   TimelineEvent? event;
   ImageProvider? image;
 
-  NotificationContent(this.title, this.content, this.type,
-      {this.sentFrom, this.event, this.image});
+  NotificationContent(this.title, this.type,
+      {this.sentFrom, this.event, this.image, this.content});
 }
 
 typedef NotificationModifier = Future<NotificationContent?> Function(
@@ -45,7 +45,6 @@ class NotificationManager {
 
   Future<void> notify(NotificationContent notification) async {
     NotificationContent? content = notification;
-    print("Sending notification");
 
     for (var modifier in _modifiers) {
       content = await modifier(content!);
