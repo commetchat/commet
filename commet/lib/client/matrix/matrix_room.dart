@@ -184,6 +184,7 @@ class MatrixRoom extends Room {
         _matrixRoom.onUpdate.stream.listen(onMatrixRoomUpdate);
 
     _matrixRoom.client.onRoomState.stream.listen(onRoomStateUpdated);
+    _matrixRoom.client.onEvent.stream.listen(onEvent);
 
     _permissions = MatrixRoomPermissions(_matrixRoom);
   }
@@ -196,12 +197,22 @@ class MatrixRoom extends Room {
         _memberIds.add(event.senderId);
       }
     }
+  }
 
-    if (event.type == matrix.EventTypes.Message) {
-      lastEvent = MatrixTimelineEvent(event, _matrixRoom.client);
-      _lastStateEventTimestamp = event.originServerTs;
-      handleNotification(lastEvent!);
-      _onUpdate.add(null);
+  void onEvent(matrix.EventUpdate eventUpdate) async {
+    if (eventUpdate.roomID != identifier) {
+      return;
+    }
+
+    if (eventUpdate.content["type"] == matrix.EventTypes.Message) {
+      var roomEvent =
+          await matrixRoom.getEventById(eventUpdate.content['event_id']);
+      if (roomEvent == null) {
+        return;
+      }
+
+      var event = MatrixTimelineEvent(roomEvent, matrixRoom.client);
+      handleNotification(event);
     }
   }
 
