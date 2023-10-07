@@ -110,6 +110,9 @@ abstract class Room {
   /// Gets the color of a user based on their ID
   Color getColorOfUser(String userId);
 
+  /// Gets the timeline of a room, loading it if not yet loaded
+  Future<Timeline> loadTimeline();
+
   /// Enables end to end encryption in a room
   Future<void> enableE2EE();
 

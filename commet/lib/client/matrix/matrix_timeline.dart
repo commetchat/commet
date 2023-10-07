@@ -22,11 +22,9 @@ class MatrixTimeline extends Timeline {
     _matrixRoom = matrixRoom;
     this.client = client;
     this.room = room;
-
-    initTimeline();
   }
 
-  void initTimeline() async {
+  Future<void> initTimeline() async {
     await (client as MatrixClient).firstSync;
 
     _matrixTimeline = await _matrixRoom.getTimeline(

@@ -226,4 +226,9 @@ class SimulatedRoom extends Room {
 
   @override
   Stream<void> get membersUpdated => _onMembersListUpdated.stream;
+
+  @override
+  Future<Timeline> loadTimeline() async {
+    return _timeline;
+  }
 }

@@ -127,8 +127,7 @@ class MatrixRoom extends Room {
   String get identifier => _matrixRoom.id;
 
   @override
-  Timeline? get timeline =>
-      _timeline ?? (_timeline = MatrixTimeline(client, this, matrixRoom));
+  Timeline? get timeline => _timeline;
 
   StreamSubscription? _onUpdateSubscription;
 
@@ -372,5 +371,12 @@ class MatrixRoom extends Room {
     await _onUpdate.close();
     await _onUpdateSubscription?.cancel();
     await timeline?.close();
+  }
+
+  @override
+  Future<Timeline> loadTimeline() async {
+    _timeline = MatrixTimeline(client, this, matrixRoom);
+    await _timeline!.initTimeline();
+    return _timeline!;
   }
 }
