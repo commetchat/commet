@@ -1,7 +1,6 @@
 import 'package:commet/ui/atoms/space_header.dart';
 import 'package:commet/ui/atoms/space_icon.dart';
 import 'package:commet/ui/organisms/space_summary/space_summary_view.dart';
-import 'package:commet/ui/pages/chat/chat_page.dart';
 import 'package:commet/ui/pages/main/main_page.dart';
 import 'package:commet/ui/pages/settings/desktop_settings_page.dart';
 import 'package:commet/utils/rng.dart';
