@@ -151,6 +151,8 @@ class TimelineViewerState extends State<TimelineViewer> {
     controller.addListener(onScroll);
     setState(() {
       firstFrame = false;
+      if (widget.timeline.events.isEmpty) return;
+
       widget.markAsRead?.call(widget.timeline.events.first);
     });
   }
@@ -300,8 +302,8 @@ class TimelineViewerState extends State<TimelineViewer> {
         child: TimelineEventView(
           event: widget.timeline.events[index],
           timeline: widget.timeline,
-          onReactionTapped: (emote) => widget.onReactionTapped
-              ?.call(widget.timeline.events[index], emote),
+          onReactionTapped: (emote) =>
+              widget.onAddReaction?.call(widget.timeline.events[index], emote),
           showSender: shouldShowSender(index),
           setEditingEvent: () =>
               widget.setEditingEvent?.call(widget.timeline.events[index]),

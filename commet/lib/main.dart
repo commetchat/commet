@@ -4,8 +4,8 @@ import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/preferences.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
-import 'package:commet/ui/pages/chat/chat_page.dart';
 import 'package:commet/ui/pages/login/login_page.dart';
+import 'package:commet/ui/pages/main/main_page.dart';
 import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:commet/utils/notification/notification_manager.dart';
 import 'package:commet/utils/notification/notifier.dart';
@@ -146,12 +146,10 @@ class _AppViewState extends State<AppView> {
   @override
   Widget build(BuildContext context) {
     return widget.clientManager.isLoggedIn()
-        ? ChatPage(clientManager: widget.clientManager)
+        ? MainPage(widget.clientManager)
         : LoginPage(onSuccess: (_) {
             Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(
-                  builder: (_) =>
-                      ChatPage(clientManager: widget.clientManager)),
+              MaterialPageRoute(builder: (_) => MainPage(widget.clientManager)),
               (route) => false,
             );
           });

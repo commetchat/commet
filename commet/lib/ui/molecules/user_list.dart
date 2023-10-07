@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:commet/client/client.dart';
 import 'package:commet/ui/molecules/user_panel.dart';
 import 'package:flutter/material.dart';
@@ -13,28 +15,32 @@ class PeerList extends StatefulWidget {
 }
 
 class _PeerListState extends State<PeerList> {
-  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
   int _count = 0;
+  StreamSubscription? subscription;
 
   @override
   void initState() {
     _count = widget.room.memberIds.length;
+    subscription = widget.room.membersUpdated.listen(onMembersListUpdated);
+    //widget.room.loadMembers();
     super.initState();
+  }
+
+  void onMembersListUpdated(void event) {
+    setState(() {
+      _count = widget.room.memberIds.length;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedList(
-      key: _listKey,
-      physics: const BouncingScrollPhysics(),
-      initialItemCount: _count,
-      itemBuilder: (context, i, animation) => SizeTransition(
-          sizeFactor: animation.drive(CurveTween(curve: Curves.easeOutCubic)),
-          child: UserPanel(
-            widget.room.client.getPeer(widget.room.memberIds.elementAt(i)),
-            userColor:
-                widget.room.getColorOfUser(widget.room.memberIds.elementAt(i)),
-          )),
+    return ListView.builder(
+      itemCount: _count,
+      itemBuilder: (context, i) => UserPanel(
+        widget.room.client.getPeer(widget.room.memberIds.elementAt(i)),
+        userColor:
+            widget.room.getColorOfUser(widget.room.memberIds.elementAt(i)),
+      ),
     );
   }
 }

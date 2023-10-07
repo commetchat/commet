@@ -20,7 +20,9 @@ class ReadIndicatorState extends State<ReadIndicator> {
   @override
   Widget build(BuildContext context) {
     if (widget.initialList == null) {
-      return const SizedBox();
+      return const SizedBox(
+        height: 20,
+      );
     }
     return SizedBox(
         height: 20,

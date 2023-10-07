@@ -47,6 +47,9 @@ abstract class Room {
   /// Stream which is called when the room state updates
   Stream<void> get onUpdate;
 
+  /// Stream which gets called when the members list is updated
+  Stream<void> get membersUpdated;
+
   /// Rule for push notifications for this room
   PushRule get pushRule;
 
@@ -107,10 +110,16 @@ abstract class Room {
   /// Gets the color of a user based on their ID
   Color getColorOfUser(String userId);
 
+  /// Gets the timeline of a room, loading it if not yet loaded
+  Future<Timeline> loadTimeline();
+
   /// Enables end to end encryption in a room
   Future<void> enableE2EE();
 
   Future<void> close();
+
+  // Returns true if a notification should be sent for a given event
+  bool shouldNotify(TimelineEvent event);
 
   /// The last known event in the room timeline
   TimelineEvent? get lastEvent;
