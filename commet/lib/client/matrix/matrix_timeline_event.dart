@@ -239,7 +239,7 @@ class MatrixTimelineEvent implements TimelineEvent {
         attachment = ImageAttachment(
             MatrixMxcImage(matrixEvent.attachmentMxcUrl!, client,
                 blurhash: matrixEvent.attachmentBlurhash,
-                doThumbnail: false,
+                doThumbnail: true,
                 matrixEvent: matrixEvent),
             width: width,
             name: matrixEvent.body,
