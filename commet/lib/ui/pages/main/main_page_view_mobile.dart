@@ -44,7 +44,7 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
   }
 
   @override
-  Widget build(BuildContext newContext) {
+  Widget build(BuildContext context) {
     return WillPopScope(
         onWillPop: () async {
           switch (panelsKey.currentState?.currentSide) {
@@ -63,7 +63,7 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
         },
         child: OverlappingPanels(
             key: panelsKey,
-            left: navigation(newContext),
+            left: navigation(context),
             main: Container(
               child: shouldMainIgnoreInput
                   ? IgnorePointer(
@@ -115,40 +115,49 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
   Widget mainPanel() {
     if (widget.state.currentSpace != null && widget.state.currentRoom == null) {
       return Tile(
-        child: ListView(children: [
-          SpaceSummary(
-            key: ValueKey(
-                "space-summary-key-${widget.state.currentSpace!.localId}"),
-            space: widget.state.currentSpace!,
-            onRoomTap: (room) {
-              widget.state.selectRoom(room);
-            },
-          ),
-        ]),
+        child: SafeArea(
+          child: ListView(children: [
+            SpaceSummary(
+              key: ValueKey(
+                  "space-summary-key-${widget.state.currentSpace!.localId}"),
+              space: widget.state.currentSpace!,
+              onRoomTap: (room) {
+                widget.state.selectRoom(room);
+              },
+            ),
+          ]),
+        ),
       );
     }
 
     if (widget.state.currentRoom != null) {
-      return Column(
-        children: [
-          SizedBox(
-            height: 50,
-            child: RoomHeader(
-              widget.state.currentRoom!,
-              onTap:
-                  widget.state.currentRoom?.permissions.canEditAnything == true
-                      ? () => widget.state.navigateRoomSettings()
-                      : null,
+      return Tile(
+        child: material.Scaffold(
+          body: SafeArea(
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 50,
+                  child: RoomHeader(
+                    widget.state.currentRoom!,
+                    onTap:
+                        widget.state.currentRoom?.permissions.canEditAnything ==
+                                true
+                            ? () => widget.state.navigateRoomSettings()
+                            : null,
+                  ),
+                ),
+                Flexible(
+                  child: Chat(
+                    widget.state.currentRoom!,
+                    key: ValueKey(
+                        "room-timeline-key-${widget.state.currentRoom!.localId}"),
+                  ),
+                ),
+              ],
             ),
           ),
-          Expanded(
-            child: Chat(
-              widget.state.currentRoom!,
-              key: ValueKey(
-                  "room-timeline-key-${widget.state.currentRoom!.localId}"),
-            ),
-          ),
-        ],
+        ),
       );
     }
 

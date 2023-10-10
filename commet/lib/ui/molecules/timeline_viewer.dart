@@ -69,7 +69,7 @@ class TimelineViewerState extends State<TimelineViewer> {
   int recentItemsCount = 0;
   int historyItemsCount = 0;
   int hoveredIndex = -1;
-
+  double height = -1;
   bool animatingToBottom = false;
   bool get attachedToBottom =>
       controller.offset - controller.positions.first.minScrollExtent < 50 ||
@@ -231,7 +231,22 @@ class TimelineViewerState extends State<TimelineViewer> {
         child: buildScrollView(),
       );
     }
-    return buildScrollView();
+
+    return NotificationListener(
+        onNotification: (SizeChangedLayoutNotification notification) {
+          var prevHeight = height;
+          height = MediaQuery.of(context).size.height;
+          if (prevHeight == -1) return true;
+          print("SHIT RESIZED");
+
+          var diff = prevHeight - height;
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+            controller.jumpTo(controller.offset + diff);
+          });
+
+          return true;
+        },
+        child: buildScrollView());
   }
 
   Widget buildScrollView() {
