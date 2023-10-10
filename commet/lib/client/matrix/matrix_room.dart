@@ -192,11 +192,10 @@ class MatrixRoom extends Room {
   void onRoomStateUpdated(matrix.Event event) {
     if (event.roomId != identifier) return;
 
-    if (event is matrix.User) {
-      if (event.membership == matrix.Membership.join) {
-        _memberIds.add(event.senderId);
-      }
-    }
+    _memberIds.addAll(_matrixRoom
+        .getParticipants()
+        .where((element) => !memberIds.contains(element.id))
+        .map((e) => e.id));
   }
 
   void onEvent(matrix.EventUpdate eventUpdate) async {
