@@ -60,7 +60,7 @@ class MainPageState extends State<MainPage> {
 
   Future<NotificationContent?> dontNotifySelectedRooms(
       NotificationContent content) async {
-    if (!await windowManager.isFocused()) {
+    if (BuildConfig.DESKTOP && !await windowManager.isFocused()) {
       return content;
     }
 
