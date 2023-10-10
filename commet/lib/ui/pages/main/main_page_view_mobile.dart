@@ -133,6 +133,7 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
     if (widget.state.currentRoom != null) {
       return Tile(
         child: material.Scaffold(
+          backgroundColor: material.Theme.of(context).colorScheme.surface,
           body: SafeArea(
             child: Column(
               children: [
