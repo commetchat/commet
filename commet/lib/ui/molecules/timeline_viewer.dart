@@ -237,7 +237,6 @@ class TimelineViewerState extends State<TimelineViewer> {
           var prevHeight = height;
           height = MediaQuery.of(context).size.height;
           if (prevHeight == -1) return true;
-          print("SHIT RESIZED");
 
           var diff = prevHeight - height;
           WidgetsBinding.instance.addPostFrameCallback((timeStamp) {

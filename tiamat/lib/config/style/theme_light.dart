@@ -30,7 +30,8 @@ class ThemeLight {
             surfaceLow3: ThemeLightColors.surfaceLow3,
             surfaceLow4: ThemeLightColors.surfaceLow4,
             highlight: ThemeLightColors.highlightColor,
-            outline: ThemeLightColors.outlineColor),
+            outline: ThemeLightColors.outlineColor,
+            codeHighlight: Color(0xffa626a4)),
         ThemeSettings(frosted: false)
       ],
       colorScheme: ColorScheme(
