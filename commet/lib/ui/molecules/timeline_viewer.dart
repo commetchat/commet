@@ -84,7 +84,6 @@ class TimelineViewerState extends State<TimelineViewer> {
   late StreamSubscription eventChanged;
   late StreamSubscription eventRemoved;
   final LayerLink messageLayerLink = LayerLink();
-  OverlayEntry? messageOverlay;
 
   @override
   void initState() {
@@ -104,20 +103,11 @@ class TimelineViewerState extends State<TimelineViewer> {
     super.dispose();
   }
 
-  void createOverlay() {
-    if (!widget.doMessageOverlayMenu) return;
-
-    var overlay = Overlay.of(context);
-    messageOverlay = OverlayEntry(
-      builder: (context) {
-        return buildOverlay();
-      },
-    );
-
-    overlay.insert(messageOverlay!);
-  }
-
   Widget buildOverlay() {
+    if (hoveredIndex == -1) {
+      return Container();
+    }
+
     var event = widget.timeline.events[hoveredIndex];
     return Positioned(
         height: 50,
@@ -127,16 +117,17 @@ class TimelineViewerState extends State<TimelineViewer> {
             showWhenUnlinked: false,
             offset: const Offset(-20, -40),
             link: messageLayerLink,
-            child: MessagePopupMenu(
-              event,
-              widget.timeline,
-              isEditable: canUserEditEvent(event),
-              isDeletable: widget.timeline.canDeleteEvent(event),
-              deleteEvent: (event) => promptDeleteEvent(context, event),
-              setEditingEvent: widget.setEditingEvent,
-              setReplyingEvent: widget.setReplyingEvent,
-              onMessageChanged: onHoveredMessageChanged.stream,
-              addReaction: widget.onAddReaction,
+            child: SizedBox(
+              child: MessagePopupMenu(
+                event,
+                widget.timeline,
+                isEditable: canUserEditEvent(event),
+                isDeletable: widget.timeline.canDeleteEvent(event),
+                deleteEvent: (event) => promptDeleteEvent(context, event),
+                setEditingEvent: widget.setEditingEvent,
+                setReplyingEvent: widget.setReplyingEvent,
+                addReaction: widget.onAddReaction,
+              ),
             )));
   }
 
@@ -249,21 +240,33 @@ class TimelineViewerState extends State<TimelineViewer> {
   }
 
   Widget buildScrollView() {
-    return CustomScrollView(
-      center: historyEventsKey,
-      reverse: true,
-      controller: controller,
-      anchor: 0,
-      slivers: [
-        //Beware, these are in reverse order
-        SliverList(
-            delegate: SliverChildBuilderDelegate(buildRecentItem,
-                childCount: recentItemsCount)),
-        SliverList(
-            key: historyEventsKey,
-            delegate: SliverChildBuilderDelegate(buildHistoryItem,
-                childCount: historyItemsCount)),
-      ],
+    return ClipRect(
+      child: MouseRegion(
+        onExit: (_) => setState(() {
+          hoveredIndex = -1;
+        }),
+        child: Stack(
+          children: [
+            CustomScrollView(
+              center: historyEventsKey,
+              reverse: true,
+              controller: controller,
+              anchor: 0,
+              slivers: [
+                //Beware, these are in reverse order
+                SliverList(
+                    delegate: SliverChildBuilderDelegate(buildRecentItem,
+                        childCount: recentItemsCount)),
+                SliverList(
+                    key: historyEventsKey,
+                    delegate: SliverChildBuilderDelegate(buildHistoryItem,
+                        childCount: historyItemsCount)),
+              ],
+            ),
+            buildOverlay()
+          ],
+        ),
+      ),
     );
   }
 
@@ -301,12 +304,6 @@ class TimelineViewerState extends State<TimelineViewer> {
           hoveredIndex = index;
 
           if (!widget.doMessageOverlayMenu) return;
-
-          messageOverlay?.markNeedsBuild();
-          onHoveredMessageChanged.add(index);
-          if (messageOverlay == null) {
-            createOverlay();
-          }
         });
       },
       child: Container(
