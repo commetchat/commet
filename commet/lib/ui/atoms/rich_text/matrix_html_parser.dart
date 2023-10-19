@@ -2,6 +2,7 @@ import 'package:commet/client/matrix/components/emoticon/matrix_emoticon.dart';
 import 'package:commet/ui/atoms/code_block.dart';
 import 'package:commet/ui/atoms/emoji_widget.dart';
 import 'package:commet/utils/emoji/unicode_emoji.dart';
+import 'package:commet/utils/link_utils.dart';
 import 'package:commet/utils/text_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -20,22 +21,29 @@ class MatrixHtmlParser {
 
     // Making a new one of these for every message we pass might make a lot of garbage
     var extension = MatrixEmoticonHtmlExtension(client, big);
-    var widget = Html(data: text, extensions: [
-      extension,
-      _codeBlock,
-      _code,
-    ], style: {
-      "body": Style(
-        padding: HtmlPaddings.all(0),
-        margin: Margins(
-          bottom: Margin.zero(),
-          left: Margin.zero(),
-          top: Margin.zero(),
-          right: Margin.zero(),
+    var widget = Html(
+      data: text,
+      extensions: [
+        extension,
+        _codeBlock,
+        _code,
+      ],
+      style: {
+        "body": Style(
+          padding: HtmlPaddings.all(0),
+          margin: Margins(
+            bottom: Margin.zero(),
+            left: Margin.zero(),
+            top: Margin.zero(),
+            right: Margin.zero(),
+          ),
         ),
-      ),
-      "code": Style(backgroundColor: Colors.black.withAlpha(40))
-    });
+        "code": Style(backgroundColor: Colors.black.withAlpha(40))
+      },
+      onLinkTap: (url, attributes, element) {
+        LinkUtils.open(Uri.parse(url!));
+      },
+    );
 
     return widget;
   }

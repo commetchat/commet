@@ -212,10 +212,15 @@ class MatrixTimelineEvent implements TimelineEvent {
   void handleFormatting(matrix.Event matrixEvent, matrix.Client client) {
     var format = matrixEvent.content.tryGet<String>("format");
     body = matrixEvent.plaintextBody;
-    bodyFormat = format ?? "chat.commet.default";
 
-    formattedBody =
-        format == null ? "<body>$body</body>" : matrixEvent.formattedText;
+    if (format != null) {
+      bodyFormat = format;
+      formattedBody = matrixEvent.formattedText;
+    } else {
+      bodyFormat = "chat.commet.default";
+      formattedBody = body!;
+      formattedBody = TextUtils.linkifyStringHtml(formattedBody!);
+    }
 
     formattedContent = MatrixHtmlParser.parse(formattedBody!, client);
   }
