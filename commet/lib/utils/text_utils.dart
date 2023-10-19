@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:commet/ui/atoms/rich_text/spans/link.dart';
 import 'package:flutter/material.dart';
 import 'emoji/emoji_matcher.dart';
 import 'package:intl/intl.dart' as intl;
@@ -38,6 +39,62 @@ class TextUtils {
     }
 
     return text;
+  }
+
+  static bool containsUrl(String text) {
+    return _urlRegex.hasMatch(text);
+  }
+
+  static List<InlineSpan> linkifyString(String text, {TextStyle? style}) {
+    var matches = _urlRegex.allMatches(text);
+    return formatMatches(
+      matches,
+      text,
+      style: style,
+      builder: (matchedText, theme) {
+        return LinkSpan.create(matchedText,
+            destination: Uri.parse(matchedText), style: style);
+      },
+    );
+  }
+
+  static List<InlineSpan> formatMatches(
+      Iterable<RegExpMatch> matches, String text,
+      {required InlineSpan Function(String matchedText, TextStyle? theme)
+          builder,
+      TextStyle? style}) {
+    if (matches.isEmpty) return [TextSpan(text: text, style: style)];
+
+    List<InlineSpan> span = List.empty(growable: true);
+    for (int i = 0; i < matches.length; i++) {
+      var match = matches.elementAt(i);
+
+      String? pre;
+
+      if (i == 0 && match.start > 0) {
+        pre = text.substring(0, match.start);
+      } else if (i > 0) {
+        var start = match.start;
+        var end = matches.elementAt(i - 1).end;
+
+        if (start != end) {
+          var previous = matches.elementAt(i - 1);
+          pre = text.substring(previous.end, match.start);
+        }
+      }
+
+      if (pre != null) {
+        span.add(TextSpan(text: pre, style: style));
+      }
+
+      span.add(builder(text.substring(match.start, match.end), style));
+    }
+
+    if (matches.last.end != text.length) {
+      span.add(TextSpan(text: text.substring(matches.last.end), style: style));
+    }
+
+    return span;
   }
 
   static NewPasswordResult isValidPassword(

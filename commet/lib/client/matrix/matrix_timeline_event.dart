@@ -8,7 +8,6 @@ import 'package:commet/client/timeline.dart';
 import 'package:commet/ui/atoms/rich_text/matrix_html_parser.dart';
 import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:commet/utils/mime.dart';
-import 'package:commet/utils/text_utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:matrix/matrix.dart' as matrix;
@@ -219,7 +218,6 @@ class MatrixTimelineEvent implements TimelineEvent {
     } else {
       bodyFormat = "chat.commet.default";
       formattedBody = body!;
-      formattedBody = TextUtils.linkifyStringHtml(formattedBody!);
     }
 
     formattedContent = MatrixHtmlParser.parse(formattedBody!, client);
