@@ -14,7 +14,7 @@ import 'package:tiamat/config/style/theme_extensions.dart';
 class MatrixHtmlParser {
   static final CodeBlockHtmlExtension _codeBlock = CodeBlockHtmlExtension();
   static final CodeHtmlExtension _code = CodeHtmlExtension();
-
+  static final LinkifyHtmlExtension _linkify = LinkifyHtmlExtension();
   static Widget parse(String text, matrix.Client client) {
     var document = html_parser.parse(text);
     bool big = shouldDoBigEmoji(document);
@@ -27,6 +27,7 @@ class MatrixHtmlParser {
         extension,
         _codeBlock,
         _code,
+        _linkify,
       ],
       style: {
         "body": Style(
@@ -169,4 +170,20 @@ class CodeHtmlExtension extends HtmlExtension {
 
   @override
   Set<String> get supportedTags => tags;
+}
+
+class LinkifyHtmlExtension extends HtmlExtension {
+  @override
+  InlineSpan build(ExtensionContext context) {
+    return TextSpan(children: TextUtils.linkifyString(context.node.text!));
+  }
+
+  @override
+  bool matches(ExtensionContext context) {
+    return context.node is dom.Text &&
+        TextUtils.containsUrl(context.node.text!);
+  }
+
+  @override
+  Set<String> get supportedTags => {};
 }

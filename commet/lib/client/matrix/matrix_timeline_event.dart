@@ -219,7 +219,6 @@ class MatrixTimelineEvent implements TimelineEvent {
     } else {
       bodyFormat = "chat.commet.default";
       formattedBody = body!;
-      formattedBody = TextUtils.linkifyStringHtml(formattedBody!);
     }
 
     formattedContent = MatrixHtmlParser.parse(formattedBody!, client);
