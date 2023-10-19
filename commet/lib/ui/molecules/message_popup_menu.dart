@@ -5,7 +5,6 @@ import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/client/timeline.dart';
 import 'package:commet/ui/molecules/emoji_picker.dart';
 import 'package:commet/utils/common_strings.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
 
@@ -31,12 +30,14 @@ class MessagePopupMenu extends StatefulWidget {
       this.isDeletable = false,
       this.deleteEvent,
       this.addReaction,
+      this.onPopupStateChanged,
       this.isEditable = false});
 
   final Function(TimelineEvent event)? deleteEvent;
   final Function(TimelineEvent? event)? setReplyingEvent;
   final Function(TimelineEvent? event)? setEditingEvent;
   final Function(TimelineEvent event, Emoticon emoticon)? addReaction;
+  final Function(bool state)? onPopupStateChanged;
 
   @override
   State<MessagePopupMenu> createState() => MessagePopupMenuState();
@@ -53,53 +54,53 @@ class MessagePopupMenuState extends State<MessagePopupMenu> {
     super.initState();
     emoticons = widget.timeline.room.getComponent<RoomEmoticonComponent>();
     sub = widget.onMessageChanged?.listen(onMessageChanged);
+    controller.addListener(onTooltipControllerStateChanged);
+  }
+
+  @override
+  void dispose() {
+    sub?.cancel();
+    controller.removeListener(onTooltipControllerStateChanged);
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return MouseRegion(
-        child: JustTheTooltip(
-            tailLength: 0,
-            tailBaseWidth: 0,
-            isModal: true,
-            controller: controller,
-            shadow: const Shadow(color: Colors.transparent),
-            backgroundColor:
-                kDebugMode ? Colors.red.withAlpha(40) : Colors.transparent,
-            content: MouseRegion(
-              child: PageStorage(
-                bucket: storage,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(boxShadow: [
-                      BoxShadow(
-                          blurRadius: 10,
-                          spreadRadius: 2,
-                          color: Theme.of(context).shadowColor),
-                    ]),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(5),
-                      child: Container(
-                        color: Theme.of(context).colorScheme.surface,
-                        child: SizedBox(
-                          width: 300,
-                          height: 300,
-                          child: emoticons != null
-                              ? EmojiPicker(
-                                  emoticons!.availableEmoji,
-                                  onEmoticonPressed: onEmoticonPicked,
-                                )
-                              : Container(),
-                        ),
-                      ),
-                    ),
-                  ),
+    return JustTheTooltip(
+        tailLength: 0,
+        tailBaseWidth: 0,
+        isModal: true,
+        controller: controller,
+        shadow: const Shadow(color: Colors.transparent),
+        content: PageStorage(
+          bucket: storage,
+          child: DecoratedBox(
+            decoration: BoxDecoration(boxShadow: [
+              BoxShadow(
+                  blurRadius: 10,
+                  spreadRadius: 2,
+                  color: Theme.of(context).shadowColor),
+            ]),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(5),
+              child: Container(
+                color: Theme.of(context).colorScheme.surface,
+                child: SizedBox(
+                  width: 300,
+                  height: 300,
+                  child: emoticons != null
+                      ? EmojiPicker(
+                          emoticons!.availableEmoji,
+                          onEmoticonPressed: onEmoticonPicked,
+                        )
+                      : Container(),
                 ),
               ),
             ),
-            preferredDirection: AxisDirection.up,
-            child: buildMenu(context)));
+          ),
+        ),
+        preferredDirection: AxisDirection.up,
+        child: buildMenu(context));
   }
 
   void toggleTooltipMenu() {
@@ -173,5 +174,10 @@ class MessagePopupMenuState extends State<MessagePopupMenu> {
   void onEmoticonPicked(Emoticon emoticon) {
     controller.hideTooltip();
     widget.addReaction?.call(widget.event, emoticon);
+  }
+
+  void onTooltipControllerStateChanged() {
+    widget.onPopupStateChanged
+        ?.call(controller.value == TooltipStatus.isShowing);
   }
 }

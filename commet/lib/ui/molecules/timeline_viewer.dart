@@ -85,6 +85,8 @@ class TimelineViewerState extends State<TimelineViewer> {
   late StreamSubscription eventRemoved;
   final LayerLink messageLayerLink = LayerLink();
 
+  bool messagePopupIsBeingInteracted = false;
+
   @override
   void initState() {
     recentItemsCount = widget.timeline.events.length;
@@ -127,6 +129,8 @@ class TimelineViewerState extends State<TimelineViewer> {
                 setEditingEvent: widget.setEditingEvent,
                 setReplyingEvent: widget.setReplyingEvent,
                 addReaction: widget.onAddReaction,
+                onPopupStateChanged: (state) =>
+                    messagePopupIsBeingInteracted = state,
               ),
             )));
   }
@@ -243,6 +247,8 @@ class TimelineViewerState extends State<TimelineViewer> {
     return ClipRect(
       child: MouseRegion(
         onExit: (_) => setState(() {
+          if (messagePopupIsBeingInteracted) return;
+
           hoveredIndex = -1;
         }),
         child: Stack(
@@ -298,12 +304,12 @@ class TimelineViewerState extends State<TimelineViewer> {
   Widget buildTimelineEvent(int index) {
     return MouseRegion(
       onEnter: (event) {
+        if (!widget.doMessageOverlayMenu) return;
         if (index == hoveredIndex) return;
+        if (messagePopupIsBeingInteracted) return;
 
         setState(() {
           hoveredIndex = index;
-
-          if (!widget.doMessageOverlayMenu) return;
         });
       },
       child: Container(
