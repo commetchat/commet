@@ -8,7 +8,6 @@ import 'package:commet/ui/molecules/message_popup_menu/message_popup_menu_view_d
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
 import '../../../client/client.dart';
-import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:flutter/services.dart' as services;
 
 class MessagePopupMenu extends StatefulWidget {

@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/molecules/message_popup_menu/message_popup_menu.dart';
 import 'package:commet/ui/molecules/timeline_event.dart';
-import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
 import '../../client/client.dart';
 import '../../client/components/emoticon/emoticon.dart';
@@ -31,7 +30,6 @@ to the minScrollExtent we just grabbed, which places timeline right where we wou
 
 I know its weird but its necessary!
 */
-import 'package:tiamat/tiamat.dart' as tiamat;
 
 class TimelineViewer extends StatefulWidget {
   const TimelineViewer(
