@@ -423,10 +423,11 @@ packages:
   flutter_html:
     dependency: "direct main"
     description:
-      name: flutter_html
-      sha256: "02ad69e813ecfc0728a455e4bf892b9379983e050722b1dce00192ee2e41d1ee"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: HEAD
+      resolved-ref: "8f695c4bf6c16cf00aa2d4e9933f6b3ed17098d6"
+      url: "https://github.com/commetchat/flutter_html.git"
+    source: git
     version: "3.0.0-beta.2"
   flutter_launcher_icons:
     dependency: "direct dev"

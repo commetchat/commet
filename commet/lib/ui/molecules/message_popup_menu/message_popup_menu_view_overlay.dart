@@ -1,59 +1,39 @@
+import 'package:commet/ui/molecules/emoji_picker.dart';
+import 'package:commet/ui/molecules/message_popup_menu/message_popup_menu.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
+import 'package:flutter/material.dart';
+import 'package:just_the_tooltip/just_the_tooltip.dart';
 import 'dart:async';
 
 import 'package:commet/client/components/emoticon/emoticon.dart';
-import 'package:commet/client/components/emoticon/emoticon_component.dart';
-import 'package:commet/client/timeline.dart';
-import 'package:commet/ui/molecules/emoji_picker.dart';
 import 'package:commet/utils/common_strings.dart';
-import 'package:flutter/material.dart';
-import 'package:just_the_tooltip/just_the_tooltip.dart';
 
 import 'package:flutter/material.dart' as m;
 import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
-import '../../client/client.dart';
-import '../atoms/tooltip.dart' as t;
+import '../../atoms/tooltip.dart' as t;
 
-class MessagePopupMenu extends StatefulWidget {
-  final TimelineEvent event;
-  final Timeline timeline;
-  final bool isEditable;
-  final bool isDeletable;
-  final Stream<int>? onMessageChanged;
+class MessagePopupMenuViewOverlay extends StatefulWidget {
+  final MessagePopupMenuState state;
 
-  const MessagePopupMenu(this.event, this.timeline,
-      {super.key,
-      this.setEditingEvent,
-      this.onMessageChanged,
-      this.setReplyingEvent,
-      this.isDeletable = false,
-      this.deleteEvent,
-      this.addReaction,
-      this.onPopupStateChanged,
-      this.isEditable = false});
-
-  final Function(TimelineEvent event)? deleteEvent;
-  final Function(TimelineEvent? event)? setReplyingEvent;
-  final Function(TimelineEvent? event)? setEditingEvent;
-  final Function(TimelineEvent event, Emoticon emoticon)? addReaction;
-  final Function(bool state)? onPopupStateChanged;
+  const MessagePopupMenuViewOverlay(this.state, {super.key});
 
   @override
-  State<MessagePopupMenu> createState() => MessagePopupMenuState();
+  State<MessagePopupMenuViewOverlay> createState() =>
+      _MessagePopupMenuViewOverlayState();
 }
 
-class MessagePopupMenuState extends State<MessagePopupMenu> {
+class _MessagePopupMenuViewOverlayState
+    extends State<MessagePopupMenuViewOverlay> {
   JustTheController controller = JustTheController();
   PageStorageBucket storage = PageStorageBucket();
-  RoomEmoticonComponent? emoticons;
   StreamSubscription? sub;
 
   @override
   void initState() {
     super.initState();
-    emoticons = widget.timeline.room.getComponent<RoomEmoticonComponent>();
-    sub = widget.onMessageChanged?.listen(onMessageChanged);
+    sub = widget.state.onMessageChanged?.listen(onMessageChanged);
     controller.addListener(onTooltipControllerStateChanged);
   }
 
@@ -88,9 +68,9 @@ class MessagePopupMenuState extends State<MessagePopupMenu> {
                 child: SizedBox(
                   width: 300,
                   height: 300,
-                  child: emoticons != null
+                  child: widget.state.emoticons != null
                       ? EmojiPicker(
-                          emoticons!.availableEmoji,
+                          widget.state.emoticons!.availableEmoji,
                           onEmoticonPressed: onEmoticonPicked,
                         )
                       : Container(),
@@ -127,17 +107,21 @@ class MessagePopupMenuState extends State<MessagePopupMenu> {
           child: Row(
             children: [
               buildMenuEntry(m.Icons.reply, CommonStrings.promptReply, () {
-                widget.setReplyingEvent?.call(widget.event);
+                widget.state.setReplyingEvent();
               }),
               buildMenuEntry(m.Icons.add_reaction,
                   CommonStrings.promptAddReaction, toggleTooltipMenu),
-              if (widget.isEditable && widget.event.editable)
+              if (widget.state.isEditable)
                 buildMenuEntry(m.Icons.edit, CommonStrings.promptEdit, () {
-                  widget.setEditingEvent?.call(widget.event);
+                  widget.state.setEditingEvent();
                 }),
-              if (widget.isDeletable && widget.deleteEvent != null)
+              if (widget.state.isDeletable)
                 buildMenuEntry(m.Icons.delete, CommonStrings.promptDelete, () {
-                  widget.deleteEvent?.call(widget.event);
+                  AdaptiveDialog.confirmation(context).then((value) {
+                    if (value == true) {
+                      widget.state.deleteEvent();
+                    }
+                  });
                 }),
               buildMenuEntry(
                   m.Icons.more_vert, CommonStrings.promptOptions, () => null),
@@ -173,11 +157,11 @@ class MessagePopupMenuState extends State<MessagePopupMenu> {
 
   void onEmoticonPicked(Emoticon emoticon) {
     controller.hideTooltip();
-    widget.addReaction?.call(widget.event, emoticon);
+    widget.state.addReaction(emoticon);
   }
 
   void onTooltipControllerStateChanged() {
-    widget.onPopupStateChanged
-        ?.call(controller.value == TooltipStatus.isShowing);
+    widget.state
+        .onPopupStateChanged(controller.value == TooltipStatus.isShowing);
   }
 }

@@ -1,12 +1,11 @@
 import 'dart:async';
 import 'package:commet/config/build_config.dart';
-import 'package:commet/ui/molecules/message_popup_menu.dart';
+import 'package:commet/ui/molecules/message_popup_menu/message_popup_menu.dart';
 import 'package:commet/ui/molecules/timeline_event.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
 import '../../client/client.dart';
 import '../../client/components/emoticon/emoticon.dart';
-
 /* Note: This aint your mother's timeline viewer...
 This file contains some unusual hacks in order to achieve a smoother experience
 
@@ -32,6 +31,7 @@ to the minScrollExtent we just grabbed, which places timeline right where we wou
 
 I know its weird but its necessary!
 */
+import 'package:tiamat/tiamat.dart' as tiamat;
 
 class TimelineViewer extends StatefulWidget {
   const TimelineViewer(
@@ -119,20 +119,28 @@ class TimelineViewerState extends State<TimelineViewer> {
             showWhenUnlinked: false,
             offset: const Offset(-20, -40),
             link: messageLayerLink,
-            child: SizedBox(
-              child: MessagePopupMenu(
-                event,
-                widget.timeline,
-                isEditable: canUserEditEvent(event),
-                isDeletable: widget.timeline.canDeleteEvent(event),
-                deleteEvent: (event) => promptDeleteEvent(context, event),
-                setEditingEvent: widget.setEditingEvent,
-                setReplyingEvent: widget.setReplyingEvent,
-                addReaction: widget.onAddReaction,
-                onPopupStateChanged: (state) =>
-                    messagePopupIsBeingInteracted = state,
-              ),
-            )));
+            child: SizedBox(child: buildPopupMenu(event, false))));
+  }
+
+  onEventLongPress(TimelineEvent event) {
+    if (BuildConfig.MOBILE) {
+      showModalBottomSheet(
+          context: context, builder: (context) => buildPopupMenu(event, true));
+    }
+  }
+
+  Widget buildPopupMenu(TimelineEvent event, bool asDialog) {
+    return MessagePopupMenu(
+      event,
+      widget.timeline,
+      isEditable: canUserEditEvent(event),
+      asDialog: asDialog,
+      isDeletable: widget.timeline.canDeleteEvent(event),
+      setEditingEvent: widget.setEditingEvent,
+      setReplyingEvent: widget.setReplyingEvent,
+      addReaction: widget.onAddReaction,
+      onPopupStateChanged: (state) => messagePopupIsBeingInteracted = state,
+    );
   }
 
   bool canUserEditEvent(TimelineEvent event) {
@@ -245,33 +253,26 @@ class TimelineViewerState extends State<TimelineViewer> {
 
   Widget buildScrollView() {
     return ClipRect(
-      child: MouseRegion(
-        onExit: (_) => setState(() {
-          if (messagePopupIsBeingInteracted) return;
-
-          hoveredIndex = -1;
-        }),
-        child: Stack(
-          children: [
-            CustomScrollView(
-              center: historyEventsKey,
-              reverse: true,
-              controller: controller,
-              anchor: 0,
-              slivers: [
-                //Beware, these are in reverse order
-                SliverList(
-                    delegate: SliverChildBuilderDelegate(buildRecentItem,
-                        childCount: recentItemsCount)),
-                SliverList(
-                    key: historyEventsKey,
-                    delegate: SliverChildBuilderDelegate(buildHistoryItem,
-                        childCount: historyItemsCount)),
-              ],
-            ),
-            buildOverlay()
-          ],
-        ),
+      child: Stack(
+        children: [
+          CustomScrollView(
+            center: historyEventsKey,
+            reverse: true,
+            controller: controller,
+            anchor: 0,
+            slivers: [
+              //Beware, these are in reverse order
+              SliverList(
+                  delegate: SliverChildBuilderDelegate(buildRecentItem,
+                      childCount: recentItemsCount)),
+              SliverList(
+                  key: historyEventsKey,
+                  delegate: SliverChildBuilderDelegate(buildHistoryItem,
+                      childCount: historyItemsCount)),
+            ],
+          ),
+          if (BuildConfig.DESKTOP) buildOverlay()
+        ],
       ),
     );
   }
@@ -326,8 +327,7 @@ class TimelineViewerState extends State<TimelineViewer> {
               widget.setEditingEvent?.call(widget.timeline.events[index]),
           setReplyingEvent: () =>
               widget.setReplyingEvent?.call(widget.timeline.events[index]),
-          onLongPress: () =>
-              widget.onEventLongPress?.call(widget.timeline.events[index]),
+          onLongPress: () => onEventLongPress(widget.timeline.events[index]),
         ),
       ),
     );
@@ -351,13 +351,5 @@ class TimelineViewerState extends State<TimelineViewer> {
 
     return widget.timeline.events[index].senderId !=
         widget.timeline.events[index + 1].senderId;
-  }
-
-  promptDeleteEvent(BuildContext context, TimelineEvent event) {
-    AdaptiveDialog.confirmation(context).then((value) {
-      if (value == true) {
-        widget.timeline.deleteEvent(event);
-      }
-    });
   }
 }
