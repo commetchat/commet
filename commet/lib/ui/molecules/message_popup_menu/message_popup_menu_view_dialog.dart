@@ -91,8 +91,8 @@ class MessagePopupMenuViewDialog extends StatelessWidget {
                   CommonStrings.promptDelete,
                   icon: Icons.delete_forever,
                   onTap: () {
-                    state.deleteEvent();
                     Navigator.pop(context);
+                    state.deleteEvent();
                   },
                 ),
               ),

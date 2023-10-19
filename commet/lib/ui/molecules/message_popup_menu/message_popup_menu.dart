@@ -59,7 +59,11 @@ class MessagePopupMenuState extends State<MessagePopupMenu> {
   }
 
   void deleteEvent() {
-    widget.timeline.deleteEvent(event);
+    AdaptiveDialog.confirmation(context).then((value) {
+      if (value == true) {
+        widget.timeline.deleteEvent(event);
+      }
+    });
   }
 
   void setReplyingEvent() {

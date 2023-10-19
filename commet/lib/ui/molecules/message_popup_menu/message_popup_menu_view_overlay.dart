@@ -117,11 +117,7 @@ class _MessagePopupMenuViewOverlayState
                 }),
               if (widget.state.isDeletable)
                 buildMenuEntry(m.Icons.delete, CommonStrings.promptDelete, () {
-                  AdaptiveDialog.confirmation(context).then((value) {
-                    if (value == true) {
-                      widget.state.deleteEvent();
-                    }
-                  });
+                  widget.state.deleteEvent();
                 }),
               buildMenuEntry(
                   m.Icons.more_vert, CommonStrings.promptOptions, () => null),
