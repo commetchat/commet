@@ -1,6 +1,7 @@
 import 'package:commet/client/matrix/components/emoticon/matrix_emoticon.dart';
 import 'package:commet/ui/atoms/code_block.dart';
 import 'package:commet/ui/atoms/emoji_widget.dart';
+import 'package:commet/ui/atoms/rich_text/spans/link.dart';
 import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:commet/utils/link_utils.dart';
 import 'package:commet/utils/text_utils.dart';
@@ -175,11 +176,20 @@ class CodeHtmlExtension extends HtmlExtension {
 class LinkifyHtmlExtension extends HtmlExtension {
   @override
   InlineSpan build(ExtensionContext context) {
+    if (context.node.attributes.containsKey("href")) {
+      return LinkSpan.create(context.node.text!,
+          destination: Uri.parse(context.node.attributes["href"]!));
+    }
+
     return TextSpan(children: TextUtils.linkifyString(context.node.text!));
   }
 
   @override
   bool matches(ExtensionContext context) {
+    if (context.node.attributes.containsKey("href")) {
+      return true;
+    }
+
     return context.node is dom.Text &&
         TextUtils.containsUrl(context.node.text!);
   }
