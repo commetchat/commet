@@ -34,7 +34,8 @@ class ThemeDark {
             surfaceLow3: ThemeDarkColors.surfaceLow3,
             surfaceLow4: ThemeDarkColors.surfaceLow4,
             highlight: ThemeDarkColors.highlightColor,
-            outline: ThemeDarkColors.outlineColor),
+            outline: ThemeDarkColors.outlineColor,
+            codeHighlight: Color(0xffc678dd)),
         ThemeSettings(frosted: false),
       ],
       colorScheme: ColorScheme(

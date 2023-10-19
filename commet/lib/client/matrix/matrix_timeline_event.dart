@@ -211,21 +211,18 @@ class MatrixTimelineEvent implements TimelineEvent {
 
   void handleFormatting(matrix.Event matrixEvent, matrix.Client client) {
     var format = matrixEvent.content.tryGet<String>("format");
-
     body = matrixEvent.plaintextBody;
 
     if (format != null) {
       bodyFormat = format;
       formattedBody = matrixEvent.formattedText;
-
-      if (format == "org.matrix.custom.html") {
-        formattedContent = MatrixHtmlParser.parse(formattedBody!, client);
-      }
     } else {
       bodyFormat = "chat.commet.default";
-      formattedContent = TextUtils.manageRtlSpan(matrixEvent.body,
-          TextUtils.formatString(matrixEvent.body, handleBigEmoji: true));
+      formattedBody = body!;
+      formattedBody = TextUtils.linkifyStringHtml(formattedBody!);
     }
+
+    formattedContent = MatrixHtmlParser.parse(formattedBody!, client);
   }
 
   void parseAnyAttachments(matrix.Event matrixEvent, matrix.Client client) {
