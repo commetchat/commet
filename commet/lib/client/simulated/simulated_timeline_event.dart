@@ -64,4 +64,9 @@ class SimulatedTimelineEvent implements TimelineEvent {
     required this.originServerTs,
     required this.senderId,
   });
+
+  @override
+  Widget buildFormattedContent() {
+    throw UnimplementedError();
+  }
 }

@@ -27,6 +27,7 @@ class TimelineEventView extends StatefulWidget {
       this.onLongPress,
       this.deleteEvent,
       this.canDeleteEvent = false,
+      this.useCachedFormat = false,
       this.debugInfo});
   final TimelineEvent event;
   final bool hovered;
@@ -34,6 +35,7 @@ class TimelineEventView extends StatefulWidget {
   final bool showSender;
   final String? debugInfo;
   final Timeline timeline;
+  final bool useCachedFormat;
   final Function()? onDoubleTap;
   final Function()? onLongPress;
   final Function()? setReplyingEvent;
@@ -306,11 +308,16 @@ class _TimelineEventState extends State<TimelineEventView> {
   Widget buildMessageText() {
     const bool selectableText = BuildConfig.DESKTOP || BuildConfig.WEB;
 
-    if (widget.event.bodyFormat != null &&
-        widget.event.formattedContent != null)
-      return selectableText
-          ? m.SelectionArea(child: widget.event.formattedContent!)
-          : widget.event.formattedContent!;
+    if (widget.event.bodyFormat != null) {
+      var formatted = widget.useCachedFormat
+          ? widget.event.formattedContent
+          : widget.event.buildFormattedContent();
+
+      // if the cache didnt have anything lets just build new content. This should really never happen though
+      formatted ??= widget.event.buildFormattedContent();
+
+      return selectableText ? m.SelectionArea(child: formatted) : formatted;
+    }
 
     if (widget.event.body != null)
       return selectableText

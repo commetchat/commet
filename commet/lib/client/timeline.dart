@@ -97,7 +97,14 @@ abstract class TimelineEvent {
   List<Attachment>? get attachments;
   String? get bodyFormat;
   String? get formattedBody;
+
+  /// This has a global key, and as such should only be displayed on screen in one place at a time.
+  /// We cache it here so we dont have to parse formatting again on every rebuild
+  /// If you want to display the same message twice, use `buildFormattedContent()` to create a new widget
   Widget? get formattedContent;
+
+  Widget buildFormattedContent();
+
   String? get relatedEventId;
   String? get stateKey;
   EventRelationshipType? get relationshipType;

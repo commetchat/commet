@@ -326,6 +326,7 @@ class TimelineViewerState extends State<TimelineViewer> {
           setReplyingEvent: () =>
               widget.setReplyingEvent?.call(widget.timeline.events[index]),
           onLongPress: () => onEventLongPress(widget.timeline.events[index]),
+          useCachedFormat: true,
         ),
       ),
     );

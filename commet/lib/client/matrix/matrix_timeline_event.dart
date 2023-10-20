@@ -220,7 +220,13 @@ class MatrixTimelineEvent implements TimelineEvent {
       formattedBody = body!;
     }
 
-    formattedContent = MatrixHtmlParser.parse(formattedBody!, client);
+    formattedContent =
+        Container(key: GlobalKey(), child: buildFormattedContent());
+  }
+
+  @override
+  Widget buildFormattedContent() {
+    return MatrixHtmlParser.parse(formattedBody!, event.room.client);
   }
 
   void parseAnyAttachments(matrix.Event matrixEvent, matrix.Client client) {
