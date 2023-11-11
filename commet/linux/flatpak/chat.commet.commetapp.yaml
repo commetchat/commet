@@ -1,0 +1,134 @@
+app-id: chat.commet.commetapp
+runtime: org.freedesktop.Platform
+runtime-version: '23.08'
+sdk: org.freedesktop.Sdk
+command: commet
+separate-locales: false
+
+add-extensions:
+  org.freedesktop.Platform.ffmpeg-full:
+    directory: lib/ffmpeg
+    add-ld-path: .
+    version: '23.08'
+    no-autodownload: true
+    autodelete: false
+
+
+finish-args:
+- "--share=ipc"
+- "--socket=fallback-x11"
+- "--socket=wayland"
+- "--socket=pulseaudio"
+- "--share=network"
+- "--device=all"
+- "--filesystem=xdg-download"
+- "--talk-name=org.freedesktop.Notifications"
+- "--env=LD_LIBRARY_PATH=/app/lib"
+modules:
+- name: olm
+  buildsystem: cmake
+  sources:
+  - type: git
+    url: https://gitlab.matrix.org/matrix-org/olm.git
+    tag: 3.2.15
+- name: libmpv
+  cleanup:
+  - "/include"
+  - "/lib/pkgconfig"
+  - "/share/man"
+  buildsystem: simple
+  build-commands:
+  - python3 waf configure --prefix=/app --enable-libmpv-shared --disable-cplayer --disable-build-date
+    --disable-alsa
+  - python3 waf build
+  - python3 waf install
+  sources:
+  - type: git
+    url: https://github.com/mpv-player/mpv.git
+    tag: v0.35.1
+  - type: file
+    url: https://waf.io/waf-2.0.25
+    sha256: 21199cd220ccf60434133e1fd2ab8c8e5217c3799199c82722543970dc8e38d5
+    dest-filename: waf
+  modules:
+  - name: libass
+    cleanup:
+    - "/include"
+    - "/lib/*.la"
+    - "/lib/pkgconfig"
+    config-opts:
+    - "--disable-static"
+    sources:
+    - type: archive
+      url: https://github.com/libass/libass/releases/download/0.17.1/libass-0.17.1.tar.xz
+      sha256: f0da0bbfba476c16ae3e1cfd862256d30915911f7abaa1b16ce62ee653192784
+    modules:
+    - name: fribidi
+      cleanup:
+      - "/bin"
+      - "/include"
+      - "/lib/pkgconfig"
+      - "/lib/*.la"
+      - "/share/man"
+      buildsystem: meson
+      config-opts:
+      - "--buildtype=release"
+      - "-Ddocs=false"
+      sources:
+      - type: git
+        url: https://github.com/fribidi/fribidi.git
+        tag: v1.0.13
+        commit: b54871c339dabb7434718da3fed2fa63320997e5
+  - name: x264
+    cleanup:
+    - "/include"
+    - "/lib/pkgconfig"
+    - "/share/man"
+    config-opts:
+    - "--disable-cli"
+    - "--enable-shared"
+    sources:
+    - type: git
+      url: https://code.videolan.org/videolan/x264.git
+      commit: a8b68ebfaa68621b5ac8907610d3335971839d52
+      x-checker-data:
+        type: json
+        url: https://code.videolan.org/api/v4/projects/536/repository/commits
+        commit-query: first( .[].id )
+        version-query: first( .[].id )
+        timestamp-query: first( .[].committed_date )
+  - name: nv-codec-headers
+    cleanup:
+    - "*"
+    no-autogen: true
+    make-install-args:
+    - PREFIX=/app
+    sources:
+    - type: git
+      url: https://github.com/FFmpeg/nv-codec-headers.git
+      commit: 855f8263d97bbdcaeabaaaa2997e1ccad7c52dc3
+
+- name: commetapp
+  buildsystem: simple
+  only-arches:
+  - x86_64
+  build-commands:
+  - mkdir -p /app/commet
+  - mkdir -p /app/lib/ffmpeg
+  - cp -r bundle /app/commet
+  - chmod +x /app/commet/bundle/commet
+  - install -Dm644 chat.commet.commetapp.metainfo.xml /app/share/appdata/chat.commet.commetapp.appdata.xml
+  - install -Dm644 icon.png /app/share/icons/hicolor/512x512/apps/chat.commet.commetapp.png
+  - install -Dm644 chat.commet.commetapp.desktop /app/share/applications/chat.commet.commetapp.desktop
+  - mkdir -p /app/bin
+  - cp /app/lib/libmpv.so /app/lib/libmpv.so.1
+  - ln -s /app/commet/bundle/commet /app/bin/commet
+  sources:
+  - type: dir
+    path: commet
+  - type: file
+    path: chat.commet.commetapp.desktop
+  - type: file
+    path: chat.commet.commetapp.metainfo.xml
+  - type: file
+    path: icon.png

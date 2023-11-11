@@ -201,7 +201,7 @@ jobs:
       - name: Create Flatpak
         run: | 
           sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-          sudo flatpak install -y flathub org.freedesktop.Platform//22.08 org.freedesktop.Sdk//22.08
+          sudo flatpak install -y flathub org.freedesktop.Platform//23.08 org.freedesktop.Sdk//23.08
           mkdir -p commet/linux/flatpak/commet
           cp -r $PROJECT_PATH/build/linux/x64/release/bundle $PROJECT_PATH/linux/flatpak/commet/bundle
           version=$(echo ${{ github.event.release.tag_name || 'v0.0.0' }} | grep -oP '[0-9]+([.][0-9]+)+')
@@ -209,7 +209,7 @@ jobs:
           cd $PROJECT_PATH/linux/flatpak
           sed -i "s/{{VERSION_TAG}}/$version/g" ./chat.commet.commetapp.desktop
           sed -i "s/{{VERSION_TAG}}/$version/g" ./chat.commet.commetapp.metainfo.xml
-          flatpak-builder --force-clean build-dir chat.commet.commetapp.json --repo=repo
+          flatpak-builder --force-clean build-dir chat.commet.commetapp.yaml --repo=repo
           flatpak build-bundle repo chat.commet.commetapp.flatpak chat.commet.commetapp
       
       - name: Upload to release
