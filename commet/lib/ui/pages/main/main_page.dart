@@ -174,7 +174,6 @@ class MainPageState extends State<MainPage> {
 
     if (clientId != null) {
       client = clientManager.getClient(clientId);
-      print(client);
     } else {
       client = clientManager.clients
           .where((element) => element.hasRoom(roomId))
