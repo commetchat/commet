@@ -105,6 +105,8 @@ class NotifyingList<T> implements List<T> {
     for (int i = 0; i < iterable.length; i++) {
       _onAdd.add(prevLength + i);
     }
+
+    _onAnyUpdate(null);
   }
 
   @override
