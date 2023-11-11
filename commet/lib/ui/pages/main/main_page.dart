@@ -166,23 +166,31 @@ class MainPageState extends State<MainPage> {
     setState(() {});
   }
 
-  void onOpenRoomSignal(String roomId) {
-    for (var client in clientManager.clients) {
-      if (client.hasRoom(roomId)) {
-        var room = client.getRoom(roomId);
+  void onOpenRoomSignal((String, String?) strings) {
+    var roomId = strings.$1;
+    var clientId = strings.$2;
 
-        if (room != null) {
-          var spacesWithRoom =
-              client.spaces.where((element) => element.containsRoom(roomId));
+    Client? client;
 
-          if (spacesWithRoom.isNotEmpty) {
-            selectSpace(spacesWithRoom.first);
-          }
+    if (clientId != null) {
+      client = clientManager.getClient(clientId);
+    } else {
+      client = clientManager.clients
+          .where((element) => element.hasRoom(roomId))
+          .first;
+    }
 
-          selectRoom(room);
-          break;
-        }
+    var room = client!.getRoom(roomId);
+
+    if (room != null) {
+      var spacesWithRoom =
+          client.spaces.where((element) => element.containsRoom(roomId));
+
+      if (spacesWithRoom.isNotEmpty) {
+        selectSpace(spacesWithRoom.first);
       }
+
+      selectRoom(room);
     }
   }
 

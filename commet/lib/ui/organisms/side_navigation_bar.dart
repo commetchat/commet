@@ -132,6 +132,7 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                 onSpaceInsert: _clientManager.onSpaceAdded,
                 onSpaceRemoved: _clientManager.onSpaceRemoved,
                 clearSelection: widget.clearSpaceSelection,
+                shouldShowAvatarForSpace: shouldShowAvatarForSpace,
                 header: Column(
                   children: [
                     SideNavigationBar.tooltip(
@@ -182,7 +183,6 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                     ),
                   ],
                 ),
-                showSpaceOwnerAvatar: false,
                 onSelected: (index) {
                   widget.onSpaceSelected?.call(index);
                 },
@@ -190,5 +190,11 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
             ),
           ],
         ));
+  }
+
+  bool shouldShowAvatarForSpace(Space space) {
+    var spaces = _clientManager.spaces
+        .where((element) => element.identifier == space.identifier);
+    return spaces.length > 1;
   }
 }

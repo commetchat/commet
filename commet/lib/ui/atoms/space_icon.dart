@@ -17,7 +17,9 @@ class SpaceIcon extends StatefulWidget {
       this.notificationCount = 0,
       this.highlightedNotificationCount = 0,
       required this.displayName,
-      this.userAvatar});
+      this.userAvatar,
+      this.userDisplayName,
+      this.userColor});
   final double width;
   final void Function()? onTap;
   final bool showUser;
@@ -28,6 +30,8 @@ class SpaceIcon extends StatefulWidget {
   final int highlightedNotificationCount;
   final ImageProvider? avatar;
   final ImageProvider? userAvatar;
+  final String? userDisplayName;
+  final Color? userColor;
 
   @override
   State<SpaceIcon> createState() => _SpaceIconState();
@@ -64,7 +68,7 @@ class _SpaceIconState extends State<SpaceIcon> {
             placeholderText: widget.displayName,
           ),
           context),
-      if (widget.showUser && widget.userAvatar != null) avatarOverlay(),
+      if (widget.showUser) avatarOverlay(),
       if (widget.highlightedNotificationCount > 0) notificationOverlay(),
     ]);
   }
@@ -73,17 +77,23 @@ class _SpaceIconState extends State<SpaceIcon> {
     return Positioned(
       right: 0,
       bottom: 0,
-      child: SizedBox(
-        width: 20,
-        height: 20,
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: const [BoxShadow(color: Colors.black, blurRadius: 4)],
-            image: DecorationImage(
-                image: widget.userAvatar!, fit: BoxFit.fitHeight),
-            //border: Border.all(color: Colors.white, width: 1)),
-          ),
+      child: IgnorePointer(
+        child: SizedBox(
+          width: 20,
+          height: 20,
+          child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: const [
+                  BoxShadow(color: Colors.black, blurRadius: 4)
+                ],
+              ),
+              child: Avatar(
+                radius: 10,
+                image: widget.userAvatar,
+                placeholderColor: widget.userColor,
+                placeholderText: widget.userDisplayName,
+              )),
         ),
       ),
     );

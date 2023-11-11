@@ -105,6 +105,13 @@ class HomeScreenView extends StatelessWidget {
                   ? room.getColorOfUser(room.lastEvent!.senderId)
                   : null,
               onTap: () => onRoomClicked?.call(room),
+              showUserAvatar: clientManager.rooms
+                      .where((element) => element.identifier == room.identifier)
+                      .length >
+                  1,
+              userAvatar: room.client.self!.avatar,
+              userDisplayName: room.client.self!.displayName,
+              userColor: room.client.self!.defaultColor,
             );
           },
         ));
@@ -137,6 +144,14 @@ class HomeScreenView extends StatelessWidget {
                       ? room.getColorOfUser(room.lastEvent!.senderId)
                       : null,
                   onTap: () => onRoomClicked?.call(room),
+                  showUserAvatar: clientManager.rooms
+                          .where((element) =>
+                              element.identifier == room.identifier)
+                          .length >
+                      1,
+                  userAvatar: room.client.self!.avatar,
+                  userDisplayName: room.client.self!.displayName,
+                  userColor: room.client.self!.defaultColor,
                 );
               },
             ),

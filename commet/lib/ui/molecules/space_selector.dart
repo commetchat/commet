@@ -15,18 +15,18 @@ class SpaceSelector extends StatefulWidget {
       this.onSpaceRemoved,
       this.clearSelection,
       required this.width,
-      this.showSpaceOwnerAvatar = false,
+      this.shouldShowAvatarForSpace,
       this.header,
       this.footer});
   final Stream<int>? onSpaceInsert;
   final Stream<int>? onSpaceRemoved;
   final List<Space> spaces;
-  final bool showSpaceOwnerAvatar;
   final double width;
   final Widget? header;
   final Widget? footer;
   final void Function(int index)? onSelected;
   final void Function()? clearSelection;
+  final bool Function(Space space)? shouldShowAvatarForSpace;
 
   static EdgeInsets get padding => const EdgeInsets.fromLTRB(7, 0, 7, 0);
 
@@ -110,6 +110,10 @@ class _SpaceSelectorState extends State<SpaceSelector> {
                               highlightedNotificationCount: widget.spaces[i]
                                   .displayHighlightedNotificationCount,
                               userAvatar: widget.spaces[i].client.self!.avatar,
+                              userColor:
+                                  widget.spaces[i].client.self!.defaultColor,
+                              userDisplayName:
+                                  widget.spaces[i].client.self!.displayName,
                               placeholderColor: widget.spaces[i].color,
                               index: i,
                             )),
@@ -134,6 +138,8 @@ class _SpaceSelectorState extends State<SpaceSelector> {
       Stream<void>? onUpdate,
       ImageProvider? avatar,
       ImageProvider? userAvatar,
+      Color? userColor,
+      String? userDisplayName,
       Color? placeholderColor,
       int highlightedNotificationCount = 0,
       int notificationCount = 0,
@@ -152,6 +158,8 @@ class _SpaceSelectorState extends State<SpaceSelector> {
                 onUpdate: onUpdate,
                 avatar: avatar,
                 userAvatar: userAvatar,
+                userColor: userColor,
+                userDisplayName: userDisplayName,
                 highlightedNotificationCount: highlightedNotificationCount,
                 notificationCount: notificationCount,
                 width: widget.width,
@@ -161,7 +169,11 @@ class _SpaceSelectorState extends State<SpaceSelector> {
                     widget.onSelected?.call(index);
                   }
                 },
-                showUser: widget.showSpaceOwnerAvatar,
+                showUser: index != null
+                    ? widget.shouldShowAvatarForSpace
+                            ?.call(widget.spaces[index]) ??
+                        false
+                    : false,
               ),
             ),
           ),

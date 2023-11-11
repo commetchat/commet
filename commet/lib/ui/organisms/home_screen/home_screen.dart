@@ -73,7 +73,8 @@ class _HomeScreenState extends State<HomeScreen> {
       clientManager: widget.clientManager,
       rooms: widget.clientManager.singleRooms,
       recentActivity: recentActivity,
-      onRoomClicked: (room) => NavigationSignals.openRoom.add(room.identifier),
+      onRoomClicked: (room) => NavigationSignals.openRoom
+          .add((room.identifier, room.client.identifier)),
       acceptInvite: acceptInvitation,
       rejectInvite: rejectInvitation,
       joinRoom: joinRoom,

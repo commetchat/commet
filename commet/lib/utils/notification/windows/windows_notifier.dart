@@ -55,7 +55,7 @@ class WindowsNotifier extends Notifier {
         var roomId = args['room_id'];
         if (roomId == null) return;
 
-        NavigationSignals.openRoom.add(roomId);
+        NavigationSignals.openRoom.add((roomId, null));
         windowManager.show();
     }
   }
