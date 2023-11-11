@@ -15,18 +15,18 @@ class SpaceSelector extends StatefulWidget {
       this.onSpaceRemoved,
       this.clearSelection,
       required this.width,
-      this.showSpaceOwnerAvatar = false,
+      this.shouldShowAvatarForSpace,
       this.header,
       this.footer});
   final Stream<int>? onSpaceInsert;
   final Stream<int>? onSpaceRemoved;
   final List<Space> spaces;
-  final bool showSpaceOwnerAvatar;
   final double width;
   final Widget? header;
   final Widget? footer;
   final void Function(int index)? onSelected;
   final void Function()? clearSelection;
+  final bool Function(Space space)? shouldShowAvatarForSpace;
 
   static EdgeInsets get padding => const EdgeInsets.fromLTRB(7, 0, 7, 0);
 
@@ -161,7 +161,11 @@ class _SpaceSelectorState extends State<SpaceSelector> {
                     widget.onSelected?.call(index);
                   }
                 },
-                showUser: widget.showSpaceOwnerAvatar,
+                showUser: index != null
+                    ? widget.shouldShowAvatarForSpace
+                            ?.call(widget.spaces[index]) ??
+                        false
+                    : false,
               ),
             ),
           ),
