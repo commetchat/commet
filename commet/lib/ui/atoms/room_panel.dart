@@ -16,13 +16,20 @@ class RoomPanel extends StatefulWidget {
       this.secondaryButtonLoading = false,
       this.onRoomSettingsButtonPressed,
       this.showSettingsButton = false,
+      this.userColor,
       this.onTap,
       this.color,
       this.body,
       this.recentEventSender,
       this.recentEventSenderColor,
+      this.userAvatar,
+      this.userDisplayName,
+      this.showUserAvatar = false,
       super.key});
   final ImageProvider? avatar;
+  final ImageProvider? userAvatar;
+  final Color? userColor;
+  final String? userDisplayName;
   final String displayName;
   final bool showSettingsButton;
   final Color? color;
@@ -37,6 +44,7 @@ class RoomPanel extends StatefulWidget {
   final String? secondaryButtonLabel;
   final bool secondaryButtonLoading;
   final Function()? onSecondaryButtonPressed;
+  final bool showUserAvatar;
   @override
   State<RoomPanel> createState() => _RoomPanelState();
 }
@@ -81,10 +89,22 @@ class _RoomPanelState extends State<RoomPanel> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisSize: MainAxisSize.max,
                           children: [
-                            Avatar.medium(
-                              image: widget.avatar,
-                              placeholderText: widget.displayName,
-                              placeholderColor: widget.color,
+                            Stack(
+                              alignment: Alignment.bottomRight,
+                              children: [
+                                Avatar.medium(
+                                  image: widget.avatar,
+                                  placeholderText: widget.displayName,
+                                  placeholderColor: widget.color,
+                                ),
+                                if (widget.showUserAvatar)
+                                  Avatar(
+                                    radius: 10,
+                                    image: widget.userAvatar,
+                                    placeholderText: widget.userDisplayName,
+                                    placeholderColor: widget.userColor,
+                                  ),
+                              ],
                             ),
                             Flexible(
                               child: Padding(

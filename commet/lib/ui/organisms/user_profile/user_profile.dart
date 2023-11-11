@@ -41,11 +41,13 @@ class UserProfile extends StatelessWidget {
         .where((element) => user.identifier == element.directMessagePartnerID);
 
     if (existingRooms.isNotEmpty) {
-      NavigationSignals.openRoom.add(existingRooms.first.identifier);
+      NavigationSignals.openRoom
+          .add((existingRooms.first.identifier, user.client.identifier));
     } else {
       var room = await user.client.createDirectMessage(user.identifier);
       if (room != null) {
-        NavigationSignals.openRoom.add(room.identifier);
+        NavigationSignals.openRoom
+            .add((room.identifier, user.client.identifier));
       }
     }
 

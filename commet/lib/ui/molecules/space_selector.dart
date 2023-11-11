@@ -110,6 +110,10 @@ class _SpaceSelectorState extends State<SpaceSelector> {
                               highlightedNotificationCount: widget.spaces[i]
                                   .displayHighlightedNotificationCount,
                               userAvatar: widget.spaces[i].client.self!.avatar,
+                              userColor:
+                                  widget.spaces[i].client.self!.defaultColor,
+                              userDisplayName:
+                                  widget.spaces[i].client.self!.displayName,
                               placeholderColor: widget.spaces[i].color,
                               index: i,
                             )),
@@ -134,6 +138,8 @@ class _SpaceSelectorState extends State<SpaceSelector> {
       Stream<void>? onUpdate,
       ImageProvider? avatar,
       ImageProvider? userAvatar,
+      Color? userColor,
+      String? userDisplayName,
       Color? placeholderColor,
       int highlightedNotificationCount = 0,
       int notificationCount = 0,
@@ -152,6 +158,8 @@ class _SpaceSelectorState extends State<SpaceSelector> {
                 onUpdate: onUpdate,
                 avatar: avatar,
                 userAvatar: userAvatar,
+                userColor: userColor,
+                userDisplayName: userDisplayName,
                 highlightedNotificationCount: highlightedNotificationCount,
                 notificationCount: notificationCount,
                 width: widget.width,
