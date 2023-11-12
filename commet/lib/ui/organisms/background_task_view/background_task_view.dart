@@ -34,19 +34,17 @@ class _BackgroundTaskViewState extends State<BackgroundTaskView> {
           borderRadius: BorderRadius.circular(8),
           child: Container(
             color: Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
-            child: Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: widget.manager.tasks
-                      .map((e) => _SingleBackgroundTaskView(
-                            e,
-                            key: ValueKey("task-display${e.hashCode}"),
-                          ))
-                      .toList(),
-                )),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: widget.manager.tasks
+                  .map((e) => _SingleBackgroundTaskView(
+                        e,
+                        key: ValueKey("task-display${e.hashCode}"),
+                      ))
+                  .toList(),
+            ),
           ),
         ),
       ),
@@ -97,30 +95,37 @@ class __SingleBackgroundTaskViewState extends State<_SingleBackgroundTaskView> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
-            child: SizedBox(
-                width: 10,
-                height: 10,
-                child: complete
-                    ? const Icon(
-                        Icons.check,
-                        color: Colors.greenAccent,
-                        size: 10,
-                      )
-                    : CircularProgressIndicator(
-                        strokeWidth: 2,
-                        value: progress,
-                      )),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap:
+            widget.task.canCallAction ? () => widget.task.action?.call() : null,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+                child: SizedBox(
+                    width: 10,
+                    height: 10,
+                    child: complete
+                        ? const Icon(
+                            Icons.check,
+                            color: Colors.greenAccent,
+                            size: 10,
+                          )
+                        : CircularProgressIndicator(
+                            strokeWidth: 2,
+                            value: progress,
+                          )),
+              ),
+              tiamat.Text.tiny(widget.task.label)
+            ],
           ),
-          tiamat.Text.tiny(widget.task.label)
-        ],
+        ),
       ),
     );
   }

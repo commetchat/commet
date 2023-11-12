@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:commet/client/attachment.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/main.dart';
@@ -11,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
+import 'package:url_launcher/url_launcher.dart';
 
 class MessageAttachment extends StatefulWidget {
   const MessageAttachment(this.attachment,
@@ -171,9 +174,7 @@ class _MessageAttachmentState extends State<MessageAttachment> {
                 icon: Icons.download,
                 onPressed: () async {
                   if (widget.attachment is FileAttachment) {
-                    backgroundTaskManager.addTask(AsyncTask(
-                        downloadAttachment(widget.attachment as FileAttachment),
-                        "Downloading: ${widget.attachment.name}"));
+                    downloadAttachment(widget.attachment as FileAttachment);
                   }
                 },
               ),
@@ -188,8 +189,19 @@ class _MessageAttachmentState extends State<MessageAttachment> {
     var attachment = widget.attachment as FileAttachment;
     var result =
         await FilePicker.platform.saveFile(fileName: widget.attachment.name);
-    if (result != null) {
-      attachment.provider.save(result);
+
+    if (result == null) {
+      return;
     }
+
+    backgroundTaskManager.addTask(AsyncTask(
+      attachment.provider.save(result),
+      "Downloading: ${widget.attachment.name}",
+      action: () {
+        var path = File(result).parent.path;
+        launchUrl(Uri.file(path), mode: LaunchMode.platformDefault);
+      },
+      isActionReady: () => true,
+    ));
   }
 }

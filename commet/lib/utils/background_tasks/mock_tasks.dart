@@ -19,6 +19,12 @@ class FakeBackgroundTask implements BackgroundTask {
       stream.add(null);
     });
   }
+
+  @override
+  void Function()? action;
+
+  @override
+  bool get canCallAction => isComplete;
 }
 
 class FakeBackgroundTaskWithProgress implements BackgroundTaskWithProgress {
@@ -45,20 +51,35 @@ class FakeBackgroundTaskWithProgress implements BackgroundTaskWithProgress {
 
   FakeBackgroundTaskWithProgress() {
     progress();
+    action = doAction;
   }
 
   void progress() {
     Timer(const Duration(seconds: 1), () {
-      current += 1;
-      progressStream.add(current);
-
-      if (current >= total) {
-        isComplete = true;
-        stream.add(null);
-        return;
-      }
+      doProgress();
 
       progress();
     });
   }
+
+  @override
+  void Function()? action;
+
+  void doProgress() {
+    current += 1;
+    progressStream.add(current);
+
+    if (current >= total) {
+      isComplete = true;
+      stream.add(null);
+      return;
+    }
+  }
+
+  void doAction() {
+    doProgress();
+  }
+
+  @override
+  bool get canCallAction => true;
 }

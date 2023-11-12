@@ -31,6 +31,9 @@ abstract class BackgroundTask {
   bool get isComplete;
   String get label;
   Stream<void> get completed;
+
+  bool get canCallAction;
+  void Function()? action;
 }
 
 abstract class BackgroundTaskWithProgress extends BackgroundTask {
@@ -52,7 +55,7 @@ class AsyncTask implements BackgroundTask {
   @override
   bool isComplete = false;
 
-  AsyncTask(Future future, this.label) {
+  AsyncTask(Future future, this.label, {this.action, this.isActionReady}) {
     future.then((value) => onFutureComplete());
   }
 
@@ -60,4 +63,12 @@ class AsyncTask implements BackgroundTask {
     isComplete = true;
     stream.add(null);
   }
+
+  @override
+  void Function()? action;
+
+  bool Function()? isActionReady;
+
+  @override
+  bool get canCallAction => isActionReady?.call() ?? false;
 }
