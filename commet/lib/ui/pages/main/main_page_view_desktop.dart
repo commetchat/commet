@@ -1,3 +1,4 @@
+import 'package:commet/ui/atoms/drag_drop_file_target.dart';
 import 'package:commet/ui/atoms/room_header.dart';
 import 'package:commet/ui/atoms/space_header.dart';
 import 'package:commet/ui/molecules/direct_message_list.dart';
@@ -8,6 +9,7 @@ import 'package:commet/ui/organisms/chat/chat.dart';
 import 'package:commet/ui/organisms/side_navigation_bar.dart';
 import 'package:commet/ui/organisms/space_summary/space_summary.dart';
 import 'package:commet/ui/pages/main/main_page.dart';
+import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tiamat/atoms/tile.dart';
@@ -69,6 +71,12 @@ class MainPageViewDesktop extends StatelessWidget {
               ),
           ],
         ),
+        if (state.currentRoom != null)
+          DragDropFileTarget(
+            onDropComplete: (details) {
+              EventBus.onFileDropped.add(details);
+            },
+          )
       ],
     );
   }

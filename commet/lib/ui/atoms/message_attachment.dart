@@ -4,6 +4,7 @@ import 'package:commet/ui/atoms/lightbox.dart';
 import 'package:commet/ui/molecules/video_player/video_player.dart';
 import 'package:commet/utils/mime.dart';
 import 'package:commet/utils/text_utils.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart';
@@ -133,28 +134,53 @@ class _MessageAttachmentState extends State<MessageAttachment> {
               color: Theme.of(context).extension<ExtraColors>()!.outline)),
       child: Padding(
         padding: const EdgeInsets.all(2.0),
-        child:
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Icon(icon),
-              ),
-              Flexible(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    tiamat.Text.labelEmphasised(fileName),
-                    if (fileSize != null)
-                      tiamat.Text.labelLow(TextUtils.readableFileSize(fileSize))
-                  ],
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Icon(icon),
                 ),
+                Flexible(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      tiamat.Text.labelEmphasised(
+                        fileName,
+                        maxLines: 1,
+                        overflow: TextOverflow.fade,
+                      ),
+                      if (fileSize != null)
+                        tiamat.Text.labelLow(
+                            TextUtils.readableFileSize(fileSize))
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+              child: tiamat.IconButton(
+                size: 20,
+                icon: Icons.download,
+                onPressed: () async {
+                  if (widget.attachment is FileAttachment) {
+                    var attachment = widget.attachment as FileAttachment;
+                    var result = await FilePicker.platform
+                        .saveFile(fileName: widget.attachment.name);
+                    if (result != null) {
+                      attachment.provider.save(result);
+                    }
+                  }
+                },
               ),
-            ],
-          ),
-        ]),
+            )
+          ],
+        ),
       ),
     );
   }

@@ -142,6 +142,8 @@ class TimelineViewerState extends State<TimelineViewer> {
   }
 
   bool canUserEditEvent(TimelineEvent event) {
+    if (event.attachments != null) return false;
+
     return widget.timeline.room.permissions.canUserEditMessages &&
         event.senderId == widget.timeline.room.client.self!.identifier;
   }

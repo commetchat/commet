@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:commet/cache/file_provider.dart';
 import 'package:commet/main.dart';
@@ -13,12 +14,27 @@ class MxcFileProvider implements FileProvider {
   MxcFileProvider(this.client, this.uri, {this.event});
 
   @override
-  Future<Uri?> resolve() async {
-    if (await fileCache.hasFile(fileIdentifier)) {
-      var result = await fileCache.getFile(fileIdentifier);
-      if (result != null) return result;
+  Future<Uri?> resolve({String? savePath}) async {
+    var bytes = await getFileData();
+
+    if (bytes == null) {
+      return null;
     }
 
+    return fileCache.putFile(fileIdentifier, bytes);
+  }
+
+  @override
+  Future<void> save(String filepath) async {
+    var bytes = await getFileData();
+    if (bytes == null) return;
+
+    var file = File(filepath);
+    await file.create(recursive: true);
+    await file.writeAsBytes(bytes);
+  }
+
+  Future<Uint8List?> getFileData() async {
     Uint8List? bytes;
 
     if (event != null) {
@@ -31,10 +47,6 @@ class MxcFileProvider implements FileProvider {
       }
     }
 
-    if (bytes != null) {
-      return fileCache.putFile(fileIdentifier, bytes);
-    }
-
-    return null;
+    return bytes;
   }
 }

@@ -242,6 +242,8 @@ class MatrixTimelineEvent implements TimelineEvent {
                 blurhash: matrixEvent.attachmentBlurhash,
                 doThumbnail: true,
                 matrixEvent: matrixEvent),
+            MxcFileProvider(client, matrixEvent.attachmentMxcUrl!,
+                event: matrixEvent),
             width: width,
             name: matrixEvent.body,
             height: height);
