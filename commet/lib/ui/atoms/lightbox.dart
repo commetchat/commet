@@ -109,52 +109,50 @@ class _LightboxState extends State<Lightbox> {
       onTap: () {
         dismiss();
       },
-      child: Placeholder(
-        child: Container(
-          color: Colors.transparent,
-          child: Padding(
-            padding: const EdgeInsets.all(BuildConfig.MOBILE ? 10 : 100.0),
-            child: SafeArea(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: InteractiveViewer(
-                  trackpadScrollCausesScale: true,
-                  transformationController: controller,
-                  maxScale: 3.5,
-                  child: Container(
-                    alignment: Alignment.center,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: GestureDetector(
-                        onTap: () {},
-                        child: AspectRatio(
-                            aspectRatio: aspectRatio,
-                            child: widget.image != null
-                                ? Image(
-                                    fit: BoxFit.cover,
-                                    image: widget.image!,
-                                    isAntiAlias: true,
-                                    filterQuality: FilterQuality.medium,
-                                  )
-                                : widget.video != null
-                                    ? dismissing
-                                        ? widget.thumbnail != null
-                                            ? Image(
-                                                fit: BoxFit.cover,
-                                                image: widget.thumbnail!,
-                                              )
-                                            : Container(
-                                                color: Colors.black,
-                                              )
-                                        : VideoPlayer(
-                                            widget.video!,
-                                            showProgressBar: true,
-                                            canGoFullscreen: false,
-                                            thumbnail: widget.thumbnail,
-                                            key: widget.contentKey,
-                                          )
-                                    : const Placeholder()),
-                      ),
+      child: Container(
+        color: Colors.transparent,
+        child: Padding(
+          padding: const EdgeInsets.all(BuildConfig.MOBILE ? 10 : 100.0),
+          child: SafeArea(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: InteractiveViewer(
+                trackpadScrollCausesScale: true,
+                transformationController: controller,
+                maxScale: 3.5,
+                child: Container(
+                  alignment: Alignment.center,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: GestureDetector(
+                      onTap: () {},
+                      child: AspectRatio(
+                          aspectRatio: aspectRatio,
+                          child: widget.image != null
+                              ? Image(
+                                  fit: BoxFit.cover,
+                                  image: widget.image!,
+                                  isAntiAlias: true,
+                                  filterQuality: FilterQuality.medium,
+                                )
+                              : widget.video != null
+                                  ? dismissing
+                                      ? widget.thumbnail != null
+                                          ? Image(
+                                              fit: BoxFit.cover,
+                                              image: widget.thumbnail!,
+                                            )
+                                          : Container(
+                                              color: Colors.black,
+                                            )
+                                      : VideoPlayer(
+                                          widget.video!,
+                                          showProgressBar: true,
+                                          canGoFullscreen: false,
+                                          thumbnail: widget.thumbnail,
+                                          key: widget.contentKey,
+                                        )
+                                  : const Placeholder()),
                     ),
                   ),
                 ),
