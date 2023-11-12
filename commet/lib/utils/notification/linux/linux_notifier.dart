@@ -8,7 +8,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:window_manager/window_manager.dart';
 import 'dart:ui' as ui;
-import '../../../ui/navigation/navigation_signals.dart';
+import '../../event_bus.dart';
 import '../notification_manager.dart';
 
 class LinuxNotifier extends Notifier {
@@ -27,7 +27,7 @@ class LinuxNotifier extends Notifier {
   static void backgroundNotificationResponse(NotificationResponse details) {}
 
   static void notificationResponse(NotificationResponse details) {
-    NavigationSignals.openRoom.add((details.payload!, null));
+    EventBus.openRoom.add((details.payload!, null));
     windowManager.show();
     windowManager.focus();
   }

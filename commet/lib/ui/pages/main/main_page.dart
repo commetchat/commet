@@ -3,7 +3,7 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/main.dart';
-import 'package:commet/ui/navigation/navigation_signals.dart';
+import 'package:commet/utils/event_bus.dart';
 import 'package:commet/ui/navigation/navigation_utils.dart';
 import 'package:commet/ui/pages/main/main_page_view_desktop.dart';
 import 'package:commet/ui/pages/main/main_page_view_mobile.dart';
@@ -49,7 +49,7 @@ class MainPageState extends State<MainPage> {
     super.initState();
     notificationManager.addModifier(dontNotifySelectedRooms);
 
-    NavigationSignals.openRoom.stream.listen(onOpenRoomSignal);
+    EventBus.openRoom.stream.listen(onOpenRoomSignal);
   }
 
   @override

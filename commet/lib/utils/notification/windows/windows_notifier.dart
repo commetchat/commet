@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/main.dart';
-import 'package:commet/ui/navigation/navigation_signals.dart';
+import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/notification/notifier.dart';
 import 'package:desktop_notifications/desktop_notifications.dart';
 import 'package:win_toast/win_toast.dart';
@@ -55,7 +55,7 @@ class WindowsNotifier extends Notifier {
         var roomId = args['room_id'];
         if (roomId == null) return;
 
-        NavigationSignals.openRoom.add((roomId, null));
+        EventBus.openRoom.add((roomId, null));
         windowManager.show();
     }
   }

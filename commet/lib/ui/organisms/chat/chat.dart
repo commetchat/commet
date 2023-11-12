@@ -11,6 +11,8 @@ import 'package:commet/client/timeline.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/organisms/chat/chat_view.dart';
 import 'package:commet/utils/debounce.dart';
+import 'package:commet/utils/event_bus.dart';
+import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -56,6 +58,8 @@ class ChatState extends State<Chat> {
   StreamController<void> onFocusMessageInput = StreamController();
   StreamController<String> setMessageInputText = StreamController();
 
+  StreamSubscription? onFileDroppedSubscription;
+
   GifComponent? gifs;
   RoomEmoticonComponent? emoticons;
 
@@ -68,6 +72,9 @@ class ChatState extends State<Chat> {
     if (kDebugMode) {
       print("Initializing room timeline for: ${widget.room.displayName}");
     }
+
+    onFileDroppedSubscription =
+        EventBus.onFileDropped.stream.listen(onFileDropped);
 
     if (room.timeline != null) {
       _timeline = room.timeline;
@@ -93,6 +100,8 @@ class ChatState extends State<Chat> {
     if (kDebugMode) {
       print("Disposing room timeline for: ${widget.room.displayName}");
     }
+
+    onFileDroppedSubscription?.cancel();
     super.dispose();
   }
 
@@ -236,5 +245,19 @@ class ChatState extends State<Chat> {
 
   void stopTyping() {
     room.setTypingStatus(false);
+  }
+
+  void onFileDropped(DropDoneDetails event) async {
+    for (var file in event.files) {
+      var size = await file.length();
+      Uint8List? data;
+      if (size < 50000000) {
+        data = await file.readAsBytes();
+      }
+      setState(() {
+        attachments.add(PendingFileAttachment(
+            name: file.name, path: file.path, size: size, data: data));
+      });
+    }
   }
 }

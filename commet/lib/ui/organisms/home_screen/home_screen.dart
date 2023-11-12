@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/invitation.dart';
-import 'package:commet/ui/navigation/navigation_signals.dart';
+import 'package:commet/utils/event_bus.dart';
 import 'package:commet/ui/organisms/home_screen/home_screen_view.dart';
 import 'package:flutter/material.dart';
 
@@ -73,8 +73,8 @@ class _HomeScreenState extends State<HomeScreen> {
       clientManager: widget.clientManager,
       rooms: widget.clientManager.singleRooms,
       recentActivity: recentActivity,
-      onRoomClicked: (room) => NavigationSignals.openRoom
-          .add((room.identifier, room.client.identifier)),
+      onRoomClicked: (room) =>
+          EventBus.openRoom.add((room.identifier, room.client.identifier)),
       acceptInvite: acceptInvitation,
       rejectInvite: rejectInvitation,
       joinRoom: joinRoom,

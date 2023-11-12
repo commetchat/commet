@@ -1,5 +1,5 @@
 import 'package:commet/client/client.dart';
-import 'package:commet/ui/navigation/navigation_signals.dart';
+import 'package:commet/utils/event_bus.dart';
 import 'package:commet/ui/organisms/user_profile/user_profile_view.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
@@ -41,13 +41,12 @@ class UserProfile extends StatelessWidget {
         .where((element) => user.identifier == element.directMessagePartnerID);
 
     if (existingRooms.isNotEmpty) {
-      NavigationSignals.openRoom
+      EventBus.openRoom
           .add((existingRooms.first.identifier, user.client.identifier));
     } else {
       var room = await user.client.createDirectMessage(user.identifier);
       if (room != null) {
-        NavigationSignals.openRoom
-            .add((room.identifier, user.client.identifier));
+        EventBus.openRoom.add((room.identifier, user.client.identifier));
       }
     }
 
