@@ -120,9 +120,7 @@ class __SingleBackgroundTaskViewState extends State<_SingleBackgroundTaskView> {
                         value: progress,
                       )),
           ),
-          GestureDetector(
-              onTap: () => backgroundTaskManager.addTask(widget.task),
-              child: tiamat.Text.tiny(widget.task.label))
+          tiamat.Text.tiny(widget.task.label)
         ],
       ),
     );

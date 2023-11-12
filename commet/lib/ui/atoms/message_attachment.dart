@@ -1,7 +1,9 @@
 import 'package:commet/client/attachment.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/lightbox.dart';
 import 'package:commet/ui/molecules/video_player/video_player.dart';
+import 'package:commet/utils/background_tasks/background_task_manager.dart';
 import 'package:commet/utils/mime.dart';
 import 'package:commet/utils/text_utils.dart';
 import 'package:file_picker/file_picker.dart';
@@ -169,12 +171,9 @@ class _MessageAttachmentState extends State<MessageAttachment> {
                 icon: Icons.download,
                 onPressed: () async {
                   if (widget.attachment is FileAttachment) {
-                    var attachment = widget.attachment as FileAttachment;
-                    var result = await FilePicker.platform
-                        .saveFile(fileName: widget.attachment.name);
-                    if (result != null) {
-                      attachment.provider.save(result);
-                    }
+                    backgroundTaskManager.addTask(AsyncTask(
+                        downloadAttachment(widget.attachment as FileAttachment),
+                        "Downloading: ${widget.attachment.name}"));
                   }
                 },
               ),
@@ -183,5 +182,14 @@ class _MessageAttachmentState extends State<MessageAttachment> {
         ),
       ),
     );
+  }
+
+  Future<void> downloadAttachment(FileAttachment attachmet) async {
+    var attachment = widget.attachment as FileAttachment;
+    var result =
+        await FilePicker.platform.saveFile(fileName: widget.attachment.name);
+    if (result != null) {
+      attachment.provider.save(result);
+    }
   }
 }

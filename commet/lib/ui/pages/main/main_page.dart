@@ -48,6 +48,9 @@ class MainPageState extends State<MainPage> {
   void initState() {
     super.initState();
     notificationManager.addModifier(dontNotifySelectedRooms);
+    backgroundTaskManager.onListUpdate.listen((event) {
+      setState(() {});
+    });
 
     EventBus.openRoom.stream.listen(onOpenRoomSignal);
   }
