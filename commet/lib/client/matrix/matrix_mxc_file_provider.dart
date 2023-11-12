@@ -30,7 +30,6 @@ class MxcFileProvider implements FileProvider {
     if (bytes == null) return;
 
     var file = File(filepath);
-    print("Saving file: $filepath");
     await file.create(recursive: true);
     await file.writeAsBytes(bytes);
   }

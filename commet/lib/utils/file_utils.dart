@@ -14,7 +14,7 @@ class FileUtils {
     var path = desiredFilePath;
     int attempts = 0;
     while (File(path).existsSync()) {
-      path = p.join(dir, "${file}_(${attempts})$extension");
+      path = p.join(dir, "${file}_($attempts)$extension");
       attempts += 1;
 
       //surely this wont happen

@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:commet/utils/background_tasks/background_task_manager.dart';
-import 'package:commet/utils/rng.dart';
 
 class FakeBackgroundTask implements BackgroundTask {
   StreamController stream = StreamController.broadcast();
