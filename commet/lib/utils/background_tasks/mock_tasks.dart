@@ -21,6 +21,11 @@ class FakeBackgroundTask implements BackgroundTask {
   }
 
   @override
+  void dispose() {
+    stream.close();
+  }
+
+  @override
   void Function()? action;
 
   @override
@@ -48,6 +53,11 @@ class FakeBackgroundTaskWithProgress implements BackgroundTaskWithProgress {
 
   @override
   int get total => 20;
+
+  @override
+  void dispose() {
+    stream.close();
+  }
 
   FakeBackgroundTaskWithProgress() {
     progress();

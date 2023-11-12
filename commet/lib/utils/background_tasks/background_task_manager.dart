@@ -12,9 +12,11 @@ class BackgroundTaskManager {
 
   Stream get onListUpdate => tasks.onListUpdated;
 
+  Map<BackgroundTask, StreamSubscription> subscriptions = {};
+
   void addTask(BackgroundTask task) {
     tasks.add(task);
-    task.completed.listen((_) => onTaskCompleted(task));
+    subscriptions[task] = task.completed.listen((_) => onTaskCompleted(task));
   }
 
   void onTaskCompleted(BackgroundTask task) {
@@ -23,6 +25,7 @@ class BackgroundTaskManager {
     }
     Timer(const Duration(seconds: 5), () {
       tasks.remove(task);
+      subscriptions[task]?.cancel();
     });
   }
 }
@@ -34,6 +37,7 @@ abstract class BackgroundTask {
 
   bool get canCallAction;
   void Function()? action;
+  void dispose();
 }
 
 abstract class BackgroundTaskWithProgress extends BackgroundTask {
@@ -71,4 +75,9 @@ class AsyncTask implements BackgroundTask {
 
   @override
   bool get canCallAction => isActionReady?.call() ?? false;
+
+  @override
+  void dispose() {
+    stream.close();
+  }
 }
