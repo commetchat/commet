@@ -290,14 +290,17 @@ class TimelineViewerState extends State<TimelineViewer> {
   }
 
   Widget buildEvent(int displayIndex, int actualIndex) {
-    if (displayIndex == hoveredIndex) {
-      return CompositedTransformTarget(
-        link: messageLayerLink,
-        child: buildTimelineEvent(displayIndex),
-      );
-    }
-
-    return buildTimelineEvent(displayIndex);
+    return Stack(alignment: Alignment.topRight, children: [
+      buildTimelineEvent(displayIndex),
+      if (displayIndex == hoveredIndex)
+        CompositedTransformTarget(
+          link: messageLayerLink,
+          child: const SizedBox(
+            height: 1,
+            width: 1,
+          ),
+        )
+    ]);
   }
 
   Widget buildTimelineEvent(int index) {
