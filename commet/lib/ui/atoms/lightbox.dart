@@ -45,6 +45,7 @@ class Lightbox extends StatefulWidget {
             aspectRatio: aspectRatio,
             thumbnail: thumbnail,
             contentKey: key,
+            key: GlobalKey(),
           );
         },
         transitionDuration: const Duration(milliseconds: 300),
