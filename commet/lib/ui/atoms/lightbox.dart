@@ -62,6 +62,8 @@ class Lightbox extends StatefulWidget {
 class _LightboxState extends State<Lightbox> {
   double aspectRatio = 1;
   bool dismissing = false;
+  final controller = TransformationController();
+
   @override
   void initState() {
     super.initState();
@@ -106,38 +108,50 @@ class _LightboxState extends State<Lightbox> {
       onTap: () {
         dismiss();
       },
-      child: Container(
-        color: Colors.transparent,
-        child: Padding(
-          padding: const EdgeInsets.all(BuildConfig.MOBILE ? 10 : 100.0),
-          child: SafeArea(
-            child: Container(
-              alignment: Alignment.center,
+      child: Placeholder(
+        child: Container(
+          color: Colors.transparent,
+          child: Padding(
+            padding: const EdgeInsets.all(BuildConfig.MOBILE ? 10 : 100.0),
+            child: SafeArea(
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
-                child: AspectRatio(
-                    aspectRatio: aspectRatio,
-                    child: widget.image != null
-                        ? Image(
-                            fit: BoxFit.cover,
-                            image: widget.image!,
-                            isAntiAlias: true,
-                            filterQuality: FilterQuality.medium,
-                          )
-                        : widget.video != null
-                            ? dismissing
+                child: InteractiveViewer(
+                  trackpadScrollCausesScale: true,
+                  transformationController: controller,
+                  child: Container(
+                    alignment: Alignment.center,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: GestureDetector(
+                        onTap: () {},
+                        child: AspectRatio(
+                            aspectRatio: aspectRatio,
+                            child: widget.image != null
                                 ? Image(
                                     fit: BoxFit.cover,
-                                    image: widget.thumbnail!,
+                                    image: widget.image!,
+                                    isAntiAlias: true,
+                                    filterQuality: FilterQuality.medium,
                                   )
-                                : VideoPlayer(
-                                    widget.video!,
-                                    showProgressBar: true,
-                                    canGoFullscreen: false,
-                                    thumbnail: widget.thumbnail,
-                                    key: widget.contentKey,
-                                  )
-                            : const Placeholder()),
+                                : widget.video != null
+                                    ? dismissing && widget.thumbnail != null
+                                        ? Image(
+                                            fit: BoxFit.cover,
+                                            image: widget.thumbnail!,
+                                          )
+                                        : VideoPlayer(
+                                            widget.video!,
+                                            showProgressBar: true,
+                                            canGoFullscreen: false,
+                                            thumbnail: widget.thumbnail,
+                                            key: widget.contentKey,
+                                          )
+                                    : const Placeholder()),
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ),
           ),
