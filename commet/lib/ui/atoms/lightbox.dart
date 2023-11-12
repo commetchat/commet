@@ -119,6 +119,7 @@ class _LightboxState extends State<Lightbox> {
                 child: InteractiveViewer(
                   trackpadScrollCausesScale: true,
                   transformationController: controller,
+                  maxScale: 3.5,
                   child: Container(
                     alignment: Alignment.center,
                     child: ClipRRect(
