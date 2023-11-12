@@ -19,6 +19,7 @@ class Preferences {
   static const String _developerMode = "developer_mode";
   static const String _tenorGifSearch = "enable_tenor_gif_search";
   static const String _gifSearchProxyUrl = "gif_search_proxy_url";
+  static const String _lastDownloadLocation = "last_download_location";
   final StreamController _onSettingChanged = StreamController.broadcast();
   Stream get onSettingChanged => _onSettingChanged.stream;
 
@@ -113,6 +114,14 @@ class Preferences {
 
   Future<void> setTenorGifSearch(bool value) async {
     await _preferences!.setBool(_tenorGifSearch, value);
+    _onSettingChanged.add(null);
+  }
+
+  String? get lastDownloadLocation =>
+      _preferences!.getString(_lastDownloadLocation);
+
+  Future<void> setLastDownloadLocation(String value) async {
+    await _preferences!.setString(_lastDownloadLocation, value);
     _onSettingChanged.add(null);
   }
 }

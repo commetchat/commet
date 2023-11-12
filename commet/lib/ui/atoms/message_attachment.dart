@@ -187,8 +187,9 @@ class _MessageAttachmentState extends State<MessageAttachment> {
 
   Future<void> downloadAttachment(FileAttachment attachmet) async {
     var attachment = widget.attachment as FileAttachment;
-    var result =
-        await FilePicker.platform.saveFile(fileName: widget.attachment.name);
+    var result = await FilePicker.platform.saveFile(
+        fileName: widget.attachment.name,
+        initialDirectory: preferences.lastDownloadLocation);
 
     if (result == null) {
       return;
@@ -199,6 +200,7 @@ class _MessageAttachmentState extends State<MessageAttachment> {
       "Downloading: ${widget.attachment.name}",
       action: () {
         var path = File(result).parent.path;
+        preferences.setLastDownloadLocation(path);
         launchUrl(Uri.file(path), mode: LaunchMode.platformDefault);
       },
       isActionReady: () => true,
