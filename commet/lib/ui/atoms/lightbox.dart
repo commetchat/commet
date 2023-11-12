@@ -136,11 +136,15 @@ class _LightboxState extends State<Lightbox> {
                                     filterQuality: FilterQuality.medium,
                                   )
                                 : widget.video != null
-                                    ? dismissing && widget.thumbnail != null
-                                        ? Image(
-                                            fit: BoxFit.cover,
-                                            image: widget.thumbnail!,
-                                          )
+                                    ? dismissing
+                                        ? widget.thumbnail != null
+                                            ? Image(
+                                                fit: BoxFit.cover,
+                                                image: widget.thumbnail!,
+                                              )
+                                            : Container(
+                                                color: Colors.black,
+                                              )
                                         : VideoPlayer(
                                             widget.video!,
                                             showProgressBar: true,
