@@ -69,11 +69,11 @@ class __SingleBackgroundTaskViewState extends State<_SingleBackgroundTaskView> {
   StreamSubscription? progressSubscription;
   StreamSubscription? completeSubscription;
   double? progress;
-  bool complete = false;
+  late BackgroundTaskStatus status;
 
   @override
   void initState() {
-    complete = widget.task.isComplete;
+    status = widget.task.status;
     completeSubscription = widget.task.completed.listen((event) {
       onTaskComplete();
     });
@@ -111,16 +111,22 @@ class __SingleBackgroundTaskViewState extends State<_SingleBackgroundTaskView> {
                 child: SizedBox(
                     width: 10,
                     height: 10,
-                    child: complete
+                    child: status == BackgroundTaskStatus.completed
                         ? const Icon(
                             Icons.check,
                             color: Colors.greenAccent,
                             size: 10,
                           )
-                        : CircularProgressIndicator(
-                            strokeWidth: 2,
-                            value: progress,
-                          )),
+                        : status == BackgroundTaskStatus.failed
+                            ? Icon(
+                                Icons.error,
+                                color: Theme.of(context).colorScheme.error,
+                                size: 10,
+                              )
+                            : CircularProgressIndicator(
+                                strokeWidth: 2,
+                                value: progress,
+                              )),
               ),
               tiamat.Text.tiny(widget.task.label)
             ],
@@ -132,7 +138,7 @@ class __SingleBackgroundTaskViewState extends State<_SingleBackgroundTaskView> {
 
   void onTaskComplete() {
     setState(() {
-      complete = true;
+      status = widget.task.status;
     });
   }
 

@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:commet/utils/background_tasks/background_task_manager.dart';
+import 'package:commet/utils/rng.dart';
 
 class FakeBackgroundTask implements BackgroundTask {
   StreamController stream = StreamController.broadcast();
@@ -8,15 +10,20 @@ class FakeBackgroundTask implements BackgroundTask {
   Stream<void> get completed => stream.stream;
 
   @override
-  bool isComplete = false;
+  String get label => "Fake background task";
 
   @override
-  String get label => "Fake background task";
+  BackgroundTaskStatus status = BackgroundTaskStatus.running;
 
   FakeBackgroundTask() {
     Timer(const Duration(seconds: 5), () {
-      isComplete = true;
+      if (Random().nextDouble() < 0.5) {
+        status = BackgroundTaskStatus.failed;
+      } else {
+        status = BackgroundTaskStatus.completed;
+      }
       stream.add(null);
+      return;
     });
   }
 
@@ -29,7 +36,7 @@ class FakeBackgroundTask implements BackgroundTask {
   void Function()? action;
 
   @override
-  bool get canCallAction => isComplete;
+  bool get canCallAction => status == BackgroundTaskStatus.running;
 }
 
 class FakeBackgroundTaskWithProgress implements BackgroundTaskWithProgress {
@@ -43,9 +50,6 @@ class FakeBackgroundTaskWithProgress implements BackgroundTaskWithProgress {
   String get label => "Fake background task with progress ($current/$total)";
 
   @override
-  bool isComplete = false;
-
-  @override
   int current = 0;
 
   @override
@@ -53,6 +57,12 @@ class FakeBackgroundTaskWithProgress implements BackgroundTaskWithProgress {
 
   @override
   int get total => 20;
+
+  @override
+  bool get canCallAction => true;
+
+  @override
+  BackgroundTaskStatus status = BackgroundTaskStatus.running;
 
   @override
   void dispose() {
@@ -67,7 +77,7 @@ class FakeBackgroundTaskWithProgress implements BackgroundTaskWithProgress {
   void progress() {
     Timer(const Duration(seconds: 1), () {
       doProgress();
-      if (!isComplete) {
+      if (status == BackgroundTaskStatus.running) {
         progress();
       }
     });
@@ -80,8 +90,14 @@ class FakeBackgroundTaskWithProgress implements BackgroundTaskWithProgress {
     current += 1;
     progressStream.add(current);
 
+    if (Random().nextDouble() < 0.1) {
+      status = BackgroundTaskStatus.failed;
+      stream.add(null);
+      return;
+    }
+
     if (current >= total) {
-      isComplete = true;
+      status = BackgroundTaskStatus.completed;
       stream.add(null);
       return;
     }
@@ -90,7 +106,4 @@ class FakeBackgroundTaskWithProgress implements BackgroundTaskWithProgress {
   void doAction() {
     doProgress();
   }
-
-  @override
-  bool get canCallAction => true;
 }

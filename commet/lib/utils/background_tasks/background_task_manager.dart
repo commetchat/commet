@@ -30,8 +30,10 @@ class BackgroundTaskManager {
   }
 }
 
+enum BackgroundTaskStatus { running, failed, completed }
+
 abstract class BackgroundTask {
-  bool get isComplete;
+  BackgroundTaskStatus get status;
   String get label;
   Stream<void> get completed;
 
@@ -57,14 +59,15 @@ class AsyncTask implements BackgroundTask {
   String label;
 
   @override
-  bool isComplete = false;
+  BackgroundTaskStatus status = BackgroundTaskStatus.running;
 
-  AsyncTask(Future future, this.label, {this.action, this.isActionReady}) {
-    future.then((value) => onFutureComplete());
+  AsyncTask(Future<BackgroundTaskStatus> future, this.label,
+      {this.action, this.isActionReady}) {
+    future.then((value) => onFutureComplete(value));
   }
 
-  void onFutureComplete() {
-    isComplete = true;
+  void onFutureComplete(BackgroundTaskStatus result) {
+    status = result;
     stream.add(null);
   }
 

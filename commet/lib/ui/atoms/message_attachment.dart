@@ -6,14 +6,19 @@ import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/lightbox.dart';
 import 'package:commet/ui/molecules/video_player/video_player.dart';
 import 'package:commet/utils/background_tasks/background_task_manager.dart';
+import 'package:commet/utils/file_utils.dart';
 import 'package:commet/utils/mime.dart';
 import 'package:commet/utils/text_utils.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:url_launcher/url_launcher.dart';
+
+import 'package:path/path.dart' as p;
+import 'package:permission_handler/permission_handler.dart';
 
 class MessageAttachment extends StatefulWidget {
   const MessageAttachment(this.attachment,
@@ -185,25 +190,31 @@ class _MessageAttachmentState extends State<MessageAttachment> {
     );
   }
 
-  Future<void> downloadAttachment(FileAttachment attachmet) async {
-    var attachment = widget.attachment as FileAttachment;
-    var result = await FilePicker.platform.saveFile(
-        fileName: widget.attachment.name,
-        initialDirectory: preferences.lastDownloadLocation);
-
-    if (result == null) {
-      return;
-    }
+  Future<void> downloadAttachment(FileAttachment attachment) async {
+    var path = await FileUtils.getSaveFilePath(fileName: attachment.name);
+    if (path == null) return;
 
     backgroundTaskManager.addTask(AsyncTask(
-      attachment.provider.save(result),
+      downloadTask(attachment, path),
       "Downloading: ${widget.attachment.name}",
       action: () {
-        var path = File(result).parent.path;
-        preferences.setLastDownloadLocation(path);
-        launchUrl(Uri.file(path), mode: LaunchMode.platformDefault);
+        var openPath = path;
+        if (BuildConfig.DESKTOP) {
+          openPath = p.dirname(path);
+        }
+        launchUrl(Uri.file(openPath), mode: LaunchMode.platformDefault);
       },
       isActionReady: () => true,
     ));
+  }
+
+  Future<BackgroundTaskStatus> downloadTask(
+      FileAttachment attachment, String path) async {
+    try {
+      await attachment.provider.save(path);
+    } catch (_) {
+      return BackgroundTaskStatus.failed;
+    }
+    return BackgroundTaskStatus.completed;
   }
 }

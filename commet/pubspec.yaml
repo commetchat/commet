@@ -69,6 +69,7 @@ dependencies:
   flutter_html:
     git:
       url: https://github.com/commetchat/flutter_html.git
+  permission_handler: ^11.0.1
 
 dev_dependencies:
   build_runner:

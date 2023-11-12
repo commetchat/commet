@@ -42,8 +42,10 @@ class _FloatingTileState extends State<FloatingTile> {
 
   Widget buildOverlay(BuildContext context) {
     var size = MediaQuery.of(context).size;
+    var padding = MediaQuery.of(context).padding;
     return TileOverlay(
       initialLayoutSize: Rect.fromLTWH(0, 0, size.width, size.height),
+      safeAreaPadding: padding,
       child: widget.child,
     );
   }
@@ -59,8 +61,10 @@ class TileOverlay extends StatefulWidget {
       {super.key,
       required this.child,
       this.initialPosition = Alignment.topRight,
-      this.initialLayoutSize = Rect.zero});
+      this.initialLayoutSize = Rect.zero,
+      this.safeAreaPadding = EdgeInsets.zero});
   final Rect initialLayoutSize;
+  final EdgeInsets safeAreaPadding;
   final Alignment initialPosition;
   final Widget child;
   @override
@@ -93,7 +97,8 @@ class _TileOverlayState extends State<TileOverlay> {
         break;
     }
 
-    offset = getNearestPoint(offset, Offset.zero, widget.initialLayoutSize);
+    offset = getNearestPoint(
+        offset, Offset.zero, widget.initialLayoutSize, widget.safeAreaPadding);
 
     SchedulerBinding.instance.addPostFrameCallback(postFrameCallback);
   }
@@ -102,13 +107,21 @@ class _TileOverlayState extends State<TileOverlay> {
     updatePoint(offset);
   }
 
-  Offset getNearestPoint(Offset currentPos, Offset size, Rect bounds) {
+  Offset getNearestPoint(
+      Offset currentPos, Offset size, Rect bounds, EdgeInsets safeAreaPadding) {
     var p = 10.0;
+
+    var rect = Rect.fromLTRB(
+        bounds.left + p + safeAreaPadding.left,
+        bounds.top + p + safeAreaPadding.top,
+        bounds.right - p - size.dx - safeAreaPadding.right,
+        bounds.bottom - p - size.dy - safeAreaPadding.bottom);
+
     var points = [
-      Offset(bounds.left + p, bounds.top + p),
-      Offset(bounds.right - p - size.dx, bounds.top + p),
-      Offset(bounds.left + p, bounds.bottom - p - size.dy),
-      Offset(bounds.right - p - size.dx, bounds.bottom - p - size.dy)
+      Offset(rect.left, rect.top),
+      Offset(rect.right, rect.top),
+      Offset(rect.left, rect.bottom),
+      Offset(rect.right, rect.bottom)
     ];
 
     var minDistance = 9999999999.0;
@@ -135,7 +148,8 @@ class _TileOverlayState extends State<TileOverlay> {
     var point = getNearestPoint(
         currentPoint,
         Offset(childSize.width, childSize.height),
-        Rect.fromLTWH(0, 0, size.width, size.height));
+        Rect.fromLTWH(0, 0, size.width, size.height),
+        widget.safeAreaPadding);
 
     if ((point - offset).distance > 1) {
       setState(() {
