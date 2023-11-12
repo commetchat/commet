@@ -179,6 +179,7 @@ class _RoomListState extends State<RoomList>
           iconColor: getIconColor(context, i),
           textColor: getTextColor(context, i),
           highlighted: _selectedIndex == i,
+          isDm: room.isDirectMessage,
           onTap: () {
             widget.onRoomSelected?.call(i);
             setState(() {
@@ -197,6 +198,7 @@ class _RoomListState extends State<RoomList>
     Color? iconColor,
     Color? textColor,
     bool highlighted = false,
+    bool isDm = false,
     void Function()? onTap,
   }) {
     return SizeTransition(
@@ -207,7 +209,7 @@ class _RoomListState extends State<RoomList>
           height: 37,
           child: TextButton(room.displayName,
               highlighted: highlighted,
-              icon: m.Icons.tag,
+              icon: isDm ? m.Icons.alternate_email_rounded : m.Icons.tag,
               iconColor: iconColor,
               textColor: textColor,
               footer: room.displayHighlightedNotificationCount > 0
