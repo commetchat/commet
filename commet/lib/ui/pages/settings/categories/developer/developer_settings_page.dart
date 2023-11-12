@@ -1,4 +1,5 @@
 import 'package:commet/main.dart';
+import 'package:commet/utils/background_tasks/mock_tasks.dart';
 import 'package:commet/utils/notification/notification_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
@@ -16,8 +17,12 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Column(
-        children:
-            [performance(), windowSize(), notificationTests()].map<Widget>((e) {
+        children: [
+      performance(),
+      windowSize(),
+      notificationTests(),
+      backgroundTasks()
+    ].map<Widget>((e) {
       return Padding(
         padding: const EdgeInsets.fromLTRB(0, 3, 0, 3),
         child: ClipRRect(borderRadius: BorderRadius.circular(10), child: e),
@@ -123,6 +128,26 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
                 content: "Message received!",
                 image: clientManager?.clients.first.self?.avatar)),
           ),
+        ])
+      ],
+    );
+  }
+
+  Widget backgroundTasks() {
+    return ExpansionTile(
+      title: const tiamat.Text.labelEmphasised("Background Tasks"),
+      backgroundColor: Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+      collapsedBackgroundColor:
+          Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+      children: [
+        Wrap(spacing: 8, runSpacing: 8, children: [
+          tiamat.Button(
+              text: "With progress",
+              onTap: () => backgroundTaskManager
+                  .addTask(FakeBackgroundTaskWithProgress())),
+          tiamat.Button(
+              text: "Indeterminate",
+              onTap: () => backgroundTaskManager.addTask(FakeBackgroundTask())),
         ])
       ],
     );
