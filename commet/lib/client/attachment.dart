@@ -42,6 +42,7 @@ class PendingFileAttachment {
 
 class ImageAttachment implements Attachment {
   final ImageProvider image;
+  final FileProvider file;
   final double? width;
   final double? height;
   @override
@@ -50,7 +51,8 @@ class ImageAttachment implements Attachment {
   double get aspectRatio =>
       (width != null && height != null) ? (width! / height!) : 1;
 
-  ImageAttachment(this.image, {required this.name, this.width, this.height});
+  ImageAttachment(this.image, this.file,
+      {required this.name, this.width, this.height});
 }
 
 class VideoAttachment implements Attachment {
