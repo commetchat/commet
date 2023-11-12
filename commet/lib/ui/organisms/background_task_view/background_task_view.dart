@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:commet/main.dart';
 import 'package:commet/utils/background_tasks/background_task_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
