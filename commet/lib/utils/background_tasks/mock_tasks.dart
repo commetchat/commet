@@ -57,8 +57,9 @@ class FakeBackgroundTaskWithProgress implements BackgroundTaskWithProgress {
   void progress() {
     Timer(const Duration(seconds: 1), () {
       doProgress();
-
-      progress();
+      if (!isComplete) {
+        progress();
+      }
     });
   }
 
