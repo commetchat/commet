@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:commet/client/attachment.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/atoms/lightbox.dart';
@@ -170,14 +168,10 @@ class _MessageAttachmentState extends State<MessageAttachment> {
                 size: 20,
                 icon: Icons.download,
                 onPressed: () async {
-                  print("Shit was pressed!");
                   if (widget.attachment is FileAttachment) {
                     var attachment = widget.attachment as FileAttachment;
                     var result = await FilePicker.platform
                         .saveFile(fileName: widget.attachment.name);
-
-                    print(result);
-
                     if (result != null) {
                       attachment.provider.save(result);
                     }
