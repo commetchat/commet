@@ -1,12 +1,16 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/notification/notifier.dart';
 import 'package:desktop_notifications/desktop_notifications.dart';
+import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:win_toast/win_toast.dart';
 import 'package:window_manager/window_manager.dart';
 import '../notification_manager.dart';
+import 'package:path/path.dart' as p;
 
 class WindowsNotifier extends Notifier {
   @override
@@ -15,10 +19,21 @@ class WindowsNotifier extends Notifier {
   static NotificationsClient client = NotificationsClient();
 
   static Future<void> init() async {
+    final dir = await getTemporaryDirectory();
+    var file = p.join(dir.path, "chat.commet.app", "commet_app_icon.png");
+
+    ByteData data = await rootBundle
+        .load("assets/images/app_icon/app_icon_transparent_cropped.png");
+
+    var imageFile = File(file);
+    imageFile.createSync(recursive: true);
+    imageFile.writeAsBytes(data.buffer.asInt8List());
+    var uri = Uri.file(file, windows: true);
+
     await WinToast.instance().initialize(
       aumId: 'chat.commet.app.windows-a33bc9ba',
       displayName: 'Commet',
-      iconPath: '',
+      iconPath: uri.toString(),
       clsid: '7685C041-9D17-4112-8FC4-386743A3D53E',
     );
 

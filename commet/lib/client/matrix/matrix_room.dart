@@ -244,7 +244,14 @@ class MatrixRoom extends Room {
     if (clientManager?.clients
             .any((element) => element.self?.identifier == event.senderId) ==
         true) {
-      return true;
+      return false;
+    }
+
+    var timeDiff = DateTime.now().difference(event.originServerTs);
+
+    // dont notify if we are receiving an old message
+    if (timeDiff.inMinutes > 10) {
+      return false;
     }
 
     if (pushRule == PushRule.dontNotify) {
