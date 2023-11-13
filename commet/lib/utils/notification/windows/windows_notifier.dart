@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/event_bus.dart';
@@ -29,9 +28,7 @@ class WindowsNotifier extends Notifier {
     var imageFile = File(file);
     imageFile.createSync(recursive: true);
     imageFile.writeAsBytes(data.buffer.asInt8List());
-    print(file);
     var uri = Uri.file(file, windows: true);
-    print(uri.toString());
 
     await WinToast.instance().initialize(
       aumId: 'chat.commet.app.windows-a33bc9ba',
