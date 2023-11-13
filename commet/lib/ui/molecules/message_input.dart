@@ -323,6 +323,7 @@ class MessageInputState extends State<MessageInput> {
                           ClipRRect(
                             borderRadius: BorderRadius.circular(4),
                             child: Material(
+                              color: Colors.transparent,
                               child: InkWell(
                                 onTap: widget.onReadReceiptsClicked,
                                 child: Padding(
