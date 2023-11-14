@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:commet/utils/notification/android/android_notifier.dart';
 import 'package:commet/utils/notification/linux/linux_notifier.dart';
 import 'package:commet/utils/notification/notification_content.dart';
 import 'package:commet/utils/notification/notification_modifiers.dart';
@@ -11,7 +12,9 @@ class NotificationManager {
       ? LinuxNotifier()
       : Platform.isWindows
           ? WindowsNotifier()
-          : null;
+          : Platform.isAndroid
+              ? AndroidNotifier()
+              : null;
 
   final List<NotificationModifier> _modifiers = List.empty(growable: true);
 
