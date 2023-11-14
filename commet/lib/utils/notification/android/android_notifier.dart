@@ -115,6 +115,7 @@ class AndroidNotifier implements Notifier {
         groupAlertBehavior: GroupAlertBehavior.children,
         styleInformation: style,
         shortcutId: content.roomId,
+        bubbleActivity: "chat.commet.commetapp.BubbleActivity",
         color: const Color.fromARGB(0xff, 0x53, 0x4c, 0xdd));
 
     await flutterLocalNotificationsPlugin?.show(

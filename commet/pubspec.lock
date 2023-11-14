@@ -448,11 +448,10 @@ packages:
   flutter_local_notifications:
     dependency: "direct main"
     description:
-      name: flutter_local_notifications
-      sha256: "3002092e5b8ce2f86c3361422e52e6db6776c23ee21e0b2f71b892bf4259ef04"
-      url: "https://pub.dev"
-    source: hosted
-    version: "15.1.1"
+      path: "../../flutter_local_notifications/flutter_local_notifications"
+      relative: true
+    source: path
+    version: "16.1.0"
   flutter_local_notifications_linux:
     dependency: transitive
     description:

@@ -37,6 +37,9 @@ ShortcutsManager shortcutsManager = ShortcutsManager();
 Diagnostics diagnostics = Diagnostics();
 ClientManager? clientManager;
 
+@pragma('vm:entry-point')
+void bubble() => main();
+
 void main() async {
   String? initialRoomId;
   String? initialClientId;
