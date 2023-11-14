@@ -1,6 +1,5 @@
 import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/notification/notification_content.dart';
-import 'package:commet/utils/notification/notification_manager.dart';
 import 'package:intl/intl.dart';
 
 abstract class NotificationModifier {
@@ -39,7 +38,6 @@ class NotificationModifierDontNotifyActiveRoom implements NotificationModifier {
   NotificationModifierDontNotifyActiveRoom() {
     EventBus.onRoomOpened.stream.listen((event) {
       roomId = event.identifier;
-      print("Current room id: $roomId");
     });
   }
 

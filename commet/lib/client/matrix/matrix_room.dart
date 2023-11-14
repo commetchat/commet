@@ -17,7 +17,6 @@ import 'package:commet/main.dart';
 import 'package:commet/utils/image_utils.dart';
 import 'package:commet/utils/mime.dart';
 import 'package:commet/utils/notification/notification_content.dart';
-import 'package:commet/utils/notification/notification_manager.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:flutter/material.dart';
 import 'package:html_unescape/html_unescape.dart';

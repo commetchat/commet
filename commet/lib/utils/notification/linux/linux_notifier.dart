@@ -10,7 +10,6 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:window_manager/window_manager.dart';
 import 'dart:ui' as ui;
 import '../../event_bus.dart';
-import '../notification_manager.dart';
 
 class LinuxNotifier extends Notifier {
   @override
