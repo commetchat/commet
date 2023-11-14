@@ -12,13 +12,14 @@ import 'package:win_toast/win_toast.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:path/path.dart' as p;
 
-class WindowsNotifier extends Notifier {
+class WindowsNotifier implements Notifier {
   @override
   bool get hasPermission => true;
 
   static NotificationsClient client = NotificationsClient();
 
-  static Future<void> init() async {
+  @override
+  Future<void> init() async {
     final dir = await getTemporaryDirectory();
     var file = p.join(dir.path, "chat.commet.app", "commet_app_icon.png");
 

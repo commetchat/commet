@@ -15,8 +15,9 @@ class NotificationManager {
 
   final List<NotificationModifier> _modifiers = List.empty(growable: true);
 
-  void init() {
+  Future<void> init() async {
     addModifier(NotificationModifierDontNotifyActiveRoom());
+    await _notifier?.init();
   }
 
   void addModifier(NotificationModifier modifier) {
@@ -28,13 +29,21 @@ class NotificationManager {
   }
 
   Future<void> notify(NotificationContent notification) async {
+    if (_notifier == null) return;
+
     NotificationContent? content = notification;
+
+    if (_notifier!.hasPermission == false) {
+      if (await _notifier!.requestPermission() == false) {
+        return;
+      }
+    }
 
     for (var modifier in _modifiers) {
       content = modifier.process(content!);
       if (content == null) return;
     }
 
-    await _notifier?.notify(notification);
+    await _notifier!.notify(notification);
   }
 }

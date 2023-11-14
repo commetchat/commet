@@ -10,7 +10,6 @@ import 'package:commet/ui/pages/login/login_page.dart';
 import 'package:commet/ui/pages/main/main_page.dart';
 import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:commet/utils/notification/notification_manager.dart';
-import 'package:commet/utils/notification/notifier.dart';
 import 'package:commet/utils/scaled_app.dart';
 import 'package:commet/utils/shortcuts_manager.dart';
 import 'package:commet/utils/window_management.dart';
@@ -103,7 +102,7 @@ Future<ClientManager> initApp() async {
       () => fileCache.init().then((value) => fileCache.clean()),
     ),
     diagnostics.timeAsync("Loading default emoji", () => UnicodeEmojis.load()),
-    Notifier.init(),
+    notificationManager.init(),
     WindowManagement.init(),
     if (!BuildConfig.LINUX) Hive.initFlutter(dbPath),
   ]);

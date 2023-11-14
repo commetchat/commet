@@ -11,7 +11,7 @@ import 'package:window_manager/window_manager.dart';
 import 'dart:ui' as ui;
 import '../../event_bus.dart';
 
-class LinuxNotifier extends Notifier {
+class LinuxNotifier implements Notifier {
   @override
   bool get hasPermission => true;
 
@@ -32,7 +32,8 @@ class LinuxNotifier extends Notifier {
     windowManager.focus();
   }
 
-  static Future<void> init() async {
+  @override
+  Future<void> init() async {
     flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
     const LinuxInitializationSettings initializationSettingsLinux =
