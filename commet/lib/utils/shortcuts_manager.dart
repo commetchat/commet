@@ -34,7 +34,6 @@ class ShortcutsManager {
       Uint8List? bytes;
       if (avatar is LODImageProvider) {
         bytes = await avatar.loadThumbnail?.call();
-        print("using thumbnail for shortcut instead!");
       }
 
       if (bytes == null) {
@@ -49,7 +48,7 @@ class ShortcutsManager {
       }
 
       icon =
-          ShortcutMemoryIcon(jpegImage: bytes!.buffer.asUint8List()).toString();
+          ShortcutMemoryIcon(jpegImage: bytes.buffer.asUint8List()).toString();
       type = ShortcutIconAsset.memoryAsset;
     }
 
