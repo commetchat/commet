@@ -51,6 +51,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await preferences.init();
+  notificationManager.init();
   shortcutsManager.init();
 
   clientManager =

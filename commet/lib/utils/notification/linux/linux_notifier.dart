@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:commet/utils/image/lod_image.dart';
 import 'package:commet/utils/image_utils.dart';
+import 'package:commet/utils/notification/notification_content.dart';
 import 'package:commet/utils/notification/notifier.dart';
 import 'package:desktop_notifications/desktop_notifications.dart';
 import 'package:flutter/widgets.dart';
@@ -48,11 +49,21 @@ class LinuxNotifier extends Notifier {
   }
 
   @override
-  Future<void> notifyInternal(NotificationContent notification) async {
+  Future<void> notify(NotificationContent notification) async {
+    switch (notification.runtimeType) {
+      case MessageNotificationContent:
+        return displayMessageNotification(
+            notification as MessageNotificationContent);
+      default:
+    }
+  }
+
+  Future<void> displayMessageNotification(
+      MessageNotificationContent content) async {
     LinuxNotificationIcon? icon;
 
-    if (notification.image != null) {
-      var image = await determineImage(notification.image!);
+    if (content.senderImage != null) {
+      var image = await determineImage(content.senderImage!);
       var bytes = (await image.toByteData(format: ui.ImageByteFormat.rawRgba))
           ?.buffer
           .asUint8List();
@@ -72,9 +83,14 @@ class LinuxNotifier extends Notifier {
       category: LinuxNotificationCategory.imReceived,
     );
 
-    flutterLocalNotificationsPlugin?.show(0, notification.title,
-        notification.content, NotificationDetails(linux: details),
-        payload: notification.sentFrom?.identifier);
+    var title = "${content.senderName} (${content.roomName})";
+    if (content.isDirectMessage) {
+      title = content.senderName;
+    }
+
+    flutterLocalNotificationsPlugin?.show(
+        0, title, content.content, NotificationDetails(linux: details),
+        payload: content.roomId);
   }
 
   Future<ui.Image> determineImage(ImageProvider provider) async {

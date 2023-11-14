@@ -50,7 +50,6 @@ class MainPageState extends State<MainPage> {
   @override
   void initState() {
     super.initState();
-    notificationManager.addModifier(dontNotifySelectedRooms);
 
     Client? client;
     if (widget.initialClientId != null) {
@@ -75,22 +74,7 @@ class MainPageState extends State<MainPage> {
 
   @override
   void dispose() {
-    notificationManager.removeModifier(dontNotifySelectedRooms);
     super.dispose();
-  }
-
-  Future<NotificationContent?> dontNotifySelectedRooms(
-      NotificationContent content) async {
-    if (BuildConfig.DESKTOP && !await windowManager.isFocused()) {
-      return content;
-    }
-
-    if (content.sentFrom != null &&
-        content.sentFrom!.identifier == currentRoom?.identifier) {
-      return null;
-    }
-
-    return content;
   }
 
   Peer getCurrentUser() {

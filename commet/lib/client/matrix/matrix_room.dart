@@ -16,6 +16,7 @@ import 'package:commet/client/permissions.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/image_utils.dart';
 import 'package:commet/utils/mime.dart';
+import 'package:commet/utils/notification/notification_content.dart';
 import 'package:commet/utils/notification/notification_manager.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:flutter/material.dart';
@@ -226,16 +227,16 @@ class MatrixRoom extends Room {
       await sender.loading;
     }
 
-    notificationManager.notify(NotificationContent(
-      isDirectMessage
-          ? sender.displayName
-          : "${sender.displayName} ($displayName)",
-      NotificationType.messageReceived,
-      content: event.body,
-      sentFrom: this,
-      event: event,
-      image: sender.avatar,
-    ));
+    var notification = MessageNotificationContent(
+        senderName: sender.displayName,
+        roomName: displayName,
+        content: event.body ?? "Received a message",
+        eventId: event.eventId,
+        roomId: identifier,
+        clientId: client.identifier,
+        isDirectMessage: isDirectMessage);
+
+    notificationManager.notify(notification);
   }
 
   @override

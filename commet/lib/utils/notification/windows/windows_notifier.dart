@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/event_bus.dart';
+import 'package:commet/utils/notification/notification_content.dart';
 import 'package:commet/utils/notification/notifier.dart';
 import 'package:desktop_notifications/desktop_notifications.dart';
 import 'package:flutter/services.dart';
@@ -83,12 +84,22 @@ class WindowsNotifier extends Notifier {
   }
 
   @override
-  Future<void> notifyInternal(NotificationContent notification) async {
+  Future<void> notify(NotificationContent notification) async {
+    switch (notification.runtimeType) {
+      case MessageNotificationContent:
+        return displayMessageNotification(
+            notification as MessageNotificationContent);
+      default:
+    }
+  }
+
+  Future<void> displayMessageNotification(
+      MessageNotificationContent content) async {
     String? avatarFilePath;
 
-    if (notification.image is MatrixMxcImage) {
+    if (content.senderImage is MatrixMxcImage) {
       var id = MatrixMxcImage.getThumbnailIdentifier(
-          (notification.image as MatrixMxcImage).identifier);
+          (content.senderImage as MatrixMxcImage).identifier);
       if (await fileCache.hasFile(id)) {
         avatarFilePath = (await fileCache.getFile(id)).toString();
       }
@@ -97,19 +108,24 @@ class WindowsNotifier extends Notifier {
     // ignore: prefer_function_declarations_over_variables
     var f = (String string) => Uri.encodeComponent(string);
 
+    var title = "${content.senderName} (${content.roomName})";
+    if (content.isDirectMessage) {
+      title = content.senderName;
+    }
+
     var xml = """
 <?xml version="1.0" encoding="UTF-8"?>
-<toast launch="action=open_room&amp;client_id=${f(notification.sentFrom!.client.identifier)}&amp;room_id=${f(notification.sentFrom!.identifier)}&amp;event_id=${f(notification.event!.eventId)}">
+<toast launch="action=open_room&amp;client_id=${f(content.clientId)}&amp;room_id=${f(content.roomId)}&amp;event_id=${f(content.eventId)}">
    <visual>
       <binding template="ToastGeneric">
-         <text>${notification.title}</text>
-         <text>${notification.content}</text>
+         <text>$title</text>
+         <text>${content.content}</text>
          ${avatarFilePath != null ? "<image placement='appLogoOverride' src='$avatarFilePath' hint-crop='circle'/>" : ""}
       </binding>
    </visual>
    <actions>
       <input id="reply" type="text" placeHolderContent="Send a reply..." />
-      <action content="Reply" activationType="background" arguments="action=reply&amp;client_id=${f(notification.sentFrom!.client.identifier)}&amp;room_id=${f(notification.sentFrom!.identifier)}&amp;event_id=${f(notification.event!.eventId)}" />
+      <action content="Reply" activationType="background" arguments="action=reply&amp;client_id=${f(content.clientId)}&amp;room_id=${f(content.roomId)}&amp;event_id=${f(content.eventId)}" />
    </actions>
 </toast>
   """;

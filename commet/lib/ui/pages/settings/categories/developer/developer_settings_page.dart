@@ -1,4 +1,5 @@
 import 'package:commet/main.dart';
+import 'package:commet/utils/notification/notification_content.dart';
 import 'package:commet/utils/notification/notification_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
@@ -118,13 +119,22 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
         Wrap(spacing: 8, runSpacing: 8, children: [
           tiamat.Button(
             text: "Message Notification",
-            onTap: () => notificationManager.notify(NotificationContent(
-                clientManager!.rooms.first.lastEvent!.senderId,
-                NotificationType.messageReceived,
-                content: clientManager!.rooms.first.lastEvent!.body!,
-                sentFrom: clientManager?.rooms.first,
-                event: clientManager?.rooms.first.lastEvent,
-                image: clientManager?.clients.first.self?.avatar)),
+            onTap: () async {
+              var client = clientManager!.clients.first;
+              var room = client.rooms.first;
+              var user = client.self!;
+              notificationManager.notify(MessageNotificationContent(
+                senderName: user.displayName,
+                senderImage: user.avatar,
+                roomName: room.displayName,
+                roomId: room.identifier,
+                roomImage: await room.getShortcutImage(),
+                content: "Test Message!",
+                clientId: client.identifier,
+                eventId: "fake_event_id",
+                isDirectMessage: true,
+              ));
+            },
           ),
         ])
       ],
