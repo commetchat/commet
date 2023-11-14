@@ -14,8 +14,11 @@ import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
 
 class MainPage extends StatefulWidget {
-  const MainPage(this.clientManager, {super.key});
+  const MainPage(this.clientManager,
+      {super.key, this.initialClientId, this.initialRoom});
   final ClientManager clientManager;
+  final String? initialRoom;
+  final String? initialClientId;
 
   @override
   State<MainPage> createState() => MainPageState();
@@ -48,6 +51,24 @@ class MainPageState extends State<MainPage> {
   void initState() {
     super.initState();
     notificationManager.addModifier(dontNotifySelectedRooms);
+
+    Client? client;
+    if (widget.initialClientId != null) {
+      client = clientManager.getClient(widget.initialClientId!);
+    }
+
+    if (client == null && widget.initialRoom != null) {
+      client = clientManager.clients
+          .where((element) => element.getRoom(widget.initialRoom!) != null)
+          .firstOrNull;
+    }
+
+    if (client != null && widget.initialRoom != null) {
+      var room = client.getRoom(widget.initialRoom!);
+      if (room != null) {
+        selectRoom(room);
+      }
+    }
 
     EventBus.openRoom.stream.listen(onOpenRoomSignal);
   }

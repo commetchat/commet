@@ -126,6 +126,8 @@ abstract class Room {
 
   T? getComponent<T extends RoomComponent>();
 
+  Future<ImageProvider?> getShortcutImage();
+
   @override
   bool operator ==(Object other) {
     if (other is! Room) return false;

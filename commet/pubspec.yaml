@@ -69,6 +69,10 @@ dependencies:
   flutter_html:
     git:
       url: https://github.com/commetchat/flutter_html.git
+  flutter_shortcuts:
+    git:
+      url: https://github.com/commetchat/flutter_shortcuts.git
+  receive_intent: ^0.2.4
 
 dev_dependencies:
   build_runner:

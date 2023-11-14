@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:commet/cache/file_cache.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
@@ -10,6 +12,7 @@ import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:commet/utils/notification/notification_manager.dart';
 import 'package:commet/utils/notification/notifier.dart';
 import 'package:commet/utils/scaled_app.dart';
+import 'package:commet/utils/shortcuts_manager.dart';
 import 'package:commet/utils/window_management.dart';
 
 import 'package:flutter/material.dart';
@@ -17,6 +20,7 @@ import 'package:hive_flutter/adapters.dart';
 import 'package:media_kit/media_kit.dart';
 
 import 'package:provider/provider.dart';
+import 'package:receive_intent/receive_intent.dart';
 import 'package:tiamat/config/style/theme_changer.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:tiamat/config/style/theme_dark.dart';
@@ -30,10 +34,14 @@ final GlobalKey<NavigatorState> navigator = GlobalKey();
 FileCacheInstance fileCache = FileCacheInstance();
 Preferences preferences = Preferences();
 NotificationManager notificationManager = NotificationManager();
+ShortcutsManager shortcutsManager = ShortcutsManager();
 Diagnostics diagnostics = Diagnostics();
 ClientManager? clientManager;
 
 void main() async {
+  String? initialRoomId;
+  String? initialClientId;
+
   ScaledWidgetsFlutterBinding.ensureInitialized(
     scaleFactor: (deviceSize) {
       return 1;
@@ -54,9 +62,25 @@ void main() async {
     return scale;
   };
 
+  if (Platform.isAndroid) {
+    var intent = await ReceiveIntent.getInitialIntent();
+    if (intent?.extra?.containsKey("flutter_shortcuts") == true) {
+      var uri = Uri.parse(intent!.extra!["flutter_shortcuts"]);
+      switch (uri.authority) {
+        case "open_room":
+          initialRoomId = uri.queryParameters["room_id"];
+          initialClientId = uri.queryParameters["client_id"];
+          break;
+        default:
+      }
+    }
+  }
+
   runApp(App(
     clientManager: clientManager!,
     initialTheme: theme,
+    initialClientId: initialClientId,
+    initialRoom: initialRoomId,
   ));
 }
 
@@ -102,10 +126,15 @@ class App extends StatelessWidget {
   const App(
       {Key? key,
       required this.clientManager,
-      this.initialTheme = AppTheme.dark})
+      this.initialTheme = AppTheme.dark,
+      this.initialRoom,
+      this.initialClientId})
       : super(key: key);
   final AppTheme initialTheme;
   final ClientManager clientManager;
+
+  final String? initialRoom;
+  final String? initialClientId;
 
   @override
   Widget build(BuildContext context) {
@@ -128,6 +157,8 @@ class App extends StatelessWidget {
             ),
             home: AppView(
               clientManager: clientManager,
+              initialClientId: initialClientId,
+              initialRoom: initialRoom,
             ),
           );
         });
@@ -135,8 +166,14 @@ class App extends StatelessWidget {
 }
 
 class AppView extends StatefulWidget {
-  const AppView({required this.clientManager, super.key});
+  const AppView(
+      {required this.clientManager,
+      super.key,
+      this.initialClientId,
+      this.initialRoom});
   final ClientManager clientManager;
+  final String? initialRoom;
+  final String? initialClientId;
 
   @override
   State<AppView> createState() => _AppViewState();
@@ -146,7 +183,11 @@ class _AppViewState extends State<AppView> {
   @override
   Widget build(BuildContext context) {
     return widget.clientManager.isLoggedIn()
-        ? MainPage(widget.clientManager)
+        ? MainPage(
+            widget.clientManager,
+            initialClientId: widget.initialClientId,
+            initialRoom: widget.initialRoom,
+          )
         : LoginPage(onSuccess: (_) {
             Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(builder: (_) => MainPage(widget.clientManager)),

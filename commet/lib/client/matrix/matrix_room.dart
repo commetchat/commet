@@ -440,4 +440,14 @@ class MatrixRoom extends Room {
     await _timeline!.initTimeline();
     return _timeline!;
   }
+
+  @override
+  Future<ImageProvider?> getShortcutImage() async {
+    if (avatar != null) return avatar;
+
+    return client.spaces
+        .where((space) => space.containsRoom(identifier))
+        .firstOrNull
+        ?.avatar;
+  }
 }
