@@ -51,6 +51,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await preferences.init();
+  shortcutsManager.init();
 
   clientManager =
       await diagnostics.timeAsync("App initialization", () => initApp());

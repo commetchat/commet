@@ -147,6 +147,8 @@ class MainPageState extends State<MainPage> {
       _previousRoom = currentRoom;
       _currentRoom = room;
     });
+
+    EventBus.onRoomOpened.add(room);
   }
 
   void clearRoomSelection() {
