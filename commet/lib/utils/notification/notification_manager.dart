@@ -31,7 +31,8 @@ class NotificationManager {
     _modifiers.remove(modifier);
   }
 
-  Future<void> notify(NotificationContent notification) async {
+  Future<void> notify(NotificationContent notification,
+      {bool bypassModifiers = false}) async {
     if (_notifier == null) return;
 
     NotificationContent? content = notification;
@@ -42,9 +43,11 @@ class NotificationManager {
       }
     }
 
-    for (var modifier in _modifiers) {
-      content = modifier.process(content!);
-      if (content == null) return;
+    if (!bypassModifiers) {
+      for (var modifier in _modifiers) {
+        content = modifier.process(content!);
+        if (content == null) return;
+      }
     }
 
     await _notifier!.notify(notification);

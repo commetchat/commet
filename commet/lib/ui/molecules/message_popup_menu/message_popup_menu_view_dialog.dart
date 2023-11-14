@@ -1,8 +1,10 @@
 import 'package:commet/client/timeline.dart';
+import 'package:commet/main.dart';
 import 'package:commet/ui/molecules/emoji_picker.dart';
 import 'package:commet/ui/molecules/message_popup_menu/message_popup_menu.dart';
 import 'package:commet/ui/molecules/timeline_event.dart';
 import 'package:commet/utils/common_strings.dart';
+import 'package:commet/utils/notification/notification_content.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
@@ -107,6 +109,33 @@ class MessagePopupMenuViewDialog extends StatelessWidget {
                 },
               ),
             ),
+            if (preferences.developerMode)
+              SizedBox(
+                height: 50,
+                child: tiamat.TextButton(
+                  "Send Notification",
+                  icon: Icons.notification_add,
+                  onTap: () async {
+                    var room = state.timeline.room;
+                    var user = room.client.getPeer(state.event.senderId);
+                    await user.loading;
+
+                    var content = MessageNotificationContent(
+                      senderName: user.displayName,
+                      senderImage: user.avatar,
+                      roomName: room.displayName,
+                      roomId: room.identifier,
+                      roomImage: await room.getShortcutImage(),
+                      content: event.body ?? "Sent a message",
+                      clientId: room.client.identifier,
+                      eventId: event.eventId,
+                      isDirectMessage: room.isDirectMessage,
+                    );
+
+                    notificationManager.notify(content, bypassModifiers: true);
+                  },
+                ),
+              ),
           ],
         ),
       ),

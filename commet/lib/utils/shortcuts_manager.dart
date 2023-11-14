@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:commet/client/room.dart';
 import 'package:commet/utils/event_bus.dart';
+import 'package:commet/utils/image/lod_image.dart';
 import 'package:commet/utils/image_utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_shortcuts/flutter_shortcuts.dart';
@@ -28,9 +29,25 @@ class ShortcutsManager {
     ShortcutIconAsset type = ShortcutIconAsset.flutterAsset;
 
     var avatar = await room.getShortcutImage();
+
     if (avatar != null) {
-      var image = await ImageUtils.imageProviderToImage(avatar);
-      var bytes = await image.toByteData(format: ImageByteFormat.png);
+      Uint8List? bytes;
+      if (avatar is LODImageProvider) {
+        bytes = await avatar.loadThumbnail?.call();
+        print("using thumbnail for shortcut instead!");
+      }
+
+      if (bytes == null) {
+        var image = await ImageUtils.imageProviderToImage(avatar);
+        bytes = (await image.toByteData(format: ImageByteFormat.png))
+            ?.buffer
+            .asUint8List();
+      }
+
+      if (bytes == null) {
+        return;
+      }
+
       icon =
           ShortcutMemoryIcon(jpegImage: bytes!.buffer.asUint8List()).toString();
       type = ShortcutIconAsset.memoryAsset;

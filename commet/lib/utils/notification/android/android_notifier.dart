@@ -1,10 +1,10 @@
-import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:commet/main.dart';
 import 'package:commet/utils/image_utils.dart';
 import 'package:commet/utils/notification/notification_content.dart';
 import 'package:commet/utils/notification/notifier.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
@@ -13,6 +13,8 @@ class AndroidNotifier implements Notifier {
   bool get hasPermission => true;
 
   FlutterLocalNotificationsPlugin? flutterLocalNotificationsPlugin;
+
+  Map<String, List<Message>> previousMessages = {};
 
   @override
   Future<void> init() async {
@@ -49,11 +51,13 @@ class AndroidNotifier implements Notifier {
     List<dynamic> result = await Future.wait([
       getImageBytes(content.senderImage),
       getImageBytes(content.roomImage),
+      flutterLocalNotificationsPlugin!.getActiveNotifications(),
       shortcutsManager.createShortcutForRoom(room),
     ]);
 
     Uint8List? userAvatarBytes = result[0];
     Uint8List? roomAvatarBytes = result[1];
+    List<ActiveNotification> activeNotifications = result[2];
 
     var person = Person(
         name: content.senderName,
@@ -63,10 +67,40 @@ class AndroidNotifier implements Notifier {
             ? ByteArrayAndroidIcon(userAvatarBytes)
             : null);
 
+    var message = Message(
+      content.content,
+      DateTime.now(),
+      person,
+    );
+    var keys = previousMessages.keys.toList();
+    for (var key in keys) {
+      if (!activeNotifications.any((element) => element.groupKey == key)) {
+        previousMessages.remove(key);
+      }
+    }
+
+    if (!previousMessages.containsKey(content.roomId)) {
+      previousMessages[content.roomId] = List.empty(growable: true);
+    }
+
+    previousMessages[content.roomId]!.add(message);
+
+    int id = 0;
+    for (var active in activeNotifications) {
+      if (active.groupKey == content.roomId) {
+        id = active.id!;
+        break;
+      }
+
+      if (active.id == id && active.groupKey != content.roomId) {
+        id += 1;
+      }
+    }
+
     var style = MessagingStyleInformation(person,
         conversationTitle: content.isDirectMessage ? content.roomName : null,
         groupConversation: !content.isDirectMessage,
-        messages: [Message(content.content, DateTime.now(), person)]);
+        messages: previousMessages[content.roomId]!);
 
     var details = AndroidNotificationDetails(
         "messages", "Notifies when a message is received",
@@ -84,7 +118,7 @@ class AndroidNotifier implements Notifier {
         color: const Color.fromARGB(0xff, 0x53, 0x4c, 0xdd));
 
     await flutterLocalNotificationsPlugin?.show(
-        0, null, content.content, NotificationDetails(android: details));
+        id, null, content.content, NotificationDetails(android: details));
   }
 
   Future<Uint8List?> getImageBytes(ImageProvider? provider) async {
@@ -101,7 +135,15 @@ class AndroidNotifier implements Notifier {
     return true;
   }
 
-  static void onBackgroundResponse(NotificationResponse details) {}
+  static void onBackgroundResponse(NotificationResponse details) {
+    if (kDebugMode) {
+      print("Got a background notification response: $details");
+    }
+  }
 
-  static void onResponse(NotificationResponse details) {}
+  static void onResponse(NotificationResponse details) {
+    if (kDebugMode) {
+      print("Got a notification response: $details");
+    }
+  }
 }
