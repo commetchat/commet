@@ -13,6 +13,7 @@ import 'package:commet/client/matrix/matrix_room_permissions.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
 import 'package:commet/client/matrix/matrix_timeline_event.dart';
 import 'package:commet/client/permissions.dart';
+import 'package:commet/config/build_config.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/image_utils.dart';
 import 'package:commet/utils/mime.dart';
@@ -220,6 +221,11 @@ class MatrixRoom extends Room {
       return;
     }
 
+    // let push notifications handle it
+    if (BuildConfig.ANDROID) {
+      return;
+    }
+
     var sender = client.getPeer(event.senderId);
 
     if (sender.loading != null) {
@@ -235,7 +241,7 @@ class MatrixRoom extends Room {
         clientId: client.identifier,
         isDirectMessage: isDirectMessage);
 
-    // notificationManager.notify(notification);
+    notificationManager.notify(notification);
   }
 
   @override
