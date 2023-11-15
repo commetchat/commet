@@ -76,7 +76,8 @@ dependencies:
   flutter_shortcuts:
     git:
       url: https://github.com/commetchat/flutter_shortcuts.git
-  receive_intent: ^0.2.4
+  receive_intent:
+    path: ../../receive_intent
   sqflite: ^2.3.0
   sqflite_common_ffi: ^2.3.0+3
 

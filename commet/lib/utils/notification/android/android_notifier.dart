@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:commet/main.dart';
+import 'package:commet/utils/custom_uri.dart';
 import 'package:commet/utils/image_utils.dart';
 import 'package:commet/utils/notification/notification_content.dart';
 import 'package:commet/utils/notification/notifier.dart';
@@ -102,6 +103,8 @@ class AndroidNotifier implements Notifier {
         groupConversation: !content.isDirectMessage,
         messages: previousMessages[content.roomId]!);
 
+    f(String string) => Uri.encodeComponent(string);
+
     var details = AndroidNotificationDetails(
         "messages", "Notifies when a message is received",
         importance: Importance.high,
@@ -116,6 +119,9 @@ class AndroidNotifier implements Notifier {
         styleInformation: style,
         shortcutId: content.roomId,
         bubbleActivity: "chat.commet.commetapp.BubbleActivity",
+        bubbleExtra:
+            OpenRoomURI(roomId: content.roomId, clientId: content.clientId)
+                .toString(),
         color: const Color.fromARGB(0xff, 0x53, 0x4c, 0xdd));
 
     await flutterLocalNotificationsPlugin?.show(

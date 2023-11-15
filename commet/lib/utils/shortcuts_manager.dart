@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:commet/client/room.dart';
+import 'package:commet/utils/custom_uri.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/image/lod_image.dart';
 import 'package:commet/utils/image_utils.dart';
@@ -56,8 +57,9 @@ class ShortcutsManager {
 
     var item = ShortcutItem(
         id: room.identifier,
-        action:
-            "commet://open_room?room_id=${f(room.identifier)}&client_id=${room.client.identifier}",
+        action: OpenRoomURI(
+                roomId: room.identifier, clientId: room.client.identifier)
+            .toString(),
         shortLabel: room.displayName,
         icon: icon,
         shortcutIconAsset: type,

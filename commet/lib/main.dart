@@ -6,8 +6,10 @@ import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/preferences.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
+import 'package:commet/ui/pages/bubble/bubble_page.dart';
 import 'package:commet/ui/pages/login/login_page.dart';
 import 'package:commet/ui/pages/main/main_page.dart';
+import 'package:commet/utils/custom_uri.dart';
 import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:commet/utils/notification/notification_manager.dart';
 import 'package:commet/utils/scaled_app.dart';
@@ -40,25 +42,71 @@ Diagnostics diagnostics = Diagnostics();
 ClientManager? clientManager;
 
 @pragma('vm:entry-point')
-void bubble() {
-  main();
-}
+void bubble() async {
+  await initNecessary();
 
-void main() async {
   String? initialRoomId;
   String? initialClientId;
 
+  ReceiveIntent.receivedIntentStream.listen(
+    (event) {
+      print("Received an intent");
+      print(event);
+    },
+  );
+
+  var intent = await ReceiveIntent.getInitialIntent();
+  print("Bubble got intent:");
+  print(intent);
+  if (intent?.extra?.containsKey("bubbleExtra") == true) {
+    var uri = CustomURI.parse(intent!.extra!["bubbleExtra"]);
+    print(uri);
+    if (uri is OpenRoomURI) {
+      initialClientId = uri.clientId;
+      initialRoomId = uri.roomId;
+    }
+  }
+
+  print("Initial room: $initialRoomId");
+  print("initial client: $initialClientId");
+
+  var theme = preferences.theme;
+  var initialTheme =
+      theme == AppTheme.dark ? ThemeDark.theme : ThemeLight.theme;
+
+  runApp(MaterialApp(
+      title: 'Commet',
+      theme: initialTheme,
+      navigatorKey: navigator,
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      builder: (context, child) => Provider<ClientManager>(
+            create: (context) => clientManager!,
+            child: child,
+          ),
+      home: BubblePage(
+        clientManager!,
+        initialClientId: initialClientId,
+        initialRoom: initialRoomId,
+      )));
+}
+
+Future<void> initNecessary() async {
   ScaledWidgetsFlutterBinding.ensureInitialized(
     scaleFactor: (deviceSize) {
       return 1;
     },
   );
-
   WidgetsFlutterBinding.ensureInitialized();
 
   await preferences.init();
+
   notificationManager.init();
   shortcutsManager.init();
+
   if (Platform.isAndroid) {
     databaseFactory = databaseFactorySqflitePlugin;
   } else {
@@ -68,6 +116,13 @@ void main() async {
 
   clientManager =
       await diagnostics.timeAsync("App initialization", () => initApp());
+}
+
+void main() async {
+  String? initialRoomId;
+  String? initialClientId;
+
+  await initNecessary();
 
   double scale = preferences.appScale;
   var theme = preferences.theme;
@@ -79,13 +134,10 @@ void main() async {
   if (Platform.isAndroid) {
     var intent = await ReceiveIntent.getInitialIntent();
     if (intent?.extra?.containsKey("flutter_shortcuts") == true) {
-      var uri = Uri.parse(intent!.extra!["flutter_shortcuts"]);
-      switch (uri.authority) {
-        case "open_room":
-          initialRoomId = uri.queryParameters["room_id"];
-          initialClientId = uri.queryParameters["client_id"];
-          break;
-        default:
+      var uri = CustomURI.parse(intent!.extra!["flutter_shortcuts"]);
+      if (uri is OpenRoomURI) {
+        initialClientId = uri.clientId;
+        initialRoomId = uri.roomId;
       }
     }
   }
