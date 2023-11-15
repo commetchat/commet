@@ -6,6 +6,7 @@ import 'package:commet/config/preferences.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
 import 'package:commet/ui/pages/login/login_page.dart';
 import 'package:commet/ui/pages/main/main_page.dart';
+import 'package:commet/utils/background_tasks/background_task_manager.dart';
 import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:commet/utils/notification/notification_manager.dart';
 import 'package:commet/utils/notification/notifier.dart';
@@ -30,6 +31,7 @@ final GlobalKey<NavigatorState> navigator = GlobalKey();
 FileCacheInstance fileCache = FileCacheInstance();
 Preferences preferences = Preferences();
 NotificationManager notificationManager = NotificationManager();
+BackgroundTaskManager backgroundTaskManager = BackgroundTaskManager();
 Diagnostics diagnostics = Diagnostics();
 ClientManager? clientManager;
 

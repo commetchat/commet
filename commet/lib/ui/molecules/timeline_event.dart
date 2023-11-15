@@ -1,4 +1,5 @@
 import 'package:commet/config/build_config.dart';
+import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/generic_room_event.dart';
 import 'package:commet/ui/molecules/message.dart';
 import 'package:flutter/material.dart' as m;
@@ -229,7 +230,7 @@ class _TimelineEventState extends State<TimelineEventView> {
         break;
     }
 
-    if (BuildConfig.DEBUG) {
+    if (BuildConfig.DEBUG && preferences.developerMode) {
       return m.Padding(
         padding: const EdgeInsets.all(8.0),
         child: Placeholder(
