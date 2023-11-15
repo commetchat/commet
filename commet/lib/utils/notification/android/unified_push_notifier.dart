@@ -28,8 +28,8 @@ class UnifiedPushNotifier implements Notifier {
   }
 
   @override
-  Future<void> notify(NotificationContent notification) async {
-    notifier.notify(notification);
+  Future<void> notify(NotificationContent notification) {
+    return notifier.notify(notification);
   }
 
   @override

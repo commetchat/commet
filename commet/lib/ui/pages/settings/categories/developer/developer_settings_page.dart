@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:commet/main.dart';
+import 'package:commet/utils/notification/android/firebase_push_notifier.dart';
 import 'package:commet/utils/notification/notification_content.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
@@ -151,6 +152,13 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
               for (var client in clientManager!.clients) {
                 await client.registerPushNotifications();
               }
+            },
+          ),
+          tiamat.Button(
+            text: "Register Firebase Cloud Messaging",
+            onTap: () async {
+              var notifier = FirebasePushNotifier();
+              await notifier.init();
             },
           ),
         ])
