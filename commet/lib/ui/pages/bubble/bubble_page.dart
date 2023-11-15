@@ -47,7 +47,7 @@ class BubblePageState extends State<BubblePage> {
   @override
   Widget build(BuildContext context) {
     return currentRoom == null
-        ? Placeholder()
+        ? const Placeholder()
         : Tile(
             child: material.Scaffold(
               backgroundColor: material.Theme.of(context).colorScheme.surface,

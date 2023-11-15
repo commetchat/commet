@@ -103,8 +103,6 @@ class AndroidNotifier implements Notifier {
         groupConversation: !content.isDirectMessage,
         messages: previousMessages[content.roomId]!);
 
-    f(String string) => Uri.encodeComponent(string);
-
     var details = AndroidNotificationDetails(
         "messages", "Notifies when a message is received",
         importance: Importance.high,

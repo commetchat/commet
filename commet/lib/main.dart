@@ -48,27 +48,16 @@ void bubble() async {
   String? initialRoomId;
   String? initialClientId;
 
-  ReceiveIntent.receivedIntentStream.listen(
-    (event) {
-      print("Received an intent");
-      print(event);
-    },
-  );
-
   var intent = await ReceiveIntent.getInitialIntent();
-  print("Bubble got intent:");
-  print(intent);
+
   if (intent?.extra?.containsKey("bubbleExtra") == true) {
     var uri = CustomURI.parse(intent!.extra!["bubbleExtra"]);
-    print(uri);
+
     if (uri is OpenRoomURI) {
       initialClientId = uri.clientId;
       initialRoomId = uri.roomId;
     }
   }
-
-  print("Initial room: $initialRoomId");
-  print("initial client: $initialClientId");
 
   var theme = preferences.theme;
   var initialTheme =

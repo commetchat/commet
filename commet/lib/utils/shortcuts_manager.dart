@@ -53,8 +53,6 @@ class ShortcutsManager {
       type = ShortcutIconAsset.memoryAsset;
     }
 
-    f(String string) => Uri.encodeComponent(string);
-
     var item = ShortcutItem(
         id: room.identifier,
         action: OpenRoomURI(
