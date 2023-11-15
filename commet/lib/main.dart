@@ -20,6 +20,8 @@ import 'package:media_kit/media_kit.dart';
 
 import 'package:provider/provider.dart';
 import 'package:receive_intent/receive_intent.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:tiamat/config/style/theme_changer.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:tiamat/config/style/theme_dark.dart';
@@ -38,7 +40,9 @@ Diagnostics diagnostics = Diagnostics();
 ClientManager? clientManager;
 
 @pragma('vm:entry-point')
-void bubble() => main();
+void bubble() {
+  main();
+}
 
 void main() async {
   String? initialRoomId;
@@ -55,6 +59,12 @@ void main() async {
   await preferences.init();
   notificationManager.init();
   shortcutsManager.init();
+  if (Platform.isAndroid) {
+    databaseFactory = databaseFactorySqflitePlugin;
+  } else {
+    sqfliteFfiInit();
+    databaseFactory = databaseFactoryFfi;
+  }
 
   clientManager =
       await diagnostics.timeAsync("App initialization", () => initApp());
