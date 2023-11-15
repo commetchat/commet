@@ -81,6 +81,7 @@ dependencies:
   receive_intent: ^0.2.4
   sqflite: ^2.3.0
   sqflite_common_ffi: ^2.3.0+3
+  unifiedpush: ^5.0.1
 
 dev_dependencies:
   build_runner:

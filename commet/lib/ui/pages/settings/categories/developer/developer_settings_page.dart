@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:commet/main.dart';
 import 'package:commet/utils/notification/notification_content.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
+import 'package:unifiedpush/unifiedpush.dart';
 import 'package:window_manager/window_manager.dart';
 
 class DeveloperSettingsPage extends StatefulWidget {
@@ -135,6 +138,13 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
               ));
             },
           ),
+          if (Platform.isAndroid)
+            tiamat.Button(
+              text: "Register Unified Push",
+              onTap: () async {
+                UnifiedPush.registerAppWithDialog(context);
+              },
+            ),
         ])
       ],
     );

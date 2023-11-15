@@ -11,7 +11,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class AndroidNotifier implements Notifier {
   @override
-  bool get hasPermission => true;
+  bool hasPermission = false;
 
   FlutterLocalNotificationsPlugin? flutterLocalNotificationsPlugin;
 
@@ -28,6 +28,18 @@ class AndroidNotifier implements Notifier {
     await flutterLocalNotificationsPlugin?.initialize(initSettings,
         onDidReceiveBackgroundNotificationResponse: onBackgroundResponse,
         onDidReceiveNotificationResponse: onResponse);
+
+    if (!isHeadless) {
+      checkPermission();
+    }
+  }
+
+  Future<void> checkPermission() async {
+    var android = flutterLocalNotificationsPlugin!
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()!;
+
+    hasPermission = await android.requestNotificationsPermission() ?? false;
   }
 
   @override

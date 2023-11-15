@@ -41,8 +41,11 @@ ShortcutsManager shortcutsManager = ShortcutsManager();
 Diagnostics diagnostics = Diagnostics();
 ClientManager? clientManager;
 
+bool isHeadless = false;
+
 @pragma('vm:entry-point')
 void bubble() async {
+  ensureBindingInit();
   await initNecessary();
 
   String? initialRoomId;
@@ -84,17 +87,7 @@ void bubble() async {
 }
 
 Future<void> initNecessary() async {
-  ScaledWidgetsFlutterBinding.ensureInitialized(
-    scaleFactor: (deviceSize) {
-      return 1;
-    },
-  );
-  WidgetsFlutterBinding.ensureInitialized();
-
   await preferences.init();
-
-  notificationManager.init();
-  shortcutsManager.init();
 
   if (Platform.isAndroid) {
     databaseFactory = databaseFactorySqflitePlugin;
@@ -105,20 +98,35 @@ Future<void> initNecessary() async {
 
   clientManager =
       await diagnostics.timeAsync("App initialization", () => initApp());
+
+  shortcutsManager.init();
+  notificationManager.init();
+}
+
+void ensureBindingInit() {
+  ScaledWidgetsFlutterBinding.ensureInitialized(
+    scaleFactor: (deviceSize) {
+      return 1;
+    },
+  );
+
+  WidgetsFlutterBinding.ensureInitialized();
 }
 
 void main() async {
+  ensureBindingInit();
+
   String? initialRoomId;
   String? initialClientId;
 
+  isHeadless = Platform.isAndroid &&
+      AppLifecycleState.detached == WidgetsBinding.instance.lifecycleState;
+
   await initNecessary();
 
-  double scale = preferences.appScale;
-  var theme = preferences.theme;
-
-  ScaledWidgetsFlutterBinding.instance.scaleFactor = (deviceSize) {
-    return scale;
-  };
+  if (isHeadless) {
+    return;
+  }
 
   if (Platform.isAndroid) {
     var intent = await ReceiveIntent.getInitialIntent();
@@ -130,6 +138,13 @@ void main() async {
       }
     }
   }
+
+  double scale = preferences.appScale;
+  var theme = preferences.theme;
+
+  ScaledWidgetsFlutterBinding.instance.scaleFactor = (deviceSize) {
+    return scale;
+  };
 
   runApp(App(
     clientManager: clientManager!,
@@ -156,7 +171,6 @@ Future<ClientManager> initApp() async {
       () => fileCache.init().then((value) => fileCache.clean()),
     ),
     diagnostics.timeAsync("Loading default emoji", () => UnicodeEmojis.load()),
-    notificationManager.init(),
     WindowManagement.init(),
     if (!BuildConfig.LINUX) Hive.initFlutter(dbPath),
   ]);

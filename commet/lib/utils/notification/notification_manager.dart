@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:commet/utils/notification/android/android_notifier.dart';
+import 'package:commet/utils/notification/android/unified_push_notifier.dart';
 import 'package:commet/utils/notification/linux/linux_notifier.dart';
 import 'package:commet/utils/notification/notification_content.dart';
 import 'package:commet/utils/notification/notification_modifiers.dart';
@@ -13,7 +13,7 @@ class NotificationManager {
       : Platform.isWindows
           ? WindowsNotifier()
           : Platform.isAndroid
-              ? AndroidNotifier()
+              ? UnifiedPushNotifier()
               : null;
 
   final List<NotificationModifier> _modifiers = List.empty(growable: true);
@@ -36,12 +36,6 @@ class NotificationManager {
     if (_notifier == null) return;
 
     NotificationContent? content = notification;
-
-    if (_notifier!.hasPermission == false) {
-      if (await _notifier!.requestPermission() == false) {
-        return;
-      }
-    }
 
     if (!bypassModifiers) {
       for (var modifier in _modifiers) {
