@@ -152,5 +152,7 @@ abstract class Client {
   /// Reject an invitation to join a room or space which this client is not yet a member of
   Future<void> rejectInvitation(Invitation invitation);
 
+  Future<void> registerPushNotifications();
+
   T? getComponent<T extends Component>();
 }

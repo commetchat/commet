@@ -458,7 +458,7 @@ packages:
     description:
       path: flutter_local_notifications
       ref: HEAD
-      resolved-ref: "7e3ae5a5bff96ed74cbf4c5453618845b2c624c7"
+      resolved-ref: a502fb4559c76fd70e23ba606c9b3452b0360daf
       url: "https://github.com/Airyzz/flutter_local_notifications.git"
     source: git
     version: "16.1.0"

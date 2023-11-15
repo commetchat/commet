@@ -145,6 +145,14 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
                 UnifiedPush.registerAppWithDialog(context);
               },
             ),
+          tiamat.Button(
+            text: "Register Push Gateway",
+            onTap: () async {
+              for (var client in clientManager!.clients) {
+                await client.registerPushNotifications();
+              }
+            },
+          ),
         ])
       ],
     );

@@ -53,6 +53,9 @@ void bubble() async {
 
   var intent = await ReceiveIntent.getInitialIntent();
 
+  print("Lets have a look at the intent we got");
+  print(intent);
+
   if (intent?.extra?.containsKey("bubbleExtra") == true) {
     var uri = CustomURI.parse(intent!.extra!["bubbleExtra"]);
 
@@ -129,7 +132,9 @@ void main() async {
   }
 
   if (Platform.isAndroid) {
+    print("hollddd upp");
     var intent = await ReceiveIntent.getInitialIntent();
+    print(intent);
     if (intent?.extra?.containsKey("flutter_shortcuts") == true) {
       var uri = CustomURI.parse(intent!.extra!["flutter_shortcuts"]);
       if (uri is OpenRoomURI) {

@@ -216,8 +216,8 @@ presence:
 # This whitelist overrides ip_range_blacklist and defaults to an empty
 # list.
 #
-#ip_range_whitelist:
-#   - '192.168.1.1'
+ip_range_whitelist:
+  - '10.0.10.66'
 
 # List of ports that Synapse should listen on, their purpose and their
 # configuration.

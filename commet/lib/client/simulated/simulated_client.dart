@@ -281,4 +281,7 @@ class SimulatedClient extends Client {
   Future<void> leaveSpace(Space space) async {
     spaces.remove(space);
   }
+
+  @override
+  Future<void> registerPushNotifications() async {}
 }

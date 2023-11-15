@@ -586,4 +586,28 @@ class MatrixClient extends Client {
     space.close();
     return _matrixClient.leaveRoom(space.identifier);
   }
+
+  @override
+  Future<void> registerPushNotifications() async {
+    var pusher = matrix.Pusher(
+        appId: "chat.commet.commetapp",
+        pushkey: "https://ntfy.sh/upbX8UqQn3Wpm0?up=1",
+        appDisplayName: BuildConfig.appName,
+        data: matrix.PusherData(
+          format: "event_id_only",
+          url: Uri.parse(
+              "https://matrix.gateway.unifiedpush.org/_matrix/push/v1/notify"),
+          additionalProperties: {
+            "data_message": 'android',
+          },
+        ),
+        deviceDisplayName: "test",
+        kind: "http",
+        lang: "en");
+
+    print("Registering push gateway!");
+    print(pusher);
+
+    await _matrixClient.postPusher(pusher, append: true);
+  }
 }

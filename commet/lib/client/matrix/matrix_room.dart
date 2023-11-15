@@ -235,7 +235,7 @@ class MatrixRoom extends Room {
         clientId: client.identifier,
         isDirectMessage: isDirectMessage);
 
-    notificationManager.notify(notification);
+    // notificationManager.notify(notification);
   }
 
   @override
@@ -445,9 +445,29 @@ class MatrixRoom extends Room {
   Future<ImageProvider?> getShortcutImage() async {
     if (avatar != null) return avatar;
 
+    if (isDirectMessage) {
+      print("Using direct message partner avatar");
+      var user = client.getPeer(directMessagePartnerID!);
+      await user.loading;
+
+      if (user.avatar != null) {
+        return user.avatar;
+      }
+    }
+
     return client.spaces
         .where((space) => space.containsRoom(identifier))
         .firstOrNull
         ?.avatar;
+  }
+
+  @override
+  Future<TimelineEvent?> getEvent(String eventId) async {
+    var event = await _matrixRoom.getEventById(eventId);
+    if (event == null) {
+      return null;
+    }
+
+    return MatrixTimelineEvent(event, _matrixRoom.client);
   }
 }

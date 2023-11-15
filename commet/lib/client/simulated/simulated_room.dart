@@ -241,4 +241,9 @@ class SimulatedRoom extends Room {
   Future<ImageProvider?> getShortcutImage() async {
     return null;
   }
+
+  @override
+  Future<TimelineEvent?> getEvent(String eventId) async {
+    return null;
+  }
 }
