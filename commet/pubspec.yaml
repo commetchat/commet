@@ -54,7 +54,9 @@ dependencies:
   mime: ^1.0.4
   pasteboard: ^0.2.0
   flutter_local_notifications: 
-    path: ../../flutter_local_notifications/flutter_local_notifications
+    git:
+      url: https://github.com/Airyzz/flutter_local_notifications.git
+      path: ./flutter_local_notifications
   win_toast: ^0.3.0
   window_manager: ^0.3.4
   html_unescape: ^2.0.0
@@ -76,8 +78,7 @@ dependencies:
   flutter_shortcuts:
     git:
       url: https://github.com/commetchat/flutter_shortcuts.git
-  receive_intent:
-    path: ../../receive_intent
+  receive_intent: ^0.2.4
   sqflite: ^2.3.0
   sqflite_common_ffi: ^2.3.0+3
 
