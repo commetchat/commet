@@ -589,16 +589,24 @@ class MatrixClient extends Client {
 
   @override
   Future<void> registerPushNotifications() async {
+    var pushers = await _matrixClient.getPushers();
+    print(json.encode(pushers));
+    if (pushers != null) {
+      for (var pusher in pushers) {
+        await _matrixClient.deletePusher(pusher);
+        print("Deleted pusher!");
+      }
+    }
+
     var pusher = matrix.Pusher(
-        appId: "chat.commet.commetapp",
-        pushkey: "https://ntfy.sh/upbX8UqQn3Wpm0?up=1",
+        appId: "chat.commet.commetapp.android",
+        pushkey: preferences.fcmKey!,
         appDisplayName: BuildConfig.appName,
         data: matrix.PusherData(
           format: "event_id_only",
-          url: Uri.parse(
-              "https://matrix.gateway.unifiedpush.org/_matrix/push/v1/notify"),
+          url: Uri.parse("http://push.commet.chat/_matrix/push/v1/notify"),
           additionalProperties: {
-            "data_message": 'android',
+            "type": 'fcm',
           },
         ),
         deviceDisplayName: "test",
@@ -607,6 +615,7 @@ class MatrixClient extends Client {
 
     print("Registering push gateway!");
     print(pusher);
+    print(pusher.toJson());
 
     await _matrixClient.postPusher(pusher, append: true);
   }

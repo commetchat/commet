@@ -22,9 +22,15 @@ class FirebasePushNotifier implements Notifier {
     fcm = FcmSharedIsolate();
     print("Initialized fcm");
 
-    // var token = await fcm?.getToken();
-    // print("Got fcm token:");
-    // print(token);
+    if (preferences.fcmKey == null) {
+      var token = await fcm?.getToken();
+      if (token != null) {
+        preferences.setFcmKey(token);
+        print("Got fcm token:");
+      }
+    }
+
+    print(preferences.fcmKey);
 
     fcm?.setListeners(
       onMessage: onMessage,
