@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:commet/utils/notification/android/firebase_push_notifier.dart';
-import 'package:commet/utils/notification/android/unified_push_notifier.dart';
 import 'package:commet/utils/notification/linux/linux_notifier.dart';
 import 'package:commet/utils/notification/notification_content.dart';
 import 'package:commet/utils/notification/notification_modifiers.dart';

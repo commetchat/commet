@@ -2,15 +2,79 @@ import 'package:commet/main.dart';
 import 'package:commet/utils/notification/android/android_notifier.dart';
 import 'package:commet/utils/notification/notification_content.dart';
 import 'package:commet/utils/notification/notifier.dart';
-import 'package:fcm_shared_isolate/fcm_shared_isolate.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+
+Future<void> onBackgroundMessage(RemoteMessage message) async {
+  if (clientManager == null) {
+    await initNecessary();
+  }
+
+  var data = message.data;
+  String? eventId = data['event_id'];
+  String? roomId = data['room_id'];
+  if (eventId == null || roomId == null) {
+    return;
+  }
+
+  var client =
+      clientManager!.clients.firstWhere((element) => element.hasRoom(roomId));
+  var room = client.getRoom(roomId);
+  var event = await room!.getEvent(eventId);
+
+  var user = client.getPeer(event!.senderId);
+  await user.loading;
+
+  notificationManager.notify(MessageNotificationContent(
+      senderName: user.displayName,
+      roomName: room.displayName,
+      content: event.body!,
+      eventId: eventId,
+      roomId: room.identifier,
+      clientId: client.identifier,
+      senderImage: user.avatar,
+      roomImage: await room.getShortcutImage(),
+      isDirectMessage: room.isDirectMessage));
+}
+
+Future<void> onMessage(RemoteMessage message) async {
+  print("Received firebase message!");
+
+  var data = message.data;
+  String? eventId = data['event_id'];
+  String? roomId = data['room_id'];
+  if (eventId == null || roomId == null) {
+    return;
+  }
+
+  var client =
+      clientManager!.clients.firstWhere((element) => element.hasRoom(roomId));
+  var room = client.getRoom(roomId);
+  var event = await room!.getEvent(eventId);
+
+  var user = client.getPeer(event!.senderId);
+  await user.loading;
+
+  notificationManager.notify(MessageNotificationContent(
+      senderName: user.displayName,
+      roomName: room.displayName,
+      content: event.body!,
+      eventId: eventId,
+      roomId: room.identifier,
+      clientId: client.identifier,
+      senderImage: user.avatar,
+      roomImage: await room.getShortcutImage(),
+      isDirectMessage: room.isDirectMessage));
+
+/*
+*/
+}
 
 class FirebasePushNotifier implements Notifier {
   late AndroidNotifier notifier;
 
   @override
   bool get hasPermission => notifier.hasPermission;
-
-  FcmSharedIsolate? fcm;
 
   FirebasePushNotifier() {
     notifier = AndroidNotifier();
@@ -19,23 +83,12 @@ class FirebasePushNotifier implements Notifier {
   @override
   Future<void> init() async {
     await notifier.init();
-    fcm = FcmSharedIsolate();
     print("Initialized fcm");
-
-    if (preferences.fcmKey == null) {
-      var token = await fcm?.getToken();
-      if (token != null) {
-        preferences.setFcmKey(token);
-        print("Got fcm token:");
-      }
-    }
-
     print(preferences.fcmKey);
 
-    fcm?.setListeners(
-      onMessage: onMessage,
-      onNewToken: onNewToken,
-    );
+    await Firebase.initializeApp();
+    FirebaseMessaging.onMessage.listen(onMessage);
+    FirebaseMessaging.onBackgroundMessage(onBackgroundMessage);
   }
 
   @override
@@ -46,34 +99,6 @@ class FirebasePushNotifier implements Notifier {
   @override
   Future<bool> requestPermission() {
     return notifier.requestPermission();
-  }
-
-  void onMessage(Map message) async {
-    print(message);
-    String? eventId = message['event_id'];
-    String? roomId = message['room_id'];
-    if (eventId == null || roomId == null) {
-      return;
-    }
-
-    var client =
-        clientManager!.clients.firstWhere((element) => element.hasRoom(roomId));
-    var room = client.getRoom(roomId);
-    var event = await room!.getEvent(eventId);
-
-    var user = client.getPeer(event!.senderId);
-    await user.loading;
-
-    notifier.notify(MessageNotificationContent(
-        senderName: user.displayName,
-        roomName: room.displayName,
-        content: event.body!,
-        eventId: eventId,
-        roomId: room.identifier,
-        clientId: client.identifier,
-        senderImage: user.avatar,
-        roomImage: await room.getShortcutImage(),
-        isDirectMessage: room.isDirectMessage));
   }
 
   void onNewToken(String token) {}
