@@ -5,6 +5,7 @@ import 'package:commet/utils/notification/notifier.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
+@pragma('vm:entry-point')
 Future<void> onBackgroundMessage(RemoteMessage message) async {
   if (clientManager == null) {
     await initNecessary();
@@ -83,10 +84,19 @@ class FirebasePushNotifier implements Notifier {
   @override
   Future<void> init() async {
     await notifier.init();
+
+    await Firebase.initializeApp();
+
+    if (preferences.fcmKey == null) {
+      var key = await FirebaseMessaging.instance.getToken();
+      if (key != null) {
+        preferences.setFcmKey(key);
+      }
+    }
+
     print("Initialized fcm");
     print(preferences.fcmKey);
 
-    await Firebase.initializeApp();
     FirebaseMessaging.onMessage.listen(onMessage);
     FirebaseMessaging.onBackgroundMessage(onBackgroundMessage);
   }
@@ -100,6 +110,4 @@ class FirebasePushNotifier implements Notifier {
   Future<bool> requestPermission() {
     return notifier.requestPermission();
   }
-
-  void onNewToken(String token) {}
 }
