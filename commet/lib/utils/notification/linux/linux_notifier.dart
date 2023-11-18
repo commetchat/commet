@@ -102,4 +102,23 @@ class LinuxNotifier implements Notifier {
 
     return await ImageUtils.imageProviderToImage(provider);
   }
+
+  @override
+  Map<String, dynamic>? extraRegistrationData() {
+    return null;
+  }
+
+  @override
+  Future<String?> getToken() async {
+    return null;
+  }
+
+  @override
+  // TODO: implement needsToken
+  bool get needsToken => throw UnimplementedError();
+
+  @override
+  Future<bool?> configure(BuildContext context) async {
+    return null;
+  }
 }

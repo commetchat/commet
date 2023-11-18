@@ -2,16 +2,27 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:commet/main.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
+import 'package:commet/ui/pages/setup/menus/unified_push_setup.dart';
+import 'package:commet/utils/first_time_setup.dart';
 import 'package:commet/utils/notification/android/android_notifier.dart';
 import 'package:commet/utils/notification/notification_content.dart';
 import 'package:commet/utils/notification/notifier.dart';
+import 'package:flutter/material.dart';
 import 'package:unifiedpush/unifiedpush.dart';
 
 class UnifiedPushNotifier implements Notifier {
   late AndroidNotifier notifier;
 
+  @override
+  bool get needsToken => true;
+
   UnifiedPushNotifier() {
     notifier = AndroidNotifier();
+
+    if (preferences.unifiedPushEnabled == null) {
+      FirstTimeSetup.registerPostLoginSetup(UnifiedPushSetup());
+    }
   }
 
   @override
@@ -20,11 +31,13 @@ class UnifiedPushNotifier implements Notifier {
   @override
   Future<void> init() async {
     await notifier.init();
-    UnifiedPush.initialize(
-        onNewEndpoint: onNewEndpoint,
-        onMessage: onMessage,
-        onRegistrationFailed: onRegistrationFailed,
-        onUnregistered: onUnregistered);
+    print("Unified push endpoint: ${preferences.unifiedPushEndpoint}");
+    UnifiedPush.initialize(onMessage: onMessage);
+  }
+
+  @override
+  Future<String?> getToken() async {
+    return null;
   }
 
   @override
@@ -75,4 +88,18 @@ class UnifiedPushNotifier implements Notifier {
   void onRegistrationFailed(String instance) {}
 
   void onUnregistered(String instance) {}
+
+  @override
+  Map<String, dynamic>? extraRegistrationData() {
+    return null;
+  }
+
+  @override
+  Future<bool?> configure(BuildContext context) async {
+    await AdaptiveDialog.show(context, builder: (context) {
+      return Placeholder();
+    }, title: "Unified Push");
+
+    return true;
+  }
 }

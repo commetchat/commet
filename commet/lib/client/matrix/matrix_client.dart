@@ -586,37 +586,4 @@ class MatrixClient extends Client {
     space.close();
     return _matrixClient.leaveRoom(space.identifier);
   }
-
-  @override
-  Future<void> registerPushNotifications() async {
-    var pushers = await _matrixClient.getPushers();
-    print(json.encode(pushers));
-    if (pushers != null) {
-      for (var pusher in pushers) {
-        await _matrixClient.deletePusher(pusher);
-        print("Deleted pusher!");
-      }
-    }
-
-    var pusher = matrix.Pusher(
-        appId: "chat.commet.commetapp.android",
-        pushkey: preferences.fcmKey!,
-        appDisplayName: BuildConfig.appName,
-        data: matrix.PusherData(
-          format: "event_id_only",
-          url: Uri.parse("http://push.commet.chat/_matrix/push/v1/notify"),
-          additionalProperties: {
-            "type": 'fcm',
-          },
-        ),
-        deviceDisplayName: "test",
-        kind: "http",
-        lang: "en");
-
-    print("Registering push gateway!");
-    print(pusher);
-    print(pusher.toJson());
-
-    await _matrixClient.postPusher(pusher, append: true);
-  }
 }

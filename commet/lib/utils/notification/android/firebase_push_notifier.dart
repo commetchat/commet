@@ -2,11 +2,12 @@ import 'package:commet/main.dart';
 import 'package:commet/utils/notification/android/android_notifier.dart';
 import 'package:commet/utils/notification/notification_content.dart';
 import 'package:commet/utils/notification/notifier.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
+// import 'package:firebase_core/firebase_core.dart';
+// import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/src/widgets/framework.dart';
 
 @pragma('vm:entry-point')
-Future<void> onBackgroundMessage(RemoteMessage message) async {
+Future<void> onBackgroundMessage(dynamic message) async {
   if (clientManager == null) {
     await initNecessary();
   }
@@ -38,7 +39,7 @@ Future<void> onBackgroundMessage(RemoteMessage message) async {
       isDirectMessage: room.isDirectMessage));
 }
 
-Future<void> onMessage(RemoteMessage message) async {
+Future<void> onMessage(dynamic message) async {
   print("Received firebase message!");
 
   var data = message.data;
@@ -77,9 +78,15 @@ class FirebasePushNotifier implements Notifier {
   @override
   bool get hasPermission => notifier.hasPermission;
 
+  @override
+  bool get needsToken => true;
+
   FirebasePushNotifier() {
     notifier = AndroidNotifier();
   }
+
+  static dynamic Firebase = null;
+  static dynamic FirebaseMessaging = null;
 
   @override
   Future<void> init() async {
@@ -94,9 +101,6 @@ class FirebasePushNotifier implements Notifier {
       }
     }
 
-    print("Initialized fcm");
-    print(preferences.fcmKey);
-
     FirebaseMessaging.onMessage.listen(onMessage);
     FirebaseMessaging.onBackgroundMessage(onBackgroundMessage);
   }
@@ -109,5 +113,20 @@ class FirebasePushNotifier implements Notifier {
   @override
   Future<bool> requestPermission() {
     return notifier.requestPermission();
+  }
+
+  @override
+  Future<String?> getToken() {
+    return FirebaseMessaging.instance.getToken();
+  }
+
+  @override
+  Map<String, dynamic>? extraRegistrationData() {
+    return {"type": "fcm"};
+  }
+
+  @override
+  Future<bool?> configure(BuildContext context) async {
+    return false;
   }
 }

@@ -139,28 +139,6 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
               ));
             },
           ),
-          if (Platform.isAndroid)
-            tiamat.Button(
-              text: "Register Unified Push",
-              onTap: () async {
-                UnifiedPush.registerAppWithDialog(context);
-              },
-            ),
-          tiamat.Button(
-            text: "Register Push Gateway",
-            onTap: () async {
-              for (var client in clientManager!.clients) {
-                await client.registerPushNotifications();
-              }
-            },
-          ),
-          tiamat.Button(
-            text: "Register Firebase Cloud Messaging",
-            onTap: () async {
-              var notifier = FirebasePushNotifier();
-              await notifier.init();
-            },
-          ),
         ])
       ],
     );

@@ -7,6 +7,7 @@ import 'package:commet/utils/notification/notification_content.dart';
 import 'package:commet/utils/notification/notifier.dart';
 import 'package:desktop_notifications/desktop_notifications.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/src/widgets/framework.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:win_toast/win_toast.dart';
 import 'package:window_manager/window_manager.dart';
@@ -15,6 +16,9 @@ import 'package:path/path.dart' as p;
 class WindowsNotifier implements Notifier {
   @override
   bool get hasPermission => true;
+
+  @override
+  bool get needsToken => false;
 
   static NotificationsClient client = NotificationsClient();
 
@@ -130,5 +134,20 @@ class WindowsNotifier implements Notifier {
 </toast>
   """;
     WinToast.instance().showCustomToast(xml: xml);
+  }
+
+  @override
+  Map<String, dynamic>? extraRegistrationData() {
+    return null;
+  }
+
+  @override
+  Future<String?> getToken() async {
+    return null;
+  }
+
+  @override
+  Future<bool?> configure(BuildContext context) async {
+    return null;
   }
 }

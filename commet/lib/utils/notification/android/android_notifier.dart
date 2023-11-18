@@ -13,6 +13,9 @@ class AndroidNotifier implements Notifier {
   @override
   bool hasPermission = false;
 
+  @override
+  bool get needsToken => false;
+
   FlutterLocalNotificationsPlugin? flutterLocalNotificationsPlugin;
 
   Map<String, List<Message>> previousMessages = {};
@@ -162,5 +165,20 @@ class AndroidNotifier implements Notifier {
     if (kDebugMode) {
       print("Got a notification response: $details");
     }
+  }
+
+  @override
+  Future<String?> getToken() async {
+    return null;
+  }
+
+  @override
+  Map<String, dynamic>? extraRegistrationData() {
+    return null;
+  }
+
+  @override
+  Future<bool?> configure(BuildContext context) async {
+    return false;
   }
 }

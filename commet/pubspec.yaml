@@ -82,8 +82,8 @@ dependencies:
   sqflite: ^2.3.0
   sqflite_common_ffi: ^2.3.0+3
   unifiedpush: ^5.0.1
-  firebase_core: ^2.22.0
-  firebase_messaging: ^14.7.4
+  # firebase_core: ^2.22.0
+  # firebase_messaging: ^14.7.4
 
 dev_dependencies:
   build_runner:
