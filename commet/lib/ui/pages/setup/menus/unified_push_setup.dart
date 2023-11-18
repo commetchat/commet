@@ -1,8 +1,8 @@
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/setup/setup_menu.dart';
+import 'package:commet/utils/notification/android/unified_push_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
@@ -15,7 +15,7 @@ class UnifiedPushSetup implements SetupMenu {
   GlobalKey key = GlobalKey();
   @override
   Widget builder(BuildContext context) {
-    return UnifiedPushSetupView(this, key: key);
+    return UnifiedPushSetupView(key: key);
   }
 
   @override
@@ -26,23 +26,13 @@ class UnifiedPushSetup implements SetupMenu {
 
   @override
   Future<void> submit() async {
-    var state = key.currentState as UnifiedPushSetupViewState;
-
-    var enabled = state.unifiedPushEnabled;
-    var endpoint = state.endpoint;
-
-    await preferences.setUnifiedPushEnabled(enabled);
-    if (endpoint != null) {
-      await preferences.setUnifiedPushEndpoint(endpoint);
-    }
-
     notificationManager.init();
   }
 }
 
 class UnifiedPushSetupView extends StatefulWidget {
-  const UnifiedPushSetupView(this.setup, {super.key});
-  final UnifiedPushSetup setup;
+  const UnifiedPushSetupView({super.key, this.onToggled});
+  final Function(bool enabled)? onToggled;
 
   @override
   State<UnifiedPushSetupView> createState() => UnifiedPushSetupViewState();
@@ -50,14 +40,26 @@ class UnifiedPushSetupView extends StatefulWidget {
 
 class UnifiedPushSetupViewState extends State<UnifiedPushSetupView> {
   bool unifiedPushEnabled = false;
-  String? distributor;
-  String? endpoint;
   bool loading = true;
+  bool wasUnifiedPushAlreadyConfigured = false;
+  UnifiedPushNotifier? notifier;
 
   final Map<String, String> knownDistributors = {"io.heckel.ntfy": "ntfy"};
 
   @override
   void initState() {
+    wasUnifiedPushAlreadyConfigured = preferences.unifiedPushEnabled != null;
+    notifier = notificationManager.notifier as UnifiedPushNotifier?;
+    notifier?.onEndpointChanged.stream.listen((event) {
+      setState(() {});
+    });
+
+    unifiedPushEnabled = preferences.unifiedPushEnabled == true;
+
+    if (wasUnifiedPushAlreadyConfigured) {
+      loading = false;
+    }
+
     super.initState();
   }
 
@@ -65,26 +67,30 @@ class UnifiedPushSetupViewState extends State<UnifiedPushSetupView> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const MarkdownBody(data: """
+        if (!wasUnifiedPushAlreadyConfigured) MarkdownBody(data: """
 # Unified Push
 This version of Commet was built without Google Play Services. In order to receive push notifications, you will need to use [Unified Push](https://unifiedpush.org/). 
 
 If you already have a Unified Push compatible distributor app installed, you can configure it below
 """),
-        const Seperator(),
+        if (!wasUnifiedPushAlreadyConfigured) Seperator(),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const tiamat.Text.label("Enable Unified Push"),
+            tiamat.Text.label("Enable Unified Push"),
             tiamat.Switch(
               state: unifiedPushEnabled,
               onChanged: (value) {
+                widget.onToggled?.call(value);
+
                 setState(() {
                   unifiedPushEnabled = value;
                 });
 
                 if (value) {
                   enableUnifiedPush();
+                } else {
+                  disableUnifiedPush();
                 }
               },
             ),
@@ -108,52 +114,29 @@ If you already have a Unified Push compatible distributor app installed, you can
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           tiamat.Text.labelEmphasised("Distributor"),
-          tiamat.Text.labelLow(distributor == null
+          tiamat.Text.labelLow(notifier?.distributor == null
               ? "No distributor could be found"
-              : knownDistributors[distributor] ?? distributor!),
+              : knownDistributors[notifier!.distributor] ??
+                  notifier!.distributor!),
           tiamat.Text.labelEmphasised("Endpoint"),
-          tiamat.Text.labelLow(endpoint == null
+          tiamat.Text.labelLow(notifier?.endpoint == null
               ? "No endpoint was registered, something went wrong"
-              : endpoint!),
+              : notifier!.endpoint!)
         ],
       ),
     );
   }
 
   void enableUnifiedPush() async {
-    await UnifiedPush.initialize(
-        onNewEndpoint: onNewEndpoint,
-        onRegistrationFailed: onRegistrationFailed,
-        onMessage: onMessage,
-        onUnregistered: onUnregistered);
-
+    await notifier?.init();
+    preferences.setUnifiedPushEnabled(true);
     if (mounted) {
       await UnifiedPush.registerAppWithDialog(context);
-      var foundDistributor = await UnifiedPush.getDistributor();
-
-      setState(() {
-        loading = false;
-        distributor = foundDistributor;
-      });
     }
   }
 
-  void onNewEndpoint(String newEndpoint, String instance) {
-    print("Received endpoint: $newEndpoint");
-    setState(() {
-      endpoint = newEndpoint;
-    });
-  }
-
-  void onRegistrationFailed(String instance) {
-    print("Registration failed :(");
-  }
-
-  void onMessage(Uint8List message, String instance) {
-    print("Message received!");
-  }
-
-  void onUnregistered(String instance) {
-    print("on Unregistered!");
+  void disableUnifiedPush() async {
+    preferences.setUnifiedPushEnabled(false);
+    notifier?.unregister();
   }
 }

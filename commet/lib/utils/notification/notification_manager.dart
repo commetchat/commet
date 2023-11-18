@@ -1,8 +1,6 @@
 import 'dart:io';
 
 import 'package:commet/config/build_config.dart';
-import 'package:commet/ui/pages/setup/menus/unified_push_setup.dart';
-import 'package:commet/utils/first_time_setup.dart';
 import 'package:commet/utils/notification/android/firebase_push_notifier.dart';
 import 'package:commet/utils/notification/android/unified_push_notifier.dart';
 import 'package:commet/utils/notification/linux/linux_notifier.dart';
@@ -33,6 +31,8 @@ class NotificationManager {
       _notifier = WindowsNotifier();
     }
   }
+
+  Notifier? get notifier => _notifier;
 
   final List<NotificationModifier> _modifiers = List.empty(growable: true);
 

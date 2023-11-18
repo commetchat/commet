@@ -18,6 +18,9 @@ class LinuxNotifier implements Notifier {
   static NotificationsClient client = NotificationsClient();
 
   @override
+  bool get enabled => true;
+
+  @override
   Future<bool> requestPermission() async {
     return true;
   }
@@ -114,11 +117,5 @@ class LinuxNotifier implements Notifier {
   }
 
   @override
-  // TODO: implement needsToken
-  bool get needsToken => throw UnimplementedError();
-
-  @override
-  Future<bool?> configure(BuildContext context) async {
-    return null;
-  }
+  bool get needsToken => false;
 }

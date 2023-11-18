@@ -1,10 +1,11 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:commet/main.dart';
 import 'package:commet/utils/notification/android/android_notifier.dart';
 import 'package:commet/utils/notification/notification_content.dart';
 import 'package:commet/utils/notification/notifier.dart';
 // import 'package:firebase_core/firebase_core.dart';
 // import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/src/widgets/framework.dart';
 
 @pragma('vm:entry-point')
 Future<void> onBackgroundMessage(dynamic message) async {
@@ -40,8 +41,6 @@ Future<void> onBackgroundMessage(dynamic message) async {
 }
 
 Future<void> onMessage(dynamic message) async {
-  print("Received firebase message!");
-
   var data = message.data;
   String? eventId = data['event_id'];
   String? roomId = data['room_id'];
@@ -67,9 +66,6 @@ Future<void> onMessage(dynamic message) async {
       senderImage: user.avatar,
       roomImage: await room.getShortcutImage(),
       isDirectMessage: room.isDirectMessage));
-
-/*
-*/
 }
 
 class FirebasePushNotifier implements Notifier {
@@ -85,8 +81,11 @@ class FirebasePushNotifier implements Notifier {
     notifier = AndroidNotifier();
   }
 
-  static dynamic Firebase = null;
-  static dynamic FirebaseMessaging = null;
+  @override
+  bool get enabled => true;
+
+  static dynamic Firebase;
+  static dynamic FirebaseMessaging;
 
   @override
   Future<void> init() async {
@@ -123,10 +122,5 @@ class FirebasePushNotifier implements Notifier {
   @override
   Map<String, dynamic>? extraRegistrationData() {
     return {"type": "fcm"};
-  }
-
-  @override
-  Future<bool?> configure(BuildContext context) async {
-    return false;
   }
 }

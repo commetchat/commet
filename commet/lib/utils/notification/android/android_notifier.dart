@@ -21,6 +21,9 @@ class AndroidNotifier implements Notifier {
   Map<String, List<Message>> previousMessages = {};
 
   @override
+  bool get enabled => true;
+
+  @override
   Future<void> init() async {
     flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
@@ -175,10 +178,5 @@ class AndroidNotifier implements Notifier {
   @override
   Map<String, dynamic>? extraRegistrationData() {
     return null;
-  }
-
-  @override
-  Future<bool?> configure(BuildContext context) async {
-    return false;
   }
 }

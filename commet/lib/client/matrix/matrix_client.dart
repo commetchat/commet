@@ -216,6 +216,14 @@ class MatrixClient extends Client {
             title: "Authentication Request");
       }
     });
+
+    if (isLoggedIn()) {
+      for (var component in _components) {
+        if (component is NeedsPostLoginInit) {
+          (component as NeedsPostLoginInit).postLoginInit();
+        }
+      }
+    }
   }
 
   void onMatrixClientSync(matrix.SyncUpdate update) {

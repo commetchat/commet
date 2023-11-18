@@ -57,9 +57,6 @@ void bubble() async {
 
   var intent = await ReceiveIntent.getInitialIntent();
 
-  print("Lets have a look at the intent we got");
-  print(intent);
-
   if (intent?.extra?.containsKey("bubbleExtra") == true) {
     var uri = CustomURI.parse(intent!.extra!["bubbleExtra"]);
 

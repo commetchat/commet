@@ -129,8 +129,12 @@ class Preferences {
   String? get unifiedPushEndpoint =>
       _preferences!.getString(_unifiedPushEndpoint);
 
-  Future<void> setUnifiedPushEndpoint(String value) async {
-    await _preferences!.setString(_unifiedPushEndpoint, value);
+  Future<void> setUnifiedPushEndpoint(String? value) async {
+    if (value == null) {
+      await _preferences!.remove(_unifiedPushEndpoint);
+    } else {
+      await _preferences!.setString(_unifiedPushEndpoint, value);
+    }
   }
 
   Future<void> setUnifiedPushEnabled(bool value) async {

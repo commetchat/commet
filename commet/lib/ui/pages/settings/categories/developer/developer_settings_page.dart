@@ -1,12 +1,8 @@
-import 'dart:io';
-
 import 'package:commet/main.dart';
-import 'package:commet/utils/notification/android/firebase_push_notifier.dart';
 import 'package:commet/utils/notification/notification_content.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
-import 'package:unifiedpush/unifiedpush.dart';
 import 'package:window_manager/window_manager.dart';
 
 class DeveloperSettingsPage extends StatefulWidget {

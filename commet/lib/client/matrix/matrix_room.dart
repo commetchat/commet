@@ -452,7 +452,6 @@ class MatrixRoom extends Room {
     if (avatar != null) return avatar;
 
     if (isDirectMessage) {
-      print("Using direct message partner avatar");
       var user = client.getPeer(directMessagePartnerID!);
       await user.loading;
 
