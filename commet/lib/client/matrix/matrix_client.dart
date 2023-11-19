@@ -216,14 +216,6 @@ class MatrixClient extends Client {
             title: "Authentication Request");
       }
     });
-
-    if (isLoggedIn()) {
-      for (var component in _components) {
-        if (component is NeedsPostLoginInit) {
-          (component as NeedsPostLoginInit).postLoginInit();
-        }
-      }
-    }
   }
 
   void onMatrixClientSync(matrix.SyncUpdate update) {
@@ -579,6 +571,18 @@ class MatrixClient extends Client {
     }
 
     return null;
+  }
+
+  @override
+  List<T>? getAllComponents<T extends Component<Client>>() {
+    List<T> components = List.empty(growable: true);
+    for (var component in _components) {
+      if (component is T) {
+        components.add(component as T);
+      }
+    }
+
+    return components;
   }
 
   @override

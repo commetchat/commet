@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:commet/cache/file_cache.dart';
 import 'package:commet/client/client_manager.dart';
+import 'package:commet/client/components/component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/preferences.dart';
@@ -99,12 +100,13 @@ Future<void> initNecessary() async {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
   }
-
   clientManager =
       await diagnostics.timeAsync("App initialization", () => initApp());
 
   shortcutsManager.init();
   notificationManager.init();
+
+  NeedsPostLoginInit.doPostLoginInit();
 }
 
 void ensureBindingInit() {

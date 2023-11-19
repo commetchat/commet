@@ -38,6 +38,7 @@ class MatrixPushNotificationComponent
         deviceDisplayName: deviceName,
         kind: "http",
         lang: "en");
+
     await matrixClient.postPusher(pusher, append: true);
   }
 
@@ -60,6 +61,9 @@ class MatrixPushNotificationComponent
 
   @override
   Future<void> updatePushers() async {
+    if (notificationManager.notifierLoading != null) {
+      await notificationManager.notifierLoading;
+    }
     var notifier = notificationManager.notifier;
     var key = await notifier?.getToken();
     var mxClient = client.getMatrixClient();
@@ -73,7 +77,6 @@ class MatrixPushNotificationComponent
       return;
     }
 
-    print("Registering with push gateway: $uri");
     await ensurePushNotificationsRegistered(key, uri, name,
         extraData: extraData);
   }

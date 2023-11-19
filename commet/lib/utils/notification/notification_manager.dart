@@ -36,10 +36,12 @@ class NotificationManager {
 
   final List<NotificationModifier> _modifiers = List.empty(growable: true);
 
+  Future<void>? notifierLoading;
+
   Future<void> init() async {
     _modifiers.clear;
     addModifier(NotificationModifierDontNotifyActiveRoom());
-    await _notifier?.init();
+    notifierLoading = _notifier?.init();
   }
 
   void addModifier(NotificationModifier modifier) {

@@ -19,7 +19,7 @@ class BuildConfig {
   static const String BUILD_DETAIL =
       String.fromEnvironment('BUILD_DETAIL', defaultValue: "default");
 
-  static const bool ENABLE_GOOGLE_SERVICES = false;
+  static const bool ENABLE_GOOGLE_SERVICES = true;
 
   static const bool DEBUG = _buildMode == _Constants._debug;
 
