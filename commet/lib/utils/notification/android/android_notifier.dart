@@ -16,6 +16,8 @@ class AndroidNotifier implements Notifier {
   @override
   bool get needsToken => false;
 
+  static const bool bubblesEnabled = false;
+
   FlutterLocalNotificationsPlugin? flutterLocalNotificationsPlugin;
 
   Map<String, List<Message>> previousMessages = {};
@@ -134,10 +136,12 @@ class AndroidNotifier implements Notifier {
         groupAlertBehavior: GroupAlertBehavior.children,
         styleInformation: style,
         shortcutId: content.roomId,
-        bubbleActivity: "chat.commet.commetapp.BubbleActivity",
-        bubbleExtra:
-            OpenRoomURI(roomId: content.roomId, clientId: content.clientId)
-                .toString(),
+        bubbleActivity:
+            bubblesEnabled ? "chat.commet.commetapp.BubbleActivity" : null,
+        bubbleExtra: bubblesEnabled
+            ? OpenRoomURI(roomId: content.roomId, clientId: content.clientId)
+                .toString()
+            : null,
         color: const Color.fromARGB(0xff, 0x53, 0x4c, 0xdd));
 
     await flutterLocalNotificationsPlugin?.show(
