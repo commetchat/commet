@@ -7,21 +7,17 @@ import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/preferences.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
-import 'package:commet/ui/navigation/navigation_utils.dart';
 import 'package:commet/ui/pages/bubble/bubble_page.dart';
 import 'package:commet/ui/pages/login/login_page.dart';
 import 'package:commet/ui/pages/main/main_page.dart';
-import 'package:commet/ui/pages/setup/setup_page.dart';
 import 'package:commet/utils/custom_uri.dart';
 import 'package:commet/utils/emoji/unicode_emoji.dart';
-import 'package:commet/utils/first_time_setup.dart';
 import 'package:commet/utils/notification/notification_manager.dart';
 import 'package:commet/utils/scaled_app.dart';
 import 'package:commet/utils/shortcuts_manager.dart';
 import 'package:commet/utils/window_management.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:media_kit/media_kit.dart';
 

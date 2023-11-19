@@ -52,7 +52,6 @@ class UnifiedPushNotifier implements Notifier {
 
     var distributor = await UnifiedPush.getDistributor();
     _distributor = distributor;
-    print("Got a distributor!: $_distributor");
 
     isInit = true;
   }

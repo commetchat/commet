@@ -35,7 +35,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
           header: "Push Notifications",
           child: buildNotificationSettings(),
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         Panel(
@@ -48,7 +48,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
 
   Widget buildNotificationSettings() {
     if (notifier is UnifiedPushNotifier) {
-      return UnifiedPushSetupView();
+      return const UnifiedPushSetupView();
     }
 
     return tiamat.Text("Push notifications are not supported on this system");

@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:commet/client/components/push_notification/push_notification_component.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/settings/categories/app/notification_settings_page.dart';
 import 'package:commet/ui/pages/setup/setup_menu.dart';
@@ -129,7 +128,6 @@ If you already have a Unified Push compatible distributor app installed, you can
   }
 
   void enableUnifiedPush() async {
-    print("Enabling unified push");
     preferences.setUnifiedPushEnabled(true);
     await notifier?.init();
 
@@ -144,7 +142,6 @@ If you already have a Unified Push compatible distributor app installed, you can
   }
 
   void disableUnifiedPush() async {
-    print("Disabling unified push");
     await notifier?.unregister();
     setState(() {
       loading = false;

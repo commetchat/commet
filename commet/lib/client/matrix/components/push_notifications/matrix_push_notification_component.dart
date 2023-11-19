@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:commet/client/components/push_notification/push_notification_component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/config/build_config.dart';
