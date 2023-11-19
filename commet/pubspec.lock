@@ -377,14 +377,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.0"
-  fluffybox:
-    dependency: transitive
-    description:
-      name: fluffybox
-      sha256: "80e7f029e265e85d0dd30da09d5b9ef0077238c62675d69d30c4f829aadaefd0"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.7.2"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -803,12 +795,11 @@ packages:
   matrix:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "krille/new-fluffybox"
-      resolved-ref: e4dfbf343063ebdf1d5202835422ebe50677dd5b
-      url: "https://github.com/famedly/matrix-dart-sdk.git"
-    source: git
-    version: "0.22.6"
+      name: matrix
+      sha256: b01a8a7141a586853a4f9b2e98b3c9912ff74bbceadc16b2bf3630bf055a830a
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.22.7"
   matrix_api_lite:
     dependency: transitive
     description:
@@ -1350,38 +1341,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.10.0"
-  sqflite:
-    dependency: "direct main"
-    description:
-      name: sqflite
-      sha256: "591f1602816e9c31377d5f008c2d9ef7b8aca8941c3f89cc5fd9d84da0c38a9a"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.3.0"
-  sqflite_common:
-    dependency: transitive
-    description:
-      name: sqflite_common
-      sha256: "8ed044102f3135add97be8653662052838859f5400075ef227f8ad72ae320803"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.5.0+1"
-  sqflite_common_ffi:
-    dependency: "direct main"
-    description:
-      name: sqflite_common_ffi
-      sha256: "198b40b4a7ba58cca18d7837d0246859b7b4c8b007d2902634fc26dec57fa3f1"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.3.0+3"
-  sqlite3:
-    dependency: transitive
-    description:
-      name: sqlite3
-      sha256: db65233e6b99e99b2548932f55a987961bc06d82a31a0665451fa0b4fff4c3fb
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.1.0"
   stack_trace:
     dependency: transitive
     description:

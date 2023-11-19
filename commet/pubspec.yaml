@@ -13,10 +13,7 @@ dependencies:
     sdk: flutter
 
   provider: ^6.0.0
-  matrix:
-    git:
-      url: https://github.com/famedly/matrix-dart-sdk.git
-      ref: krille/new-fluffybox
+  matrix: ^0.22.2
   flutter_olm: ^1.2.0
   flutter_openssl_crypto: ^0.1.0
   just_the_tooltip: ^0.0.12
@@ -79,8 +76,6 @@ dependencies:
     git:
       url: https://github.com/commetchat/flutter_shortcuts.git
   receive_intent: ^0.2.4
-  sqflite: ^2.3.0
-  sqflite_common_ffi: ^2.3.0+3
   unifiedpush: ^5.0.1
   # firebase_core: ^2.22.0
   # firebase_messaging: ^14.7.4

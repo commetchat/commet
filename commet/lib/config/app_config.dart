@@ -10,6 +10,6 @@ class AppConfig {
       return "commet";
     }
     final dir = await getApplicationSupportDirectory();
-    return join(dir.path, "sqflite");
+    return join(dir.path, "hive");
   }
 }
