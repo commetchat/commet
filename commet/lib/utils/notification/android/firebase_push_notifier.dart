@@ -4,8 +4,8 @@ import 'package:commet/main.dart';
 import 'package:commet/utils/notification/android/android_notifier.dart';
 import 'package:commet/utils/notification/notification_content.dart';
 import 'package:commet/utils/notification/notifier.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
+// import 'package:firebase_core/firebase_core.dart';
+// import 'package:firebase_messaging/firebase_messaging.dart';
 
 @pragma('vm:entry-point')
 Future<void> onBackgroundMessage(dynamic message) async {
@@ -84,8 +84,8 @@ class FirebasePushNotifier implements Notifier {
   @override
   bool get enabled => true;
 
-  // static dynamic Firebase;
-  // static dynamic FirebaseMessaging;
+  static dynamic Firebase;
+  static dynamic FirebaseMessaging;
 
   @override
   Future<void> init() async {
