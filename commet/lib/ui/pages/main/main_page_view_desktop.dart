@@ -1,9 +1,13 @@
 import 'package:commet/ui/atoms/drag_drop_file_target.dart';
+
+import 'package:commet/main.dart';
+import 'package:commet/ui/atoms/floating_tile.dart';
 import 'package:commet/ui/atoms/room_header.dart';
 import 'package:commet/ui/atoms/space_header.dart';
 import 'package:commet/ui/molecules/direct_message_list.dart';
 import 'package:commet/ui/molecules/space_viewer.dart';
 import 'package:commet/ui/molecules/user_list.dart';
+import 'package:commet/ui/organisms/background_task_view/background_task_view.dart';
 import 'package:commet/ui/organisms/home_screen/home_screen.dart';
 import 'package:commet/ui/organisms/chat/chat.dart';
 import 'package:commet/ui/organisms/side_navigation_bar.dart';
@@ -76,6 +80,10 @@ class MainPageViewDesktop extends StatelessWidget {
             onDropComplete: (details) {
               EventBus.onFileDropped.add(details);
             },
+          ),
+        if (backgroundTaskManager.tasks.isNotEmpty)
+          FloatingTile(
+            child: BackgroundTaskView(backgroundTaskManager),
           )
       ],
     );

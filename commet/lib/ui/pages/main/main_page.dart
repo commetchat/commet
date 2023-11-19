@@ -68,6 +68,9 @@ class MainPageState extends State<MainPage> {
         selectRoom(room);
       }
     }
+    backgroundTaskManager.onListUpdate.listen((event) {
+      setState(() {});
+    });
 
     EventBus.openRoom.stream.listen(onOpenRoomSignal);
     SchedulerBinding.instance.scheduleFrameCallback(onFirstFrame);

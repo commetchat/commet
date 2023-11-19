@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/main.dart';
 import 'package:commet/ui/molecules/message_popup_menu/message_popup_menu.dart';
 import 'package:commet/ui/molecules/timeline_event.dart';
 import 'package:flutter/material.dart';
@@ -280,14 +281,18 @@ class TimelineViewerState extends State<TimelineViewer> {
   Widget? buildHistoryItem(BuildContext context, int index) {
     var displayIndex = recentItemsCount + index;
     return Container(
-        color: BuildConfig.DEBUG ? Colors.red.withAlpha(15) : null,
+        color: BuildConfig.DEBUG && preferences.developerMode
+            ? Colors.red.withAlpha(15)
+            : null,
         child: buildEvent(displayIndex, index));
   }
 
   Widget? buildRecentItem(BuildContext context, int index) {
     int displayIndex = recentItemsCount - index - 1;
     return Container(
-        color: BuildConfig.DEBUG ? Colors.blue.withAlpha(15) : null,
+        color: BuildConfig.DEBUG && preferences.developerMode
+            ? Colors.blue.withAlpha(15)
+            : null,
         child: buildEvent(displayIndex, index));
   }
 

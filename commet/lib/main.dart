@@ -11,6 +11,7 @@ import 'package:commet/ui/pages/bubble/bubble_page.dart';
 import 'package:commet/ui/pages/login/login_page.dart';
 import 'package:commet/ui/pages/main/main_page.dart';
 import 'package:commet/utils/custom_uri.dart';
+import 'package:commet/utils/background_tasks/background_task_manager.dart';
 import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:commet/utils/notification/notification_manager.dart';
 import 'package:commet/utils/scaled_app.dart';
@@ -37,6 +38,7 @@ FileCacheInstance fileCache = FileCacheInstance();
 Preferences preferences = Preferences();
 NotificationManager notificationManager = NotificationManager();
 ShortcutsManager shortcutsManager = ShortcutsManager();
+BackgroundTaskManager backgroundTaskManager = BackgroundTaskManager();
 Diagnostics diagnostics = Diagnostics();
 ClientManager? clientManager;
 

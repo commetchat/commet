@@ -79,6 +79,7 @@ dependencies:
   unifiedpush: ^5.0.1
   # firebase_core: ^2.22.0
   # firebase_messaging: ^14.7.4
+  permission_handler: ^11.0.1
 
 dev_dependencies:
   build_runner:

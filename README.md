@@ -54,8 +54,8 @@ flutter pub get
 ### 4. Code Generation
 We make use of procedural code generation in some parts of commet. As a rule, generated code will not be checked in to git, and will need to be generated before building.
 
-To run code generation, run the script:
-`dart run commet/scripts/codegen.dart`
+To run code generation, run the script within the `commet` directory:
+`dart run scripts/codegen.dart`
 
 ### 5. Building
 When building Commet, there are some additional command line arguments that must be used to configure the build.

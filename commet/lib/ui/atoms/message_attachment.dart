@@ -1,14 +1,19 @@
 import 'package:commet/client/attachment.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/lightbox.dart';
 import 'package:commet/ui/molecules/video_player/video_player.dart';
+import 'package:commet/utils/background_tasks/background_task_manager.dart';
+import 'package:commet/utils/file_utils.dart';
 import 'package:commet/utils/mime.dart';
 import 'package:commet/utils/text_utils.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
+import 'package:url_launcher/url_launcher.dart';
+
+import 'package:path/path.dart' as p;
 
 class MessageAttachment extends StatefulWidget {
   const MessageAttachment(this.attachment,
@@ -169,12 +174,7 @@ class _MessageAttachmentState extends State<MessageAttachment> {
                 icon: Icons.download,
                 onPressed: () async {
                   if (widget.attachment is FileAttachment) {
-                    var attachment = widget.attachment as FileAttachment;
-                    var result = await FilePicker.platform
-                        .saveFile(fileName: widget.attachment.name);
-                    if (result != null) {
-                      attachment.provider.save(result);
-                    }
+                    downloadAttachment(widget.attachment as FileAttachment);
                   }
                 },
               ),
@@ -183,5 +183,33 @@ class _MessageAttachmentState extends State<MessageAttachment> {
         ),
       ),
     );
+  }
+
+  Future<void> downloadAttachment(FileAttachment attachment) async {
+    var path = await FileUtils.getSaveFilePath(fileName: attachment.name);
+    if (path == null) return;
+
+    backgroundTaskManager.addTask(AsyncTask(
+      downloadTask(attachment, path),
+      "Downloading: ${widget.attachment.name}",
+      action: () {
+        var openPath = path;
+        if (BuildConfig.DESKTOP) {
+          openPath = p.dirname(path);
+        }
+        launchUrl(Uri.file(openPath), mode: LaunchMode.platformDefault);
+      },
+      isActionReady: () => true,
+    ));
+  }
+
+  Future<BackgroundTaskStatus> downloadTask(
+      FileAttachment attachment, String path) async {
+    try {
+      await attachment.provider.save(path);
+    } catch (_) {
+      return BackgroundTaskStatus.failed;
+    }
+    return BackgroundTaskStatus.completed;
   }
 }
