@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:commet/client/components/push_notification/push_notification_component.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/setup/menus/unified_push_setup.dart';
 import 'package:commet/utils/first_time_setup.dart';
@@ -42,15 +43,16 @@ class UnifiedPushNotifier implements Notifier {
 
   @override
   Future<void> init() async {
-    if (isInit) return;
+    //if (isInit) return;
     if (preferences.unifiedPushEnabled != true) return;
 
     await notifier.init();
 
     UnifiedPush.initialize(onMessage: onMessage, onNewEndpoint: onNewEndpoint);
-    await UnifiedPush.getDistributor().then((value) {
-      _distributor = value;
-    });
+
+    var distributor = await UnifiedPush.getDistributor();
+    _distributor = distributor;
+    print("Got a distributor!: $_distributor");
 
     isInit = true;
   }
@@ -70,15 +72,16 @@ class UnifiedPushNotifier implements Notifier {
     return notifier.requestPermission();
   }
 
-  void onNewEndpoint(String endpoint, String instance) {
-    preferences.setUnifiedPushEndpoint(endpoint);
+  void onNewEndpoint(String endpoint, String instance) async {
+    await preferences.setUnifiedPushEndpoint(endpoint);
+    await PushNotificationComponent.updateAllPushers();
     onEndpointChanged.add(endpoint);
   }
 
   void onMessage(Uint8List message, String instance) async {
     var data = utf8.decode(message);
-
     var json = jsonDecode(data) as Map<String, dynamic>;
+
     var notifData = json['notification'] as Map<String, dynamic>;
 
     var roomId = notifData['room_id'] as String;
@@ -108,10 +111,11 @@ class UnifiedPushNotifier implements Notifier {
 
   void onUnregistered(String instance) {}
 
-  void unregister() async {
+  Future<void> unregister() async {
     await UnifiedPush.unregister();
-    preferences.setUnifiedPushEnabled(false);
-    preferences.setUnifiedPushEndpoint(null);
+    await preferences.setUnifiedPushEnabled(false);
+    await preferences.setUnifiedPushEndpoint(null);
+    await PushNotificationComponent.updateAllPushers();
   }
 
   @override

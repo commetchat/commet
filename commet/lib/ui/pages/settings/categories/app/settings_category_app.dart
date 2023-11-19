@@ -86,12 +86,13 @@ class SettingsCategoryApp implements SettingsCategory {
               pageBuilder: (context) {
                 return const WindowSettingsPage();
               }),
-        SettingsTab(
-            label: labelSettingsAppNotifications,
-            icon: m.Icons.notifications,
-            pageBuilder: (context) {
-              return const NotificationSettingsPage();
-            }),
+        if (BuildConfig.ANDROID)
+          SettingsTab(
+              label: labelSettingsAppNotifications,
+              icon: m.Icons.notifications,
+              pageBuilder: (context) {
+                return const NotificationSettingsPage();
+              }),
         SettingsTab(
             label: labelSettingsAppAdvanced,
             icon: m.Icons.code,

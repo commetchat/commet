@@ -85,10 +85,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
       isPushGatewayLoading = true;
     });
 
-    for (var client in clientManager!.clients) {
-      var notifier = client.getComponent<PushNotificationComponent>();
-      await notifier?.updatePushers();
-    }
+    await PushNotificationComponent.updateAllPushers();
 
     setState(() {
       isPushGatewayLoading = false;

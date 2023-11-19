@@ -2,13 +2,16 @@ import 'dart:async';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/ui/pages/setup/setup_page.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:commet/ui/navigation/navigation_utils.dart';
 import 'package:commet/ui/pages/main/main_page_view_desktop.dart';
 import 'package:commet/ui/pages/main/main_page_view_mobile.dart';
 import 'package:commet/ui/pages/settings/room_settings_page.dart';
+import 'package:commet/utils/first_time_setup.dart';
 import 'package:commet/utils/orientation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage(this.clientManager,
@@ -67,6 +70,16 @@ class MainPageState extends State<MainPage> {
     }
 
     EventBus.openRoom.stream.listen(onOpenRoomSignal);
+    SchedulerBinding.instance.scheduleFrameCallback(onFirstFrame);
+  }
+
+  void onFirstFrame(Duration timeStamp) {
+    if (widget.clientManager.isLoggedIn()) {
+      var menus = FirstTimeSetup.postLogin;
+      if (menus.isNotEmpty) {
+        NavigationUtils.navigateTo(context, SetupPage(menus));
+      }
+    }
   }
 
   @override

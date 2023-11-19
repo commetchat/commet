@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:commet/client/components/push_notification/push_notification_component.dart';
 import 'package:commet/main.dart';
+import 'package:commet/ui/pages/settings/categories/app/notification_settings_page.dart';
 import 'package:commet/ui/pages/setup/setup_menu.dart';
 import 'package:commet/utils/notification/android/unified_push_notifier.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +17,7 @@ class UnifiedPushSetup implements SetupMenu {
   GlobalKey key = GlobalKey();
   @override
   Widget builder(BuildContext context) {
-    return UnifiedPushSetupView(key: key);
+    return NotificationSettingsPage(key: key);
   }
 
   @override
@@ -44,15 +46,13 @@ class UnifiedPushSetupViewState extends State<UnifiedPushSetupView> {
   bool wasUnifiedPushAlreadyConfigured = false;
   UnifiedPushNotifier? notifier;
 
-  final Map<String, String> knownDistributors = {"io.heckel.ntfy": "ntfy"};
+  String? endpoint;
 
   @override
   void initState() {
     wasUnifiedPushAlreadyConfigured = preferences.unifiedPushEnabled != null;
     notifier = notificationManager.notifier as UnifiedPushNotifier?;
-    notifier?.onEndpointChanged.stream.listen((event) {
-      setState(() {});
-    });
+    notifier?.onEndpointChanged.stream.listen((event) => onEndpointChanged());
 
     unifiedPushEnabled = preferences.unifiedPushEnabled == true;
 
@@ -113,30 +113,42 @@ If you already have a Unified Push compatible distributor app installed, you can
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          tiamat.Text.labelEmphasised("Distributor"),
-          tiamat.Text.labelLow(notifier?.distributor == null
-              ? "No distributor could be found"
-              : knownDistributors[notifier!.distributor] ??
-                  notifier!.distributor!),
           tiamat.Text.labelEmphasised("Endpoint"),
-          tiamat.Text.labelLow(notifier?.endpoint == null
+          tiamat.Text.labelLow(endpoint == null
               ? "No endpoint was registered, something went wrong"
-              : notifier!.endpoint!),
+              : endpoint!),
         ],
       ),
     );
   }
 
+  void onEndpointChanged() async {
+    setState(() {
+      endpoint = notifier?.endpoint;
+    });
+  }
+
   void enableUnifiedPush() async {
-    await notifier?.init();
+    print("Enabling unified push");
     preferences.setUnifiedPushEnabled(true);
+    await notifier?.init();
+
     if (mounted) {
       await UnifiedPush.registerAppWithDialog(context);
     }
+
+    setState(() {
+      loading = false;
+      endpoint = notifier?.endpoint;
+    });
   }
 
   void disableUnifiedPush() async {
-    preferences.setUnifiedPushEnabled(false);
-    notifier?.unregister();
+    print("Disabling unified push");
+    await notifier?.unregister();
+    setState(() {
+      loading = false;
+      endpoint = null;
+    });
   }
 }

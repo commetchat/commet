@@ -256,14 +256,6 @@ class _AppViewState extends State<AppView> {
   @override
   void initState() {
     super.initState();
-    SchedulerBinding.instance.scheduleFrameCallback(onFirstFrame);
-  }
-
-  void onFirstFrame(Duration timeStamp) {
-    var menus = FirstTimeSetup.postLogin;
-    if (menus.isNotEmpty) {
-      NavigationUtils.navigateTo(context, SetupPage(menus));
-    }
   }
 
   @override
