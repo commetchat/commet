@@ -1,9 +1,11 @@
 import 'package:commet/client/components/push_notification/push_notification_component.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/setup/menus/unified_push_setup.dart';
+import 'package:commet/utils/common_strings.dart';
 import 'package:commet/utils/notification/android/unified_push_notifier.dart';
 import 'package:commet/utils/notification/notifier.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:tiamat/tiamat.dart';
@@ -20,6 +22,11 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
   Notifier? notifier;
   GlobalKey pushGatewayKey = GlobalKey();
   bool isPushGatewayLoading = false;
+
+  String get notificationSettingsNotSupported =>
+      Intl.message("Push notifications are not supported on this system",
+          name: "notificationSettingsNotSupported",
+          desc: "Message to display when push notifications are not supported");
 
   @override
   void initState() {
@@ -51,7 +58,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
       return const UnifiedPushSetupView();
     }
 
-    return tiamat.Text("Push notifications are not supported on this system");
+    return tiamat.Text(notificationSettingsNotSupported);
   }
 
   Widget pushGatewaySelector() {
@@ -69,7 +76,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
                 "matrix.gateway.unifiedpush.org"
             ]),
         tiamat.Button(
-          text: "Apply",
+          text: CommonStrings.promptApply,
           isLoading: isPushGatewayLoading,
           onTap: onPushGatewaySelected,
         )

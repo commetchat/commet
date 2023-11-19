@@ -6,6 +6,7 @@ import 'package:commet/ui/pages/setup/setup_menu.dart';
 import 'package:commet/utils/notification/android/unified_push_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:intl/intl.dart';
 
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -47,6 +48,28 @@ class UnifiedPushSetupViewState extends State<UnifiedPushSetupView> {
 
   String? endpoint;
 
+  String get unifiedPushExplainer => Intl.message("""
+# Unified Push
+This version of Commet was built without Google Play Services. In order to receive push notifications, you will need to use [Unified Push](https://unifiedpush.org/). 
+
+If you already have a Unified Push compatible distributor app installed, you can configure it below
+""",
+      name: "unifiedPushExplainer",
+      desc: "Explains the need for unified push. Supports markdown");
+
+  String get labelEnableUnifiedPush => Intl.message("Enable Unified Push",
+      name: "labelEnableUnifiedPush",
+      desc: "Label for the toggle to enable Unified Push");
+
+  String get labelEnableUnifiedPushEndpoint => Intl.message("Endpoint",
+      name: "labelEnableUnifiedPushEndpoint",
+      desc: "Label for the Unified Push endpoint");
+
+  String get labelUnifiedPushNoEndpointFound => Intl.message(
+      "No endpoint found, something went wrong :(",
+      name: "labelUnifiedPushNoEndpointFound",
+      desc: "Message for when a unified push endpoint could not be registered");
+
   @override
   void initState() {
     wasUnifiedPushAlreadyConfigured = preferences.unifiedPushEnabled != null;
@@ -74,17 +97,13 @@ class UnifiedPushSetupViewState extends State<UnifiedPushSetupView> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        if (!wasUnifiedPushAlreadyConfigured) MarkdownBody(data: """
-# Unified Push
-This version of Commet was built without Google Play Services. In order to receive push notifications, you will need to use [Unified Push](https://unifiedpush.org/). 
-
-If you already have a Unified Push compatible distributor app installed, you can configure it below
-"""),
-        if (!wasUnifiedPushAlreadyConfigured) Seperator(),
+        if (!wasUnifiedPushAlreadyConfigured)
+          MarkdownBody(data: unifiedPushExplainer),
+        if (!wasUnifiedPushAlreadyConfigured) const Seperator(),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            tiamat.Text.label("Enable Unified Push"),
+            tiamat.Text.label(labelEnableUnifiedPush),
             tiamat.Switch(
               state: unifiedPushEnabled,
               onChanged: (value) {
@@ -112,7 +131,7 @@ If you already have a Unified Push compatible distributor app installed, you can
 
   Widget buildUnifiedPushDetails() {
     if (loading) {
-      return CircularProgressIndicator();
+      return const CircularProgressIndicator();
     }
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -120,10 +139,9 @@ If you already have a Unified Push compatible distributor app installed, you can
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          tiamat.Text.labelEmphasised("Endpoint"),
-          tiamat.Text.labelLow(endpoint == null
-              ? "No endpoint was registered, something went wrong"
-              : endpoint!),
+          tiamat.Text.labelEmphasised(labelEnableUnifiedPushEndpoint),
+          tiamat.Text.labelLow(
+              endpoint == null ? labelUnifiedPushNoEndpointFound : endpoint!),
         ],
       ),
     );

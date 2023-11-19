@@ -1,6 +1,7 @@
 import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/pages/setup/setup_menu.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -16,6 +17,9 @@ class SetupPage extends StatefulWidget {
 class _SetupPageState extends State<SetupPage> {
   int currentMenuIndex = 0;
   late SetupMenu currentMenu;
+
+  String get setupPageBeforeYouBegin => Intl.message("Before you begin...",
+      name: "setupPageBeforeYouBegin", desc: "Title for first time setup page");
 
   @override
   void initState() {
@@ -35,7 +39,7 @@ class _SetupPageState extends State<SetupPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.max,
               children: [
-                tiamat.Text.largeTitle("Before you begin..."),
+                tiamat.Text.largeTitle(setupPageBeforeYouBegin),
                 Flexible(
                   child: ClipRRect(
                       borderRadius: BorderRadius.circular(10),
