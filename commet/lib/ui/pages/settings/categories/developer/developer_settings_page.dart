@@ -1,7 +1,6 @@
 import 'package:commet/main.dart';
 import 'package:commet/utils/notification/notification_content.dart';
 import 'package:commet/utils/background_tasks/mock_tasks.dart';
-import 'package:commet/utils/notification/notification_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
