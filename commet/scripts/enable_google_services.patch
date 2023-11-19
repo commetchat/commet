@@ -1,0 +1,80 @@
+diff --git a/commet/android/app/build.gradle b/commet/android/app/build.gradle
+index e9ee824..c66714c 100644
+--- a/commet/android/app/build.gradle
++++ b/commet/android/app/build.gradle
+@@ -23,7 +23,7 @@ if (flutterVersionName == null) {
+ 
+ apply plugin: 'com.android.application'
+ apply plugin: 'kotlin-android'
+-// apply plugin: 'com.google.gms.google-services'
++apply plugin: 'com.google.gms.google-services'
+ apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
+ 
+ def keystoreProperties = new Properties()
+diff --git a/commet/android/build.gradle b/commet/android/build.gradle
+index 7b03921..a059ce6 100644
+--- a/commet/android/build.gradle
++++ b/commet/android/build.gradle
+@@ -8,7 +8,7 @@ buildscript {
+     dependencies {
+         classpath 'com.android.tools.build:gradle:7.2.0'
+         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+-        // classpath 'com.google.gms:google-services:4.3.8'
++        classpath 'com.google.gms:google-services:4.3.8'
+     }
+ }
+ 
+diff --git a/commet/lib/config/build_config.dart b/commet/lib/config/build_config.dart
+index b8bd49b..9b01ddb 100644
+--- a/commet/lib/config/build_config.dart
++++ b/commet/lib/config/build_config.dart
+@@ -19,7 +19,7 @@ class BuildConfig {
+   static const String BUILD_DETAIL =
+       String.fromEnvironment('BUILD_DETAIL', defaultValue: "default");
+ 
+-  static const bool ENABLE_GOOGLE_SERVICES = false;
++  static const bool ENABLE_GOOGLE_SERVICES = true;
+ 
+   static const bool DEBUG = _buildMode == _Constants._debug;
+ 
+diff --git a/commet/lib/utils/notification/android/firebase_push_notifier.dart b/commet/lib/utils/notification/android/firebase_push_notifier.dart
+index c6f7b7c..41a8864 100644
+--- a/commet/lib/utils/notification/android/firebase_push_notifier.dart
++++ b/commet/lib/utils/notification/android/firebase_push_notifier.dart
+@@ -4,8 +4,8 @@ import 'package:commet/main.dart';
+ import 'package:commet/utils/notification/android/android_notifier.dart';
+ import 'package:commet/utils/notification/notification_content.dart';
+ import 'package:commet/utils/notification/notifier.dart';
+-// import 'package:firebase_core/firebase_core.dart';
+-// import 'package:firebase_messaging/firebase_messaging.dart';
++import 'package:firebase_core/firebase_core.dart';
++import 'package:firebase_messaging/firebase_messaging.dart';
+ 
+ @pragma('vm:entry-point')
+ Future<void> onBackgroundMessage(dynamic message) async {
+@@ -84,8 +84,8 @@ class FirebasePushNotifier implements Notifier {
+   @override
+   bool get enabled => true;
+ 
+-  static dynamic Firebase;
+-  static dynamic FirebaseMessaging;
++  // static dynamic Firebase;
++  // static dynamic FirebaseMessaging;
+ 
+   @override
+   Future<void> init() async {
+diff --git a/commet/pubspec.yaml b/commet/pubspec.yaml
+index 9febcfb..40e1eca 100644
+--- a/commet/pubspec.yaml
++++ b/commet/pubspec.yaml
+@@ -82,8 +82,8 @@ dependencies:
+   sqflite: ^2.3.0
+   sqflite_common_ffi: ^2.3.0+3
+   unifiedpush: ^5.0.1
+-  # firebase_core: ^2.22.0
+-  # firebase_messaging: ^14.7.4
++  firebase_core: ^2.22.0
++  firebase_messaging: ^14.7.4
+ 
+ dev_dependencies:
+   build_runner:
