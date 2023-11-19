@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/main.dart';
 import 'package:commet/ui/pages/setup/setup_page.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:commet/ui/navigation/navigation_utils.dart';
