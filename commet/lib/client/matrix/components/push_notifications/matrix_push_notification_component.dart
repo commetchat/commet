@@ -15,7 +15,7 @@ class MatrixPushNotificationComponent
 
   @override
   Future<void> ensurePushNotificationsRegistered(
-      String pushKey, String pushServer, String deviceName,
+      String pushKey, Uri pushServer, String deviceName,
       {Map<String, dynamic>? extraData}) async {
     var matrixClient = client.getMatrixClient();
 
@@ -32,18 +32,17 @@ class MatrixPushNotificationComponent
         appDisplayName: BuildConfig.appName,
         data: PusherData(
           format: "event_id_only",
-          url: Uri.parse(pushServer),
+          url: pushServer,
           additionalProperties: extraData ?? {},
         ),
         deviceDisplayName: deviceName,
         kind: "http",
         lang: "en");
-
     await matrixClient.postPusher(pusher, append: true);
   }
 
   Future<void> cleanOldPushers(
-      String? currentPushKey, String deviceName) async {
+      String? currentPushKey, String deviceName, Uri pushGateway) async {
     var matrixClient = client.getMatrixClient();
     var pushers = await matrixClient.getPushers();
 
@@ -51,7 +50,8 @@ class MatrixPushNotificationComponent
     if (pushers != null) {
       for (var pusher in pushers) {
         if (pusher.deviceDisplayName == deviceName &&
-            pusher.pushkey != currentPushKey) {
+            (pusher.pushkey != currentPushKey ||
+                pusher.data.url != pushGateway)) {
           await matrixClient.deletePusher(pusher);
         }
       }
@@ -59,21 +59,27 @@ class MatrixPushNotificationComponent
   }
 
   @override
-  void postLoginInit() async {
+  Future<void> updatePushers() async {
     var notifier = notificationManager.notifier;
     var key = await notifier?.getToken();
     var mxClient = client.getMatrixClient();
     var extraData = notifier?.extraRegistrationData();
     var name = mxClient.clientName;
+    var uri = Uri.https(preferences.pushGateway, "/_matrix/push/v1/notify");
 
-    await cleanOldPushers(key, name);
+    await cleanOldPushers(key, name, uri);
 
     if (key == null) {
       return;
     }
 
-    await ensurePushNotificationsRegistered(
-        key, "http://push.commet.chat/_matrix/push/v1/notify", name,
+    print("Registering with push gateway: $uri");
+    await ensurePushNotificationsRegistered(key, uri, name,
         extraData: extraData);
+  }
+
+  @override
+  void postLoginInit() async {
+    updatePushers();
   }
 }

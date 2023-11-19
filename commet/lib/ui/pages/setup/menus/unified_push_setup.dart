@@ -121,7 +121,7 @@ If you already have a Unified Push compatible distributor app installed, you can
           tiamat.Text.labelEmphasised("Endpoint"),
           tiamat.Text.labelLow(notifier?.endpoint == null
               ? "No endpoint was registered, something went wrong"
-              : notifier!.endpoint!)
+              : notifier!.endpoint!),
         ],
       ),
     );
