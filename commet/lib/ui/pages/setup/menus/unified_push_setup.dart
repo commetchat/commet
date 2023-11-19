@@ -52,14 +52,22 @@ class UnifiedPushSetupViewState extends State<UnifiedPushSetupView> {
     wasUnifiedPushAlreadyConfigured = preferences.unifiedPushEnabled != null;
     notifier = notificationManager.notifier as UnifiedPushNotifier?;
     notifier?.onEndpointChanged.stream.listen((event) => onEndpointChanged());
-
     unifiedPushEnabled = preferences.unifiedPushEnabled == true;
+
+    getInitialToken();
 
     if (wasUnifiedPushAlreadyConfigured) {
       loading = false;
     }
 
     super.initState();
+  }
+
+  void getInitialToken() async {
+    var token = await notifier?.getToken();
+    setState(() {
+      endpoint = token;
+    });
   }
 
   @override
