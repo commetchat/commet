@@ -86,7 +86,8 @@ class SettingsCategoryApp implements SettingsCategory {
               pageBuilder: (context) {
                 return const WindowSettingsPage();
               }),
-        if (BuildConfig.ANDROID)
+        // We really only need to configure on unified push
+        if (BuildConfig.ANDROID && !BuildConfig.ENABLE_GOOGLE_SERVICES)
           SettingsTab(
               label: labelSettingsAppNotifications,
               icon: m.Icons.notifications,
