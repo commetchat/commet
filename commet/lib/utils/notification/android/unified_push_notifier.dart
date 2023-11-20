@@ -94,7 +94,7 @@ class UnifiedPushNotifier implements Notifier {
     var user = client.getPeer(event!.senderId);
     await user.loading;
 
-    notifier.notify(MessageNotificationContent(
+    notificationManager.notify(MessageNotificationContent(
         senderName: user.displayName,
         roomName: room.displayName,
         content: event.body!,

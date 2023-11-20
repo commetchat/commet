@@ -4,8 +4,10 @@ import 'package:commet/config/build_config.dart';
 import 'package:commet/utils/notification/android/firebase_push_notifier.dart';
 import 'package:commet/utils/notification/android/unified_push_notifier.dart';
 import 'package:commet/utils/notification/linux/linux_notifier.dart';
+import 'package:commet/utils/notification/modifiers/suppress_active_room.dart';
+import 'package:commet/utils/notification/modifiers/suppress_other_device_active.dart';
 import 'package:commet/utils/notification/notification_content.dart';
-import 'package:commet/utils/notification/notification_modifiers.dart';
+import 'package:commet/utils/notification/modifiers/notification_modifiers.dart';
 import 'package:commet/utils/notification/notifier.dart';
 import 'package:commet/utils/notification/windows/windows_notifier.dart';
 
@@ -40,7 +42,11 @@ class NotificationManager {
 
   Future<void> init() async {
     _modifiers.clear;
-    addModifier(NotificationModifierDontNotifyActiveRoom());
+    addModifier(NotificationModifierSuppressActiveRoom());
+    if (BuildConfig.ANDROID) {
+      addModifier(NotificationModifierSuppressOtherActiveDevice());
+    }
+
     notifierLoading = _notifier?.init();
   }
 
@@ -60,7 +66,7 @@ class NotificationManager {
 
     if (!bypassModifiers) {
       for (var modifier in _modifiers) {
-        content = modifier.process(content!);
+        content = await modifier.process(content!);
         if (content == null) return;
       }
     }

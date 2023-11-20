@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 
+enum NotificationPriority { normal, low }
+
 class NotificationContent {
   String title;
   String content;
+  NotificationPriority priority;
 
-  NotificationContent({required this.title, required this.content});
+  NotificationContent(
+      {required this.title,
+      required this.content,
+      this.priority = NotificationPriority.normal});
 }
 
 class MessageNotificationContent extends NotificationContent {

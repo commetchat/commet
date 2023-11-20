@@ -136,6 +136,7 @@ class AndroidNotifier implements Notifier {
         groupAlertBehavior: GroupAlertBehavior.children,
         styleInformation: style,
         shortcutId: content.roomId,
+        silent: content.priority == NotificationPriority.low,
         bubbleActivity:
             bubblesEnabled ? "chat.commet.commetapp.BubbleActivity" : null,
         bubbleExtra: bubblesEnabled
