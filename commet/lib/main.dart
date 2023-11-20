@@ -8,6 +8,7 @@ import 'package:commet/config/build_config.dart';
 import 'package:commet/config/preferences.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
 import 'package:commet/ui/pages/bubble/bubble_page.dart';
+import 'package:commet/ui/pages/fatal_error/fatal_error_page.dart';
 import 'package:commet/ui/pages/login/login_page.dart';
 import 'package:commet/ui/pages/main/main_page.dart';
 import 'package:commet/utils/custom_uri.dart';
@@ -108,23 +109,29 @@ void ensureBindingInit() {
   );
 
   WidgetsFlutterBinding.ensureInitialized();
-
-  WidgetsBinding.instance.addObserver(AppStarter());
 }
 
 void main() async {
-  ensureBindingInit();
+  try {
+    ensureBindingInit();
 
-  isHeadless = Platform.isAndroid &&
-      AppLifecycleState.detached == WidgetsBinding.instance.lifecycleState;
+    isHeadless = Platform.isAndroid &&
+        AppLifecycleState.detached == WidgetsBinding.instance.lifecycleState;
 
-  await initNecessary();
+    if (isHeadless) {
+      WidgetsBinding.instance.addObserver(AppStarter());
+    }
 
-  if (isHeadless) {
-    return;
+    await initNecessary();
+
+    if (isHeadless) {
+      return;
+    }
+
+    await startGui();
+  } catch (error, stacktrace) {
+    runApp(FatalErrorPage(error, stacktrace));
   }
-
-  await startGui();
 }
 
 Future<void> startGui() async {
@@ -280,7 +287,7 @@ class AppStarter with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (kDebugMode) {
-      print("########## APP LIFECYCLE STATE CHANGED!!!! ${state}");
+      print("########## APP LIFECYCLE STATE CHANGED!!!! $state");
     }
 
     if (state == AppLifecycleState.detached) return;

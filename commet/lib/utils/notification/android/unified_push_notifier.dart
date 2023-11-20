@@ -82,6 +82,7 @@ class UnifiedPushNotifier implements Notifier {
     var json = jsonDecode(data) as Map<String, dynamic>;
 
     var notifData = json['notification'] as Map<String, dynamic>;
+    print(notifData);
 
     var roomId = notifData['room_id'] as String;
     var eventId = notifData['event_id'] as String;
