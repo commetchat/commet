@@ -29,8 +29,7 @@ class AndroidNotifier implements Notifier {
   Future<void> init() async {
     flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
-    const settings =
-        AndroidInitializationSettings("app_icon_transparent_cropped");
+    const settings = AndroidInitializationSettings("notification_icon");
     const initSettings = InitializationSettings(android: settings);
 
     await flutterLocalNotificationsPlugin?.initialize(initSettings,
@@ -127,7 +126,7 @@ class AndroidNotifier implements Notifier {
         "messages", "Notifies when a message is received",
         importance: Importance.high,
         priority: Priority.high,
-        icon: "app_icon_transparent_cropped",
+        icon: "notification_icon",
         largeIcon: roomAvatarBytes != null
             ? ByteArrayAndroidBitmap(roomAvatarBytes)
             : null,

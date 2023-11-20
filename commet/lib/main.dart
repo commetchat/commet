@@ -112,17 +112,25 @@ void ensureBindingInit() {
 void main() async {
   ensureBindingInit();
 
-  String? initialRoomId;
-  String? initialClientId;
-
   isHeadless = Platform.isAndroid &&
       AppLifecycleState.detached == WidgetsBinding.instance.lifecycleState;
 
   await initNecessary();
 
+  WidgetsBinding.instance.addObserver(AppStarter());
+
   if (isHeadless) {
     return;
   }
+
+  await startGui();
+}
+
+Future<void> startGui() async {
+  String? initialRoomId;
+  String? initialClientId;
+
+  isHeadless = false;
 
   if (Platform.isAndroid) {
     var intent = await ReceiveIntent.getInitialIntent();
@@ -264,5 +272,18 @@ class _AppViewState extends State<AppView> {
               (route) => false,
             );
           });
+  }
+}
+
+class AppStarter with WidgetsBindingObserver {
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.detached) return;
+
+    if (isHeadless) {
+      startGui();
+    }
+
+    super.didChangeAppLifecycleState(state);
   }
 }
