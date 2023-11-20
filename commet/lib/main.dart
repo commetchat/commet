@@ -17,6 +17,7 @@ import 'package:commet/utils/notification/notification_manager.dart';
 import 'package:commet/utils/scaled_app.dart';
 import 'package:commet/utils/shortcuts_manager.dart';
 import 'package:commet/utils/window_management.dart';
+import 'package:flutter/foundation.dart';
 
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
@@ -107,6 +108,8 @@ void ensureBindingInit() {
   );
 
   WidgetsFlutterBinding.ensureInitialized();
+
+  WidgetsBinding.instance.addObserver(AppStarter());
 }
 
 void main() async {
@@ -116,8 +119,6 @@ void main() async {
       AppLifecycleState.detached == WidgetsBinding.instance.lifecycleState;
 
   await initNecessary();
-
-  WidgetsBinding.instance.addObserver(AppStarter());
 
   if (isHeadless) {
     return;
@@ -278,6 +279,10 @@ class _AppViewState extends State<AppView> {
 class AppStarter with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (kDebugMode) {
+      print("########## APP LIFECYCLE STATE CHANGED!!!! ${state}");
+    }
+
     if (state == AppLifecycleState.detached) return;
 
     if (isHeadless) {
