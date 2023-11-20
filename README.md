@@ -63,7 +63,7 @@ When building Commet, there are some additional command line arguments that must
 **Required**
 | **Argument** | **Valid Values**                                                          | **Description**                                                                                              |
 |--------------|---------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
-| PLATLFORM    | 'desktop', 'mobile', 'linux', 'windows', 'macos', 'android', 'ios', 'web' | Defines which platform to build for                                                                          |
+| PLATFORM    | 'desktop', 'mobile', 'linux', 'windows', 'macos', 'android', 'ios', 'web' | Defines which platform to build for                                                                          |
 | BUILD_MODE   | 'release', 'debug'                                                        | When building with 'debug' flag, additional debug information will be shown                                  |
 
 **Optional**
