@@ -30,6 +30,13 @@ Commet is a client for [Matrix](https://matrix.org) focused on providing a featu
 - Spaces
 - Emoji verification & cross signing
 
+# Translation
+Help translate Commet to your language on [Weblate](https://hosted.weblate.org/projects/commetchat/commet/)
+
+<a href="https://hosted.weblate.org/engage/commetchat/">
+<img src="https://hosted.weblate.org/widget/commetchat/commet/multi-auto.svg" alt="Translation status" />
+</a>
+
 # Development
 Commet is built using [Flutter](https://flutter.dev), currently v3.13.5. 
 
