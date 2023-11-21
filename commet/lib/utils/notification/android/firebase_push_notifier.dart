@@ -59,10 +59,9 @@ class FirebasePushNotifier implements Notifier {
     await notifier.init();
 
     var key = await fcm.getToken();
-    if (key != null) {
-      preferences.setFcmKey(key);
-    }
-    print("Got fcm token: $key");
+
+    preferences.setFcmKey(key);
+
     preferences.setPushGateway("push.commet.chat");
     fcm.setListeners(onMessage: onMessage);
   }
