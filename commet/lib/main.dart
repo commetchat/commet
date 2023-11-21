@@ -142,12 +142,6 @@ Future<void> initGuiRequirements() async {
     WindowManagement.init(),
     UnicodeEmojis.load(),
   ]);
-
-  double scale = preferences.appScale;
-
-  ScaledWidgetsFlutterBinding.instance.scaleFactor = (deviceSize) {
-    return scale;
-  };
 }
 
 /// Initializes gui requirements and launches the gui
@@ -167,6 +161,12 @@ Future<void> startGui() async {
       }
     }
   }
+
+  double scale = preferences.appScale;
+
+  ScaledWidgetsFlutterBinding.instance.scaleFactor = (deviceSize) {
+    return scale;
+  };
 
   runApp(App(
     clientManager: clientManager!,
