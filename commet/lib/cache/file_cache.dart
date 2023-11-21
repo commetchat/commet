@@ -38,6 +38,8 @@ class FileCacheInstance {
     db = await BoxCollection.open("file_cache", {"files"},
         path: await AppConfig.getDatabasePath());
     filesBox = await db!.openBox("files");
+
+    clean();
   }
 
   Future<bool> hasFile(String identifier) async {
