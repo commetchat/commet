@@ -3,8 +3,6 @@ import 'dart:io';
 import 'package:commet/cache/file_cache.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/component.dart';
-import 'package:commet/client/matrix/matrix_client.dart';
-import 'package:commet/config/build_config.dart';
 import 'package:commet/config/preferences.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
 import 'package:commet/ui/pages/bubble/bubble_page.dart';
@@ -18,10 +16,8 @@ import 'package:commet/utils/notification/notification_manager.dart';
 import 'package:commet/utils/scaled_app.dart';
 import 'package:commet/utils/shortcuts_manager.dart';
 import 'package:commet/utils/window_management.dart';
-import 'package:flutter/foundation.dart';
 
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/adapters.dart';
 import 'package:media_kit/media_kit.dart';
 
 import 'package:provider/provider.dart';
@@ -30,10 +26,6 @@ import 'package:tiamat/config/style/theme_changer.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:tiamat/config/style/theme_dark.dart';
 import 'package:tiamat/config/style/theme_light.dart';
-
-import 'cache/cached_file.dart';
-import 'client/simulated/simulated_client.dart';
-import 'config/app_config.dart';
 
 final GlobalKey<NavigatorState> navigator = GlobalKey();
 FileCacheInstance fileCache = FileCacheInstance();
@@ -46,10 +38,13 @@ ClientManager? clientManager;
 
 bool isHeadless = false;
 
+Future<void>? loading;
+
 @pragma('vm:entry-point')
 void bubble() async {
   ensureBindingInit();
   await initNecessary();
+  await initGuiRequirements();
 
   String? initialRoomId;
   String? initialClientId;
@@ -89,28 +84,6 @@ void bubble() async {
       )));
 }
 
-Future<void> initNecessary() async {
-  await preferences.init();
-
-  clientManager =
-      await diagnostics.timeAsync("App initialization", () => initApp());
-
-  shortcutsManager.init();
-  notificationManager.init();
-
-  NeedsPostLoginInit.doPostLoginInit();
-}
-
-void ensureBindingInit() {
-  ScaledWidgetsFlutterBinding.ensureInitialized(
-    scaleFactor: (deviceSize) {
-      return 1;
-    },
-  );
-
-  WidgetsFlutterBinding.ensureInitialized();
-}
-
 void main() async {
   try {
     ensureBindingInit();
@@ -118,14 +91,14 @@ void main() async {
     isHeadless = Platform.isAndroid &&
         AppLifecycleState.detached == WidgetsBinding.instance.lifecycleState;
 
+    loading = initNecessary();
+
     if (isHeadless) {
       WidgetsBinding.instance.addObserver(AppStarter());
-    }
-
-    await initNecessary();
-
-    if (isHeadless) {
+      await loading;
       return;
+    } else {
+      await loading;
     }
 
     await startGui();
@@ -134,11 +107,55 @@ void main() async {
   }
 }
 
+WidgetsBinding ensureBindingInit() {
+  ScaledWidgetsFlutterBinding.ensureInitialized(
+    scaleFactor: (deviceSize) {
+      return 1;
+    },
+  );
+
+  return WidgetsFlutterBinding.ensureInitialized();
+}
+
+/// Initializes the bare necessities for the app to run in headless mode
+Future<void> initNecessary() async {
+  await preferences.init();
+
+  await Future.wait([
+    fileCache.init(),
+    ClientManager.init(),
+  ]);
+
+  shortcutsManager.init();
+  notificationManager.init();
+
+  NeedsPostLoginInit.doPostLoginInit();
+}
+
+/// Initializes everything that is needed to run in GUI mode
+Future<void> initGuiRequirements() async {
+  isHeadless = false;
+
+  MediaKit.ensureInitialized();
+
+  Future.wait([
+    WindowManagement.init(),
+    UnicodeEmojis.load(),
+  ]);
+
+  double scale = preferences.appScale;
+
+  ScaledWidgetsFlutterBinding.instance.scaleFactor = (deviceSize) {
+    return scale;
+  };
+}
+
+/// Initializes gui requirements and launches the gui
 Future<void> startGui() async {
   String? initialRoomId;
   String? initialClientId;
 
-  isHeadless = false;
+  initGuiRequirements();
 
   if (Platform.isAndroid) {
     var intent = await ReceiveIntent.getInitialIntent();
@@ -151,56 +168,12 @@ Future<void> startGui() async {
     }
   }
 
-  double scale = preferences.appScale;
-  var theme = preferences.theme;
-
-  ScaledWidgetsFlutterBinding.instance.scaleFactor = (deviceSize) {
-    return scale;
-  };
-
   runApp(App(
     clientManager: clientManager!,
-    initialTheme: theme,
+    initialTheme: preferences.theme,
     initialClientId: initialClientId,
     initialRoom: initialRoomId,
   ));
-}
-
-Future<ClientManager> initApp() async {
-  var adapter = CachedFileAdapter();
-
-  MediaKit.ensureInitialized();
-
-  if (!Hive.isAdapterRegistered(adapter.typeId)) {
-    Hive.registerAdapter(adapter);
-  }
-
-  var dbPath = await AppConfig.getDatabasePath();
-
-  await Future.wait([
-    diagnostics.timeAsync(
-      "Cleaning file cache",
-      () => fileCache.init().then((value) => fileCache.clean()),
-    ),
-    diagnostics.timeAsync("Loading default emoji", () => UnicodeEmojis.load()),
-    WindowManagement.init(),
-    if (!BuildConfig.LINUX) Hive.initFlutter(dbPath),
-  ]);
-
-  if (BuildConfig.LINUX) {
-    Hive.init(dbPath);
-  }
-
-  final clientManager = ClientManager();
-
-  await diagnostics.timeAsync("Loading clients", () async {
-    await Future.wait([
-      MatrixClient.loadFromDB(clientManager),
-      if (BuildConfig.DEBUG) SimulatedClient.loadFromDB(clientManager),
-    ]);
-  });
-
-  return clientManager;
 }
 
 class App extends StatelessWidget {
@@ -285,12 +258,11 @@ class _AppViewState extends State<AppView> {
 
 class AppStarter with WidgetsBindingObserver {
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (kDebugMode) {
-      print("########## APP LIFECYCLE STATE CHANGED!!!! $state");
-    }
-
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
     if (state == AppLifecycleState.detached) return;
+    if (loading != null) {
+      await loading;
+    }
 
     if (isHeadless) {
       startGui();

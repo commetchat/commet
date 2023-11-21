@@ -17,7 +17,6 @@ class ShortcutsManager {
     if (Platform.isAndroid) {
       shortcuts = FlutterShortcuts();
       loading = shortcuts!.initialize(debug: true);
-      shortcuts!.listenAction(receviedShortcutAction);
     }
 
     EventBus.onRoomOpened.stream.listen(onRoomOpenedInUI);
@@ -67,12 +66,6 @@ class ShortcutsManager {
 
   Future<void> clearAllShortcuts() async {
     await shortcuts?.clearShortcutItems();
-  }
-
-  void receviedShortcutAction(String action) {
-    if (kDebugMode) {
-      print("Received shortcut action: $action");
-    }
   }
 
   void onRoomOpenedInUI(Room event) async {

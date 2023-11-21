@@ -29,6 +29,12 @@ class FileCacheInstance {
   }
 
   Future<void> init() async {
+    var adapter = CachedFileAdapter();
+
+    if (!Hive.isAdapterRegistered(adapter.typeId)) {
+      Hive.registerAdapter(adapter);
+    }
+
     db = await BoxCollection.open("file_cache", {"files"},
         path: await AppConfig.getDatabasePath());
     filesBox = await db!.openBox("files");

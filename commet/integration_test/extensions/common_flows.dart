@@ -58,8 +58,9 @@ extension CommonFlows on WidgetTester {
 
   Future<App> setupApp() async {
     await clearUserData();
-    var clientManager = await initApp();
-    return App(clientManager: clientManager);
+    await initNecessary();
+    await initGuiRequirements();
+    return App(clientManager: clientManager!);
   }
 
   Future<void> login(App app) async {
