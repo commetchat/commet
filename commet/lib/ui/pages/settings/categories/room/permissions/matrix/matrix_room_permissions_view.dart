@@ -1,3 +1,4 @@
+import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/pages/settings/categories/room/permissions/matrix/matrix_room_permissions_page.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/atoms/tile.dart';
@@ -66,15 +67,24 @@ class _MatrixRoomPermissionsViewState extends State<MatrixRoomPermissionsView> {
       backgroundColor: Colors.transparent,
       body: ReorderableList(
           itemBuilder: (context, index) {
-            return ReorderableDragStartListener(
-              key: Key('$index'),
-              enabled:
-                  widget.canEdit && entries[index] is MatrixRoomPermissionEntry,
-              index: index,
-              child: Container(
+            var key = Key('$index');
+            var enabled =
+                widget.canEdit && entries[index] is MatrixRoomPermissionEntry;
+            if (BuildConfig.MOBILE) {
+              return ReorderableDelayedDragStartListener(
+                key: key,
+                enabled: enabled,
+                index: index,
                 child: itemBuilder(context, index),
-              ),
-            );
+              );
+            } else {
+              return ReorderableDragStartListener(
+                key: key,
+                enabled: enabled,
+                index: index,
+                child: itemBuilder(context, index),
+              );
+            }
           },
           shrinkWrap: true,
           itemCount: entries.length,
@@ -151,33 +161,45 @@ class _MatrixRoomPermissionsViewState extends State<MatrixRoomPermissionsView> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    children: [
-                      if (item.icon != null)
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(4, 0, 12, 0),
-                          child: Icon(item.icon),
-                        ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                  Flexible(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+                      child: Row(
                         children: [
-                          tiamat.Text.labelEmphasised(item.title),
-                          tiamat.Text.labelLow(item.description)
+                          if (item.icon != null)
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(4, 0, 12, 0),
+                              child: Icon(item.icon),
+                            ),
+                          Flexible(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                tiamat.Text.labelEmphasised(item.title),
+                                tiamat.Text.labelLow(item.description)
+                              ],
+                            ),
+                          ),
                         ],
                       ),
-                    ],
+                    ),
                   ),
                   Row(
                     children: [
-                      if (item.powerLevel != item.originalPowerLevel)
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                          child: Icon(
-                            Icons.edit,
-                            color: Theme.of(context).colorScheme.primary,
-                            size: 15,
-                          ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(8, 0, 4, 0),
+                        child: SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: item.powerLevel != item.originalPowerLevel
+                              ? Icon(
+                                  Icons.edit,
+                                  color: Theme.of(context).colorScheme.primary,
+                                  size: 15,
+                                )
+                              : null,
                         ),
+                      ),
                       tiamat.Text.tiny(item.powerLevel.toString()),
                     ],
                   )
