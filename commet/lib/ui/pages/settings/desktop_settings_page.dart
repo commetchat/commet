@@ -38,23 +38,11 @@ class DesktopSettingsPageState extends State<DesktopSettingsPage> {
         children: [
           tabSelector(context),
           Expanded(
-            child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                switchInCurve: Curves.easeInOutCubic,
-                transitionBuilder: (Widget child, Animation<double> animation) {
-                  return SlideTransition(
-                    position: Tween(
-                      begin: const Offset(0.0, 1.5),
-                      end: const Offset(0.0, 0.0),
-                    ).animate(animation),
-                    child: child,
-                  );
-                },
-                child: categories[selectedCategoryIndex]
-                        .tabs[selectedTabIndex]
-                        .makeScrollable
-                    ? SingleChildScrollView(child: buildContent())
-                    : buildContent()),
+            child: categories[selectedCategoryIndex]
+                    .tabs[selectedTabIndex]
+                    .makeScrollable
+                ? SingleChildScrollView(child: buildContent())
+                : buildContent(),
           )
         ],
       ),

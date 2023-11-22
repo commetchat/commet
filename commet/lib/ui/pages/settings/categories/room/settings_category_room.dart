@@ -93,7 +93,7 @@ class SettingsCategoryRoom implements SettingsCategory {
             icon: Icons.admin_panel_settings,
             makeScrollable: false,
             pageBuilder: (context) {
-              return MatrixRoomPermissionsPage(room as MatrixRoom);
+              return MatrixRoomPermissionsPage((room as MatrixRoom).matrixRoom);
             }),
       if (preferences.developerMode)
         SettingsTab(

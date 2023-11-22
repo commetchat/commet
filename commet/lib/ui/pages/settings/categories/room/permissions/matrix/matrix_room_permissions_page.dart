@@ -1,7 +1,7 @@
-import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/ui/pages/settings/categories/room/permissions/matrix/matrix_room_permissions_view.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart';
+import 'package:matrix/matrix.dart' as matrix;
 
 class MatrixRoomPermissionEntry {
   String title;
@@ -37,7 +37,7 @@ class MatrixRoomRoleEntry {
 
 class MatrixRoomPermissionsPage extends StatefulWidget {
   const MatrixRoomPermissionsPage(this.room, {super.key});
-  final MatrixRoom room;
+  final matrix.Room room;
 
   @override
   State<MatrixRoomPermissionsPage> createState() =>
@@ -45,95 +45,114 @@ class MatrixRoomPermissionsPage extends StatefulWidget {
 }
 
 class _MatrixRoomPermissionsPageState extends State<MatrixRoomPermissionsPage> {
-  final List<MatrixRoomRoleEntry> roles = [
-    // MatrixRoomRoleEntry(
-    //     name: "Founder", powerlevel: 101, icon: Icons.star_rounded),
-    MatrixRoomRoleEntry(name: "Admin", powerlevel: 100, icon: Icons.security),
-    MatrixRoomRoleEntry(
-        name: "Moderator", powerlevel: 50, icon: Icons.shield_rounded),
-    MatrixRoomRoleEntry(name: "Room Member", powerlevel: 0, icon: Icons.groups)
-  ];
+  late List<MatrixRoomRoleEntry> roles;
+  late List<MatrixRoomPermissionEntry> permissions;
 
-  final List<MatrixRoomPermissionEntry> permissions = [
-    MatrixRoomPermissionEntry(
-        key: "redact",
-        title: "Delete Messages",
-        description: "Allows the user to delete messages sent by others",
-        powerLevel: 50,
-        icon: Icons.delete),
-    MatrixRoomPermissionEntry(
-        key: "kick",
-        title: "Kick Users",
-        description: "Kick other users out of the room",
-        powerLevel: 50,
-        icon: Icons.gavel),
-    MatrixRoomPermissionEntry(
-        key: "ban",
-        title: "Ban",
-        description: "Ban other users from the room",
-        powerLevel: 100,
-        icon: Icons.gavel),
-    MatrixRoomPermissionEntry(
-        key: "events_default",
-        title: "Send Messages",
-        description: "Allows a user to send messages in this room",
-        powerLevel: 0,
-        icon: Icons.message),
-    MatrixRoomPermissionEntry(
-        key: "m.reaction",
-        keyParent: "events",
-        title: "Add Reactions",
-        description: "Add reactions to messages",
-        icon: Icons.favorite,
-        powerLevel: 0),
-    // MatrixRoomPermissionEntry(
-    //     key: "notifications",
-    //     title: "Ping room",
-    //     description: "Allows a user to notify all members of this room",
-    //     icon: Icons.notifications,
-    //     powerLevel: 50),
-    MatrixRoomPermissionEntry(
-        key: "m.room.avatar",
-        keyParent: "events",
-        title: "Set Room Avatar",
-        description: "Change the room avatar",
-        icon: Icons.image,
-        powerLevel: 50),
-    MatrixRoomPermissionEntry(
-        key: "m.room.name",
-        keyParent: "events",
-        title: "Change room name",
-        description: "Allows the user to change the name of this room",
-        powerLevel: 50,
-        icon: Icons.edit),
-    MatrixRoomPermissionEntry(
-        key: "m.room.topic",
-        keyParent: "events",
-        title: "Change topic",
-        description: "Allows the user to change the topic of this room",
-        icon: Icons.edit_note_rounded,
-        powerLevel: 50),
-    MatrixRoomPermissionEntry(
-        key: "m.room.history_visibility",
-        keyParent: "events",
-        title: "History Visibility",
-        description:
-            "Allows the user to change the visibility of chat history in this room",
-        powerLevel: 50,
-        icon: Icons.history),
-    MatrixRoomPermissionEntry(
-        key: "m.room.power_levels",
-        keyParent: "events",
-        title: "Change permissions",
-        description: "Allows the user to change permission",
-        powerLevel: 50,
-        icon: Icons.admin_panel_settings)
-  ];
+  void initPermissions() {
+    roles = [
+      // MatrixRoomRoleEntry(
+      //     name: "Founder", powerlevel: 101, icon: Icons.star_rounded),
+      MatrixRoomRoleEntry(name: "Admin", powerlevel: 100, icon: Icons.security),
+      MatrixRoomRoleEntry(
+          name: "Moderator", powerlevel: 50, icon: Icons.shield_rounded),
+      MatrixRoomRoleEntry(
+          name: "Room Member", powerlevel: 0, icon: Icons.groups)
+    ];
+
+    permissions = List.empty(growable: true);
+
+    if (widget.room.isSpace) {
+      permissions.addAll([
+        MatrixRoomPermissionEntry(
+            key: "m.space.child",
+            keyParent: "events",
+            title: "Manage Children",
+            description:
+                "Allows the user to manage which rooms are part of this space",
+            powerLevel: 50,
+            icon: Icons.list)
+      ]);
+    } else {
+      permissions.addAll([
+        MatrixRoomPermissionEntry(
+            key: "redact",
+            title: "Delete Messages",
+            description: "Allows the user to delete messages sent by others",
+            powerLevel: 50,
+            icon: Icons.delete),
+        MatrixRoomPermissionEntry(
+            key: "events_default",
+            title: "Send Messages",
+            description: "Allows a user to send messages in this room",
+            powerLevel: 0,
+            icon: Icons.message),
+        MatrixRoomPermissionEntry(
+            key: "m.reaction",
+            keyParent: "events",
+            title: "Add Reactions",
+            description: "Add reactions to messages",
+            icon: Icons.favorite,
+            powerLevel: 0),
+        MatrixRoomPermissionEntry(
+            key: "m.room.history_visibility",
+            keyParent: "events",
+            title: "History Visibility",
+            description:
+                "Allows the user to change the visibility of chat history in this room",
+            powerLevel: 50,
+            icon: Icons.history),
+      ]);
+    }
+
+    permissions.addAll([
+      MatrixRoomPermissionEntry(
+          key: "m.room.avatar",
+          keyParent: "events",
+          title: "Set Room Avatar",
+          description: "Change the room avatar",
+          icon: Icons.image,
+          powerLevel: 50),
+      MatrixRoomPermissionEntry(
+          key: "m.room.power_levels",
+          keyParent: "events",
+          title: "Change permissions",
+          description: "Allows the user to change permission settings",
+          powerLevel: 50,
+          icon: Icons.admin_panel_settings),
+      MatrixRoomPermissionEntry(
+          key: "m.room.name",
+          keyParent: "events",
+          title: "Change room name",
+          description: "Allows the user to change the name of this room",
+          powerLevel: 50,
+          icon: Icons.edit),
+      MatrixRoomPermissionEntry(
+          key: "m.room.topic",
+          keyParent: "events",
+          title: "Change topic",
+          description: "Allows the user to change the topic of this room",
+          icon: Icons.edit_note_rounded,
+          powerLevel: 50),
+      MatrixRoomPermissionEntry(
+          key: "kick",
+          title: "Kick Users",
+          description: "Kick other users out of the room",
+          powerLevel: 50,
+          icon: Icons.gavel),
+      MatrixRoomPermissionEntry(
+          key: "ban",
+          title: "Ban",
+          description: "Ban other users from the room",
+          powerLevel: 100,
+          icon: Icons.gavel),
+    ]);
+  }
 
   @override
   void initState() {
-    var mxRoom = widget.room.matrixRoom;
-    var event = mxRoom.states["m.room.power_levels"]![""] as Event;
+    initPermissions();
+
+    var event = widget.room.states["m.room.power_levels"]![""] as Event;
     var content = event.content;
 
     for (int i = 0; i < permissions.length; i++) {
@@ -160,14 +179,13 @@ class _MatrixRoomPermissionsPageState extends State<MatrixRoomPermissionsPage> {
       permissions,
       roles,
       setPermissions: setPermissions,
-      canEdit:
-          widget.room.matrixRoom.canChangeStateEvent("m.room.power_levels"),
+      canEdit: widget.room.canChangeStateEvent("m.room.power_levels"),
     );
   }
 
   Future<void> setPermissions(
       List<MatrixRoomPermissionEntry> permissions) async {
-    var mxRoom = widget.room.matrixRoom;
+    var mxRoom = widget.room;
     var event = mxRoom.states["m.room.power_levels"]![""] as Event;
     var content = event.content;
 
