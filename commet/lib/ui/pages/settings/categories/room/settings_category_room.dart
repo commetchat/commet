@@ -1,10 +1,12 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/emoticon/emoticon_component.dart';
+import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/settings/categories/room/appearance/room_appearance_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/room/developer/room_developer_settings_view.dart';
 import 'package:commet/ui/pages/settings/categories/room/emoji_packs/room_emoji_pack_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/room/general/room_general_settings_page.dart';
+import 'package:commet/ui/pages/settings/categories/room/permissions/matrix/matrix_room_permissions_page.dart';
 import 'package:commet/ui/pages/settings/categories/room/security/room_security_settings_page.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
 import 'package:commet/ui/pages/settings/settings_tab.dart';
@@ -84,6 +86,14 @@ class SettingsCategoryRoom implements SettingsCategory {
             icon: Icons.emoji_emotions,
             pageBuilder: (context) {
               return RoomEmojiPackSettingsPage(room);
+            }),
+      if (room is MatrixRoom)
+        SettingsTab(
+            label: "Permissions",
+            icon: Icons.admin_panel_settings,
+            makeScrollable: false,
+            pageBuilder: (context) {
+              return MatrixRoomPermissionsPage(room as MatrixRoom);
             }),
       if (preferences.developerMode)
         SettingsTab(
