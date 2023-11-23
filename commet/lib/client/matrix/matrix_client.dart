@@ -231,7 +231,7 @@ class MatrixClient extends Client {
         KeyVerificationMethod.emoji,
         KeyVerificationMethod.numbers
       },
-      importantStateEvents: {"im.ponies.room_emotes"},
+      importantStateEvents: {"im.ponies.room_emotes", "m.room.power_levels"},
       supportedLoginTypes: {matrix.AuthenticationTypes.password},
       nativeImplementations: nativeImplementations,
       logLevel:
