@@ -546,5 +546,41 @@
     "description": "Button text to generate a recovery key",
     "type": "text",
     "placeholders": {}
+  },
+  "labelEmojiPickerStickerTab": "Pegatina",
+  "@labelEmojiPickerStickerTab": {
+    "description": "Label for the sticker tab in the emoji picker",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomsList": "Salas",
+  "@labelRoomsList": {
+    "description": "Header label for the list of rooms",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelEmojiPickerEmojiTab": "Emoticonos",
+  "@labelEmojiPickerEmojiTab": {
+    "description": "Label for the emoji tab in emoji picker",
+    "type": "text",
+    "placeholders": {}
+  },
+  "notificationReceivedMessagePlaceholder": "Enviar un mensaje",
+  "@notificationReceivedMessagePlaceholder": {
+    "description": "Placeholder text for the body of a notification, when the message either doesnt contain a displayable body, or the body has been hidden by notification settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "matrixClientOlmMissingMessage": "libolm no está instalado o no se ha encontrado. El cifrado de extremo a extremo no estará disponible hasta que se resuelva este problema",
+  "@matrixClientOlmMissingMessage": {
+    "description": "Text that explains to the user that libolm dependency is not found",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelEmojiPickerGifTab": "GIF",
+  "@labelEmojiPickerGifTab": {
+    "description": "Label for the gif search tab in the emoji picker",
+    "type": "text",
+    "placeholders": {}
   }
 }
