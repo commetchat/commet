@@ -1,4 +1,7 @@
+import 'dart:ui';
+
 import 'package:commet/main.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/utils/notification/notification_content.dart';
 import 'package:commet/utils/background_tasks/mock_tasks.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +24,8 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
       performance(),
       windowSize(),
       notificationTests(),
-      backgroundTasks()
+      backgroundTasks(),
+      drawImage(),
     ].map<Widget>((e) {
       return Padding(
         padding: const EdgeInsets.fromLTRB(0, 3, 0, 3),
@@ -160,6 +164,40 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
           tiamat.Button(
               text: "Indeterminate",
               onTap: () => backgroundTaskManager.addTask(FakeBackgroundTask())),
+        ])
+      ],
+    );
+  }
+
+  Widget drawImage() {
+    return ExpansionTile(
+      title: const tiamat.Text.labelEmphasised("Draw Image"),
+      backgroundColor: Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+      collapsedBackgroundColor:
+          Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+      children: [
+        Wrap(spacing: 8, runSpacing: 8, children: [
+          tiamat.Button(
+              text: "Draw",
+              onTap: () async {
+                var client = clientManager!.clients
+                    .where((element) => element.self!.avatar != null)
+                    .first;
+
+                var avatar = client.self!.avatar;
+
+                var img = await shortcutsManager.createAvatarImage(
+                    placeholderColor: Colors.red,
+                    placeholderText: "A",
+                    imageProvider: avatar);
+                var bytes = await img.toByteData(format: ImageByteFormat.png);
+                if (mounted)
+                  AdaptiveDialog.show(context, title: "img",
+                      builder: (context) {
+                    return Image(
+                        image: MemoryImage(bytes!.buffer.asUint8List()));
+                  });
+              }),
         ])
       ],
     );
