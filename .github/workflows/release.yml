@@ -119,6 +119,57 @@ jobs:
           asset_name: commet-android.apk
           asset_content_type: application/vnd.android.package-archive
 
+  release-android-google-services:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: 'true'
+        
+      - name: Setup Flutter 
+        uses: subosito/flutter-action@v2.8.0
+        with:
+          flutter-version: '3.13.5'
+          channel: 'stable'
+
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 17
+
+      - name: Setup Tools
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ninja-build libgtk-3-dev libolm3 libmpv-dev mpv ffmpeg
+        
+      - name: Code Generation
+        run: |
+          cd $PROJECT_PATH
+          git apply scripts/apply_google_services.patch
+          dart run scripts/codegen.dart
+
+      - name: Setup Signatures
+        run: |
+          cd $PROJECT_PATH
+          dart run scripts/setup_android_release.dart --key_password ${{ secrets.ANDROID_KEY_PASSWORD }} --key_b64 ${{ secrets.ANDROID_KEY_STORE_B64 }}
+          
+      - name: Build APK
+        run: |
+          cd $PROJECT_PATH
+          dart run scripts/build_release.dart --platform android --version_tag ${{ github.event.release.tag_name || 'v0.0.0' }} --git_hash ${{ github.sha }} --enable_google_services true --build_detail google_services
+                    
+      - name: Upload to release
+        if: github.event_name == 'release'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: commet/build/app/outputs/flutter-apk/app-release.apk
+          asset_name: commet-android-google-services.apk
+          asset_content_type: application/vnd.android.package-archive
+
   release-linux-debian:
     runs-on: ubuntu-latest
     steps:
