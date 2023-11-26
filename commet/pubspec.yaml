@@ -1,168 +1,160 @@
 name: commet
-description: Your space to connect
-
-publish_to: 'none'
-
 version: 0.0.1+1
-
-environment:
+publish_to: none
+description: Your space to connect
+environment: 
   sdk: '>=3.1.0 <4.0.0'
 
-dependencies:
-  flutter:
-    sdk: flutter
-
-  provider: ^6.0.0
-  matrix:
-    git:
-      url: https://github.com/famedly/matrix-dart-sdk.git
-      ref: krille/add-matrix-sdk-database
+dependencies: 
+  build: any
+  build_config: ^1.1.1
+  crypto: ^3.0.2
+  desktop_drop: ^0.4.1
+  desktop_notifications: ^0.6.3
+  device_info_plus: ^9.0.3
+  fcm_shared_isolate: ^0.1.0
+  file_picker: ^5.2.10
+  flutter_blurhash: ^0.7.0
+  flutter_gen: ^5.3.1
+  flutter_markdown: ^0.6.9+1
   flutter_olm: ^1.2.0
   flutter_openssl_crypto: ^0.1.0
-  just_the_tooltip: ^0.0.12
-  flutter_localizations:
-    sdk: flutter
-  intl: any
-  intl_utils:
-  desktop_drop: ^0.4.1
-  test: ^1.24.3
-  tiamat:
-    path: ../tiamat/
-  crypto: ^3.0.2
-  path: ^1.8.2
-  path_provider: ^2.0.13
-  widgetbook_annotation: ^3.0.0
-  flutter_markdown: ^0.6.9+1
-
-  media_kit: ^1.1.7                              # Primary package.
-  media_kit_video: ^1.1.8                        # For video rendering.
-  media_kit_libs_video: ^1.0.1                   # Native video dependencies.
-
-  shared_preferences: ^2.0.18
-  flutter_highlighter:
-    git:
-      url: https://github.com/commetchat/highlight.git
-      path: ./flutter_highlighter
-  file_picker: ^5.2.10
-  html: ^0.15.2
-  desktop_notifications: ^0.6.3
-  url_launcher: ^6.1.11
-  flutter_blurhash: ^0.7.0
-  mime: ^1.0.4
-  pasteboard: ^0.2.0
-  flutter_local_notifications: 
-    git:
-      url: https://github.com/Airyzz/flutter_local_notifications.git
-      path: ./flutter_local_notifications
-  win_toast: ^0.3.0
-  window_manager: ^0.3.4
-  html_unescape: ^2.0.0
-  build:
-  scrollable_positioned_list: ^0.3.8
   flutter_staggered_grid_view: ^0.7.0
-  http: ^0.13.6
-  build_config: ^1.1.1
-  implicitly_animated_list: ^2.2.0
-  widgetbook: ^3.2.0
   flutter_svg: ^2.0.7
-  device_info_plus: ^9.0.3
+  html: ^0.15.2
+  html_unescape: ^2.0.0
+  http: ^0.13.6
+  implicitly_animated_list: ^2.2.0
+  intl: any
   intl_translation: ^0.18.2
-  flutter_gen: ^5.3.1
-  olm: ^2.0.3
-  flutter_html:
-    git:
-      url: https://github.com/commetchat/flutter_html.git
-  flutter_shortcuts:
-    git:
-      url: https://github.com/commetchat/flutter_shortcuts.git
-  receive_intent: ^0.2.4
-  unifiedpush: ^5.0.1
-  permission_handler: ^11.0.1
-  fcm_shared_isolate: ^0.1.0
-  sqflite: ^2.3.0
-  sqflite_common_ffi: ^2.3.0+4
+  intl_utils: any
   isar: ^3.1.0+1
   isar_flutter_libs: ^3.1.0+1
   isar_generator: ^3.1.0+1
-
-dev_dependencies:
-  build_runner:
-  widgetbook_generator: ^3.1.0
-  msix: ^3.7.0
-  flutter_test:
+  just_the_tooltip: ^0.0.12
+  media_kit: ^1.1.7
+  media_kit_libs_video: ^1.0.1
+  media_kit_video: ^1.1.8
+  mime: ^1.0.4
+  olm: ^2.0.3
+  pasteboard: ^0.2.0
+  path: ^1.8.2
+  path_provider: ^2.0.13
+  permission_handler: ^11.0.1
+  provider: ^6.0.0
+  receive_intent: ^0.2.4
+  scrollable_positioned_list: ^0.3.8
+  shared_preferences: ^2.0.18
+  sqflite: ^2.3.0
+  sqflite_common_ffi: ^2.3.0+4
+  test: ^1.24.3
+  unifiedpush: ^5.0.1
+  url_launcher: ^6.1.11
+  widgetbook: ^3.2.0
+  widgetbook_annotation: ^3.0.0
+  win_toast: ^0.3.0
+  window_manager: ^0.3.4
+  flutter: 
     sdk: flutter
-
-  integration_test:
+  flutter_highlighter: 
+    git: 
+      url: https://github.com/commetchat/highlight.git
+      path: ./flutter_highlighter
+  flutter_html: 
+    git: https://github.com/commetchat/flutter_html.git
+  flutter_local_notifications: 
+    git: 
+      url: https://github.com/Airyzz/flutter_local_notifications.git
+      path: ./flutter_local_notifications
+  flutter_localizations: 
     sdk: flutter
+  flutter_shortcuts: 
+    git: https://github.com/commetchat/flutter_shortcuts.git
+  matrix: 
+    git: 
+      url: https://github.com/famedly/matrix-dart-sdk.git
+      ref: krille/add-matrix-sdk-database
+  tiamat: 
+    path: ../tiamat/
 
-  flutter_launcher_icons: "^0.13.1"
+dev_dependencies: 
+  build_runner: any
+  flutter_launcher_icons: ^0.13.1
   flutter_lints: ^2.0.0
+  msix: ^3.7.0
+  pubspec_dependency_sorter: ^1.0.4
+  widgetbook_generator: ^3.1.0
+  flutter_test: 
+    sdk: flutter
+  integration_test: 
+    sdk: flutter
 
-flutter_intl:
+flutter_intl: 
   class_name: T
-  main_locale: en 
+  main_locale: en
   arb_dir: assets/l10n
   output_dir: integration_test/generated
 
-flutter_launcher_icons:
-  image_path: "assets/images/app_icon/app_icon_filled.png"
-  web:
+flutter_launcher_icons: 
+  image_path: assets/images/app_icon/app_icon_filled.png
+  adaptive_icon_background: '#534CDD'
+  adaptive_icon_foreground: assets/images/app_icon/app_icon_transparent.png
+  web: 
+    image_path: assets/images/app_icon/app_icon_transparent_cropped.png
     generate: true
-    image_path: "assets/images/app_icon/app_icon_transparent_cropped.png"
-  windows:
+  windows: 
+    image_path: assets/images/app_icon/app_icon_rounded.png
     generate: true
-    image_path: "assets/images/app_icon/app_icon_rounded.png"
-    icon_size: 48 # min:48, max:256, default: 48
-  macos:
+    icon_size: 48
+  macos: 
+    image_path: assets/images/app_icon/app_icon_rounded.png
     generate: true
-    image_path: "assets/images/app_icon/app_icon_rounded.png"
-  ios:
+  ios: null
   remove_alpha_ios: true
   android: true
-  min_sdk_android: 16 # android min sdk min:16, default 21
-  adaptive_icon_background: "#534CDD"
-  adaptive_icon_foreground: "assets/images/app_icon/app_icon_transparent.png"
+  min_sdk_android: 16
 
-
-flutter:
-  uses-material-design: true
-  generate: true
-  assets:
+flutter: 
+  assets: 
     - assets/l10n/
     - assets/images/app_icon/
     - assets/emoji_data/
     - assets/emoji_data/shortcodes/
     - assets/js/package/
-
-  shaders:
+  shaders: 
     - assets/shader/texture_coordinate.frag
-
-  fonts:
-    - family: Jellee
+  fonts: 
+    - 
+      family: Jellee
       fonts: 
-        - asset: assets/font/jellee/Jellee-Bold.ttf
-
-    - family: EmojiFont
+        - 
+          asset: assets/font/jellee/Jellee-Bold.ttf
+    - 
+      family: EmojiFont
       fonts: 
-        - asset: assets/font/emoji-font/NotoColorEmoji.ttf
-
-    - family: RobotoCustom
+        - 
+          asset: assets/font/emoji-font/NotoColorEmoji.ttf
+    - 
+      family: RobotoCustom
       fonts: 
-        - asset: assets/font/roboto/Roboto-Regular.ttf
-        - asset: assets/font/roboto/Roboto-Bold.ttf
+        - 
+          asset: assets/font/roboto/Roboto-Regular.ttf
+        - 
+          asset: assets/font/roboto/Roboto-Bold.ttf
           weight: 700
-    
-    - family: Code
+    - 
+      family: Code
       fonts: 
-        - asset: assets/font/code/RobotoMono.ttf
+        - 
+          asset: assets/font/code/RobotoMono.ttf
+  uses-material-design: true
+  generate: true
 
-
-
-msix_config:
+msix_config: 
   display_name: Commet
   identity_name: chat.commet.app.windows-a33bc9ba
-  toast_activator:
-    clsid: "7685C041-9D17-4112-8FC4-386743A3D53E"
-    arguments: "-ToastActivated"
-    display_name: "Commet"
   msix_version: 1.0.4.0
+  toast_activator: 
+    clsid: 7685C041-9D17-4112-8FC4-386743A3D53E
+    arguments: -ToastActivated
+    display_name: Commet
