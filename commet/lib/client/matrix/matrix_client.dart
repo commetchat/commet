@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:commet/client/alert.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/component.dart';
@@ -15,7 +16,7 @@ import 'package:commet/ui/pages/matrix/authentication/matrix_uia_request.dart';
 import 'package:commet/utils/list_extension.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:flutter/foundation.dart';
-
+import 'package:path/path.dart' as p;
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
 
@@ -25,6 +26,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:matrix/matrix.dart' as matrix;
 import 'package:matrix/encryption.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import '../../ui/atoms/code_block.dart';
 import '../../ui/pages/matrix/verification/matrix_verification_page.dart';
@@ -237,8 +240,24 @@ class MatrixClient extends Client {
       logLevel:
           BuildConfig.RELEASE ? matrix.Level.warning : matrix.Level.verbose,
       databaseBuilder: (client) async {
-        final db = matrix.HiveCollectionsDatabase(
-            client.clientName, await AppConfig.getDatabasePath());
+        var path = await AppConfig.getDatabasePath();
+        path = p.join(path, client.clientName, "data.db");
+        var dir = p.dirname(path);
+
+        if (!await Directory(dir).exists()) {
+          await Directory(dir).create(recursive: true);
+        }
+
+        DatabaseFactory factory = databaseFactoryFfi;
+
+        if (Platform.isAndroid) {
+          factory = databaseFactorySqflitePlugin;
+        }
+
+        var database = await factory.openDatabase(path);
+
+        final db =
+            matrix.MatrixSdkDatabase(client.clientName, database: database);
         await db.open();
         return db;
       },

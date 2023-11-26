@@ -13,7 +13,10 @@ dependencies:
     sdk: flutter
 
   provider: ^6.0.0
-  matrix: ^0.22.2
+  matrix:
+    git:
+      url: https://github.com/famedly/matrix-dart-sdk.git
+      ref: krille/add-matrix-sdk-database
   flutter_olm: ^1.2.0
   flutter_openssl_crypto: ^0.1.0
   just_the_tooltip: ^0.0.12
@@ -79,6 +82,8 @@ dependencies:
   unifiedpush: ^5.0.1
   permission_handler: ^11.0.1
   fcm_shared_isolate: ^0.1.0
+  sqflite: ^2.3.0
+  sqflite_common_ffi: ^2.3.0+4
 
 dev_dependencies:
   build_runner:
