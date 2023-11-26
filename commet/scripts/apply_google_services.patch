@@ -1,0 +1,61 @@
+diff --git a/commet/android/app/build.gradle b/commet/android/app/build.gradle
+index e9ee824..c66714c 100644
+--- a/commet/android/app/build.gradle
++++ b/commet/android/app/build.gradle
+@@ -23,7 +23,7 @@ if (flutterVersionName == null) {
+ 
+ apply plugin: 'com.android.application'
+ apply plugin: 'kotlin-android'
+-// apply plugin: 'com.google.gms.google-services'
++apply plugin: 'com.google.gms.google-services'
+ apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
+ 
+ def keystoreProperties = new Properties()
+diff --git a/commet/android/build.gradle b/commet/android/build.gradle
+index 7b03921..a059ce6 100644
+--- a/commet/android/build.gradle
++++ b/commet/android/build.gradle
+@@ -8,7 +8,7 @@ buildscript {
+     dependencies {
+         classpath 'com.android.tools.build:gradle:7.2.0'
+         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+-        // classpath 'com.google.gms:google-services:4.3.8'
++        classpath 'com.google.gms:google-services:4.3.8'
+     }
+ }
+ 
+diff --git a/commet/lib/utils/notification/android/firebase_push_notifier.dart b/commet/lib/utils/notification/android/firebase_push_notifier.dart
+index 6e5ea52..900d4d8 100644
+--- a/commet/lib/utils/notification/android/firebase_push_notifier.dart
++++ b/commet/lib/utils/notification/android/firebase_push_notifier.dart
+@@ -2,7 +2,7 @@ import 'package:commet/main.dart';
+ import 'package:commet/utils/notification/android/android_notifier.dart';
+ import 'package:commet/utils/notification/notification_content.dart';
+ import 'package:commet/utils/notification/notifier.dart';
+-// import 'package:fcm_shared_isolate/fcm_shared_isolate.dart';
++import 'package:fcm_shared_isolate/fcm_shared_isolate.dart';
+ 
+ Future<void> onMessage(dynamic message) async {
+   String? eventId = message['event_id'];
+@@ -47,7 +47,7 @@ class FirebasePushNotifier implements Notifier {
+   @override
+   bool get enabled => true;
+ 
+-  dynamic fcm;
++  FcmSharedIsolate fcm = FcmSharedIsolate();
+ 
+   @override
+   Future<void> init() async {
+diff --git a/commet/pubspec.yaml b/commet/pubspec.yaml
+index 92d2ee4..3643dff 100644
+--- a/commet/pubspec.yaml
++++ b/commet/pubspec.yaml
+@@ -12,7 +12,7 @@ dependencies:
+   desktop_drop: ^0.4.1
+   desktop_notifications: ^0.6.3
+   device_info_plus: ^9.0.3
+-  #fcm_shared_isolate: ^0.1.0
++  fcm_shared_isolate: ^0.1.0
+   file_picker: ^5.2.10
+   flutter_blurhash: ^0.7.0
+   flutter_gen: ^5.3.1
