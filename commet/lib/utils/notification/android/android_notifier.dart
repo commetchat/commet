@@ -16,7 +16,7 @@ class AndroidNotifier implements Notifier {
   @override
   bool get needsToken => false;
 
-  static const bool bubblesEnabled = false;
+  static const bool bubblesEnabled = true;
 
   FlutterLocalNotificationsPlugin? flutterLocalNotificationsPlugin;
 
