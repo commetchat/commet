@@ -33,7 +33,7 @@ jobs:
           cd .\commet
           dart run scripts/build_release.dart --platform windows --version_tag ${{ github.event.release.tag_name || 'v0.0.0' }} --git_hash ${{ github.sha }}
 
-  release-android:
+  build-android:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -67,7 +67,7 @@ jobs:
           cd $PROJECT_PATH
           dart run scripts/build_release.dart --platform android --version_tag ${{ github.event.release.tag_name || 'v0.0.0' }} --git_hash ${{ github.sha }}
 
-  release-android-google-services:
+  build-android-google-services:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -94,7 +94,7 @@ jobs:
       - name: Code Generation
         run: |
           cd $PROJECT_PATH
-          git apply scripts/apply-google-services.patch
+          git apply scripts/apply_google_services.patch
           dart run scripts/codegen.dart
 
       - name: Build APK
