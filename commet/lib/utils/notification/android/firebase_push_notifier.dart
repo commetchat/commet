@@ -1,10 +1,8 @@
-// ignore_for_file: non_constant_identifier_names
-
 import 'package:commet/main.dart';
 import 'package:commet/utils/notification/android/android_notifier.dart';
 import 'package:commet/utils/notification/notification_content.dart';
 import 'package:commet/utils/notification/notifier.dart';
-import 'package:fcm_shared_isolate/fcm_shared_isolate.dart';
+// import 'package:fcm_shared_isolate/fcm_shared_isolate.dart';
 
 Future<void> onMessage(dynamic message) async {
   String? eventId = message['event_id'];
@@ -49,10 +47,7 @@ class FirebasePushNotifier implements Notifier {
   @override
   bool get enabled => true;
 
-  FcmSharedIsolate fcm = FcmSharedIsolate();
-
-  // static dynamic Firebase;
-  // static dynamic FirebaseMessaging;
+  dynamic fcm;
 
   @override
   Future<void> init() async {
