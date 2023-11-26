@@ -42,6 +42,10 @@ class FileCacheInstance {
     clean();
   }
 
+  Future<void> close() async {
+    await db!.close();
+  }
+
   Future<CachedFile?> _getByFileId(String fileId) async {
     return await files!.filter().fileIdEqualTo(fileId).findFirst();
   }
