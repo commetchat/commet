@@ -11,6 +11,22 @@ index e9ee824..c66714c 100644
  apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
  
  def keystoreProperties = new Properties()
+diff --git a/commet/android/app/src/main/kotlin/chat/commet/commet/FcmPushService.kt b/commet/android/app/src/main/kotlin/chat/commet/commet/FcmPushService.kt
+index 0df357b..00d3e31 100644
+--- a/commet/android/app/src/main/kotlin/chat/commet/commet/FcmPushService.kt
++++ b/commet/android/app/src/main/kotlin/chat/commet/commet/FcmPushService.kt
+@@ -1,4 +1,4 @@
+-/* 
++
+ package chat.commet.commetapp
+ 
+ import com.famedly.fcm_shared_isolate.FcmSharedIsolateService
+@@ -35,4 +35,3 @@ class FcmPushService : FcmSharedIsolateService() {
+     }
+ }
+ 
+-*/
+\ No newline at end of file
 diff --git a/commet/android/build.gradle b/commet/android/build.gradle
 index 7b03921..a059ce6 100644
 --- a/commet/android/build.gradle
