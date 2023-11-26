@@ -589,7 +589,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "errorMatrixPassphraseMustContainUpperAndLowercase": "La frase de contraseña debe contener al menos una letra mayúscula y una minúscula",
+  "errorMatrixPassphraseMustContainUpperAndLowercase": "La frase de contraseña debe contener al menos una mayúscula y una minúscula",
   "@errorMatrixPassphraseMustContainUpperAndLowercase": {
     "description": "Explains constraints of recovery passphrase",
     "type": "text",
@@ -613,9 +613,33 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelMatrixSecurityPhraseShouldNotBePassword": "Su frase de contraseña debe ser diferente de la contraseña de su cuenta",
+  "labelMatrixSecurityPhraseShouldNotBePassword": "Su frase de seguridad debe ser diferente a la contraseña de su cuenta",
   "@labelMatrixSecurityPhraseShouldNotBePassword": {
     "description": "Tells the user to not use their password as their security phrase",
+    "type": "text",
+    "placeholders": {}
+  },
+  "errorMatrixPassphraseMustContainSymbol": "La frase de contraseña debe contener al menos 1 símbolo",
+  "@errorMatrixPassphraseMustContainSymbol": {
+    "description": "Explains constraints of recovery passphrase",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixConfirmSecurityPhrase": "Confirmar la frase de seguridad:",
+  "@labelMatrixConfirmSecurityPhrase": {
+    "description": "Prompts the user to input their passphrase again",
+    "type": "text",
+    "placeholders": {}
+  },
+  "errorMatrixPassphraseMustContainNumber": "La frase de contraseña debe contener al menos 1 número",
+  "@errorMatrixPassphraseMustContainNumber": {
+    "description": "Explains constraints of recovery passphrase",
+    "type": "text",
+    "placeholders": {}
+  },
+  "erroMatrixPassphraseMustBeLonger": "La frase de contraseña debe tener al menos 10 caracteres",
+  "@erroMatrixPassphraseMustBeLonger": {
+    "description": "Explains constraints of recovery passphrase",
     "type": "text",
     "placeholders": {}
   }
