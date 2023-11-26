@@ -5,11 +5,9 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/simulated/simulated_client.dart';
 import 'package:commet/client/stale_info.dart';
-import 'package:commet/config/app_config.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/notifying_list.dart';
-import 'package:hive_flutter/adapters.dart';
 
 class ClientManager {
   final Map<String, Client> _clients = {};
@@ -72,14 +70,6 @@ class ClientManager {
           previousValue + element.displayNotificationCount);
 
   static Future<void> init() async {
-    var dbPath = await AppConfig.getDatabasePath();
-
-    if (!BuildConfig.LINUX) {
-      await Hive.initFlutter(dbPath);
-    } else {
-      Hive.init(dbPath);
-    }
-
     final newClientManager = ClientManager();
 
     await Future.wait([

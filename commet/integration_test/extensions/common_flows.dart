@@ -7,7 +7,6 @@ import 'package:commet/ui/pages/login/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:commet/main.dart';
-import 'package:hive/hive.dart';
 import 'package:matrix/encryption/utils/key_verification.dart';
 import 'package:matrix/matrix.dart';
 import 'package:path_provider/path_provider.dart';
@@ -51,7 +50,6 @@ extension CommonFlows on WidgetTester {
   }
 
   Future<void> clean() async {
-    await Hive.close();
     await preferences.clear();
     await clearUserData();
   }
