@@ -11,11 +11,16 @@ import 'package:commet/utils/notification/notification_content.dart';
 import 'package:commet/utils/notification/notifier.dart';
 import 'package:unifiedpush/unifiedpush.dart';
 
+@pragma('vm:entry-point')
+void unifiedPushEntry() async {}
+
 class UnifiedPushNotifier implements Notifier {
   late AndroidNotifier notifier;
 
   @override
   bool get needsToken => true;
+
+  List<String> notifiedEvents = List.empty(growable: true);
 
   bool isInit = false;
 
@@ -85,6 +90,13 @@ class UnifiedPushNotifier implements Notifier {
 
     var roomId = notifData['room_id'] as String;
     var eventId = notifData['event_id'] as String;
+
+    // Workaround for notifications being displayed twice sometimes. Not sure where its coming from...
+    if (notifiedEvents.contains(eventId)) {
+      return;
+    }
+
+    notifiedEvents.add(eventId);
 
     var client =
         clientManager!.clients.firstWhere((element) => element.hasRoom(roomId));
