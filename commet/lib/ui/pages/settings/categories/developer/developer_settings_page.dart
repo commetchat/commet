@@ -1,7 +1,4 @@
-import 'dart:ui';
-
 import 'package:commet/main.dart';
-import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/utils/notification/notification_content.dart';
 import 'package:commet/utils/background_tasks/mock_tasks.dart';
 import 'package:flutter/material.dart';
