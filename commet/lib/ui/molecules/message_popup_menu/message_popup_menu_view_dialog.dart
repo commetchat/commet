@@ -123,6 +123,7 @@ class MessagePopupMenuViewDialog extends StatelessWidget {
                     var content = MessageNotificationContent(
                       senderName: user.displayName,
                       senderImage: user.avatar,
+                      senderId: user.identifier,
                       roomName: room.displayName,
                       roomId: room.identifier,
                       roomImage: await room.getShortcutImage(),

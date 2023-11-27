@@ -15,6 +15,7 @@ class NotificationContent {
 
 class MessageNotificationContent extends NotificationContent {
   String get senderName => title;
+  String senderId;
   String eventId;
   String roomId;
   String clientId;
@@ -26,6 +27,7 @@ class MessageNotificationContent extends NotificationContent {
 
   MessageNotificationContent({
     required String senderName,
+    required this.senderId,
     required this.roomName,
     required String content,
     required this.eventId,

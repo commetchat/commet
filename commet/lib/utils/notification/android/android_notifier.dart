@@ -5,6 +5,7 @@ import 'package:commet/utils/custom_uri.dart';
 import 'package:commet/utils/image_utils.dart';
 import 'package:commet/utils/notification/notification_content.dart';
 import 'package:commet/utils/notification/notifier.dart';
+import 'package:commet/utils/shortcuts_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -69,23 +70,30 @@ class AndroidNotifier implements Notifier {
     }
 
     List<dynamic> result = await Future.wait([
-      getImageBytes(content.senderImage),
-      getImageBytes(content.roomImage),
+      ShortcutsManager.getCachedAvatarImage(
+          placeholderColor: room.getColorOfUser(content.senderId),
+          placeholderText: content.senderName,
+          identifier: content.senderId,
+          shouldZoomOut: false,
+          imageProvider: content.senderImage),
+      ShortcutsManager.getCachedAvatarImage(
+          placeholderColor: room.defaultColor,
+          placeholderText: room.displayName,
+          identifier: room.identifier,
+          imageProvider: room.avatar),
       flutterLocalNotificationsPlugin!.getActiveNotifications(),
       shortcutsManager.createShortcutForRoom(room),
     ]);
 
-    Uint8List? userAvatarBytes = result[0];
-    Uint8List? roomAvatarBytes = result[1];
+    Uri? userAvatar = result[0];
+    Uri? roomAvatar = result[1];
     List<ActiveNotification> activeNotifications = result[2];
 
     var person = Person(
         name: content.senderName,
         important: true,
         bot: false,
-        icon: userAvatarBytes != null
-            ? ByteArrayAndroidIcon(userAvatarBytes)
-            : null);
+        icon: BitmapFilePathAndroidIcon(userAvatar!.toFilePath()));
 
     var message = Message(
       content.content,
@@ -127,9 +135,7 @@ class AndroidNotifier implements Notifier {
         importance: Importance.high,
         priority: Priority.high,
         icon: "notification_icon",
-        largeIcon: roomAvatarBytes != null
-            ? ByteArrayAndroidBitmap(roomAvatarBytes)
-            : null,
+        largeIcon: FilePathAndroidBitmap(roomAvatar!.toString()),
         subText: content.roomName,
         groupKey: content.roomId,
         groupAlertBehavior: GroupAlertBehavior.children,

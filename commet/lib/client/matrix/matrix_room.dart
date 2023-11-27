@@ -234,6 +234,7 @@ class MatrixRoom extends Room {
 
     var notification = MessageNotificationContent(
         senderName: sender.displayName,
+        senderId: sender.identifier,
         roomName: displayName,
         content: event.body ?? "Received a message",
         eventId: event.eventId,

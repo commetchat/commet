@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/room.dart';
+import 'package:commet/main.dart';
 import 'package:commet/utils/custom_uri.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/image_utils.dart';
@@ -25,20 +27,11 @@ class ShortcutsManager {
   Future<void> createShortcutForRoom(Room room) async {
     if (loading != null) await loading;
 
-    var avatar = await room.getShortcutImage();
-
-    var image = await createAvatarImage(
+    var cachedAvatar = await getCachedAvatarImage(
+        identifier: room.identifier,
         placeholderColor: room.defaultColor,
         placeholderText: room.displayName,
-        imageProvider: avatar);
-
-    var bytes = (await image.toByteData(format: ImageByteFormat.png))
-        ?.buffer
-        .asUint8List();
-
-    var icon =
-        ShortcutMemoryIcon(jpegImage: bytes!.buffer.asUint8List()).toString();
-    var type = ShortcutIconAsset.memoryAsset;
+        imageProvider: room.avatar);
 
     var item = ShortcutItem(
         id: room.identifier,
@@ -46,8 +39,8 @@ class ShortcutsManager {
                 roomId: room.identifier, clientId: room.client.identifier)
             .toString(),
         shortLabel: room.displayName,
-        icon: icon,
-        shortcutIconAsset: type,
+        icon: cachedAvatar.toFilePath(),
+        shortcutIconAsset: ShortcutIconAsset.flutterAsset,
         conversationShortcut: true);
     shortcuts?.pushShortcutItem(shortcut: item);
   }
@@ -60,43 +53,76 @@ class ShortcutsManager {
     await createShortcutForRoom(event);
   }
 
-  Future<ui.Image> createAvatarImage(
+  static Future<Uri> getCachedAvatarImage(
       {required Color placeholderColor,
       required String placeholderText,
-      ImageProvider? imageProvider}) async {
+      required String identifier,
+      ImageProvider? imageProvider,
+      bool shouldZoomOut = true}) async {
+    String avatarId = "shortcutAvatar_$identifier";
+
+    if (imageProvider == null) {
+      avatarId += "_placeholder";
+    }
+
+    if (imageProvider is MatrixMxcImage) {
+      avatarId += "_${imageProvider.identifier.toString()}";
+    }
+
+    if (shouldZoomOut) {
+      avatarId += "_zoomed";
+    }
+
+    // Uri? cachedAvatar = await fileCache.getFile(avatarId);
+//
+    // if (cachedAvatar != null) {
+    //   print("Using avatar file from cache: $cachedAvatar");
+    //   return cachedAvatar;
+    // }
+
+    var image = await createAvatarImage(
+        placeholderColor: placeholderColor,
+        placeholderText: placeholderText,
+        imageProvider: imageProvider,
+        shouldZoomOut: shouldZoomOut);
+
+    var bytes = (await image.toByteData(format: ImageByteFormat.png))!
+        .buffer
+        .asUint8List();
+    var cachedAvatar = await fileCache.putFile(avatarId, bytes);
+
+    return cachedAvatar;
+  }
+
+  static Future<ui.Image> createAvatarImage(
+      {required Color placeholderColor,
+      required String placeholderText,
+      ImageProvider? imageProvider,
+      bool shouldZoomOut = true}) async {
     PictureRecorder recorder = PictureRecorder();
     Canvas c = Canvas(recorder);
 
     var size = const Size(128, 128);
     var center = Offset(size.width / 2, size.height / 2);
 
-    // if we have an image, we are going to zoom it out a little and add a white border because android likes to zoom in on it. This reverses that!
     if (imageProvider != null) {
-      c.drawColor(Colors.white, BlendMode.dstATop);
+      c.drawColor(Colors.transparent, BlendMode.dstATop);
       var image = await ImageUtils.imageProviderToImage(imageProvider);
+
+      double zoomAmount = 1.45;
+
+      if (shouldZoomOut == false) {
+        zoomAmount = 1;
+      }
 
       c.drawImageRect(
           image,
           Rect.fromLTWH(0, 0, image.width.toDouble(), image.height.toDouble()),
           Rect.fromCenter(
               center: center,
-              width: size.width / 1.45,
-              height: size.height / 1.45),
+              width: size.width / zoomAmount,
+              height: size.height / zoomAmount),
           Paint());
-
-      final Paint paint = Paint()
-        ..isAntiAlias = true
-        ..strokeWidth = 40
-        ..color = Colors.white
-        ..style = PaintingStyle.stroke;
-
-      c.drawArc(
-          Rect.fromCenter(
-              center: center, width: size.height, height: size.height),
-          0,
-          360,
-          false,
-          paint);
     } else {
       c.drawColor(placeholderColor, BlendMode.dstATop);
       const textStyle = TextStyle(
@@ -120,6 +146,29 @@ class ShortcutsManager {
       final offset = Offset(xCenter, yCenter);
       textPainter.paint(c, offset);
     }
+
+    // Mask image with a circle
+    final Paint paint = Paint()
+      ..isAntiAlias = true
+      ..strokeWidth = 50
+      ..color = Colors.white
+      ..style = PaintingStyle.stroke
+      ..blendMode = BlendMode.dstOut;
+
+    double offset = 10;
+    if (!shouldZoomOut) {
+      offset = 40;
+    }
+
+    c.drawArc(
+        Rect.fromCenter(
+            center: center,
+            width: size.height + offset,
+            height: size.height + offset),
+        0,
+        360,
+        false,
+        paint);
 
     var pic = recorder.endRecording();
     var img = await pic.toImage(size.width.round(), size.height.round());

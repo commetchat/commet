@@ -108,6 +108,7 @@ class UnifiedPushNotifier implements Notifier {
 
     notificationManager.notify(MessageNotificationContent(
         senderName: user.displayName,
+        senderId: user.identifier,
         roomName: room.displayName,
         content: event.body!,
         eventId: eventId,
