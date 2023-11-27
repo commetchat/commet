@@ -76,7 +76,6 @@ class ShortcutsManager {
     Uri? cachedAvatar = await fileCache.getFile(avatarId);
 
     if (cachedAvatar != null) {
-      print("Using avatar file from cache: $cachedAvatar");
       return cachedAvatar;
     }
 
