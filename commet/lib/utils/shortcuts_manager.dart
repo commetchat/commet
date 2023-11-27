@@ -129,7 +129,7 @@ class ShortcutsManager {
       c.drawColor(placeholderColor, BlendMode.dstATop);
       const textStyle = TextStyle(
         color: Colors.white,
-        fontSize: 30,
+        fontSize: 50,
       );
       final textSpan = TextSpan(
         text: placeholderText.characters.first.toUpperCase(),
