@@ -31,7 +31,7 @@ class ShortcutsManager {
         identifier: room.identifier,
         placeholderColor: room.defaultColor,
         placeholderText: room.displayName,
-        imageProvider: room.avatar);
+        imageProvider: await room.getShortcutImage());
 
     var item = ShortcutItem(
         id: room.identifier,
@@ -40,7 +40,7 @@ class ShortcutsManager {
             .toString(),
         shortLabel: room.displayName,
         icon: cachedAvatar.toFilePath(),
-        shortcutIconAsset: ShortcutIconAsset.flutterAsset,
+        shortcutIconAsset: ShortcutIconAsset.fileAsset,
         conversationShortcut: true);
     shortcuts?.pushShortcutItem(shortcut: item);
   }
@@ -73,12 +73,12 @@ class ShortcutsManager {
       avatarId += "_zoomed";
     }
 
-    // Uri? cachedAvatar = await fileCache.getFile(avatarId);
-//
-    // if (cachedAvatar != null) {
-    //   print("Using avatar file from cache: $cachedAvatar");
-    //   return cachedAvatar;
-    // }
+    Uri? cachedAvatar = await fileCache.getFile(avatarId);
+
+    if (cachedAvatar != null) {
+      print("Using avatar file from cache: $cachedAvatar");
+      return cachedAvatar;
+    }
 
     var image = await createAvatarImage(
         placeholderColor: placeholderColor,
@@ -89,7 +89,8 @@ class ShortcutsManager {
     var bytes = (await image.toByteData(format: ImageByteFormat.png))!
         .buffer
         .asUint8List();
-    var cachedAvatar = await fileCache.putFile(avatarId, bytes);
+
+    cachedAvatar = await fileCache.putFile(avatarId, bytes);
 
     return cachedAvatar;
   }
@@ -105,24 +106,25 @@ class ShortcutsManager {
     var size = const Size(128, 128);
     var center = Offset(size.width / 2, size.height / 2);
 
+    if (shouldZoomOut) {
+      double scale = 0.7;
+      c.scale(scale);
+      c.translate(
+          (size.width * 1 / scale) * 0.5, (size.height * 1 / scale) * 0.5);
+
+      c.translate(-size.width / 2, -size.height / 2);
+    }
+
     if (imageProvider != null) {
       c.drawColor(Colors.transparent, BlendMode.dstATop);
       var image = await ImageUtils.imageProviderToImage(imageProvider);
-
-      double zoomAmount = 1.45;
-
-      if (shouldZoomOut == false) {
-        zoomAmount = 1;
-      }
 
       c.drawImageRect(
           image,
           Rect.fromLTWH(0, 0, image.width.toDouble(), image.height.toDouble()),
           Rect.fromCenter(
-              center: center,
-              width: size.width / zoomAmount,
-              height: size.height / zoomAmount),
-          Paint());
+              center: center, width: size.width, height: size.height),
+          Paint()..filterQuality = FilterQuality.medium);
     } else {
       c.drawColor(placeholderColor, BlendMode.dstATop);
       const textStyle = TextStyle(
@@ -147,24 +149,21 @@ class ShortcutsManager {
       textPainter.paint(c, offset);
     }
 
+    double width = 500;
+
     // Mask image with a circle
     final Paint paint = Paint()
       ..isAntiAlias = true
-      ..strokeWidth = 50
+      ..strokeWidth = width
       ..color = Colors.white
       ..style = PaintingStyle.stroke
       ..blendMode = BlendMode.dstOut;
 
-    double offset = 10;
-    if (!shouldZoomOut) {
-      offset = 40;
-    }
-
     c.drawArc(
         Rect.fromCenter(
             center: center,
-            width: size.height + offset,
-            height: size.height + offset),
+            width: size.height + width,
+            height: size.height + width),
         0,
         360,
         false,

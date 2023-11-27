@@ -80,7 +80,7 @@ class AndroidNotifier implements Notifier {
           placeholderColor: room.defaultColor,
           placeholderText: room.displayName,
           identifier: room.identifier,
-          imageProvider: room.avatar),
+          imageProvider: await room.getShortcutImage()),
       flutterLocalNotificationsPlugin!.getActiveNotifications(),
       shortcutsManager.createShortcutForRoom(room),
     ]);
