@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:commet/main.dart';
 import 'package:commet/utils/notification/notification_content.dart';
 import 'package:commet/utils/background_tasks/mock_tasks.dart';
@@ -21,6 +22,7 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
       performance(),
       windowSize(),
       notificationTests(),
+      if (Platform.isAndroid) shortcuts(),
       backgroundTasks(),
     ].map<Widget>((e) {
       return Padding(
@@ -130,6 +132,7 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
               notificationManager.notify(MessageNotificationContent(
                 senderName: user.displayName,
                 senderImage: user.avatar,
+                senderId: user.identifier,
                 roomName: room.displayName,
                 roomId: room.identifier,
                 roomImage: await room.getShortcutImage(),
@@ -138,6 +141,25 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
                 eventId: "fake_event_id",
                 isDirectMessage: true,
               ));
+            },
+          ),
+        ])
+      ],
+    );
+  }
+
+  Widget shortcuts() {
+    return ExpansionTile(
+      title: const tiamat.Text.labelEmphasised("Shortcuts"),
+      backgroundColor: Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+      collapsedBackgroundColor:
+          Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+      children: [
+        Wrap(spacing: 8, runSpacing: 8, children: [
+          tiamat.Button(
+            text: "Clear Shortcuts",
+            onTap: () async {
+              await shortcutsManager.clearAllShortcuts();
             },
           ),
         ])
