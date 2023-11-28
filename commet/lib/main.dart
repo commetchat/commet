@@ -9,9 +9,11 @@ import 'package:commet/ui/pages/bubble/bubble_page.dart';
 import 'package:commet/ui/pages/fatal_error/fatal_error_page.dart';
 import 'package:commet/ui/pages/login/login_page.dart';
 import 'package:commet/ui/pages/main/main_page.dart';
+import 'package:commet/utils/android_intent_helper.dart';
 import 'package:commet/utils/custom_uri.dart';
 import 'package:commet/utils/background_tasks/background_task_manager.dart';
 import 'package:commet/utils/emoji/unicode_emoji.dart';
+import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/notification/notification_manager.dart';
 import 'package:commet/utils/scaled_app.dart';
 import 'package:commet/utils/shortcuts_manager.dart';
@@ -154,13 +156,20 @@ Future<void> startGui() async {
   initGuiRequirements();
 
   if (Platform.isAndroid) {
-    var intent = await ReceiveIntent.getInitialIntent();
-    if (intent?.extra?.containsKey("flutter_shortcuts") == true) {
-      var uri = CustomURI.parse(intent!.extra!["flutter_shortcuts"]);
+    var initialIntent = await ReceiveIntent.getInitialIntent();
+
+    ReceiveIntent.receivedIntentStream.listen((event) {
+      var uri = AndroidIntentHelper.getUriFromIntent(event);
       if (uri is OpenRoomURI) {
-        initialClientId = uri.clientId;
-        initialRoomId = uri.roomId;
+        EventBus.openRoom.add((uri.roomId, uri.clientId));
       }
+    });
+
+    var uri = AndroidIntentHelper.getUriFromIntent(initialIntent);
+
+    if (uri is OpenRoomURI) {
+      initialClientId = uri.clientId;
+      initialRoomId = uri.roomId;
     }
   }
 

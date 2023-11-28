@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:commet/main.dart';
 import 'package:commet/utils/custom_uri.dart';
+import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/image_utils.dart';
 import 'package:commet/utils/notification/notification_content.dart';
 import 'package:commet/utils/notification/notifier.dart';
@@ -125,6 +126,10 @@ class AndroidNotifier implements Notifier {
       }
     }
 
+    var payload =
+        OpenRoomURI(roomId: content.roomId, clientId: content.clientId)
+            .toString();
+
     var style = MessagingStyleInformation(person,
         conversationTitle: content.isDirectMessage ? content.roomName : null,
         groupConversation: !content.isDirectMessage,
@@ -144,14 +149,12 @@ class AndroidNotifier implements Notifier {
         silent: content.priority == NotificationPriority.low,
         bubbleActivity:
             bubblesEnabled ? "chat.commet.commetapp.BubbleActivity" : null,
-        bubbleExtra: bubblesEnabled
-            ? OpenRoomURI(roomId: content.roomId, clientId: content.clientId)
-                .toString()
-            : null,
+        bubbleExtra: bubblesEnabled ? payload : null,
         color: const Color.fromARGB(0xff, 0x53, 0x4c, 0xdd));
 
     await flutterLocalNotificationsPlugin?.show(
-        id, null, content.content, NotificationDetails(android: details));
+        id, null, content.content, NotificationDetails(android: details),
+        payload: payload);
   }
 
   Future<Uint8List?> getImageBytes(ImageProvider? provider) async {
@@ -177,6 +180,16 @@ class AndroidNotifier implements Notifier {
   static void onResponse(NotificationResponse details) {
     if (kDebugMode) {
       print("Got a notification response: $details");
+    }
+    if (details.payload == null) return;
+
+    var uri = CustomURI.parse(details.payload!);
+
+    if (details.notificationResponseType ==
+        NotificationResponseType.selectedNotification) {
+      if (uri is OpenRoomURI) {
+        EventBus.openRoom.add((uri.roomId, uri.clientId));
+      }
     }
   }
 
