@@ -253,6 +253,28 @@ class _RichTextFieldState extends State<RichTextField>
 
   int handleNode(int currentIndex, String text, List<TextSpan> children,
       TextStyle style, md.Node node) {
+    var originalStyle = style.copyWith();
+
+    if (node is md.Text) {
+      var substr = text.substring(currentIndex);
+      var nodeText = node.text;
+      var index = substr.indexOf(nodeText);
+
+      if (index == -1) {
+        return currentIndex;
+      }
+
+      if (index != 0) {
+        var sub = substr.substring(0, index);
+        children.add(TextSpan(
+            text: sub, style: Theme.of(context).textTheme.bodyMedium!));
+        currentIndex += sub.length;
+      }
+
+      children.add(TextSpan(text: nodeText, style: originalStyle));
+      currentIndex += nodeText.length;
+    }
+
     if (node is md.Element) {
       switch (node.tag) {
         case "em":
@@ -308,26 +330,6 @@ class _RichTextFieldState extends State<RichTextField>
         }
       }
     }
-
-    if (node is md.Text) {
-      var substr = text.substring(currentIndex);
-      var nodeText = node.text;
-      var index = substr.indexOf(nodeText);
-
-      if (index == -1) {
-        return currentIndex;
-      }
-
-      if (index != 0) {
-        var sub = substr.substring(0, index);
-        children.add(TextSpan(text: sub, style: style));
-        currentIndex += sub.length;
-      }
-
-      children.add(TextSpan(text: nodeText, style: style));
-      currentIndex += nodeText.length;
-    }
-
     return currentIndex;
   }
 }
