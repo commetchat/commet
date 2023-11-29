@@ -642,5 +642,65 @@
     "description": "Explains constraints of recovery passphrase",
     "type": "text",
     "placeholders": {}
+  },
+  "errorMatrixPassphrasesDontMatch": "Las frases no coinciden",
+  "@errorMatrixPassphrasesDontMatch": {
+    "description": "Error when the user enters passphrase twice and the two dont match",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPromptPassphrase": "Frase de seguridad:",
+  "@labelMatrixPromptPassphrase": {
+    "description": "Prompt the user to enter passphrase",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixCrossSigning": "Firma cruzada",
+  "@labelMatrixCrossSigning": {
+    "description": "Title label for matrix cross signing",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixWarnResetKeysIsPermanent": "Restablecer tus claves es permanente, y resultará en la pérdida de la copia de seguridad de tu historial de chats. ¡Es casi seguro que no quieres hacer esto!",
+  "@labelMatrixWarnResetKeysIsPermanent": {
+    "description": "Explains that resetting keys is permanent, should emphasize that this isnt really a great idea",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixExplainOnlineKeyBackup": "La copia de seguridad en línea de las claves le permitirá recuperar el historial de mensajes en caso de que pierda el acceso a todas sus sesiones",
+  "@labelMatrixExplainOnlineKeyBackup": {
+    "description": "Explains what the message backup does",
+    "type": "text",
+    "placeholders": {}
+  },
+  "placeholderMatrixEnterSecutiyPhrase": "Frase de seguridad",
+  "@placeholderMatrixEnterSecutiyPhrase": {
+    "description": "Placeholder text for the passphrase text box",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixAskWipeBackupToContinue": "Si vas a cambiar tus claves de firma cruzada, tendrás que borrar tu copia de seguridad... ¿Continuar?",
+  "@labelMatrixAskWipeBackupToContinue": {
+    "description": "Asks the user if they want to wipe their existing backup to continue changing their cross signing keys",
+    "type": "text",
+    "placeholders": {}
+  },
+  "placeholderMatrixConfirmSecurityPhrase": "Confirme la frase de seguridad",
+  "@placeholderMatrixConfirmSecurityPhrase": {
+    "description": "Placeholder text for the confirm passphrase text input",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixAskEnableMessageBackup": "¿Desea activar la copia de seguridad en línea?",
+  "@labelMatrixAskEnableMessageBackup": {
+    "description": "Asks the user if they want to enable online backup",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixExistingMessageBackupFound": "¡Se ha encontrado una copia de seguridad!",
+  "@labelMatrixExistingMessageBackupFound": {
+    "description": "Message to explain that existing backup has been found",
+    "type": "text",
+    "placeholders": {}
   }
 }
