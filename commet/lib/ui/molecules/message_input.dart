@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:commet/client/components/gif/gif_component.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/main.dart';
+import 'package:commet/ui/atoms/rich_text_field.dart';
 import 'package:commet/ui/molecules/attachment_icon.dart';
 import 'package:commet/ui/molecules/emoticon_picker.dart';
 import 'package:commet/ui/organisms/chat/chat.dart';
@@ -249,34 +250,22 @@ class MessageInputState extends State<MessageInput> {
                                     Expanded(
                                       child: Padding(
                                         padding: const EdgeInsets.fromLTRB(
-                                            0, 2, 4, 2),
+                                            4, 2, 4, 2),
                                         child: Stack(
                                           children: [
-                                            TextField(
+                                            RichTextField(
                                               controller: controller,
-                                              focusNode: textFocus,
-                                              contextMenuBuilder:
-                                                  contextMenuBuilder,
-                                              enabled:
-                                                  widget.isProcessing != true,
+                                              focus: textFocus,
+
                                               style: Theme.of(context)
                                                   .textTheme
-                                                  .bodyMedium,
-                                              decoration: InputDecoration(
-                                                prefix: const SizedBox(
-                                                  width: 8,
-                                                  height: 10,
-                                                ),
-                                                hintText: widget.isRoomE2EE
-                                                    ? sendEncryptedMessagePrompt
-                                                    : sendUnencryptedMessagePrompt,
-                                              ),
+                                                  .bodyMedium!,
+                                              contextMenuBuilder:
+                                                  contextMenuBuilder,
+                                              hintText: widget.isRoomE2EE
+                                                  ? sendEncryptedMessagePrompt
+                                                  : sendUnencryptedMessagePrompt,
                                               //decoration: null,
-                                              maxLines: null,
-                                              cursorColor: Theme.of(context)
-                                                  .colorScheme
-                                                  .onPrimary,
-                                              cursorWidth: 1,
                                             ),
                                           ],
                                         ),
@@ -547,7 +536,7 @@ class MessageInputState extends State<MessageInput> {
       // to apply the normal behavior when click on select all
       onSelectAll: () =>
           editableTextState.selectAll(SelectionChangedCause.toolbar),
-      onLiveTextInput: () {},
+      onLiveTextInput: null,
     );
   }
 
