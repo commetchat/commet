@@ -76,6 +76,8 @@ class _RichTextFieldState extends State<RichTextField>
   bool isEmpty = true;
   EditableTextState? get _editableText => editableTextKey.currentState;
 
+  TextEditingController get _effectiveController => widget.controller;
+
   late RichTextFieldSelectionGestureDetectorBuilder
       _selectionGestureDetectorBuilder;
 
@@ -115,6 +117,8 @@ class _RichTextFieldState extends State<RichTextField>
         break;
     }
 
+    isEmpty = _effectiveController.text.isEmpty;
+
     var child = InputDecorator(
       isFocused: widget.focus.hasFocus,
       baseStyle: widget.style,
@@ -139,7 +143,6 @@ class _RichTextFieldState extends State<RichTextField>
           contextMenuBuilder: widget.contextMenuBuilder,
           buildTextSpan: buildTextSpan),
     );
-
     return MouseRegion(
       child: TextFieldTapRegion(
         child: IgnorePointer(
@@ -155,7 +158,7 @@ class _RichTextFieldState extends State<RichTextField>
 
   void _handleSelectionChanged(
       TextSelection selection, SelectionChangedCause? cause) {
-    const bool willShowSelectionHandles = true;
+    bool willShowSelectionHandles = _shouldShowSelectionHandles(cause);
     if (willShowSelectionHandles != _showSelectionHandles) {
       setState(() {
         _showSelectionHandles = willShowSelectionHandles;
@@ -186,6 +189,33 @@ class _RichTextFieldState extends State<RichTextField>
           _editableText?.hideToolbar();
         }
     }
+  }
+
+  bool _shouldShowSelectionHandles(SelectionChangedCause? cause) {
+    // When the text field is activated by something that doesn't trigger the
+    // selection overlay, we shouldn't show the handles either.
+    if (!_selectionGestureDetectorBuilder.shouldShowSelectionToolbar) {
+      return false;
+    }
+
+    if (cause == SelectionChangedCause.keyboard) {
+      return false;
+    }
+
+    if (_effectiveController.selection.isCollapsed) {
+      return false;
+    }
+
+    if (cause == SelectionChangedCause.longPress ||
+        cause == SelectionChangedCause.scribble) {
+      return true;
+    }
+
+    if (_effectiveController.text.isNotEmpty) {
+      return true;
+    }
+
+    return false;
   }
 
   @override
