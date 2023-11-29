@@ -237,7 +237,7 @@ class _RichTextFieldState extends State<RichTextField>
     var parsed = doc.parseLines(const LineSplitter().convert(text));
 
     var children = <TextSpan>[];
-    var style = const TextStyle();
+    var style = Theme.of(context).textTheme.bodyMedium!;
 
     int currentIndex = 0;
     for (var element in parsed) {
@@ -245,7 +245,7 @@ class _RichTextFieldState extends State<RichTextField>
     }
 
     if (currentIndex <= text.length - 1) {
-      children.add(TextSpan(text: text.substring(currentIndex)));
+      children.add(TextSpan(text: text.substring(currentIndex), style: style));
     }
 
     return TextSpan(children: children);
@@ -320,7 +320,7 @@ class _RichTextFieldState extends State<RichTextField>
 
       if (index != 0) {
         var sub = substr.substring(0, index);
-        children.add(TextSpan(text: sub));
+        children.add(TextSpan(text: sub, style: style));
         currentIndex += sub.length;
       }
 
