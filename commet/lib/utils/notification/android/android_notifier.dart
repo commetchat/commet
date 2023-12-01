@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:commet/client/room.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/custom_uri.dart';
 import 'package:commet/utils/event_bus.dart';
@@ -37,6 +38,8 @@ class AndroidNotifier implements Notifier {
     await flutterLocalNotificationsPlugin?.initialize(initSettings,
         onDidReceiveBackgroundNotificationResponse: onBackgroundResponse,
         onDidReceiveNotificationResponse: onResponse);
+
+    EventBus.onRoomOpened.stream.listen(onRoomOpened);
 
     if (!isHeadless) {
       checkPermission();
@@ -102,6 +105,7 @@ class AndroidNotifier implements Notifier {
       person,
     );
     var keys = previousMessages.keys.toList();
+
     for (var key in keys) {
       if (!activeNotifications.any((element) => element.groupKey == key)) {
         previousMessages.remove(key);
@@ -201,5 +205,19 @@ class AndroidNotifier implements Notifier {
   @override
   Map<String, dynamic>? extraRegistrationData() {
     return null;
+  }
+
+  void onRoomOpened(Room room) async {
+    var notifications =
+        await flutterLocalNotificationsPlugin?.getActiveNotifications();
+
+    if (notifications == null) return;
+
+    for (var noti in notifications) {
+      if (noti.groupKey == room.identifier) {
+        flutterLocalNotificationsPlugin?.cancel(noti.id!);
+      }
+    }
+    previousMessages.remove(room.identifier);
   }
 }
