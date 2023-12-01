@@ -813,10 +813,10 @@ packages:
     description:
       path: "."
       ref: "krille/add-matrix-sdk-database"
-      resolved-ref: c8a1e596b24d1ebef1e2b5ddf2dc2e78e29a3aee
-      url: "https://github.com/famedly/matrix-dart-sdk.git"
+      resolved-ref: "2b08db35972b47040da6d7aa84f564cbf68ed4f2"
+      url: "https://github.com/Airyzz/matrix-dart-sdk.git"
     source: git
-    version: "0.22.7"
+    version: "0.24.0"
   matrix_api_lite:
     dependency: transitive
     description:

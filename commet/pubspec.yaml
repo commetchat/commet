@@ -72,7 +72,7 @@ dependencies:
     git: https://github.com/commetchat/flutter_shortcuts.git
   matrix: 
     git: 
-      url: https://github.com/famedly/matrix-dart-sdk.git
+      url: https://github.com/Airyzz/matrix-dart-sdk.git
       ref: krille/add-matrix-sdk-database
   tiamat: 
     path: ../tiamat/
