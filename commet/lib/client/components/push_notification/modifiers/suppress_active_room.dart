@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:commet/client/components/push_notification/modifiers/notification_modifiers.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/config/build_config.dart';

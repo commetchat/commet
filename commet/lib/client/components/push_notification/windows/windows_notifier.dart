@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notifier.dart';
-import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/shortcuts_manager.dart';
@@ -135,7 +134,7 @@ class WindowsNotifier implements Notifier {
       <binding template="ToastGeneric">
          <text>$title</text>
          <text>${content.content}</text>
-         ${avatarFilePath != null ? "<image placement='appLogoOverride' src='$avatarFilePath' hint-crop='circle'/>" : ""}
+         <image placement='appLogoOverride' src='$avatarFilePath' hint-crop='circle'/>
       </binding>
    </visual>
    <actions>
