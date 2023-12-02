@@ -5,6 +5,7 @@ import 'package:commet/client/components/push_notification/notifier.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/event_bus.dart';
+import 'package:commet/utils/shortcuts_manager.dart';
 import 'package:desktop_notifications/desktop_notifications.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
@@ -103,13 +104,21 @@ class WindowsNotifier implements Notifier {
       MessageNotificationContent content) async {
     String? avatarFilePath;
 
-    if (content.senderImage is MatrixMxcImage) {
-      var id = MatrixMxcImage.getThumbnailIdentifier(
-          (content.senderImage as MatrixMxcImage).identifier);
-      if (await fileCache.hasFile(id)) {
-        avatarFilePath = (await fileCache.getFile(id)).toString();
-      }
+    var client = clientManager?.getClient(content.clientId);
+    var room = client?.getRoom(content.roomId);
+
+    if (room == null) {
+      return;
     }
+
+    var avatar = await ShortcutsManager.getCachedAvatarImage(
+        placeholderColor: room.getColorOfUser(content.senderId),
+        placeholderText: content.senderName,
+        identifier: content.senderId,
+        shouldZoomOut: false,
+        imageProvider: content.senderImage);
+
+    avatarFilePath = avatar.toFilePath();
 
     // ignore: prefer_function_declarations_over_variables
     var f = (String string) => Uri.encodeComponent(string);

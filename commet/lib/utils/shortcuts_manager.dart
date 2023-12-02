@@ -58,7 +58,8 @@ class ShortcutsManager {
       required String placeholderText,
       required String identifier,
       ImageProvider? imageProvider,
-      bool shouldZoomOut = true}) async {
+      bool shouldZoomOut = true,
+      bool doCircleMask = true}) async {
     String avatarId = "shortcutAvatar_$identifier";
 
     if (imageProvider == null) {
@@ -71,6 +72,10 @@ class ShortcutsManager {
 
     if (shouldZoomOut) {
       avatarId += "_zoomed";
+    }
+
+    if (doCircleMask) {
+      avatarId += "_circle";
     }
 
     Uri? cachedAvatar = await fileCache.getFile(avatarId);
@@ -98,7 +103,8 @@ class ShortcutsManager {
       {required Color placeholderColor,
       required String placeholderText,
       ImageProvider? imageProvider,
-      bool shouldZoomOut = true}) async {
+      bool shouldZoomOut = true,
+      bool doCircleMask = true}) async {
     PictureRecorder recorder = PictureRecorder();
     Canvas c = Canvas(recorder);
 
@@ -148,25 +154,27 @@ class ShortcutsManager {
       textPainter.paint(c, offset);
     }
 
-    double width = 500;
+    if (doCircleMask) {
+      double width = 500;
 
-    // Mask image with a circle
-    final Paint paint = Paint()
-      ..isAntiAlias = true
-      ..strokeWidth = width
-      ..color = Colors.white
-      ..style = PaintingStyle.stroke
-      ..blendMode = BlendMode.dstOut;
+      // Mask image with a circle
+      final Paint paint = Paint()
+        ..isAntiAlias = true
+        ..strokeWidth = width
+        ..color = Colors.white
+        ..style = PaintingStyle.stroke
+        ..blendMode = BlendMode.dstOut;
 
-    c.drawArc(
-        Rect.fromCenter(
-            center: center,
-            width: size.height + width,
-            height: size.height + width),
-        0,
-        360,
-        false,
-        paint);
+      c.drawArc(
+          Rect.fromCenter(
+              center: center,
+              width: size.height + width,
+              height: size.height + width),
+          0,
+          360,
+          false,
+          paint);
+    }
 
     var pic = recorder.endRecording();
     var img = await pic.toImage(size.width.round(), size.height.round());
