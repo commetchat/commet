@@ -90,7 +90,7 @@ class SettingsCategoryRoom implements SettingsCategory {
             label: labelRoomSettingsDeveloper,
             icon: Icons.code,
             pageBuilder: (context) {
-              return RoomDeveloperSettingsView(room.developerInfo);
+              return RoomDeveloperSettingsView(room);
             }),
     ]);
   }

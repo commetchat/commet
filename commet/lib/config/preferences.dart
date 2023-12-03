@@ -19,6 +19,10 @@ class Preferences {
   static const String _developerMode = "developer_mode";
   static const String _tenorGifSearch = "enable_tenor_gif_search";
   static const String _gifSearchProxyUrl = "gif_search_proxy_url";
+  static const String _fcmKey = "fcm_key";
+  static const String _unifiedPushEnabled = "unified_push_enabled";
+  static const String _unifiedPushEndpoint = "unified_push_endpoint";
+  static const String _pushGateway = "push_gateway";
   static const String _lastDownloadLocation = "last_download_location";
   final StreamController _onSettingChanged = StreamController.broadcast();
   Stream get onSettingChanged => _onSettingChanged.stream;
@@ -116,6 +120,37 @@ class Preferences {
     await _preferences!.setBool(_tenorGifSearch, value);
     _onSettingChanged.add(null);
   }
+
+  String? get fcmKey => _preferences!.getString(_fcmKey);
+
+  Future<void> setFcmKey(String key) async {
+    await _preferences!.setString(_fcmKey, key);
+    _onSettingChanged.add(null);
+  }
+
+  String? get unifiedPushEndpoint =>
+      _preferences!.getString(_unifiedPushEndpoint);
+
+  Future<void> setUnifiedPushEndpoint(String? value) async {
+    if (value == null) {
+      await _preferences!.remove(_unifiedPushEndpoint);
+    } else {
+      await _preferences!.setString(_unifiedPushEndpoint, value);
+    }
+  }
+
+  Future<void> setUnifiedPushEnabled(bool value) async {
+    await _preferences!.setBool(_unifiedPushEnabled, value);
+  }
+
+  bool? get unifiedPushEnabled => _preferences!.getBool(_unifiedPushEnabled);
+
+  Future<void> setPushGateway(String value) async {
+    await _preferences!.setString(_pushGateway, value);
+  }
+
+  String get pushGateway =>
+      _preferences!.getString(_pushGateway) ?? "push.commet.chat";
 
   String? get lastDownloadLocation =>
       _preferences!.getString(_lastDownloadLocation);

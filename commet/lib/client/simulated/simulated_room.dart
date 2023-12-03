@@ -236,4 +236,14 @@ class SimulatedRoom extends Room {
   bool shouldNotify(TimelineEvent event) {
     return false;
   }
+
+  @override
+  Future<ImageProvider?> getShortcutImage() async {
+    return null;
+  }
+
+  @override
+  Future<TimelineEvent?> getEvent(String eventId) async {
+    return null;
+  }
 }

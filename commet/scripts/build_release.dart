@@ -26,6 +26,10 @@ String getHash(List<String> args) {
   return getArg(args, "--git_hash") ?? "unknown";
 }
 
+String getEnableGoogleServices(List<String> args) {
+  return getArg(args, "--enable_google_services") ?? "false";
+}
+
 String getBuildVersion(String versionTag) {
   var regex = RegExp(r"\d+(\.\d+)+");
   var match = regex.firstMatch(versionTag);
@@ -44,6 +48,7 @@ main(List<String> args) async {
   String version = getVersionTag(args);
   String platform = getPlatform(args);
   String hash = getHash(args);
+  String enableGoogleServices = getEnableGoogleServices(args);
   String buildVersion = getBuildVersion(version);
   String flutterPlatform = getFlutterPlatformName(platform);
   String? buildDetail = getArg(args, "--build_detail");
@@ -52,6 +57,10 @@ main(List<String> args) async {
   print("Build Version:\t'$buildVersion'");
   print("Platform:\t'$platform' / '$flutterPlatform' ");
   print("Hash:\t\t'$hash'");
+
+  if (buildDetail != null) {
+    print("Detail:\t\t'$buildDetail'");
+  }
 
   var process = Process.runSync(
     "flutter",
@@ -68,6 +77,8 @@ main(List<String> args) async {
       "GIT_HASH=$hash",
       "--dart-define",
       "VERSION_TAG=$version",
+      "--dart-define",
+      "ENABLE_GOOGLE_SERVICES=$enableGoogleServices",
       if (buildDetail != null) "--dart-define",
       if (buildDetail != null) "BUILD_DETAIL=$buildDetail",
     ],

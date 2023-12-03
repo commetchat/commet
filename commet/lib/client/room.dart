@@ -126,6 +126,10 @@ abstract class Room {
 
   T? getComponent<T extends RoomComponent>();
 
+  Future<ImageProvider?> getShortcutImage();
+
+  Future<TimelineEvent?> getEvent(String eventId);
+
   @override
   bool operator ==(Object other) {
     if (other is! Room) return false;

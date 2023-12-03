@@ -44,16 +44,17 @@ class _MatrixSessionState extends State<MatrixSession> {
     return widget.device.deviceId == widget.matrixClient.deviceID;
   }
 
-  void beginVerification() {
+  void beginVerification() async {
     var keys = widget.matrixClient.userDeviceKeys[widget.matrixClient.userID]
         ?.deviceKeys[widget.device.deviceId];
-    var request = keys!.startVerification();
+    var request = await keys!.startVerification();
     previousOnUpdate = request.onUpdate;
     request.onUpdate = onRequestUpdate;
 
-    AdaptiveDialog.show(context,
-        builder: (_) => MatrixVerificationPage(request: request),
-        title: "Verification Request");
+    if (mounted)
+      AdaptiveDialog.show(context,
+          builder: (_) => MatrixVerificationPage(request: request),
+          title: "Verification Request");
   }
 
   void onRequestUpdate() {

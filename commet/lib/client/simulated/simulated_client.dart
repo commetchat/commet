@@ -273,6 +273,18 @@ class SimulatedClient extends Client {
   }
 
   @override
+  List<T>? getAllComponents<T extends Component<Client>>() {
+    List<T> components = List.empty(growable: true);
+    for (var component in _components) {
+      if (component is T) {
+        components.add(component as T);
+      }
+    }
+
+    return components;
+  }
+
+  @override
   Future<void> leaveRoom(Room room) async {
     rooms.remove(room);
   }

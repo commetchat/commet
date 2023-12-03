@@ -1,0 +1,77 @@
+diff --git a/commet/android/app/build.gradle b/commet/android/app/build.gradle
+index e9ee824..c66714c 100644
+--- a/commet/android/app/build.gradle
++++ b/commet/android/app/build.gradle
+@@ -23,7 +23,7 @@ if (flutterVersionName == null) {
+ 
+ apply plugin: 'com.android.application'
+ apply plugin: 'kotlin-android'
+-// apply plugin: 'com.google.gms.google-services'
++apply plugin: 'com.google.gms.google-services'
+ apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
+ 
+ def keystoreProperties = new Properties()
+diff --git a/commet/android/app/src/main/kotlin/chat/commet/commet/FcmPushService.kt b/commet/android/app/src/main/kotlin/chat/commet/commet/FcmPushService.kt
+index 0df357b..00d3e31 100644
+--- a/commet/android/app/src/main/kotlin/chat/commet/commet/FcmPushService.kt
++++ b/commet/android/app/src/main/kotlin/chat/commet/commet/FcmPushService.kt
+@@ -1,4 +1,4 @@
+-/* 
++
+ package chat.commet.commetapp
+ 
+ import com.famedly.fcm_shared_isolate.FcmSharedIsolateService
+@@ -35,4 +35,3 @@ class FcmPushService : FcmSharedIsolateService() {
+     }
+ }
+ 
+-*/
+\ No newline at end of file
+diff --git a/commet/android/build.gradle b/commet/android/build.gradle
+index 7b03921..a059ce6 100644
+--- a/commet/android/build.gradle
++++ b/commet/android/build.gradle
+@@ -8,7 +8,7 @@ buildscript {
+     dependencies {
+         classpath 'com.android.tools.build:gradle:7.2.0'
+         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+-        // classpath 'com.google.gms:google-services:4.3.8'
++        classpath 'com.google.gms:google-services:4.3.8'
+     }
+ }
+ 
+diff --git a/commet/lib/client/components/push_notification/android/firebase_push_notifier.dart b/commet/lib/client/components/push_notification/android/firebase_push_notifier.dart
+index b30cd9b..a0800ef 100644
+--- a/commet/lib/client/components/push_notification/android/firebase_push_notifier.dart
++++ b/commet/lib/client/components/push_notification/android/firebase_push_notifier.dart
+@@ -3,7 +3,7 @@ import 'package:commet/client/components/push_notification/notification_content.
+ import 'package:commet/client/components/push_notification/notification_manager.dart';
+ import 'package:commet/client/components/push_notification/notifier.dart';
+ import 'package:commet/main.dart';
+-// import 'package:fcm_shared_isolate/fcm_shared_isolate.dart';
++import 'package:fcm_shared_isolate/fcm_shared_isolate.dart';
+ 
+ Future<void> onMessage(dynamic message) async {
+   String? eventId = message['event_id'];
+@@ -49,7 +49,7 @@ class FirebasePushNotifier implements Notifier {
+   @override
+   bool get enabled => true;
+ 
+-  dynamic fcm;
++  FcmSharedIsolate fcm = FcmSharedIsolate();
+ 
+   @override
+   Future<void> init() async {
+diff --git a/commet/pubspec.yaml b/commet/pubspec.yaml
+index 819350f..054e21c 100644
+--- a/commet/pubspec.yaml
++++ b/commet/pubspec.yaml
+@@ -12,7 +12,7 @@ dependencies:
+   desktop_drop: ^0.4.1
+   desktop_notifications: ^0.6.3
+   device_info_plus: ^9.0.3
+-  #fcm_shared_isolate: ^0.1.0
++  fcm_shared_isolate: ^0.1.0
+   file_picker: ^5.2.10
+   flutter_blurhash: ^0.7.0
+   flutter_gen: ^5.3.1

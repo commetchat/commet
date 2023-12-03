@@ -1,24 +1,31 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
+import 'package:commet/client/components/push_notification/notification_content.dart';
+import 'package:commet/client/components/push_notification/notifier.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/event_bus.dart';
-import 'package:commet/utils/notification/notifier.dart';
+import 'package:commet/utils/shortcuts_manager.dart';
 import 'package:desktop_notifications/desktop_notifications.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:win_toast/win_toast.dart';
 import 'package:window_manager/window_manager.dart';
-import '../notification_manager.dart';
 import 'package:path/path.dart' as p;
 
-class WindowsNotifier extends Notifier {
+class WindowsNotifier implements Notifier {
   @override
   bool get hasPermission => true;
 
+  @override
+  bool get enabled => true;
+
+  @override
+  bool get needsToken => false;
+
   static NotificationsClient client = NotificationsClient();
 
-  static Future<void> init() async {
+  @override
+  Future<void> init() async {
     final dir = await getTemporaryDirectory();
     var file = p.join(dir.path, "chat.commet.app", "commet_app_icon.png");
 
@@ -83,36 +90,69 @@ class WindowsNotifier extends Notifier {
   }
 
   @override
-  Future<void> notifyInternal(NotificationContent notification) async {
+  Future<void> notify(NotificationContent notification) async {
+    switch (notification.runtimeType) {
+      case MessageNotificationContent:
+        return displayMessageNotification(
+            notification as MessageNotificationContent);
+      default:
+    }
+  }
+
+  Future<void> displayMessageNotification(
+      MessageNotificationContent content) async {
     String? avatarFilePath;
 
-    if (notification.image is MatrixMxcImage) {
-      var id = MatrixMxcImage.getThumbnailIdentifier(
-          (notification.image as MatrixMxcImage).identifier);
-      if (await fileCache.hasFile(id)) {
-        avatarFilePath = (await fileCache.getFile(id)).toString();
-      }
+    var client = clientManager?.getClient(content.clientId);
+    var room = client?.getRoom(content.roomId);
+
+    if (room == null) {
+      return;
     }
+
+    var avatar = await ShortcutsManager.getCachedAvatarImage(
+        placeholderColor: room.getColorOfUser(content.senderId),
+        placeholderText: content.senderName,
+        identifier: content.senderId,
+        shouldZoomOut: false,
+        imageProvider: content.senderImage);
+
+    avatarFilePath = avatar.toFilePath();
 
     // ignore: prefer_function_declarations_over_variables
     var f = (String string) => Uri.encodeComponent(string);
 
+    var title = "${content.senderName} (${content.roomName})";
+    if (content.isDirectMessage) {
+      title = content.senderName;
+    }
+
     var xml = """
 <?xml version="1.0" encoding="UTF-8"?>
-<toast launch="action=open_room&amp;client_id=${f(notification.sentFrom!.client.identifier)}&amp;room_id=${f(notification.sentFrom!.identifier)}&amp;event_id=${f(notification.event!.eventId)}">
+<toast launch="action=open_room&amp;client_id=${f(content.clientId)}&amp;room_id=${f(content.roomId)}&amp;event_id=${f(content.eventId)}">
    <visual>
       <binding template="ToastGeneric">
-         <text>${notification.title}</text>
-         <text>${notification.content}</text>
-         ${avatarFilePath != null ? "<image placement='appLogoOverride' src='$avatarFilePath' hint-crop='circle'/>" : ""}
+         <text>$title</text>
+         <text>${content.content}</text>
+         <image placement='appLogoOverride' src='$avatarFilePath' hint-crop='circle'/>
       </binding>
    </visual>
    <actions>
       <input id="reply" type="text" placeHolderContent="Send a reply..." />
-      <action content="Reply" activationType="background" arguments="action=reply&amp;client_id=${f(notification.sentFrom!.client.identifier)}&amp;room_id=${f(notification.sentFrom!.identifier)}&amp;event_id=${f(notification.event!.eventId)}" />
+      <action content="Reply" activationType="background" arguments="action=reply&amp;client_id=${f(content.clientId)}&amp;room_id=${f(content.roomId)}&amp;event_id=${f(content.eventId)}" />
    </actions>
 </toast>
   """;
     WinToast.instance().showCustomToast(xml: xml);
+  }
+
+  @override
+  Map<String, dynamic>? extraRegistrationData() {
+    return null;
+  }
+
+  @override
+  Future<String?> getToken() async {
+    return null;
   }
 }
