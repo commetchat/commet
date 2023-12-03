@@ -72,7 +72,7 @@ class _MobileSettingsPageState extends State<MobileSettingsPage> {
                                   return button(
                                     label: tabs[categoryIndex]
                                         .tabs[tabIndex]
-                                        .label!,
+                                        .label,
                                     icon:
                                         tabs[categoryIndex].tabs[tabIndex].icon,
                                     onTap: () {
@@ -86,7 +86,7 @@ class _MobileSettingsPageState extends State<MobileSettingsPage> {
                                                         .makeScrollable,
                                                 builder: tabs[categoryIndex]
                                                     .tabs[tabIndex]
-                                                    .pageBuilder!));
+                                                    .pageBuilder));
                                       });
                                     },
                                   );

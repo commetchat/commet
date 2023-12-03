@@ -1,6 +1,5 @@
 import 'package:commet/ui/pages/settings/categories/room/permissions/matrix/matrix_room_permissions_view.dart';
 import 'package:flutter/material.dart';
-import 'package:matrix/matrix.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
 class MatrixRoomPermissionEntry {
@@ -47,6 +46,7 @@ class MatrixRoomPermissionsPage extends StatefulWidget {
 class _MatrixRoomPermissionsPageState extends State<MatrixRoomPermissionsPage> {
   late List<MatrixRoomRoleEntry> roles;
   late List<MatrixRoomPermissionEntry> permissions;
+  bool loading = false;
 
   void initPermissions() {
     roles = [
@@ -152,15 +152,34 @@ class _MatrixRoomPermissionsPageState extends State<MatrixRoomPermissionsPage> {
   void initState() {
     initPermissions();
 
-    var event = widget.room.states["m.room.power_levels"]![""] as Event;
-    var content = event.content;
+    var event = widget.room.states["m.room.power_levels"]?[""];
+    if (event != null) {
+      updatePowerLevels(event.content);
+    } else {
+      loading = true;
 
+      widget.room.postLoad().then((value) {
+        var event = widget.room.getState("m.room.power_levels");
+        updatePowerLevels(event!.content);
+        setState(() {
+          loading = false;
+        });
+      });
+    }
+
+    super.initState();
+  }
+
+  void updatePowerLevels(Map<String, Object?> content) {
     for (int i = 0; i < permissions.length; i++) {
       var perm = permissions[i];
 
       dynamic c = content;
       if (perm.keyParent != null) {
-        c = c[perm.keyParent];
+        var parent = c[perm.keyParent];
+        if (parent != null) {
+          c = c[perm.keyParent];
+        }
       }
 
       var powerLevel = c[perm.key];
@@ -169,25 +188,30 @@ class _MatrixRoomPermissionsPageState extends State<MatrixRoomPermissionsPage> {
         perm.originalPowerLevel = powerLevel;
       }
     }
-
-    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (loading) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
+    var canEdit = widget.room.canChangeStateEvent("m.room.power_levels");
     return MatrixRoomPermissionsView(
       permissions,
       roles,
       setPermissions: setPermissions,
-      canEdit: widget.room.canChangeStateEvent("m.room.power_levels"),
+      canEdit: canEdit,
     );
   }
 
   Future<void> setPermissions(
       List<MatrixRoomPermissionEntry> permissions) async {
     var mxRoom = widget.room;
-    var event = mxRoom.states["m.room.power_levels"]![""] as Event;
-    var content = event.content;
+    var event = mxRoom.states["m.room.power_levels"]?[""];
+    var content = event?.content ?? {};
 
     for (var perm in permissions) {
       if (perm.powerLevel == perm.originalPowerLevel) {

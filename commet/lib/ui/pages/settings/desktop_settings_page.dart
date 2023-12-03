@@ -56,7 +56,7 @@ class DesktopSettingsPageState extends State<DesktopSettingsPage> {
               selectedTabIndex < categories[selectedCategoryIndex].tabs.length
           ? settingsTab(categories[selectedCategoryIndex]
               .tabs[selectedTabIndex]
-              .pageBuilder!)
+              .pageBuilder)
           : null,
     );
   }
@@ -131,7 +131,7 @@ class DesktopSettingsPageState extends State<DesktopSettingsPage> {
       shrinkWrap: true,
       itemBuilder: (context, tabIndex) {
         return button(
-            label: categories[categoryIndex].tabs[tabIndex].label!,
+            label: categories[categoryIndex].tabs[tabIndex].label,
             icon: categories[categoryIndex].tabs[tabIndex].icon,
             highlighted: categoryIndex == selectedCategoryIndex &&
                 tabIndex == selectedTabIndex,
