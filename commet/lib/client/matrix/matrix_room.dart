@@ -236,6 +236,8 @@ class MatrixRoom extends Room {
         senderName: sender.displayName,
         senderId: sender.identifier,
         roomName: displayName,
+        senderImage: sender.avatar,
+        roomImage: avatar,
         content: event.body ?? "Received a message",
         eventId: event.eventId,
         roomId: identifier,
@@ -261,15 +263,10 @@ class MatrixRoom extends Room {
       return false;
     }
 
-    if (pushRule == PushRule.dontNotify) {
-      return false;
-    }
+    var evaluator = _matrixRoom.client.pushruleEvaluator;
+    var match = evaluator.match((event as MatrixTimelineEvent).event);
 
-    if (pushRule == PushRule.mentionsOnly && !event.highlight) {
-      return false;
-    }
-
-    return true;
+    return match.notify;
   }
 
   @override
