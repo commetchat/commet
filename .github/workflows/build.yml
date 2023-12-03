@@ -100,7 +100,7 @@ jobs:
       - name: Build APK
         run: |
           cd $PROJECT_PATH
-          dart run scripts/build_release.dart --platform android --version_tag ${{ github.event.release.tag_name || 'v0.0.0' }} --git_hash ${{ github.sha }}
+          dart run scripts/build_release.dart --platform android --enable_google_services true --version_tag ${{ github.event.release.tag_name || 'v0.0.0' }} --git_hash ${{ github.sha }}
 
 
   build-linux:
