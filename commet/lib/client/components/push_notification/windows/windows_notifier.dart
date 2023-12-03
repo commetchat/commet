@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:commet/client/components/push_notification/notification_content.dart';
+import 'package:commet/client/components/push_notification/notifier.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/event_bus.dart';
-import 'package:commet/utils/notification/notification_content.dart';
-import 'package:commet/utils/notification/notifier.dart';
 import 'package:desktop_notifications/desktop_notifications.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';

@@ -1,9 +1,9 @@
 import 'dart:async';
 
+import 'package:commet/client/components/push_notification/android/unified_push_notifier.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/settings/categories/app/notification_settings_page.dart';
 import 'package:commet/ui/pages/setup/setup_menu.dart';
-import 'package:commet/utils/notification/android/unified_push_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:intl/intl.dart';

@@ -1,7 +1,7 @@
+import 'package:commet/client/components/push_notification/android/android_notifier.dart';
+import 'package:commet/client/components/push_notification/notification_content.dart';
+import 'package:commet/client/components/push_notification/notifier.dart';
 import 'package:commet/main.dart';
-import 'package:commet/utils/notification/android/android_notifier.dart';
-import 'package:commet/utils/notification/notification_content.dart';
-import 'package:commet/utils/notification/notifier.dart';
 // import 'package:fcm_shared_isolate/fcm_shared_isolate.dart';
 
 Future<void> onMessage(dynamic message) async {

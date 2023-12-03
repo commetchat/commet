@@ -1,9 +1,9 @@
+import 'package:commet/client/components/push_notification/android/unified_push_notifier.dart';
+import 'package:commet/client/components/push_notification/notifier.dart';
 import 'package:commet/client/components/push_notification/push_notification_component.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/setup/menus/unified_push_setup.dart';
 import 'package:commet/utils/common_strings.dart';
-import 'package:commet/utils/notification/android/unified_push_notifier.dart';
-import 'package:commet/utils/notification/notifier.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 

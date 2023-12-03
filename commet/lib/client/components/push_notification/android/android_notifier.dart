@@ -1,12 +1,12 @@
 import 'dart:ui';
 
+import 'package:commet/client/components/push_notification/notification_content.dart';
+import 'package:commet/client/components/push_notification/notifier.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/custom_uri.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/image_utils.dart';
-import 'package:commet/utils/notification/notification_content.dart';
-import 'package:commet/utils/notification/notifier.dart';
 import 'package:commet/utils/shortcuts_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';

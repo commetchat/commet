@@ -1,15 +1,15 @@
 import 'dart:io';
 
+import 'package:commet/client/components/push_notification/android/firebase_push_notifier.dart';
+import 'package:commet/client/components/push_notification/android/unified_push_notifier.dart';
+import 'package:commet/client/components/push_notification/linux/linux_notifier.dart';
+import 'package:commet/client/components/push_notification/modifiers/notification_modifiers.dart';
+import 'package:commet/client/components/push_notification/modifiers/suppress_active_room.dart';
+import 'package:commet/client/components/push_notification/modifiers/suppress_other_device_active.dart';
+import 'package:commet/client/components/push_notification/notification_content.dart';
+import 'package:commet/client/components/push_notification/notifier.dart';
+import 'package:commet/client/components/push_notification/windows/windows_notifier.dart';
 import 'package:commet/config/build_config.dart';
-import 'package:commet/utils/notification/android/firebase_push_notifier.dart';
-import 'package:commet/utils/notification/android/unified_push_notifier.dart';
-import 'package:commet/utils/notification/linux/linux_notifier.dart';
-import 'package:commet/utils/notification/modifiers/suppress_active_room.dart';
-import 'package:commet/utils/notification/modifiers/suppress_other_device_active.dart';
-import 'package:commet/utils/notification/notification_content.dart';
-import 'package:commet/utils/notification/modifiers/notification_modifiers.dart';
-import 'package:commet/utils/notification/notifier.dart';
-import 'package:commet/utils/notification/windows/windows_notifier.dart';
 
 class NotificationManager {
   late final Notifier? _notifier;

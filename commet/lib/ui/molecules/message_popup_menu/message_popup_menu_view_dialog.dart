@@ -1,10 +1,10 @@
+import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/timeline.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/molecules/emoji_picker.dart';
 import 'package:commet/ui/molecules/message_popup_menu/message_popup_menu.dart';
 import 'package:commet/ui/molecules/timeline_event.dart';
 import 'package:commet/utils/common_strings.dart';
-import 'package:commet/utils/notification/notification_content.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 

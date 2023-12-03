@@ -1,7 +1,7 @@
+import 'package:commet/client/components/push_notification/modifiers/notification_modifiers.dart';
+import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/main.dart';
-import 'package:commet/utils/notification/modifiers/notification_modifiers.dart';
-import 'package:commet/utils/notification/notification_content.dart';
 import 'package:flutter/foundation.dart';
 
 class NotificationModifierSuppressOtherActiveDevice

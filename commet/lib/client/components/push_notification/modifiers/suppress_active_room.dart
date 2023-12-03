@@ -1,6 +1,7 @@
+import 'package:commet/client/components/push_notification/modifiers/notification_modifiers.dart';
+import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/utils/event_bus.dart';
-import 'package:commet/utils/notification/modifiers/notification_modifiers.dart';
-import 'package:commet/utils/notification/notification_content.dart';
+
 import 'package:flutter/material.dart';
 
 class NotificationModifierSuppressActiveRoom implements NotificationModifier {

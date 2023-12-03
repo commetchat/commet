@@ -2,13 +2,13 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:commet/client/components/push_notification/android/android_notifier.dart';
+import 'package:commet/client/components/push_notification/notification_content.dart';
+import 'package:commet/client/components/push_notification/notifier.dart';
 import 'package:commet/client/components/push_notification/push_notification_component.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/setup/menus/unified_push_setup.dart';
 import 'package:commet/utils/first_time_setup.dart';
-import 'package:commet/utils/notification/android/android_notifier.dart';
-import 'package:commet/utils/notification/notification_content.dart';
-import 'package:commet/utils/notification/notifier.dart';
 import 'package:unifiedpush/unifiedpush.dart';
 
 @pragma('vm:entry-point')

@@ -1,15 +1,15 @@
 import 'dart:async';
 
+import 'package:commet/client/components/push_notification/notification_content.dart';
+import 'package:commet/client/components/push_notification/notifier.dart';
+import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/image/lod_image.dart';
 import 'package:commet/utils/image_utils.dart';
-import 'package:commet/utils/notification/notification_content.dart';
-import 'package:commet/utils/notification/notifier.dart';
 import 'package:desktop_notifications/desktop_notifications.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:window_manager/window_manager.dart';
 import 'dart:ui' as ui;
-import '../../event_bus.dart';
 
 class LinuxNotifier implements Notifier {
   @override

@@ -1,4 +1,4 @@
-import 'package:commet/utils/notification/notification_content.dart';
+import 'package:commet/client/components/push_notification/notification_content.dart';
 
 abstract class Notifier {
   Future<void> notify(NotificationContent notification);
