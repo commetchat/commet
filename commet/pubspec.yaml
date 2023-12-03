@@ -64,7 +64,7 @@ dependencies:
     git: https://github.com/commetchat/flutter_html.git
   flutter_local_notifications: 
     git: 
-      url: https://github.com/Airyzz/flutter_local_notifications.git
+      url: https://github.com/commetchat/flutter_local_notifications.git
       path: ./flutter_local_notifications
   flutter_localizations: 
     sdk: flutter
