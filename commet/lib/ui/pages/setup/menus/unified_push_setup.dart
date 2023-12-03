@@ -29,7 +29,7 @@ class UnifiedPushSetup implements SetupMenu {
 
   @override
   Future<void> submit() async {
-    NotificationManager().init();
+    NotificationManager.init();
   }
 }
 
@@ -74,7 +74,7 @@ If you already have a Unified Push compatible distributor app installed, you can
   @override
   void initState() {
     wasUnifiedPushAlreadyConfigured = preferences.unifiedPushEnabled != null;
-    notifier = NotificationManager().notifier as UnifiedPushNotifier?;
+    notifier = NotificationManager.notifier as UnifiedPushNotifier?;
     notifier?.onEndpointChanged.stream.listen((event) => onEndpointChanged());
     unifiedPushEnabled = preferences.unifiedPushEnabled == true;
 

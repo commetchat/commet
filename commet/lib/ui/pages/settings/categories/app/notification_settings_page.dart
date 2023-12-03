@@ -32,7 +32,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
   @override
   void initState() {
     super.initState();
-    notifier = NotificationManager().notifier;
+    notifier = NotificationManager.notifier;
   }
 
   @override

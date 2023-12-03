@@ -245,7 +245,7 @@ class MatrixRoom extends Room {
         clientId: client.identifier,
         isDirectMessage: isDirectMessage);
 
-    NotificationManager().notify(notification);
+    NotificationManager.notify(notification);
   }
 
   @override

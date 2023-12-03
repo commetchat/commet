@@ -60,11 +60,10 @@ class MatrixPushNotificationComponent
 
   @override
   Future<void> updatePushers() async {
-    var manager = NotificationManager();
-    if (manager.notifierLoading != null) {
-      await manager.notifierLoading;
+    if (NotificationManager.notifierLoading != null) {
+      await NotificationManager.notifierLoading;
     }
-    var notifier = manager.notifier;
+    var notifier = NotificationManager.notifier;
     var key = await notifier?.getToken();
     var mxClient = client.getMatrixClient();
     var extraData = notifier?.extraRegistrationData();

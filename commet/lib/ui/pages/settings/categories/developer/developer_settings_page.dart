@@ -130,7 +130,7 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
               var client = clientManager!.clients.first;
               var room = client.rooms.first;
               var user = client.self!;
-              NotificationManager().notify(MessageNotificationContent(
+              NotificationManager.notify(MessageNotificationContent(
                 senderName: user.displayName,
                 senderImage: user.avatar,
                 senderId: user.identifier,

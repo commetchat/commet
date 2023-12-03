@@ -134,8 +134,7 @@ class MessagePopupMenuViewDialog extends StatelessWidget {
                       isDirectMessage: room.isDirectMessage,
                     );
 
-                    NotificationManager()
-                        .notify(content, bypassModifiers: true);
+                    NotificationManager.notify(content, bypassModifiers: true);
                   },
                 ),
               ),

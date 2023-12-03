@@ -130,7 +130,7 @@ Future<void> initNecessary() async {
   ]);
 
   shortcutsManager.init();
-  NotificationManager().init();
+  NotificationManager.init();
 
   NeedsPostLoginInit.doPostLoginInit();
 }

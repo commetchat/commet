@@ -12,41 +12,18 @@ import 'package:commet/client/components/push_notification/windows/windows_notif
 import 'package:commet/config/build_config.dart';
 
 class NotificationManager {
-  late final Notifier? _notifier;
+  static Notifier? _notifier;
 
-  static final NotificationManager _singleton = NotificationManager._internal();
+  static Notifier? get notifier => _notifier;
 
-  factory NotificationManager() {
-    return _singleton;
-  }
+  static final List<NotificationModifier> _modifiers =
+      List.empty(growable: true);
 
-  NotificationManager._internal() {
-    if (Platform.isLinux) {
-      _notifier = LinuxNotifier();
-      return;
-    }
+  static Future<void>? notifierLoading;
 
-    if (Platform.isAndroid) {
-      if (BuildConfig.ENABLE_GOOGLE_SERVICES) {
-        _notifier = FirebasePushNotifier();
-      } else {
-        _notifier = UnifiedPushNotifier();
-      }
-      return;
-    }
+  static Future<void> init() async {
+    _notifier ??= _getNotifier();
 
-    if (Platform.isWindows) {
-      _notifier = WindowsNotifier();
-    }
-  }
-
-  Notifier? get notifier => _notifier;
-
-  final List<NotificationModifier> _modifiers = List.empty(growable: true);
-
-  Future<void>? notifierLoading;
-
-  Future<void> init() async {
     _modifiers.clear;
     addModifier(NotificationModifierSuppressActiveRoom());
     if (BuildConfig.ANDROID) {
@@ -56,15 +33,35 @@ class NotificationManager {
     notifierLoading = _notifier?.init();
   }
 
-  void addModifier(NotificationModifier modifier) {
+  static Notifier? _getNotifier() {
+    if (Platform.isLinux) {
+      return LinuxNotifier();
+    }
+
+    if (Platform.isWindows) {
+      return WindowsNotifier();
+    }
+
+    if (Platform.isAndroid) {
+      if (BuildConfig.ENABLE_GOOGLE_SERVICES) {
+        return FirebasePushNotifier();
+      }
+
+      return UnifiedPushNotifier();
+    }
+
+    return null;
+  }
+
+  static void addModifier(NotificationModifier modifier) {
     _modifiers.add(modifier);
   }
 
-  void removeModifier(NotificationModifier modifier) {
+  static void removeModifier(NotificationModifier modifier) {
     _modifiers.remove(modifier);
   }
 
-  Future<void> notify(NotificationContent notification,
+  static Future<void> notify(NotificationContent notification,
       {bool bypassModifiers = false}) async {
     if (_notifier == null) return;
 
