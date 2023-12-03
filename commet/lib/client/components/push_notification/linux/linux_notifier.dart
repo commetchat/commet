@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notifier.dart';
+import 'package:commet/main.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/image/lod_image.dart';
 import 'package:commet/utils/image_utils.dart';
+import 'package:commet/utils/shortcuts_manager.dart';
 import 'package:desktop_notifications/desktop_notifications.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -63,22 +65,21 @@ class LinuxNotifier implements Notifier {
 
   Future<void> displayMessageNotification(
       MessageNotificationContent content) async {
-    LinuxNotificationIcon? icon;
+    var client = clientManager?.getClient(content.clientId);
+    var room = client?.getRoom(content.roomId);
 
-    if (content.senderImage != null) {
-      var image = await determineImage(content.senderImage!);
-      var bytes = (await image.toByteData(format: ui.ImageByteFormat.rawRgba))
-          ?.buffer
-          .asUint8List();
-
-      icon = ByteDataLinuxIcon(LinuxRawIconData(
-          data: bytes!,
-          width: image.width,
-          height: image.height,
-          bitsPerSample: 8,
-          channels: 4,
-          hasAlpha: true));
+    if (room == null) {
+      return;
     }
+
+    var avatar = await ShortcutsManager.getCachedAvatarImage(
+        placeholderColor: room.getColorOfUser(content.senderId),
+        placeholderText: content.senderName,
+        identifier: content.senderId,
+        shouldZoomOut: false,
+        imageProvider: content.senderImage);
+
+    LinuxNotificationIcon icon = FilePathLinuxIcon(avatar.toFilePath());
 
     var details = LinuxNotificationDetails(
       icon: icon,
