@@ -14,7 +14,13 @@ import 'package:commet/config/build_config.dart';
 class NotificationManager {
   late final Notifier? _notifier;
 
-  NotificationManager() {
+  static final NotificationManager _singleton = NotificationManager._internal();
+
+  factory NotificationManager() {
+    return _singleton;
+  }
+
+  NotificationManager._internal() {
     if (Platform.isLinux) {
       _notifier = LinuxNotifier();
       return;

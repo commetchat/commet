@@ -33,7 +33,6 @@ import 'package:tiamat/config/style/theme_light.dart';
 final GlobalKey<NavigatorState> navigator = GlobalKey();
 FileCacheInstance fileCache = FileCacheInstance();
 Preferences preferences = Preferences();
-NotificationManager notificationManager = NotificationManager();
 ShortcutsManager shortcutsManager = ShortcutsManager();
 BackgroundTaskManager backgroundTaskManager = BackgroundTaskManager();
 Diagnostics diagnostics = Diagnostics();
@@ -131,7 +130,7 @@ Future<void> initNecessary() async {
   ]);
 
   shortcutsManager.init();
-  notificationManager.init();
+  NotificationManager().init();
 
   NeedsPostLoginInit.doPostLoginInit();
 }

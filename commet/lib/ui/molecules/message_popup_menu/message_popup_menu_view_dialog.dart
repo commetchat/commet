@@ -1,4 +1,5 @@
 import 'package:commet/client/components/push_notification/notification_content.dart';
+import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/timeline.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/molecules/emoji_picker.dart';
@@ -133,7 +134,8 @@ class MessagePopupMenuViewDialog extends StatelessWidget {
                       isDirectMessage: room.isDirectMessage,
                     );
 
-                    notificationManager.notify(content, bypassModifiers: true);
+                    NotificationManager()
+                        .notify(content, bypassModifiers: true);
                   },
                 ),
               ),

@@ -1,4 +1,5 @@
 import 'package:commet/client/components/push_notification/android/unified_push_notifier.dart';
+import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/components/push_notification/notifier.dart';
 import 'package:commet/client/components/push_notification/push_notification_component.dart';
 import 'package:commet/main.dart';
@@ -31,7 +32,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
   @override
   void initState() {
     super.initState();
-    notifier = notificationManager.notifier;
+    notifier = NotificationManager().notifier;
   }
 
   @override

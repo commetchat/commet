@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:commet/client/components/push_notification/android/unified_push_notifier.dart';
+import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/settings/categories/app/notification_settings_page.dart';
 import 'package:commet/ui/pages/setup/setup_menu.dart';
@@ -28,7 +29,7 @@ class UnifiedPushSetup implements SetupMenu {
 
   @override
   Future<void> submit() async {
-    notificationManager.init();
+    NotificationManager().init();
   }
 }
 
@@ -73,7 +74,7 @@ If you already have a Unified Push compatible distributor app installed, you can
   @override
   void initState() {
     wasUnifiedPushAlreadyConfigured = preferences.unifiedPushEnabled != null;
-    notifier = notificationManager.notifier as UnifiedPushNotifier?;
+    notifier = NotificationManager().notifier as UnifiedPushNotifier?;
     notifier?.onEndpointChanged.stream.listen((event) => onEndpointChanged());
     unifiedPushEnabled = preferences.unifiedPushEnabled == true;
 

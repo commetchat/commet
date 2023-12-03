@@ -1,5 +1,6 @@
 import 'package:commet/client/components/push_notification/android/android_notifier.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
+import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/components/push_notification/notifier.dart';
 import 'package:commet/main.dart';
 // import 'package:fcm_shared_isolate/fcm_shared_isolate.dart';
@@ -19,7 +20,7 @@ Future<void> onMessage(dynamic message) async {
   var user = client.getPeer(event!.senderId);
   await user.loading;
 
-  notificationManager.notify(MessageNotificationContent(
+  NotificationManager().notify(MessageNotificationContent(
       senderName: user.displayName,
       senderId: user.identifier,
       roomName: room.displayName,

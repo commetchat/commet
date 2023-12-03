@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:commet/client/components/component_registry.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
+import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/components/room_component.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_room_emoticon_component.dart';
 import 'package:commet/client/matrix/matrix_attachment.dart';
@@ -244,7 +245,7 @@ class MatrixRoom extends Room {
         clientId: client.identifier,
         isDirectMessage: isDirectMessage);
 
-    notificationManager.notify(notification);
+    NotificationManager().notify(notification);
   }
 
   @override

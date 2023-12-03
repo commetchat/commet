@@ -1,3 +1,4 @@
+import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/components/push_notification/push_notification_component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/config/build_config.dart';
@@ -59,10 +60,11 @@ class MatrixPushNotificationComponent
 
   @override
   Future<void> updatePushers() async {
-    if (notificationManager.notifierLoading != null) {
-      await notificationManager.notifierLoading;
+    var manager = NotificationManager();
+    if (manager.notifierLoading != null) {
+      await manager.notifierLoading;
     }
-    var notifier = notificationManager.notifier;
+    var notifier = manager.notifier;
     var key = await notifier?.getToken();
     var mxClient = client.getMatrixClient();
     var extraData = notifier?.extraRegistrationData();

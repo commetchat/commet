@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:commet/client/components/push_notification/notification_content.dart';
+import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/background_tasks/mock_tasks.dart';
 import 'package:flutter/material.dart';
@@ -129,7 +130,7 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
               var client = clientManager!.clients.first;
               var room = client.rooms.first;
               var user = client.self!;
-              notificationManager.notify(MessageNotificationContent(
+              NotificationManager().notify(MessageNotificationContent(
                 senderName: user.displayName,
                 senderImage: user.avatar,
                 senderId: user.identifier,
