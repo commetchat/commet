@@ -15,9 +15,12 @@ class BuildConfig {
   static const String VERSION_TAG =
       String.fromEnvironment('VERSION_TAG', defaultValue: "development");
 
-  // Details about build, like "flatpak", "fdroid", "google-services"
+  // Details about build, like "flatpak", "fdroid"
   static const String BUILD_DETAIL =
       String.fromEnvironment('BUILD_DETAIL', defaultValue: "default");
+
+  static const bool ENABLE_GOOGLE_SERVICES =
+      bool.fromEnvironment("ENABLE_GOOGLE_SERVICES", defaultValue: false);
 
   static const bool DEBUG = _buildMode == _Constants._debug;
 

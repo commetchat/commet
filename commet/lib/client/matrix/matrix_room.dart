@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'dart:ui';
 import 'package:commet/client/components/component_registry.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
+import 'package:commet/client/components/push_notification/notification_content.dart';
+import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/components/room_component.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_room_emoticon_component.dart';
 import 'package:commet/client/matrix/matrix_attachment.dart';
@@ -13,10 +15,10 @@ import 'package:commet/client/matrix/matrix_room_permissions.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
 import 'package:commet/client/matrix/matrix_timeline_event.dart';
 import 'package:commet/client/permissions.dart';
+import 'package:commet/config/build_config.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/image_utils.dart';
 import 'package:commet/utils/mime.dart';
-import 'package:commet/utils/notification/notification_manager.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:flutter/material.dart';
 import 'package:html_unescape/html_unescape.dart';
@@ -220,22 +222,30 @@ class MatrixRoom extends Room {
       return;
     }
 
+    // let push notifications handle it
+    if (BuildConfig.ANDROID) {
+      return;
+    }
+
     var sender = client.getPeer(event.senderId);
 
     if (sender.loading != null) {
       await sender.loading;
     }
 
-    notificationManager.notify(NotificationContent(
-      isDirectMessage
-          ? sender.displayName
-          : "${sender.displayName} ($displayName)",
-      NotificationType.messageReceived,
-      content: event.body,
-      sentFrom: this,
-      event: event,
-      image: sender.avatar,
-    ));
+    var notification = MessageNotificationContent(
+        senderName: sender.displayName,
+        senderId: sender.identifier,
+        roomName: displayName,
+        senderImage: sender.avatar,
+        roomImage: avatar,
+        content: event.body ?? "Received a message",
+        eventId: event.eventId,
+        roomId: identifier,
+        clientId: client.identifier,
+        isDirectMessage: isDirectMessage);
+
+    NotificationManager.notify(notification);
   }
 
   @override
@@ -254,15 +264,10 @@ class MatrixRoom extends Room {
       return false;
     }
 
-    if (pushRule == PushRule.dontNotify) {
-      return false;
-    }
+    var evaluator = _matrixRoom.client.pushruleEvaluator;
+    var match = evaluator.match((event as MatrixTimelineEvent).event);
 
-    if (pushRule == PushRule.mentionsOnly && !event.highlight) {
-      return false;
-    }
-
-    return true;
+    return match.notify;
   }
 
   @override
@@ -439,5 +444,34 @@ class MatrixRoom extends Room {
     _timeline = MatrixTimeline(client, this, matrixRoom);
     await _timeline!.initTimeline();
     return _timeline!;
+  }
+
+  @override
+  Future<ImageProvider?> getShortcutImage() async {
+    if (avatar != null) return avatar;
+
+    if (isDirectMessage) {
+      var user = client.getPeer(directMessagePartnerID!);
+      await user.loading;
+
+      if (user.avatar != null) {
+        return user.avatar;
+      }
+    }
+
+    return client.spaces
+        .where((space) => space.containsRoom(identifier))
+        .firstOrNull
+        ?.avatar;
+  }
+
+  @override
+  Future<TimelineEvent?> getEvent(String eventId) async {
+    var event = await _matrixRoom.getEventById(eventId);
+    if (event == null) {
+      return null;
+    }
+
+    return MatrixTimelineEvent(event, _matrixRoom.client);
   }
 }

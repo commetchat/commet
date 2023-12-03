@@ -1,6 +1,8 @@
+import 'dart:io';
+import 'package:commet/client/components/push_notification/notification_content.dart';
+import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/background_tasks/mock_tasks.dart';
-import 'package:commet/utils/notification/notification_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -21,7 +23,8 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
       performance(),
       windowSize(),
       notificationTests(),
-      backgroundTasks()
+      if (Platform.isAndroid) shortcuts(),
+      backgroundTasks(),
     ].map<Widget>((e) {
       return Padding(
         padding: const EdgeInsets.fromLTRB(0, 3, 0, 3),
@@ -123,13 +126,42 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
         Wrap(spacing: 8, runSpacing: 8, children: [
           tiamat.Button(
             text: "Message Notification",
-            onTap: () => notificationManager.notify(NotificationContent(
-                clientManager!.rooms.first.lastEvent!.senderId,
-                NotificationType.messageReceived,
-                content: clientManager!.rooms.first.lastEvent!.body!,
-                sentFrom: clientManager?.rooms.first,
-                event: clientManager?.rooms.first.lastEvent,
-                image: clientManager?.clients.first.self?.avatar)),
+            onTap: () async {
+              var client = clientManager!.clients.first;
+              var room = client.rooms.first;
+              var user = client.self!;
+              NotificationManager.notify(MessageNotificationContent(
+                senderName: user.displayName,
+                senderImage: user.avatar,
+                senderId: user.identifier,
+                roomName: room.displayName,
+                roomId: room.identifier,
+                roomImage: await room.getShortcutImage(),
+                content: "Test Message!",
+                clientId: client.identifier,
+                eventId: "fake_event_id",
+                isDirectMessage: true,
+              ));
+            },
+          ),
+        ])
+      ],
+    );
+  }
+
+  Widget shortcuts() {
+    return ExpansionTile(
+      title: const tiamat.Text.labelEmphasised("Shortcuts"),
+      backgroundColor: Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+      collapsedBackgroundColor:
+          Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+      children: [
+        Wrap(spacing: 8, runSpacing: 8, children: [
+          tiamat.Button(
+            text: "Clear Shortcuts",
+            onTap: () async {
+              await shortcutsManager.clearAllShortcuts();
+            },
           ),
         ])
       ],

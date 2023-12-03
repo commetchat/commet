@@ -145,14 +145,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.0"
-  charcode:
-    dependency: transitive
-    description:
-      name: charcode
-      sha256: fb98c0f6d12c920a02ee2d998da788bca066ca5f148492b7085ee23372b12306
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.3.1"
   checked_yaml:
     dependency: transitive
     description:
@@ -281,6 +273,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.8"
+  dependency_validator:
+    dependency: transitive
+    description:
+      name: dependency_validator
+      sha256: f727a5627aa405965fab4aef4f468e50a9b632ba0737fd2f98c932fec6d712b9
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.2.3"
   desktop_drop:
     dependency: "direct main"
     description:
@@ -448,11 +448,12 @@ packages:
   flutter_local_notifications:
     dependency: "direct main"
     description:
-      name: flutter_local_notifications
-      sha256: "3002092e5b8ce2f86c3361422e52e6db6776c23ee21e0b2f71b892bf4259ef04"
-      url: "https://pub.dev"
-    source: hosted
-    version: "15.1.1"
+      path: flutter_local_notifications
+      ref: HEAD
+      resolved-ref: "2ed87e412371cb5aeaceaced0dd49bd812ea85be"
+      url: "https://github.com/commetchat/flutter_local_notifications.git"
+    source: git
+    version: "16.1.0"
   flutter_local_notifications_linux:
     dependency: transitive
     description:
@@ -478,10 +479,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_markdown
-      sha256: "7c4e42e66fb24bc912b64860c69806ef5cc0ad1480772aa2201ede568125a379"
+      sha256: "35108526a233cc0755664d445f8a6b4b61e6f8fe993b3658b80b4a26827fc196"
       url: "https://pub.dev"
     source: hosted
-    version: "0.6.9+1"
+    version: "0.6.18+2"
   flutter_olm:
     dependency: "direct main"
     description:
@@ -506,6 +507,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.16"
+  flutter_shortcuts:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: "92024a382c0fc12c0743846869817fb33f0f54ce"
+      url: "https://github.com/commetchat/flutter_shortcuts.git"
+    source: git
+    version: "1.4.0"
   flutter_staggered_grid_view:
     dependency: "direct main"
     description:
@@ -586,29 +596,13 @@ packages:
     source: hosted
     version: "0.1.1"
   hive:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: hive
       sha256: "8dcf6db979d7933da8217edcec84e9df1bdb4e4edc7fc77dbd5aa74356d6d941"
       url: "https://pub.dev"
     source: hosted
     version: "2.2.3"
-  hive_flutter:
-    dependency: "direct main"
-    description:
-      name: hive_flutter
-      sha256: dca1da446b1d808a51689fb5d0c6c9510c0a2ba01e22805d492c73b68e33eecc
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.1.0"
-  hive_generator:
-    dependency: "direct main"
-    description:
-      name: hive_generator
-      sha256: "06cb8f58ace74de61f63500564931f9505368f45f98958bd7a6c35ba24159db4"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.1"
   html:
     dependency: "direct main"
     description:
@@ -702,6 +696,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.4"
+  isar:
+    dependency: "direct main"
+    description:
+      name: isar
+      sha256: "99165dadb2cf2329d3140198363a7e7bff9bbd441871898a87e26914d25cf1ea"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.1.0+1"
+  isar_flutter_libs:
+    dependency: "direct main"
+    description:
+      name: isar_flutter_libs
+      sha256: bc6768cc4b9c61aabff77152e7f33b4b17d2fc93134f7af1c3dd51500fe8d5e8
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.1.0+1"
+  isar_generator:
+    dependency: "direct main"
+    description:
+      name: isar_generator
+      sha256: "76c121e1295a30423604f2f819bc255bc79f852f3bc8743a24017df6068ad133"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.1.0+1"
   js:
     dependency: transitive
     description:
@@ -750,6 +768,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.1"
+  logger:
+    dependency: transitive
+    description:
+      name: logger
+      sha256: "6bbb9d6f7056729537a4309bda2e74e18e5d9f14302489cc1e93f33b3fe32cac"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.2+1"
   logging:
     dependency: transitive
     description:
@@ -762,10 +788,10 @@ packages:
     dependency: transitive
     description:
       name: markdown
-      sha256: "01512006c8429f604eb10f9848717baeaedf99e991d14a50d540d9beff08e5c6"
+      sha256: acf35edccc0463a9d7384e437c015a3535772e09714cf60e07eeef3a15870dcd
       url: "https://pub.dev"
     source: hosted
-    version: "4.0.1"
+    version: "7.1.1"
   matcher:
     dependency: transitive
     description:
@@ -785,11 +811,12 @@ packages:
   matrix:
     dependency: "direct main"
     description:
-      name: matrix
-      sha256: "10389562a4562db6150291b538e025a9a1b7a79998a71d38cb5c78a34ca6b007"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.22.3"
+      path: "."
+      ref: "krille/add-matrix-sdk-database"
+      resolved-ref: "2b08db35972b47040da6d7aa84f564cbf68ed4f2"
+      url: "https://github.com/Airyzz/matrix-dart-sdk.git"
+    source: git
+    version: "0.24.0"
   matrix_api_lite:
     dependency: transitive
     description:
@@ -1118,6 +1145,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.4"
+  pubspec:
+    dependency: transitive
+    description:
+      name: pubspec
+      sha256: f534a50a2b4d48dc3bc0ec147c8bd7c304280fff23b153f3f11803c4d49d927e
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.3.0"
+  pubspec_dependency_sorter:
+    dependency: "direct dev"
+    description:
+      name: pubspec_dependency_sorter
+      sha256: "515adbbe2fcf96a35b02957775c4e71db7197f4f8890ebeb9b42d8ccf72375a0"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.4"
   pubspec_parse:
     dependency: transitive
     description:
@@ -1126,6 +1169,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.3"
+  quiver:
+    dependency: transitive
+    description:
+      name: quiver
+      sha256: b1c1ac5ce6688d77f65f3375a9abb9319b3cb32486bdc7a1e0fdf004d7ba4e47
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.2.1"
   random_string:
     dependency: transitive
     description:
@@ -1134,6 +1185,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.1"
+  receive_intent:
+    dependency: "direct main"
+    description:
+      name: receive_intent
+      sha256: "84671fa21d7fdbe38c1a658f3b7656afd5e9852e99f25ce6ff80fd5f04cc8b53"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.4"
   resizable_widget:
     dependency: transitive
     description:
@@ -1331,14 +1390,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.4.0"
-  source_helper:
-    dependency: transitive
-    description:
-      name: source_helper
-      sha256: "6adebc0006c37dd63fe05bca0a929b99f06402fc95aa35bf36d67f5c06de01fd"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.3.4"
   source_map_stack_trace:
     dependency: transitive
     description:
@@ -1363,6 +1414,38 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.10.0"
+  sqflite:
+    dependency: "direct main"
+    description:
+      name: sqflite
+      sha256: "591f1602816e9c31377d5f008c2d9ef7b8aca8941c3f89cc5fd9d84da0c38a9a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.3.0"
+  sqflite_common:
+    dependency: transitive
+    description:
+      name: sqflite_common
+      sha256: bb4738f15b23352822f4c42a531677e5c6f522e079461fd240ead29d8d8a54a6
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.5.0+2"
+  sqflite_common_ffi:
+    dependency: "direct main"
+    description:
+      name: sqflite_common_ffi
+      sha256: "35d2fce1e971707c227cc4775cc017d5eafe06c2654c3435ebd5c3ad6c170f5f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.3.0+4"
+  sqlite3:
+    dependency: transitive
+    description:
+      name: sqlite3
+      sha256: db65233e6b99e99b2548932f55a987961bc06d82a31a0665451fa0b4fff4c3fb
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.0"
   stack_trace:
     dependency: transitive
     description:
@@ -1482,6 +1565,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.2"
+  unifiedpush:
+    dependency: "direct main"
+    description:
+      name: unifiedpush
+      sha256: ef7f3ae6139d27169604e3844379ef7929af573a2be21d9e82187f44ab7b9a32
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.0.1"
+  unifiedpush_android:
+    dependency: transitive
+    description:
+      name: unifiedpush_android
+      sha256: "19fcdd2671c46bd074efbb80c43cedd0bcddd1fc0cfd3e2f74aec03fb0659d58"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.2.0"
+  unifiedpush_platform_interface:
+    dependency: transitive
+    description:
+      name: unifiedpush_platform_interface
+      sha256: "7782b18a15d22bb184fa766ef1e0c675eef862055ff815453df7041dfd026146"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.1"
   universal_platform:
     dependency: transitive
     description:
@@ -1498,6 +1605,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.0"
+  uri:
+    dependency: transitive
+    description:
+      name: uri
+      sha256: "889eea21e953187c6099802b7b4cf5219ba8f3518f604a1033064d45b1b8268a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   uri_parser:
     dependency: transitive
     description:
@@ -1762,6 +1877,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.3.0"
+  xxh3:
+    dependency: transitive
+    description:
+      name: xxh3
+      sha256: a92b30944a9aeb4e3d4f3c3d4ddb3c7816ca73475cd603682c4f8149690f56d7
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
   yaml:
     dependency: transitive
     description:

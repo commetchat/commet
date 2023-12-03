@@ -1,21 +1,26 @@
 import 'dart:async';
 
+import 'package:commet/client/components/push_notification/notification_content.dart';
+import 'package:commet/client/components/push_notification/notifier.dart';
+import 'package:commet/main.dart';
+import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/image/lod_image.dart';
 import 'package:commet/utils/image_utils.dart';
-import 'package:commet/utils/notification/notifier.dart';
+import 'package:commet/utils/shortcuts_manager.dart';
 import 'package:desktop_notifications/desktop_notifications.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:window_manager/window_manager.dart';
 import 'dart:ui' as ui;
-import '../../event_bus.dart';
-import '../notification_manager.dart';
 
-class LinuxNotifier extends Notifier {
+class LinuxNotifier implements Notifier {
   @override
   bool get hasPermission => true;
 
   static NotificationsClient client = NotificationsClient();
+
+  @override
+  bool get enabled => true;
 
   @override
   Future<bool> requestPermission() async {
@@ -32,7 +37,8 @@ class LinuxNotifier extends Notifier {
     windowManager.focus();
   }
 
-  static Future<void> init() async {
+  @override
+  Future<void> init() async {
     flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
     const LinuxInitializationSettings initializationSettingsLinux =
@@ -48,23 +54,32 @@ class LinuxNotifier extends Notifier {
   }
 
   @override
-  Future<void> notifyInternal(NotificationContent notification) async {
-    LinuxNotificationIcon? icon;
-
-    if (notification.image != null) {
-      var image = await determineImage(notification.image!);
-      var bytes = (await image.toByteData(format: ui.ImageByteFormat.rawRgba))
-          ?.buffer
-          .asUint8List();
-
-      icon = ByteDataLinuxIcon(LinuxRawIconData(
-          data: bytes!,
-          width: image.width,
-          height: image.height,
-          bitsPerSample: 8,
-          channels: 4,
-          hasAlpha: true));
+  Future<void> notify(NotificationContent notification) async {
+    switch (notification.runtimeType) {
+      case MessageNotificationContent:
+        return displayMessageNotification(
+            notification as MessageNotificationContent);
+      default:
     }
+  }
+
+  Future<void> displayMessageNotification(
+      MessageNotificationContent content) async {
+    var client = clientManager?.getClient(content.clientId);
+    var room = client?.getRoom(content.roomId);
+
+    if (room == null) {
+      return;
+    }
+
+    var avatar = await ShortcutsManager.getCachedAvatarImage(
+        placeholderColor: room.getColorOfUser(content.senderId),
+        placeholderText: content.senderName,
+        identifier: content.senderId,
+        shouldZoomOut: false,
+        imageProvider: content.senderImage);
+
+    LinuxNotificationIcon icon = FilePathLinuxIcon(avatar.toFilePath());
 
     var details = LinuxNotificationDetails(
       icon: icon,
@@ -72,9 +87,14 @@ class LinuxNotifier extends Notifier {
       category: LinuxNotificationCategory.imReceived,
     );
 
-    flutterLocalNotificationsPlugin?.show(0, notification.title,
-        notification.content, NotificationDetails(linux: details),
-        payload: notification.sentFrom?.identifier);
+    var title = "${content.senderName} (${content.roomName})";
+    if (content.isDirectMessage) {
+      title = content.senderName;
+    }
+
+    flutterLocalNotificationsPlugin?.show(
+        0, title, content.content, NotificationDetails(linux: details),
+        payload: content.roomId);
   }
 
   Future<ui.Image> determineImage(ImageProvider provider) async {
@@ -86,4 +106,17 @@ class LinuxNotifier extends Notifier {
 
     return await ImageUtils.imageProviderToImage(provider);
   }
+
+  @override
+  Map<String, dynamic>? extraRegistrationData() {
+    return null;
+  }
+
+  @override
+  Future<String?> getToken() async {
+    return null;
+  }
+
+  @override
+  bool get needsToken => false;
 }

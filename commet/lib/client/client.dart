@@ -153,4 +153,6 @@ abstract class Client {
   Future<void> rejectInvitation(Invitation invitation);
 
   T? getComponent<T extends Component>();
+
+  List<T>? getAllComponents<T extends Component>();
 }

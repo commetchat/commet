@@ -26,7 +26,7 @@ void main() {
         devices!.firstWhere((element) => element.deviceId == client.deviceID);
     expect(device, isNotNull);
 
-    var verification = otherClient
+    var verification = await otherClient
         .userDeviceKeys[otherClient.userID]!.deviceKeys[device.deviceId]!
         .startVerification();
     verification.onUpdate = () {};

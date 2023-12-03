@@ -13,7 +13,7 @@ class AppSettingsPage extends StatelessWidget {
     return SettingsPage(settings: [
       SettingsCategoryAccount(),
       SettingsCategoryApp(),
-      SettingsCategoryAbout()
+      SettingsCategoryAbout(),
     ]);
   }
 }

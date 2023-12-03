@@ -2,8 +2,11 @@ import 'dart:async';
 
 import 'package:commet/client/alert.dart';
 import 'package:commet/client/client.dart';
+import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/simulated/simulated_client.dart';
 import 'package:commet/client/stale_info.dart';
+import 'package:commet/config/build_config.dart';
+import 'package:commet/main.dart';
 import 'package:commet/utils/notifying_list.dart';
 
 class ClientManager {
@@ -65,6 +68,17 @@ class ClientManager {
       0,
       (previousValue, element) =>
           previousValue + element.displayNotificationCount);
+
+  static Future<void> init() async {
+    final newClientManager = ClientManager();
+
+    await Future.wait([
+      MatrixClient.loadFromDB(newClientManager),
+      if (BuildConfig.DEBUG) SimulatedClient.loadFromDB(newClientManager),
+    ]);
+
+    clientManager = newClientManager;
+  }
 
   void addClient(Client client) {
     _clients[client.identifier] = client;
