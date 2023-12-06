@@ -3,11 +3,26 @@ import 'package:commet/ui/molecules/read_indicator.dart';
 import 'package:commet/ui/molecules/timeline_viewer.dart';
 import 'package:commet/ui/organisms/chat/chat.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart';
 
 class ChatView extends StatelessWidget {
   const ChatView(this.state, {super.key});
   final ChatState state;
+
+  String get sendEncryptedMessagePrompt =>
+      Intl.message("Send an encrypted message",
+          name: "sendEncryptedMessagePrompt",
+          desc: "Placeholder text for message input in an encrypted room");
+
+  String get sendUnencryptedMessagePrompt => Intl.message("Send a message",
+      name: "sendUnencryptedMessagePrompt",
+      desc: "Placeholder text for message input in an unencrypted room");
+
+  String get cantSentMessagePrompt => Intl.message(
+      "You do not have permission to send a message in this room",
+      name: "cantSentMessagePrompt",
+      desc: "Text that explains the user cannot send a message in this room");
 
   String? get relatedEventSenderName => state.interactingEvent == null
       ? null
@@ -59,6 +74,7 @@ class ChatView extends StatelessWidget {
       addAttachment: state.addAttachment,
       removeAttachment: state.removeAttachment,
       isProcessing: state.processing,
+      enabled: state.room.permissions.canSendMessage,
       typingUsernames:
           state.room.typingPeers.map((e) => e.displayName).toList(),
       relatedEventBody: state.interactingEvent?.body,
@@ -70,6 +86,11 @@ class ChatView extends StatelessWidget {
       sendSticker: state.sendSticker,
       sendGif: state.sendGif,
       editLastMessage: state.editLastMessage,
+      hintText: state.room.permissions.canSendMessage
+          ? state.room.isE2EE
+              ? sendEncryptedMessagePrompt
+              : sendUnencryptedMessagePrompt
+          : cantSentMessagePrompt,
       cancelReply: () {
         state.setInteractingEvent(null);
       },
