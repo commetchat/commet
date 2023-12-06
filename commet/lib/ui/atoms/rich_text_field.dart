@@ -14,11 +14,13 @@ class RichTextField extends StatefulWidget {
       required this.style,
       this.onTap,
       this.hintText,
+      this.readOnly = false,
       this.contextMenuBuilder,
       super.key});
   final TextEditingController controller;
   final FocusNode focus;
   final TextStyle style;
+  final bool readOnly;
   final String? hintText;
   final EditableTextContextMenuBuilder? contextMenuBuilder;
   final GestureTapCallback? onTap;
@@ -138,6 +140,7 @@ class _RichTextFieldState extends State<RichTextField>
           selectionControls: selectionControls,
           minLines: 1,
           maxLines: null,
+          readOnly: widget.readOnly,
           onSelectionChanged: _handleSelectionChanged,
           onChanged: onChanged,
           contextMenuBuilder: widget.contextMenuBuilder,
@@ -146,7 +149,7 @@ class _RichTextFieldState extends State<RichTextField>
     return MouseRegion(
       child: TextFieldTapRegion(
         child: IgnorePointer(
-          ignoring: false,
+          ignoring: widget.readOnly,
           child: _selectionGestureDetectorBuilder.buildGestureDetector(
             behavior: HitTestBehavior.translucent,
             child: child,

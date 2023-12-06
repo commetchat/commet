@@ -39,7 +39,9 @@ class MessageInput extends StatefulWidget {
       this.focusKeyboard,
       this.setInputText,
       this.isProcessing = false,
+      this.enabled = true,
       this.editLastMessage,
+      this.hintText,
       this.attachments,
       this.addAttachment,
       this.onTextUpdated,
@@ -59,12 +61,14 @@ class MessageInput extends StatefulWidget {
   final Widget? readIndicator;
   final String? relatedEventBody;
   final String? relatedEventSenderName;
+  final String? hintText;
   final Color? relatedEventSenderColor;
   final List<PendingFileAttachment>? attachments;
   final EventInteractionType? interactionType;
   final Stream<void>? focusKeyboard;
   final Stream<String>? setInputText;
   final bool isProcessing;
+  final bool enabled;
   final List<String>? typingUsernames;
   final List<EmoticonPack>? availibleEmoticons;
   final List<EmoticonPack>? availibleStickers;
@@ -93,15 +97,6 @@ class MessageInputState extends State<MessageInput> {
   final layerLink = LayerLink();
   bool showEmotePicker = false;
   bool hasEmotePickerOpened = false;
-
-  String get sendEncryptedMessagePrompt =>
-      Intl.message("Send an encrypted message",
-          name: "sendEncryptedMessagePrompt",
-          desc: "Placeholder text for message input in an encrypted room");
-
-  String get sendUnencryptedMessagePrompt => Intl.message("Send a message",
-      name: "sendUnencryptedMessagePrompt",
-      desc: "Placeholder text for message input in an unencrypted room");
 
   String typingUsers(int howMany, String user1, String user2, String user3) =>
       Intl.plural(howMany,
@@ -224,18 +219,19 @@ class MessageInputState extends State<MessageInput> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.max,
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
-                            child: SizedBox(
-                              width: widget.size,
-                              height: widget.size,
-                              child: tiamat.IconButton(
-                                icon: Icons.add,
-                                size: 24,
-                                onPressed: addAttachment,
+                          if (widget.enabled)
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
+                              child: SizedBox(
+                                width: widget.size,
+                                height: widget.size,
+                                child: tiamat.IconButton(
+                                  icon: Icons.add,
+                                  size: 24,
+                                  onPressed: addAttachment,
+                                ),
                               ),
                             ),
-                          ),
                           Flexible(
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(10),
@@ -250,54 +246,54 @@ class MessageInputState extends State<MessageInput> {
                                     Expanded(
                                       child: Padding(
                                         padding: const EdgeInsets.fromLTRB(
-                                            4, 2, 4, 2),
+                                            8, 2, 4, 2),
                                         child: Stack(
                                           children: [
                                             RichTextField(
                                               controller: controller,
                                               focus: textFocus,
-
+                                              readOnly: !widget.enabled,
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .bodyMedium!,
                                               contextMenuBuilder:
                                                   contextMenuBuilder,
-                                              hintText: widget.isRoomE2EE
-                                                  ? sendEncryptedMessagePrompt
-                                                  : sendUnencryptedMessagePrompt,
+                                              hintText: widget.hintText,
                                               //decoration: null,
                                             ),
                                           ],
                                         ),
                                       ),
                                     ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(2.0),
-                                      child: SizedBox(
-                                          width: widget.size,
-                                          height: widget.size,
-                                          child: tiamat.IconButton(
-                                            icon: Icons.face,
-                                            size: 24,
-                                            onPressed: toggleEmojiOverlay,
-                                          )),
-                                    ),
+                                    if (widget.enabled)
+                                      Padding(
+                                        padding: const EdgeInsets.all(2.0),
+                                        child: SizedBox(
+                                            width: widget.size,
+                                            height: widget.size,
+                                            child: tiamat.IconButton(
+                                              icon: Icons.face,
+                                              size: 24,
+                                              onPressed: toggleEmojiOverlay,
+                                            )),
+                                      ),
                                   ],
                                 ),
                               ),
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(4, 0, 0, 0),
-                            child: SizedBox(
-                                width: widget.size,
-                                height: widget.size,
-                                child: tiamat.IconButton(
-                                  icon: Icons.send,
-                                  onPressed: sendMessage,
-                                  size: 24,
-                                )),
-                          )
+                          if (widget.enabled)
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(4, 0, 0, 0),
+                              child: SizedBox(
+                                  width: widget.size,
+                                  height: widget.size,
+                                  child: tiamat.IconButton(
+                                    icon: Icons.send,
+                                    onPressed: sendMessage,
+                                    size: 24,
+                                  )),
+                            )
                         ]),
                   ),
                 ),
