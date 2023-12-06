@@ -157,26 +157,33 @@ class _LogPageState extends State<LogPage> {
     }
 
     if (prevIndex <= text.length - 1) {
-      spans.add(TextSpan(text: text.substring(prevIndex)));
+      spans.add(TextSpan(text: text.substring(prevIndex), style: style));
     }
 
     return spans;
   }
 
   Widget logDetail(LogEntry entry) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        if (entry is LogEntryException)
-          tiamat.Button.secondary(
-            text: "Report Issue",
-            onTap: () => reportIssue(entry),
-          ),
-        Text.rich(TextSpan(children: buildAnsiStyledTest(entry.content))),
-        if (entry is LogEntryException && entry.trace != null)
-          Codeblock(text: entry.trace!.toString()),
-      ],
+    return SelectionArea(
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (entry is LogEntryException)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+                child: tiamat.Button.secondary(
+                  text: "Report Issue",
+                  onTap: () => reportIssue(entry),
+                ),
+              ),
+            Text.rich(TextSpan(children: buildAnsiStyledTest(entry.content))),
+            if (entry is LogEntryException && entry.trace != null)
+              Codeblock(text: entry.trace!.toString()),
+          ],
+        ),
+      ),
     );
   }
 
