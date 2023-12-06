@@ -1,5 +1,6 @@
 import 'package:commet/client/attachment.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/lightbox.dart';
 import 'package:commet/ui/molecules/video_player/video_player.dart';
@@ -207,7 +208,8 @@ class _MessageAttachmentState extends State<MessageAttachment> {
       FileAttachment attachment, String path) async {
     try {
       await attachment.provider.save(path);
-    } catch (_) {
+    } catch (error, trace) {
+      Log.onError(error, trace);
       return BackgroundTaskStatus.failed;
     }
     return BackgroundTaskStatus.completed;

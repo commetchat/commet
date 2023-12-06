@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:commet/debug/log.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
@@ -25,17 +25,15 @@ class _FloatingTileState extends State<FloatingTile> {
 
   @override
   void dispose() {
-    if (kDebugMode) {
-      print("Floating tile is being diposed!");
-    }
+    Log.i("Floating tile is being diposed!");
+
     entry.remove();
     super.dispose();
   }
 
   void addOverlay() {
-    if (kDebugMode) {
-      print("added floating tile overlay");
-    }
+    Log.i("added floating tile overlay");
+
     entry = OverlayEntry(builder: buildOverlay);
     Overlay.of(context).insert(entry);
   }

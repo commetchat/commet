@@ -6,6 +6,7 @@ import 'package:commet/ui/pages/settings/categories/app/general_settings_page.da
 import 'package:commet/ui/pages/settings/categories/app/notification_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/app/window_settings.dart';
 import 'package:commet/ui/pages/settings/categories/developer/developer_settings_page.dart';
+import 'package:commet/ui/pages/settings/categories/developer/log_page.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
 import 'package:commet/ui/pages/settings/settings_tab.dart';
 import 'package:commet/utils/common_strings.dart';
@@ -42,6 +43,11 @@ class SettingsCategoryApp implements SettingsCategory {
       name: "labelSettingsAppDeveloperUtils",
       desc:
           "Label for the developer utils settings page, usually hidden unless developer mode is turned on");
+
+  String get labelSettingsAppLogs => Intl.message("Logs",
+      name: "labelSettingsAppLogs",
+      desc:
+          "Label for the logs settings page, usually hidden unless developer mode is turned on");
 
   String get labelSettingsAppTheme => Intl.message("Theme",
       name: "labelSettingsAppTheme",
@@ -106,6 +112,14 @@ class SettingsCategoryApp implements SettingsCategory {
             icon: m.Icons.bug_report,
             pageBuilder: (context) {
               return const DeveloperSettingsPage();
+            },
+          ),
+        if (preferences.developerMode)
+          SettingsTab(
+            label: labelSettingsAppLogs,
+            icon: m.Icons.text_snippet,
+            pageBuilder: (context) {
+              return const LogPage();
             },
           )
       ]);

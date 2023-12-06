@@ -26,9 +26,11 @@ class Preferences {
   static const String _lastDownloadLocation = "last_download_location";
   final StreamController _onSettingChanged = StreamController.broadcast();
   Stream get onSettingChanged => _onSettingChanged.stream;
+  bool isInit = false;
 
   Future<void> init() async {
     _preferences = await SharedPreferences.getInstance();
+    isInit = true;
   }
 
   List<String>? getRegisteredMatrixClients() {
