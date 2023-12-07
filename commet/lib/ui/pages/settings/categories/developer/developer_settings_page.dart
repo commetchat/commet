@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/main.dart';
+import 'package:commet/utils/background_tasks/background_task_manager.dart';
 import 'package:commet/utils/background_tasks/mock_tasks.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
@@ -23,6 +24,7 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
       performance(),
       windowSize(),
       notificationTests(),
+      error(),
       if (Platform.isAndroid) shortcuts(),
       backgroundTasks(),
     ].map<Widget>((e) {
@@ -183,6 +185,32 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
           tiamat.Button(
               text: "Indeterminate",
               onTap: () => backgroundTaskManager.addTask(FakeBackgroundTask())),
+          tiamat.Button(
+              text: "Async task with crash",
+              onTap: () => backgroundTaskManager.addTask(AsyncTask(() async {
+                    await Future.delayed(const Duration(seconds: 5));
+                    throw Exception("This background task failed!");
+                  }, "Async task"))),
+        ])
+      ],
+    );
+  }
+
+  Widget error() {
+    return ExpansionTile(
+      title: const tiamat.Text.labelEmphasised("Error"),
+      backgroundColor: Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+      collapsedBackgroundColor:
+          Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+      children: [
+        Wrap(spacing: 8, runSpacing: 8, children: [
+          tiamat.Button(
+              text: "Throw an error",
+              onTap: () {
+                // This should also throw an error!
+                String? empty;
+                empty!.split(" ");
+              }),
         ])
       ],
     );

@@ -1,6 +1,5 @@
 import 'package:commet/client/attachment.dart';
 import 'package:commet/config/build_config.dart';
-import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/lightbox.dart';
 import 'package:commet/ui/molecules/video_player/video_player.dart';
@@ -191,7 +190,7 @@ class _MessageAttachmentState extends State<MessageAttachment> {
     if (path == null) return;
 
     backgroundTaskManager.addTask(AsyncTask(
-      downloadTask(attachment, path),
+      () => downloadTask(attachment, path),
       "Downloading: ${widget.attachment.name}",
       action: () {
         var openPath = path;
@@ -206,12 +205,8 @@ class _MessageAttachmentState extends State<MessageAttachment> {
 
   Future<BackgroundTaskStatus> downloadTask(
       FileAttachment attachment, String path) async {
-    try {
-      await attachment.provider.save(path);
-    } catch (error, trace) {
-      Log.onError(error, trace);
-      return BackgroundTaskStatus.failed;
-    }
+    await attachment.provider.save(path);
+
     return BackgroundTaskStatus.completed;
   }
 }

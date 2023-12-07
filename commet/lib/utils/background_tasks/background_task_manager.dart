@@ -60,9 +60,19 @@ class AsyncTask implements BackgroundTask {
   @override
   BackgroundTaskStatus status = BackgroundTaskStatus.running;
 
-  AsyncTask(Future<BackgroundTaskStatus> future, this.label,
+  AsyncTask(Future<BackgroundTaskStatus> Function() func, this.label,
       {this.action, this.isActionReady}) {
-    future.then((value) => onFutureComplete(value));
+    doAsyncFunc(func);
+  }
+
+  void doAsyncFunc(Future<BackgroundTaskStatus> Function() func) async {
+    try {
+      var result = await func.call();
+      onFutureComplete(result);
+    } catch (exception, stack) {
+      Log.onError(exception, stack);
+      onFutureComplete(BackgroundTaskStatus.failed);
+    }
   }
 
   void onFutureComplete(BackgroundTaskStatus result) {

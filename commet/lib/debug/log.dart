@@ -40,14 +40,20 @@ class Log {
       parent.print(zone, "ERROR CALLBACK");
       parent.print(zone, error.toString());
       parent.print(zone, stackTrace?.toString() ?? "");
+      String? info =
+          stackTrace != null ? getDetailFromStackTrace(stackTrace) : null;
       log.add(LogEntryException(
-          LogType.error, error.toString(), error, stackTrace));
+          LogType.error,
+          "${error.toString()}${info != null ? " ($info)" : ""}",
+          error,
+          stackTrace));
       return null;
     },
     handleUncaughtError: (self, parent, zone, error, stackTrace) {
       parent.print(zone, "HandleUncaughtError");
+      String? info = getDetailFromStackTrace(stackTrace);
       log.add(LogEntryException(
-          LogType.error, error.toString(), error, stackTrace));
+          LogType.error, "${error.toString()} ($info)", error, stackTrace));
     },
   );
 
@@ -97,7 +103,9 @@ class Log {
   }
 
   static void onError(Object object, StackTrace trace) {
-    log.add(LogEntryException(LogType.error, object.toString(), object, trace));
+    String? info = getDetailFromStackTrace(trace);
+    log.add(LogEntryException(
+        LogType.error, "${object.toString()} ($info)", object, trace));
   }
 
   static Function(FlutterErrorDetails)? _previousReporter;
@@ -108,15 +116,8 @@ class Log {
   }
 
   static void _onFlutterError(FlutterErrorDetails details) {
-    String? info;
-
-    if (details.stack != null) {
-      var str = details.stack.toString();
-      var match = RegExp(r"([a-zA-Z0-9_]*)\.([a-zA-Z0-9_]*)").firstMatch(str);
-      if (match != null) {
-        info = str.substring(match.start, match.end);
-      }
-    }
+    String? info =
+        details.stack != null ? getDetailFromStackTrace(details.stack!) : null;
     log.add(LogEntryException(
         LogType.error,
         "${details.exception.toString()}${info != null ? " ($info)" : ""}",
@@ -124,5 +125,17 @@ class Log {
         details.stack));
 
     _previousReporter?.call(details);
+  }
+
+  static String? getDetailFromStackTrace(StackTrace stack) {
+    String? info;
+
+    var str = stack.toString();
+    var match = RegExp(r"([a-zA-Z0-9_]*)\.([a-zA-Z0-9_]*)").firstMatch(str);
+    if (match != null) {
+      info = str.substring(match.start, match.end);
+    }
+
+    return info;
   }
 }
