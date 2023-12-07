@@ -38,33 +38,26 @@ class DesktopSettingsPageState extends State<DesktopSettingsPage> {
         children: [
           tabSelector(context),
           Expanded(
-              child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 300),
-            switchInCurve: Curves.easeInOutCubic,
-            transitionBuilder: (Widget child, Animation<double> animation) {
-              return SlideTransition(
-                position: Tween(
-                  begin: const Offset(0.0, 1.5),
-                  end: const Offset(0.0, 0.0),
-                ).animate(animation),
-                child: child,
-              );
-            },
-            child: SingleChildScrollView(
-              child: Tile(
-                key: ValueKey(selectedTabIndex),
-                child: selectedCategoryIndex < categories.length &&
-                        selectedTabIndex <
-                            categories[selectedCategoryIndex].tabs.length
-                    ? settingsTab(categories[selectedCategoryIndex]
-                        .tabs[selectedTabIndex]
-                        .pageBuilder!)
-                    : null,
-              ),
-            ),
-          ))
+            child: categories[selectedCategoryIndex]
+                    .tabs[selectedTabIndex]
+                    .makeScrollable
+                ? SingleChildScrollView(child: buildContent())
+                : buildContent(),
+          )
         ],
       ),
+    );
+  }
+
+  Widget buildContent() {
+    return Tile(
+      key: ValueKey(selectedTabIndex),
+      child: selectedCategoryIndex < categories.length &&
+              selectedTabIndex < categories[selectedCategoryIndex].tabs.length
+          ? settingsTab(categories[selectedCategoryIndex]
+              .tabs[selectedTabIndex]
+              .pageBuilder)
+          : null,
     );
   }
 
@@ -138,7 +131,7 @@ class DesktopSettingsPageState extends State<DesktopSettingsPage> {
       shrinkWrap: true,
       itemBuilder: (context, tabIndex) {
         return button(
-            label: categories[categoryIndex].tabs[tabIndex].label!,
+            label: categories[categoryIndex].tabs[tabIndex].label,
             icon: categories[categoryIndex].tabs[tabIndex].icon,
             highlighted: categoryIndex == selectedCategoryIndex &&
                 tabIndex == selectedTabIndex,

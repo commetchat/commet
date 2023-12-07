@@ -1,5 +1,7 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/emoticon/emoticon_component.dart';
+import 'package:commet/client/matrix/matrix_space.dart';
+import 'package:commet/ui/pages/settings/categories/room/permissions/matrix/matrix_room_permissions_page.dart';
 import 'package:commet/ui/pages/settings/categories/space/space_emoji_pack_settings.dart';
 import 'package:commet/ui/pages/settings/categories/space/space_general_settings_page.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
@@ -68,6 +70,15 @@ class SettingsCategorySpace implements SettingsCategory {
             icon: Icons.emoji_emotions,
             pageBuilder: (context) {
               return SpaceEmojiPackSettings(space);
+            }),
+      if (space is MatrixSpace)
+        SettingsTab(
+            label: "Permissions",
+            icon: Icons.admin_panel_settings,
+            makeScrollable: false,
+            pageBuilder: (context) {
+              return MatrixRoomPermissionsPage(
+                  (space as MatrixSpace).matrixRoom);
             }),
     ]);
   }
