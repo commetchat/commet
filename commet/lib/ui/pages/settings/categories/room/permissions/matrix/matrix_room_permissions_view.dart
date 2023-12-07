@@ -1,6 +1,9 @@
+import 'dart:ui';
+
 import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/pages/settings/categories/room/permissions/matrix/matrix_room_permissions_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:tiamat/atoms/tile.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
@@ -85,6 +88,22 @@ class _MatrixRoomPermissionsViewState extends State<MatrixRoomPermissionsView> {
                 child: itemBuilder(context, index),
               );
             }
+          },
+          onReorderStart: (index) => HapticFeedback.mediumImpact(),
+          proxyDecorator: (child, index, animation) {
+            return AnimatedBuilder(
+              animation: animation,
+              builder: (BuildContext context, Widget? child) {
+                final double animValue =
+                    Curves.easeInCubic.transform(animation.value);
+                final double scale = lerpDouble(1, 1.02, animValue)!;
+                return Transform.scale(
+                  scale: scale,
+                  child: child,
+                );
+              },
+              child: child,
+            );
           },
           shrinkWrap: true,
           itemCount: entries.length,
