@@ -95,8 +95,8 @@ class _MatrixRoomPermissionsViewState extends State<MatrixRoomPermissionsView> {
               animation: animation,
               builder: (BuildContext context, Widget? child) {
                 final double animValue =
-                    Curves.easeInCubic.transform(animation.value);
-                final double scale = lerpDouble(1, 1.02, animValue)!;
+                    Curves.easeOut.transform(animation.value);
+                final double scale = lerpDouble(1, 1.03, animValue)!;
                 return Transform.scale(
                   scale: scale,
                   child: child,
