@@ -190,7 +190,7 @@ class _MessageAttachmentState extends State<MessageAttachment> {
     if (path == null) return;
 
     backgroundTaskManager.addTask(AsyncTask(
-      downloadTask(attachment, path),
+      () => downloadTask(attachment, path),
       "Downloading: ${widget.attachment.name}",
       action: () {
         var openPath = path;
@@ -205,11 +205,8 @@ class _MessageAttachmentState extends State<MessageAttachment> {
 
   Future<BackgroundTaskStatus> downloadTask(
       FileAttachment attachment, String path) async {
-    try {
-      await attachment.provider.save(path);
-    } catch (_) {
-      return BackgroundTaskStatus.failed;
-    }
+    await attachment.provider.save(path);
+
     return BackgroundTaskStatus.completed;
   }
 }

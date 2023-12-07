@@ -8,6 +8,7 @@ import 'package:commet/client/components/gif/gif_component.dart';
 import 'package:commet/client/components/gif/gif_search_result.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/client/timeline.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/organisms/chat/chat_view.dart';
 import 'package:commet/utils/debounce.dart';
@@ -69,9 +70,7 @@ class ChatState extends State<Chat> {
 
   @override
   void initState() {
-    if (kDebugMode) {
-      print("Initializing room timeline for: ${widget.room.displayName}");
-    }
+    Log.i("Initializing room timeline for: ${widget.room.displayName}");
 
     onFileDroppedSubscription =
         EventBus.onFileDropped.stream.listen(onFileDropped);
@@ -97,9 +96,7 @@ class ChatState extends State<Chat> {
 
   @override
   void dispose() {
-    if (kDebugMode) {
-      print("Disposing room timeline for: ${widget.room.displayName}");
-    }
+    Log.i("Disposing room timeline for: ${widget.room.displayName}");
 
     onFileDroppedSubscription?.cancel();
     super.dispose();

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:commet/cache/file_cache.dart';
@@ -5,6 +6,7 @@ import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/component.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/config/preferences.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
 import 'package:commet/ui/pages/bubble/bubble_page.dart';
 import 'package:commet/ui/pages/fatal_error/fatal_error_page.dart';
@@ -87,8 +89,14 @@ void bubble() async {
 }
 
 void main() async {
+  runZonedGuarded(appMain, Log.onError, zoneSpecification: Log.spec);
+}
+
+void appMain() async {
   try {
     ensureBindingInit();
+
+    FlutterError.onError = Log.getFlutterErrorReporter(FlutterError.onError);
 
     isHeadless = Platform.isAndroid &&
         AppLifecycleState.detached == WidgetsBinding.instance.lifecycleState;

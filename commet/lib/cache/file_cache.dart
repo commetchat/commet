@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:commet/cache/cached_file.dart';
 import 'package:commet/config/app_config.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/utils/rng.dart';
 import 'package:flutter/foundation.dart';
 import 'package:isar/isar.dart';
@@ -123,9 +124,7 @@ class FileCacheInstance {
   }
 
   Future<void> clean() async {
-    if (kDebugMode) {
-      print("Cleaning files");
-    }
+    Log.i("Cleaning files");
 
     var now = DateTime.now();
     var cutoffTime = now.subtract(const Duration(days: 2));
@@ -136,10 +135,7 @@ class FileCacheInstance {
 
     var allFiles = await files!.where().findAll();
 
-    if (kDebugMode) {
-      print(
-          "Found: ${removeFiles.length}/${allFiles.length} files for cleaning");
-    }
+    Log.i("Found: ${removeFiles.length}/${allFiles.length} files for cleaning");
 
     for (var file in removeFiles) {
       _cleanFile(file);

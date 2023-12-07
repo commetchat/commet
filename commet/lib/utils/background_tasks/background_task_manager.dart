@@ -1,7 +1,7 @@
 import 'dart:async';
 
+import 'package:commet/debug/log.dart';
 import 'package:commet/utils/notifying_list.dart';
-import 'package:flutter/foundation.dart';
 
 class BackgroundTaskManager {
   NotifyingList<BackgroundTask> tasks = NotifyingList.empty(growable: true);
@@ -20,9 +20,8 @@ class BackgroundTaskManager {
   }
 
   void onTaskCompleted(BackgroundTask task) {
-    if (kDebugMode) {
-      print("Task was completed!: $task");
-    }
+    Log.i("Background Task was completed!: $task");
+
     Timer(const Duration(seconds: 5), () {
       tasks.remove(task);
       subscriptions[task]?.cancel();
@@ -61,9 +60,19 @@ class AsyncTask implements BackgroundTask {
   @override
   BackgroundTaskStatus status = BackgroundTaskStatus.running;
 
-  AsyncTask(Future<BackgroundTaskStatus> future, this.label,
+  AsyncTask(Future<BackgroundTaskStatus> Function() func, this.label,
       {this.action, this.isActionReady}) {
-    future.then((value) => onFutureComplete(value));
+    doAsyncFunc(func);
+  }
+
+  void doAsyncFunc(Future<BackgroundTaskStatus> Function() func) async {
+    try {
+      var result = await func.call();
+      onFutureComplete(result);
+    } catch (exception, stack) {
+      Log.onError(exception, stack);
+      onFutureComplete(BackgroundTaskStatus.failed);
+    }
   }
 
   void onFutureComplete(BackgroundTaskStatus result) {

@@ -1,17 +1,25 @@
 import 'package:commet/config/build_config.dart';
 import 'package:commet/main.dart';
+import 'package:commet/ui/pages/settings/categories/developer/log_page.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
 import 'package:commet/ui/pages/settings/settings_tab.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
 
+import 'package:flutter/material.dart' as m;
 import 'package:tiamat/tiamat.dart' as tiamat;
 // ignore: depend_on_referenced_packages
 import 'package:olm/olm.dart' as olm;
 
 class SettingsCategoryAbout implements SettingsCategory {
+  String get labelSettingsAppLogs => Intl.message("Logs",
+      name: "labelSettingsAppLogs",
+      desc:
+          "Label for the logs settings page, usually hidden unless developer mode is turned on");
+
   @override
   List<SettingsTab> get tabs => List.from([
         SettingsTab(
@@ -20,6 +28,14 @@ class SettingsCategoryAbout implements SettingsCategory {
             pageBuilder: (context) {
               return const _AppInfo();
             }),
+        if (preferences.developerMode)
+          SettingsTab(
+            label: labelSettingsAppLogs,
+            icon: m.Icons.text_snippet,
+            pageBuilder: (context) {
+              return const LogPage();
+            },
+          )
       ]);
 
   @override

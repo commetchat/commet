@@ -107,7 +107,7 @@ class SettingsCategoryApp implements SettingsCategory {
             pageBuilder: (context) {
               return const DeveloperSettingsPage();
             },
-          )
+          ),
       ]);
 
   Widget themeSettings(BuildContext context) {

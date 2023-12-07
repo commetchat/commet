@@ -1,5 +1,5 @@
+import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
-import 'package:flutter/foundation.dart';
 
 class TimerResult {
   final String name;
@@ -14,9 +14,7 @@ class Diagnostics {
   void addResult(String name, Duration time) {
     results.add(TimerResult(name, time));
 
-    if (kDebugMode) {
-      print("Diagnostics: $name took ${time.inMilliseconds}ms");
-    }
+    Log.i("Diagnostics: $name took ${time.inMilliseconds}ms");
   }
 
   Future<T> timeAsync<T>(String name, Future<T> Function() func) async {
