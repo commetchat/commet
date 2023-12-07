@@ -103,19 +103,77 @@ class _RichTextFieldState extends State<RichTextField>
     var theme = Theme.of(context);
     DefaultSelectionStyle selectionStyle = DefaultSelectionStyle.of(context);
 
+    final bool paintCursorAboveText;
+    bool? cursorOpacityAnimates;
+    Offset? cursorOffset;
+    final Color cursorColor;
+    final Color selectionColor;
+    Color? autocorrectionTextRectColor;
+    Radius? cursorRadius;
+    VoidCallback? handleDidGainAccessibilityFocus;
+
     switch (theme.platform) {
       case TargetPlatform.iOS:
         selectionControls = cupertinoTextSelectionHandleControls;
+        final CupertinoThemeData cupertinoTheme = CupertinoTheme.of(context);
+        paintCursorAboveText = true;
+        cursorOpacityAnimates ??= true;
+        cursorColor = selectionStyle.cursorColor ?? cupertinoTheme.primaryColor;
+        selectionColor = selectionStyle.selectionColor ??
+            cupertinoTheme.primaryColor.withOpacity(0.40);
+        cursorRadius ??= const Radius.circular(2.0);
+        cursorOffset = Offset(
+            iOSHorizontalOffset / MediaQuery.devicePixelRatioOf(context), 0);
+        autocorrectionTextRectColor = selectionColor;
+        break;
+      case TargetPlatform.macOS:
+        selectionControls = cupertinoDesktopTextSelectionHandleControls;
+        final CupertinoThemeData cupertinoTheme = CupertinoTheme.of(context);
+        paintCursorAboveText = true;
+        cursorOpacityAnimates ??= false;
+        cursorColor = selectionStyle.cursorColor ?? cupertinoTheme.primaryColor;
+        selectionColor = selectionStyle.selectionColor ??
+            cupertinoTheme.primaryColor.withOpacity(0.40);
+        cursorRadius ??= const Radius.circular(2.0);
+        cursorOffset = Offset(
+            iOSHorizontalOffset / MediaQuery.devicePixelRatioOf(context), 0);
+        handleDidGainAccessibilityFocus = () {
+          // Automatically activate the TextField when it receives accessibility focus.
+          if (!widget.focus.hasFocus && widget.focus.canRequestFocus) {
+            widget.focus.requestFocus();
+          }
+        };
         break;
       case TargetPlatform.android:
       case TargetPlatform.fuchsia:
         selectionControls = materialTextSelectionHandleControls;
+        paintCursorAboveText = false;
+        cursorOpacityAnimates ??= false;
+        cursorColor = selectionStyle.cursorColor ?? theme.colorScheme.primary;
+        selectionColor = selectionStyle.selectionColor ??
+            theme.colorScheme.primary.withOpacity(0.40);
         break;
-      case TargetPlatform.macOS:
-        selectionControls = cupertinoDesktopTextSelectionHandleControls;
       case TargetPlatform.linux:
+        paintCursorAboveText = false;
+        cursorOpacityAnimates ??= false;
+        cursorColor = selectionStyle.cursorColor ?? theme.colorScheme.primary;
+        selectionColor = selectionStyle.selectionColor ??
+            theme.colorScheme.primary.withOpacity(0.40);
+        selectionControls = desktopTextSelectionHandleControls;
+        break;
       case TargetPlatform.windows:
         selectionControls = desktopTextSelectionHandleControls;
+        paintCursorAboveText = false;
+        cursorOpacityAnimates ??= false;
+        cursorColor = selectionStyle.cursorColor ?? theme.colorScheme.primary;
+        selectionColor = selectionStyle.selectionColor ??
+            theme.colorScheme.primary.withOpacity(0.40);
+        handleDidGainAccessibilityFocus = () {
+          // Automatically activate the TextField when it receives accessibility focus.
+          if (!widget.focus.hasFocus && widget.focus.canRequestFocus) {
+            widget.focus.requestFocus();
+          }
+        };
         break;
     }
 
@@ -133,7 +191,7 @@ class _RichTextFieldState extends State<RichTextField>
           controller: widget.controller,
           focusNode: widget.focus,
           style: widget.style,
-          cursorColor: Colors.white,
+          cursorColor: cursorColor,
           selectionColor: selectionStyle.selectionColor,
           backgroundCursorColor: CupertinoColors.inactiveGray,
           showSelectionHandles: _showSelectionHandles,
@@ -142,17 +200,40 @@ class _RichTextFieldState extends State<RichTextField>
           maxLines: null,
           readOnly: widget.readOnly,
           onSelectionChanged: _handleSelectionChanged,
+          autocorrectionTextRectColor: autocorrectionTextRectColor,
+          paintCursorAboveText: paintCursorAboveText,
+          cursorOffset: cursorOffset,
           onChanged: onChanged,
           contextMenuBuilder: widget.contextMenuBuilder,
           buildTextSpan: buildTextSpan),
     );
+
     return MouseRegion(
       child: TextFieldTapRegion(
         child: IgnorePointer(
           ignoring: widget.readOnly,
-          child: _selectionGestureDetectorBuilder.buildGestureDetector(
-            behavior: HitTestBehavior.translucent,
-            child: child,
+          child: AnimatedBuilder(
+            animation: _effectiveController, // changes the _currentLength
+            builder: (BuildContext context, Widget? child) {
+              return Semantics(
+                onTap: widget.readOnly
+                    ? null
+                    : () {
+                        if (!_effectiveController.selection.isValid) {
+                          _effectiveController.selection =
+                              TextSelection.collapsed(
+                                  offset: _effectiveController.text.length);
+                        }
+                        _requestKeyboard();
+                      },
+                onDidGainAccessibilityFocus: handleDidGainAccessibilityFocus,
+                child: child,
+              );
+            },
+            child: _selectionGestureDetectorBuilder.buildGestureDetector(
+              behavior: HitTestBehavior.translucent,
+              child: child,
+            ),
           ),
         ),
       ),
@@ -205,7 +286,7 @@ class _RichTextFieldState extends State<RichTextField>
       return false;
     }
 
-    if (_effectiveController.selection.isCollapsed) {
+    if (widget.readOnly && _effectiveController.selection.isCollapsed) {
       return false;
     }
 
