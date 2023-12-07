@@ -114,14 +114,6 @@ class SettingsCategoryApp implements SettingsCategory {
               return const DeveloperSettingsPage();
             },
           ),
-        if (preferences.developerMode)
-          SettingsTab(
-            label: labelSettingsAppLogs,
-            icon: m.Icons.text_snippet,
-            pageBuilder: (context) {
-              return const LogPage();
-            },
-          )
       ]);
 
   Widget themeSettings(BuildContext context) {
