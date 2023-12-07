@@ -65,6 +65,10 @@ class MatrixClient extends Client {
       : matrix.NativeImplementationsIsolate(compute);
 
   MatrixClient({required String identifier}) {
+    if (preferences.developerMode) {
+      matrix.Logs().level = matrix.Level.verbose;
+    }
+
     _id = identifier;
     _matrixClient = _createMatrixClient(identifier);
   }
