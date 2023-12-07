@@ -205,7 +205,7 @@ class _RichTextFieldState extends State<RichTextField>
       return false;
     }
 
-    if (_effectiveController.selection.isCollapsed) {
+    if (widget.readOnly && _effectiveController.selection.isCollapsed) {
       return false;
     }
 
