@@ -32,6 +32,7 @@ class SettingsCategoryAbout implements SettingsCategory {
           SettingsTab(
             label: labelSettingsAppLogs,
             icon: m.Icons.text_snippet,
+            makeScrollable: false,
             pageBuilder: (context) {
               return const LogPage();
             },

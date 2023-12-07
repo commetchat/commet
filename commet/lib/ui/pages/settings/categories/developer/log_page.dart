@@ -60,12 +60,10 @@ class _LogPageState extends State<LogPage> {
   Widget build(BuildContext context) {
     return ListView.builder(
       itemCount: count,
-      reverse: true,
       itemBuilder: (context, index) {
-        var item = Log.log[index];
+        var item = Log.log[Log.log.length - index - 1];
         return buildLog(item, index);
       },
-      shrinkWrap: true,
     );
   }
 
