@@ -32,6 +32,10 @@ class Log {
     print: (self, parent, zone, line) {
       parent.print(zone, line);
 
+      if (line.startsWith("[Commet]")) {
+        return;
+      }
+
       if (!preferences.isInit || preferences.developerMode == true) {
         log.add(LogEntry(LogType.info, line));
       }
