@@ -87,4 +87,5 @@ main(List<String> args) async {
 
   print(process.stdout);
   print(process.stderr);
+  exit(process.exitCode);
 }
