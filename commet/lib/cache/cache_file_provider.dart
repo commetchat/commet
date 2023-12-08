@@ -13,8 +13,8 @@ class CacheFileProvider implements FileProvider {
       : fileIdentifier = "thumbnail_$fileId";
 
   @override
-  Future<Uri> resolve({String? savePath}) async {
-    return fileCache.fetchFile(fileIdentifier, getter);
+  Future<Uri?> resolve({String? savePath}) async {
+    return fileCache?.fetchFile(fileIdentifier, getter);
   }
 
   @override

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:commet/cache/file_cache.dart';
+import 'package:commet/cache/isar_file_cache.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/component.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
@@ -20,6 +21,7 @@ import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/scaled_app.dart';
 import 'package:commet/utils/shortcuts_manager.dart';
 import 'package:commet/utils/window_management.dart';
+import 'package:flutter/foundation.dart';
 
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
@@ -33,7 +35,7 @@ import 'package:tiamat/config/style/theme_dark.dart';
 import 'package:tiamat/config/style/theme_light.dart';
 
 final GlobalKey<NavigatorState> navigator = GlobalKey();
-FileCacheInstance fileCache = FileCacheInstance();
+FileCache? fileCache = kIsWeb ? null : IsarFileCache();
 Preferences preferences = Preferences();
 ShortcutsManager shortcutsManager = ShortcutsManager();
 BackgroundTaskManager backgroundTaskManager = BackgroundTaskManager();
@@ -133,7 +135,7 @@ Future<void> initNecessary() async {
   await preferences.init();
 
   await Future.wait([
-    fileCache.init(),
+    if (fileCache != null) fileCache!.init(),
     ClientManager.init(),
   ]);
 

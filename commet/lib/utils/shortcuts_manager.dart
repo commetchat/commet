@@ -78,7 +78,7 @@ class ShortcutsManager {
       avatarId += "_circle";
     }
 
-    Uri? cachedAvatar = await fileCache.getFile(avatarId);
+    Uri? cachedAvatar = await fileCache?.getFile(avatarId);
 
     if (cachedAvatar != null) {
       return cachedAvatar;
@@ -94,7 +94,7 @@ class ShortcutsManager {
         .buffer
         .asUint8List();
 
-    cachedAvatar = await fileCache.putFile(avatarId, bytes);
+    cachedAvatar = await fileCache!.putFile(avatarId, bytes);
 
     return cachedAvatar;
   }
