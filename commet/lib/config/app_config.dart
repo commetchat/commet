@@ -12,4 +12,12 @@ class AppConfig {
     final dir = await getApplicationSupportDirectory();
     return join(dir.path, "db");
   }
+
+  static Future<String> getHiveDatabasePath() async {
+    if (BuildConfig.WEB) {
+      return "commet";
+    }
+    final dir = await getApplicationSupportDirectory();
+    return join(dir.path, "hive");
+  }
 }

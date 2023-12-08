@@ -11,6 +11,7 @@ import 'package:commet/client/room_preview.dart';
 import 'package:commet/config/app_config.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/platform_utils.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/pages/matrix/authentication/matrix_uia_request.dart';
@@ -187,7 +188,8 @@ class MatrixClient extends Client {
       await diagnostics.timeAsync("Matrix client init", () async {
         await _matrixClient.init(
             waitForFirstSync: !loadingFromCache,
-            waitUntilLoadCompletedLoaded: true);
+            waitUntilLoadCompletedLoaded: true,
+            onMigration: () => Log.w("Matrix Database is migrating"));
       });
       self = MatrixPeer(this, _matrixClient, _matrixClient.userID!);
       peers.add(self!);
@@ -241,14 +243,16 @@ class MatrixClient extends Client {
         importantStateEvents: {"im.ponies.room_emotes", "m.room.power_levels"},
         supportedLoginTypes: {matrix.AuthenticationTypes.password},
         nativeImplementations: nativeImplementations,
+        legacyDatabaseBuilder: _hiveDatabaseBuilder,
         logLevel:
             BuildConfig.RELEASE ? matrix.Level.warning : matrix.Level.verbose,
-        databaseBuilder: kIsWeb ? _webDatabaseBuilder : _databaseBuilder);
+        databaseBuilder: kIsWeb ? _hiveDatabaseBuilder : _databaseBuilder);
   }
 
-  FutureOr<matrix.DatabaseApi> _webDatabaseBuilder(matrix.Client client) async {
+  FutureOr<matrix.DatabaseApi> _hiveDatabaseBuilder(
+      matrix.Client client) async {
     final db = matrix.HiveCollectionsDatabase(
-        client.clientName, await AppConfig.getDatabasePath());
+        client.clientName, await AppConfig.getHiveDatabasePath());
     await db.open();
     return db;
   }
