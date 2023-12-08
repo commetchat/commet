@@ -31,7 +31,7 @@ jobs:
       - name: Build Windows App
         run: |
           cd .\commet
-          flutter build windows --release
+          flutter build windows --release --dart-define PLATFORM=windows
 
   build-android:
     runs-on: ubuntu-latest
@@ -65,7 +65,7 @@ jobs:
       - name: Build APK
         run: |
           cd $PROJECT_PATH
-          flutter build apk --release
+          flutter build apk --release --dart-define PLATFORM=android
 
   build-android-google-services:
     runs-on: ubuntu-latest
@@ -100,7 +100,7 @@ jobs:
       - name: Build APK
         run: |
           cd $PROJECT_PATH
-          flutter build apk --release --dart-define ENABLE_GOOGLE_SERVICES=true
+          flutter build apk --release --dart-define ENABLE_GOOGLE_SERVICES=true --dart-define PLATFORM=android
 
   build-linux:
     runs-on: ubuntu-latest
@@ -129,7 +129,7 @@ jobs:
       - name: Build Linux
         run: |
           cd $PROJECT_PATH
-          flutter build linux --release
+          flutter build linux --release --dart-define PLATFORM=linux
 
   build-web:
     runs-on: ubuntu-latest
@@ -158,4 +158,4 @@ jobs:
       - name: Build Web
         run: |
           cd $PROJECT_PATH
-          flutter build web --release
+          flutter build web --release --dart-define PLATFORM=web
