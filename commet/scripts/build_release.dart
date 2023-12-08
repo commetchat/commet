@@ -70,7 +70,7 @@ main(List<String> args) async {
       "--build-name=$buildVersion",
       "--release",
       "--dart-define",
-      "BUILD_MODE=relese",
+      "BUILD_MODE=release",
       "--dart-define",
       "PLATFORM=$platform",
       "--dart-define",
