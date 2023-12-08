@@ -2,10 +2,10 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:commet/cache/file_cache.dart';
-import 'package:commet/cache/isar_file_cache.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/component.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
+import 'package:commet/config/platform_utils.dart';
 import 'package:commet/config/preferences.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
@@ -35,7 +35,7 @@ import 'package:tiamat/config/style/theme_dark.dart';
 import 'package:tiamat/config/style/theme_light.dart';
 
 final GlobalKey<NavigatorState> navigator = GlobalKey();
-FileCache? fileCache = kIsWeb ? null : IsarFileCache();
+FileCache? fileCache;
 Preferences preferences = Preferences();
 ShortcutsManager shortcutsManager = ShortcutsManager();
 BackgroundTaskManager backgroundTaskManager = BackgroundTaskManager();
@@ -100,7 +100,7 @@ void appMain() async {
 
     FlutterError.onError = Log.getFlutterErrorReporter(FlutterError.onError);
 
-    isHeadless = Platform.isAndroid &&
+    isHeadless = PlatformUtils.isAndroid &&
         AppLifecycleState.detached == WidgetsBinding.instance.lifecycleState;
 
     loading = initNecessary();
@@ -133,6 +133,7 @@ WidgetsBinding ensureBindingInit() {
 Future<void> initNecessary() async {
   sqfliteFfiInit();
   await preferences.init();
+  fileCache = FileCache.getFileCacheInstance();
 
   await Future.wait([
     if (fileCache != null) fileCache!.init(),
@@ -164,7 +165,7 @@ Future<void> startGui() async {
 
   initGuiRequirements();
 
-  if (Platform.isAndroid) {
+  if (PlatformUtils.isAndroid) {
     var initialIntent = await ReceiveIntent.getInitialIntent();
 
     ReceiveIntent.receivedIntentStream.listen((event) {

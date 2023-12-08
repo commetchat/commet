@@ -21,7 +21,7 @@ class MxcFileProvider implements FileProvider {
       return null;
     }
 
-    return fileCache.putFile(fileIdentifier, bytes);
+    return fileCache?.putFile(fileIdentifier, bytes);
   }
 
   @override

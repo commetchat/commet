@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/room.dart';
+import 'package:commet/config/platform_utils.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/custom_uri.dart';
 import 'package:commet/utils/event_bus.dart';
@@ -16,12 +17,11 @@ class ShortcutsManager {
   Future? loading;
 
   void init() {
-    if (Platform.isAndroid) {
+    if (PlatformUtils.isAndroid) {
       shortcuts = FlutterShortcuts();
       loading = shortcuts!.initialize(debug: true);
+      EventBus.onRoomOpened.stream.listen(onRoomOpenedInUI);
     }
-
-    EventBus.onRoomOpened.stream.listen(onRoomOpenedInUI);
   }
 
   Future<void> createShortcutForRoom(Room room) async {

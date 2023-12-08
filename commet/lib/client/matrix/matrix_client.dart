@@ -10,6 +10,7 @@ import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/config/app_config.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/config/platform_utils.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/pages/matrix/authentication/matrix_uia_request.dart';
@@ -232,40 +233,45 @@ class MatrixClient extends Client {
   bool isLoggedIn() => _matrixClient.isLogged();
 
   matrix.Client _createMatrixClient(String name) {
-    return matrix.Client(
-      name,
-      verificationMethods: {
-        KeyVerificationMethod.emoji,
-        KeyVerificationMethod.numbers
-      },
-      importantStateEvents: {"im.ponies.room_emotes", "m.room.power_levels"},
-      supportedLoginTypes: {matrix.AuthenticationTypes.password},
-      nativeImplementations: nativeImplementations,
-      logLevel:
-          BuildConfig.RELEASE ? matrix.Level.warning : matrix.Level.verbose,
-      databaseBuilder: (client) async {
-        var path = await AppConfig.getDatabasePath();
-        path = p.join(path, client.clientName, "data.db");
-        var dir = p.dirname(path);
+    return matrix.Client(name,
+        verificationMethods: {
+          KeyVerificationMethod.emoji,
+          KeyVerificationMethod.numbers
+        },
+        importantStateEvents: {"im.ponies.room_emotes", "m.room.power_levels"},
+        supportedLoginTypes: {matrix.AuthenticationTypes.password},
+        nativeImplementations: nativeImplementations,
+        logLevel:
+            BuildConfig.RELEASE ? matrix.Level.warning : matrix.Level.verbose,
+        databaseBuilder: kIsWeb ? _webDatabaseBuilder : _databaseBuilder);
+  }
 
-        if (!await Directory(dir).exists()) {
-          await Directory(dir).create(recursive: true);
-        }
+  FutureOr<matrix.DatabaseApi> _webDatabaseBuilder(matrix.Client client) async {
+    final db = matrix.HiveCollectionsDatabase(
+        client.clientName, await AppConfig.getDatabasePath());
+    await db.open();
+    return db;
+  }
 
-        DatabaseFactory factory = databaseFactoryFfi;
+  FutureOr<matrix.DatabaseApi> _databaseBuilder(matrix.Client client) async {
+    var path = await AppConfig.getDatabasePath();
 
-        if (Platform.isAndroid) {
-          factory = databaseFactorySqflitePlugin;
-        }
+    DatabaseFactory factory = PlatformUtils.isAndroid
+        ? databaseFactorySqflitePlugin
+        : databaseFactoryFfi;
 
-        var database = await factory.openDatabase(path);
+    path = p.join(path, client.clientName, "data.db");
+    var dir = p.dirname(path);
 
-        final db =
-            matrix.MatrixSdkDatabase(client.clientName, database: database);
-        await db.open();
-        return db;
-      },
-    );
+    if (!await Directory(dir).exists()) {
+      await Directory(dir).create(recursive: true);
+    }
+
+    var database = await factory.openDatabase(path);
+
+    final db = matrix.MatrixSdkDatabase(client.clientName, database: database);
+    await db.open();
+    return db;
   }
 
   matrix.Client getMatrixClient() {
