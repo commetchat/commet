@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:commet/config/platform_utils.dart';
 import 'package:commet/main.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart' as p;
@@ -35,7 +36,7 @@ class FileUtils {
       return path;
     } catch (_) {
       var dir = await getDownloadsDirectory();
-      if (Platform.isAndroid) {
+      if (PlatformUtils.isAndroid) {
         dir = Directory("/storage/emulated/0/Download");
       }
 

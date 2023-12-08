@@ -26,12 +26,13 @@ jobs:
       - name: Code Generation
         run: |
           cd .\commet
+          git config --global core.longpaths true
           dart run scripts/codegen.dart
 
       - name: Build Windows App
         run: |
           cd .\commet
-          dart run scripts/build_release.dart --platform windows --version_tag ${{ github.event.release.tag_name || 'v0.0.0' }} --git_hash ${{ github.sha }}
+          flutter build windows --release --dart-define PLATFORM=windows
 
   build-android:
     runs-on: ubuntu-latest
@@ -65,7 +66,7 @@ jobs:
       - name: Build APK
         run: |
           cd $PROJECT_PATH
-          dart run scripts/build_release.dart --platform android --version_tag ${{ github.event.release.tag_name || 'v0.0.0' }} --git_hash ${{ github.sha }}
+          flutter build apk --debug --dart-define PLATFORM=android
 
   build-android-google-services:
     runs-on: ubuntu-latest
@@ -100,8 +101,7 @@ jobs:
       - name: Build APK
         run: |
           cd $PROJECT_PATH
-          dart run scripts/build_release.dart --platform android --enable_google_services true --version_tag ${{ github.event.release.tag_name || 'v0.0.0' }} --git_hash ${{ github.sha }}
-
+          flutter build apk --debug --dart-define ENABLE_GOOGLE_SERVICES=true --dart-define PLATFORM=android
 
   build-linux:
     runs-on: ubuntu-latest
@@ -130,7 +130,7 @@ jobs:
       - name: Build Linux
         run: |
           cd $PROJECT_PATH
-          dart run scripts/build_release.dart --platform linux --version_tag ${{ github.event.release.tag_name || 'v0.0.0' }} --git_hash ${{ github.sha }} --build_detail debian
+          flutter build linux --release --dart-define PLATFORM=linux
 
   build-web:
     runs-on: ubuntu-latest
@@ -159,4 +159,4 @@ jobs:
       - name: Build Web
         run: |
           cd $PROJECT_PATH
-          dart run scripts/build_release.dart --platform web --version_tag ${{ github.event.release.tag_name || 'v0.0.0' }} --git_hash ${{ github.sha }}
+          flutter build web --release --dart-define PLATFORM=web

@@ -50,7 +50,7 @@ extension CommonFlows on WidgetTester {
   }
 
   Future<void> clean() async {
-    await fileCache.close();
+    await fileCache?.close();
     await preferences.clear();
     await clearUserData();
   }

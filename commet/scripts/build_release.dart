@@ -70,7 +70,7 @@ main(List<String> args) async {
       "--build-name=$buildVersion",
       "--release",
       "--dart-define",
-      "BUILD_MODE=relese",
+      "BUILD_MODE=release",
       "--dart-define",
       "PLATFORM=$platform",
       "--dart-define",
@@ -87,4 +87,5 @@ main(List<String> args) async {
 
   print(process.stdout);
   print(process.stderr);
+  exit(process.exitCode);
 }

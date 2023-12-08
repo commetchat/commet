@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:commet/client/components/push_notification/android/firebase_push_notifier.dart';
 import 'package:commet/client/components/push_notification/android/unified_push_notifier.dart';
 import 'package:commet/client/components/push_notification/linux/linux_notifier.dart';
@@ -10,6 +8,7 @@ import 'package:commet/client/components/push_notification/notification_content.
 import 'package:commet/client/components/push_notification/notifier.dart';
 import 'package:commet/client/components/push_notification/windows/windows_notifier.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/config/platform_utils.dart';
 
 class NotificationManager {
   static Notifier? _notifier;
@@ -34,15 +33,15 @@ class NotificationManager {
   }
 
   static Notifier? _getNotifier() {
-    if (Platform.isLinux) {
+    if (PlatformUtils.isLinux) {
       return LinuxNotifier();
     }
 
-    if (Platform.isWindows) {
+    if (PlatformUtils.isWindows) {
       return WindowsNotifier();
     }
 
-    if (Platform.isAndroid) {
+    if (PlatformUtils.isAndroid) {
       if (BuildConfig.ENABLE_GOOGLE_SERVICES) {
         return FirebasePushNotifier();
       }

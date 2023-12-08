@@ -36,8 +36,8 @@ class MatrixMxcImage extends LODImageProvider {
       Client client, Uri uri, Event? matrixEvent) async {
     var identifier = getThumbnailIdentifier(uri);
 
-    if (await fileCache.hasFile(identifier)) {
-      var cacheUri = await fileCache.getFile(identifier);
+    if (await fileCache?.hasFile(identifier) == true) {
+      var cacheUri = await fileCache?.getFile(identifier);
 
       if (cacheUri != null) {
         return File.fromUri(cacheUri).readAsBytes();
@@ -58,7 +58,7 @@ class MatrixMxcImage extends LODImageProvider {
     }
 
     if (bytes != null) {
-      fileCache.putFile(identifier, bytes);
+      fileCache?.putFile(identifier, bytes);
       return bytes;
     }
 
@@ -69,8 +69,8 @@ class MatrixMxcImage extends LODImageProvider {
       Client client, Uri uri, Event? matrixEvent) async {
     var identifier = getIdentifier(uri);
 
-    if (await fileCache.hasFile(identifier)) {
-      var cacheUri = await fileCache.getFile(identifier);
+    if (await fileCache?.hasFile(identifier) == true) {
+      var cacheUri = await fileCache?.getFile(identifier);
 
       if (cacheUri != null) {
         return File.fromUri(cacheUri).readAsBytes();
@@ -89,7 +89,7 @@ class MatrixMxcImage extends LODImageProvider {
     }
 
     if (bytes != null) {
-      fileCache.putFile(identifier, bytes);
+      fileCache?.putFile(identifier, bytes);
       return bytes;
     }
 
