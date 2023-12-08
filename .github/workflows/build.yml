@@ -65,7 +65,7 @@ jobs:
       - name: Build APK
         run: |
           cd $PROJECT_PATH
-          flutter build apk --release --dart-define PLATFORM=android
+          flutter build apk --dart-define PLATFORM=android
 
   build-android-google-services:
     runs-on: ubuntu-latest
@@ -100,7 +100,7 @@ jobs:
       - name: Build APK
         run: |
           cd $PROJECT_PATH
-          flutter build apk --release --dart-define ENABLE_GOOGLE_SERVICES=true --dart-define PLATFORM=android
+          flutter build apk --dart-define ENABLE_GOOGLE_SERVICES=true --dart-define PLATFORM=android
 
   build-linux:
     runs-on: ubuntu-latest
