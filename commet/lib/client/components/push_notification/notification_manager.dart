@@ -32,15 +32,15 @@ class NotificationManager {
   }
 
   static Notifier? _getNotifier() {
-    if (BuildConfig.WINDOWS) {
-      return WindowsNotifier();
-    }
-
-    if (BuildConfig.LINUX) {
+    if (PlatformUtils.isLinux) {
       return LinuxNotifier();
     }
 
-    if (BuildConfig.ANDROID) {
+    if (PlatformUtils.isWindows) {
+      return WindowsNotifier();
+    }
+
+    if (PlatformUtils.isAndroid) {
       if (BuildConfig.ENABLE_GOOGLE_SERVICES) {
         return FirebasePushNotifier();
       }
