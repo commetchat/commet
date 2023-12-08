@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:commet/client/components/push_notification/android/firebase_push_notifier.dart';
 import 'package:commet/client/components/push_notification/android/unified_push_notifier.dart';
 import 'package:commet/client/components/push_notification/linux/linux_notifier.dart';
@@ -11,7 +9,6 @@ import 'package:commet/client/components/push_notification/notifier.dart';
 import 'package:commet/client/components/push_notification/windows/windows_notifier.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/platform_utils.dart';
-import 'package:flutter/material.dart';
 
 class NotificationManager {
   static Notifier? _notifier;

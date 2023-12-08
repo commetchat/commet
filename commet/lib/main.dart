@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:commet/cache/file_cache.dart';
 import 'package:commet/client/client_manager.dart';
@@ -21,8 +20,6 @@ import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/scaled_app.dart';
 import 'package:commet/utils/shortcuts_manager.dart';
 import 'package:commet/utils/window_management.dart';
-import 'package:flutter/foundation.dart';
-
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 

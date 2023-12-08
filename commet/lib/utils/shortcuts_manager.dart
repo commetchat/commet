@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:ui';
 
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
