@@ -8,7 +8,6 @@ import 'package:commet/client/components/push_notification/notification_content.
 import 'package:commet/client/components/push_notification/notifier.dart';
 import 'package:commet/client/components/push_notification/windows/windows_notifier.dart';
 import 'package:commet/config/build_config.dart';
-import 'package:commet/config/platform_utils.dart';
 
 class NotificationManager {
   static Notifier? _notifier;
