@@ -312,6 +312,9 @@ class TimelineViewerState extends State<TimelineViewer> {
   }
 
   Widget buildJumpToLatestButton() {
+    var padding = BuildConfig.MOBILE
+        ? const EdgeInsets.fromLTRB(18, 12, 18, 12)
+        : const EdgeInsets.fromLTRB(12, 4, 12, 4);
     return Padding(
         padding: const EdgeInsets.all(8.0),
         child: DecoratedBox(
@@ -326,7 +329,7 @@ class TimelineViewerState extends State<TimelineViewer> {
               border: Border.all(
                   color: Theme.of(context).extension<ExtraColors>()!.highlight,
                   width: 1),
-              color: Theme.of(context).extension<ExtraColors>()!.surfaceLow2),
+              color: Theme.of(context).extension<ExtraColors>()!.surfaceHigh1),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(20),
             child: Material(
@@ -334,7 +337,7 @@ class TimelineViewerState extends State<TimelineViewer> {
               child: InkWell(
                 onTap: animateAndSnapToBottom,
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 4, 12, 4),
+                  padding: padding,
                   child: tiamat.Text.labelLow(
                     labelJumpToLatest,
                     color: Theme.of(context).colorScheme.onSurface,
