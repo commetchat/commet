@@ -11,6 +11,7 @@ import 'package:commet/client/room_preview.dart';
 import 'package:commet/config/app_config.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/platform_utils.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/pages/matrix/authentication/matrix_uia_request.dart';
@@ -20,7 +21,7 @@ import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
-
+import 'package:universal_html/html.dart' as html;
 import 'package:commet/client/client.dart';
 import 'package:commet/client/matrix/matrix_peer.dart';
 import 'package:flutter/material.dart';
@@ -147,16 +148,22 @@ class MatrixClient extends Client {
       if (clients != null) {
         for (var clientName in clients) {
           var client = MatrixClient(identifier: clientName);
-          try {
-            manager.addClient(client);
-            futures.add(diagnostics.timeAsync("Initializing client $clientName",
-                () async {
+          manager.addClient(client);
+          futures.add(diagnostics.timeAsync("Initializing client $clientName",
+              () async {
+            try {
               await client.init(true);
-            }));
-          } catch (_) {
-            manager.removeClient(client);
-            preferences.removeRegisteredMatrixClient(clientName);
-          }
+            } catch (error, trace) {
+              Log.e("Unable to load client $clientName from database");
+              Log.onError(error, trace);
+              client.self = MatrixPeer(client, client._matrixClient,
+                  "@failed_to_load:${clientName.substring(0, 8)}");
+              manager.alertManager.addAlert(Alert(AlertType.warning,
+                  messageGetter: () =>
+                      "One of the registered accounts (${clientName.substring(0, 8)}...) was unable to load correctly, please check the logs for more details",
+                  titleGetter: () => "Unable to load account"));
+            }
+          }));
         }
       }
 
@@ -187,7 +194,8 @@ class MatrixClient extends Client {
       await diagnostics.timeAsync("Matrix client init", () async {
         await _matrixClient.init(
             waitForFirstSync: !loadingFromCache,
-            waitUntilLoadCompletedLoaded: true);
+            waitUntilLoadCompletedLoaded: true,
+            onMigration: () => Log.w("Matrix Database is migrating"));
       });
       self = MatrixPeer(this, _matrixClient, _matrixClient.userID!);
       peers.add(self!);
@@ -241,19 +249,26 @@ class MatrixClient extends Client {
         importantStateEvents: {"im.ponies.room_emotes", "m.room.power_levels"},
         supportedLoginTypes: {matrix.AuthenticationTypes.password},
         nativeImplementations: nativeImplementations,
+        legacyDatabaseBuilder: _hiveDatabaseBuilder,
         logLevel:
             BuildConfig.RELEASE ? matrix.Level.warning : matrix.Level.verbose,
-        databaseBuilder: kIsWeb ? _webDatabaseBuilder : _databaseBuilder);
+        databaseBuilder: kIsWeb ? _hiveDatabaseBuilder : _databaseBuilder);
   }
 
-  FutureOr<matrix.DatabaseApi> _webDatabaseBuilder(matrix.Client client) async {
+  FutureOr<matrix.DatabaseApi> _hiveDatabaseBuilder(
+      matrix.Client client) async {
     final db = matrix.HiveCollectionsDatabase(
-        client.clientName, await AppConfig.getDatabasePath());
+        client.clientName, await AppConfig.getHiveDatabasePath());
     await db.open();
     return db;
   }
 
   FutureOr<matrix.DatabaseApi> _databaseBuilder(matrix.Client client) async {
+    if (kIsWeb) {
+      await html.window.navigator.storage?.persist();
+      return matrix.MatrixSdkDatabase(client.clientName);
+    }
+
     var path = await AppConfig.getDatabasePath();
 
     DatabaseFactory factory = PlatformUtils.isAndroid
