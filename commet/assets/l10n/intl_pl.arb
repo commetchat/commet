@@ -1,1 +1,917 @@
-{}
+{
+  "promptMatrixVerifySession": "Zweryfikuj",
+  "@promptMatrixVerifySession": {
+    "description": "Text on the button to verify a session",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmSpaceCreation": "Utwórz Przestrzeń!",
+  "@promptConfirmSpaceCreation": {
+    "description": "Label for a button which confirms the creation of a space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsDeveloper": "Deweloperskie",
+  "@labelRoomSettingsDeveloper": {
+    "description": "Label for room developer settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptRoomAddress": "Adres Pokoju:",
+  "@promptRoomAddress": {
+    "description": "Short label to prompt for the input of a room address",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelOr": "lub",
+  "@labelOr": {
+    "description": "Text that is placed between two or more options: [button1] or [button2]",
+    "type": "text",
+    "placeholders": {}
+  },
+  "placeholderSpaceAddress": "#niesamowita-przestrzen:matrix.org",
+  "@placeholderSpaceAddress": {
+    "description": "Placeholder / Example for a space address",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmRoomJoin": "Dołącz do Pokoju!",
+  "@promptConfirmRoomJoin": {
+    "description": "Label for a button which confirms the joining of a room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelHomeRecentActivity": "Ostatnia aktywność",
+  "@labelHomeRecentActivity": {
+    "description": "Short label for header of recent room activity",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceEmoticonSettings": "Emotikony",
+  "@labelSpaceEmoticonSettings": {
+    "description": "Label for space emoticon settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelHomeAlerts": "Alarmy",
+  "@labelHomeAlerts": {
+    "description": "Short label for header of alerts",
+    "type": "text",
+    "placeholders": {}
+  },
+  "matrixClientEncryptionWarningTitle": "Ostrzeżenie o szyfrowaniu",
+  "@matrixClientEncryptionWarningTitle": {
+    "description": "Title of a warning about encryption",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelCouldNotLoadRoomPreview": "Nie można było załadować podglądu pokoju",
+  "@labelCouldNotLoadRoomPreview": {
+    "description": "Error message for when a room preview was not able to be loaded",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptOpenDirectMessage": "Wiadomość",
+  "@promptOpenDirectMessage": {
+    "description": "Prompt on the button to open a direct message with another user",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptOptions": "Opcje",
+  "@promptOptions": {
+    "description": "Generic prompt for options, generally would be used to open a settings menu, extra details or similar",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsCategorySpace": "Ustawienia Przestrzeni",
+  "@labelSettingsCategorySpace": {
+    "description": "Label for the overall space settings category",
+    "type": "text",
+    "placeholders": {}
+  },
+  "errorMatrixPassphraseMustContainSymbol": "Hasło musi zawierać przynajmniej 1 symbol",
+  "@errorMatrixPassphraseMustContainSymbol": {
+    "description": "Explains constraints of recovery passphrase",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsCategory": "Ustawienia Pokoju",
+  "@labelRoomSettingsCategory": {
+    "description": "Label for the overall settings category of a room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelEmojiPickerStickerTab": "Naklejka",
+  "@labelEmojiPickerStickerTab": {
+    "description": "Label for the sticker tab in the emoji picker",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messagePlaceholderUserCreatedRoom": "{user} utworzył pokój!",
+  "@messagePlaceholderUserCreatedRoom": {
+    "description": "Message body for when a user created the room",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "promptEnableMatrixBackup": "Włącz kopie zapasowe",
+  "@promptEnableMatrixBackup": {
+    "description": "Button text to enable to encrypted message backup",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptSpaceName": "Nazwa Przestrzeni",
+  "@promptSpaceName": {
+    "description": "Prompt to enter a space name, placeholder text for text input",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageLoginFailed": "Logowanie nieudane...",
+  "@messageLoginFailed": {
+    "description": "Generic text to show that an attempted login has failed",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsAppearance": "Wygląd",
+  "@labelRoomSettingsAppearance": {
+    "description": "Label for room appearance settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceSettingsGeneral": "Główne",
+  "@labelSpaceSettingsGeneral": {
+    "description": "Label for general space settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelPushRuleNotifyAll": "Wszystkie wiadomości",
+  "@labelPushRuleNotifyAll": {
+    "description": "Label for the push rule which notifies for all received messages",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmCreateEmoticon": "Stwórz!",
+  "@promptConfirmCreateEmoticon": {
+    "description": "Prompt to confirm the creation of an Emoticon Pack, Emoji, or Sticker",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptLogoutSingleAccount": "Wyloguj",
+  "@promptLogoutSingleAccount": {
+    "description": "Label for button in settings to log out of an account",
+    "type": "text",
+    "placeholders": {}
+  },
+  "errorMatrixPassphraseMustContainUpperAndLowercase": "Hasło musi zawierać przynajmniej 1 dużą literę i 1 małą literę",
+  "@errorMatrixPassphraseMustContainUpperAndLowercase": {
+    "description": "Explains constraints of recovery passphrase",
+    "type": "text",
+    "placeholders": {}
+  },
+  "roomVisibilityPublicExplanation": "Ten pokój będzie dostępny publicznie dla wszystkich",
+  "@roomVisibilityPublicExplanation": {
+    "description": "Explains what 'public' visibility means",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelThemeLight": "Jasno motyw",
+  "@labelThemeLight": {
+    "description": "Label for the light theme",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixMessageBackup": "Kopia zapasowa wiadomości",
+  "@labelMatrixMessageBackup": {
+    "description": "TItle label for matrix message backup settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsAppAdvanced": "Zaawansowane",
+  "@labelSettingsAppAdvanced": {
+    "description": "Label for the App Advanced settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRestoreMatrixBackupTitle": "Przywróć kopię bezpieczeństwa",
+  "@labelRestoreMatrixBackupTitle": {
+    "description": "Title of the popup dialog for restoring message backup",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelAskUseExistingMatrixKeys": "Czy chcesz wykorzystać istniejące klucze?",
+  "@labelAskUseExistingMatrixKeys": {
+    "description": "Text that is shown when the user is setting up cross signing, but has existing keys and asks the user if they would like to use those keys",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptJoin": "Dołącz",
+  "@promptJoin": {
+    "description": "Generic prompt to join a room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptRestore": "Przywróć",
+  "@promptRestore": {
+    "description": "Generic prompt to restore something",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsTabManageAccounts": "Zarządzaj kontami",
+  "@labelSettingsTabManageAccounts": {
+    "description": "Label for the Manage Accounts settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelHomeInvitations": "Zaproszenia",
+  "@labelHomeInvitations": {
+    "description": "Short label for header of invitations list",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptLeaveRoomConfirmation": "Czy na pewno chcesz opuścić {roomName}?",
+  "@promptLeaveRoomConfirmation": {
+    "description": "Text for the popup dialog confirming the intent to leave",
+    "type": "text",
+    "placeholders": {
+      "roomName": {}
+    }
+  },
+  "labelChatPageFileTooLarge": "Ten plik jest zbyt duży do przesłania!",
+  "@labelChatPageFileTooLarge": {
+    "description": "Text that is shown when the user attempts to upload a file that is greater than the allowed size",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptAddAccount": "Dodaj konto",
+  "@promptAddAccount": {
+    "description": "Label for button in settings to add another account",
+    "type": "text",
+    "placeholders": {}
+  },
+  "sendEncryptedMessagePrompt": "Wyślij zaszyfrowaną wiadomość",
+  "@sendEncryptedMessagePrompt": {
+    "description": "Placeholder text for message input in an encrypted room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "directMessagesListHeaderDesktop": "Wiadomości bezpośrednie",
+  "@directMessagesListHeaderDesktop": {
+    "description": "The header for the direct messages list on desktop",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptLeaveSpaceConfirmation": "Czy jesteś pewien, że chcesz opuścić {spaceName}?",
+  "@promptLeaveSpaceConfirmation": {
+    "description": "Text for the popup dialog confirming the intent to leave a space",
+    "type": "text",
+    "placeholders": {
+      "spaceName": {}
+    }
+  },
+  "promptSettings": "Ustawienia",
+  "@promptSettings": {
+    "description": "Generic prompt for settings, usually will open a settings menu or similar",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptApply": "Zastosuj",
+  "@promptApply": {
+    "description": "Generic prompt to apply something, probably a setting",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceAvailableRoomsList": "Dostępne pokoje",
+  "@labelSpaceAvailableRoomsList": {
+    "description": "Header label for the list of rooms in a space, which the user has not yet joined but are available",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptEmojiName": "Nazwa emoji",
+  "@promptEmojiName": {
+    "description": "Prompt for the input of the name of an emoji",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomsList": "Pokoje",
+  "@labelRoomsList": {
+    "description": "Header label for the list of rooms",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsTabDeveloper": "Deweloperskie",
+  "@labelSettingsTabDeveloper": {
+    "description": "Label for the Developer settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptReject": "Odrzuć",
+  "@promptReject": {
+    "description": "Generic prompt to reject something, probably a request of some kind",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixAccountSessions": "Sesje",
+  "@labelMatrixAccountSessions": {
+    "description": "Title label for account sessions",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messagePlaceholderUserLeftRoom": "{user} opuścił pokój",
+  "@messagePlaceholderUserLeftRoom": {
+    "description": "Message body for when a user leaves the room",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "promptStickerName": "Nazwa naklejki",
+  "@promptStickerName": {
+    "description": "Prompt for the input of a sticker",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelEmojiPickerEmojiTab": "Emoji",
+  "@labelEmojiPickerEmojiTab": {
+    "description": "Label for the emoji tab in emoji picker",
+    "type": "text",
+    "placeholders": {}
+  },
+  "roomVisibilityPrivateExplanation": "Ten pokój będzie dostępny wyłącznie poprzez zaproszenie",
+  "@roomVisibilityPrivateExplanation": {
+    "description": "Explains what 'private' room visibility means",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptSubmitLogin": "Zaloguj",
+  "@promptSubmitLogin": {
+    "description": "Prompt to submit the username and password, and attempt to login",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptAddReaction": "Dodaj reakcję",
+  "@promptAddReaction": {
+    "description": "Generic prompt to add reaction to a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptCreateNewSpace": "Utwórz nową przestrzeń",
+  "@promptCreateNewSpace": {
+    "description": "Prompt to create a new space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "directMessagesListHeaderMobile": "Wiadomości bezpośrednie",
+  "@directMessagesListHeaderMobile": {
+    "description": "The header for the direct messages list on desktop",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptCopyComplete": "Skopiowano!",
+  "@promptCopyComplete": {
+    "description": "Prompt text for after a copy has been completed",
+    "type": "text",
+    "placeholders": {}
+  },
+  "spaceVisibilityPrivateExplanation": "Ten pokój będzie dostępny wyłącznie poprzez zaproszenie",
+  "@spaceVisibilityPrivateExplanation": {
+    "description": "Explains what 'private' space visibility means",
+    "type": "text",
+    "placeholders": {}
+  },
+  "notificationReceivedMessagePlaceholder": "Wysłano wiadomość",
+  "@notificationReceivedMessagePlaceholder": {
+    "description": "Placeholder text for the body of a notification, when the message either doesnt contain a displayable body, or the body has been hidden by notification settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptPassword": "Hasło",
+  "@promptPassword": {
+    "description": "Placeholder text for password field on login form",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptPoliteNo": "Nie, dziękuję",
+  "@promptPoliteNo": {
+    "description": "Generic message to decline something, using nice manners :)",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageVerificationComplete": "Weryfikacja zakończona!",
+  "@messageVerificationComplete": {
+    "description": "Message to show when verification was completed successfully, and the session has been verified",
+    "type": "text",
+    "placeholders": {}
+  },
+  "encryptionCannotBeDisabledExplanation": "Jeśli włączono, szyfrowania nie będzie można później dezaktywować",
+  "@encryptionCannotBeDisabledExplanation": {
+    "description": "Explains that encryption cannot be disabled once enabled",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptMatrixRecoveryKeyInput": "Klucz Odzyskiwania",
+  "@promptMatrixRecoveryKeyInput": {
+    "description": "Placeholder text for the recovery key input box",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptCreateNewMatrixKeys": "Nie, utwórz nowe klucze",
+  "@promptCreateNewMatrixKeys": {
+    "description": "Button text to opt to create new keys",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelVisibilityPublic": "Publiczny",
+  "@labelVisibilityPublic": {
+    "description": "Short label for room visibility public",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsAppAppearance": "Wygląd",
+  "@labelSettingsAppAppearance": {
+    "description": "Label for the App Appearance settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "spaceVisibilityPublicExplanation": "Ten pokój będzie dostępny publicznie dla wszystkich",
+  "@spaceVisibilityPublicExplanation": {
+    "description": "Explains what 'public' space visibility means",
+    "type": "text",
+    "placeholders": {}
+  },
+  "notificationModifiersPrivacyEnhanced": "Wysłano wiadomość",
+  "@notificationModifiersPrivacyEnhanced": {
+    "description": "Placeholder text to put in a notification when the user has privacy enhanced notifications enabled.",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmRoomCreation": "Utwórz Pokój!",
+  "@promptConfirmRoomCreation": {
+    "description": "Label for a button which confirms the creation of a room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmEmojiMatches": "Pasują!",
+  "@promptConfirmEmojiMatches": {
+    "description": "Button text to confirm that the emoji matches",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptEnable": "Włącz",
+  "@promptEnable": {
+    "description": "Generic prompt to enable something",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptLeaveSpace": "Opuść Przestrzeń",
+  "@promptLeaveSpace": {
+    "description": "Text on a button to leave a space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptEmojiDoNotMatch": "Nie pasują",
+  "@promptEmojiDoNotMatch": {
+    "description": "Button text to confirm that the emoji do NOT match",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptRenameEmoticon": "Zmień nazwę emotki",
+  "@promptRenameEmoticon": {
+    "description": "Tooltip for button to rename emoticon",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messagePlaceholderUserUpdatedAvatar": "{user} zaktualizował swój awatar",
+  "@messagePlaceholderUserUpdatedAvatar": {
+    "description": "Message body for when a user updates their avatar",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messageLoginError": "Wystąpił błąd",
+  "@messageLoginError": {
+    "description": "A generic error message to convey that an error occured when attempting to login",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptEmoticonPackName": "Nazwa paczki",
+  "@promptEmoticonPackName": {
+    "description": "Prompt for the input of the name of an emoticon pack",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptDone": "Gotowe",
+  "@promptDone": {
+    "description": "Generic prompt to confirm that you are done",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelVisibilityPrivate": "Prywatny",
+  "@labelVisibilityPrivate": {
+    "description": "Short label for room visibility private",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceAppearanceSettings": "Wygląd",
+  "@labelSpaceAppearanceSettings": {
+    "description": "Label for space appearance settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messagePlaceholderUserJoinedRoom": "{user} dołączył do pokoju!",
+  "@messagePlaceholderUserJoinedRoom": {
+    "description": "Message body for when a user joins the room",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "labelChatPageFileTooLargeTitle": "Przekroczono maksymalny rozmiar pliku",
+  "@labelChatPageFileTooLargeTitle": {
+    "description": "Title for the dialog that is shown when the user attempts to upload a file that is greater than the allowed size",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptEnableEncryptionRoomSettings": "Włącz szyfrowanie",
+  "@promptEnableEncryptionRoomSettings": {
+    "description": "Short prompt to enable encryption for a room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsNotifications": "Powiadomienia",
+  "@labelRoomSettingsNotifications": {
+    "description": "Label for the notifications section in room settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptBack": "Wstecz",
+  "@promptBack": {
+    "description": "Prompt text to go backwards, probably for navigation",
+    "type": "text",
+    "placeholders": {}
+  },
+  "tooltipAddRoom": "Dodaj pokój",
+  "@tooltipAddRoom": {
+    "description": "Tooltip for the button that adds a new room to a space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmSpaceJoin": "Dołącz do Przestrzeni!",
+  "@promptConfirmSpaceJoin": {
+    "description": "Label for a button which confirms the joining of a space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptContinue": "Kontynuuj",
+  "@promptContinue": {
+    "description": "Generic prompt to continue with some action",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsAppGeneral": "Główne",
+  "@labelSettingsAppGeneral": {
+    "description": "Label for the App General settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsAppTheme": "Motyw",
+  "@labelSettingsAppTheme": {
+    "description": "Label for theme section of app appearance",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptUseExistingRoom": "Użyj istniejącego pokoju",
+  "@promptUseExistingRoom": {
+    "description": "Button text to choose to use an existing room when adding a room to a space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsCategoryApp": "Ustawienia aplikacji",
+  "@labelSettingsCategoryApp": {
+    "description": "Label for the settings category of the overall App settings/",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageEditedMarker": "(Edytowano)",
+  "@messageEditedMarker": {
+    "description": "Short text to mark that a message has been edited",
+    "type": "text",
+    "placeholders": {}
+  },
+  "matrixClientOlmMissingMessage": "libolm jest niezainstalowany lub nie został odnaleziony. Szyfrowanie od końca do końca nie będzie dostępne, dopóki nie zostanie to rozwiązane",
+  "@matrixClientOlmMissingMessage": {
+    "description": "Text that explains to the user that libolm dependency is not found",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsGeneral": "Główne",
+  "@labelRoomSettingsGeneral": {
+    "description": "Label for general room settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptReset": "Reset",
+  "@promptReset": {
+    "description": "Generic prompt to reset something",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelHomeInvitationBody": "Zaprosił cię do pokoju",
+  "@labelHomeInvitationBody": {
+    "description": "Displays a short description explaining that an invitation to a room was received. Does not need to contain the name of the room or inviter",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageSasEmojiVerificationPrompt": "Sprawdź, czy emoji są takie same, oraz czy są w tej samej kolejności, co na drugim urządzeniu",
+  "@messageSasEmojiVerificationPrompt": {
+    "description": "Explains what to look for when verifying using emoji. Needs to portray that the emoji MUST be the same AND in the same order",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceDeveloperSettings": "Deweloperskie",
+  "@labelSpaceDeveloperSettings": {
+    "description": "Label for space developer settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelEmojiPickerGifTab": "Gif",
+  "@labelEmojiPickerGifTab": {
+    "description": "Label for the gif search tab in the emoji picker",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelHomeRoomsList": "Pokoje",
+  "@labelHomeRoomsList": {
+    "description": "Short label for header of rooms list",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsSecurity": "Bezpieczeństwo",
+  "@labelRoomSettingsSecurity": {
+    "description": "Label for room security settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "errorMatrixPassphraseMustContainNumber": "Hasło musi zawierać przynajmniej 1 cyfrę",
+  "@errorMatrixPassphraseMustContainNumber": {
+    "description": "Explains constraints of recovery passphrase",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageAlreadyLoggedIn": "Już się zalogowałeś na to konto",
+  "@messageAlreadyLoggedIn": {
+    "description": "An error message displayed when the user attempts to add an account which has already been logged in to on this device",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptCreateNewRoom": "Utwórz nowy pokój",
+  "@promptCreateNewRoom": {
+    "description": "Prompt to create a new room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "sendUnencryptedMessagePrompt": "Wyślij wiadomość",
+  "@sendUnencryptedMessagePrompt": {
+    "description": "Placeholder text for message input in an unencrypted room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceVisibilityPrivate": "Przestrzeń prywatna",
+  "@labelSpaceVisibilityPrivate": {
+    "description": "Label to display that the space is private",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelPushRuleNone": "Wycisz",
+  "@labelPushRuleNone": {
+    "description": "Label for the push rule which sends no notifications",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptJoinExistingRoom": "Dołącz do istniejącego pokoju",
+  "@promptJoinExistingRoom": {
+    "description": "Prompt to join a room which already exists",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptCopy": "Kopiuj",
+  "@promptCopy": {
+    "description": "Prompt to copy text",
+    "type": "text",
+    "placeholders": {}
+  },
+  "encryptionCannotBeDisabledExplanationRoomSettings": "Jeśli włączono, szyfrowania nie będzie można później dezaktywować",
+  "@encryptionCannotBeDisabledExplanationRoomSettings": {
+    "description": "Explains that encryption cannot be disabled once enabled",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptTopic": "Tematyka (opcjonalne)",
+  "@promptTopic": {
+    "description": "Prompt to enter a topic for room or space, specifying that doing so is optional",
+    "type": "text",
+    "placeholders": {}
+  },
+  "createEmoticonDialogTitle": "Utwórz emotkę",
+  "@createEmoticonDialogTitle": {
+    "description": "Title of a dialog that pops up when choosing to create a new emoticon",
+    "type": "text",
+    "placeholders": {}
+  },
+  "fileDragDropPrompt": "Upuść plik do wysłania...",
+  "@fileDragDropPrompt": {
+    "description": "Text that is shown when a user is dragging a file",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceRoomsList": "Pokoje",
+  "@labelSpaceRoomsList": {
+    "description": "Header label for the list of rooms in a space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsCategoryAccount": "Konto",
+  "@labelSettingsCategoryAccount": {
+    "description": "Label for the settings category Account",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptDelete": "Usuń",
+  "@promptDelete": {
+    "description": "Generic prompt to delete something",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptRoomName": "Nazwa Pokoju",
+  "@promptRoomName": {
+    "description": "Prompt to enter a room name, placeholder text for text input",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsEmoticons": "Emotikony",
+  "@labelRoomSettingsEmoticons": {
+    "description": "Label for room Emoticon settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messagePlaceholderSticker": "{user} wysłał naklejkę",
+  "@messagePlaceholderSticker": {
+    "description": "Message body for when a user sends a sticker",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "labelMatrixExistingMessageBackupFound": "Znaleziono kopię bezpieczeństwa!",
+  "@labelMatrixExistingMessageBackupFound": {
+    "description": "Message to explain that existing backup has been found",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptReply": "Odpowiedz",
+  "@promptReply": {
+    "description": "Generic prompt to reply to a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptAddSelectedRooms": "Dodaj wybrane pokoje",
+  "@promptAddSelectedRooms": {
+    "description": "Prompt to add the selected rooms to a space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "errorMessageFailedToSend": "Nie udało się wysłać",
+  "@errorMessageFailedToSend": {
+    "description": "Text that is placed below a message when the message fails to send",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messagePlaceholderUserUpdatedName": "{user} zaktualizował swoją nazwę",
+  "@messagePlaceholderUserUpdatedName": {
+    "description": "Message body for when a user updates their display name",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "labelSettingsDeveloperMode": "Tryb programisty",
+  "@labelSettingsDeveloperMode": {
+    "description": "Header for the settings to enable developer mode",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelThemeDark": "Ciemny motyw",
+  "@labelThemeDark": {
+    "description": "Label for the dark theme",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptEnableEncryption": "Włącz szyfrowanie",
+  "@promptEnableEncryption": {
+    "description": "Short prompt to enable encryption for a room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptLeaveRoom": "Opuść Pokój",
+  "@promptLeaveRoom": {
+    "description": "Text on a button to leave a room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptEdit": "Edytuj",
+  "@promptEdit": {
+    "description": "Generic prompt to edit something",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptAccept": "Zaakceptuj",
+  "@promptAccept": {
+    "description": "Generic prompt to accept something, probably a request of some kind",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptUsername": "Nazwa użytkownika",
+  "@promptUsername": {
+    "description": "Placeholder text for username field on login form",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsTabEmoticons": "Emotikony",
+  "@labelSettingsTabEmoticons": {
+    "description": "Label for the Emoticons settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirm": "Zatwierdź",
+  "@promptConfirm": {
+    "description": "Generic prompt to confirm some action",
+    "type": "text",
+    "placeholders": {}
+  },
+  "placeholderRoomAddress": "#niesamowity-pokoj:matrix.org",
+  "@placeholderRoomAddress": {
+    "description": "Placeholder / Example for a room address",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsTabProfile": "Profil",
+  "@labelSettingsTabProfile": {
+    "description": "Label for the Profile settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messagePlaceholderUserRejectedInvite": "{user} odrzucił zaproszenie",
+  "@messagePlaceholderUserRejectedInvite": {
+    "description": "Message body for when a user rejected an invitation to a room",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "erroMatrixPassphraseMustBeLonger": "Hasło musi zawierać przynajmniej 10 znaków",
+  "@erroMatrixPassphraseMustBeLonger": {
+    "description": "Explains constraints of recovery passphrase",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptSpaceAddress": "Adres Przestrzeni:",
+  "@promptSpaceAddress": {
+    "description": "Short label to prompt for the input of a space address",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptJoinExistingSpace": "Dołącz do istniejącej przestrzeni",
+  "@promptJoinExistingSpace": {
+    "description": "Prompt to join a space which already exists",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelGifSearchToggle": "Wyszukaj Gifa",
+  "@labelGifSearchToggle": {
+    "description": "Label for the toggle for enabling and disabling gif search",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messagePlaceholderUserInvited": "{sender} zaprosił {invitedUser}",
+  "@messagePlaceholderUserInvited": {
+    "description": "Message body for when a user invites another user to the room",
+    "type": "text",
+    "placeholders": {
+      "sender": {},
+      "invitedUser": {}
+    }
+  },
+  "labelSettingsTabSecurity": "Bezpieczeństwo",
+  "@labelSettingsTabSecurity": {
+    "description": "Label for the Security settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptGenerateMatrixRecoveryKey": "Wygeneruj Klucz",
+  "@promptGenerateMatrixRecoveryKey": {
+    "description": "Button text to generate a recovery key",
+    "type": "text",
+    "placeholders": {}
+  }
+}
