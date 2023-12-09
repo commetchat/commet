@@ -82,6 +82,8 @@ class TimelineViewerState extends State<TimelineViewer> {
   Future? loadingHistory;
   bool toBeDisposed = false;
 
+  bool showJumpToBottom = false;
+
   StreamController<int> onHoveredMessageChanged = StreamController.broadcast();
 
   late StreamSubscription eventAdded;
@@ -185,6 +187,10 @@ class TimelineViewerState extends State<TimelineViewer> {
     if (shouldScrollPositionLoadHistory()) {
       if (loadingHistory == null) loadMoreHistory();
     }
+
+    setState(() {
+      showJumpToBottom = !attachedToBottom;
+    });
   }
 
   void animateAndSnapToBottom() {
@@ -193,6 +199,7 @@ class TimelineViewerState extends State<TimelineViewer> {
 
     setState(() {
       animatingToBottom = true;
+      showJumpToBottom = false;
     });
     int lastEvent = recentItemsCount;
 
@@ -206,6 +213,7 @@ class TimelineViewerState extends State<TimelineViewer> {
 
         setState(() {
           animatingToBottom = false;
+          showJumpToBottom = false;
         });
       }
     });
@@ -291,8 +299,7 @@ class TimelineViewerState extends State<TimelineViewer> {
           Align(
               alignment: Alignment.bottomCenter,
               child: AnimatedSlide(
-                  offset:
-                      Offset(0, attachedToBottom && !animatingToBottom ? 1 : 0),
+                  offset: Offset(0, showJumpToBottom ? 0 : 1),
                   duration: const Duration(milliseconds: 200),
                   curve: Curves.easeInOutCubic,
                   child: buildJumpToLatestButton()))
@@ -442,8 +449,17 @@ class TimelineViewerState extends State<TimelineViewer> {
       return false;
     }
 
-    return widget.timeline.events[index].originServerTs.toLocal().day !=
-        widget.timeline.events[index + 1].originServerTs.toLocal().day;
+    if (widget.timeline.events[index].originServerTs.toLocal().day !=
+        widget.timeline.events[index + 1].originServerTs.toLocal().day) {
+      return true;
+    }
+
+    if (widget.timeline.events[index].originServerTs
+            .difference(widget.timeline.events[index + 1].originServerTs)
+            .inHours >
+        2) return true;
+
+    return false;
   }
 
   bool shouldShowSender(int index) {
