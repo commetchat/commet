@@ -53,6 +53,9 @@ class SettingsCategoryApp implements SettingsCategory {
   String get labelThemeLight => Intl.message("Light Theme",
       name: "labelThemeLight", desc: "Label for the light theme");
 
+  String get labelThemeAmoled => Intl.message("Amoled",
+      name: "labelThemeAmoled", desc: "Label for the light theme");
+
   String get labelAppScale => Intl.message("App Scale",
       name: 'labelAppScale',
       desc:
@@ -124,6 +127,10 @@ class SettingsCategoryApp implements SettingsCategory {
             TextButton(labelThemeDark, onTap: () {
               preferences.setTheme(AppTheme.dark);
               ThemeChanger.setTheme(context, ThemeDark.theme);
+            }),
+            TextButton(labelThemeAmoled, onTap: () {
+              preferences.setTheme(AppTheme.amoled);
+              ThemeChanger.setTheme(context, ThemeAmoled.theme);
             }),
           ]),
         ),

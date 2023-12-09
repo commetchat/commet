@@ -4,10 +4,7 @@ import 'package:commet/config/build_config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
 
-enum AppTheme {
-  light,
-  dark,
-}
+enum AppTheme { light, dark, amoled }
 
 class Preferences {
   SharedPreferences? _preferences;
