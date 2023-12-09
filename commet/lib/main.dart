@@ -8,6 +8,7 @@ import 'package:commet/config/platform_utils.dart';
 import 'package:commet/config/preferences.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
+import 'package:commet/generated/l10n/messages_all_locales.dart';
 import 'package:commet/ui/pages/bubble/bubble_page.dart';
 import 'package:commet/ui/pages/fatal_error/fatal_error_page.dart';
 import 'package:commet/ui/pages/login/login_page.dart';
@@ -20,9 +21,12 @@ import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/scaled_app.dart';
 import 'package:commet/utils/shortcuts_manager.dart';
 import 'package:commet/utils/window_management.dart';
-import 'package:flutter/material.dart';
-import 'package:media_kit/media_kit.dart';
+import 'package:flutter/foundation.dart';
 
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:media_kit/media_kit.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:provider/provider.dart';
 import 'package:receive_intent/receive_intent.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -147,12 +151,17 @@ Future<void> initNecessary() async {
 Future<void> initGuiRequirements() async {
   isHeadless = false;
 
+  var locale = PlatformDispatcher.instance.locale;
+
   MediaKit.ensureInitialized();
 
   Future.wait([
     WindowManagement.init(),
     UnicodeEmojis.load(),
+    initializeMessages(locale.languageCode)
   ]);
+
+  Intl.defaultLocale = locale.languageCode;
 }
 
 /// Initializes gui requirements and launches the gui
@@ -218,15 +227,12 @@ class App extends StatelessWidget {
             title: 'Commet',
             theme: theme,
             navigatorKey: navigator,
-            localizationsDelegates: const [
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
+            localizationsDelegates: T.localizationsDelegates,
             builder: (context, child) => Provider<ClientManager>(
               create: (context) => clientManager,
               child: child,
             ),
+            supportedLocales: T.supportedLocales,
             home: AppView(
               clientManager: clientManager,
               initialClientId: initialClientId,
