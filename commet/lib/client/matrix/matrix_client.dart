@@ -252,7 +252,7 @@ class MatrixClient extends Client {
         legacyDatabaseBuilder: _hiveDatabaseBuilder,
         logLevel:
             BuildConfig.RELEASE ? matrix.Level.warning : matrix.Level.verbose,
-        databaseBuilder: _databaseBuilder);
+        databaseBuilder: kIsWeb ? _hiveDatabaseBuilder : _databaseBuilder);
   }
 
   FutureOr<matrix.DatabaseApi> _hiveDatabaseBuilder(
@@ -265,7 +265,7 @@ class MatrixClient extends Client {
 
   FutureOr<matrix.DatabaseApi> _databaseBuilder(matrix.Client client) async {
     if (kIsWeb) {
-      html.window.navigator.storage?.persist();
+      await html.window.navigator.storage?.persist();
       return matrix.MatrixSdkDatabase(client.clientName);
     }
 
@@ -276,7 +276,6 @@ class MatrixClient extends Client {
         : databaseFactoryFfi;
 
     path = p.join(path, client.clientName, "data.db");
-
     var dir = p.dirname(path);
 
     if (!await Directory(dir).exists()) {
