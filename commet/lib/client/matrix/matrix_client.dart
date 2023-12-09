@@ -21,7 +21,7 @@ import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
-
+import 'package:universal_html/html.dart' as html;
 import 'package:commet/client/client.dart';
 import 'package:commet/client/matrix/matrix_peer.dart';
 import 'package:flutter/material.dart';
@@ -148,16 +148,22 @@ class MatrixClient extends Client {
       if (clients != null) {
         for (var clientName in clients) {
           var client = MatrixClient(identifier: clientName);
-          try {
-            manager.addClient(client);
-            futures.add(diagnostics.timeAsync("Initializing client $clientName",
-                () async {
+          manager.addClient(client);
+          futures.add(diagnostics.timeAsync("Initializing client $clientName",
+              () async {
+            try {
               await client.init(true);
-            }));
-          } catch (_) {
-            manager.removeClient(client);
-            preferences.removeRegisteredMatrixClient(clientName);
-          }
+            } catch (error, trace) {
+              Log.e("Unable to load client $clientName from database");
+              Log.onError(error, trace);
+              client.self = MatrixPeer(client, client._matrixClient,
+                  "@failed_to_load:${clientName.substring(0, 8)}");
+              manager.alertManager.addAlert(Alert(AlertType.warning,
+                  messageGetter: () =>
+                      "One of the registered accounts (${clientName.substring(0, 8)}...) was unable to load correctly, please check the logs for more details",
+                  titleGetter: () => "Unable to load account"));
+            }
+          }));
         }
       }
 
@@ -246,7 +252,7 @@ class MatrixClient extends Client {
         legacyDatabaseBuilder: _hiveDatabaseBuilder,
         logLevel:
             BuildConfig.RELEASE ? matrix.Level.warning : matrix.Level.verbose,
-        databaseBuilder: kIsWeb ? _hiveDatabaseBuilder : _databaseBuilder);
+        databaseBuilder: _databaseBuilder);
   }
 
   FutureOr<matrix.DatabaseApi> _hiveDatabaseBuilder(
@@ -258,6 +264,11 @@ class MatrixClient extends Client {
   }
 
   FutureOr<matrix.DatabaseApi> _databaseBuilder(matrix.Client client) async {
+    if (kIsWeb) {
+      html.window.navigator.storage?.persist();
+      return matrix.MatrixSdkDatabase(client.clientName);
+    }
+
     var path = await AppConfig.getDatabasePath();
 
     DatabaseFactory factory = PlatformUtils.isAndroid
@@ -265,6 +276,7 @@ class MatrixClient extends Client {
         : databaseFactoryFfi;
 
     path = p.join(path, client.clientName, "data.db");
+
     var dir = p.dirname(path);
 
     if (!await Directory(dir).exists()) {
