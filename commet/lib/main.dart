@@ -30,6 +30,7 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:provider/provider.dart';
 import 'package:receive_intent/receive_intent.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:tiamat/config/style/theme_amoled.dart';
 import 'package:tiamat/config/style/theme_changer.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:tiamat/config/style/theme_dark.dart';
@@ -68,8 +69,11 @@ void bubble() async {
   }
 
   var theme = preferences.theme;
-  var initialTheme =
-      theme == AppTheme.dark ? ThemeDark.theme : ThemeLight.theme;
+  var initialTheme = {
+    AppTheme.dark: ThemeDark.theme,
+    AppTheme.light: ThemeLight.theme,
+    AppTheme.amoled: ThemeAmoled.theme,
+  }[theme];
 
   runApp(MaterialApp(
       title: 'Commet',
@@ -220,8 +224,11 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ThemeChanger(
-        initialTheme:
-            initialTheme == AppTheme.dark ? ThemeDark.theme : ThemeLight.theme,
+        initialTheme: {
+          AppTheme.dark: ThemeDark.theme,
+          AppTheme.light: ThemeLight.theme,
+          AppTheme.amoled: ThemeAmoled.theme,
+        }[initialTheme]!,
         materialAppBuilder: (context, theme) {
           return MaterialApp(
             title: 'Commet',

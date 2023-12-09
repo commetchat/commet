@@ -331,7 +331,7 @@ class _ImageButtonState extends State<ImageButton> {
                           color: Theme.of(context)
                               .extension<ExtraColors>()!
                               .outline,
-                          width: 1),
+                          width: 1.5),
                     )
                   : null,
           child: ClipRRect(
