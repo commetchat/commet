@@ -46,7 +46,9 @@ class MessagePopupMenuViewDialog extends StatelessWidget {
                     physics: const NeverScrollableScrollPhysics(),
                     child: SizedBox(
                       child: TimelineEventView(
-                          event: event, timeline: state.timeline),
+                          hovered: true,
+                          event: event,
+                          timeline: state.timeline),
                     ),
                   ),
                 ),

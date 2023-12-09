@@ -3,9 +3,13 @@ import 'package:commet/config/build_config.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/molecules/message_popup_menu/message_popup_menu.dart';
 import 'package:commet/ui/molecules/timeline_event.dart';
+import 'package:commet/utils/text_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:tiamat/config/config.dart';
 import '../../client/client.dart';
 import '../../client/components/emoticon/emoticon.dart';
+import 'package:tiamat/tiamat.dart' as tiamat;
 /* Note: This aint your mother's timeline viewer...
 This file contains some unusual hacks in order to achieve a smoother experience
 
@@ -70,12 +74,15 @@ class TimelineViewerState extends State<TimelineViewer> {
   int hoveredIndex = -1;
   double height = -1;
   bool animatingToBottom = false;
-  bool get attachedToBottom =>
-      controller.offset - controller.positions.first.minScrollExtent < 50 ||
-      animatingToBottom;
+  bool get attachedToBottom => controller.hasClients
+      ? controller.offset - controller.positions.first.minScrollExtent < 50 ||
+          animatingToBottom
+      : true;
 
   Future? loadingHistory;
   bool toBeDisposed = false;
+
+  bool showJumpToBottom = false;
 
   StreamController<int> onHoveredMessageChanged = StreamController.broadcast();
 
@@ -85,6 +92,11 @@ class TimelineViewerState extends State<TimelineViewer> {
   final LayerLink messageLayerLink = LayerLink();
 
   bool messagePopupIsBeingInteracted = false;
+
+  String get labelJumpToLatest => Intl.message("Jump to latest",
+      desc:
+          "Label for the button which jumps the room timeline view to the latest message",
+      name: "labelJumpToLatest");
 
   @override
   void initState() {
@@ -116,7 +128,7 @@ class TimelineViewerState extends State<TimelineViewer> {
             targetAnchor: Alignment.topRight,
             followerAnchor: Alignment.topRight,
             showWhenUnlinked: false,
-            offset: const Offset(-20, -40),
+            offset: const Offset(-20, -48),
             link: messageLayerLink,
             child: SizedBox(child: buildPopupMenu(event, false))));
   }
@@ -175,13 +187,20 @@ class TimelineViewerState extends State<TimelineViewer> {
     if (shouldScrollPositionLoadHistory()) {
       if (loadingHistory == null) loadMoreHistory();
     }
+
+    setState(() {
+      showJumpToBottom = !attachedToBottom;
+    });
   }
 
   void animateAndSnapToBottom() {
     if (toBeDisposed) return;
     controller.position.hold(() {});
 
-    animatingToBottom = true;
+    setState(() {
+      animatingToBottom = true;
+      showJumpToBottom = false;
+    });
     int lastEvent = recentItemsCount;
 
     controller
@@ -191,7 +210,11 @@ class TimelineViewerState extends State<TimelineViewer> {
         .then((value) {
       if (recentItemsCount == lastEvent) {
         controller.jumpTo(controller.position.minScrollExtent);
-        animatingToBottom = false;
+
+        setState(() {
+          animatingToBottom = false;
+          showJumpToBottom = false;
+        });
       }
     });
   }
@@ -253,29 +276,77 @@ class TimelineViewerState extends State<TimelineViewer> {
   }
 
   Widget buildScrollView() {
+    var view = CustomScrollView(
+      center: historyEventsKey,
+      reverse: true,
+      controller: controller,
+      anchor: 0,
+      slivers: [
+        //Beware, these are in reverse order
+        SliverList(
+            delegate: SliverChildBuilderDelegate(buildRecentItem,
+                childCount: recentItemsCount)),
+        SliverList(
+            key: historyEventsKey,
+            delegate: SliverChildBuilderDelegate(buildHistoryItem,
+                childCount: historyItemsCount)),
+      ],
+    );
+
     return ClipRect(
       child: Stack(
         children: [
-          CustomScrollView(
-            center: historyEventsKey,
-            reverse: true,
-            controller: controller,
-            anchor: 0,
-            slivers: [
-              //Beware, these are in reverse order
-              SliverList(
-                  delegate: SliverChildBuilderDelegate(buildRecentItem,
-                      childCount: recentItemsCount)),
-              SliverList(
-                  key: historyEventsKey,
-                  delegate: SliverChildBuilderDelegate(buildHistoryItem,
-                      childCount: historyItemsCount)),
-            ],
-          ),
-          if (BuildConfig.DESKTOP) buildOverlay()
+          if (BuildConfig.MOBILE) view,
+          if (BuildConfig.DESKTOP) SelectionArea(child: view),
+          if (BuildConfig.DESKTOP) buildOverlay(),
+          Align(
+              alignment: Alignment.bottomCenter,
+              child: AnimatedSlide(
+                  offset: Offset(0, showJumpToBottom ? 0 : 1),
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeInOutCubic,
+                  child: buildJumpToLatestButton()))
         ],
       ),
     );
+  }
+
+  Widget buildJumpToLatestButton() {
+    var padding = BuildConfig.MOBILE
+        ? const EdgeInsets.fromLTRB(18, 12, 18, 12)
+        : const EdgeInsets.fromLTRB(12, 4, 12, 4);
+    return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                  color: Theme.of(context).shadowColor,
+                  blurRadius: 5,
+                )
+              ],
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                  color: Theme.of(context).extension<ExtraColors>()!.highlight,
+                  width: 1),
+              color: Theme.of(context).extension<ExtraColors>()!.surfaceHigh1),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: animateAndSnapToBottom,
+                child: Padding(
+                  padding: padding,
+                  child: tiamat.Text.labelLow(
+                    labelJumpToLatest,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ));
   }
 
   Widget? buildHistoryItem(BuildContext context, int index) {
@@ -297,7 +368,7 @@ class TimelineViewerState extends State<TimelineViewer> {
   }
 
   Widget buildEvent(int displayIndex, int actualIndex) {
-    return Stack(alignment: Alignment.topRight, children: [
+    var event = Stack(alignment: Alignment.topRight, children: [
       buildTimelineEvent(displayIndex),
       if (displayIndex == hoveredIndex)
         CompositedTransformTarget(
@@ -308,6 +379,46 @@ class TimelineViewerState extends State<TimelineViewer> {
           ),
         )
     ]);
+
+    if (shouldShowDate(displayIndex)) {
+      return Column(
+        children: [
+          dateTimeMarker(displayIndex),
+          event,
+        ],
+      );
+    }
+
+    return event;
+  }
+
+  Widget dateTimeMarker(int actualIndex) {
+    var color = Theme.of(context).extension<ExtraColors>()!.surfaceLow2;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Expanded(
+            child: Divider(
+              height: 1,
+              color: Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
+            child: tiamat.Text.labelLow(TextUtils.timestampToLocalizedTime(
+                widget.timeline.events[actualIndex].originServerTs)),
+          ),
+          Expanded(
+            child: Divider(
+              height: 1,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget buildTimelineEvent(int index) {
@@ -328,6 +439,7 @@ class TimelineViewerState extends State<TimelineViewer> {
         child: TimelineEventView(
           event: widget.timeline.events[index],
           timeline: widget.timeline,
+          hovered: hoveredIndex == index,
           onReactionTapped: (emote) =>
               widget.onAddReaction?.call(widget.timeline.events[index], emote),
           showSender: shouldShowSender(index),
@@ -340,6 +452,24 @@ class TimelineViewerState extends State<TimelineViewer> {
         ),
       ),
     );
+  }
+
+  bool shouldShowDate(int index) {
+    if (widget.timeline.events.length <= index + 1) {
+      return false;
+    }
+
+    if (widget.timeline.events[index].originServerTs.toLocal().day !=
+        widget.timeline.events[index + 1].originServerTs.toLocal().day) {
+      return true;
+    }
+
+    if (widget.timeline.events[index].originServerTs
+            .difference(widget.timeline.events[index + 1].originServerTs)
+            .inHours >
+        2) return true;
+
+    return false;
   }
 
   bool shouldShowSender(int index) {

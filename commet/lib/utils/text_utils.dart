@@ -140,6 +140,16 @@ class TextUtils {
         .format(time.toLocal());
   }
 
+  static String timestampToLocalizedTimeSpecific(DateTime time) {
+    var difference = DateTime.now().difference(time);
+
+    if (difference.inDays < 7) {
+      return intl.DateFormat(intl.DateFormat.HOUR_MINUTE)
+          .format(time.toLocal());
+    }
+    return intl.DateFormat().format(time.toLocal());
+  }
+
   static String readableFileSize(num number, {bool base1024 = true}) {
     final base = base1024 ? 1024 : 1000;
     if (number <= 0) return "0";

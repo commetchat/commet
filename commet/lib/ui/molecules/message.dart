@@ -1,12 +1,13 @@
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/atoms/emoji_reaction.dart';
-import 'package:commet/utils/text_utils.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:flutter/material.dart' as material;
+
+import 'package:intl/intl.dart' as intl;
 
 class Message extends StatefulWidget {
   const Message(
@@ -21,6 +22,7 @@ class Message extends StatefulWidget {
       this.replySenderColor,
       this.replySenderName,
       this.edited = false,
+      this.showDetailed = false,
       this.onDoubleTap,
       this.reactions,
       this.onReactionTapped,
@@ -31,6 +33,7 @@ class Message extends StatefulWidget {
   final double avatarSize = 32;
 
   final bool showSender;
+  final bool showDetailed;
   final String senderName;
   final Color? senderColor;
 
@@ -108,6 +111,7 @@ class _MessageState extends State<Message> {
                         Padding(
                           padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                           child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               senderName(),
                               timeStamp(),
@@ -149,7 +153,7 @@ class _MessageState extends State<Message> {
       padding: const EdgeInsets.fromLTRB(0, 0, 4, 1),
       child: SizedBox(
         child: tiamat.Text.name(
-          widget.senderName,
+          "${widget.senderName} ",
           color: widget.senderColor,
         ),
       ),
@@ -159,13 +163,21 @@ class _MessageState extends State<Message> {
   Widget replyText() {
     return SizedBox(
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.baseline,
+        textBaseline: TextBaseline.ideographic,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           SizedBox(
-            width: widget.avatarSize,
+            width: widget.avatarSize / 2,
           ),
-          const Icon(material.Icons.keyboard_arrow_right_rounded),
+          SizedBox(
+            width: 30,
+            height: 20,
+            child: CustomPaint(
+              painter: ReplyLinePainter(
+                  pathColor: Theme.of(context).colorScheme.secondary),
+            ),
+          ),
           tiamat.Text.name(
             widget.replySenderName ?? "Loading...",
             color: widget.replySenderColor,
@@ -187,17 +199,14 @@ class _MessageState extends State<Message> {
   }
 
   Widget timeStamp() {
-    return AnimatedOpacity(
-      opacity: hovered ? 1 : 0,
-      duration: const Duration(milliseconds: 200),
-      child: Padding(
+    return Padding(
         padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
         child: SizedBox(
-          child: tiamat.Text.labelLow(
-              TextUtils.timestampToLocalizedTime(widget.sentTimeStamp)),
-        ),
-      ),
-    );
+          child: tiamat.Text.labelLow(widget.showDetailed
+              ? intl.DateFormat().format(widget.sentTimeStamp.toLocal())
+              : intl.DateFormat(DateFormat.HOUR_MINUTE)
+                  .format(widget.sentTimeStamp.toLocal())),
+        ));
   }
 
   Widget body() {
@@ -221,5 +230,41 @@ class _MessageState extends State<Message> {
               numReactions: value.length,
               highlighted: value.contains(widget.currentUserIdentifier));
         }).toList());
+  }
+}
+
+class ReplyLinePainter extends CustomPainter {
+  Color pathColor;
+  double strokeWidth;
+  double radius;
+  double padding;
+  ReplyLinePainter(
+      {this.pathColor = Colors.white,
+      this.strokeWidth = 2,
+      this.radius = 3,
+      this.padding = 2}) {
+    _paint = Paint()
+      ..color = pathColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = strokeWidth
+      ..strokeCap = StrokeCap.round;
+  }
+
+  late Paint _paint;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Path path = Path();
+    path.moveTo(0, size.height - padding);
+    path.lineTo(0, (size.height / 2) + radius);
+    path.relativeArcToPoint(Offset(radius, -radius),
+        radius: Radius.circular(radius));
+    path.lineTo(size.width - 5, size.height / 2);
+    canvas.drawPath(path, _paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return true;
   }
 }
