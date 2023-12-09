@@ -3,9 +3,13 @@ import 'package:commet/config/build_config.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/molecules/message_popup_menu/message_popup_menu.dart';
 import 'package:commet/ui/molecules/timeline_event.dart';
+import 'package:commet/utils/text_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:tiamat/config/config.dart';
 import '../../client/client.dart';
 import '../../client/components/emoticon/emoticon.dart';
+import 'package:tiamat/tiamat.dart' as tiamat;
 /* Note: This aint your mother's timeline viewer...
 This file contains some unusual hacks in order to achieve a smoother experience
 
@@ -70,9 +74,10 @@ class TimelineViewerState extends State<TimelineViewer> {
   int hoveredIndex = -1;
   double height = -1;
   bool animatingToBottom = false;
-  bool get attachedToBottom =>
-      controller.offset - controller.positions.first.minScrollExtent < 50 ||
-      animatingToBottom;
+  bool get attachedToBottom => controller.hasClients
+      ? controller.offset - controller.positions.first.minScrollExtent < 50 ||
+          animatingToBottom
+      : true;
 
   Future? loadingHistory;
   bool toBeDisposed = false;
@@ -85,6 +90,11 @@ class TimelineViewerState extends State<TimelineViewer> {
   final LayerLink messageLayerLink = LayerLink();
 
   bool messagePopupIsBeingInteracted = false;
+
+  String get labelJumpToLatest => Intl.message("Jump to latest",
+      desc:
+          "Label for the button which jumps the room timeline view to the latest message",
+      name: "labelJumpToLatest");
 
   @override
   void initState() {
@@ -116,7 +126,7 @@ class TimelineViewerState extends State<TimelineViewer> {
             targetAnchor: Alignment.topRight,
             followerAnchor: Alignment.topRight,
             showWhenUnlinked: false,
-            offset: const Offset(-20, -40),
+            offset: const Offset(-20, -48),
             link: messageLayerLink,
             child: SizedBox(child: buildPopupMenu(event, false))));
   }
@@ -181,7 +191,9 @@ class TimelineViewerState extends State<TimelineViewer> {
     if (toBeDisposed) return;
     controller.position.hold(() {});
 
-    animatingToBottom = true;
+    setState(() {
+      animatingToBottom = true;
+    });
     int lastEvent = recentItemsCount;
 
     controller
@@ -191,7 +203,10 @@ class TimelineViewerState extends State<TimelineViewer> {
         .then((value) {
       if (recentItemsCount == lastEvent) {
         controller.jumpTo(controller.position.minScrollExtent);
-        animatingToBottom = false;
+
+        setState(() {
+          animatingToBottom = false;
+        });
       }
     });
   }
@@ -272,10 +287,50 @@ class TimelineViewerState extends State<TimelineViewer> {
                       childCount: historyItemsCount)),
             ],
           ),
-          if (BuildConfig.DESKTOP) buildOverlay()
+          if (BuildConfig.DESKTOP) buildOverlay(),
+          Align(
+              alignment: Alignment.bottomCenter,
+              child: AnimatedSlide(
+                  offset:
+                      Offset(0, attachedToBottom && !animatingToBottom ? 1 : 0),
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeInOutCubic,
+                  child: buildJumpToLatestButton()))
         ],
       ),
     );
+  }
+
+  Widget buildJumpToLatestButton() {
+    return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(color: Theme.of(context).shadowColor, blurRadius: 10)
+              ],
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                  color: Theme.of(context).extension<ExtraColors>()!.highlight,
+                  width: 1),
+              color: Theme.of(context).extension<ExtraColors>()!.surfaceLow2),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: animateAndSnapToBottom,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 4, 12, 4),
+                  child: tiamat.Text.labelLow(
+                    labelJumpToLatest,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ));
   }
 
   Widget? buildHistoryItem(BuildContext context, int index) {
@@ -297,7 +352,7 @@ class TimelineViewerState extends State<TimelineViewer> {
   }
 
   Widget buildEvent(int displayIndex, int actualIndex) {
-    return Stack(alignment: Alignment.topRight, children: [
+    var event = Stack(alignment: Alignment.topRight, children: [
       buildTimelineEvent(displayIndex),
       if (displayIndex == hoveredIndex)
         CompositedTransformTarget(
@@ -308,6 +363,45 @@ class TimelineViewerState extends State<TimelineViewer> {
           ),
         )
     ]);
+
+    if (shouldShowDate(displayIndex)) {
+      return Column(
+        children: [
+          dateTimeMarker(displayIndex),
+          event,
+        ],
+      );
+    }
+
+    return event;
+  }
+
+  Widget dateTimeMarker(int actualIndex) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Expanded(
+            child: Divider(
+              height: 1,
+              color: Theme.of(context).extension<ExtraColors>()!.highlight,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
+            child: tiamat.Text.labelLow(TextUtils.timestampToLocalizedTime(
+                widget.timeline.events[actualIndex].originServerTs)),
+          ),
+          Expanded(
+            child: Divider(
+              height: 1,
+              color: Theme.of(context).extension<ExtraColors>()!.highlight,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget buildTimelineEvent(int index) {
@@ -328,6 +422,7 @@ class TimelineViewerState extends State<TimelineViewer> {
         child: TimelineEventView(
           event: widget.timeline.events[index],
           timeline: widget.timeline,
+          hovered: hoveredIndex == index,
           onReactionTapped: (emote) =>
               widget.onAddReaction?.call(widget.timeline.events[index], emote),
           showSender: shouldShowSender(index),
@@ -340,6 +435,15 @@ class TimelineViewerState extends State<TimelineViewer> {
         ),
       ),
     );
+  }
+
+  bool shouldShowDate(int index) {
+    if (widget.timeline.events.length <= index + 1) {
+      return false;
+    }
+
+    return widget.timeline.events[index].originServerTs.toLocal().day !=
+        widget.timeline.events[index + 1].originServerTs.toLocal().day;
   }
 
   bool shouldShowSender(int index) {

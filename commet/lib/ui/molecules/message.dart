@@ -1,12 +1,13 @@
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/atoms/emoji_reaction.dart';
-import 'package:commet/utils/text_utils.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:flutter/material.dart' as material;
+
+import 'package:intl/intl.dart' as intl;
 
 class Message extends StatefulWidget {
   const Message(
@@ -21,6 +22,7 @@ class Message extends StatefulWidget {
       this.replySenderColor,
       this.replySenderName,
       this.edited = false,
+      this.showDetailed = false,
       this.onDoubleTap,
       this.reactions,
       this.onReactionTapped,
@@ -31,6 +33,7 @@ class Message extends StatefulWidget {
   final double avatarSize = 32;
 
   final bool showSender;
+  final bool showDetailed;
   final String senderName;
   final Color? senderColor;
 
@@ -108,6 +111,7 @@ class _MessageState extends State<Message> {
                         Padding(
                           padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                           child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               senderName(),
                               timeStamp(),
@@ -187,17 +191,14 @@ class _MessageState extends State<Message> {
   }
 
   Widget timeStamp() {
-    return AnimatedOpacity(
-      opacity: hovered ? 1 : 0,
-      duration: const Duration(milliseconds: 200),
-      child: Padding(
+    return Padding(
         padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
         child: SizedBox(
-          child: tiamat.Text.labelLow(
-              TextUtils.timestampToLocalizedTime(widget.sentTimeStamp)),
-        ),
-      ),
-    );
+          child: tiamat.Text.labelLow(widget.showDetailed
+              ? intl.DateFormat().format(widget.sentTimeStamp.toLocal())
+              : intl.DateFormat(DateFormat.HOUR_MINUTE)
+                  .format(widget.sentTimeStamp.toLocal())),
+        ));
   }
 
   Widget body() {

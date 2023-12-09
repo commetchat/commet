@@ -136,17 +136,7 @@ class _TimelineEventState extends State<TimelineEventView> {
 
   @override
   Widget build(BuildContext context) {
-    var display = eventToWidget(widget.event);
-    return AnimatedContainer(
-        duration: const Duration(milliseconds: 100),
-        color: widget.hovered ? m.Colors.red : m.Colors.transparent,
-        child: Opacity(
-          opacity: [TimelineEventStatus.sending, TimelineEventStatus.error]
-                  .contains(widget.event.status)
-              ? 0.5
-              : 1,
-          child: display,
-        ));
+    return eventToWidget(widget.event) ?? Container();
   }
 
   String get displayName =>
@@ -175,6 +165,7 @@ class _TimelineEventState extends State<TimelineEventView> {
           senderColor: color,
           senderAvatar: avatar,
           sentTimeStamp: widget.event.originServerTs,
+          showDetailed: widget.hovered,
           onDoubleTap: widget.onDoubleTap,
           onLongPress: widget.onLongPress,
           showSender: widget.showSender,

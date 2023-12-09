@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-12-08T10:56:56.499146",
+  "@@last_modified": "2023-12-09T20:25:33.438018",
   "fileDragDropPrompt": "Drop a file to upload...",
   "@fileDragDropPrompt": {
     "description": "Text that is shown when a user is dragging a file",
@@ -92,6 +92,12 @@
   "labelHomeInvitationBody": "Invited you to a room",
   "@labelHomeInvitationBody": {
     "description": "Displays a short description explaining that an invitation to a room was received. Does not need to contain the name of the room or inviter",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelJumpToLatest": "Jump to latest",
+  "@labelJumpToLatest": {
+    "description": "Label for the button which jumps the room timeline view to the latest message",
     "type": "text",
     "placeholders": {}
   },
