@@ -392,7 +392,7 @@ class TimelineViewerState extends State<TimelineViewer> {
   Widget dateTimeMarker(int actualIndex) {
     var color = Theme.of(context).extension<ExtraColors>()!.surfaceLow2;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
       child: Row(
         mainAxisSize: MainAxisSize.max,
         children: [
