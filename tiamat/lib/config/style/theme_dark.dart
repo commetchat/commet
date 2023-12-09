@@ -50,7 +50,6 @@ class ThemeDark {
           onBackground: Colors.black,
           onError: Colors.white,
           brightness: Brightness.dark,
-          shadow: Colors.black.withAlpha(0),
           outline: ThemeDarkColors.surfaceHigh1),
       listTileTheme: const ListTileThemeData(
         tileColor: ThemeDarkColors.surface,

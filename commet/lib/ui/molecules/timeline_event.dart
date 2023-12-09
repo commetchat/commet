@@ -174,7 +174,7 @@ class _TimelineEventState extends State<TimelineEventView> {
           replyBody: relatedEvent?.body ??
               (relatedEvent?.type == EventType.sticker
                   ? messagePlaceholderSticker(displayName)
-                  : null),
+                  : relatedEvent?.attachments?.firstOrNull?.name),
           replySenderName: relatedEventDisplayName,
           replySenderColor: replyColor,
           isInReply: widget.event.relatedEventId != null,
@@ -298,8 +298,6 @@ class _TimelineEventState extends State<TimelineEventView> {
   }
 
   Widget buildMessageText() {
-    const bool selectableText = BuildConfig.DESKTOP || BuildConfig.WEB;
-
     if (widget.event.bodyFormat != null) {
       var formatted = widget.useCachedFormat
           ? widget.event.formattedContent
@@ -308,13 +306,11 @@ class _TimelineEventState extends State<TimelineEventView> {
       // if the cache didnt have anything lets just build new content. This should really never happen though
       formatted ??= widget.event.buildFormattedContent();
 
-      return selectableText ? m.SelectionArea(child: formatted) : formatted;
+      return formatted;
     }
 
     if (widget.event.body != null)
-      return selectableText
-          ? m.SelectionArea(child: tiamat.Text.body(widget.event.body!))
-          : tiamat.Text.body(widget.event.body!);
+      return tiamat.Text.body("${widget.event.body}\n");
 
     return const SizedBox();
   }

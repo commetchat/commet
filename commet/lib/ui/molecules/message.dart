@@ -1,8 +1,10 @@
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/atoms/emoji_reaction.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
+import 'package:tiamat/config/config.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:flutter/material.dart' as material;
@@ -153,7 +155,7 @@ class _MessageState extends State<Message> {
       padding: const EdgeInsets.fromLTRB(0, 0, 4, 1),
       child: SizedBox(
         child: tiamat.Text.name(
-          widget.senderName,
+          "${widget.senderName} ",
           color: widget.senderColor,
         ),
       ),
@@ -163,13 +165,21 @@ class _MessageState extends State<Message> {
   Widget replyText() {
     return SizedBox(
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.baseline,
+        textBaseline: TextBaseline.ideographic,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           SizedBox(
-            width: widget.avatarSize,
+            width: widget.avatarSize / 2,
           ),
-          const Icon(material.Icons.keyboard_arrow_right_rounded),
+          SizedBox(
+            width: 30,
+            height: 20,
+            child: CustomPaint(
+              painter: ReplyLinePainter(
+                  pathColor: Theme.of(context).colorScheme.secondary),
+            ),
+          ),
           tiamat.Text.name(
             widget.replySenderName ?? "Loading...",
             color: widget.replySenderColor,
@@ -222,5 +232,41 @@ class _MessageState extends State<Message> {
               numReactions: value.length,
               highlighted: value.contains(widget.currentUserIdentifier));
         }).toList());
+  }
+}
+
+class ReplyLinePainter extends CustomPainter {
+  Color pathColor;
+  double strokeWidth;
+  double radius;
+  double padding;
+  ReplyLinePainter(
+      {this.pathColor = Colors.white,
+      this.strokeWidth = 2,
+      this.radius = 3,
+      this.padding = 2}) {
+    _paint = Paint()
+      ..color = pathColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = strokeWidth
+      ..strokeCap = StrokeCap.round;
+  }
+
+  late Paint _paint;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Path path = Path();
+    path.moveTo(0, size.height - padding);
+    path.lineTo(0, (size.height / 2) + radius);
+    path.relativeArcToPoint(Offset(radius, -radius),
+        radius: Radius.circular(radius));
+    path.lineTo(size.width - 5, size.height / 2);
+    canvas.drawPath(path, _paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return true;
   }
 }

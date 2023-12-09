@@ -276,25 +276,28 @@ class TimelineViewerState extends State<TimelineViewer> {
   }
 
   Widget buildScrollView() {
+    var view = CustomScrollView(
+      center: historyEventsKey,
+      reverse: true,
+      controller: controller,
+      anchor: 0,
+      slivers: [
+        //Beware, these are in reverse order
+        SliverList(
+            delegate: SliverChildBuilderDelegate(buildRecentItem,
+                childCount: recentItemsCount)),
+        SliverList(
+            key: historyEventsKey,
+            delegate: SliverChildBuilderDelegate(buildHistoryItem,
+                childCount: historyItemsCount)),
+      ],
+    );
+
     return ClipRect(
       child: Stack(
         children: [
-          CustomScrollView(
-            center: historyEventsKey,
-            reverse: true,
-            controller: controller,
-            anchor: 0,
-            slivers: [
-              //Beware, these are in reverse order
-              SliverList(
-                  delegate: SliverChildBuilderDelegate(buildRecentItem,
-                      childCount: recentItemsCount)),
-              SliverList(
-                  key: historyEventsKey,
-                  delegate: SliverChildBuilderDelegate(buildHistoryItem,
-                      childCount: historyItemsCount)),
-            ],
-          ),
+          if (BuildConfig.MOBILE) view,
+          if (BuildConfig.DESKTOP) SelectionArea(child: view),
           if (BuildConfig.DESKTOP) buildOverlay(),
           Align(
               alignment: Alignment.bottomCenter,
@@ -314,7 +317,10 @@ class TimelineViewerState extends State<TimelineViewer> {
         child: DecoratedBox(
           decoration: BoxDecoration(
               boxShadow: [
-                BoxShadow(color: Theme.of(context).shadowColor, blurRadius: 10)
+                BoxShadow(
+                  color: Theme.of(context).shadowColor,
+                  blurRadius: 5,
+                )
               ],
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
@@ -384,6 +390,7 @@ class TimelineViewerState extends State<TimelineViewer> {
   }
 
   Widget dateTimeMarker(int actualIndex) {
+    var color = Theme.of(context).extension<ExtraColors>()!.surfaceLow2;
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
       child: Row(
@@ -392,7 +399,7 @@ class TimelineViewerState extends State<TimelineViewer> {
           Expanded(
             child: Divider(
               height: 1,
-              color: Theme.of(context).extension<ExtraColors>()!.highlight,
+              color: Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
             ),
           ),
           Padding(
@@ -403,7 +410,7 @@ class TimelineViewerState extends State<TimelineViewer> {
           Expanded(
             child: Divider(
               height: 1,
-              color: Theme.of(context).extension<ExtraColors>()!.highlight,
+              color: color,
             ),
           ),
         ],
