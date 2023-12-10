@@ -229,6 +229,13 @@ class MatrixRoom extends Room {
       }
 
       var event = MatrixTimelineEvent(roomEvent, matrixRoom.client);
+      if (lastEvent == null) {
+        lastEvent = event;
+        _onUpdate.add(null);
+      } else if (event.originServerTs.isAfter(lastEvent!.originServerTs)) {
+        lastEvent = event;
+        _onUpdate.add(null);
+      }
       handleNotification(event);
     }
   }
