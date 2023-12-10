@@ -26,6 +26,14 @@ class LODImageProvider extends ImageProvider<LODImageProvider> {
   Future<Uint8List?> Function()? loadFullRes;
   LODImageCompleter? completer;
 
+  Future<bool> hasCachedFullres() async {
+    return false;
+  }
+
+  Future<bool> hasCachedThumbnail() async {
+    return false;
+  }
+
   @override
   Future<LODImageProvider> obtainKey(ImageConfiguration configuration) {
     return SynchronousFuture<LODImageProvider>(this);
@@ -38,7 +46,9 @@ class LODImageProvider extends ImageProvider<LODImageProvider> {
         blurhash: blurhash,
         loadThumbnail: loadThumbnail,
         loadFullRes: loadFullRes,
-        autoLoadFullRes: autoLoadFullRes);
+        hasCachedFullres: hasCachedFullres,
+        hasCachedThumbnail: hasCachedThumbnail,
+        autoLoadFullres: autoLoadFullRes);
     return completer!;
   }
 
@@ -49,18 +59,22 @@ class LODImageProvider extends ImageProvider<LODImageProvider> {
 
 class LODImageCompleter extends ImageStreamCompleter {
   String? blurhash;
+  Future<bool> Function()? hasCachedThumbnail;
+  Future<bool> Function()? hasCachedFullres;
   Future<Uint8List?> Function()? loadThumbnail;
   Future<Uint8List?> Function()? loadFullRes;
   LODImageType? currentlyLoadedImage;
-  late double _scale;
+  final double _scale = 1;
   ImageInfo? currentImage;
   FrameInfo? _nextFrame;
   Codec? _codec;
   late Duration _shownTimestamp;
   Duration? _frameDuration;
   bool _frameCallbackScheduled = false;
+  bool autoLoadFullres;
   String? mimeType;
   int _framesEmitted = 0;
+  double scale = 1;
   Timer? _timer;
   bool _isFullResLoading = false;
 
@@ -68,12 +82,27 @@ class LODImageCompleter extends ImageStreamCompleter {
       {this.blurhash,
       this.loadThumbnail,
       this.loadFullRes,
-      double scale = 1,
-      bool autoLoadFullRes = true}) {
+      this.hasCachedFullres,
+      this.hasCachedThumbnail,
+      this.autoLoadFullres = true}) {
+    loadImages();
+  }
+
+  Future<void> loadImages() async {
+    if (hasCachedFullres != null && await (hasCachedFullres!.call()) == true) {
+      _loadFullRes();
+      return;
+    }
+
+    if (hasCachedThumbnail != null &&
+        await (hasCachedThumbnail!.call()) == true) {
+      _loadThumbnail();
+      return;
+    }
+
     if (blurhash != null) _loadBlurhash();
     if (loadThumbnail != null) _loadThumbnail();
-    if (loadFullRes != null && autoLoadFullRes) _loadFullRes();
-    _scale = scale;
+    if (loadFullRes != null && autoLoadFullres) _loadFullRes();
   }
 
   Future<void> _loadBlurhash() async {

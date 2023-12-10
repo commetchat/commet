@@ -159,6 +159,7 @@ class MatrixRoom extends Room {
 
     if (isDirectMessage) {
       _directPartnerId = _matrixRoom.directChatMatrixID!;
+      updateAvatar();
     }
 
     var memberStates = _matrixRoom.states["m.room.member"];
@@ -189,6 +190,21 @@ class MatrixRoom extends Room {
     _matrixRoom.client.onEvent.stream.listen(onEvent);
 
     _permissions = MatrixRoomPermissions(_matrixRoom);
+  }
+
+  Future<void> updateAvatar() async {
+    if (_matrixRoom.avatar != null) {
+      _avatar = MatrixMxcImage(_matrixRoom.avatar!, _matrixRoom.client,
+          autoLoadFullRes: false);
+    } else if (_matrixRoom.isDirectChat) {
+      var url = await _matrixRoom.client
+          .getAvatarUrl(_matrixRoom.directChatMatrixID!);
+      if (url != null) {
+        _avatar = MatrixMxcImage(url, _matrixRoom.client);
+      }
+    }
+
+    _onUpdate.add(null);
   }
 
   void onRoomStateUpdated(matrix.Event event) {
