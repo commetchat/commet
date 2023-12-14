@@ -1,4 +1,4 @@
-import 'package:commet/config/build_config.dart';
+import 'package:commet/config/layout_config.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
@@ -95,10 +95,10 @@ class MatrixSessionView extends StatelessWidget {
                     ),
                   ],
                 ),
-                if (BuildConfig.DESKTOP) verifyButton()
+                if (Layout.desktop) verifyButton()
               ],
             ),
-            if (BuildConfig.MOBILE) Align(child: verifyButton()),
+            if (Layout.mobile) Align(child: verifyButton()),
           ],
         ),
       ),
