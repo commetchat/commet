@@ -73,6 +73,7 @@ dependencies:
     git: https://github.com/commetchat/flutter_shortcuts.git
   tiamat: 
     path: ../tiamat/
+  sqlite3_flutter_libs: ^0.5.18
 
 dev_dependencies: 
   build_runner: any

@@ -9,6 +9,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   media_kit_video
   pasteboard
   screen_retriever
+  sqlite3_flutter_libs
   url_launcher_linux
   window_manager
 )

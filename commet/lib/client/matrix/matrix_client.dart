@@ -271,10 +271,6 @@ class MatrixClient extends Client {
 
     var path = await AppConfig.getDatabasePath();
 
-    DatabaseFactory factory = PlatformUtils.isAndroid
-        ? databaseFactorySqflitePlugin
-        : databaseFactoryFfi;
-
     path = p.join(path, client.clientName, "data.db");
     var dir = p.dirname(path);
 
@@ -282,6 +278,7 @@ class MatrixClient extends Client {
       await Directory(dir).create(recursive: true);
     }
 
+    DatabaseFactory factory = databaseFactoryFfi;
     var database = await factory.openDatabase(path);
 
     final db = matrix.MatrixSdkDatabase(client.clientName, database: database);
