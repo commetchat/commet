@@ -10,7 +10,6 @@ import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/config/app_config.dart';
 import 'package:commet/config/build_config.dart';
-import 'package:commet/config/platform_utils.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
@@ -28,7 +27,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:matrix/matrix.dart' as matrix;
 import 'package:matrix/encryption.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import '../../ui/atoms/code_block.dart';
@@ -271,10 +269,6 @@ class MatrixClient extends Client {
 
     var path = await AppConfig.getDatabasePath();
 
-    DatabaseFactory factory = PlatformUtils.isAndroid
-        ? databaseFactorySqflitePlugin
-        : databaseFactoryFfi;
-
     path = p.join(path, client.clientName, "data.db");
     var dir = p.dirname(path);
 
@@ -282,6 +276,7 @@ class MatrixClient extends Client {
       await Directory(dir).create(recursive: true);
     }
 
+    DatabaseFactory factory = databaseFactoryFfi;
     var database = await factory.openDatabase(path);
 
     final db = matrix.MatrixSdkDatabase(client.clientName, database: database);
