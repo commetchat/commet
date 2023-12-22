@@ -1,5 +1,4 @@
-import 'package:commet/config/build_config.dart';
-import 'package:commet/utils/orientation.dart';
+import 'package:commet/config/layout_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
@@ -8,12 +7,6 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:flutter/material.dart' as m;
 
 class AdaptiveDialog {
-  static bool showDesktopVersion(BuildContext context) =>
-      BuildConfig.DESKTOP ||
-      (BuildConfig.WEB &&
-          OrientationUtils.getCurrentOrientation(context) ==
-              Orientation.landscape);
-
   static Future<T?> show<T extends Object?>(
     BuildContext context, {
     required Widget Function(BuildContext context) builder,
@@ -21,7 +14,7 @@ class AdaptiveDialog {
     bool dismissible = true,
     double initialHeightMobile = 0.5,
   }) async {
-    if (showDesktopVersion(context)) {
+    if (Layout.desktop) {
       return PopupDialog.show<T>(context,
           content: builder(context),
           title: title,
@@ -67,7 +60,7 @@ class AdaptiveDialog {
       bool dangerous = false}) {
     return show<bool?>(context, builder: (context) {
       return SizedBox(
-        width: showDesktopVersion(context) ? 500 : null,
+        width: Layout.desktop ? 500 : null,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
           child: Column(

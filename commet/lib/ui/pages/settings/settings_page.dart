@@ -1,8 +1,7 @@
-import 'package:commet/config/build_config.dart';
+import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/pages/settings/mobile_settings_page.dart';
 import 'package:commet/ui/pages/settings/settings_button.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
-import 'package:commet/utils/orientation.dart';
 import 'package:flutter/widgets.dart';
 
 import 'desktop_settings_page.dart';
@@ -18,33 +17,19 @@ class SettingsPage extends StatelessWidget {
   }
 
   Widget pickChatView(BuildContext context) {
-    if (BuildConfig.DESKTOP) {
+    if (Layout.desktop) {
       return DesktopSettingsPage(
         settings: settings,
         buttons: buttons,
       );
     }
-    if (BuildConfig.MOBILE) {
+    if (Layout.mobile) {
       return MobileSettingsPage(
         settings: settings,
         buttons: buttons,
       );
     }
 
-    if (BuildConfig.WEB) {
-      if (OrientationUtils.getCurrentOrientation(context) ==
-          Orientation.landscape) {
-        return DesktopSettingsPage(
-          settings: settings,
-          buttons: buttons,
-        );
-      } else {
-        return MobileSettingsPage(
-          settings: settings,
-          buttons: buttons,
-        );
-      }
-    }
     throw Exception(
         "No SettingsPage has been defined for the current build config");
   }

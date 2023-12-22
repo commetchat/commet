@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
-import 'package:commet/config/build_config.dart';
+import 'package:commet/config/layout_config.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/setup/setup_page.dart';
 import 'package:commet/utils/event_bus.dart';
@@ -10,7 +10,6 @@ import 'package:commet/ui/pages/main/main_page_view_desktop.dart';
 import 'package:commet/ui/pages/main/main_page_view_mobile.dart';
 import 'package:commet/ui/pages/settings/room_settings_page.dart';
 import 'package:commet/utils/first_time_setup.dart';
-import 'package:commet/utils/orientation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
@@ -105,19 +104,11 @@ class MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (BuildConfig.DESKTOP) return MainPageViewDesktop(this);
-    if (BuildConfig.MOBILE) return MainPageViewMobile(this);
-
-    if (BuildConfig.WEB) {
-      if (OrientationUtils.getCurrentOrientation(context) ==
-          Orientation.landscape) {
-        return MainPageViewDesktop(this);
-      } else {
-        return MainPageViewMobile(this);
-      }
+    if (Layout.mobile) {
+      return MainPageViewMobile(this);
+    } else {
+      return MainPageViewDesktop(this);
     }
-
-    throw Exception("Unknown build config");
   }
 
   void selectSpace(Space? space) {
