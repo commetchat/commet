@@ -1,10 +1,14 @@
+import 'dart:ui';
+
 import 'package:commet/client/client.dart';
+import 'package:commet/config/build_config.dart';
+import 'package:commet/ui/atoms/shader/star_trails.dart';
 import 'package:commet/ui/pages/login/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
-import 'package:tiamat/atoms/tile.dart';
+import 'package:tiamat/atoms/circle_button.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -16,8 +20,9 @@ Widget wbLoginPage(BuildContext context) {
 }
 
 class LoginPageView extends StatefulWidget {
-  const LoginPageView({this.state, super.key});
+  const LoginPageView({this.state, super.key, this.canNavigateBack = false});
   final LoginPageState? state;
+  final bool canNavigateBack;
 
   @override
   State<LoginPageView> createState() => _LoginPageViewState();
@@ -105,64 +110,93 @@ class _LoginPageViewState extends State<LoginPageView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Material(
-        color: Theme.of(context).extension<ExtraColors>()!.surfaceLow4,
-        child: Padding(
-          padding: const EdgeInsets.all(8),
-          child: Stack(
+    return Stack(
+      children: [
+        ImageFiltered(
+          imageFilter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+          child: const StarTrailsBackground(),
+        ),
+        Material(
+          color: Colors.transparent,
+          child: Padding(
+            padding: const EdgeInsets.all(8),
+            child: Stack(
+              children: [
+                loginField(context),
+                info(),
+              ],
+            ),
+          ),
+        ),
+        if (widget.canNavigateBack)
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Align(
+                alignment: Alignment.topLeft,
+                child: CircleButton(
+                  radius: 25,
+                  icon: Icons.arrow_back,
+                  onPressed: () => Navigator.of(context).pop(),
+                )),
+          ),
+      ],
+    );
+  }
+
+  Widget info() {
+    return Align(
+        alignment: Alignment.bottomCenter,
+        child: SizedBox(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 500),
-                  child: Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(13),
-                        border: Border.all(
-                            color: Theme.of(context)
-                                .extension<ExtraColors>()!
-                                .outline,
-                            width: 1),
-                        boxShadow: [
-                          BoxShadow(
-                              blurRadius: 50,
-                              color:
-                                  Theme.of(context).shadowColor.withAlpha(50))
-                        ]),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(13),
-                      child: Tile.low2(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child:
-                              Column(mainAxisSize: MainAxisSize.min, children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                appIcon(context),
-                                const SizedBox(
-                                  width: 8,
-                                ),
-                                appName(),
-                              ],
-                            ),
-                            const SizedBox(height: 16),
-                            homeserverEntry(),
-                            const SizedBox(height: 16),
-                            usernameEntry(),
-                            const SizedBox(height: 16),
-                            passwordEntry(),
-                            const SizedBox(height: 16),
-                            loginButton(),
-                          ]),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+              const tiamat.Text.label(BuildConfig.VERSION_TAG),
+              const tiamat.Text.label(" · "),
+              tiamat.Text.label(BuildConfig.GIT_HASH.substring(0, 7)),
             ],
+          ),
+        ));
+  }
+
+  Widget loginField(BuildContext context) {
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 500),
+        child: Container(
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: Theme.of(context).extension<ExtraColors>()!.surfaceLow1,
+              border: Border.all(
+                  color: Theme.of(context).extension<ExtraColors>()!.outline,
+                  width: 1),
+              boxShadow: [
+                BoxShadow(
+                    blurRadius: 50,
+                    color: Theme.of(context).shadowColor.withAlpha(50))
+              ]),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  appIcon(context),
+                  const SizedBox(
+                    width: 8,
+                  ),
+                  appName(),
+                ],
+              ),
+              const SizedBox(height: 16),
+              homeserverEntry(),
+              const SizedBox(height: 16),
+              usernameEntry(),
+              const SizedBox(height: 16),
+              passwordEntry(),
+              const SizedBox(height: 16),
+              loginButton(),
+            ]),
           ),
         ),
       ),
