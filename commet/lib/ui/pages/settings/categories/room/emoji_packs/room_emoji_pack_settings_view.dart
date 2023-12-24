@@ -5,6 +5,7 @@ import 'package:commet/ui/atoms/emoji_widget.dart';
 import 'package:commet/ui/molecules/editable_label.dart';
 import 'package:commet/ui/molecules/image_picker.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
+import 'package:commet/ui/pages/settings/categories/room/emoji_packs/bulk_import_view.dart';
 import 'package:commet/utils/common_animation.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/components/emoticon/emoji_pack.dart';
@@ -31,6 +32,7 @@ class RoomEmojiPackSettingsView extends StatefulWidget {
   final bool editable;
   final bool canCreatePack;
   final bool defaultExpanded;
+  final bool showBulkImport;
   const RoomEmojiPackSettingsView(this.packs,
       {this.createNewPack,
       super.key,
@@ -39,6 +41,7 @@ class RoomEmojiPackSettingsView extends StatefulWidget {
       this.editable = true,
       this.canCreatePack = true,
       this.defaultExpanded = false,
+      this.showBulkImport = true,
       this.renameEmoticon,
       this.deleteEmoticon});
 
@@ -98,18 +101,37 @@ class _RoomEmojiPackSettingsViewState extends State<RoomEmojiPackSettingsView> {
             );
           },
         ),
-        if (widget.editable && widget.canCreatePack)
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: CircleButton(
-                radius: 20,
-                icon: Icons.add,
-                onPressed: promptNewPack,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            if (widget.editable &&
+                widget.canCreatePack &&
+                widget.showBulkImport)
+              Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: CircleButton(
+                    radius: 20,
+                    icon: Icons.auto_awesome_motion,
+                    onPressed: promptNewPack,
+                  ),
+                ),
               ),
-            ),
-          )
+            if (widget.editable && widget.canCreatePack)
+              Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: CircleButton(
+                    radius: 20,
+                    icon: Icons.add,
+                    onPressed: promptNewPack,
+                  ),
+                ),
+              ),
+          ],
+        )
       ],
     );
   }
@@ -142,6 +164,16 @@ class _RoomEmojiPackSettingsViewState extends State<RoomEmojiPackSettingsView> {
   }
 
   void promptNewPack() async {
+    await AdaptiveDialog.show(
+      context,
+      title: promptCreateEmoticonPack,
+      builder: (context) {
+        return EmoticonBulkImportDialog();
+      },
+    );
+  }
+
+  void promptBulkImport() async {
     await AdaptiveDialog.show(
       context,
       title: promptCreateEmoticonPack,
