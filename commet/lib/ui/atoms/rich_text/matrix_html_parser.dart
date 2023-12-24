@@ -5,6 +5,7 @@ import 'package:commet/ui/atoms/rich_text/spans/link.dart';
 import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:commet/utils/link_utils.dart';
 import 'package:commet/utils/text_utils.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:html/parser.dart' as html_parser;
@@ -13,19 +14,48 @@ import 'package:matrix/matrix.dart' as matrix;
 import 'package:tiamat/config/style/theme_extensions.dart';
 
 class MatrixHtmlParser {
+  static Widget parse(String text, matrix.Client client) {
+    return MatrixHtmlState(text, client);
+  }
+}
+
+class MatrixHtmlState extends StatefulWidget {
+  const MatrixHtmlState(this.text, this.client, {super.key});
+  final String text;
+  final matrix.Client client;
+
+  @override
+  State<MatrixHtmlState> createState() => _MatrixHtmlStateState();
+}
+
+class _MatrixHtmlStateState extends State<MatrixHtmlState> {
+  bool hideSpoiler = true;
+
   static final CodeBlockHtmlExtension _codeBlock = CodeBlockHtmlExtension();
   static final CodeHtmlExtension _code = CodeHtmlExtension();
   static final LinkifyHtmlExtension _linkify = LinkifyHtmlExtension();
-  static Widget parse(String text, matrix.Client client) {
-    var document = html_parser.parse(text);
+
+  void onTap() {
+    setState(() {
+      hideSpoiler = !hideSpoiler;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final SpoilerHtmlExtension spoiler =
+        SpoilerHtmlExtension(hideSpoiler, onTap);
+
+    var document = html_parser.parse(widget.text);
     bool big = shouldDoBigEmoji(document);
 
     // Making a new one of these for every message we pass might make a lot of garbage
-    var extension = MatrixEmoticonHtmlExtension(client, big);
-    var widget = Html(
-      data: text,
+    var extension = MatrixEmoticonHtmlExtension(widget.client, big);
+    var result = Html(
+      data: widget.text,
       extensions: [
         extension,
+        spoiler,
         _codeBlock,
         _code,
         _linkify,
@@ -47,7 +77,13 @@ class MatrixHtmlParser {
       },
     );
 
-    return widget;
+    return result;
+  }
+
+  void onSpoilerTapped() {
+    setState(() {
+      hideSpoiler = !hideSpoiler;
+    });
   }
 }
 
@@ -192,6 +228,36 @@ class LinkifyHtmlExtension extends HtmlExtension {
 
     return context.node is dom.Text &&
         TextUtils.containsUrl(context.node.text!);
+  }
+
+  @override
+  Set<String> get supportedTags => {};
+}
+
+class SpoilerHtmlExtension extends HtmlExtension {
+  bool hide = true;
+  Function() onTap;
+
+  SpoilerHtmlExtension(this.hide, this.onTap);
+
+  @override
+  InlineSpan build(ExtensionContext context) {
+    var theme = Theme.of(context.buildContext!);
+    var color = theme.textTheme.bodyMedium!.color;
+
+    var recogniser = TapGestureRecognizer();
+    recogniser.onTap = onTap;
+    return TextSpan(
+        text: context.node.text,
+        recognizer: recogniser,
+        style: TextStyle(
+            color: color,
+            backgroundColor: hide == true ? color : color!.withAlpha(20)));
+  }
+
+  @override
+  bool matches(ExtensionContext context) {
+    return context.attributes.containsKey("data-mx-spoiler");
   }
 
   @override
