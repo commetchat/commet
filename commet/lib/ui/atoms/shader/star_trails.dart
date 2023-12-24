@@ -25,9 +25,11 @@ class _StarTrailsBackgroundState extends State<StarTrailsBackground> {
     shader = program.fragmentShader();
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      setState(() {
-        loadingShader = false;
-      });
+      if (mounted) {
+        setState(() {
+          loadingShader = false;
+        });
+      }
     });
   }
 
@@ -43,6 +45,12 @@ class _StarTrailsBackgroundState extends State<StarTrailsBackground> {
         delta += 1 / 60;
       });
     });
+  }
+
+  @override
+  void dispose() {
+    timer.cancel();
+    super.dispose();
   }
 
   @override
