@@ -58,6 +58,10 @@ class _RoomEmojiPackSettingsViewState extends State<RoomEmojiPackSettingsView> {
       name: "promptCreateEmoticonPack",
       desc: "Prompt to create a new emoticon pack, for emoji or stickers");
 
+  String get promptImportPack => Intl.message("Import pack",
+      name: "promptImportPack",
+      desc: "Prompt to import a set of emoticons from an existing pack");
+
   @override
   void initState() {
     itemCount = widget.packs.length;
@@ -114,7 +118,7 @@ class _RoomEmojiPackSettingsViewState extends State<RoomEmojiPackSettingsView> {
                   child: CircleButton(
                     radius: 20,
                     icon: Icons.auto_awesome_motion,
-                    onPressed: promptNewPack,
+                    onPressed: promptBulkImport,
                   ),
                 ),
               ),
@@ -168,7 +172,10 @@ class _RoomEmojiPackSettingsViewState extends State<RoomEmojiPackSettingsView> {
       context,
       title: promptCreateEmoticonPack,
       builder: (context) {
-        return EmoticonBulkImportDialog();
+        return EmoticonCreator(
+          pack: true,
+          create: widget.createNewPack,
+        );
       },
     );
   }
@@ -176,12 +183,9 @@ class _RoomEmojiPackSettingsViewState extends State<RoomEmojiPackSettingsView> {
   void promptBulkImport() async {
     await AdaptiveDialog.show(
       context,
-      title: promptCreateEmoticonPack,
+      title: promptImportPack,
       builder: (context) {
-        return EmoticonCreator(
-          pack: true,
-          create: widget.createNewPack,
-        );
+        return EmoticonBulkImportDialog();
       },
     );
   }
