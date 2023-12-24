@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/components/emoticon/emoji_pack.dart';
 import 'package:commet/utils/emoji/unicode_emoji_data.dart';
@@ -51,6 +53,31 @@ class UnicodeEmojis {
     }
 
     return packs!;
+  }
+
+  static Map<String, dynamic>? shortcodeData;
+
+  static Future<void> loadShortcodeData() async {
+    if (shortcodeData == null) {
+      var data =
+          await rootBundle.loadString('assets/emoji_data/shortcodes/en.json');
+
+      shortcodeData = jsonDecode(data) as Map<String, dynamic>;
+    }
+  }
+
+  static String? findShortcode(String emoji) {
+    var codepoint = UnicodeEmoticon.emojiToUnicode(emoji).toUpperCase();
+    print(codepoint);
+
+    var codes = shortcodeData![codepoint];
+    if (codes is String) {
+      return codes;
+    } else if (codes is List<dynamic>) {
+      return codes[0] as String;
+    }
+
+    return codepoint;
   }
 }
 

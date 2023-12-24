@@ -257,6 +257,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.3"
+  cryptography:
+    dependency: transitive
+    description:
+      name: cryptography
+      sha256: d146b76d33d94548cf035233fbc2f4338c1242fa119013bead807d033fc4ae05
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.7.0"
   csslib:
     dependency: transitive
     description:
@@ -1491,6 +1499,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.4"
+  signal_sticker_api:
+    dependency: "direct main"
+    description:
+      path: "../../signal-sticker-api"
+      relative: true
+    source: path
+    version: "1.0.0"
   sky_engine:
     dependency: transitive
     description: flutter
