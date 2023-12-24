@@ -110,36 +110,38 @@ class _LoginPageViewState extends State<LoginPageView> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        ImageFiltered(
-          imageFilter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-          child: const StarTrailsBackground(),
-        ),
-        Material(
-          color: Colors.transparent,
-          child: Padding(
-            padding: const EdgeInsets.all(8),
-            child: Stack(
-              children: [
-                loginField(context),
-                info(),
-              ],
+    return SafeArea(
+      child: Stack(
+        children: [
+          ImageFiltered(
+            imageFilter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+            child: const StarTrailsBackground(),
+          ),
+          Material(
+            color: Colors.transparent,
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: Stack(
+                children: [
+                  loginField(context),
+                  info(),
+                ],
+              ),
             ),
           ),
-        ),
-        if (widget.canNavigateBack)
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Align(
-                alignment: Alignment.topLeft,
-                child: CircleButton(
-                  radius: 25,
-                  icon: Icons.arrow_back,
-                  onPressed: () => Navigator.of(context).pop(),
-                )),
-          ),
-      ],
+          if (widget.canNavigateBack)
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Align(
+                  alignment: Alignment.topLeft,
+                  child: CircleButton(
+                    radius: 25,
+                    icon: Icons.arrow_back,
+                    onPressed: () => Navigator.of(context).pop(),
+                  )),
+            ),
+        ],
+      ),
     );
   }
 
