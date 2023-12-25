@@ -74,7 +74,7 @@ dependencies:
   tiamat: 
     path: ../tiamat/
   signal_sticker_api: 
-    path: ../../signal-sticker-api/
+    git: https://github.com/commetchat/signal-sticker-api.git
   sqlite3_flutter_libs: ^0.5.18
 
 dev_dependencies: 
