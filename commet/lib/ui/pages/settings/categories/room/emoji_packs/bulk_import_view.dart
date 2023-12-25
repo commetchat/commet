@@ -25,11 +25,11 @@ class EmoticonBulkImportDialog extends StatefulWidget {
 }
 
 class _EmoticonBulkImportDialogState extends State<EmoticonBulkImportDialog> {
-  TextEditingController _controller = TextEditingController();
-  TextEditingController _packNameEditor = TextEditingController();
-  TextEditingController _emotePrefixEditor = TextEditingController();
-  TextEditingController _overrideNameEditor = TextEditingController();
-  Debouncer debouncer = Debouncer(delay: Duration(seconds: 2));
+  final TextEditingController _controller = TextEditingController();
+  final TextEditingController _packNameEditor = TextEditingController();
+  final TextEditingController _emotePrefixEditor = TextEditingController();
+  final TextEditingController _overrideNameEditor = TextEditingController();
+  Debouncer debouncer = Debouncer(delay: const Duration(seconds: 2));
 
   List<String>? names;
   List<Uint8List?>? datas;
@@ -53,7 +53,7 @@ class _EmoticonBulkImportDialogState extends State<EmoticonBulkImportDialog> {
   }
 
   void onTextChanged() {
-    if (_controller.text.length > 0) {
+    if (_controller.text.isNotEmpty) {
       setState(() {
         loading = true;
       });
@@ -143,8 +143,6 @@ class _EmoticonBulkImportDialogState extends State<EmoticonBulkImportDialog> {
     datas = List.generate(names!.length, (index) => null);
     images = List.generate(names!.length, (index) => null);
 
-    print("Got names: ${names}");
-
     setState(() {
       loading = false;
     });
@@ -166,8 +164,6 @@ class _EmoticonBulkImportDialogState extends State<EmoticonBulkImportDialog> {
           if (coverId == sticker.id) {
             avatarIndex = i;
           }
-
-          print("Received image: $i");
         });
       });
     }
@@ -185,7 +181,7 @@ class _EmoticonBulkImportDialogState extends State<EmoticonBulkImportDialog> {
 
     var dir = Directory(path);
     var entries = await dir.list().toList();
-    var files = entries.where((element) => element is File).toList();
+    var files = entries.whereType<File>().toList();
 
     _packNameEditor.text = p.basename(path);
     setState(() {
@@ -197,7 +193,7 @@ class _EmoticonBulkImportDialogState extends State<EmoticonBulkImportDialog> {
 
     for (var i = 0; i < files.length; i++) {
       var file = files[i];
-      (file as File).readAsBytes().then((bytes) {
+      file.readAsBytes().then((bytes) {
         setState(() {
           datas![i] = bytes;
           images![i] = Image.memory(bytes).image;
@@ -216,14 +212,14 @@ class _EmoticonBulkImportDialogState extends State<EmoticonBulkImportDialog> {
         ) ==
         false;
     return ConstrainedBox(
-      constraints: BoxConstraints.expand(width: 800, height: 800),
+      constraints: const BoxConstraints.expand(width: 800, height: 800),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.max,
         children: [
           sourceSelection(),
           if (loading)
-            Expanded(
+            const Expanded(
               child: Center(
                 child: CircularProgressIndicator(),
               ),
@@ -276,7 +272,7 @@ class _EmoticonBulkImportDialogState extends State<EmoticonBulkImportDialog> {
                     image: images![avatarIndex!],
                     radius: 50,
                   )
-                : Center(
+                : const Center(
                     child: CircularProgressIndicator(),
                   ),
             Flexible(
@@ -367,7 +363,7 @@ class _EmoticonBulkImportDialogState extends State<EmoticonBulkImportDialog> {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(5),
         child: ConstrainedBox(
-          constraints: BoxConstraints(minHeight: 150, minWidth: 150),
+          constraints: const BoxConstraints(minHeight: 150, minWidth: 150),
           child: loading
               ? Column(
                   children: [
@@ -379,7 +375,7 @@ class _EmoticonBulkImportDialogState extends State<EmoticonBulkImportDialog> {
                     tiamat.Text.tiny(getFinalName(index))
                   ],
                 )
-              : SizedBox(
+              : const SizedBox(
                   width: 15,
                   height: 15,
                   child: Center(child: CircularProgressIndicator())),
