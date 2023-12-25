@@ -29,6 +29,9 @@ class RoomEmojiPackSettingsView extends StatefulWidget {
   final Future<void> Function(
       EmoticonPack pack, Emoticon emoticon, String name)? renameEmoticon;
 
+  final Function(String name, int avatarIndex, List<String> names,
+      List<Uint8List> imageDatas)? importPack;
+
   final bool editable;
   final bool canCreatePack;
   final bool defaultExpanded;
@@ -42,6 +45,7 @@ class RoomEmojiPackSettingsView extends StatefulWidget {
       this.canCreatePack = true,
       this.defaultExpanded = false,
       this.showBulkImport = true,
+      this.importPack,
       this.renameEmoticon,
       this.deleteEmoticon});
 
@@ -185,7 +189,9 @@ class _RoomEmojiPackSettingsViewState extends State<RoomEmojiPackSettingsView> {
       context,
       title: promptImportPack,
       builder: (context) {
-        return EmoticonBulkImportDialog();
+        return EmoticonBulkImportDialog(
+          importPack: widget.importPack,
+        );
       },
     );
   }

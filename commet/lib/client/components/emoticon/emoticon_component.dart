@@ -16,6 +16,8 @@ abstract class EmoticonComponent<T extends Client> implements Component<T> {
   Stream<int> get onOwnedPackAdded;
 
   Future<void> createEmoticonPack(String name, Uint8List? avatarData);
+  Future<void> importEmoticonPack(String name, int avatarIndex,
+      List<String> names, List<Uint8List> imageDatas);
   Future<void> deleteEmoticonPack(EmoticonPack pack);
 }
 

@@ -14,17 +14,10 @@ import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:path/path.dart' as p;
 import 'package:tiamat/tiamat.dart' as tiamat;
 
-class EmoticonCreationInfo {
-  String slug;
-  String shortcode;
-  Uint8List data;
-
-  EmoticonCreationInfo(
-      {required this.slug, required this.shortcode, required this.data});
-}
-
 class EmoticonBulkImportDialog extends StatefulWidget {
-  const EmoticonBulkImportDialog({super.key});
+  const EmoticonBulkImportDialog({super.key, this.importPack});
+  final Function(String name, int avatarIndex, List<String> names,
+      List<Uint8List> imageDatas)? importPack;
 
   @override
   State<EmoticonBulkImportDialog> createState() =>
@@ -42,7 +35,7 @@ class _EmoticonBulkImportDialogState extends State<EmoticonBulkImportDialog> {
   List<Uint8List?>? datas;
   List<ImageProvider?>? images;
 
-  ImageProvider? avatar;
+  int? avatarIndex;
 
   String? prefix;
   String? overrideName;
@@ -118,7 +111,7 @@ class _EmoticonBulkImportDialogState extends State<EmoticonBulkImportDialog> {
       _packNameEditor.text = "";
       _overrideNameEditor.text = "";
       _emotePrefixEditor.text = "";
-      avatar = null;
+      avatarIndex = null;
       names = null;
       datas = null;
       images = null;
@@ -171,7 +164,7 @@ class _EmoticonBulkImportDialogState extends State<EmoticonBulkImportDialog> {
           images![i] = Image.memory(bytes).image;
 
           if (coverId == sticker.id) {
-            avatar = images![i];
+            avatarIndex = i;
           }
 
           print("Received image: $i");
@@ -209,7 +202,7 @@ class _EmoticonBulkImportDialogState extends State<EmoticonBulkImportDialog> {
           datas![i] = bytes;
           images![i] = Image.memory(bytes).image;
           if (i == 0) {
-            avatar = images![i];
+            avatarIndex = i;
           }
         });
       });
@@ -257,6 +250,12 @@ class _EmoticonBulkImportDialogState extends State<EmoticonBulkImportDialog> {
               child: tiamat.Button(
                 isLoading: !loadingFinished,
                 text: "Import ${names!.length} Emoticons!",
+                onTap: () {
+                  var finalNames =
+                      names!.mapIndexed((e, i) => getFinalName(i)).toList();
+                  widget.importPack?.call(_packNameEditor.text, avatarIndex!,
+                      finalNames, datas!.map((e) => e!).toList());
+                },
               ),
             )
         ],
@@ -272,9 +271,9 @@ class _EmoticonBulkImportDialogState extends State<EmoticonBulkImportDialog> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            avatar != null
+            avatarIndex != null && images?[avatarIndex!] != null
                 ? tiamat.Avatar(
-                    image: avatar!,
+                    image: images![avatarIndex!],
                     radius: 50,
                   )
                 : Center(
@@ -307,42 +306,6 @@ class _EmoticonBulkImportDialogState extends State<EmoticonBulkImportDialog> {
                       ),
                     ],
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(children: [
-                      SizedBox(
-                        width: 40,
-                        height: 40,
-                        child: tiamat.IconToggle(
-                          icon: Icons.emoji_emotions,
-                          size: 20,
-                          state: useAsEmoji,
-                          onPressed: (newState) {
-                            setState(() {
-                              useAsEmoji = newState;
-                            });
-                          },
-                        ),
-                      ),
-                      SizedBox(
-                        width: 5,
-                      ),
-                      SizedBox(
-                        width: 40,
-                        height: 40,
-                        child: tiamat.IconToggle(
-                          icon: Icons.sticky_note_2_rounded,
-                          size: 20,
-                          state: useAsSticker,
-                          onPressed: (newState) {
-                            setState(() {
-                              useAsSticker = newState;
-                            });
-                          },
-                        ),
-                      )
-                    ]),
-                  )
                 ],
               ),
             ),

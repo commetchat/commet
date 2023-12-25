@@ -1502,9 +1502,11 @@ packages:
   signal_sticker_api:
     dependency: "direct main"
     description:
-      path: "../../signal-sticker-api"
-      relative: true
-    source: path
+      path: "."
+      ref: HEAD
+      resolved-ref: "2bba630055af1974946788e9afdde181d4731691"
+      url: "https://github.com/commetchat/signal-sticker-api.git"
+    source: git
     version: "1.0.0"
   sky_engine:
     dependency: transitive
