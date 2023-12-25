@@ -36,7 +36,6 @@ class SimulatedEmoticonComponent implements EmoticonComponent<SimulatedClient> {
   @override
   Future<void> importEmoticonPack(String name, int avatarIndex,
       List<String> names, List<Uint8List> imageDatas) {
-    // TODO: implement importEmoticonPack
     throw UnimplementedError();
   }
 }

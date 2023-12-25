@@ -88,9 +88,6 @@ class MatrixEmoticonComponent extends EmoticonComponent<MatrixClient> {
     backgroundTaskManager.addTask(task);
     var uris = await task.uploadImages();
 
-    print("Uploaded all images");
-    print(uris);
-
     var content = <String, dynamic>{
       "pack": {
         "display_name": name,
@@ -107,16 +104,7 @@ class MatrixEmoticonComponent extends EmoticonComponent<MatrixClient> {
       };
     }
 
-    print("Creating pack with content: ");
-    print(content);
-
     String stateKey = getNewPackKeyState(name);
-
-    //     if (content['images'][emoteName] == null) {
-    //   content['images'][emoteName] = {};
-    // }
-    // content['images'][emoteName]['url'] = url.toString();
-    // content['images'][emoteName]['display_name'] = emoteName;
 
     await setState(stateKey, content);
 

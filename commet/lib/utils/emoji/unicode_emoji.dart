@@ -68,7 +68,6 @@ class UnicodeEmojis {
 
   static String? findShortcode(String emoji) {
     var codepoint = UnicodeEmoticon.emojiToUnicode(emoji).toUpperCase();
-    print(codepoint);
 
     var codes = shortcodeData![codepoint];
     if (codes is String) {

@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/emoticon/emoji_pack.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
