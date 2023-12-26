@@ -1,10 +1,13 @@
 import 'dart:io';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
+import 'package:commet/config/app_config.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/background_tasks/background_task_manager.dart';
 import 'package:commet/utils/background_tasks/mock_tasks.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as p;
 import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:window_manager/window_manager.dart';
@@ -27,6 +30,7 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
       error(),
       if (Platform.isAndroid) shortcuts(),
       backgroundTasks(),
+      dumpDatabases()
     ].map<Widget>((e) {
       return Padding(
         padding: const EdgeInsets.fromLTRB(0, 3, 0, 3),
@@ -210,6 +214,43 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
                 // This should also throw an error!
                 String? empty;
                 empty!.split(" ");
+              }),
+        ])
+      ],
+    );
+  }
+
+  Widget dumpDatabases() {
+    return ExpansionTile(
+      title: const tiamat.Text.labelEmphasised("Dump Databases"),
+      backgroundColor: Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+      collapsedBackgroundColor:
+          Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+      children: [
+        Wrap(spacing: 8, runSpacing: 8, children: [
+          tiamat.Button(
+              text: "Dump Databases",
+              onTap: () async {
+                var folder = await FilePicker.platform.getDirectoryPath();
+                var dbDir = Directory(await AppConfig.getDatabasePath());
+
+                var files = await dbDir
+                    .list(recursive: true)
+                    .where((event) => event is File)
+                    .toList();
+
+                for (var file in files) {
+                  var name = p.basename(file.path);
+                  var dirname = p.basename(p.dirname(file.path));
+
+                  var newFolder = Directory(p.join(folder!, dirname));
+                  if (!await newFolder.exists()) {
+                    await newFolder.create(recursive: true);
+                  }
+
+                  var newFile = p.join(folder, dirname, name);
+                  (file as File).copy(newFile);
+                }
               }),
         ])
       ],
