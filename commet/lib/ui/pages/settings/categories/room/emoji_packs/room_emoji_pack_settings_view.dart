@@ -190,7 +190,10 @@ class _RoomEmojiPackSettingsViewState extends State<RoomEmojiPackSettingsView> {
       title: promptImportPack,
       builder: (context) {
         return EmoticonBulkImportDialog(
-          importPack: widget.importPack,
+          importPack: (name, avatarIndex, names, imageDatas) {
+            widget.importPack?.call(name, avatarIndex, names, imageDatas);
+            Navigator.pop(context);
+          },
         );
       },
     );

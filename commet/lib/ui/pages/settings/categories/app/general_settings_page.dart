@@ -51,7 +51,7 @@ class _GeneralSettingsPage extends State<GeneralSettingsPage> {
                 children: [
                   tiamat.Text.labelEmphasised(labelGifSearchToggle),
                   tiamat.Text.labelLow(
-                      labelGifSearchDescription(preferences.gifProxyUrl))
+                      labelGifSearchDescription(preferences.proxyUrl))
                 ],
               ),
             ),
