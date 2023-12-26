@@ -330,7 +330,7 @@ class MessageInputState extends State<MessageInput> {
                     curve: Curves.easeOutExpo,
                     duration: const Duration(milliseconds: 500),
                     height: showEmotePicker ? emotePickerHeight : 0,
-                    child: buildEmojiPicker(),
+                    child: ClipRect(child: buildEmojiPicker()),
                   )
               ],
             ),
