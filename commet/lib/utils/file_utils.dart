@@ -49,4 +49,24 @@ class FileUtils {
       return path;
     }
   }
+
+  static Future<String?> getSaveDirectory() async {
+    try {
+      var path = await FilePicker.platform
+          .getDirectoryPath(initialDirectory: preferences.lastDownloadLocation);
+
+      return path;
+    } catch (_) {
+      var dir = await getDownloadsDirectory();
+      if (PlatformUtils.isAndroid) {
+        dir = Directory("/storage/emulated/0/Download");
+      }
+
+      if (dir == null) {
+        return null;
+      }
+
+      return dir.path;
+    }
+  }
 }
