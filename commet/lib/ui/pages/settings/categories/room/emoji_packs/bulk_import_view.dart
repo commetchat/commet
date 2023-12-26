@@ -1,10 +1,11 @@
-import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:commet/main.dart';
 import 'package:commet/utils/common_strings.dart';
 import 'package:commet/utils/debounce.dart';
 import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:signal_sticker_api/signal_sticker_api.dart';
@@ -29,7 +30,7 @@ class _EmoticonBulkImportDialogState extends State<EmoticonBulkImportDialog> {
   final TextEditingController _packNameEditor = TextEditingController();
   final TextEditingController _emotePrefixEditor = TextEditingController();
   final TextEditingController _overrideNameEditor = TextEditingController();
-  Debouncer debouncer = Debouncer(delay: const Duration(seconds: 2));
+  Debouncer debouncer = Debouncer(delay: const Duration(milliseconds: 500));
 
   List<String>? names;
   List<Uint8List?>? datas;
@@ -62,6 +63,7 @@ class _EmoticonBulkImportDialogState extends State<EmoticonBulkImportDialog> {
       debouncer.cancel();
       setState(() {
         loading = false;
+        reset();
       });
     }
   }
@@ -130,7 +132,8 @@ class _EmoticonBulkImportDialogState extends State<EmoticonBulkImportDialog> {
   }
 
   Future<void> loadSignalPack(Uri uri) async {
-    var client = const SignalStickerClient();
+    var client = SignalStickerClient(
+        host: preferences.proxyUrl, rootPath: "/proxy/signal", useHttps: false);
     var packInfo = client.getPackFromUri(uri);
     var pack = await client.getPack(packInfo!);
     _packNameEditor.text = pack!.name;
@@ -170,39 +173,18 @@ class _EmoticonBulkImportDialogState extends State<EmoticonBulkImportDialog> {
   }
 
   Future<void> pickFolder() async {
-    var path = await FilePicker.platform.getDirectoryPath();
-    if (path == null) {
-      return;
-    }
+    var files = await FilePicker.platform
+        .pickFiles(type: FileType.image, withData: true, allowMultiple: true);
 
-    _controller.text = "";
-
-    reset();
-
-    var dir = Directory(path);
-    var entries = await dir.list().toList();
-    var files = entries.whereType<File>().toList();
-
-    _packNameEditor.text = p.basename(path);
     setState(() {
-      names = files.map((e) => p.basenameWithoutExtension(e.path)).toList();
+      reset();
+      datas = files!.files.map((e) => e.bytes!).toList();
+      images = files.files.map((e) => Image.memory(e.bytes!).image).toList();
+      names =
+          files.files.map((e) => p.basenameWithoutExtension(e.name)).toList();
+      avatarIndex = 0;
+      _controller.text = "";
     });
-
-    datas = List.generate(names!.length, (index) => null);
-    images = List.generate(names!.length, (index) => null);
-
-    for (var i = 0; i < files.length; i++) {
-      var file = files[i];
-      file.readAsBytes().then((bytes) {
-        setState(() {
-          datas![i] = bytes;
-          images![i] = Image.memory(bytes).image;
-          if (i == 0) {
-            avatarIndex = i;
-          }
-        });
-      });
-    }
   }
 
   @override
@@ -247,16 +229,22 @@ class _EmoticonBulkImportDialogState extends State<EmoticonBulkImportDialog> {
                 isLoading: !loadingFinished,
                 text: "Import ${names!.length} Emoticons!",
                 onTap: () {
-                  var finalNames =
-                      names!.mapIndexed((e, i) => getFinalName(i)).toList();
-                  widget.importPack?.call(_packNameEditor.text, avatarIndex!,
-                      finalNames, datas!.map((e) => e!).toList());
+                  if (canCreatePack()) {
+                    var finalNames =
+                        names!.mapIndexed((e, i) => getFinalName(i)).toList();
+                    widget.importPack?.call(_packNameEditor.text, avatarIndex!,
+                        finalNames, datas!.map((e) => e!).toList());
+                  }
                 },
               ),
             )
         ],
       ),
     );
+  }
+
+  bool canCreatePack() {
+    return _packNameEditor.text.isNotEmpty;
   }
 
   Widget packEdit() {
@@ -267,21 +255,29 @@ class _EmoticonBulkImportDialogState extends State<EmoticonBulkImportDialog> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            avatarIndex != null && images?[avatarIndex!] != null
-                ? tiamat.Avatar(
-                    image: images![avatarIndex!],
-                    radius: 50,
-                  )
-                : const Center(
-                    child: CircularProgressIndicator(),
-                  ),
+            Padding(
+              padding: const EdgeInsets.all(8),
+              child: avatarIndex != null && images?[avatarIndex!] != null
+                  ? tiamat.Avatar(
+                      image: images![avatarIndex!],
+                      radius: 50,
+                    )
+                  : const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+            ),
             Flexible(
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   tiamat.TextInput(
                     controller: _packNameEditor,
                     label: "Pack Name",
                     maxLines: 1,
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: tiamat.Text.labelLow("Optional:"),
                   ),
                   Row(
                     mainAxisSize: MainAxisSize.min,
@@ -289,14 +285,17 @@ class _EmoticonBulkImportDialogState extends State<EmoticonBulkImportDialog> {
                       Flexible(
                         child: tiamat.TextInput(
                           controller: _emotePrefixEditor,
-                          label: "Prefix (Optional)",
+                          label: "Prefix",
                           maxLines: 1,
                         ),
+                      ),
+                      const SizedBox(
+                        width: 10,
                       ),
                       Flexible(
                         child: tiamat.TextInput(
                           controller: _overrideNameEditor,
-                          label: "Override Name (Optional)",
+                          label: "Override Name",
                           maxLines: 1,
                         ),
                       ),
@@ -322,6 +321,18 @@ class _EmoticonBulkImportDialogState extends State<EmoticonBulkImportDialog> {
               controller: _controller,
               maxLines: 1,
             ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Flexible(
+                    child: tiamat.Text.labelLow(
+                        "Supports: sgnl:// and signal.art")),
+                Flexible(
+                  child: tiamat.Text.labelLow(
+                      "Request will be proxied via ${preferences.proxyUrl}"),
+                ),
+              ],
+            ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(
@@ -343,7 +354,7 @@ class _EmoticonBulkImportDialogState extends State<EmoticonBulkImportDialog> {
               ),
             ),
             tiamat.Button(
-              text: "Select Folder",
+              text: "Select Files",
               onTap: pickFolder,
             ),
           ],

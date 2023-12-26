@@ -1504,7 +1504,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "2bba630055af1974946788e9afdde181d4731691"
+      resolved-ref: "851c15db2d46e55e3e8fb6ee6699ab66a0328ed6"
       url: "https://github.com/commetchat/signal-sticker-api.git"
     source: git
     version: "1.0.0"
