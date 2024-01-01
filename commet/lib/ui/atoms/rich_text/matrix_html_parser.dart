@@ -91,6 +91,7 @@ class MatrixHtmlParser {
       onLinkTap: (url, attributes, element) {
         LinkUtils.open(Uri.parse(url!));
       },
+      onlyRenderTheseTags: allowedHtmlTags,
     );
 
     return widget;
