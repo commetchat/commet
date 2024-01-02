@@ -22,7 +22,10 @@ Widget wbContextMenu(BuildContext context) {
                 icon: Icons.copy_rounded,
                 danger: false,
               ),
-              Seperator(),
+              SizedBox(
+                width: 260,
+                child: Seperator(),
+              ),
               ContextMenuItem(
                   text: "Delete Message", danger: true, icon: Icons.delete),
             ],
@@ -43,9 +46,12 @@ class _ContextMenuState extends State<ContextMenu> {
   @override
   Widget build(BuildContext context) {
     return UnconstrainedBox(
-      child: tiamat.Tile.low1(
-        child: Column(
-          children: widget.items,
+      child: tiamat.Tile.low3(
+        child: Container(
+          margin: const EdgeInsets.all(8),
+          child: Column(
+            children: widget.items,
+          ),
         ),
       ),
     );
@@ -74,23 +80,13 @@ class _ContextMenuItemState extends State<ContextMenuItem> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(0, 4, 0, 4),
-      // color: hovered ? Theme.of(context).colorScheme.onPrimary : null, //TODO: Revist this for coming with a more subtle hover color
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-      child: GestureDetector(
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
           onTap: () => widget.onPressed?.call(),
-          child: MouseRegion(
-              onEnter: (event) {
-                setState(() {
-                  hovered = true;
-                });
-              },
-              onExit: (event) {
-                setState(() {
-                  hovered = false;
-                });
-              },
+          borderRadius: BorderRadius.circular(8),
+          child: Container(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
               child: SizedBox(
                 width: 250,
                 height: 25,
