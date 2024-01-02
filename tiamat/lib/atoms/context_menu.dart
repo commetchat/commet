@@ -6,28 +6,33 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 
 @UseCase(name: "Context Menu", type: ContextMenu)
 Widget wbContextMenu(BuildContext context) {
-  return const Center(
+  return Center(
       child: Padding(
-          padding: EdgeInsets.all(8.0),
-          // TODO: generally any widget can be passed through which is a no-no in this use case
+          padding: const EdgeInsets.all(8.0),
           child: ContextMenu(
             items: [
               ContextMenuItem(
                 text: "Add Reaction",
                 icon: Icons.add_reaction_rounded,
                 danger: false,
+                onPressed: () {},
               ),
               ContextMenuItem(
                 text: "Copy Text",
                 icon: Icons.copy_rounded,
                 danger: false,
+                onPressed: () {},
               ),
-              SizedBox(
+              const SizedBox(
                 width: 260,
                 child: Seperator(),
               ),
               ContextMenuItem(
-                  text: "Delete Message", danger: true, icon: Icons.delete),
+                text: "Delete Message",
+                danger: true,
+                icon: Icons.delete,
+                onPressed: () {},
+              ),
             ],
           )));
 }
@@ -36,7 +41,7 @@ class ContextMenu extends StatefulWidget {
   const ContextMenu({super.key, this.separator, required this.items});
 
   final Seperator? separator;
-  final List<Widget> items; //TODO: this could afford a better name
+  final List<Widget> items;
 
   @override
   State<ContextMenu> createState() => _ContextMenuState();
