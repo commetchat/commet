@@ -1,1 +1,46 @@
-{}
+{
+  "messagePlaceholderUserJoinedRoom": "{user} ist dem Raum beigetreten!",
+  "@messagePlaceholderUserJoinedRoom": {
+    "description": "Message body for when a user joins the room",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messageEditedMarker": "(Bearbeitet)",
+  "@messageEditedMarker": {
+    "description": "Short text to mark that a message has been edited",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messagePlaceholderSticker": "{user} hat einen Sticker verschickt",
+  "@messagePlaceholderSticker": {
+    "description": "Message body for when a user sends a sticker",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messagePlaceholderUserCreatedRoom": "{user} hat den Raum erstellt!",
+  "@messagePlaceholderUserCreatedRoom": {
+    "description": "Message body for when a user created the room",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messagePlaceholderUserLeftRoom": "{user} hat den Raum verlassen",
+  "@messagePlaceholderUserLeftRoom": {
+    "description": "Message body for when a user leaves the room",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "labelEmojiPickerEmojiTab": "Emoji",
+  "@labelEmojiPickerEmojiTab": {
+    "description": "Label for the emoji tab in emoji picker",
+    "type": "text",
+    "placeholders": {}
+  }
+}
