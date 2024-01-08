@@ -7,6 +7,7 @@ import 'package:commet/client/components/component_registry.dart';
 import 'package:commet/client/invitation.dart';
 import 'package:commet/client/matrix/extensions/matrix_client_extensions.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
+import 'package:commet/client/matrix/matrix_sdk_database_readonly.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/config/app_config.dart';
 import 'package:commet/config/build_config.dart';
@@ -38,6 +39,7 @@ import 'package:olm/olm.dart' as olm;
 class MatrixClient extends Client {
   late matrix.Client _matrixClient;
   late final List<Component<MatrixClient>> _components;
+  late final bool readOnly;
 
   Future? firstSync;
 
@@ -64,7 +66,7 @@ class MatrixClient extends Client {
       ? const matrix.NativeImplementationsDummy()
       : matrix.NativeImplementationsIsolate(compute);
 
-  MatrixClient({required String identifier}) {
+  MatrixClient({required String identifier, this.readOnly = false}) {
     if (preferences.developerMode) {
       matrix.Logs().level = matrix.Level.verbose;
     }
@@ -145,7 +147,8 @@ class MatrixClient extends Client {
 
       if (clients != null) {
         for (var clientName in clients) {
-          var client = MatrixClient(identifier: clientName);
+          var client =
+              MatrixClient(identifier: clientName, readOnly: isHeadless);
           manager.addClient(client);
           futures.add(diagnostics.timeAsync("Initializing client $clientName",
               () async {
@@ -277,9 +280,12 @@ class MatrixClient extends Client {
     }
 
     DatabaseFactory factory = databaseFactoryFfi;
-    var database = await factory.openDatabase(path);
+    var database = await factory.openDatabase(path,
+        options: OpenDatabaseOptions(readOnly: readOnly));
 
-    final db = matrix.MatrixSdkDatabase(client.clientName, database: database);
+    final db = readOnly
+        ? MatrixSdkDatabaseReadonly(client.clientName, database: database)
+        : matrix.MatrixSdkDatabase(client.clientName, database: database);
     await db.open();
     return db;
   }
