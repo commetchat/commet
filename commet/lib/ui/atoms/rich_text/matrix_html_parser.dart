@@ -1,4 +1,5 @@
 import 'package:commet/client/matrix/components/emoticon/matrix_emoticon.dart';
+import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/ui/atoms/code_block.dart';
 import 'package:commet/ui/atoms/emoji_widget.dart';
 import 'package:commet/ui/atoms/rich_text/spans/link.dart';
@@ -35,6 +36,48 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
   static final CodeHtmlExtension _code = CodeHtmlExtension();
   static final LinkifyHtmlExtension _linkify = LinkifyHtmlExtension();
 
+  static const Set<String> allowedHtmlTags = {
+    'body',
+    'html',
+    'del',
+    'h1',
+    'h2',
+    'h3',
+    'h4',
+    'h5',
+    'h6',
+    'blockquote',
+    'p',
+    'a',
+    'ul',
+    'ol',
+    'sup',
+    'sub',
+    'li',
+    'b',
+    'i',
+    'u',
+    'strong',
+    'em',
+    'strike',
+    'code',
+    'hr',
+    'br',
+    'div',
+    'table',
+    'thead',
+    'tbody',
+    'tr',
+    'th',
+    'td',
+    'caption',
+    'pre',
+    'span',
+    'img',
+    'details',
+    'summary',
+  };
+
   void onTap() {
     setState(() {
       hideSpoiler = !hideSpoiler;
@@ -51,6 +94,7 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
 
     // Making a new one of these for every message we pass might make a lot of garbage
     var extension = MatrixEmoticonHtmlExtension(widget.client, big);
+    var imageExtension = MatrixImageExtension(widget.client);
     var result = Html(
       data: widget.text,
       extensions: [
@@ -59,6 +103,7 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
         _codeBlock,
         _code,
         _linkify,
+        imageExtension
       ],
       style: {
         "body": Style(
@@ -75,6 +120,7 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
       onLinkTap: (url, attributes, element) {
         LinkUtils.open(Uri.parse(url!));
       },
+      onlyRenderTheseTags: allowedHtmlTags,
     );
 
     return result;
@@ -262,4 +308,41 @@ class SpoilerHtmlExtension extends HtmlExtension {
 
   @override
   Set<String> get supportedTags => {};
+}
+
+class MatrixImageExtension extends HtmlExtension {
+  final double defaultDimension;
+
+  final matrix.Client client;
+  const MatrixImageExtension(this.client, {this.defaultDimension = 64});
+
+  @override
+  Set<String> get supportedTags => {'img'};
+
+  @override
+  InlineSpan build(ExtensionContext context) {
+    final mxcUrl = Uri.tryParse(context.attributes['src'] ?? '');
+    if (mxcUrl == null) {
+      return TextSpan(text: context.attributes['alt']);
+    }
+
+    if (mxcUrl.scheme != 'mxc') {
+      return LinkSpan.create(mxcUrl.toString(), destination: mxcUrl);
+    }
+
+    final width = double.tryParse(context.attributes['width'] ?? '');
+    final height = double.tryParse(context.attributes['height'] ?? '');
+
+    return WidgetSpan(
+      child: SizedBox(
+          width: width ?? height ?? defaultDimension,
+          height: height ?? width ?? defaultDimension,
+          child: Image(
+            image: MatrixMxcImage(
+              mxcUrl,
+              client,
+            ),
+          )),
+    );
+  }
 }
