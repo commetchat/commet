@@ -767,5 +767,331 @@
     "description": "Tooltip for the button that opens space settings",
     "type": "text",
     "placeholders": {}
+  },
+  "unifiedPushExplainer": "# Unified Push\nDiese Version von Commet verwendet keine Google-Play-Services. Um Push-Benachrichtignungen zu erhalten, muss [Unified Push](https://unifiedpush.org/) verwendet werden.\n\nWenn bereits eine Unified-Push-Distributor-App installiert ist, kann sie unten konfiguriert werden.\n",
+  "@unifiedPushExplainer": {
+    "description": "Explains the need for unified push. Supports markdown",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixRecoveryKeyCreateExplanation": "Es muss ein Sicherheitsschlüssel gesetzt werden, der für den Zugriff auf den Nachrichtenverlauf verwendet werden kann. Es kann entweder ein Schlüssel generiert oder eine individuelle Sicherheitsphrase ausgewählt werden",
+  "@labelMatrixRecoveryKeyCreateExplanation": {
+    "description": "Explains what the matrix recovery key does, and that it can be generated or user input",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixExplainOnlineKeyBackup": "Die Online-Schlüsselsicherung ermöglicht es, den Chatverlauf wiederherzustellen, wenn der Zugriff auf alle anderen Sitzungen verloren geht",
+  "@labelMatrixExplainOnlineKeyBackup": {
+    "description": "Explains what the message backup does",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixCrossSigningExplanation": "Ermöglicht es, den Überblick über alle Sitzungen behalten und diese zu verifizieren",
+  "@labelMatrixCrossSigningExplanation": {
+    "description": "Explains what matrix cross signing does",
+    "type": "text",
+    "placeholders": {}
+  },
+  "roomVisibilityPublicExplanation": "Jeder im Internet kann den Raum betreten",
+  "@roomVisibilityPublicExplanation": {
+    "description": "Explains what 'public' visibility means",
+    "type": "text",
+    "placeholders": {}
+  },
+  "spaceVisibilityPrivateExplanation": "Nur Eingeladene können den Raum betreten",
+  "@spaceVisibilityPrivateExplanation": {
+    "description": "Explains what 'private' space visibility means",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelEnableUnifiedPush": "Unfied Push verwenden",
+  "@labelEnableUnifiedPush": {
+    "description": "Label for the toggle to enable Unified Push",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelUnifiedPushNoEndpointFound": "Es ist ein Fehler aufgetreten, kein Endpunkt wurde gefunden :(",
+  "@labelUnifiedPushNoEndpointFound": {
+    "description": "Message for when a unified push endpoint could not be registered",
+    "type": "text",
+    "placeholders": {}
+  },
+  "setupPageBeforeYouBegin": "Bevor es losgeht...",
+  "@setupPageBeforeYouBegin": {
+    "description": "Title for first time setup page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsCategorySpace": "Space-Einstellungen",
+  "@labelSettingsCategorySpace": {
+    "description": "Label for the overall space settings category",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelPushRuleMentionsAndKeywords": "Erwähnungen & Schlüsselwörter",
+  "@labelPushRuleMentionsAndKeywords": {
+    "description": "Label for the push rule which notifies only for keywords and mentions",
+    "type": "text",
+    "placeholders": {}
+  },
+  "encryptionCannotBeDisabledExplanationRoomSettings": "Wenn die Verschlüsselung aktiviert wurde, kann sie nicht wieder deaktiviert werden",
+  "@encryptionCannotBeDisabledExplanationRoomSettings": {
+    "description": "Explains that encryption cannot be disabled once enabled",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmDeleteEmoticon": "Soll **{emoticon}** wirklich gelöscht werden?",
+  "@promptConfirmDeleteEmoticon": {
+    "description": "Prompt to confirm deletion of an emoticon pack, supports markdown to emphasise the emote name",
+    "type": "text",
+    "placeholders": {
+      "emoticon": {}
+    }
+  },
+  "promptStickerName": "Name des Stickers",
+  "@promptStickerName": {
+    "description": "Prompt for the input of a sticker",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptWipeMatrixBackup": "Backup löschen",
+  "@promptWipeMatrixBackup": {
+    "description": "Button text to wipe the matrix message backup",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixRecoveryKeyExplanation": "Dies ist der Wiederherstellungsschlüssel. Damit kann eine Sitzung verifiziert werden, falls der Zugriff auf alle anderen Sitzungen nicht mehr möglich ist. Er sollte an einem sicheren Ort aufbewahrt werden!",
+  "@labelMatrixRecoveryKeyExplanation": {
+    "description": "Gives a brief description about the function on the recovery key",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixRecoveryKeyPromptExplanation": "Den zuvor generierten Wiederherstellungsschlüssel eingeben, um auf die alten Nachrichten zuzugreifen. Der Wiederherstellungsschlüssel ist NICHT das Passwort.",
+  "@labelMatrixRecoveryKeyPromptExplanation": {
+    "description": "Shown when a user is attempting to recover their old messages, explains that they need the recovery key",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmWipingCrossSigningKeys": "Sollen die Quersignierungs-Schlüssel wirklich gelöscht werden?",
+  "@promptConfirmWipingCrossSigningKeys": {
+    "description": "Asks the user if they are sure they want to wipe the keys",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixSecurityPhraseShouldNotBePassword": "Die Sicherheitsphrase sollte nicht das Account-Passwort sein",
+  "@labelMatrixSecurityPhraseShouldNotBePassword": {
+    "description": "Tells the user to not use their password as their security phrase",
+    "type": "text",
+    "placeholders": {}
+  },
+  "errorMatrixPassphraseMustContainUpperAndLowercase": "Die Passphrase muss mindestens einen Groß- und einen Kleinbuchstaben enthalten",
+  "@errorMatrixPassphraseMustContainUpperAndLowercase": {
+    "description": "Explains constraints of recovery passphrase",
+    "type": "text",
+    "placeholders": {}
+  },
+  "errorMatrixPassphraseMustContainNumber": "Die Passphrase muss mindestens eine Zahl enthalten",
+  "@errorMatrixPassphraseMustContainNumber": {
+    "description": "Explains constraints of recovery passphrase",
+    "type": "text",
+    "placeholders": {}
+  },
+  "errorMatrixPassphraseMustContainSymbol": "Die Passphrase muss mindestens ein Sonderzeichen enthalten",
+  "@errorMatrixPassphraseMustContainSymbol": {
+    "description": "Explains constraints of recovery passphrase",
+    "type": "text",
+    "placeholders": {}
+  },
+  "erroMatrixPassphraseMustBeLonger": "Die Passphrase muss mindestens 10 Zeichen lang sein",
+  "@erroMatrixPassphraseMustBeLonger": {
+    "description": "Explains constraints of recovery passphrase",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixConfirmSecurityPhrase": "Sicherheitsphrase bestätigen:",
+  "@labelMatrixConfirmSecurityPhrase": {
+    "description": "Prompts the user to input their passphrase again",
+    "type": "text",
+    "placeholders": {}
+  },
+  "placeholderMatrixConfirmSecurityPhrase": "Sicherheitsphrase bestätigen",
+  "@placeholderMatrixConfirmSecurityPhrase": {
+    "description": "Placeholder text for the confirm passphrase text input",
+    "type": "text",
+    "placeholders": {}
+  },
+  "errorMatrixPassphrasesDontMatch": "Die Passphrasen stimmen nicht überein",
+  "@errorMatrixPassphrasesDontMatch": {
+    "description": "Error when the user enters passphrase twice and the two dont match",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPromptPassphrase": "Sicherheitsphrase:",
+  "@labelMatrixPromptPassphrase": {
+    "description": "Prompt the user to enter passphrase",
+    "type": "text",
+    "placeholders": {}
+  },
+  "placeholderMatrixEnterSecutiyPhrase": "Sicherheitsphrase",
+  "@placeholderMatrixEnterSecutiyPhrase": {
+    "description": "Placeholder text for the passphrase text box",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixExistingMessageBackupFound": "Bestehendes Backup gefunden!",
+  "@labelMatrixExistingMessageBackupFound": {
+    "description": "Message to explain that existing backup has been found",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixAskWipeBackupToContinue": "Wenn die Quersignierungs-Schlüssel geändert werden, muss das bestehende Backup gelöscht werden... Fortfahren?",
+  "@labelMatrixAskWipeBackupToContinue": {
+    "description": "Asks the user if they want to wipe their existing backup to continue changing their cross signing keys",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixWarnResetKeysIsPermanent": "Das Zurücksetzen der Schlüssel ist dauerhaft und führt zum Verlust des Chatverlaufs. Das ist mit ziemlicher Sicherheit eine schlechte Idee!",
+  "@labelMatrixWarnResetKeysIsPermanent": {
+    "description": "Explains that resetting keys is permanent, should emphasize that this isnt really a great idea",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixAskEnableMessageBackup": "Soll die Online-Schlüsselsicherung aktiviert werden?",
+  "@labelMatrixAskEnableMessageBackup": {
+    "description": "Asks the user if they want to enable online backup",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixCrossSigning": "Quersignierung",
+  "@labelMatrixCrossSigning": {
+    "description": "Title label for matrix cross signing",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixCrossSigningAndBackup": "Quersignierung & Backup",
+  "@labelMatrixCrossSigningAndBackup": {
+    "description": "Header label for matrix cross signing and message backup section",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixResetCrossSigningTitle": "Quersignierung Zurücksetzen",
+  "@labelMatrixResetCrossSigningTitle": {
+    "description": "Title for the popup dialog when resetting cross signing",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixMessageBackup": "Nachrichten-Backup",
+  "@labelMatrixMessageBackup": {
+    "description": "TItle label for matrix message backup settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixMessageBackupExplanation": "Erstellt eine Sicherungskopie des Chatverlaufs für den Fall, dass alle Sitzungen verloren gehen. Die Nachrichten werden vor dem Hochladen verschlüsselt",
+  "@labelMatrixMessageBackupExplanation": {
+    "description": "Explains what matrix message backup does",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsAppDeveloperUtils": "Entwicklerwerkzeuge",
+  "@labelSettingsAppDeveloperUtils": {
+    "description": "Label for the developer utils settings page, usually hidden unless developer mode is turned on",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsAppTheme": "Thema",
+  "@labelSettingsAppTheme": {
+    "description": "Label for theme section of app appearance",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelThemeDark": "Dunkelmodus",
+  "@labelThemeDark": {
+    "description": "Label for the dark theme",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelThemeLight": "Heller Modus",
+  "@labelThemeLight": {
+    "description": "Label for the light theme",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelGifSearchDescription": "Tenor-GIF-Suche aktivieren. Die Anfragen werden über {proxyUrl} weitergeleitet",
+  "@labelGifSearchDescription": {
+    "description": "Explains that gifs will be fetched via proxy",
+    "type": "text",
+    "placeholders": {
+      "proxyUrl": {}
+    }
+  },
+  "labelSettingsDeveloperModeExplanation": "Zeigt zusätzliche Informationen, nützlich für Entwickler",
+  "@labelSettingsDeveloperModeExplanation": {
+    "description": "Explains what developer mode does",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsMinimizeOnCloseExplanation": "Beim Schließen des Fensters wird die Anwendung minimiert und nicht beendet",
+  "@labelSettingsMinimizeOnCloseExplanation": {
+    "description": "Explains what the 'minimize on close' setting does",
+    "type": "text",
+    "placeholders": {}
+  },
+  "notificationSettingsNotSupported": "Push-Benachrichtigungen werden auf diesem System nicht unterstützt",
+  "@notificationSettingsNotSupported": {
+    "description": "Message to display when push notifications are not supported",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptLeaveRoomConfirmation": "Soll der Raum {roomName} wirklich verlassen werden?",
+  "@promptLeaveRoomConfirmation": {
+    "description": "Text for the popup dialog confirming the intent to leave",
+    "type": "text",
+    "placeholders": {
+      "roomName": {}
+    }
+  },
+  "promptLeaveSpaceConfirmation": "Soll {spaceName} wirklich verlassen werden?",
+  "@promptLeaveSpaceConfirmation": {
+    "description": "Text for the popup dialog confirming the intent to leave a space",
+    "type": "text",
+    "placeholders": {
+      "spaceName": {}
+    }
+  },
+  "messageAlreadyLoggedIn": "Dieses Konto ist bereits angemeldet",
+  "@messageAlreadyLoggedIn": {
+    "description": "An error message displayed when the user attempts to add an account which has already been logged in to on this device",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptTopic": "Thema (Optional)",
+  "@promptTopic": {
+    "description": "Prompt to enter a topic for room or space, specifying that doing so is optional",
+    "type": "text",
+    "placeholders": {}
+  },
+  "roomVisibilityPrivateExplanation": "Nur Eingeladene können den Raum betreten",
+  "@roomVisibilityPrivateExplanation": {
+    "description": "Explains what 'private' room visibility means",
+    "type": "text",
+    "placeholders": {}
+  },
+  "spaceVisibilityPublicExplanation": "Jeder im Internet kann den Raum betreten",
+  "@spaceVisibilityPublicExplanation": {
+    "description": "Explains what 'public' space visibility means",
+    "type": "text",
+    "placeholders": {}
+  },
+  "encryptionCannotBeDisabledExplanation": "Wenn die Verschlüsselung aktiviert wurde, kann sie nicht wieder deaktiviert werden",
+  "@encryptionCannotBeDisabledExplanation": {
+    "description": "Explains that encryption cannot be disabled once enabled",
+    "type": "text",
+    "placeholders": {}
+  },
+  "placeholderRoomAddress": "#ein-toller-raum:matrix.org",
+  "@placeholderRoomAddress": {
+    "description": "Placeholder / Example for a room address",
+    "type": "text",
+    "placeholders": {}
   }
 }
