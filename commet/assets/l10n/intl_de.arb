@@ -66,7 +66,7 @@
       "user": {}
     }
   },
-  "labelEmojiPickerGifTab": "Gif",
+  "labelEmojiPickerGifTab": "GIF",
   "@labelEmojiPickerGifTab": {
     "description": "Label for the gif search tab in the emoji picker",
     "type": "text",
@@ -1091,6 +1091,189 @@
   "placeholderRoomAddress": "#ein-toller-raum:matrix.org",
   "@placeholderRoomAddress": {
     "description": "Placeholder / Example for a room address",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptRenameEmoticon": "Emoji umbenennen",
+  "@promptRenameEmoticon": {
+    "description": "Tooltip for button to rename emoticon",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageMatrixSessionVerificationRequest": "**{username}** hat eine Sitzungsverifizierung angefragt",
+  "@messageMatrixSessionVerificationRequest": {
+    "description": "Message to show when another user has requested to verify your matrix session. Supports markdown to emphasise the user name",
+    "type": "text",
+    "placeholders": {
+      "username": {}
+    }
+  },
+  "messageSasEmojiVerificationPrompt": "Die Emoji müssen auf beiden Geräten übereinstimmen UND in der gleichen Reihenfolge sein",
+  "@messageSasEmojiVerificationPrompt": {
+    "description": "Explains what to look for when verifying using emoji. Needs to portray that the emoji MUST be the same AND in the same order",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptEmojiDoNotMatch": "Sie stimmen nicht überein",
+  "@promptEmojiDoNotMatch": {
+    "description": "Button text to confirm that the emoji do NOT match",
+    "type": "text",
+    "placeholders": {}
+  },
+  "notificationModifiersPrivacyEnhanced": "Eine Nachricht wurde gesendet",
+  "@notificationModifiersPrivacyEnhanced": {
+    "description": "Placeholder text to put in a notification when the user has privacy enhanced notifications enabled.",
+    "type": "text",
+    "placeholders": {}
+  },
+  "fileDragDropPrompt": "Datei zum Hochladen hier loslassen...",
+  "@fileDragDropPrompt": {
+    "description": "Text that is shown when a user is dragging a file",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageFailedToDecrypt": "Fehler beim Entschlüsseln des Events",
+  "@messageFailedToDecrypt": {
+    "description": "Placeholde text for when a message fails to decrypt",
+    "type": "text",
+    "placeholders": {}
+  },
+  "typingUsers": "{howMany,plural, =1{{user1} schreibt gerade...}=2{{user1} und {user2} schreiben gerade...}few{{user1}, {user2}, und {user3} schreiben gerade...}other{mehrere Personen schreiben gerade...}}",
+  "@typingUsers": {
+    "description": "Text to display which users are currently typing",
+    "type": "text",
+    "placeholders": {
+      "howMany": {},
+      "user1": {},
+      "user2": {},
+      "user3": {}
+    }
+  },
+  "labelChatPageFileTooLargeTitle": "Die Datei ist zu groß",
+  "@labelChatPageFileTooLargeTitle": {
+    "description": "Title for the dialog that is shown when the user attempts to upload a file that is greater than the allowed size",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelHomeRecentActivity": "Neue Aktivität",
+  "@labelHomeRecentActivity": {
+    "description": "Short label for header of recent room activity",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptCreateEmoticonPack": "Neues Paket",
+  "@promptCreateEmoticonPack": {
+    "description": "Prompt to create a new emoticon pack, for emoji or stickers",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmDeleteEmoticonPack": "Soll das Paket **{packName}** wirklich gelöscht werden?",
+  "@promptConfirmDeleteEmoticonPack": {
+    "description": "Prompt to confirm deletion of an emoticon pack, supports markdown to emphasise the pack name",
+    "type": "text",
+    "placeholders": {
+      "packName": {}
+    }
+  },
+  "createEmoticonDialogTitle": "Neues Emoji",
+  "@createEmoticonDialogTitle": {
+    "description": "Title of a dialog that pops up when choosing to create a new emoticon",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptEmoticonPackName": "Paketname",
+  "@promptEmoticonPackName": {
+    "description": "Prompt for the input of the name of an emoticon pack",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptWipeMatrixKeys": "Schlüssel löschen",
+  "@promptWipeMatrixKeys": {
+    "description": "Text on the button to wipe matrix encryption keys",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptAbortWipingMatrixKeys": "Halt, nein!",
+  "@promptAbortWipingMatrixKeys": {
+    "description": "Text on the button which aborts wiping matrix encryption keys",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelExistingMatrixKeysFound": "Bestehende Signierungsschlüssel gefunden!",
+  "@labelExistingMatrixKeysFound": {
+    "description": "Text that is shown when the user is setting up cross signing, but has existing keys",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelAskUseExistingMatrixKeys": "Sollen die bestehenden Schlüssel benutzt werden?",
+  "@labelAskUseExistingMatrixKeys": {
+    "description": "Text that is shown when the user is setting up cross signing, but has existing keys and asks the user if they would like to use those keys",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelAppScale": "App-Skalierung",
+  "@labelAppScale": {
+    "description": "Label for the setting which controls the UI scale of the overall app",
+    "type": "text",
+    "placeholders": {}
+  },
+  "placeholderSpaceAddress": "#ein-toller-space:matrix.org",
+  "@placeholderSpaceAddress": {
+    "description": "Placeholder / Example for a space address",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelCouldNotLoadRoomPreview": "Raumvorschau konnte nicht geladen werden",
+  "@labelCouldNotLoadRoomPreview": {
+    "description": "Error message for when a room preview was not able to be loaded",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptJoinExistingSpace": "Bestehendem Space beitreten",
+  "@promptJoinExistingSpace": {
+    "description": "Prompt to join a space which already exists",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptJoinExistingRoom": "Bestehendem Raum beitreten",
+  "@promptJoinExistingRoom": {
+    "description": "Prompt to join a room which already exists",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptUseExistingRoom": "Bestehenden Raum benutzen",
+  "@promptUseExistingRoom": {
+    "description": "Button text to choose to use an existing room when adding a room to a space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageWaitingOtherDeviceToAccept": "Auf die Annahme der Anfrage durch das andere Gerät warten",
+  "@messageWaitingOtherDeviceToAccept": {
+    "description": "Message to show while waiting for another device to accept a matrix session verification request",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmEmojiMatches": "Sie stimmen überein!",
+  "@promptConfirmEmojiMatches": {
+    "description": "Button text to confirm that the emoji matches",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageVerificationComplete": "Verifizierung abgeschlossen!",
+  "@messageVerificationComplete": {
+    "description": "Message to show when verification was completed successfully, and the session has been verified",
+    "type": "text",
+    "placeholders": {}
+  },
+  "matrixClientOlmMissingMessage": "libolm ist nicht installiert oder wurde nicht gefunden. Ende-zu-Ende-Verschlüsselung ist nicht verfügbar, bis dieses Problem behoben ist",
+  "@matrixClientOlmMissingMessage": {
+    "description": "Text that explains to the user that libolm dependency is not found",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptHome": "Startseite",
+  "@promptHome": {
+    "description": "Generic prompt to go home, usually will go back to a main menu, or similar",
     "type": "text",
     "placeholders": {}
   }
