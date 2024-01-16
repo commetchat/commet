@@ -1,3 +1,4 @@
+import 'package:commet/config/platform_utils.dart';
 import 'package:matrix/matrix.dart';
 
 class MatrixSdkDatabaseWrapper extends MatrixSdkDatabase {
@@ -15,6 +16,12 @@ class MatrixSdkDatabaseWrapper extends MatrixSdkDatabase {
   @override
   Future<List<Event>> getEventList(Room room,
       {int start = 0, bool onlySending = false, int? limit}) async {
-    return [];
+    if (PlatformUtils.isAndroid) {
+      return super
+          .getEventList(room, start: start, onlySending: true, limit: limit);
+    } else {
+      return super.getEventList(room,
+          start: start, onlySending: onlySending, limit: limit);
+    }
   }
 }
