@@ -60,6 +60,7 @@ class ReadIndicatorState extends State<ReadIndicator> {
                   },
                   itemBuilder: (context, data) {
                     return SingleUserReadIndicator(
+                      key: ValueKey("user_read_indicator_$data"),
                       identifier: data,
                       room: widget.room,
                     );
