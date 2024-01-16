@@ -89,6 +89,11 @@ class ChatState extends State<Chat> {
 
   Future<void> loadTimeline() async {
     var t = await room.loadTimeline();
+
+    if (t.events.isEmpty) {
+      await t.loadMoreHistory();
+    }
+
     setState(() {
       _timeline = t;
     });
