@@ -24,6 +24,7 @@ import 'package:commet/utils/window_management.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -176,8 +177,9 @@ Future<void> startGui() async {
   initGuiRequirements();
 
   if (PlatformUtils.isAndroid) {
-    var initialIntent = await ReceiveIntent.getInitialIntent();
+    enableEdgeToEdge();
 
+    var initialIntent = await ReceiveIntent.getInitialIntent();
     ReceiveIntent.receivedIntentStream.listen((event) {
       var uri = AndroidIntentHelper.getUriFromIntent(event);
       if (uri is OpenRoomURI) {
@@ -204,6 +206,20 @@ Future<void> startGui() async {
     initialTheme: preferences.theme,
     initialClientId: initialClientId,
     initialRoom: initialRoomId,
+  ));
+}
+
+void enableEdgeToEdge() {
+  SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.edgeToEdge); // Enable Edge-to-Edge on Android 10+
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    systemNavigationBarColor:
+        Colors.transparent, // Setting a transparent navigation bar color
+    systemNavigationBarContrastEnforced: true, // Default
+    systemNavigationBarIconBrightness:
+        [AppTheme.amoled, AppTheme.dark].contains(preferences.theme)
+            ? Brightness.light
+            : Brightness.dark, // This defines the color of the scrim
   ));
 }
 
