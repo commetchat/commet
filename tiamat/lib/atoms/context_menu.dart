@@ -102,6 +102,7 @@ class _ContextMenuOverlayState extends State<ContextMenuOverlay>
           child: ClipRRect(
             borderRadius: BorderRadius.circular(7),
             child: SizeTransition(
+              axisAlignment: -1,
               sizeFactor: _animation,
               child: Tile.low4(
                 child: buildMenu(context),
