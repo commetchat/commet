@@ -263,7 +263,7 @@ class MessageInputState extends State<MessageInput> {
                                                   contextMenuBuilder,
                                               decoration: InputDecoration(
                                                   contentPadding:
-                                                      EdgeInsets.fromLTRB(
+                                                      const EdgeInsets.fromLTRB(
                                                           0, 13, 0, 12),
                                                   border: InputBorder.none,
                                                   isDense: true,
