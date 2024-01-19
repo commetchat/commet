@@ -180,22 +180,24 @@ class _ContextMenuState extends State<ContextMenu> {
   }
 
   Widget buildOverlay(BuildContext overlayContext) {
-    return GestureDetector(
-      behavior: HitTestBehavior.translucent,
-      onTap: removeOverlay,
-      child: Stack(
-        children: [
-          Theme(
-            data: Theme.of(context),
-            child: ContextMenuOverlay(
-              globalOffset: mousePosition,
-              items: widget.items,
-              close: removeOverlay,
+    if (mounted)
+      return GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: removeOverlay,
+        child: Stack(
+          children: [
+            Theme(
+              data: Theme.of(context),
+              child: ContextMenuOverlay(
+                globalOffset: mousePosition,
+                items: widget.items,
+                close: removeOverlay,
+              ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    return Container();
   }
 
   @override
