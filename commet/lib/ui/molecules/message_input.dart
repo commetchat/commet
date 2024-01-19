@@ -55,7 +55,7 @@ class MessageInput extends StatefulWidget {
       this.sendSticker,
       this.cancelReply});
   final double maxHeight;
-  final double size = 48;
+  final double size = 35;
   final bool isRoomE2EE;
   final MessageInputSendResult Function(String message)? onSendMessage;
   final Widget? readIndicator;
@@ -131,7 +131,7 @@ class MessageInputState extends State<MessageInput> {
 
   @override
   void initState() {
-    controller = TextEditingController();
+    controller = RichTextEditingController();
     keyboardFocusSubscription =
         widget.focusKeyboard?.listen((_) => onKeyboardFocusRequested());
 
@@ -227,14 +227,14 @@ class MessageInputState extends State<MessageInput> {
                                 height: widget.size,
                                 child: tiamat.IconButton(
                                   icon: Icons.add,
-                                  size: 24,
+                                  size: widget.size / 2,
                                   onPressed: addAttachment,
                                 ),
                               ),
                             ),
                           Flexible(
                             child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(5),
                               child: Container(
                                 decoration: BoxDecoration(
                                     color: Theme.of(context)
@@ -246,19 +246,28 @@ class MessageInputState extends State<MessageInput> {
                                     Expanded(
                                       child: Padding(
                                         padding: const EdgeInsets.fromLTRB(
-                                            8, 2, 4, 2),
+                                            8, 0, 4, 0),
                                         child: Stack(
                                           children: [
-                                            RichTextField(
+                                            TextField(
                                               controller: controller,
-                                              focus: textFocus,
+                                              focusNode: textFocus,
                                               readOnly: !widget.enabled,
+                                              maxLines: null,
+                                              cursorWidth: 1,
+
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .bodyMedium!,
                                               contextMenuBuilder:
                                                   contextMenuBuilder,
-                                              hintText: widget.hintText,
+                                              decoration: InputDecoration(
+                                                  contentPadding:
+                                                      EdgeInsets.fromLTRB(
+                                                          0, 13, 0, 12),
+                                                  border: InputBorder.none,
+                                                  isDense: true,
+                                                  hintText: widget.hintText),
                                               //decoration: null,
                                             ),
                                           ],
@@ -273,7 +282,7 @@ class MessageInputState extends State<MessageInput> {
                                             height: widget.size,
                                             child: tiamat.IconButton(
                                               icon: Icons.face,
-                                              size: 24,
+                                              size: widget.size / 2,
                                               onPressed: toggleEmojiOverlay,
                                             )),
                                       ),
@@ -291,7 +300,7 @@ class MessageInputState extends State<MessageInput> {
                                   child: tiamat.IconButton(
                                     icon: Icons.send,
                                     onPressed: sendMessage,
-                                    size: 24,
+                                    size: widget.size / 2,
                                   )),
                             )
                         ]),
