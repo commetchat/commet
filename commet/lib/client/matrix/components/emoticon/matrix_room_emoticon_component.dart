@@ -12,6 +12,7 @@ import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
 import 'package:commet/client/matrix/matrix_timeline_event.dart';
 import 'package:commet/client/timeline.dart';
+import 'package:commet/main.dart';
 import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:commet/utils/image_utils.dart';
 import 'package:matrix/matrix.dart' as matrix;
@@ -78,6 +79,9 @@ class MatrixRoomEmoticonComponent extends MatrixEmoticonComponent
     var content = {
       "body": sticker.shortcode!,
       "url": sticker.emojiUrl.toString(),
+      if (preferences.stickerCompatibilityMode) "msgtype": "m.image",
+      if (preferences.stickerCompatibilityMode)
+        "chat.commet.type": "chat.commet.sticker",
       "info": {
         "w": image.width,
         "h": image.height,
@@ -86,7 +90,10 @@ class MatrixRoomEmoticonComponent extends MatrixEmoticonComponent
     };
 
     var id = await room.matrixRoom.sendEvent(content,
-        type: matrix.EventTypes.Sticker, inReplyTo: replyingTo);
+        type: preferences.stickerCompatibilityMode
+            ? matrix.EventTypes.Message
+            : matrix.EventTypes.Sticker,
+        inReplyTo: replyingTo);
 
     if (id != null) {
       var event = await room.matrixRoom.getEventById(id);

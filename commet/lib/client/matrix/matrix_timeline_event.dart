@@ -129,6 +129,10 @@ class MatrixTimelineEvent implements TimelineEvent {
       if (event.messageType == "m.emote") {
         result = EventType.emote;
       }
+
+      if (event.content["chat.commet.type"] == "chat.commet.sticker") {
+        result = EventType.sticker;
+      }
     }
 
     if (event.type == matrix.EventTypes.RoomMember &&
