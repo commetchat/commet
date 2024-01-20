@@ -6,7 +6,6 @@ import 'package:commet/client/components/component.dart';
 import 'package:commet/client/components/component_registry.dart';
 import 'package:commet/client/invitation.dart';
 import 'package:commet/client/matrix/extensions/matrix_client_extensions.dart';
-import 'package:commet/client/matrix/matrix_database_wrapper.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/config/app_config.dart';
@@ -265,7 +264,7 @@ class MatrixClient extends Client {
   FutureOr<matrix.DatabaseApi> _databaseBuilder(matrix.Client client) async {
     if (kIsWeb) {
       await html.window.navigator.storage?.persist();
-      return MatrixSdkDatabaseWrapper(client.clientName);
+      return matrix.MatrixSdkDatabase(client.clientName);
     }
 
     var path = await AppConfig.getDatabasePath();
@@ -280,7 +279,7 @@ class MatrixClient extends Client {
     DatabaseFactory factory = databaseFactoryFfi;
     var database = await factory.openDatabase(path);
 
-    final db = MatrixSdkDatabaseWrapper(client.clientName, database: database);
+    final db = matrix.MatrixSdkDatabase(client.clientName, database: database);
     await db.open();
     return db;
   }
