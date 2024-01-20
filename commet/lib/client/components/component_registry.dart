@@ -7,6 +7,7 @@ import 'package:commet/client/matrix/components/emoticon/matrix_room_emoticon_co
 import 'package:commet/client/matrix/components/emoticon/matrix_space_emoticon_component.dart';
 import 'package:commet/client/matrix/components/gif/matrix_gif_component.dart';
 import 'package:commet/client/matrix/components/push_notifications/matrix_push_notification_component.dart';
+import 'package:commet/client/matrix/components/url_preview/matrix_url_preview_component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/matrix/matrix_space.dart';
@@ -20,7 +21,8 @@ class ComponentRegistry {
     return [
       MatrixEmoticonComponent(client),
       MatrixPushNotificationComponent(client),
-      MatrixCommandComponent(client)
+      MatrixCommandComponent(client),
+      MatrixUrlPreviewComponent(client)
     ];
   }
 
