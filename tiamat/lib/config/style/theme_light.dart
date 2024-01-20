@@ -11,7 +11,7 @@ class ThemeLightColors {
   static const Color surfaceLow2 = Color.fromARGB(255, 240, 240, 240);
   static const Color surfaceLow3 = Color.fromARGB(255, 235, 235, 235);
   static const Color surfaceLow4 = Color.fromARGB(255, 230, 230, 230);
-  static const Color highlightColor = Colors.white;
+  static const Color highlightColor = Colors.white30;
   static const Color onSurface = Colors.black;
   static const Color outlineColor = Color.fromARGB(48, 92, 92, 92);
 }

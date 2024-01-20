@@ -104,6 +104,12 @@ class _TimelineEventState extends State<TimelineEventView> {
           args: [user],
           name: "messagePlaceholderUserRejectedInvite");
 
+  String messageUserEmote(String user, String emote) =>
+      Intl.message("*$user $emote",
+          desc: "Message to display when a user does a custom emote (/me)",
+          args: [user],
+          name: "messageUserEmote");
+
   String get errorMessageFailedToSend => Intl.message("Failed to send",
       desc:
           "Text that is placed below a message when the message fails to send",
@@ -196,27 +202,33 @@ class _TimelineEventState extends State<TimelineEventView> {
             sentTimeStamp: widget.event.originServerTs);
       case EventType.roomCreated:
         return GenericRoomEvent(messagePlaceholderUserCreatedRoom(displayName),
-            m.Icons.room_preferences_outlined);
+            icon: m.Icons.room_preferences_outlined);
       case EventType.memberJoined:
         return GenericRoomEvent(messagePlaceholderUserJoinedRoom(displayName),
-            m.Icons.waving_hand_rounded);
+            icon: m.Icons.waving_hand_rounded);
       case EventType.memberLeft:
         return GenericRoomEvent(messagePlaceholderUserLeftRoom(displayName),
-            m.Icons.subdirectory_arrow_left_rounded);
+            icon: m.Icons.subdirectory_arrow_left_rounded);
       case EventType.memberAvatar:
         return GenericRoomEvent(
-            messagePlaceholderUserUpdatedAvatar(displayName), m.Icons.person);
+            messagePlaceholderUserUpdatedAvatar(displayName),
+            icon: m.Icons.person);
       case EventType.memberDisplayName:
-        return GenericRoomEvent(
-            messagePlaceholderUserUpdatedName(displayName), m.Icons.edit);
+        return GenericRoomEvent(messagePlaceholderUserUpdatedName(displayName),
+            icon: m.Icons.edit);
       case EventType.memberInvited:
         return GenericRoomEvent(
             messagePlaceholderUserInvited(displayName, event.stateKey!),
-            m.Icons.person_add);
+            icon: m.Icons.person_add);
       case EventType.memberInvitationRejected:
         return GenericRoomEvent(
             messagePlaceholderUserRejectedInvite(displayName),
-            m.Icons.subdirectory_arrow_left_rounded);
+            icon: m.Icons.subdirectory_arrow_left_rounded);
+      case EventType.emote:
+        return GenericRoomEvent(
+          messageUserEmote(displayName, event.body ?? ""),
+          senderImage: avatar,
+        );
       default:
         break;
     }
