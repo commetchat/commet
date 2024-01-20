@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:commet/client/attachment.dart';
+import 'package:commet/client/components/command/command_component.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/client/components/gif/gif_component.dart';
@@ -89,6 +90,11 @@ class ChatState extends State<Chat> {
 
   Future<void> loadTimeline() async {
     var t = await room.loadTimeline();
+
+    if (t.events.isEmpty) {
+      await t.loadMoreHistory();
+    }
+
     setState(() {
       _timeline = t;
     });
@@ -144,15 +150,22 @@ class ChatState extends State<Chat> {
       processing = false;
     });
 
-    room.sendMessage(
-        message: message,
-        inReplyTo: interactionType == EventInteractionType.reply
-            ? interactingEvent
-            : null,
-        replaceEvent: interactionType == EventInteractionType.edit
-            ? interactingEvent
-            : null,
-        processedAttachments: processedAttachments);
+    var component = room.client.getComponent<CommandComponent>();
+
+    if (component?.isExecutable(message) == true) {
+      component?.executeCommand(message, room,
+          interactingEvent: interactingEvent, type: interactionType);
+    } else {
+      room.sendMessage(
+          message: message,
+          inReplyTo: interactionType == EventInteractionType.reply
+              ? interactingEvent
+              : null,
+          replaceEvent: interactionType == EventInteractionType.edit
+              ? interactingEvent
+              : null,
+          processedAttachments: processedAttachments);
+    }
 
     room.setTypingStatus(false);
 

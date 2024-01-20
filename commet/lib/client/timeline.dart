@@ -18,6 +18,7 @@ enum EventType {
   unknown,
   message,
   sticker,
+  emote,
   redaction,
   edit,
   invalid,

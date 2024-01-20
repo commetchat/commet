@@ -3,16 +3,19 @@ import 'dart:async';
 import 'package:commet/client/components/gif/gif_component.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/main.dart';
+import 'package:commet/ui/atoms/emoji_widget.dart';
 import 'package:commet/ui/atoms/rich_text_field.dart';
 import 'package:commet/ui/molecules/attachment_icon.dart';
 import 'package:commet/ui/molecules/emoticon_picker.dart';
 import 'package:commet/ui/organisms/chat/chat.dart';
 import 'package:commet/client/components/emoticon/emoji_pack.dart';
 import 'package:commet/client/components/gif/gif_search_result.dart';
+import 'package:commet/utils/autofill_utils.dart';
 import 'package:file_picker/file_picker.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:implicitly_animated_list/implicitly_animated_list.dart';
 import 'package:intl/intl.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
 import 'package:pasteboard/pasteboard.dart';
@@ -53,6 +56,7 @@ class MessageInput extends StatefulWidget {
       this.onReadReceiptsClicked,
       this.sendGif,
       this.sendSticker,
+      this.processAutofill,
       this.cancelReply});
   final double maxHeight;
   final double size = 35;
@@ -82,6 +86,7 @@ class MessageInput extends StatefulWidget {
   final void Function()? editLastMessage;
   final void Function(PendingFileAttachment attachment)? addAttachment;
   final void Function(PendingFileAttachment attachment)? removeAttachment;
+  final List<AutofillSearchResult> Function(String text)? processAutofill;
 
   @override
   State<MessageInput> createState() => MessageInputState();
@@ -97,6 +102,10 @@ class MessageInputState extends State<MessageInput> {
   final layerLink = LayerLink();
   bool showEmotePicker = false;
   bool hasEmotePickerOpened = false;
+  List<AutofillSearchResult>? autoFillResults;
+  int? autoFillSelection;
+  (int, int)? autoFillRange;
+  ScrollController autofillScrollController = ScrollController();
 
   String typingUsers(int howMany, String user1, String user2, String user3) =>
       Intl.plural(howMany,
@@ -144,8 +153,78 @@ class MessageInputState extends State<MessageInput> {
     super.initState();
   }
 
+  String? lastSearchText;
   void onTextfieldUpdated() {
     widget.onTextUpdated?.call(controller.text);
+    var range = getAutofillTextRange();
+
+    if (range.$1 == -1 || range.$2 == -1) {
+      return;
+    }
+
+    var text = controller.text.substring(range.$1, range.$2);
+
+    if (text == "") {
+      setState(() {
+        autoFillResults = null;
+        autoFillSelection = null;
+        autoFillRange = null;
+      });
+    }
+
+    if (text == lastSearchText) {
+      return;
+    }
+
+    var result = widget.processAutofill?.call(text);
+    autoFillRange = range;
+
+    setState(() {
+      autoFillResults = result;
+      autoFillSelection = null;
+      updateAutofillScroll();
+    });
+  }
+
+  (int, int) getAutofillTextRange() {
+    var cursor = controller.selection.base.offset;
+    if (cursor >= controller.text.length) {
+      cursor = controller.text.length - 1;
+    }
+
+    if (controller.text == "") {
+      return (0, 0);
+    }
+
+    int start = cursor;
+    int end = controller.text.length;
+
+    for (int i = cursor - 1; i >= 0; i--) {
+      var char = controller.text[i];
+      if (char == ' ') {
+        if (i == controller.text.length) {
+          start = controller.text.length - 1;
+        } else {
+          start = i + 1;
+        }
+
+        break;
+      }
+
+      if (i <= 0) {
+        start = 0;
+      }
+    }
+
+    for (var i = start + 1; i < controller.text.length; i++) {
+      var char = controller.text[i];
+      if (char == ' ') {
+        end = i;
+        break;
+      }
+    }
+
+    return (start, end);
   }
 
   void sendMessage() {
@@ -170,10 +249,79 @@ class MessageInputState extends State<MessageInput> {
     });
   }
 
+  void updateAutofillScroll() {
+    if (!autofillScrollController.hasClients) {
+      return;
+    }
+    if (autoFillSelection == null) {
+      autofillScrollController.jumpTo(0);
+      return;
+    }
+
+    int totalChars = 0;
+    int selectionChars = 0;
+    for (int i = 0; i < autoFillResults!.length; i++) {
+      totalChars += autoFillResults![i].result.length;
+
+      if (autoFillSelection! > i) {
+        selectionChars += autoFillResults![i].result.length;
+      }
+    }
+
+    var maxOffset = autofillScrollController.position.maxScrollExtent;
+
+    var amount = selectionChars.toDouble() / totalChars.toDouble();
+    var offset = (maxOffset * amount) - 50;
+
+    if (offset < 0) {
+      offset = 0;
+    }
+
+    var distance = (offset - autofillScrollController.offset).abs();
+    var maxDistance =
+        autofillScrollController.position.viewportDimension * 0.25;
+
+    if (distance > maxDistance) {
+      autofillScrollController.animateTo(offset,
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeInOutExpo);
+    }
+  }
+
   KeyEventResult onKey(FocusNode node, RawKeyEvent event) {
     if (BuildConfig.MOBILE) return KeyEventResult.ignored;
 
+    if (event.isKeyPressed(LogicalKeyboardKey.tab)) {
+      if (autoFillResults == null || autoFillResults!.isEmpty) {
+        autoFillSelection = null;
+        return KeyEventResult.ignored;
+      } else {
+        if (autoFillSelection == null) {
+          setState(() {
+            autoFillSelection = 0;
+            updateAutofillScroll();
+          });
+        } else {
+          setState(() {
+            autoFillSelection = (autoFillSelection! + 1);
+            if (autoFillSelection! >= autoFillResults!.length) {
+              autoFillSelection = 0;
+            }
+
+            updateAutofillScroll();
+          });
+        }
+
+        return KeyEventResult.handled;
+      }
+    }
+
     if (event.isKeyPressed(LogicalKeyboardKey.enter)) {
+      if (autoFillSelection != null && autoFillRange != null) {
+        applyAutoFill(autoFillResults![autoFillSelection!]);
+        return KeyEventResult.handled;
+      }
+
       if (event.isShiftPressed) {
         return KeyEventResult.ignored;
       }
@@ -193,6 +341,28 @@ class MessageInputState extends State<MessageInput> {
     }
 
     return KeyEventResult.ignored;
+  }
+
+  void applyAutoFill(AutofillSearchResult result) {
+    var replacement = result.slug;
+
+    var checkWhitespaceAt = autoFillRange!.$2;
+
+    if (checkWhitespaceAt < controller.text.length) {
+      if (controller.text[checkWhitespaceAt] != " ") {
+        replacement = "$replacement ";
+      }
+    } else {
+      replacement = "$replacement ";
+    }
+
+    controller.text = controller.text
+        .replaceRange(autoFillRange!.$1, autoFillRange!.$2, replacement);
+    setState(() {
+      autoFillSelection = null;
+      autoFillResults = null;
+      autoFillRange = null;
+    });
   }
 
   @override
@@ -219,19 +389,7 @@ class MessageInputState extends State<MessageInput> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.max,
                         children: [
-                          if (widget.enabled)
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
-                              child: SizedBox(
-                                width: widget.size,
-                                height: widget.size,
-                                child: tiamat.IconButton(
-                                  icon: Icons.add,
-                                  size: widget.size / 2,
-                                  onPressed: addAttachment,
-                                ),
-                              ),
-                            ),
+                          if (widget.enabled) addAttachmentButton(),
                           Flexible(
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(5),
@@ -243,66 +401,14 @@ class MessageInputState extends State<MessageInput> {
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Expanded(
-                                      child: Padding(
-                                        padding: const EdgeInsets.fromLTRB(
-                                            8, 0, 4, 0),
-                                        child: Stack(
-                                          children: [
-                                            TextField(
-                                              controller: controller,
-                                              focusNode: textFocus,
-                                              readOnly: !widget.enabled,
-                                              maxLines: null,
-                                              cursorWidth: 1,
-
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodyMedium!,
-                                              contextMenuBuilder:
-                                                  contextMenuBuilder,
-                                              decoration: InputDecoration(
-                                                  contentPadding:
-                                                      const EdgeInsets.fromLTRB(
-                                                          0, 13, 0, 12),
-                                                  border: InputBorder.none,
-                                                  isDense: true,
-                                                  hintText: widget.hintText),
-                                              //decoration: null,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    if (widget.enabled)
-                                      Padding(
-                                        padding: const EdgeInsets.all(2.0),
-                                        child: SizedBox(
-                                            width: widget.size,
-                                            height: widget.size,
-                                            child: tiamat.IconButton(
-                                              icon: Icons.face,
-                                              size: widget.size / 2,
-                                              onPressed: toggleEmojiOverlay,
-                                            )),
-                                      ),
+                                    textInput(context),
+                                    if (widget.enabled) toggleEmojiButton(),
                                   ],
                                 ),
                               ),
                             ),
                           ),
-                          if (widget.enabled)
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(4, 0, 0, 0),
-                              child: SizedBox(
-                                  width: widget.size,
-                                  height: widget.size,
-                                  child: tiamat.IconButton(
-                                    icon: Icons.send,
-                                    onPressed: sendMessage,
-                                    size: widget.size / 2,
-                                  )),
-                            )
+                          if (widget.enabled) sendMessageButton()
                         ]),
                   ),
                 ),
@@ -310,27 +416,11 @@ class MessageInputState extends State<MessageInput> {
                   child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Expanded(
-                          child: SizedBox(),
-                        ),
-                        if (widget.readIndicator != null)
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(4),
-                            child: Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                onTap: widget.onReadReceiptsClicked,
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(8, 2, 2, 2),
-                                  child: SizedBox(
-                                    width: 150,
-                                    child: widget.readIndicator!,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          )
+                        const SizedBox(height: 30),
+                        if (autoFillResults != null) autofillResultsList(),
+                        if (autoFillResults == null)
+                          const Expanded(child: SizedBox()),
+                        if (widget.readIndicator != null) readReceipts()
                       ]),
                 ),
                 if (widget.availibleEmoticons != null &&
@@ -344,6 +434,161 @@ class MessageInputState extends State<MessageInput> {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  ClipRRect readReceipts() {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(4),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: widget.onReadReceiptsClicked,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(8, 2, 2, 2),
+            child: SizedBox(
+              width: 150,
+              child: widget.readIndicator!,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Expanded autofillResultsList() {
+    return Expanded(
+      child: ShaderMask(
+        shaderCallback: (rect) {
+          return const LinearGradient(
+            begin: Alignment.centerRight,
+            end: Alignment.center,
+            colors: [
+              Colors.purple,
+              Colors.transparent,
+            ],
+            stops: [
+              0.0,
+              0.1,
+            ],
+          ).createShader(rect);
+        },
+        blendMode: BlendMode.dstOut,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
+          child: SizedBox(
+            height: 30,
+            child: ImplicitlyAnimatedList(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.fromLTRB(0, 0, 300, 0),
+              itemData: autoFillResults!,
+              controller: autofillScrollController,
+              shrinkWrap: true,
+              itemBuilder: (context, data) {
+                bool selected = false;
+
+                if (autoFillSelection != null) {
+                  selected = data == autoFillResults![autoFillSelection!];
+                }
+
+                return ClipRRect(
+                  borderRadius: BorderRadius.circular(3),
+                  child: Material(
+                    color: selected
+                        ? Theme.of(context).extension<ExtraColors>()!.highlight
+                        : Colors.transparent,
+                    child: InkWell(
+                      onTap: () => applyAutoFill(data),
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(4, 1, 4, 1),
+                        child: Row(
+                          children: [
+                            if (data is AutofillSearchResultEmoticon)
+                              EmojiWidget(data.emoticon),
+                            tiamat.Text.labelLow(
+                              data.result,
+                              color: selected
+                                  ? Theme.of(context).colorScheme.onPrimary
+                                  : null,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Padding sendMessageButton() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(4, 0, 0, 0),
+      child: SizedBox(
+          width: widget.size,
+          height: widget.size,
+          child: tiamat.IconButton(
+            icon: Icons.send,
+            onPressed: sendMessage,
+            size: widget.size / 2,
+          )),
+    );
+  }
+
+  Padding toggleEmojiButton() {
+    return Padding(
+      padding: const EdgeInsets.all(2.0),
+      child: SizedBox(
+          width: widget.size,
+          height: widget.size,
+          child: tiamat.IconButton(
+            icon: Icons.face,
+            size: 24,
+            onPressed: toggleEmojiOverlay,
+          )),
+    );
+  }
+
+  Expanded textInput(BuildContext context) {
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(8, 0, 4, 0),
+        child: Stack(
+          children: [
+            TextField(
+              controller: controller,
+              focusNode: textFocus,
+              readOnly: !widget.enabled,
+              style: Theme.of(context).textTheme.bodyMedium!,
+              contextMenuBuilder: contextMenuBuilder,
+              decoration: InputDecoration(
+                  contentPadding: const EdgeInsets.fromLTRB(0, 13, 0, 12),
+                  border: InputBorder.none,
+                  isDense: true,
+                  hintText: widget.hintText),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Padding addAttachmentButton() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
+      child: SizedBox(
+        width: widget.size,
+        height: widget.size,
+        child: tiamat.IconButton(
+          icon: Icons.add,
+          size: widget.size / 2,
+          onPressed: addAttachment,
         ),
       ),
     );

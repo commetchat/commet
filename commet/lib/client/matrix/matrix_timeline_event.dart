@@ -125,6 +125,12 @@ class MatrixTimelineEvent implements TimelineEvent {
 
     var result = dict[event.type];
 
+    if (event.type == matrix.EventTypes.Message) {
+      if (event.messageType == "m.emote") {
+        result = EventType.emote;
+      }
+    }
+
     if (event.type == matrix.EventTypes.RoomMember &&
         event.content['membership'] != null) {
       result = convertMembershipEvent(event);
