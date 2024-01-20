@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:commet/client/components/gif/gif_component.dart';
 import 'package:commet/config/build_config.dart';
-import 'package:commet/config/layout_config.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/emoji_widget.dart';
 import 'package:commet/ui/atoms/rich_text_field.dart';
