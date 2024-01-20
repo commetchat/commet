@@ -61,6 +61,9 @@ class MatrixGifComponent implements GifComponent<MatrixClient, MatrixRoom> {
       var content = {
         "body": gif.fullResUrl.pathSegments.last,
         "url": uri.toString(),
+        if (preferences.stickerCompatibilityMode) "msgtype": "m.image",
+        if (preferences.stickerCompatibilityMode)
+          "chat.commet.type": "chat.commet.sticker",
         "info": {
           "w": gif.x.toInt(),
           "h": gif.y.toInt(),
@@ -73,7 +76,10 @@ class MatrixGifComponent implements GifComponent<MatrixClient, MatrixRoom> {
       }
 
       var id = await matrixRoom.sendEvent(content,
-          type: matrix.EventTypes.Sticker, inReplyTo: replyingTo);
+          type: preferences.stickerCompatibilityMode
+              ? matrix.EventTypes.Message
+              : matrix.EventTypes.Sticker,
+          inReplyTo: replyingTo);
 
       if (id != null) {
         var event = await matrixRoom.getEventById(id);
