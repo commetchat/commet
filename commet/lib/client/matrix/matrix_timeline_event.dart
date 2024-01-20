@@ -8,6 +8,7 @@ import 'package:commet/client/timeline.dart';
 import 'package:commet/ui/atoms/rich_text/matrix_html_parser.dart';
 import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:commet/utils/mime.dart';
+import 'package:commet/utils/text_utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:matrix/matrix.dart' as matrix;
@@ -67,6 +68,9 @@ class MatrixTimelineEvent implements TimelineEvent {
 
   @override
   late EventType type;
+
+  @override
+  List<Uri>? links;
 
   MatrixTimelineEvent(matrix.Event event, matrix.Client client,
       {matrix.Timeline? timeline}) {
@@ -224,6 +228,12 @@ class MatrixTimelineEvent implements TimelineEvent {
     } else {
       bodyFormat = "chat.commet.default";
       formattedBody = body!;
+    }
+
+    links = TextUtils.findUrls(formattedBody!);
+    links?.removeWhere((element) => element.authority == "matrix.to");
+    if (links?.isEmpty == true) {
+      links = null;
     }
 
     formattedContent =
