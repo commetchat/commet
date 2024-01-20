@@ -55,11 +55,14 @@ class MessageInput extends StatefulWidget {
       this.gifComponent,
       this.onReadReceiptsClicked,
       this.sendGif,
+      this.size = 35,
+      this.iconScale = 0.5,
       this.sendSticker,
       this.processAutofill,
       this.cancelReply});
   final double maxHeight;
-  final double size = 48;
+  final double size;
+  final double iconScale;
   final bool isRoomE2EE;
   final MessageInputSendResult Function(String message)? onSendMessage;
   final Widget? readIndicator;
@@ -140,7 +143,7 @@ class MessageInputState extends State<MessageInput> {
 
   @override
   void initState() {
-    controller = TextEditingController();
+    controller = RichTextEditingController();
     keyboardFocusSubscription =
         widget.focusKeyboard?.listen((_) => onKeyboardFocusRequested());
 
@@ -367,6 +370,7 @@ class MessageInputState extends State<MessageInput> {
 
   @override
   Widget build(BuildContext context) {
+    var padding = const EdgeInsets.fromLTRB(5, 0, 5, 0);
     return Material(
       color: Colors.transparent,
       child: TextFieldTapRegion(
@@ -384,22 +388,25 @@ class MessageInputState extends State<MessageInput> {
                 ConstrainedBox(
                   constraints: const BoxConstraints(maxHeight: 200),
                   child: Padding(
-                    padding: const EdgeInsets.all(2),
+                    padding: padding,
                     child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.max,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           if (widget.enabled) addAttachmentButton(),
                           Flexible(
                             child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(5),
                               child: Container(
                                 decoration: BoxDecoration(
                                     color: Theme.of(context)
                                         .extension<ExtraColors>()!
                                         .surfaceLow2),
                                 child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  mainAxisSize: MainAxisSize.min,
                                   children: [
                                     textInput(context),
                                     if (widget.enabled) toggleEmojiButton(),
@@ -420,7 +427,9 @@ class MessageInputState extends State<MessageInput> {
                         if (autoFillResults != null) autofillResultsList(),
                         if (autoFillResults == null)
                           const Expanded(child: SizedBox()),
-                        if (widget.readIndicator != null) readReceipts()
+                        if (widget.readIndicator != null &&
+                            autoFillResults?.isEmpty != false)
+                          readReceipts()
                       ]),
                 ),
                 if (widget.availibleEmoticons != null &&
@@ -536,41 +545,48 @@ class MessageInputState extends State<MessageInput> {
           child: tiamat.IconButton(
             icon: Icons.send,
             onPressed: sendMessage,
-            size: 24,
+            size: widget.size * widget.iconScale,
           )),
     );
   }
 
-  Padding toggleEmojiButton() {
+  Widget toggleEmojiButton() {
     return Padding(
-      padding: const EdgeInsets.all(2.0),
+      padding: const EdgeInsets.fromLTRB(0, 0, 2, 0),
       child: SizedBox(
           width: widget.size,
           height: widget.size,
           child: tiamat.IconButton(
             icon: Icons.face,
-            size: 24,
+            size: widget.size * widget.iconScale,
             onPressed: toggleEmojiOverlay,
           )),
     );
   }
 
   Expanded textInput(BuildContext context) {
+    var height = Theme.of(context).textTheme.bodyMedium!.fontSize!;
+    var padding = widget.size - height;
+
     return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(8, 2, 4, 2),
-        child: Stack(
-          children: [
-            RichTextField(
-              controller: controller,
-              focus: textFocus,
-              readOnly: !widget.enabled,
-              style: Theme.of(context).textTheme.bodyMedium!,
-              contextMenuBuilder: contextMenuBuilder,
-              hintText: widget.hintText,
-            ),
-          ],
-        ),
+      child: Stack(
+        children: [
+          TextField(
+            controller: controller,
+            focusNode: textFocus,
+            readOnly: !widget.enabled,
+            textAlignVertical: TextAlignVertical.center,
+            style: Theme.of(context).textTheme.bodyMedium!,
+            maxLines: null,
+            contextMenuBuilder: contextMenuBuilder,
+            decoration: InputDecoration(
+                contentPadding:
+                    EdgeInsets.fromLTRB(8, padding / 2, 4, padding / 2),
+                border: InputBorder.none,
+                isDense: true,
+                hintText: widget.hintText),
+          ),
+        ],
       ),
     );
   }
@@ -583,7 +599,7 @@ class MessageInputState extends State<MessageInput> {
         height: widget.size,
         child: tiamat.IconButton(
           icon: Icons.add,
-          size: 24,
+          size: widget.size * widget.iconScale,
           onPressed: addAttachment,
         ),
       ),

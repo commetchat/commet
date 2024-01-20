@@ -1,3 +1,4 @@
+import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/molecules/message_input.dart';
 import 'package:commet/ui/molecules/read_indicator.dart';
 import 'package:commet/ui/molecules/timeline_viewer.dart';
@@ -74,6 +75,8 @@ class ChatView extends StatelessWidget {
       onTextUpdated: state.onInputTextUpdated,
       addAttachment: state.addAttachment,
       removeAttachment: state.removeAttachment,
+      size: Layout.mobile ? 40 : 35,
+      iconScale: Layout.mobile ? 0.6 : 0.5,
       isProcessing: state.processing,
       enabled: state.room.permissions.canSendMessage,
       typingUsernames:
