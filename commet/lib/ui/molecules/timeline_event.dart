@@ -1,3 +1,4 @@
+import 'package:commet/client/components/url_preview/url_preview_component.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/generic_room_event.dart';
@@ -115,36 +116,6 @@ class _TimelineEventState extends State<TimelineEventView> {
           "Text that is placed below a message when the message fails to send",
       name: "errorMessageFailedToSend");
 
-  @override
-  void initState() {
-    if (widget.event.relatedEventId != null) {
-      relatedEvent = widget.timeline.tryGetEvent(widget.event.relatedEventId!);
-      if (relatedEvent == null) {
-        fetchRelatedEvent();
-      }
-    }
-
-    widget.timeline.client.getPeer(widget.event.senderId).loading?.then((_) {
-      if (mounted) setState(() {});
-    });
-
-    super.initState();
-  }
-
-  void fetchRelatedEvent() async {
-    var event =
-        await widget.timeline.fetchEventById(widget.event.relatedEventId!);
-    if (mounted)
-      setState(() {
-        relatedEvent = event;
-      });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return eventToWidget(widget.event) ?? Container();
-  }
-
   String get displayName =>
       widget.timeline.room.client.getPeer(widget.event.senderId).displayName;
 
@@ -160,6 +131,75 @@ class _TimelineEventState extends State<TimelineEventView> {
   String? get relatedEventDisplayName => relatedEvent == null
       ? null
       : widget.timeline.client.getPeer(relatedEvent!.senderId).displayName;
+
+  UrlPreviewData? urlPreviews;
+
+  @override
+  void initState() {
+    if (widget.event.relatedEventId != null) {
+      relatedEvent = widget.timeline.tryGetEvent(widget.event.relatedEventId!);
+      if (relatedEvent == null) {
+        fetchRelatedEvent();
+      }
+    }
+
+    widget.timeline.client.getPeer(widget.event.senderId).loading?.then((_) {
+      if (mounted) setState(() {});
+    });
+
+    if (widget.event.links != null) {
+      getCachedUrlPreview();
+      if (urlPreviews == null) {
+        fetchUrlPreviews();
+      }
+    }
+
+    super.initState();
+  }
+
+  void fetchRelatedEvent() async {
+    var event =
+        await widget.timeline.fetchEventById(widget.event.relatedEventId!);
+    if (mounted)
+      setState(() {
+        relatedEvent = event;
+      });
+  }
+
+  void getCachedUrlPreview() {
+    var component =
+        widget.timeline.room.client.getComponent<UrlPreviewComponent>();
+
+    if (component == null) {
+      return;
+    }
+
+    var cached = component.getCachedPreview(widget.timeline.room, widget.event);
+    urlPreviews = cached;
+  }
+
+  void fetchUrlPreviews() async {
+    if (widget.event.links == null) {
+      return;
+    }
+
+    var component =
+        widget.timeline.room.client.getComponent<UrlPreviewComponent>();
+
+    if (component == null) {
+      return;
+    }
+
+    var data = await component.getPreview(widget.timeline.room, widget.event);
+    setState(() {
+      urlPreviews = data;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return eventToWidget(widget.event) ?? Container();
+  }
 
   Widget? eventToWidget(TimelineEvent event) {
     if (event.status == TimelineEventStatus.removed) return const SizedBox();
@@ -186,6 +226,7 @@ class _TimelineEventState extends State<TimelineEventView> {
           isInReply: widget.event.relatedEventId != null,
           edited: widget.event.edited,
           onReactionTapped: widget.onReactionTapped,
+          links: urlPreviews,
           body: buildBody(),
           child: event.status == TimelineEventStatus.error
               ? tiamat.Text.error(errorMessageFailedToSend)

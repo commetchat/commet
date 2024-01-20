@@ -58,6 +58,15 @@ class TextUtils {
     );
   }
 
+  static List<Uri>? findUrls(String text) {
+    var matches = _urlRegex.allMatches(text);
+    if (matches.isEmpty) return null;
+
+    return matches
+        .map((e) => Uri.parse(text.substring(e.start, e.end)))
+        .toList();
+  }
+
   static List<InlineSpan> formatMatches(
       Iterable<RegExpMatch> matches, String text,
       {required InlineSpan Function(String matchedText, TextStyle? theme)

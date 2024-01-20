@@ -145,9 +145,9 @@ class Text extends StatelessWidget {
         autoAdjustBrightness = false,
         super(key: key);
 
-  const Text.tiny(this.text, {Key? key, this.overflow, this.maxLines})
+  const Text.tiny(this.text,
+      {Key? key, this.overflow, this.maxLines, this.color})
       : type = TextType.tiny,
-        color = null,
         autoAdjustBrightness = false,
         super(key: key);
 
