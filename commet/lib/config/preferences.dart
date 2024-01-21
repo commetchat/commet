@@ -21,6 +21,7 @@ class Preferences {
   static const String _unifiedPushEndpoint = "unified_push_endpoint";
   static const String _pushGateway = "push_gateway";
   static const String _lastDownloadLocation = "last_download_location";
+  static const String _urlPreviewInE2EEChat = "use_url_preview_in_e2ee_chat";
   final StreamController _onSettingChanged = StreamController.broadcast();
   Stream get onSettingChanged => _onSettingChanged.stream;
   bool isInit = false;
@@ -158,4 +159,11 @@ class Preferences {
     await _preferences!.setString(_lastDownloadLocation, value);
     _onSettingChanged.add(null);
   }
+
+  Future<void> setUseUrlPreviewInE2EEChat(bool value) async {
+    await _preferences!.setBool(_urlPreviewInE2EEChat, value);
+  }
+
+  bool get urlPreviewInE2EEChat =>
+      _preferences!.getBool(_urlPreviewInE2EEChat) ?? false;
 }
