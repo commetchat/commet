@@ -1234,5 +1234,11 @@
     "description": "Button text to generate a recovery key",
     "type": "text",
     "placeholders": {}
+  },
+  "cantSentMessagePrompt": "Vous n'avez pas la permission d'envoyer des messages dans ce salon",
+  "@cantSentMessagePrompt": {
+    "description": "Text that explains the user cannot send a message in this room",
+    "type": "text",
+    "placeholders": {}
   }
 }
