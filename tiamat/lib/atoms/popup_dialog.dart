@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tiamat/atoms/button.dart';
+import 'package:tiamat/config/config.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
@@ -64,8 +65,11 @@ class PopupDialog extends StatelessWidget {
         barrierLabel: "POPUP_DIALOG",
         barrierColor: barrierColor,
         pageBuilder: (context, _, __) {
-          return PopupDialog(
-              title: title, content: content, width: width, height: height);
+          return Theme(
+            data: Theme.of(context),
+            child: PopupDialog(
+                title: title, content: content, width: width, height: height),
+          );
         },
         transitionDuration: const Duration(milliseconds: 300),
         transitionBuilder: (context, animation, secondaryAnimation, child) =>
@@ -81,14 +85,16 @@ class PopupDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      contentPadding: const EdgeInsets.all(8),
-      title: Row(
-        children: [
-          Text(title),
-        ],
-      ),
-      content: content,
-    );
+        backgroundColor:
+            Theme.of(context).extension<ExtraColors>()!.surfaceHigh1,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        contentPadding: const EdgeInsets.all(8),
+        title: Row(
+          children: [
+            Text(title),
+          ],
+        ),
+        content: content);
   }
 }
