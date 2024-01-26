@@ -5,6 +5,7 @@ import 'package:commet/ui/atoms/emoji_widget.dart';
 import 'package:commet/ui/molecules/editable_label.dart';
 import 'package:commet/ui/molecules/image_picker.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
+import 'package:commet/ui/pages/settings/categories/room/emoji_packs/bulk_import_view.dart';
 import 'package:commet/utils/common_animation.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/components/emoticon/emoji_pack.dart';
@@ -28,9 +29,13 @@ class RoomEmojiPackSettingsView extends StatefulWidget {
   final Future<void> Function(
       EmoticonPack pack, Emoticon emoticon, String name)? renameEmoticon;
 
+  final Function(String name, int avatarIndex, List<String> names,
+      List<Uint8List> imageDatas)? importPack;
+
   final bool editable;
   final bool canCreatePack;
   final bool defaultExpanded;
+  final bool showBulkImport;
   const RoomEmojiPackSettingsView(this.packs,
       {this.createNewPack,
       super.key,
@@ -39,6 +44,8 @@ class RoomEmojiPackSettingsView extends StatefulWidget {
       this.editable = true,
       this.canCreatePack = true,
       this.defaultExpanded = false,
+      this.showBulkImport = true,
+      this.importPack,
       this.renameEmoticon,
       this.deleteEmoticon});
 
@@ -54,6 +61,10 @@ class _RoomEmojiPackSettingsViewState extends State<RoomEmojiPackSettingsView> {
   String get promptCreateEmoticonPack => Intl.message("Create pack",
       name: "promptCreateEmoticonPack",
       desc: "Prompt to create a new emoticon pack, for emoji or stickers");
+
+  String get promptImportPack => Intl.message("Import pack",
+      name: "promptImportPack",
+      desc: "Prompt to import a set of emoticons from an existing pack");
 
   @override
   void initState() {
@@ -82,6 +93,7 @@ class _RoomEmojiPackSettingsViewState extends State<RoomEmojiPackSettingsView> {
         AnimatedList(
           initialItemCount: itemCount,
           shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
           key: _listKey,
           itemBuilder: (context, index, animation) {
             return SizeTransition(
@@ -98,18 +110,37 @@ class _RoomEmojiPackSettingsViewState extends State<RoomEmojiPackSettingsView> {
             );
           },
         ),
-        if (widget.editable && widget.canCreatePack)
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: CircleButton(
-                radius: 20,
-                icon: Icons.add,
-                onPressed: promptNewPack,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            if (widget.editable &&
+                widget.canCreatePack &&
+                widget.showBulkImport)
+              Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: CircleButton(
+                    radius: 20,
+                    icon: Icons.auto_awesome_motion,
+                    onPressed: promptBulkImport,
+                  ),
+                ),
               ),
-            ),
-          )
+            if (widget.editable && widget.canCreatePack)
+              Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: CircleButton(
+                    radius: 20,
+                    icon: Icons.add,
+                    onPressed: promptNewPack,
+                  ),
+                ),
+              ),
+          ],
+        )
       ],
     );
   }
@@ -149,6 +180,21 @@ class _RoomEmojiPackSettingsViewState extends State<RoomEmojiPackSettingsView> {
         return EmoticonCreator(
           pack: true,
           create: widget.createNewPack,
+        );
+      },
+    );
+  }
+
+  void promptBulkImport() async {
+    await AdaptiveDialog.show(
+      context,
+      title: promptImportPack,
+      builder: (context) {
+        return EmoticonBulkImportDialog(
+          importPack: (name, avatarIndex, names, imageDatas) {
+            widget.importPack?.call(name, avatarIndex, names, imageDatas);
+            Navigator.pop(context);
+          },
         );
       },
     );
@@ -348,6 +394,7 @@ class _EmojiPackEditorState extends State<EmojiPackEditor> {
               AnimatedList(
                 shrinkWrap: true,
                 key: _listKey,
+                physics: const NeverScrollableScrollPhysics(),
                 initialItemCount: _itemCount,
                 itemBuilder: (context, index, animation) {
                   return SizeTransition(

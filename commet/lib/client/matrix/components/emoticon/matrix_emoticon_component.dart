@@ -3,7 +3,9 @@ import 'dart:typed_data';
 import 'package:commet/client/components/emoticon/emoji_pack.dart';
 import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_emoticon_pack.dart';
+import 'package:commet/client/matrix/components/emoticon/matrix_import_emoticon_pack_task.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
+import 'package:commet/main.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:flutter/material.dart';
 
@@ -71,7 +73,48 @@ class MatrixEmoticonComponent extends EmoticonComponent<MatrixClient> {
       }
     };
 
-    String stateKey = name;
+    String stateKey = getNewPackKeyState(name);
+
+    await setState(stateKey, content);
+    var pack = MatrixEmoticonPack(this, stateKey, content);
+    _packs.add(pack);
+    return pack;
+  }
+
+  @override
+  Future<void> importEmoticonPack(String name, int avatarIndex,
+      List<String> names, List<Uint8List> imageDatas) async {
+    var task = MatrixImportEmoticonPackTask(imageDatas, client);
+    backgroundTaskManager.addTask(task);
+    var uris = await task.uploadImages();
+
+    var content = <String, dynamic>{
+      "pack": {
+        "display_name": name,
+        "avatar_url": uris[avatarIndex].toString(),
+      },
+      "images": <String, dynamic>{}
+    };
+
+    for (var i = 0; i < names.length; i++) {
+      var name = names[i];
+      content["images"]![name] = {
+        "display_name": name,
+        "url": uris[i]!.toString()
+      };
+    }
+
+    String stateKey = getNewPackKeyState(name);
+
+    await setState(stateKey, content);
+
+    var pack = MatrixEmoticonPack(this, stateKey, content);
+    _packs.add(pack);
+    task.complete();
+  }
+
+  String getNewPackKeyState(String packName) {
+    var stateKey = packName;
     var states = getAllStates();
 
     // Check for existing and empty state keys, and reuse those keys first
@@ -82,10 +125,7 @@ class MatrixEmoticonComponent extends EmoticonComponent<MatrixClient> {
       }
     }
 
-    await setState(stateKey, content);
-    var pack = MatrixEmoticonPack(this, stateKey, content);
-    _packs.add(pack);
-    return pack;
+    return stateKey;
   }
 
   @override

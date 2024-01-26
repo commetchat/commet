@@ -62,6 +62,7 @@ class ThemeLight {
               ))),
       iconTheme: const IconThemeData(color: ThemeLightColors.secondary),
       dividerColor: ThemeLightColors.outlineColor,
+      dialogBackgroundColor: ThemeLightColors.surface,
       dividerTheme:
           const DividerThemeData(color: ThemeLightColors.outlineColor),
       dialogTheme: const DialogTheme(

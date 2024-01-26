@@ -36,6 +36,7 @@ class _RoomEmojiPackSettingsPageState extends State<RoomEmojiPackSettingsPage> {
       canCreatePack: component.canCreatePack,
       renameEmoticon: renameEmoticon,
       editable: widget.room.permissions.canEditRoomEmoticons,
+      importPack: importPack,
     );
   }
 
@@ -54,5 +55,10 @@ class _RoomEmojiPackSettingsPageState extends State<RoomEmojiPackSettingsPage> {
   Future<void> renameEmoticon(
       EmoticonPack pack, Emoticon emoticon, String name) async {
     await pack.renameEmoticon(emoticon, name);
+  }
+
+  Future<void> importPack(String name, int avatarIndex, List<String> names,
+      List<Uint8List> imageDatas) async {
+    component.importEmoticonPack(name, avatarIndex, names, imageDatas);
   }
 }
