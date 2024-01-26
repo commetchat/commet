@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:just_the_tooltip/just_the_tooltip.dart';
 import 'package:tiamat/atoms/seperator.dart';
 import 'package:tiamat/atoms/text.dart';
 import 'package:tiamat/atoms/tile.dart';
@@ -161,7 +160,6 @@ class ContextMenu extends StatefulWidget {
 }
 
 class _ContextMenuState extends State<ContextMenu> {
-  JustTheController controller = JustTheController();
   Offset mousePosition = Offset.zero;
   OverlayEntry? entry;
 
