@@ -93,6 +93,7 @@ class _RoomEmojiPackSettingsViewState extends State<RoomEmojiPackSettingsView> {
         AnimatedList(
           initialItemCount: itemCount,
           shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
           key: _listKey,
           itemBuilder: (context, index, animation) {
             return SizeTransition(
@@ -393,6 +394,7 @@ class _EmojiPackEditorState extends State<EmojiPackEditor> {
               AnimatedList(
                 shrinkWrap: true,
                 key: _listKey,
+                physics: const NeverScrollableScrollPhysics(),
                 initialItemCount: _itemCount,
                 itemBuilder: (context, index, animation) {
                   return SizeTransition(

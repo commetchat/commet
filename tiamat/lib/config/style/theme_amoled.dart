@@ -72,6 +72,7 @@ class ThemeAmoled {
       dialogTheme: const DialogTheme(
           backgroundColor: ThemeAmoledColors.surface,
           shadowColor: Colors.black),
+      dialogBackgroundColor: ThemeAmoledColors.highlightColor,
       switchTheme: const SwitchThemeData(
           thumbColor: MaterialStatePropertyAll(ThemeAmoledColors.secondary)),
       dividerColor: ThemeAmoledColors.outlineColor,
