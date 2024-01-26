@@ -38,6 +38,39 @@ Widget wbContextMenu(BuildContext context) {
   );
 }
 
+@UseCase(name: "Modal", type: ContextMenu)
+Widget wbContextMenuModal(BuildContext context) {
+  return Tile.low1(
+    child: Center(
+        child: Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Material(
+          child: ContextMenu(
+            modal: true,
+            items: [
+              ContextMenuItem(
+                  text: "Copy Text",
+                  icon: Icons.copy_rounded,
+                  onPressed: () {
+                    print("Copying text");
+                  }),
+              ContextMenuItem(
+                text: "Delete Message",
+                icon: Icons.delete,
+                color: Theme.of(context).colorScheme.error,
+              ),
+            ],
+            child: Padding(
+                padding: EdgeInsets.all(8), child: const Icon(Icons.mouse)),
+          ),
+        ),
+      ),
+    )),
+  );
+}
+
 class ContextMenuOverlay extends StatefulWidget {
   const ContextMenuOverlay(
       {super.key, required this.globalOffset, required this.items, this.close});
@@ -149,11 +182,16 @@ class _ContextMenuOverlayState extends State<ContextMenuOverlay>
 
 class ContextMenu extends StatefulWidget {
   const ContextMenu(
-      {super.key, required this.child, this.separator, required this.items});
+      {super.key,
+      required this.child,
+      this.separator,
+      required this.items,
+      this.modal = false});
 
   final Seperator? separator;
   final List<ContextMenuItem> items;
   final Widget child;
+  final bool modal;
 
   @override
   State<ContextMenu> createState() => _ContextMenuState();
@@ -202,13 +240,19 @@ class _ContextMenuState extends State<ContextMenu> {
   Widget build(BuildContext context) {
     return Listener(
       onPointerDown: (event) {
+        print("got pointer down");
         mousePosition = event.position;
       },
-      child: GestureDetector(
-        onLongPress: () => _showMenu(context, mousePosition),
-        onSecondaryTap: () => _showMenu(context, mousePosition),
-        child: widget.child,
-      ),
+      child: widget.modal
+          ? InkWell(
+              child: widget.child,
+              onTap: () => _showMenu(context, mousePosition),
+            )
+          : GestureDetector(
+              onLongPress: () => _showMenu(context, mousePosition),
+              onSecondaryTap: () => _showMenu(context, mousePosition),
+              child: widget.child,
+            ),
     );
   }
 
