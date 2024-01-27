@@ -69,4 +69,7 @@ class SimulatedTimelineEvent implements TimelineEvent {
   Widget buildFormattedContent() {
     throw UnimplementedError();
   }
+
+  @override
+  String get rawContent => "";
 }

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/client/timeline.dart';
+import 'package:commet/ui/atoms/code_block.dart';
 import 'package:commet/ui/molecules/message_popup_menu/message_popup_menu_view_overlay.dart';
 import 'package:commet/ui/molecules/message_popup_menu/message_popup_menu_view_dialog.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
@@ -83,5 +84,17 @@ class MessagePopupMenuState extends State<MessagePopupMenu> {
 
   void copyToClipboard() {
     services.Clipboard.setData(services.ClipboardData(text: event.body!));
+  }
+
+  void showSource(BuildContext context) {
+    AdaptiveDialog.show(
+      context,
+      title: "Source",
+      builder: (context) {
+        return SelectionArea(
+          child: Codeblock(text: event.rawContent, language: "json"),
+        );
+      },
+    );
   }
 }
