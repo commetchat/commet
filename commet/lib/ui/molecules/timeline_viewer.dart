@@ -137,21 +137,27 @@ class TimelineViewerState extends State<TimelineViewer> {
   onEventLongPress(TimelineEvent event) {
     if (BuildConfig.MOBILE) {
       showModalBottomSheet(
-          context: context, builder: (context) => buildPopupMenu(event, true));
+          showDragHandle: true,
+          isScrollControlled: true,
+          elevation: 0,
+          context: context,
+          builder: (context) => buildPopupMenu(event, true));
     }
   }
 
   Widget buildPopupMenu(TimelineEvent event, bool asDialog) {
-    return MessagePopupMenu(
-      event,
-      widget.timeline,
-      isEditable: canUserEditEvent(event),
-      asDialog: asDialog,
-      isDeletable: widget.timeline.canDeleteEvent(event),
-      setEditingEvent: widget.setEditingEvent,
-      setReplyingEvent: widget.setReplyingEvent,
-      addReaction: widget.onAddReaction,
-      onPopupStateChanged: (state) => messagePopupIsBeingInteracted = state,
+    return SingleChildScrollView(
+      child: MessagePopupMenu(
+        event,
+        widget.timeline,
+        isEditable: canUserEditEvent(event),
+        asDialog: asDialog,
+        isDeletable: widget.timeline.canDeleteEvent(event),
+        setEditingEvent: widget.setEditingEvent,
+        setReplyingEvent: widget.setReplyingEvent,
+        addReaction: widget.onAddReaction,
+        onPopupStateChanged: (state) => messagePopupIsBeingInteracted = state,
+      ),
     );
   }
 

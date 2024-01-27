@@ -99,6 +99,7 @@ abstract class TimelineEvent {
   String? get bodyFormat;
   String? get formattedBody;
   List<Uri>? get links;
+  String get rawContent;
 
   /// This has a global key, and as such should only be displayed on screen in one place at a time.
   /// We cache it here so we dont have to parse formatting again on every rebuild
