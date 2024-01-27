@@ -7,6 +7,7 @@ import 'package:commet/ui/molecules/message_popup_menu/message_popup_menu.dart';
 import 'package:commet/ui/molecules/timeline_event.dart';
 import 'package:commet/utils/common_strings.dart';
 import 'package:flutter/material.dart';
+import 'package:tiamat/atoms/seperator.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class MessagePopupMenuViewDialog extends StatelessWidget {
@@ -109,6 +110,18 @@ class MessagePopupMenuViewDialog extends StatelessWidget {
                 onTap: () {
                   state.copyToClipboard();
                   Navigator.pop(context);
+                },
+              ),
+            ),
+            const Seperator(),
+            SizedBox(
+              height: 50,
+              child: tiamat.TextButton(
+                "Show Source",
+                icon: Icons.code,
+                onTap: () {
+                  Navigator.pop(context);
+                  state.showSource(context);
                 },
               ),
             ),

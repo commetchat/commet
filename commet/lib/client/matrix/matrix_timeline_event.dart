@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:commet/client/attachment.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_emoticon.dart';
@@ -323,4 +325,8 @@ class MatrixTimelineEvent implements TimelineEvent {
 
   @override
   bool get highlight => false;
+
+  @override
+  String get rawContent => const JsonEncoder.withIndent("  ")
+      .convert(const JsonDecoder().convert(jsonEncode(event.toJson())));
 }
