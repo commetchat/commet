@@ -1,4 +1,6 @@
+import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/room.dart';
+import 'package:commet/ui/pages/matrix/room_address_settings/matrix_room_address_settings.dart';
 import 'package:commet/ui/pages/settings/categories/room/general/room_general_settings_view.dart';
 import 'package:flutter/widgets.dart';
 
@@ -21,9 +23,18 @@ class _RoomGeneralSettingsPageState extends State<RoomGeneralSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return RoomGeneralSettingsView(
-      pushRule: pushRule,
-      onPushRuleChanged: setPushRule,
+    return Column(
+      children: [
+        RoomGeneralSettingsView(
+          pushRule: pushRule,
+          onPushRuleChanged: setPushRule,
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        if (widget.room is MatrixRoom)
+          MatrixRoomAddressSettings((widget.room as MatrixRoom).matrixRoom)
+      ],
     );
   }
 

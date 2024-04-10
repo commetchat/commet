@@ -2,7 +2,6 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart' as material;
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:tiamat/tiamat.dart';
-import '../atoms/tooltip.dart';
 
 class EditableLabel extends StatefulWidget {
   const EditableLabel({

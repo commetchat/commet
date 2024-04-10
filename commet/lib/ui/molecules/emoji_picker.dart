@@ -7,7 +7,6 @@ import 'package:tiamat/atoms/image_button.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:commet/client/components/emoticon/emoji_pack.dart';
 import 'package:commet/ui/atoms/emoji_widget.dart';
-import '../atoms/tooltip.dart' as t;
 
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 
@@ -138,7 +137,7 @@ class EmojiPicker extends StatelessWidget {
 
   Widget buildPackButton(int index, void Function()? onTap) {
     return SizedBox(
-      child: t.Tooltip(
+      child: tiamat.Tooltip(
         text: packs[index].displayName,
         preferredDirection: AxisDirection.right,
         child: ImageButton(

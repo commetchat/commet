@@ -4,7 +4,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart';
 import '../../utils/mime.dart';
-import '../atoms/tooltip.dart' as t;
+
+import 'package:tiamat/tiamat.dart' as tiamat;
 
 class ImagePicker extends StatefulWidget {
   const ImagePicker(
@@ -40,7 +41,7 @@ class _ImagePickerState extends State<ImagePicker> {
 
   @override
   Widget build(BuildContext context) {
-    return t.Tooltip(
+    return tiamat.Tooltip(
       text: widget.tooltip,
       preferredDirection: AxisDirection.down,
       child: ImageButton(
