@@ -94,6 +94,7 @@ class _LoginPageViewState extends State<LoginPageView> {
 
     if (message != null) {
       if (context.mounted) {
+        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(message),
