@@ -246,4 +246,9 @@ class SimulatedRoom extends Room {
   Future<TimelineEvent?> getEvent(String eventId) async {
     return null;
   }
+
+  @override
+  List<T>? getAllComponents<T extends RoomComponent<Client, Room>>() {
+    return null;
+  }
 }

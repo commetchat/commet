@@ -1,3 +1,4 @@
+import 'package:commet/client/components/component.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/generic_room_event.dart';
@@ -233,15 +234,29 @@ class _TimelineEventState extends State<TimelineEventView> {
         break;
     }
 
+    var components = widget.timeline.client.getAllComponents();
+    var handler = components
+        ?.where((element) =>
+            element is EventHandlerComponent &&
+            (element as EventHandlerComponent).canHandleEvent(event))
+        .firstOrNull;
+
+    if (handler != null) {
+      var widget = (handler as EventHandlerComponent)
+          .displayTimelineEvent(event, senderName: displayName);
+      if (widget != null) {
+        return widget;
+      }
+    }
+
     if (BuildConfig.DEBUG && preferences.developerMode) {
       return m.Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Placeholder(
-            child: event.source != null
-                ? tiamat.Text.tiny(event.source!)
-                : const Placeholder(
-                    fallbackHeight: 20,
-                  )),
+        child: event.source != null
+            ? tiamat.Text.tiny(event.source!)
+            : const Placeholder(
+                fallbackHeight: 20,
+              ),
       );
     }
     return null;
