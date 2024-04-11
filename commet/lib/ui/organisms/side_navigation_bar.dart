@@ -25,10 +25,13 @@ class SideNavigationBar extends StatefulWidget {
       this.onDirectMessagesSelected,
       this.onSettingsSelected,
       this.onHomeSelected,
+      this.extraEntryBuilders,
       this.clearSpaceSelection});
 
   static ValueKey settingsKey =
       const ValueKey("SIDE_NAVIGATION_SETTINGS_BUTTON");
+
+  final List<Widget Function(double width)>? extraEntryBuilders;
 
   final Peer currentUser;
   final void Function(int index)? onSpaceSelected;
@@ -188,6 +191,14 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                 },
               ),
             ),
+            if (widget.extraEntryBuilders != null)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children:
+                    widget.extraEntryBuilders!.map((e) => e(70.0)).toList(),
+              ),
           ],
         ));
   }
