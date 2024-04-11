@@ -14,7 +14,7 @@ dependencies:
   device_info_plus: ^9.0.3
   #fcm_shared_isolate: ^0.1.0
   file_picker: ^5.2.10
-  flutter_blurhash: ^0.7.0
+  flutter_blurhash: ^0.8.2
   flutter_markdown: ^0.6.9+1
   flutter_olm: ^1.2.0
   flutter_openssl_crypto: ^0.1.0

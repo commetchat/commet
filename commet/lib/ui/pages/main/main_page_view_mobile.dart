@@ -46,24 +46,26 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
     super.initState();
   }
 
+  bool canPop() {
+    switch (panelsKey.currentState?.currentSide) {
+      case RevealSide.right:
+        panelsKey.currentState?.reveal(RevealSide.main);
+        return false;
+      case RevealSide.main:
+        panelsKey.currentState?.reveal(RevealSide.left);
+        return false;
+      case RevealSide.left:
+        return true;
+      case null:
+        //idk in what case this will ever happen...
+        return true;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-        onWillPop: () async {
-          switch (panelsKey.currentState?.currentSide) {
-            case RevealSide.right:
-              panelsKey.currentState?.reveal(RevealSide.main);
-              return false;
-            case RevealSide.main:
-              panelsKey.currentState?.reveal(RevealSide.left);
-              return false;
-            case RevealSide.left:
-              return true;
-            case null:
-              //idk in what case this will ever happen...
-              return true;
-          }
-        },
+    return PopScope(
+        canPop: canPop(),
         child: OverlappingPanels(
             key: panelsKey,
             left: navigation(context),

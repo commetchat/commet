@@ -151,7 +151,7 @@ class MessageInputState extends State<MessageInput> {
 
     controller.addListener(onTextfieldUpdated);
 
-    textFocus = FocusNode(onKey: onKey);
+    textFocus = FocusNode(onKeyEvent: onKey);
 
     super.initState();
   }
@@ -291,10 +291,10 @@ class MessageInputState extends State<MessageInput> {
     }
   }
 
-  KeyEventResult onKey(FocusNode node, RawKeyEvent event) {
+  KeyEventResult onKey(FocusNode node, KeyEvent event) {
     if (BuildConfig.MOBILE) return KeyEventResult.ignored;
 
-    if (event.isKeyPressed(LogicalKeyboardKey.tab)) {
+    if (HardwareKeyboard.instance.isLogicalKeyPressed(LogicalKeyboardKey.tab)) {
       if (autoFillResults == null || autoFillResults!.isEmpty) {
         autoFillSelection = null;
         return KeyEventResult.ignored;
@@ -319,13 +319,14 @@ class MessageInputState extends State<MessageInput> {
       }
     }
 
-    if (event.isKeyPressed(LogicalKeyboardKey.enter)) {
+    if (HardwareKeyboard.instance
+        .isLogicalKeyPressed(LogicalKeyboardKey.enter)) {
       if (autoFillSelection != null && autoFillRange != null) {
         applyAutoFill(autoFillResults![autoFillSelection!]);
         return KeyEventResult.handled;
       }
 
-      if (event.isShiftPressed) {
+      if (HardwareKeyboard.instance.isShiftPressed) {
         return KeyEventResult.ignored;
       }
 
@@ -333,12 +334,14 @@ class MessageInputState extends State<MessageInput> {
       return KeyEventResult.handled;
     }
 
-    if (event.isKeyPressed(LogicalKeyboardKey.escape)) {
+    if (HardwareKeyboard.instance
+        .isLogicalKeyPressed(LogicalKeyboardKey.escape)) {
       doCancelInteraction();
       return KeyEventResult.handled;
     }
 
-    if (event.isKeyPressed(LogicalKeyboardKey.arrowUp) &&
+    if (HardwareKeyboard.instance
+            .isLogicalKeyPressed(LogicalKeyboardKey.arrowUp) &&
         controller.text.isEmpty) {
       widget.editLastMessage?.call();
     }
@@ -798,7 +801,8 @@ class MessageInputState extends State<MessageInput> {
       // to apply the normal behavior when click on select all
       onSelectAll: () =>
           editableTextState.selectAll(SelectionChangedCause.toolbar),
-      onLiveTextInput: null,
+      onLiveTextInput: null, onLookUp: () {}, onSearchWeb: () {},
+      onShare: () {},
     );
   }
 
