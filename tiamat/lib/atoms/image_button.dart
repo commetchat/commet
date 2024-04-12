@@ -264,6 +264,7 @@ class ImageButton extends StatefulWidget {
       this.iconSize,
       this.placeholderColor,
       this.placeholderText,
+      this.boxBorder,
       required this.size,
       this.icon});
   final void Function()? onTap;
@@ -272,6 +273,7 @@ class ImageButton extends StatefulWidget {
   final double? iconSize;
   final String? placeholderText;
   final Color? placeholderColor;
+  final BoxBorder? boxBorder;
   final IconData? icon;
   final bool doShadow;
 
@@ -319,21 +321,26 @@ class _ImageButtonState extends State<ImageButton> {
       builder: (context, value, child) {
         return Container(
           decoration: widget.doShadow
-              ? BoxDecoration(borderRadius: value, boxShadow: [
-                  BoxShadow(
-                      color: Theme.of(context).colorScheme.shadow,
-                      blurRadius: 10)
-                ])
+              ? BoxDecoration(
+                  borderRadius: value,
+                  border: widget.boxBorder,
+                  boxShadow: [
+                      BoxShadow(
+                          color: Theme.of(context).colorScheme.shadow,
+                          blurRadius: 10)
+                    ])
               : widget.image == null
                   ? BoxDecoration(
                       borderRadius: value.add(BorderRadius.circular(2)),
-                      border: Border.all(
-                          color: Theme.of(context)
-                              .extension<ExtraColors>()!
-                              .outline,
-                          width: 1.5),
+                      border: widget.boxBorder ??
+                          Border.all(
+                              color: Theme.of(context)
+                                  .extension<ExtraColors>()!
+                                  .outline,
+                              width: 1.5),
                     )
-                  : null,
+                  : BoxDecoration(
+                      borderRadius: value, border: widget.boxBorder),
           child: ClipRRect(
             borderRadius: value,
             child: Material(

@@ -1,7 +1,9 @@
 import 'package:commet/client/call_manager.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
+import 'package:commet/ui/organisms/mini_call_menu/mini_call_menu.dart';
 import 'package:commet/ui/organisms/sidebar_call_icon/sidebar_call_icon.dart';
 import 'package:commet/utils/notifying_list.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/gestures/events.dart';
 import 'package:flutter/widgets.dart';
@@ -30,6 +32,9 @@ class _SidebarCallsListState extends State<SidebarCallsList> {
 
   NotifyingList<VoipSession> get sessions => widget.callManager.currentSessions;
 
+  bool isHovered = false;
+  bool showWhileUnhovered = false;
+
   @override
   void initState() {
     count = widget.callManager.currentSessions.length;
@@ -39,7 +44,7 @@ class _SidebarCallsListState extends State<SidebarCallsList> {
     });
 
     sessions.onRemove.listen((event) {
-      if (sessions[event].sessionId == selectedSession?.sessionId) {
+      if (sessions[event] == selectedSession) {
         setState(() {
           selectedSession = null;
           link = null;
@@ -72,6 +77,7 @@ class _SidebarCallsListState extends State<SidebarCallsList> {
         data,
         widget.width,
         updateSelection: onSelectionUpdate,
+        onUnhovered: onUnhovered,
       ),
     );
   }
@@ -86,6 +92,10 @@ class _SidebarCallsListState extends State<SidebarCallsList> {
       return Container();
     }
 
+    if (showWhileUnhovered == false && isHovered == false) {
+      return Container();
+    }
+
     return CompositedTransformFollower(
         link: link!,
         targetAnchor: Alignment.bottomRight,
@@ -95,33 +105,21 @@ class _SidebarCallsListState extends State<SidebarCallsList> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(5),
-                child: Tile.low3(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        tiamat.Text.labelEmphasised("Incoming call!"),
-                        tiamat.Text.label(selectedSession!.roomId),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            tiamat.Button(
-                              text: "Accept",
-                            ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            tiamat.Button.secondary(
-                              text: "Decline",
-                            )
-                          ],
-                        )
-                      ],
+              MouseRegion(
+                onExit: (event) {
+                  updateHover(false);
+                },
+                onEnter: (event) {
+                  updateHover(true);
+                },
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 0, 0, 4),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(5),
+                    child: Tile.low3(
+                      child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: MiniCallMenu(selectedSession!)),
                     ),
                   ),
                 ),
@@ -131,11 +129,25 @@ class _SidebarCallsListState extends State<SidebarCallsList> {
         ));
   }
 
-  onSelectionUpdate(LayerLink link, VoipSession session) {
+  void updateHover(bool hovered) {
+    setState(() {
+      isHovered = hovered;
+      showWhileUnhovered = selectedSession?.state == VoipState.incoming ||
+          selectedSession?.state == VoipState.connecting;
+      overlay.markNeedsBuild();
+    });
+  }
+
+  void onUnhovered() {
+    updateHover(false);
+  }
+
+  onSelectionUpdate(
+      LayerLink link, VoipSession session, bool showWhileUnhovered) {
     setState(() {
       this.link = link;
       selectedSession = session;
     });
-    overlay.markNeedsBuild();
+    updateHover(true);
   }
 }
