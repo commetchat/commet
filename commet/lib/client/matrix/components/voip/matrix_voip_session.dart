@@ -2,7 +2,10 @@ import 'dart:async';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
+import 'package:commet/client/components/voip/voip_stream.dart';
+import 'package:commet/client/matrix/components/voip/matrix_voip_stream.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
+import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
 class MatrixVoipSession implements VoipSession {
@@ -12,6 +15,8 @@ class MatrixVoipSession implements VoipSession {
   late Client client;
 
   final StreamController<void> _onStateChanged = StreamController.broadcast();
+
+  List<StatsReport>? stats;
 
   MatrixVoipSession(this.session, MatrixClient this.client) {
     session.onCallStateChanged.stream.listen((event) {
@@ -30,6 +35,28 @@ class MatrixVoipSession implements VoipSession {
 
   @override
   Stream<void> get onStateChanged => _onStateChanged.stream;
+
+  @override
+  VoipStream? get remoteUserMediaStream => session.remoteUserMediaStream != null
+      ? MatrixVoipStream(session.remoteUserMediaStream!, this)
+      : null;
+
+  @override
+  List<VoipStream> get streams {
+    List<MatrixVoipStream> result = List.empty(growable: true);
+    for (var stream in session.streams) {
+      // if (stream.stopped) {
+      //   continue;
+      // }
+
+      if (!result
+          .any((element) => element.stream.stream?.id == stream.stream?.id)) {
+        result.add(MatrixVoipStream(stream, this));
+      }
+    }
+
+    return result;
+  }
 
   @override
   bool operator ==(Object other) {
@@ -91,4 +118,9 @@ class MatrixVoipSession implements VoipSession {
 
   @override
   String? get remoteUserName => session.remoteUser?.displayName;
+
+  @override
+  Future<void> updateStats() async {
+    stats = await session.pc?.getStats();
+  }
 }

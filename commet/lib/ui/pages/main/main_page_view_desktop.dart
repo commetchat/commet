@@ -8,6 +8,7 @@ import 'package:commet/ui/molecules/direct_message_list.dart';
 import 'package:commet/ui/molecules/space_viewer.dart';
 import 'package:commet/ui/molecules/user_list.dart';
 import 'package:commet/ui/organisms/background_task_view/background_task_view.dart';
+import 'package:commet/ui/organisms/call_view/call_view.dart';
 import 'package:commet/ui/organisms/home_screen/home_screen.dart';
 import 'package:commet/ui/organisms/chat/chat.dart';
 import 'package:commet/ui/organisms/side_navigation_bar.dart';
@@ -179,6 +180,7 @@ class MainPageViewDesktop extends StatelessWidget {
                   : null,
             ),
           ),
+          if (state.currentCall != null) CallView(state.currentCall!),
           Expanded(
             child: Row(
               mainAxisSize: MainAxisSize.max,

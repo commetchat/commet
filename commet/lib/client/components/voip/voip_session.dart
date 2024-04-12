@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/voip/voip_stream.dart';
 
 enum VoipState { incoming, connecting, connected, unknown }
 
@@ -21,6 +22,10 @@ abstract class VoipSession {
 
   bool get isMicrophoneMuted;
 
+  VoipStream? get remoteUserMediaStream;
+
+  List<VoipStream> get streams;
+
   Future<void> acceptCall();
 
   Future<void> declineCall();
@@ -30,4 +35,6 @@ abstract class VoipSession {
   Stream<void> get onStateChanged;
 
   Future<void> setMicrophoneMute(bool state);
+
+  Future<void> updateStats();
 }

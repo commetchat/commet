@@ -50,6 +50,14 @@ class MatrixVoipComponent
   }
 
   @override
+  List<VoipSession> getSessionsInRoom(String roomId) {
+    return voip.calls.values
+        .where((element) => element.room.id == roomId)
+        .map((e) => MatrixVoipSession(e, client))
+        .toList();
+  }
+
+  @override
   bool canHandleEvent(TimelineEvent event) {
     if (event is! MatrixTimelineEvent) {
       return false;

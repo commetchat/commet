@@ -40,6 +40,7 @@ class Avatar extends StatelessWidget {
       this.radius = 22,
       this.placeholderText,
       this.placeholderColor,
+      this.border,
       this.isPadding = false})
       : super(key: key);
 
@@ -48,6 +49,7 @@ class Avatar extends StatelessWidget {
     this.image,
     this.placeholderText,
     this.placeholderColor,
+    this.border,
     this.isPadding = false,
   })  : radius = 15,
         super(key: key);
@@ -57,6 +59,7 @@ class Avatar extends StatelessWidget {
       required this.image,
       this.placeholderText,
       this.placeholderColor,
+      this.border,
       this.isPadding = false})
       : radius = 22,
         super(key: key);
@@ -66,6 +69,7 @@ class Avatar extends StatelessWidget {
       this.image,
       this.placeholderText,
       this.placeholderColor,
+      this.border,
       this.isPadding = false})
       : radius = 44,
         super(key: key);
@@ -75,6 +79,7 @@ class Avatar extends StatelessWidget {
       this.image,
       this.placeholderText,
       this.placeholderColor,
+      this.border,
       this.isPadding = false})
       : radius = 80,
         super(key: key);
@@ -83,6 +88,7 @@ class Avatar extends StatelessWidget {
   final ImageProvider? image;
   final String? placeholderText;
   final Color? placeholderColor;
+  final BoxBorder? border;
   final bool isPadding;
 
   @override
@@ -100,6 +106,7 @@ class Avatar extends StatelessWidget {
         height: radius * 2,
         child: DecoratedBox(
             decoration: BoxDecoration(
+                border: border,
                 borderRadius: BorderRadius.circular(radius / 1.25),
                 image: DecorationImage(
                     image: image!,
