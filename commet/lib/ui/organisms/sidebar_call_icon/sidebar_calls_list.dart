@@ -5,12 +5,9 @@ import 'package:commet/ui/organisms/sidebar_call_icon/sidebar_call_icon.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/gestures/events.dart';
 import 'package:flutter/widgets.dart';
 import 'package:implicitly_animated_list/implicitly_animated_list.dart';
-import 'package:tiamat/atoms/shader_background.dart';
 import 'package:tiamat/atoms/tile.dart';
-import 'package:tiamat/tiamat.dart' as tiamat;
 
 class SidebarCallsList extends StatefulWidget {
   const SidebarCallsList(this.callManager, this.width, {super.key});

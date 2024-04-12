@@ -15,12 +15,7 @@ class MatrixVoipSession implements VoipSession {
 
   MatrixVoipSession(this.session, MatrixClient this.client) {
     session.onCallStateChanged.stream.listen((event) {
-      print("Matrix call state changed: ($event)");
       _onStateChanged.add(null);
-    });
-
-    session.onCallStreamsChanged.stream.listen((event) {
-      print("Stream changed!");
     });
   }
 
@@ -69,7 +64,6 @@ class MatrixVoipSession implements VoipSession {
 
   @override
   Future<void> acceptCall() {
-    print("Accepting call!");
     return session.answer();
   }
 
@@ -94,4 +88,7 @@ class MatrixVoipSession implements VoipSession {
 
   @override
   bool get isMicrophoneMuted => session.isMicrophoneMuted;
+
+  @override
+  String? get remoteUserName => session.remoteUser?.displayName;
 }

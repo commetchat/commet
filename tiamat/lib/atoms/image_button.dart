@@ -320,6 +320,18 @@ class _ImageButtonState extends State<ImageButton> {
           end: BorderRadius.circular(_borderRadius)),
       builder: (context, value, child) {
         return Container(
+          clipBehavior: Clip.antiAlias,
+          foregroundDecoration: BoxDecoration(
+              border: widget.boxBorder ??
+                  (widget.image == null
+                      ? Border.all(
+                          color: Theme.of(context)
+                              .extension<ExtraColors>()!
+                              .outline,
+                          strokeAlign: BorderSide.strokeAlignCenter,
+                          width: 2)
+                      : null),
+              borderRadius: value),
           decoration: widget.doShadow
               ? BoxDecoration(
                   borderRadius: value,
@@ -331,21 +343,13 @@ class _ImageButtonState extends State<ImageButton> {
                     ])
               : widget.image == null
                   ? BoxDecoration(
-                      borderRadius: value.add(BorderRadius.circular(2)),
-                      border: widget.boxBorder ??
-                          Border.all(
-                              color: Theme.of(context)
-                                  .extension<ExtraColors>()!
-                                  .outline,
-                              width: 1.5),
+                      color: widget.placeholderColor,
+                      borderRadius: value,
                     )
-                  : BoxDecoration(
-                      borderRadius: value, border: widget.boxBorder),
-          child: ClipRRect(
-            borderRadius: value,
-            child: Material(
-              child: child,
-            ),
+                  : BoxDecoration(borderRadius: value),
+          child: Material(
+            color: widget.image == null ? widget.placeholderColor : null,
+            child: child,
           ),
         );
       },
@@ -373,7 +377,6 @@ class _ImageButtonState extends State<ImageButton> {
                   )
                 : widget.placeholderText != null
                     ? Container(
-                        color: widget.placeholderColor,
                         child: Align(
                             alignment: Alignment.center,
                             child: widget.placeholderText != null

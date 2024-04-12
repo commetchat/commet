@@ -1,3 +1,5 @@
+// ignore_for_file: depend_on_referenced_packages, implementation_imports
+
 import 'dart:async';
 
 import 'package:commet/client/components/component.dart';
@@ -10,7 +12,6 @@ import 'package:commet/client/timeline.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/ui/atoms/generic_room_event.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:matrix/matrix.dart';
 import 'package:webrtc_interface/src/mediadevices.dart';
 import 'package:webrtc_interface/src/rtc_peerconnection.dart';
@@ -113,33 +114,22 @@ class MatrixVoipComponent
   }
 
   @override
-  Future<void> handleGroupCallEnded(GroupCall groupCall) async {
-    print("handleGroupCallEnded");
-  }
+  Future<void> handleGroupCallEnded(GroupCall groupCall) async {}
 
   @override
-  Future<void> handleMissedCall(CallSession session) async {
-    print("handleMissedCall");
-  }
+  Future<void> handleMissedCall(CallSession session) async {}
 
   @override
   Future<void> handleNewCall(CallSession session) async {
-    print("New call started!");
     _onSessionStarted.add(MatrixVoipSession(session, client));
   }
 
   @override
-  Future<void> handleNewGroupCall(GroupCall groupCall) async {
-    print("handleNewGroupCall");
-  }
+  Future<void> handleNewGroupCall(GroupCall groupCall) async {}
 
   @override
-  Future<void> playRingtone() async {
-    print("play ringtone!");
-  }
+  Future<void> playRingtone() async {}
 
   @override
-  Future<void> stopRingtone() async {
-    print("Stop playing ringtone");
-  }
+  Future<void> stopRingtone() async {}
 }

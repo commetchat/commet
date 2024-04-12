@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:commet/client/components/voip/voip_session.dart';
-import 'package:commet/client/matrix/components/voip/matrix_voip_session.dart';
 import 'package:commet/ui/organisms/mini_call_menu/mini_call_menu_connected.dart';
 import 'package:commet/ui/organisms/mini_call_menu/mini_call_menu_incoming.dart';
 import 'package:flutter/material.dart';
@@ -37,7 +36,12 @@ class _MiniCallMenuState extends State<MiniCallMenu> {
     switch (widget.session.state) {
       case VoipState.incoming:
         return MiniCallMenuIncoming(
+          callingUserName: widget.session.remoteUserName ?? "Unknown User",
           roomDisplayName: widget.session.roomName,
+          isRoomDirectMessage: widget.session.client
+                  .getRoom(widget.session.roomId)
+                  ?.isDirectMessage ??
+              false,
           onAccept: () => widget.session.acceptCall(),
           onDecline: () => widget.session.declineCall(),
         );
@@ -55,7 +59,8 @@ class _MiniCallMenuState extends State<MiniCallMenu> {
           },
         );
       case VoipState.connecting:
-        return CircularProgressIndicator();
+        return const SizedBox(
+            width: 20, height: 20, child: CircularProgressIndicator());
       default:
         return tiamat.Text.body(widget.session.state.name);
     }

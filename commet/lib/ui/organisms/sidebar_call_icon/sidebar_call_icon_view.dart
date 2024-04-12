@@ -6,14 +6,10 @@ import 'package:tiamat/tiamat.dart';
 
 class SidebarCallIconView extends StatelessWidget {
   const SidebarCallIconView(this.state,
-      {this.avatar,
-      this.callerName,
-      this.color,
-      required this.width,
-      super.key});
+      {this.avatar, this.roomName, this.color, required this.width, super.key});
   final double width;
   final Color? color;
-  final String? callerName;
+  final String? roomName;
   final ImageProvider? avatar;
   final VoipState state;
 
@@ -27,9 +23,12 @@ class SidebarCallIconView extends StatelessWidget {
           child: ImageButton(
             size: width,
             placeholderColor: color,
-            placeholderText: callerName,
+            placeholderText: roomName,
             image: avatar,
-            boxBorder: Border.all(color: getBorderColor(context), width: 4),
+            boxBorder: Border.all(
+                color: getBorderColor(context),
+                width: 3,
+                strokeAlign: BorderSide.strokeAlignCenter),
           ),
         ),
       ),

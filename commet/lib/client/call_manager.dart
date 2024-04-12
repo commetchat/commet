@@ -1,12 +1,9 @@
 import 'dart:async';
 
-import 'package:commet/client/alert.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/voip/voip_component.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/stale_info.dart';
-import 'package:commet/main.dart';
-import 'package:commet/utils/background_tasks/background_task_manager.dart';
 import 'package:commet/utils/notifying_list.dart';
 
 class CallManager {

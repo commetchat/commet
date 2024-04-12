@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
-import 'package:commet/main.dart';
 import 'package:commet/ui/organisms/sidebar_call_icon/sidebar_call_icon_view.dart';
 import 'package:flutter/material.dart';
 
@@ -59,6 +58,7 @@ class _SidebarCallIconEntryState extends State<SidebarCallIconEntry> {
         child: SidebarCallIconView(
           widget.session.state,
           width: widget.width,
+          roomName: room?.displayName,
           color: room?.defaultColor,
           avatar: room?.avatar,
         ),

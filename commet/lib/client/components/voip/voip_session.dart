@@ -13,6 +13,8 @@ abstract class VoipSession {
 
   String? get remoteUserId;
 
+  String? get remoteUserName;
+
   String get roomName;
 
   VoipState get state;
