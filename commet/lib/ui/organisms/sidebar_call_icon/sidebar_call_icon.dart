@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/ui/organisms/sidebar_call_icon/sidebar_call_icon_view.dart';
+import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
 
 class SidebarCallIconEntry extends StatefulWidget {
@@ -61,6 +62,8 @@ class _SidebarCallIconEntryState extends State<SidebarCallIconEntry> {
           roomName: room?.displayName,
           color: room?.defaultColor,
           avatar: room?.avatar,
+          onTap: () => EventBus.openRoom
+              .add((widget.session.roomId, widget.session.client.identifier)),
         ),
       ),
     );

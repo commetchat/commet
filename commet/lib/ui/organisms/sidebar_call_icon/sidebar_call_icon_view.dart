@@ -6,13 +6,18 @@ import 'package:tiamat/tiamat.dart';
 
 class SidebarCallIconView extends StatelessWidget {
   const SidebarCallIconView(this.state,
-      {this.avatar, this.roomName, this.color, required this.width, super.key});
+      {this.avatar,
+      this.roomName,
+      this.color,
+      this.onTap,
+      required this.width,
+      super.key});
   final double width;
   final Color? color;
   final String? roomName;
   final ImageProvider? avatar;
   final VoipState state;
-
+  final Function()? onTap;
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -24,6 +29,7 @@ class SidebarCallIconView extends StatelessWidget {
             size: width,
             placeholderColor: color,
             placeholderText: roomName,
+            onTap: onTap,
             image: avatar,
             boxBorder: Border.all(
                 color: getBorderColor(context),
