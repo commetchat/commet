@@ -124,4 +124,32 @@ class MatrixVoipSession implements VoipSession {
   Future<void> updateStats() async {
     stats = await session.pc?.getStats();
   }
+
+  @override
+  Future<void> setScreenShare(DesktopCapturerSource source) async {
+    var stream = await navigator.mediaDevices.getDisplayMedia({
+      'video': {
+        'deviceId': {'exact': source.id},
+        'mandatory': {'frameRate': 30.0}
+      }
+    });
+
+    await stopScreenshare();
+
+    session.addLocalStream(stream, matrix.SDPStreamMetadataPurpose.Screenshare);
+  }
+
+  @override
+  Future<void> stopScreenshare() async {
+    for (var element in session.getLocalStreams.where((element) =>
+        element.purpose == matrix.SDPStreamMetadataPurpose.Screenshare)) {
+      await session.removeLocalStream(element);
+    }
+  }
+
+  @override
+  bool get supportsScreenshare => true;
+
+  @override
+  bool get isSharingScreen => session.localScreenSharingStream != null;
 }

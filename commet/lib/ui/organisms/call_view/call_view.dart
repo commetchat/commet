@@ -4,8 +4,11 @@ import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:commet/ui/atoms/lightbox.dart';
 import 'package:commet/ui/layout/bento.dart';
+import 'package:commet/ui/organisms/call_view/screen_capture_source_dialog.dart';
 import 'package:commet/ui/organisms/call_view/voip_stream_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:tiamat/atoms/popup_dialog.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;
 
@@ -20,7 +23,7 @@ class CallView extends StatefulWidget {
 class _CallViewState extends State<CallView> {
   Timer? statTimer;
   StreamSubscription? sub;
-
+  bool isMouseHovering = false;
   VoipStream? mainStream;
 
   @override
@@ -58,17 +61,92 @@ class _CallViewState extends State<CallView> {
   }
 
   Widget callConnectedView() {
-    return tiamat.Tile.low4(child: LayoutBuilder(
-      builder: (context, constraints) {
-        var ratio = constraints.maxWidth / constraints.maxHeight;
-
-        if (ratio > 1) {
-          return Row(children: generateLayout());
-        } else {
-          return Column(children: generateLayout());
-        }
+    return MouseRegion(
+      onEnter: (event) {
+        setState(() {
+          isMouseHovering = true;
+        });
       },
-    ));
+      onExit: (event) {
+        setState(() {
+          isMouseHovering = false;
+        });
+      },
+      child: tiamat.Tile.low4(
+          child: Stack(
+        alignment: Alignment.bottomCenter,
+        children: [
+          LayoutBuilder(
+            builder: (context, constraints) {
+              var ratio = constraints.maxWidth / constraints.maxHeight;
+
+              if (ratio > 1) {
+                return Row(children: generateLayout());
+              } else {
+                return Column(children: generateLayout());
+              }
+            },
+          ),
+          AnimatedOpacity(
+            opacity: isMouseHovering ? 1 : 0,
+            duration: const Duration(milliseconds: 200),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Wrap(
+                spacing: 5,
+                children: [
+                  tiamat.CircleButton(
+                    icon: Icons.screen_share_outlined,
+                    onPressed: () async {
+                      var sources = await desktopCapturer.getSources(
+                          types: [SourceType.Window, SourceType.Screen]);
+
+                      if (context.mounted) {
+                        var result =
+                            await PopupDialog.show<DesktopCapturerSource>(
+                                // ignore: use_build_context_synchronously
+                                context,
+                                content: ScreenCaptureSourceDialog(sources),
+                                title: "Screen Share");
+                        if (result != null) {
+                          await widget.currentSession.setScreenShare(result);
+                          setState(() {});
+                        }
+                      }
+                    },
+                  ),
+                  if (widget.currentSession.isSharingScreen)
+                    tiamat.CircleButton(
+                      icon: Icons.stop_screen_share,
+                      onPressed: () async {
+                        await widget.currentSession.stopScreenshare();
+                        setState(() {});
+                      },
+                    ),
+                  tiamat.CircleButton(
+                    icon: widget.currentSession.isMicrophoneMuted
+                        ? Icons.mic_off
+                        : Icons.mic,
+                    onPressed: () async {
+                      await widget.currentSession.setMicrophoneMute(
+                          !widget.currentSession.isMicrophoneMuted);
+                      setState(() {});
+                    },
+                  ),
+                  tiamat.CircleButton(
+                    icon: Icons.call_end,
+                    onPressed: () async {
+                      await widget.currentSession.hangUpCall();
+                      setState(() {});
+                    },
+                  )
+                ],
+              ),
+            ),
+          )
+        ],
+      )),
+    );
   }
 
   List<Widget> generateLayout() {

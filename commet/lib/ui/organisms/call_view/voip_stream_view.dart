@@ -103,10 +103,8 @@ class _VoipStreamViewState extends State<VoipStreamView>
 
       case VoipStreamType.video:
       case VoipStreamType.screenshare:
-        return Container(
-            color: Colors.green,
-            child: widget.stream.buildVideoRenderer(widget.fit) ??
-                const Placeholder());
+        return widget.stream.buildVideoRenderer(widget.fit) ??
+            const Placeholder();
     }
   }
 
