@@ -38,10 +38,10 @@ class _SidebarCallIconEntryState extends State<SidebarCallIconEntry>
     audioLevel = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 500));
     statUpdateTimer =
-        Timer.periodic(const Duration(milliseconds: 500), (timer) {
-      widget.session.updateStats();
-
-      audioLevel.animateTo(stream?.audiolevel ?? 0);
+        Timer.periodic(const Duration(milliseconds: 500), (timer) async {
+      await widget.session.updateStats();
+      audioLevel.animateTo(stream?.audiolevel ?? 0,
+          duration: const Duration(milliseconds: 500));
     });
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {

@@ -41,6 +41,7 @@ class MainPageState extends State<MainPage> {
 
   StreamSubscription? onSpaceUpdateSubscription;
   StreamSubscription? onRoomUpdateSubscription;
+  StreamSubscription? onCallStartedSubscription;
 
   MainPageSubView get currentView => _currentView;
 
@@ -77,6 +78,11 @@ class MainPageState extends State<MainPage> {
       }
     }
     backgroundTaskManager.onListUpdate.listen((event) {
+      setState(() {});
+    });
+
+    onCallStartedSubscription =
+        clientManager.callManager.currentSessions.onListUpdated.listen((event) {
       setState(() {});
     });
 

@@ -45,9 +45,10 @@ class MatrixVoipSession implements VoipSession {
   List<VoipStream> get streams {
     List<MatrixVoipStream> result = List.empty(growable: true);
     for (var stream in session.streams) {
-      // if (stream.stopped) {
-      //   continue;
-      // }
+      if (stream.purpose == matrix.SDPStreamMetadataPurpose.Screenshare &&
+          stream.videoMuted) {
+        continue;
+      }
 
       if (!result
           .any((element) => element.stream.stream?.id == stream.stream?.id)) {

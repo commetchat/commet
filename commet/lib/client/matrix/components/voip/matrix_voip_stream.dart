@@ -25,9 +25,6 @@ class MatrixVoipStream implements VoipStream {
   }
 
   @override
-  Widget? get videoRender => RTCVideoView(stream.renderer as RTCVideoRenderer);
-
-  @override
   String get streamUserId => stream.userId;
 
   @override
@@ -59,5 +56,45 @@ class MatrixVoipStream implements VoipStream {
     if (stat == null) return 0;
 
     return stat.values["audioLevel"];
+  }
+
+  @override
+  double? get aspectRatio {
+    var ratio = stream.renderer.videoWidth / stream.renderer.videoHeight;
+    if (ratio > 0) {
+      return ratio;
+    }
+
+    return 1;
+  }
+
+  @override
+  String get streamId => stream.stream?.id ?? "UNKNOWN_STREAM_ID";
+
+  @override
+  bool operator ==(Object other) {
+    if (other is! MatrixVoipStream) return false;
+    return streamId == other.streamId;
+  }
+
+  @override
+  int get hashCode => streamId.hashCode;
+
+  @override
+  Widget? buildVideoRenderer(BoxFit fit) {
+    if (fit == BoxFit.contain) {
+      return AspectRatio(
+          aspectRatio: aspectRatio ?? 1,
+          child: RTCVideoView(stream.renderer as RTCVideoRenderer));
+    } else {
+      if (stream.renderer.textureId != null) {
+        return RTCVideoView(
+          stream.renderer as RTCVideoRenderer,
+          objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
+        );
+      }
+    }
+
+    return null;
   }
 }

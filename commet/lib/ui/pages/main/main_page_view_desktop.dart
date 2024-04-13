@@ -180,8 +180,9 @@ class MainPageViewDesktop extends StatelessWidget {
                   : null,
             ),
           ),
-          if (state.currentCall != null) CallView(state.currentCall!),
-          Expanded(
+          if (state.currentCall != null)
+            Flexible(child: CallView(state.currentCall!)),
+          Flexible(
             child: Row(
               mainAxisSize: MainAxisSize.max,
               children: [
