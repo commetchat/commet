@@ -57,122 +57,79 @@ class _CallViewState extends State<CallView> {
     }
   }
 
-  // Widget incomingCallView() {
-  //   // return LayoutBuilder(builder:(context, constraints) {
-  //   //   constraints.
-  //   // },);
-  // }
-
   Widget callConnectedView() {
-    return tiamat.Tile.low4(
-      child: Row(
-        children: [
-          if (mainStream != null)
-            Flexible(
-              flex: 2,
-              fit: FlexFit.tight,
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(2.0),
-                  child: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        mainStream = null;
-                      });
-                    },
-                    child: VoipStreamView(
-                      mainStream!,
-                      widget.currentSession,
-                      borderColor: Colors.white,
-                      onFullscreen: () {
-                        Lightbox.show(context,
-                            aspectRatio: mainStream!.aspectRatio,
-                            customWidget: VoipStreamView(
-                                mainStream!, widget.currentSession));
-                      },
-                      fit: BoxFit.contain,
-                      key: ValueKey(
-                          "callView_mainStreamView_${mainStream!.streamId}"),
-                    ),
-                  ),
+    return tiamat.Tile.low4(child: LayoutBuilder(
+      builder: (context, constraints) {
+        var ratio = constraints.maxWidth / constraints.maxHeight;
+
+        if (ratio > 1) {
+          return Row(children: generateLayout());
+        } else {
+          return Column(children: generateLayout());
+        }
+      },
+    ));
+  }
+
+  List<Widget> generateLayout() {
+    return [
+      if (mainStream != null)
+        Flexible(
+          flex: 100,
+          fit: FlexFit.tight,
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(2.0),
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    mainStream = null;
+                  });
+                },
+                child: VoipStreamView(
+                  mainStream!,
+                  widget.currentSession,
+                  borderColor: Colors.white,
+                  onFullscreen: () {
+                    Lightbox.show(context,
+                        aspectRatio: mainStream!.aspectRatio,
+                        customWidget:
+                            VoipStreamView(mainStream!, widget.currentSession));
+                  },
+                  fit: BoxFit.contain,
+                  key: ValueKey(
+                      "callView_mainStreamView_${mainStream!.streamId}"),
                 ),
               ),
             ),
-
-          Flexible(
-            fit: FlexFit.tight,
-            child: Center(
-              child: BentoLayout(widget.currentSession.streams
-                  .where((element) => element != mainStream)
-                  .map((e) => GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          mainStream = e;
-                        });
-                      },
-                      child: VoipStreamView(
-                        key: ValueKey("callView__${e.streamId}"),
-                        e,
-                        widget.currentSession,
-                        onFullscreen: () {
-                          Lightbox.show(context,
-                              aspectRatio: e.aspectRatio,
-                              customWidget:
-                                  VoipStreamView(e, widget.currentSession));
-                        },
-                      )))
-                  .toList()),
-            ),
-          )
-
-          // child: Column(
-          //     children: widget.currentSession.streams
-          //         .where((element) => element != mainStream)
-          //         .map((e) => Expanded(
-          //               child: GestureDetector(
-          //                 onTap: () {
-          //                   setState(() {
-          //                     mainStream = e;
-          //                   });
-          //                 },
-          //                 child: Padding(
-          //                   padding: const EdgeInsets.all(2.0),
-          //                   child: VoipStreamView(e, widget.currentSession,
-          //                       onFullscreen: () {
-          //                     Lightbox.show(context,
-          //                         aspectRatio: e.aspectRatio,
-          //                         customWidget: VoipStreamView(
-          //                             e, widget.currentSession));
-          //                   },
-          //                       fit: BoxFit.cover,
-          //                       key: ValueKey(
-          //                           "callView__${mainStream!.streamId}")),
-          //                 ),
-          //               ),
-          //             ))
-          //         .toList()),
-        ],
-      ),
-    );
-
-    // return Wrap(
-    //   children: widget.currentSession.streams
-    //       .map((e) => SizedBox(
-    //           width: 200,
-    //           height: 200,
-    //           child: VoipStreamView(e, widget.currentSession)))
-    //       .toList(),
-    // );
-    // return GridView.builder(
-    //   gridDelegate:
-    //       const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-    //   itemBuilder: (context, index) {
-    //     var stream = widget.currentSession.streams[index];
-
-    //     return tiamat.Tile.low3(
-    //         child: VoipStreamView(stream, widget.currentSession));
-    //   },
-    //   itemCount: widget.currentSession.streams.length,
-    // );
+          ),
+        ),
+      Flexible(
+        fit: FlexFit.tight,
+        flex: 75,
+        child: Center(
+          child: BentoLayout(widget.currentSession.streams
+              .where((element) => element != mainStream)
+              .map((e) => GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      mainStream = e;
+                    });
+                  },
+                  child: VoipStreamView(
+                    key: ValueKey("callView__${e.streamId}"),
+                    e,
+                    widget.currentSession,
+                    onFullscreen: () {
+                      Lightbox.show(context,
+                          aspectRatio: e.aspectRatio,
+                          customWidget:
+                              VoipStreamView(e, widget.currentSession));
+                    },
+                  )))
+              .toList()),
+        ),
+      )
+    ];
   }
 }

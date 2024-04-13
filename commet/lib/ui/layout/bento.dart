@@ -15,6 +15,11 @@ class BentoLayout extends StatelessWidget {
         var aspect = constraints.maxWidth / constraints.maxHeight;
 
         gridSize += max((aspect.round() - 2), 0);
+
+        if (aspect < 1) {
+          gridSize += (1 / aspect).round() - 1;
+        }
+
         gridSize = gridSize.clamp(1, children.length);
 
         var across = ({required List<Widget> children}) => Column(

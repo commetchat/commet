@@ -38,6 +38,12 @@ class _VoipStreamViewState extends State<VoipStreamView>
     super.initState();
   }
 
+  @override
+  void dispose() {
+    audioLevel.stop();
+    super.dispose();
+  }
+
   void timer(Timer timer) async {
     audioLevel.animateTo(widget.stream.audiolevel,
         duration: const Duration(milliseconds: 200));
