@@ -132,6 +132,10 @@ jobs:
           cd $PROJECT_PATH
           flutter build linux --release --dart-define PLATFORM=linux
 
+      - name: Run App
+        run: |
+          $PROJECT_PATH/build/linux/x64/release/bundle/commet
+
   build-web:
     runs-on: ubuntu-latest
     steps:
