@@ -114,7 +114,7 @@ flutter_launcher_icons:
   ios: null
   remove_alpha_ios: true
   android: true
-  min_sdk_android: 16
+  min_sdk_android: 21
 
 flutter: 
   assets: 
