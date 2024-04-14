@@ -22,7 +22,7 @@ class ComponentRegistry {
       MatrixEmoticonComponent(client),
       MatrixPushNotificationComponent(client),
       MatrixCommandComponent(client),
-      // MatrixVoipComponent(client)
+      MatrixVoipComponent(client)
     ];
   }
 
