@@ -53,12 +53,9 @@ class _CallWidgetState extends State<CallWidget> {
   }
 
   Future<void> pickCamera() async {
-    var devices = await navigator.mediaDevices.enumerateDevices();
-    devices = devices.where((element) => element.kind == "videoinput").toList();
-
-    if (devices.length == 1) {
-      widget.session.setCamera(devices.first);
-    } else {}
+    // there doesnt seem to be a clear way to allow matrix-dart-sdk to insert a stream from a specific camera,
+    // because it calls `_getUserMedia` internally to pick a camera, so we use null here
+    widget.session.setCamera(null);
   }
 
   Future<void> hangUp() {

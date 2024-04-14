@@ -152,7 +152,7 @@ class MatrixVoipSession implements VoipSession {
   }
 
   @override
-  Future<void> setCamera(MediaDeviceInfo device) async {
+  Future<void> setCamera(MediaDeviceInfo? device) async {
     if (session.localUserMediaStream!.stream!
             .getTracks()
             .any((element) => element.kind == "video") ==
