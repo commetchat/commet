@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
+import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 enum VoipState {
   incoming,
@@ -51,11 +52,11 @@ abstract class VoipSession {
 
   Future<void> updateStats();
 
-  // Future<void> setScreenShare(DesktopCapturerSource source);
+  Future<void> setScreenShare(DesktopCapturerSource source);
 
   Future<void> stopScreenshare();
 
-  // Future<void> setCamera(MediaDeviceInfo? device);
+  Future<void> setCamera(MediaDeviceInfo? device);
 
   Future<void> stopCamera();
 }
