@@ -265,6 +265,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.2"
+  dart_webrtc:
+    dependency: transitive
+    description:
+      name: dart_webrtc
+      sha256: "4565f3b0f39b7fc91390b39c71a0e12d45c215929e05e366c5a3911d09617473"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.4.1"
   dartx:
     dependency: transitive
     description:
@@ -534,6 +542,15 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_webrtc:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: "044714e4240f06e2739fba2f097a18139f68483f"
+      url: "https://github.com/commetchat/flutter-webrtc.git"
+    source: git
+    version: "0.10.3"
   freezed_annotation:
     dependency: transitive
     description:
@@ -1129,6 +1146,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.4"
+  platform_detect:
+    dependency: transitive
+    description:
+      name: platform_detect
+      sha256: "08f4ee79c0e1c4858d37e06b22352a3ebdef5466b613749a3adb03e703d4f5b0"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.11"
   plugin_platform_interface:
     dependency: transitive
     description:
