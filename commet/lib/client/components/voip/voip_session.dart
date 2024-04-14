@@ -4,7 +4,13 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
-enum VoipState { incoming, connecting, connected, unknown }
+enum VoipState {
+  incoming,
+  connecting,
+  connected,
+  unknown,
+  outgoing,
+}
 
 abstract class VoipSession {
   Client get client;
@@ -27,11 +33,14 @@ abstract class VoipSession {
 
   bool get isSharingScreen;
 
+  bool get isCameraEnabled;
+
   VoipStream? get remoteUserMediaStream;
 
   List<VoipStream> get streams;
 
-  Future<void> acceptCall();
+  Future<void> acceptCall(
+      {bool withMicrophone = false, bool withCamera = false});
 
   Future<void> declineCall();
 
@@ -46,4 +55,8 @@ abstract class VoipSession {
   Future<void> setScreenShare(DesktopCapturerSource source);
 
   Future<void> stopScreenshare();
+
+  Future<void> setCamera(MediaDeviceInfo device);
+
+  Future<void> stopCamera();
 }

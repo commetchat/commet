@@ -1,3 +1,4 @@
+import 'package:commet/client/components/voip/voip_component.dart';
 import 'package:commet/ui/atoms/drag_drop_file_target.dart';
 
 import 'package:commet/main.dart';
@@ -8,7 +9,7 @@ import 'package:commet/ui/molecules/direct_message_list.dart';
 import 'package:commet/ui/molecules/space_viewer.dart';
 import 'package:commet/ui/molecules/user_list.dart';
 import 'package:commet/ui/organisms/background_task_view/background_task_view.dart';
-import 'package:commet/ui/organisms/call_view/call_view.dart';
+import 'package:commet/ui/organisms/call_view/call.dart';
 import 'package:commet/ui/organisms/home_screen/home_screen.dart';
 import 'package:commet/ui/organisms/chat/chat.dart';
 import 'package:commet/ui/organisms/side_navigation_bar.dart';
@@ -178,10 +179,18 @@ class MainPageViewDesktop extends StatelessWidget {
               onTap: state.currentRoom?.permissions.canEditAnything == true
                   ? () => state.navigateRoomSettings()
                   : null,
+              showCallButton:
+                  state.currentRoom?.client.getComponent<VoipComponent>() !=
+                      null,
+              startCall: () {
+                if (state.currentRoom != null) {
+                  state.callRoom(state.currentRoom!);
+                }
+              },
             ),
           ),
           if (state.currentCall != null)
-            Flexible(child: CallView(state.currentCall!)),
+            Flexible(child: CallWidget(state.currentCall!)),
           Flexible(
             child: Row(
               mainAxisSize: MainAxisSize.max,

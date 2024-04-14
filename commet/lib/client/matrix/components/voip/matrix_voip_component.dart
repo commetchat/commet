@@ -12,7 +12,7 @@ import 'package:commet/client/timeline.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/ui/atoms/generic_room_event.dart';
 import 'package:flutter/material.dart';
-import 'package:matrix/matrix.dart';
+import 'package:matrix/matrix.dart' as mx;
 import 'package:webrtc_interface/src/mediadevices.dart';
 import 'package:webrtc_interface/src/rtc_peerconnection.dart';
 import 'package:webrtc_interface/src/rtc_video_renderer.dart';
@@ -22,8 +22,8 @@ class MatrixVoipComponent
     implements
         VoipComponent<MatrixClient>,
         EventHandlerComponent,
-        WebRTCDelegate {
-  late VoIP voip;
+        mx.WebRTCDelegate {
+  late mx.VoIP voip;
 
   @override
   MatrixClient client;
@@ -46,7 +46,7 @@ class MatrixVoipComponent
   MediaDevices get mediaDevices => webrtc.navigator.mediaDevices;
 
   MatrixVoipComponent(this.client) {
-    voip = VoIP(client.getMatrixClient(), this);
+    voip = mx.VoIP(client.getMatrixClient(), this);
   }
 
   @override
@@ -64,10 +64,10 @@ class MatrixVoipComponent
     }
 
     return [
-      EventTypes.CallHangup,
-      EventTypes.CallAnswer,
-      EventTypes.CallInvite,
-      EventTypes.CallReject
+      mx.EventTypes.CallHangup,
+      mx.EventTypes.CallAnswer,
+      mx.EventTypes.CallInvite,
+      mx.EventTypes.CallReject
     ].contains(event.event.type);
   }
 
@@ -79,22 +79,22 @@ class MatrixVoipComponent
     }
 
     switch (event.event.type) {
-      case EventTypes.CallHangup:
+      case mx.EventTypes.CallHangup:
         return GenericRoomEvent(
           "$senderName left the call",
           icon: Icons.call_end,
         );
-      case EventTypes.CallReject:
+      case mx.EventTypes.CallReject:
         return GenericRoomEvent(
           "$senderName rejected the call",
           icon: Icons.call_end,
         );
-      case EventTypes.CallInvite:
+      case mx.EventTypes.CallInvite:
         return GenericRoomEvent(
           "$senderName started a call",
           icon: Icons.call_end,
         );
-      case EventTypes.CallAnswer:
+      case mx.EventTypes.CallAnswer:
         return GenericRoomEvent(
           "$senderName answered the call",
           icon: Icons.call,
@@ -117,27 +117,37 @@ class MatrixVoipComponent
   }
 
   @override
-  Future<void> handleCallEnded(CallSession session) async {
+  Future<void> handleCallEnded(mx.CallSession session) async {
     _onSessionEnded.add(MatrixVoipSession(session, client));
   }
 
   @override
-  Future<void> handleGroupCallEnded(GroupCall groupCall) async {}
+  Future<void> handleGroupCallEnded(mx.GroupCall groupCall) async {}
 
   @override
-  Future<void> handleMissedCall(CallSession session) async {}
+  Future<void> handleMissedCall(mx.CallSession session) async {}
 
   @override
-  Future<void> handleNewCall(CallSession session) async {
+  Future<void> handleNewCall(mx.CallSession session) async {
     _onSessionStarted.add(MatrixVoipSession(session, client));
   }
 
   @override
-  Future<void> handleNewGroupCall(GroupCall groupCall) async {}
+  Future<void> handleNewGroupCall(mx.GroupCall groupCall) async {}
 
   @override
   Future<void> playRingtone() async {}
 
   @override
   Future<void> stopRingtone() async {}
+
+  @override
+  Future<void> startCall(String roomId, CallType type) {
+    var callType = switch (type) {
+      CallType.voice => mx.CallType.kVoice,
+      CallType.video => mx.CallType.kVideo
+    };
+
+    return voip.inviteToCall(roomId, callType);
+  }
 }

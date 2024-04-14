@@ -31,7 +31,6 @@ dependencies:
   isar_flutter_libs: ^3.1.0+1
   isar_generator: ^3.1.0+1
   just_the_tooltip: ^0.0.12
-  matrix: ^0.24.1
   media_kit: ^1.1.7
   media_kit_libs_video: ^1.0.1
   media_kit_video: ^1.1.8
@@ -73,6 +72,8 @@ dependencies:
     git: https://github.com/commetchat/flutter_shortcuts.git
   tiamat: 
     path: ../tiamat/
+  matrix: 
+    git: https://github.com/commetchat/matrix-dart-sdk.git
   flutter_webrtc: 
     git: https://github.com/commetchat/flutter-webrtc.git
   sqlite3_flutter_libs: ^0.5.18

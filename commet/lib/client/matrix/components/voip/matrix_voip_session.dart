@@ -31,10 +31,26 @@ class MatrixVoipSession implements VoipSession {
   String get roomId => session.room.id;
 
   @override
-  String get sessionId => session.callId;
+  String get sessionId => "${client.identifier}_${session.callId}";
 
   @override
   Stream<void> get onStateChanged => _onStateChanged.stream;
+
+  @override
+  bool get isMicrophoneMuted => session.isMicrophoneMuted;
+
+  @override
+  String? get remoteUserName => session.remoteUser?.displayName;
+
+  @override
+  bool get supportsScreenshare => true;
+
+  @override
+  bool get isSharingScreen => session.localScreenSharingStream != null;
+
+  @override
+  bool get isCameraEnabled =>
+      session.localUserMediaStream?.isVideoMuted() == false;
 
   @override
   VoipStream? get remoteUserMediaStream => session.remoteUserMediaStream != null
@@ -70,28 +86,23 @@ class MatrixVoipSession implements VoipSession {
 
   @override
   VoipState get state {
-    if (session.isRinging && !session.isOutgoing) {
-      return VoipState.incoming;
-    }
-
-    switch (session.state) {
-      case matrix.CallState.kConnecting:
-      case matrix.CallState.kCreateAnswer:
-        return VoipState.connecting;
-      case matrix.CallState.kConnected:
-        return VoipState.connected;
-      default:
-        break;
-    }
-
-    return VoipState.unknown;
+    return switch (session.state) {
+      matrix.CallState.kInviteSent => VoipState.outgoing,
+      matrix.CallState.kCreateOffer => VoipState.outgoing,
+      matrix.CallState.kCreateAnswer => VoipState.connecting,
+      matrix.CallState.kConnecting => VoipState.connecting,
+      matrix.CallState.kConnected => VoipState.connected,
+      matrix.CallState.kRinging => VoipState.incoming,
+      _ => VoipState.unknown
+    };
   }
 
   @override
   String get roomName => session.room.getLocalizedDisplayname();
 
   @override
-  Future<void> acceptCall() {
+  Future<void> acceptCall(
+      {bool withMicrophone = false, bool withCamera = false}) {
     return session.answer();
   }
 
@@ -115,12 +126,6 @@ class MatrixVoipSession implements VoipSession {
   }
 
   @override
-  bool get isMicrophoneMuted => session.isMicrophoneMuted;
-
-  @override
-  String? get remoteUserName => session.remoteUser?.displayName;
-
-  @override
   Future<void> updateStats() async {
     stats = await session.pc?.getStats();
   }
@@ -135,7 +140,6 @@ class MatrixVoipSession implements VoipSession {
     });
 
     await stopScreenshare();
-
     session.addLocalStream(stream, matrix.SDPStreamMetadataPurpose.Screenshare);
   }
 
@@ -148,8 +152,19 @@ class MatrixVoipSession implements VoipSession {
   }
 
   @override
-  bool get supportsScreenshare => true;
+  Future<void> setCamera(MediaDeviceInfo device) async {
+    if (session.localUserMediaStream!.stream!
+            .getTracks()
+            .any((element) => element.kind == "video") ==
+        false) {
+      await session.insertVideoTrackToAudioOnlyStream();
+    }
+
+    await session.setLocalVideoMuted(false);
+  }
 
   @override
-  bool get isSharingScreen => session.localScreenSharingStream != null;
+  Future<void> stopCamera() async {
+    await session.setLocalVideoMuted(true);
+  }
 }

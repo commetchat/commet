@@ -79,6 +79,7 @@ void bubble() async {
       title: 'Commet',
       theme: initialTheme,
       navigatorKey: navigator,
+      debugShowCheckedModeBanner: false,
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
@@ -233,6 +234,7 @@ class App extends StatelessWidget {
           return MaterialApp(
             title: 'Commet',
             theme: theme,
+            debugShowCheckedModeBanner: false,
             navigatorKey: navigator,
             localizationsDelegates: T.localizationsDelegates,
             builder: (context, child) => Provider<ClientManager>(

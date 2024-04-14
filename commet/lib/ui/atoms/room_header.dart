@@ -6,9 +6,12 @@ import 'package:tiamat/tiamat.dart' as t;
 import '../../client/client.dart';
 
 class RoomHeader extends StatelessWidget {
-  const RoomHeader(this.room, {super.key, this.onTap});
+  const RoomHeader(this.room,
+      {super.key, this.onTap, this.startCall, this.showCallButton = false});
   final Room room;
+  final bool showCallButton;
   final Function()? onTap;
+  final Function()? startCall;
 
   @override
   Widget build(BuildContext context) {
@@ -43,17 +46,19 @@ class RoomHeader extends StatelessWidget {
                     ),
                   ],
                 ),
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(0, 0, 20, 0),
-                  child: Row(
-                    children: [
-                      t.IconButton(
-                        icon: m.Icons.call,
-                        size: 20,
-                      )
-                    ],
-                  ),
-                )
+                if (showCallButton)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
+                    child: Row(
+                      children: [
+                        t.IconButton(
+                          icon: m.Icons.call,
+                          size: 20,
+                          onPressed: startCall,
+                        )
+                      ],
+                    ),
+                  )
               ],
             ),
           ),

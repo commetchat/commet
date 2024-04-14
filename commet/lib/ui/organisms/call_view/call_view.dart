@@ -4,17 +4,30 @@ import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:commet/ui/atoms/lightbox.dart';
 import 'package:commet/ui/layout/bento.dart';
-import 'package:commet/ui/organisms/call_view/screen_capture_source_dialog.dart';
 import 'package:commet/ui/organisms/call_view/voip_stream_view.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_webrtc/flutter_webrtc.dart';
-import 'package:tiamat/atoms/popup_dialog.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class CallView extends StatefulWidget {
-  const CallView(this.currentSession, {super.key});
+  const CallView(
+    this.currentSession, {
+    this.setMicrophoneMute,
+    this.pickScreenshareSource,
+    this.stopScreenshare,
+    this.pickCamera,
+    this.disableCamera,
+    this.hangUp,
+    super.key,
+  });
   final VoipSession currentSession;
+
+  final Future<void> Function(bool)? setMicrophoneMute;
+  final Future<void> Function()? pickScreenshareSource;
+  final Future<void> Function()? stopScreenshare;
+  final Future<void> Function()? pickCamera;
+  final Future<void> Function()? disableCamera;
+  final Future<void> Function()? hangUp;
 
   @override
   State<CallView> createState() => _CallViewState();
@@ -96,47 +109,35 @@ class _CallViewState extends State<CallView> {
                 spacing: 5,
                 children: [
                   tiamat.CircleButton(
-                    icon: Icons.screen_share_outlined,
-                    onPressed: () async {
-                      var sources = await desktopCapturer.getSources(
-                          types: [SourceType.Window, SourceType.Screen]);
-
-                      if (context.mounted) {
-                        var result =
-                            await PopupDialog.show<DesktopCapturerSource>(
-                                // ignore: use_build_context_synchronously
-                                context,
-                                content: ScreenCaptureSourceDialog(sources),
-                                title: "Screen Share");
-                        if (result != null) {
-                          await widget.currentSession.setScreenShare(result);
-                          setState(() {});
-                        }
-                      }
-                    },
-                  ),
+                      icon: Icons.screen_share_outlined,
+                      onPressed: widget.pickScreenshareSource),
                   if (widget.currentSession.isSharingScreen)
                     tiamat.CircleButton(
                       icon: Icons.stop_screen_share,
-                      onPressed: () async {
-                        await widget.currentSession.stopScreenshare();
-                        setState(() {});
-                      },
+                      onPressed: widget.stopScreenshare,
                     ),
                   tiamat.CircleButton(
                     icon: widget.currentSession.isMicrophoneMuted
                         ? Icons.mic_off
                         : Icons.mic,
                     onPressed: () async {
-                      await widget.currentSession.setMicrophoneMute(
-                          !widget.currentSession.isMicrophoneMuted);
+                      await widget.setMicrophoneMute
+                          ?.call(!widget.currentSession.isMicrophoneMuted);
                       setState(() {});
                     },
                   ),
                   tiamat.CircleButton(
+                    icon: widget.currentSession.isCameraEnabled
+                        ? Icons.camera_alt
+                        : Icons.camera_alt_outlined,
+                    onPressed: widget.currentSession.isCameraEnabled
+                        ? widget.disableCamera
+                        : widget.pickCamera,
+                  ),
+                  tiamat.CircleButton(
                     icon: Icons.call_end,
                     onPressed: () async {
-                      await widget.currentSession.hangUpCall();
+                      await widget.hangUp?.call();
                       setState(() {});
                     },
                   )

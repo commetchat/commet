@@ -177,6 +177,15 @@ class MainPageState extends State<MainPage> {
     });
   }
 
+  void callRoom(Room room) {
+    var component = room.client.getComponent<VoipComponent>();
+    if (component == null) {
+      return;
+    }
+
+    component.startCall(room.identifier, CallType.voice);
+  }
+
   void selectHome() {
     setState(() {
       _currentView = MainPageSubView.home;
