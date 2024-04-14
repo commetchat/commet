@@ -56,7 +56,15 @@ jobs:
       - name: Run Integration Tests  ─=≡Σ((( つ＞＜)つ
         run: |
           cd $PROJECT_PATH
+          export DISPLAY=:99
+          sudo Xvfb -ac :99 -screen 0 1920x1080x24 > /dev/null 2>&1 &
+          ffmpeg -f x11grab -video_size 1920x1080 -framerate 15 -i :99 -vcodec libx264 -preset ultrafast -qp 0 -nostdin -loglevel quiet -pix_fmt yuv444p video.mkv &
           scripts/integration-test.sh
+          INTEGRATION_TEST_EXIT_CODE=$?
+          sleep 1
+          kill $(pgrep ffmpeg)
+          exit $INTEGRATION_TEST_EXIT_CODE
+
       - name: Upload Artifact
         if: failure()
         uses: actions/upload-artifact@v3
