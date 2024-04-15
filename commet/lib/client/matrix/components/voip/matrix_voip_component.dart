@@ -136,15 +136,27 @@ class MatrixVoipComponent
     configuration["iceServers"] = newServers;
 
     // If the home server does not have any stun server, we can fallback to a default
-    // var servers = configuration["iceServers"] as List<dynamic>;
-    // if (servers.isEmpty) {
-    //   servers = [
-    //     {
-    //       "urls": ["stun:turn.matrix.org"]
-    //     }
-    //   ];
-    //   configuration["iceServers"] = servers;
-    // }
+    var servers = configuration["iceServers"] as List<dynamic>;
+    if (servers.isEmpty) {
+      if (preferences.useFallbackTurnServer == false) {
+        var result = await AdaptiveDialog.show<bool>(navigator.currentContext!,
+            builder: (context) =>
+                VoipTurnFallbackDialog(client.getMatrixClient().homeserver!),
+            dismissible: false,
+            title: "Call Error");
+
+        preferences.setUseFallbackTurnServer(result ?? false);
+      }
+
+      if (preferences.useFallbackTurnServer) {
+        servers = [
+          {
+            "urls": [preferences.fallbackTurnServer]
+          }
+        ];
+        configuration["iceServers"] = servers;
+      }
+    }
 
     return configuration;
   }
