@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import 'package:commet/client/alert.dart';
 import 'package:commet/client/matrix/components/voip/matrix_voip_component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
+import 'package:commet/ui/molecules/alert_view.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart' as mx;
 
@@ -17,6 +19,7 @@ class VoipDebugMatrixClient extends StatefulWidget {
 
 class _VoipDebugMatrixClientState extends State<VoipDebugMatrixClient> {
   bool loading = true;
+  bool homeserverHasTurnServer = false;
   mx.TurnServerCredentials? credentials;
   webrtc.RTCPeerConnection? connection;
   List<webrtc.RTCIceCandidate> foundCandidates = List.empty(growable: true);
@@ -38,12 +41,19 @@ class _VoipDebugMatrixClientState extends State<VoipDebugMatrixClient> {
   }
 
   Future<void> load() async {
-    var turnServer = await widget.client.getMatrixClient().getTurnServer();
-
-    setState(() {
-      credentials = turnServer;
-      loading = false;
-    });
+    try {
+      var turnServer = await widget.client.getMatrixClient().getTurnServer();
+      setState(() {
+        credentials = turnServer;
+        loading = false;
+        homeserverHasTurnServer = true;
+      });
+    } catch (_) {
+      setState(() {
+        loading = false;
+        homeserverHasTurnServer = false;
+      });
+    }
   }
 
   @override
@@ -58,18 +68,22 @@ class _VoipDebugMatrixClientState extends State<VoipDebugMatrixClient> {
     }
     return Column(
       children: [
-        if (credentials != null)
-          tiamat.Panel(
-            mode: tiamat.TileType.surfaceLow1,
-            header: "TURN Server (Homeserver Configuration)",
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                showTurnServerCredentials(),
-                testTurnServer(),
-              ],
-            ),
-          )
+        if (homeserverHasTurnServer == false)
+          AlertView(Alert(AlertType.warning,
+              messageGetter: () =>
+                  "Your homeserver (${widget.client.getMatrixClient().homeserver}) does not have a TURN server configured",
+              titleGetter: () => "TURN Error")),
+        tiamat.Panel(
+          mode: tiamat.TileType.surfaceLow1,
+          header: "TURN Server (Homeserver Configuration)",
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (credentials != null) showTurnServerCredentials(),
+              testTurnServer(),
+            ],
+          ),
+        )
       ],
     );
   }
@@ -120,8 +134,8 @@ class _VoipDebugMatrixClientState extends State<VoipDebugMatrixClient> {
                     header: "Connecting with config:",
                     child: tiamat.Text.tiny(const JsonEncoder.withIndent('  ')
                         .convert(connectionConfiguration!)
-                        .replaceAll(credentials!.password,
-                            "•" * credentials!.password.length)),
+                        .replaceAll(credentials?.password ?? "",
+                            "•" * (credentials?.password.length ?? 0))),
                   ),
                 ),
               if (foundCandidates.isNotEmpty)
@@ -162,13 +176,16 @@ class _VoipDebugMatrixClientState extends State<VoipDebugMatrixClient> {
 
   testTurn() async {
     foundCandidates = List.empty(growable: true);
-    var servers = [
-      {
-        'username': credentials!.username,
-        'credential': credentials!.password,
-        'urls': List.from(credentials!.uris)
-      },
-    ];
+
+    var servers = credentials == null
+        ? []
+        : [
+            {
+              'username': credentials!.username,
+              'credential': credentials!.password,
+              'urls': List.from(credentials!.uris)
+            },
+          ];
 
     var configuration = <String, dynamic>{
       'iceServers': servers,

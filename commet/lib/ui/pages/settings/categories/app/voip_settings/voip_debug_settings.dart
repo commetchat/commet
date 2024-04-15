@@ -37,7 +37,10 @@ class _VoipDebugSettingsState extends State<VoipDebugSettings> {
         if (selectedClient is MatrixClient)
           Padding(
             padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
-            child: VoipDebugMatrixClient(selectedClient as MatrixClient),
+            child: VoipDebugMatrixClient(
+              selectedClient as MatrixClient,
+              key: ValueKey(selectedClient.identifier),
+            ),
           )
       ],
     );

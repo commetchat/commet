@@ -2,6 +2,7 @@
 
 import 'dart:async';
 
+import 'package:commet/client/alert.dart';
 import 'package:commet/client/components/component.dart';
 import 'package:commet/client/components/voip/voip_component.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
@@ -10,6 +11,7 @@ import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_timeline_event.dart';
 import 'package:commet/client/timeline.dart';
 import 'package:commet/config/platform_utils.dart';
+import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/generic_room_event.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart' as mx;
@@ -122,11 +124,23 @@ class MatrixVoipComponent
         newServers.add(newEntry);
       }
     }
-
     configuration["iceServers"] = newServers;
+
+    // If the home server does not have any stun server, we can fallback to a default
+    // var servers = configuration["iceServers"] as List<dynamic>;
+    // if (servers.isEmpty) {
+    //   servers = [
+    //     {
+    //       "urls": ["stun:turn.matrix.org"]
+    //     }
+    //   ];
+    //   configuration["iceServers"] = servers;
+    // }
 
     return configuration;
   }
+
+  bool hasAddedTurnServersAlert = false;
 
   @override
   Future<RTCPeerConnection> createPeerConnection(
@@ -134,8 +148,19 @@ class MatrixVoipComponent
       [Map<String, dynamic> constraints = const {}]) async {
     configuration = alterPeerConfiguration(configuration);
 
-    var pc = await webrtc.createPeerConnection(configuration, constraints);
+    var servers = configuration['iceServers'] as List<dynamic>;
+    if (servers.isEmpty && hasAddedTurnServersAlert == false) {
+      var alert = Alert(
+        AlertType.warning,
+        titleGetter: () => "Calls not configured correctly",
+        messageGetter: () =>
+            "Your homeserver (${client.getMatrixClient().homeserver}) does not have a valid TURN server configured, and the client has no alternatives configured. As a result, voice and video calls will not function",
+      );
+      clientManager?.alertManager.addAlert(alert);
+      hasAddedTurnServersAlert = true;
+    }
 
+    var pc = await webrtc.createPeerConnection(configuration, constraints);
     return pc;
   }
 
