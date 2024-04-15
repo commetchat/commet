@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:commet/client/peer.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -95,7 +96,7 @@ class _VoipStreamViewState extends State<VoipStreamView>
                   border: Border.all(
                       strokeAlign: BorderSide.strokeAlignOutside,
                       color: getBorderColor(context),
-                      width: audioLevel.value * 5),
+                      width: clampDouble(audioLevel.value * 15, 0, 5)),
                   radius: 50,
                   image: user.avatar,
                   placeholderText: user.displayName)),

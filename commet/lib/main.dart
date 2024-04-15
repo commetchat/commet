@@ -4,6 +4,7 @@ import 'package:commet/cache/file_cache.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/component.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
+import 'package:commet/config/build_config.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/config/preferences.dart';
 import 'package:commet/debug/log.dart';
@@ -97,7 +98,11 @@ void bubble() async {
 }
 
 void main() async {
-  runZonedGuarded(appMain, Log.onError, zoneSpecification: Log.spec);
+  if (BuildConfig.RELEASE) {
+    runZonedGuarded(appMain, Log.onError, zoneSpecification: Log.spec);
+  } else {
+    appMain();
+  }
 }
 
 void appMain() async {

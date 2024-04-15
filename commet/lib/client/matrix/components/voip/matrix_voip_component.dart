@@ -104,11 +104,39 @@ class MatrixVoipComponent
     return Text(event.event.type);
   }
 
+  Map<String, dynamic> alterPeerConfiguration(
+      Map<String, dynamic> configuration) {
+    List<Map<String, dynamic>> newServers = List.empty(growable: true);
+
+    // Split up the urls in to individual servers, this helps flutter_webrtc to get all candidates correctly
+    // If all urls are in one server, it seems to only check one url.
+    for (Map<String, dynamic> config in configuration["iceServers"]) {
+      for (var url in config["urls"]) {
+        var newEntry = {
+          if (config.containsKey("username")) "username": config["username"],
+          if (config.containsKey("credential"))
+            "credential": config["credential"],
+          "urls": [url],
+        };
+
+        newServers.add(newEntry);
+      }
+    }
+
+    configuration["iceServers"] = newServers;
+
+    return configuration;
+  }
+
   @override
   Future<RTCPeerConnection> createPeerConnection(
       Map<String, dynamic> configuration,
-      [Map<String, dynamic> constraints = const {}]) {
-    return webrtc.createPeerConnection(configuration, constraints);
+      [Map<String, dynamic> constraints = const {}]) async {
+    configuration = alterPeerConfiguration(configuration);
+
+    var pc = await webrtc.createPeerConnection(configuration, constraints);
+
+    return pc;
   }
 
   @override
