@@ -193,7 +193,7 @@ class _VoipDebugMatrixClientState extends State<VoipDebugMatrixClient> {
     };
 
     var component = widget.client.getComponent<MatrixVoipComponent>();
-    configuration = component!.alterPeerConfiguration(configuration);
+    configuration = await component!.alterPeerConfiguration(configuration);
 
     setState(() {
       connectionConfiguration = configuration;

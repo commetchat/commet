@@ -2,7 +2,6 @@
 
 import 'dart:async';
 
-import 'package:commet/client/alert.dart';
 import 'package:commet/client/components/component.dart';
 import 'package:commet/client/components/voip/voip_component.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
@@ -13,6 +12,8 @@ import 'package:commet/client/timeline.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/generic_room_event.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
+import 'package:commet/ui/pages/settings/categories/app/voip_settings/voip_turn_fallback_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart' as mx;
 import 'package:webrtc_interface/src/mediadevices.dart';
@@ -53,8 +54,16 @@ class MatrixVoipComponent
 
   @override
   List<VoipSession> getSessionsInRoom(String roomId) {
+    // for (var session
+    //     in voip.calls.values.where((element) => element.pc == null).toList()) {
+    //   print("Removing invalid call session: $session");
+    //   session.hangup();
+    // }
+
+    voip.calls.removeWhere((key, value) => value.pc == null);
+
     return voip.calls.values
-        .where((element) => element.room.id == roomId)
+        .where((element) => element.room.id == roomId && element.pc != null)
         .map((e) => MatrixVoipSession(e, client))
         .toList();
   }
@@ -106,8 +115,8 @@ class MatrixVoipComponent
     return Text(event.event.type);
   }
 
-  Map<String, dynamic> alterPeerConfiguration(
-      Map<String, dynamic> configuration) {
+  Future<Map<String, dynamic>> alterPeerConfiguration(
+      Map<String, dynamic> configuration) async {
     List<Map<String, dynamic>> newServers = List.empty(growable: true);
 
     // Split up the urls in to individual servers, this helps flutter_webrtc to get all candidates correctly
@@ -140,24 +149,17 @@ class MatrixVoipComponent
     return configuration;
   }
 
-  bool hasAddedTurnServersAlert = false;
-
   @override
   Future<RTCPeerConnection> createPeerConnection(
       Map<String, dynamic> configuration,
       [Map<String, dynamic> constraints = const {}]) async {
-    configuration = alterPeerConfiguration(configuration);
+    configuration = await alterPeerConfiguration(configuration);
 
     var servers = configuration['iceServers'] as List<dynamic>;
-    if (servers.isEmpty && hasAddedTurnServersAlert == false) {
-      var alert = Alert(
-        AlertType.warning,
-        titleGetter: () => "Calls not configured correctly",
-        messageGetter: () =>
-            "Your homeserver (${client.getMatrixClient().homeserver}) does not have a valid TURN server configured, and the client has no alternatives configured. As a result, voice and video calls will not function",
-      );
-      clientManager?.alertManager.addAlert(alert);
-      hasAddedTurnServersAlert = true;
+
+    if (servers.isEmpty) {
+      throw Exception(
+          "No Turn servers are configured, this call cannot be connected");
     }
 
     var pc = await webrtc.createPeerConnection(configuration, constraints);
