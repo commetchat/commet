@@ -10,6 +10,7 @@ enum VoipState {
   connected,
   unknown,
   outgoing,
+  ended,
 }
 
 abstract class VoipSession {

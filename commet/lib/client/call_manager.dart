@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/voip/voip_component.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
@@ -42,5 +43,12 @@ class CallManager {
   void _onSessionEnded(VoipSession event) {
     currentSessions
         .removeWhere((element) => element.sessionId == event.sessionId);
+  }
+
+  VoipSession? getCallInRoom(Client client, String roomId) {
+    return currentSessions
+        .where(
+            (element) => element.client == client && element.roomId == roomId)
+        .firstOrNull;
   }
 }

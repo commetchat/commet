@@ -179,9 +179,10 @@ class MainPageViewDesktop extends StatelessWidget {
               onTap: state.currentRoom?.permissions.canEditAnything == true
                   ? () => state.navigateRoomSettings()
                   : null,
-              showCallButton:
-                  state.currentRoom?.client.getComponent<VoipComponent>() !=
-                      null,
+              showCallButton: state.currentRoom?.client
+                      .getComponent<VoipComponent>()
+                      ?.canCallRoom(state.currentRoom!.identifier) ==
+                  true,
               startCall: () {
                 if (state.currentRoom != null) {
                   state.callRoom(state.currentRoom!);

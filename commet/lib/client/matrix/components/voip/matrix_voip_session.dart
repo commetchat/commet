@@ -93,6 +93,7 @@ class MatrixVoipSession implements VoipSession {
       matrix.CallState.kConnecting => VoipState.connecting,
       matrix.CallState.kConnected => VoipState.connected,
       matrix.CallState.kRinging => VoipState.incoming,
+      matrix.CallState.kEnded => VoipState.ended,
       _ => VoipState.unknown
     };
   }

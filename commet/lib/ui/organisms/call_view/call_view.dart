@@ -2,11 +2,14 @@ import 'dart:async';
 
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
+import 'package:commet/client/room.dart';
 import 'package:commet/ui/atoms/lightbox.dart';
 import 'package:commet/ui/layout/bento.dart';
 import 'package:commet/ui/organisms/call_view/voip_stream_view.dart';
+import 'package:commet/utils/animation/ring_shaker.dart';
+import 'package:commet/utils/animation/ripple.dart';
 import 'package:flutter/material.dart';
-
+import 'package:tiamat/atoms/avatar.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class CallView extends StatefulWidget {
@@ -18,6 +21,8 @@ class CallView extends StatefulWidget {
     this.pickCamera,
     this.disableCamera,
     this.hangUp,
+    this.declineCall,
+    this.acceptCall,
     super.key,
   });
   final VoipSession currentSession;
@@ -28,6 +33,8 @@ class CallView extends StatefulWidget {
   final Future<void> Function()? pickCamera;
   final Future<void> Function()? disableCamera;
   final Future<void> Function()? hangUp;
+  final Future<void> Function()? declineCall;
+  final Future<void> Function()? acceptCall;
 
   @override
   State<CallView> createState() => _CallViewState();
@@ -38,6 +45,7 @@ class _CallViewState extends State<CallView> {
   StreamSubscription? sub;
   bool isMouseHovering = false;
   VoipStream? mainStream;
+  late Room room;
 
   @override
   void initState() {
@@ -45,6 +53,8 @@ class _CallViewState extends State<CallView> {
     sub = widget.currentSession.onStateChanged.listen((event) {
       setState(() {});
     });
+
+    room = widget.currentSession.client.getRoom(widget.currentSession.roomId)!;
 
     //mainStream = widget.currentSession.remoteUserMediaStream;
 
@@ -64,16 +74,42 @@ class _CallViewState extends State<CallView> {
 
   @override
   Widget build(BuildContext context) {
-    switch (widget.currentSession.state) {
-      case VoipState.connected:
-        return callConnectedView();
-
-      default:
-        return const Placeholder();
-    }
+    return tiamat.Tile.low4(
+      child: switch (widget.currentSession.state) {
+        VoipState.connected => callConnectedView(),
+        VoipState.outgoing => callOutgoingView(),
+        VoipState.connecting => callOutgoingView(),
+        VoipState.ended => callEndedView(),
+        VoipState.incoming => callIncomingView(),
+        _ => Container()
+      },
+    );
   }
 
-  Widget callConnectedView() {
+  Widget callOutgoingView() {
+    return callButtons(
+      canHangUp: true,
+      child: Center(
+        child: RippleAnimation(
+          ripplesCount: 3,
+          scale: 1,
+          color: Theme.of(context).colorScheme.primary,
+          repeat: true,
+          child: Avatar.large(
+              image: room.avatar,
+              placeholderColor: room.defaultColor,
+              placeholderText: room.displayName),
+        ),
+      ),
+    );
+  }
+
+  Widget callButtons(
+      {bool canMute = false,
+      bool canScreenshare = false,
+      bool canHangUp = false,
+      bool canToggleCamera = false,
+      required Widget child}) {
     return MouseRegion(
       onEnter: (event) {
         setState(() {
@@ -85,21 +121,10 @@ class _CallViewState extends State<CallView> {
           isMouseHovering = false;
         });
       },
-      child: tiamat.Tile.low4(
-          child: Stack(
+      child: Stack(
         alignment: Alignment.bottomCenter,
         children: [
-          LayoutBuilder(
-            builder: (context, constraints) {
-              var ratio = constraints.maxWidth / constraints.maxHeight;
-
-              if (ratio > 1) {
-                return Row(children: generateLayout());
-              } else {
-                return Column(children: generateLayout());
-              }
-            },
-          ),
+          child,
           AnimatedOpacity(
             opacity: isMouseHovering ? 1 : 0,
             duration: const Duration(milliseconds: 200),
@@ -108,46 +133,69 @@ class _CallViewState extends State<CallView> {
               child: Wrap(
                 spacing: 5,
                 children: [
-                  tiamat.CircleButton(
-                      icon: Icons.screen_share_outlined,
-                      onPressed: widget.pickScreenshareSource),
-                  if (widget.currentSession.isSharingScreen)
+                  if (canScreenshare)
+                    tiamat.CircleButton(
+                        icon: Icons.screen_share_outlined,
+                        onPressed: widget.pickScreenshareSource),
+                  if (widget.currentSession.isSharingScreen && canScreenshare)
                     tiamat.CircleButton(
                       icon: Icons.stop_screen_share,
                       onPressed: widget.stopScreenshare,
                     ),
-                  tiamat.CircleButton(
-                    icon: widget.currentSession.isMicrophoneMuted
-                        ? Icons.mic_off
-                        : Icons.mic,
-                    onPressed: () async {
-                      await widget.setMicrophoneMute
-                          ?.call(!widget.currentSession.isMicrophoneMuted);
-                      setState(() {});
-                    },
-                  ),
-                  tiamat.CircleButton(
-                    icon: widget.currentSession.isCameraEnabled
-                        ? Icons.camera_alt
-                        : Icons.camera_alt_outlined,
-                    onPressed: widget.currentSession.isCameraEnabled
-                        ? widget.disableCamera
-                        : widget.pickCamera,
-                  ),
-                  tiamat.CircleButton(
-                    icon: Icons.call_end,
-                    onPressed: () async {
-                      await widget.hangUp?.call();
-                      setState(() {});
-                    },
-                  )
+                  if (canMute)
+                    tiamat.CircleButton(
+                      icon: widget.currentSession.isMicrophoneMuted
+                          ? Icons.mic_off
+                          : Icons.mic,
+                      onPressed: () async {
+                        await widget.setMicrophoneMute
+                            ?.call(!widget.currentSession.isMicrophoneMuted);
+                        setState(() {});
+                      },
+                    ),
+                  if (canToggleCamera)
+                    tiamat.CircleButton(
+                      icon: widget.currentSession.isCameraEnabled
+                          ? Icons.camera_alt
+                          : Icons.camera_alt_outlined,
+                      onPressed: widget.currentSession.isCameraEnabled
+                          ? widget.disableCamera
+                          : widget.pickCamera,
+                    ),
+                  if (canHangUp)
+                    tiamat.CircleButton(
+                      icon: Icons.call_end,
+                      onPressed: () async {
+                        await widget.hangUp?.call();
+                        setState(() {});
+                      },
+                    )
                 ],
               ),
             ),
           )
         ],
-      )),
+      ),
     );
+  }
+
+  Widget callConnectedView() {
+    return callButtons(
+        canMute: true,
+        canHangUp: true,
+        canScreenshare: true,
+        canToggleCamera: true,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            var ratio = constraints.maxWidth / constraints.maxHeight;
+
+            if (ratio > 1) {
+              return Row(children: generateLayout());
+            } else {
+              return Column(children: generateLayout());
+            }
+          },
+        ));
   }
 
   List<Widget> generateLayout() {
@@ -210,5 +258,47 @@ class _CallViewState extends State<CallView> {
         ),
       )
     ];
+  }
+
+  Widget callEndedView() {
+    return const Center(child: tiamat.Text.label("Call ended"));
+  }
+
+  Widget callIncomingView() {
+    return Stack(
+      alignment: Alignment.bottomCenter,
+      children: [
+        Center(
+          child: RingShakerAnimation(
+            child: Avatar.large(
+                image: room.avatar,
+                placeholderColor: room.defaultColor,
+                placeholderText: room.displayName),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Wrap(
+            spacing: 5,
+            children: [
+              tiamat.CircleButton(
+                icon: Icons.call,
+                onPressed: () async {
+                  await widget.acceptCall?.call();
+                  setState(() {});
+                },
+              ),
+              tiamat.CircleButton(
+                icon: Icons.call_end,
+                onPressed: () async {
+                  await widget.declineCall?.call();
+                  setState(() {});
+                },
+              )
+            ],
+          ),
+        ),
+      ],
+    );
   }
 }

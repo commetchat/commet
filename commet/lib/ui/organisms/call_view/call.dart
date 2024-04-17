@@ -24,6 +24,8 @@ class _CallWidgetState extends State<CallWidget> {
       pickCamera: pickCamera,
       disableCamera: disableCamera,
       hangUp: hangUp,
+      declineCall: declineCall,
+      acceptCall: acceptCall,
     );
   }
 
@@ -64,5 +66,13 @@ class _CallWidgetState extends State<CallWidget> {
 
   Future<void> disableCamera() {
     return widget.session.stopCamera();
+  }
+
+  Future<void> declineCall() {
+    return widget.session.declineCall();
+  }
+
+  Future<void> acceptCall() {
+    return widget.session.acceptCall();
   }
 }

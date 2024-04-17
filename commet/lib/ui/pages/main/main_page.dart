@@ -51,10 +51,10 @@ class MainPageState extends State<MainPage> {
   Space? get currentSpace => _currentSpace;
   Room? get currentRoom => _currentRoom;
 
-  VoipSession? get currentCall => currentRoom?.client
-      .getComponent<VoipComponent>()
-      ?.getSessionsInRoom(currentRoom!.identifier)
-      .firstOrNull;
+  VoipSession? get currentCall => currentRoom == null
+      ? null
+      : widget.clientManager.callManager
+          .getCallInRoom(currentRoom!.client, currentRoom!.identifier);
 
   @override
   void initState() {

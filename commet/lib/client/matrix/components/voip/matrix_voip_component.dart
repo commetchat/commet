@@ -217,4 +217,14 @@ class MatrixVoipComponent
 
     return voip.inviteToCall(roomId, callType);
   }
+
+  @override
+  bool canCallRoom(String roomId) {
+    var mxRoom = client.getMatrixClient().getRoomById(roomId);
+    if (mxRoom == null) {
+      return false;
+    }
+
+    return mxRoom.getParticipants().length <= 2;
+  }
 }
