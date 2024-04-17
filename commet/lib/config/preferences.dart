@@ -22,6 +22,8 @@ class Preferences {
   static const String _pushGateway = "push_gateway";
   static const String _lastDownloadLocation = "last_download_location";
   static const String _stickerCompatibilityMode = "sticker_compatibility_mode";
+  static const String _useFallbackTurnServer = "use_fallback_turn_server";
+  static const String _fallbackTurnServer = "fallback_turn_server";
   final StreamController _onSettingChanged = StreamController.broadcast();
   Stream get onSettingChanged => _onSettingChanged.stream;
   bool isInit = false;
@@ -168,4 +170,15 @@ class Preferences {
     await _preferences!.setBool(_stickerCompatibilityMode, value);
     _onSettingChanged.add(null);
   }
+
+  bool get useFallbackTurnServer =>
+      _preferences!.getBool(_useFallbackTurnServer) ?? false;
+
+  Future<void> setUseFallbackTurnServer(bool value) async {
+    await _preferences!.setBool(_useFallbackTurnServer, value);
+    _onSettingChanged.add(null);
+  }
+
+  String get fallbackTurnServer =>
+      _preferences!.getString(_fallbackTurnServer) ?? "stun:turn.matrix.org";
 }

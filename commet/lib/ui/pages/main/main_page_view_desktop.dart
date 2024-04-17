@@ -1,3 +1,4 @@
+import 'package:commet/client/components/voip/voip_component.dart';
 import 'package:commet/ui/atoms/drag_drop_file_target.dart';
 
 import 'package:commet/main.dart';
@@ -8,9 +9,11 @@ import 'package:commet/ui/molecules/direct_message_list.dart';
 import 'package:commet/ui/molecules/space_viewer.dart';
 import 'package:commet/ui/molecules/user_list.dart';
 import 'package:commet/ui/organisms/background_task_view/background_task_view.dart';
+import 'package:commet/ui/organisms/call_view/call.dart';
 import 'package:commet/ui/organisms/home_screen/home_screen.dart';
 import 'package:commet/ui/organisms/chat/chat.dart';
 import 'package:commet/ui/organisms/side_navigation_bar.dart';
+import 'package:commet/ui/organisms/sidebar_call_icon/sidebar_calls_list.dart';
 import 'package:commet/ui/organisms/space_summary/space_summary.dart';
 import 'package:commet/ui/pages/main/main_page.dart';
 import 'package:commet/utils/event_bus.dart';
@@ -41,6 +44,12 @@ class MainPageViewDesktop extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
                 child: SideNavigationBar(
                   currentUser: state.currentUser,
+                  extraEntryBuilders: [
+                    (width) {
+                      return SidebarCallsList(
+                          state.clientManager.callManager, width);
+                    }
+                  ],
                   onSpaceSelected: (index) {
                     state.selectSpace(state.clientManager.spaces[index]);
                   },
@@ -170,9 +179,20 @@ class MainPageViewDesktop extends StatelessWidget {
               onTap: state.currentRoom?.permissions.canEditAnything == true
                   ? () => state.navigateRoomSettings()
                   : null,
+              showCallButton: state.currentRoom?.client
+                      .getComponent<VoipComponent>()
+                      ?.canCallRoom(state.currentRoom!.identifier) ==
+                  true,
+              startCall: () {
+                if (state.currentRoom != null) {
+                  state.callRoom(state.currentRoom!);
+                }
+              },
             ),
           ),
-          Expanded(
+          if (state.currentCall != null)
+            Flexible(child: CallWidget(state.currentCall!)),
+          Flexible(
             child: Row(
               mainAxisSize: MainAxisSize.max,
               children: [

@@ -4,6 +4,7 @@ import 'package:commet/main.dart';
 import 'package:commet/ui/pages/settings/categories/app/advanced_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/app/general_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/app/notification_settings_page.dart';
+import 'package:commet/ui/pages/settings/categories/app/voip_settings/voip_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/app/window_settings.dart';
 import 'package:commet/ui/pages/settings/categories/developer/developer_settings_page.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
@@ -81,6 +82,12 @@ class SettingsCategoryApp implements SettingsCategory {
             icon: m.Icons.style,
             pageBuilder: (context) {
               return themeSettings(context);
+            }),
+        SettingsTab(
+            label: "Voice and Video",
+            icon: m.Icons.call,
+            pageBuilder: (context) {
+              return const VoipSettingsPage();
             }),
         if (BuildConfig.DESKTOP)
           SettingsTab(

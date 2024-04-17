@@ -264,6 +264,7 @@ class ImageButton extends StatefulWidget {
       this.iconSize,
       this.placeholderColor,
       this.placeholderText,
+      this.boxBorder,
       required this.size,
       this.icon});
   final void Function()? onTap;
@@ -272,6 +273,7 @@ class ImageButton extends StatefulWidget {
   final double? iconSize;
   final String? placeholderText;
   final Color? placeholderColor;
+  final BoxBorder? boxBorder;
   final IconData? icon;
   final bool doShadow;
 
@@ -318,27 +320,36 @@ class _ImageButtonState extends State<ImageButton> {
           end: BorderRadius.circular(_borderRadius)),
       builder: (context, value, child) {
         return Container(
-          decoration: widget.doShadow
-              ? BoxDecoration(borderRadius: value, boxShadow: [
-                  BoxShadow(
-                      color: Theme.of(context).colorScheme.shadow,
-                      blurRadius: 10)
-                ])
-              : widget.image == null
-                  ? BoxDecoration(
-                      borderRadius: value.add(BorderRadius.circular(2)),
-                      border: Border.all(
+          clipBehavior: Clip.antiAlias,
+          foregroundDecoration: BoxDecoration(
+              border: widget.boxBorder ??
+                  (widget.image == null
+                      ? Border.all(
                           color: Theme.of(context)
                               .extension<ExtraColors>()!
                               .outline,
-                          width: 1.5),
+                          strokeAlign: BorderSide.strokeAlignCenter,
+                          width: 2)
+                      : null),
+              borderRadius: value),
+          decoration: widget.doShadow
+              ? BoxDecoration(
+                  borderRadius: value,
+                  border: widget.boxBorder,
+                  boxShadow: [
+                      BoxShadow(
+                          color: Theme.of(context).colorScheme.shadow,
+                          blurRadius: 10)
+                    ])
+              : widget.image == null
+                  ? BoxDecoration(
+                      color: widget.placeholderColor,
+                      borderRadius: value,
                     )
-                  : null,
-          child: ClipRRect(
-            borderRadius: value,
-            child: Material(
-              child: child,
-            ),
+                  : BoxDecoration(borderRadius: value),
+          child: Material(
+            color: widget.image == null ? widget.placeholderColor : null,
+            child: child,
           ),
         );
       },
@@ -366,7 +377,6 @@ class _ImageButtonState extends State<ImageButton> {
                   )
                 : widget.placeholderText != null
                     ? Container(
-                        color: widget.placeholderColor,
                         child: Align(
                             alignment: Alignment.center,
                             child: widget.placeholderText != null

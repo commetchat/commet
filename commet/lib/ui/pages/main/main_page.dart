@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
+import 'package:commet/client/components/voip/voip_component.dart';
+import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/setup/setup_page.dart';
@@ -34,10 +36,12 @@ class MainPageState extends State<MainPage> {
   Room? _currentRoom;
   Room? _previousRoom;
   Space? _previousSpace;
+
   MainPageSubView _currentView = MainPageSubView.home;
 
   StreamSubscription? onSpaceUpdateSubscription;
   StreamSubscription? onRoomUpdateSubscription;
+  StreamSubscription? onCallStartedSubscription;
 
   MainPageSubView get currentView => _currentView;
 
@@ -46,6 +50,11 @@ class MainPageState extends State<MainPage> {
   Peer get currentUser => getCurrentUser();
   Space? get currentSpace => _currentSpace;
   Room? get currentRoom => _currentRoom;
+
+  VoipSession? get currentCall => currentRoom == null
+      ? null
+      : widget.clientManager.callManager
+          .getCallInRoom(currentRoom!.client, currentRoom!.identifier);
 
   @override
   void initState() {
@@ -69,6 +78,11 @@ class MainPageState extends State<MainPage> {
       }
     }
     backgroundTaskManager.onListUpdate.listen((event) {
+      setState(() {});
+    });
+
+    onCallStartedSubscription =
+        clientManager.callManager.currentSessions.onListUpdated.listen((event) {
       setState(() {});
     });
 
@@ -161,6 +175,15 @@ class MainPageState extends State<MainPage> {
       _currentSpace = null;
       _currentView = MainPageSubView.home;
     });
+  }
+
+  void callRoom(Room room) {
+    var component = room.client.getComponent<VoipComponent>();
+    if (component == null) {
+      return;
+    }
+
+    component.startCall(room.identifier, CallType.voice);
   }
 
   void selectHome() {

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:commet/client/alert.dart';
+import 'package:commet/client/call_manager.dart';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/simulated/simulated_client.dart';
@@ -19,6 +20,7 @@ class ClientManager {
   final NotifyingList<Space> _spaces = NotifyingList.empty(growable: true);
 
   final AlertManager alertManager = AlertManager();
+  late CallManager callManager;
 
   List<Room> get rooms => _rooms;
 
@@ -68,6 +70,10 @@ class ClientManager {
       0,
       (previousValue, element) =>
           previousValue + element.displayNotificationCount);
+
+  ClientManager() {
+    callManager = CallManager(this);
+  }
 
   static Future<void> init() async {
     final newClientManager = ClientManager();

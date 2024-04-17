@@ -31,6 +31,11 @@ class CommonStrings {
       desc:
           "Generic prompt to accept something, probably a request of some kind");
 
+  static String get promptDecline => Intl.message("Decline",
+      name: "promptDecline",
+      desc:
+          "Generic prompt to decline something, probably a request of some kind");
+
   static String get promptReject => Intl.message("Reject",
       name: "promptReject",
       desc:
