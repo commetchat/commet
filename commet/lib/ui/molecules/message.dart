@@ -129,7 +129,6 @@ class _MessageState extends State<Message> {
                       if (widget.child != null) widget.child!,
                       if (widget.links != null) urlPreviews(),
                       if (widget.reactions != null) reactions(),
-                      if (widget.links != null) urlPreviews(),
                     ],
                   ),
                 ),
