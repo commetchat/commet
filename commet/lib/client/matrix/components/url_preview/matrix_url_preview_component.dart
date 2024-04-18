@@ -22,15 +22,15 @@ class MatrixUrlPreviewComponent implements UrlPreviewComponent<MatrixClient> {
 
   void createPrivatePreviewGetter() {
     privatePreviewGetter = EncryptedUrlPreview(
-        proxyServerUrl: Uri.https(preferences.gifProxyUrl),
+        proxyServerUrl: Uri.https("telescope.commet.chat"),
         publicKeyPem: """-----BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsHm6BWsALNS8QRGX19w7
-60wzxtWOFDJKU2ygrUksDZBNjfErUSEnlyfthGlkDbXLj5jCw350iCPEBL02fdAM
-i1vt6Q9o8l0KlUW+5ZkPdxPqS2P+fzdD0XZyTTSHKXOsxxW6BoTyetkjXjyQcUke
-81QCBZHbrBrDddzjZanxKtThDTs452lOhdSG/od0y3/8I7YMZ8vRroPTp0DXSf7Y
-VMVsGrhN5j+UnsZ9MFTRlsc/n/4MuP3TomyqxFc3XLJaqgCLjnuXbuIZ2bVAbODv
-Ba0WQx4DI7vg9aQc7l1KHMJsZlkZ7yiKolxYKURdHTF1QgtVO0N/xwA9SPIHkGPJ
-BwIDAQAB
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAz+sAi8PsT4QwjV/+xXK0
+vwavZJEjkwJyFODGWkoo7qB87Y2yU6/C4csul6kQpxBFu9ID7mCavAlr93/c70Qm
+sgX791W7oOSpvyeffJe5iluzaglZ/KWYo6Bc0QajKT8rLdI5vUljVMyx/nR9rIhY
+PvSJhSFLC2ZyUhhTb/ZeLm0arEtGeyfo1V3nLGsJZJx12UK8E0FpKP14S7Wke9zM
+e05PDCU/llEQpUgQOJI9Vnji71Fgocii76aSULhXalGjQIzBGKib5MIYlb0Zgf8k
+wKkRg6IrNt5kjad4PoRKocxj3ylvuxEtMN582ni3lO4gi1uzzVvFtJBzrhNMjTPC
+pQIDAQAB
 -----END PUBLIC KEY-----""");
   }
 
@@ -79,13 +79,11 @@ BwIDAQAB
     }
 
     var proxyUrl = privatePreviewGetter!.getProxyUrl(url);
+    var key = privatePreviewGetter!.contentKey;
 
     var response = await client.request(
         matrix.RequestType.GET, "/media/v3/preview_url",
         query: {"url": proxyUrl.toString()});
-
-    var encryptedKey = response['og:commet:content_key'] as String;
-    var key = privatePreviewGetter!.decryptContentKeyB64(encryptedKey);
 
     var title = response['og:title'] as String?;
     var siteName = response['og:site_name'] as String?;
@@ -101,7 +99,7 @@ BwIDAQAB
             await client.httpClient.get(mxcUri.getDownloadLink(client));
 
         var bytes = response.bodyBytes;
-        var decrypted = privatePreviewGetter!.decryptContentImage(bytes);
+        var decrypted = privatePreviewGetter!.decryptContent(bytes, key);
 
         image = Image.memory(decrypted).image;
       }
