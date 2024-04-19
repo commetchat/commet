@@ -37,7 +37,7 @@ class _GeneralSettingsPage extends State<GeneralSettingsPage> {
           name: "labelEncryptedPreview");
 
   String labelEncryptedPreviewDescription(proxyUrl) => Intl.message(
-      "Enable use of a proxy server ($proxyUrl) to get url preview in an encrypted chat. These requests will be hidden from your homeserver using Commet's 'encrypted url preview'\n\n Learn more: https://github.com/commetchat/encrypted_url_preview",
+      "Enable use of a proxy server ($proxyUrl) to get url preview in an encrypted chat. The content of these requests will be hidden from your homeserver using Commet's 'encrypted url preview'\nLearn more: https://github.com/commetchat/encrypted_url_preview",
       desc: "Explains that gifs will be fetched via proxy",
       args: [proxyUrl],
       name: "labelEncryptedPreviewDescription");
@@ -76,7 +76,7 @@ class _GeneralSettingsPage extends State<GeneralSettingsPage> {
           enableEncryptedPreview,
           title: labelEncryptedPreview,
           description:
-              labelEncryptedPreviewDescription(preferences.gifProxyUrl),
+              labelEncryptedPreviewDescription("telescope.commet.chat"),
           onChanged: (value) async {
             setState(() {
               enableEncryptedPreview = value;
