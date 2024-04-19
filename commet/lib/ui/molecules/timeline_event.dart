@@ -3,6 +3,7 @@ import 'package:commet/config/build_config.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/generic_room_event.dart';
 import 'package:commet/ui/molecules/message.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' as m;
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
@@ -193,10 +194,19 @@ class _TimelineEventState extends State<TimelineEventView> {
     }
 
     var data = await component.getPreview(widget.timeline.room, widget.event);
-    setState(() {
-      urlPreviews = data;
-      loadingUrlPreviews = false;
-    });
+
+    if (data?.image != null) {
+      if (mounted) {
+        await precacheImage(data!.image!, context);
+      }
+    }
+
+    if (mounted) {
+      setState(() {
+        urlPreviews = data;
+        loadingUrlPreviews = false;
+      });
+    }
   }
 
   @override
