@@ -366,7 +366,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: fcf3df26820be7b88d042a1bb3fb4b5756c6bd3e
+      resolved-ref: "0e8659463acb585a94e656df72b8448a5e18643e"
       url: "https://github.com/commetchat/encrypted_url_preview.git"
     source: git
     version: "1.0.0"
