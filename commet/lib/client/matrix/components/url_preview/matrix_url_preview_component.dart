@@ -52,10 +52,14 @@ pQIDAQAB
 
     UrlPreviewData? data;
 
-    if (room.isE2EE) {
-      data = await getEncryptedPreviewData(mxClient, uri);
-    } else {
-      data = await fetchPreviewData(mxClient, uri);
+    try {
+      if (room.isE2EE) {
+        data = await getEncryptedPreviewData(mxClient, uri);
+      } else {
+        data = await fetchPreviewData(mxClient, uri);
+      }
+    } catch (_) {
+      return null;
     }
 
     cache[uri.toString()] = data!;
@@ -78,8 +82,10 @@ pQIDAQAB
       createPrivatePreviewGetter();
     }
 
-    var proxyUrl = privatePreviewGetter!.getProxyUrl(url);
-    var key = privatePreviewGetter!.contentKey;
+    var key = privatePreviewGetter!.getNextKey();
+    var proxyUrl = privatePreviewGetter!.getProxyUrl(url, key);
+
+    print("Fetching proxy url: $proxyUrl");
 
     var response = await client.request(
         matrix.RequestType.GET, "/media/v3/preview_url",
@@ -111,8 +117,9 @@ pQIDAQAB
       siteName = privatePreviewGetter!.decryptContentString(siteName, key);
 
     if (description != null)
-      description =
-          privatePreviewGetter!.decryptContentString(description, key);
+      description = privatePreviewGetter!
+          .decryptContentString(description, key)
+          .replaceAll("\n", "    ");
 
     return UrlPreviewData(url,
         siteName: siteName,
@@ -131,12 +138,17 @@ pQIDAQAB
     var siteName = response['og:site_name'] as String?;
     var imageUrl = response['og:image'] as String?;
     var description = response['og:description'] as String?;
+
     ImageProvider? image;
     if (imageUrl != null) {
       var imageUri = Uri.parse(imageUrl);
       if (imageUri.scheme == "mxc") {
         image = MatrixMxcImage(imageUri, client);
       }
+    }
+
+    if (description != null) {
+      description = description.replaceAll("\n", "    ");
     }
 
     return UrlPreviewData(url,

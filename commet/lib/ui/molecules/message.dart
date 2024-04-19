@@ -31,6 +31,7 @@ class Message extends StatefulWidget {
       this.onReactionTapped,
       this.onLongPress,
       this.links,
+      this.loadingUrlPreviews = false,
       this.isInReply = false,
       this.child,
       this.showSender = true});
@@ -58,6 +59,7 @@ class Message extends StatefulWidget {
   final Widget? child;
 
   final UrlPreviewData? links;
+  final bool loadingUrlPreviews;
 
   final Map<Emoticon, Set<String>>? reactions;
 
@@ -127,7 +129,8 @@ class _MessageState extends State<Message> {
                       body(),
                       if (widget.edited) edited(),
                       if (widget.child != null) widget.child!,
-                      if (widget.links != null) urlPreviews(),
+                      if (widget.links != null || widget.loadingUrlPreviews)
+                        urlPreviews(),
                       if (widget.reactions != null) reactions(),
                     ],
                   ),
@@ -141,11 +144,14 @@ class _MessageState extends State<Message> {
   }
 
   Widget urlPreviews() {
-    return UrlPreviewWidget(
-      widget.links!,
-      onTap: () {
-        LinkUtils.open(widget.links!.uri);
-      },
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0, 0, 40, 0),
+      child: UrlPreviewWidget(
+        widget.links, //, widget.links!,
+        onTap: () {
+          LinkUtils.open(widget.links!.uri);
+        },
+      ),
     );
   }
 

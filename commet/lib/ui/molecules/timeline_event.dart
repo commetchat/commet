@@ -133,6 +133,7 @@ class _TimelineEventState extends State<TimelineEventView> {
       : widget.timeline.client.getPeer(relatedEvent!.senderId).displayName;
 
   UrlPreviewData? urlPreviews;
+  bool loadingUrlPreviews = false;
 
   @override
   void initState() {
@@ -150,6 +151,7 @@ class _TimelineEventState extends State<TimelineEventView> {
     if (widget.event.links != null) {
       getCachedUrlPreview();
       if (urlPreviews == null) {
+        loadingUrlPreviews = true;
         fetchUrlPreviews();
       }
     }
@@ -193,6 +195,7 @@ class _TimelineEventState extends State<TimelineEventView> {
     var data = await component.getPreview(widget.timeline.room, widget.event);
     setState(() {
       urlPreviews = data;
+      loadingUrlPreviews = false;
     });
   }
 
@@ -227,6 +230,7 @@ class _TimelineEventState extends State<TimelineEventView> {
           edited: widget.event.edited,
           onReactionTapped: widget.onReactionTapped,
           links: urlPreviews,
+          loadingUrlPreviews: loadingUrlPreviews,
           body: buildBody(),
           child: event.status == TimelineEventStatus.error
               ? tiamat.Text.error(errorMessageFailedToSend)

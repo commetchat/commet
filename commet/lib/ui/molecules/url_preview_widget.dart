@@ -5,7 +5,7 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 
 class UrlPreviewWidget extends StatelessWidget {
   const UrlPreviewWidget(this.data, {super.key, this.onTap});
-  final UrlPreviewData data;
+  final UrlPreviewData? data;
   final void Function()? onTap;
 
   @override
@@ -24,15 +24,23 @@ class UrlPreviewWidget extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (data.image != null) image(),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        body(context)
-                      ],
+                    ConstrainedBox(
+                      constraints:
+                          const BoxConstraints.tightFor(height: 70, width: 500),
+                      child: data == null
+                          ? Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          : Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                if (data!.image != null) image(),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                body(context)
+                              ],
+                            ),
                     )
                   ]),
             ),
@@ -48,7 +56,7 @@ class UrlPreviewWidget extends StatelessWidget {
       child: ConstrainedBox(
           constraints: const BoxConstraints(maxHeight: 70, maxWidth: 100),
           child: Image(
-            image: data.image!,
+            image: data!.image!,
             filterQuality: FilterQuality.medium,
           )),
     );
@@ -60,15 +68,25 @@ class UrlPreviewWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (data.siteName != null) tiamat.Text.labelLow(data.siteName!),
+          if (data!.siteName != null)
+            tiamat.Text.labelLow(
+              data!.siteName!,
+              maxLines: 1,
+              overflow: TextOverflow.fade,
+            ),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (data.title != null) tiamat.Text.labelEmphasised(data.title!),
-              if (data.description != null)
+              if (data!.title != null)
+                tiamat.Text.labelEmphasised(
+                  data!.title!,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              if (data!.description != null)
                 tiamat.Text.tiny(
-                  data.description!,
+                  data!.description!,
                   maxLines: 2,
                   color: Theme.of(context).colorScheme.secondary,
                   overflow: TextOverflow.ellipsis,
