@@ -85,8 +85,6 @@ pQIDAQAB
     var key = privatePreviewGetter!.getNextKey();
     var proxyUrl = privatePreviewGetter!.getProxyUrl(url, key);
 
-    print("Fetching proxy url: $proxyUrl");
-
     var response = await client.request(
         matrix.RequestType.GET, "/media/v3/preview_url",
         query: {"url": proxyUrl.toString()});
