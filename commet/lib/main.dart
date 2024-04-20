@@ -4,6 +4,8 @@ import 'package:commet/cache/file_cache.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/component.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
+import 'package:commet/config/build_config.dart';
+import 'package:commet/config/layout_config.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/config/preferences.dart';
 import 'package:commet/debug/log.dart';
@@ -21,6 +23,7 @@ import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/scaled_app.dart';
 import 'package:commet/utils/shortcuts_manager.dart';
 import 'package:commet/utils/window_management.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:flutter/material.dart';
@@ -102,6 +105,13 @@ void main() async {
 
 void appMain() async {
   try {
+    if (BuildConfig.WEB) {
+      var info = await DeviceInfoPlugin().deviceInfo;
+      if (info is WebBrowserInfo) {
+        Layout.browserInfo = info;
+      }
+    }
+
     ensureBindingInit();
 
     FlutterError.onError = Log.getFlutterErrorReporter(FlutterError.onError);

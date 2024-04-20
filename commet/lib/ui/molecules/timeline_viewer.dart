@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/config/layout_config.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/molecules/message_popup_menu/message_popup_menu.dart';
 import 'package:commet/ui/molecules/timeline_event.dart';
@@ -162,15 +163,17 @@ class TimelineViewerState extends State<TimelineViewer> {
   }
 
   void onAfterFirstFrame(_) {
-    double extent = controller.position.minScrollExtent;
-    controller = ScrollController(initialScrollOffset: extent);
-    controller.addListener(onScroll);
-    setState(() {
-      firstFrame = false;
-      if (widget.timeline.events.isEmpty) return;
+    if (controller.hasClients) {
+      double extent = controller.position.minScrollExtent;
+      controller = ScrollController(initialScrollOffset: extent);
+      controller.addListener(onScroll);
+      setState(() {
+        firstFrame = false;
+        if (widget.timeline.events.isEmpty) return;
 
-      widget.markAsRead?.call(widget.timeline.events.first);
-    });
+        widget.markAsRead?.call(widget.timeline.events.first);
+      });
+    }
   }
 
   void loadMoreHistory() async {
@@ -296,9 +299,9 @@ class TimelineViewerState extends State<TimelineViewer> {
     return ClipRect(
       child: Stack(
         children: [
-          if (BuildConfig.MOBILE) view,
-          if (BuildConfig.DESKTOP) SelectionArea(child: view),
-          if (BuildConfig.DESKTOP) buildOverlay(),
+          if (Layout.mobile) view,
+          if (Layout.desktop) SelectionArea(child: view),
+          if (Layout.desktop) buildOverlay(),
           Align(
               alignment: Alignment.bottomCenter,
               child: AnimatedSlide(
