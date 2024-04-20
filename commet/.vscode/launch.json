@@ -45,7 +45,9 @@
                 "--dart-define",
                 "PLATFORM=web",
                 "--dart-define",
-                "BUILD_MODE=debug"
+                "BUILD_MODE=debug",
+                "--web-renderer",
+                "html"
             ],
         },
         {

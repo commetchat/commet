@@ -178,6 +178,7 @@ class _AccountManagementSettingsTabState
               onPressed: () {
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (_) => LoginPage(
+                          canNavigateBack: true,
                           onSuccess: (
                             _,
                           ) {

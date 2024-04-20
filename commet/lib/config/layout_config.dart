@@ -1,7 +1,10 @@
 import 'package:commet/config/build_config.dart';
-import 'package:flutter/widgets.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 
 class Layout {
+  static WebBrowserInfo? browserInfo;
+  static bool? _isWebDesktopCache;
+
   static bool get desktop {
     if (BuildConfig.DESKTOP) {
       return true;
@@ -11,7 +14,8 @@ class Layout {
       return false;
     }
 
-    return !_isPortrait();
+    _isWebDesktopCache = _isWebDesktop();
+    return _isWebDesktopCache!;
   }
 
   static bool get mobile {
@@ -23,13 +27,47 @@ class Layout {
       return false;
     }
 
-    return _isPortrait();
+    _isWebDesktopCache = _isWebDesktop();
+    return !_isWebDesktopCache!;
   }
 
-  static bool _isPortrait() {
-    var view = WidgetsBinding.instance.platformDispatcher.views.first;
-    var size = view.physicalSize;
+  static bool _isWebDesktop() {
+    if (_isWebDesktopCache != null) {
+      return _isWebDesktopCache!;
+    }
 
-    return size.height > size.width;
+    if (browserInfo == null) {
+      return true;
+    }
+
+    var userAgent = browserInfo!.userAgent ?? "";
+    userAgent = userAgent.toLowerCase();
+
+    if (userAgent.contains("android")) {
+      return false;
+    }
+
+    if (userAgent.contains("iphone")) {
+      return false;
+    }
+
+    if (userAgent.contains("mobile")) {
+      return false;
+    }
+
+    if (userAgent.contains("macintosh")) {
+      return true;
+    }
+
+    if (userAgent.contains("windows")) {
+      return true;
+    }
+
+    if (userAgent.contains("linux")) {
+      return true;
+    }
+
+    // assume desktop otherwise
+    return true;
   }
 }

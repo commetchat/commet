@@ -8,7 +8,8 @@ import 'package:provider/provider.dart';
 import '../../../client/client_manager.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key, this.onSuccess});
+  const LoginPage({super.key, this.onSuccess, this.canNavigateBack = false});
+  final bool canNavigateBack;
   final Function(Client loggedInClient)? onSuccess;
 
   @override
@@ -51,6 +52,7 @@ class LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return LoginPageView(
       state: this,
+      canNavigateBack: widget.canNavigateBack,
     );
   }
 }
