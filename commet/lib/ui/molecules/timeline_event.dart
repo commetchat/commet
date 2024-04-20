@@ -149,7 +149,10 @@ class _TimelineEventState extends State<TimelineEventView> {
       if (mounted) setState(() {});
     });
 
-    if (widget.event.links != null) {
+    var component =
+        widget.timeline.room.client.getComponent<UrlPreviewComponent>();
+    if (component?.shouldGetPreviewData(widget.timeline.room, widget.event) ==
+        true) {
       getCachedUrlPreview();
       if (urlPreviews == null) {
         loadingUrlPreviews = true;

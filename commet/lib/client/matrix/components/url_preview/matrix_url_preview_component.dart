@@ -76,6 +76,15 @@ pQIDAQAB
     return null;
   }
 
+  @override
+  bool shouldGetPreviewData(Room room, TimelineEvent event) {
+    if (room.isE2EE && preferences.urlPreviewInE2EEChat == false) {
+      return false;
+    }
+
+    return event.links?.isNotEmpty == true;
+  }
+
   Future<UrlPreviewData> getEncryptedPreviewData(
       matrix.Client client, Uri url) async {
     if (privatePreviewGetter == null) {

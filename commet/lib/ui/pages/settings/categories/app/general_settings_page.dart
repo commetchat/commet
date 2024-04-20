@@ -32,7 +32,7 @@ class _GeneralSettingsPage extends State<GeneralSettingsPage> {
       name: "labelGifSearchDescription");
 
   String get labelEncryptedPreview =>
-      Intl.message("URL Preview in Encrypted Chats",
+      Intl.message("URL Preview in Encrypted Chats (Experimental)",
           desc: "Label for the toggle for enabling and disabling gif search",
           name: "labelEncryptedPreview");
 
