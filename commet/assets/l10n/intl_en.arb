@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2023-12-09T20:25:33.438018",
+  "@@last_modified": "2024-04-20T13:28:15.080115",
   "fileDragDropPrompt": "Drop a file to upload...",
   "@fileDragDropPrompt": {
     "description": "Text that is shown when a user is dragging a file",
@@ -81,6 +81,15 @@
     "type": "text",
     "placeholders": {
       "user": {}
+    }
+  },
+  "messageUserEmote": "*{user} {emote}",
+  "@messageUserEmote": {
+    "description": "Message to display when a user does a custom emote (/me)",
+    "type": "text",
+    "placeholders": {
+      "user": {},
+      "emote": {}
     }
   },
   "errorMessageFailedToSend": "Failed to send",
@@ -802,6 +811,12 @@
     "type": "text",
     "placeholders": {}
   },
+  "labelThemeAmoled": "Amoled",
+  "@labelThemeAmoled": {
+    "description": "Label for the light theme",
+    "type": "text",
+    "placeholders": {}
+  },
   "labelAppScale": "App Scale",
   "@labelAppScale": {
     "description": "Label for the setting which controls the UI scale of the overall app",
@@ -834,6 +849,20 @@
       "proxyUrl": {}
     }
   },
+  "labelEncryptedPreview": "URL Preview in Encrypted Chats (Experimental)",
+  "@labelEncryptedPreview": {
+    "description": "Label for the toggle for enabling and disabling gif search",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelEncryptedPreviewDescription": "Enable use of a proxy server ({proxyUrl}) to get url preview in an encrypted chat. The content of these requests will be hidden from your homeserver using Commet's 'encrypted url preview'\nLearn more: https://github.com/commetchat/encrypted_url_preview",
+  "@labelEncryptedPreviewDescription": {
+    "description": "Explains that gifs will be fetched via proxy",
+    "type": "text",
+    "placeholders": {
+      "proxyUrl": {}
+    }
+  },
   "labelSettingsDeveloperMode": "Developer mode",
   "@labelSettingsDeveloperMode": {
     "description": "Header for the settings to enable developer mode",
@@ -843,6 +872,18 @@
   "labelSettingsDeveloperModeExplanation": "Shows extra information, useful for developers",
   "@labelSettingsDeveloperModeExplanation": {
     "description": "Explains what developer mode does",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelStickerCompatibility": "Sticker compatibility",
+  "@labelStickerCompatibility": {
+    "description": "Header for the settings to enable sticker compatibility mode",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsStickerCompatibilityExplanation": "In some matrix clients, sending a sticker as 'm.sticker' will cause the sticker to not load correctly. Enabling this setting will send stickers as 'm.image' which will allow them to render correctly",
+  "@labelSettingsStickerCompatibilityExplanation": {
+    "description": "Explains what sticker compatibility mode does",
     "type": "text",
     "placeholders": {}
   },

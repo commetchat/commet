@@ -109,7 +109,7 @@ class _TimelineEventState extends State<TimelineEventView> {
   String messageUserEmote(String user, String emote) =>
       Intl.message("*$user $emote",
           desc: "Message to display when a user does a custom emote (/me)",
-          args: [user],
+          args: [user, emote],
           name: "messageUserEmote");
 
   String get errorMessageFailedToSend => Intl.message("Failed to send",
