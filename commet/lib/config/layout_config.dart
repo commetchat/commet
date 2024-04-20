@@ -1,6 +1,5 @@
 import 'package:commet/config/build_config.dart';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:flutter/widgets.dart';
 
 class Layout {
   static WebBrowserInfo? browserInfo;
