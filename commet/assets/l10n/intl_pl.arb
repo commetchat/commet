@@ -53,7 +53,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelHomeAlerts": "Alarmy",
+  "labelHomeAlerts": "Ostrzeżenia",
   "@labelHomeAlerts": {
     "description": "Short label for header of alerts",
     "type": "text",
@@ -911,6 +911,42 @@
   "promptGenerateMatrixRecoveryKey": "Wygeneruj Klucz",
   "@promptGenerateMatrixRecoveryKey": {
     "description": "Button text to generate a recovery key",
+    "type": "text",
+    "placeholders": {}
+  },
+  "tooltipSpaceSettings": "Ustawienia przestrzeni",
+  "@tooltipSpaceSettings": {
+    "description": "Tooltip for the button that opens space settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptHome": "Strona główna",
+  "@promptHome": {
+    "description": "Generic prompt to go home, usually will go back to a main menu, or similar",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptSubmit": "Prześlij",
+  "@promptSubmit": {
+    "description": "Generic prompt to submit something",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsAppLogs": "Logi",
+  "@labelSettingsAppLogs": {
+    "description": "Label for the logs settings page, usually hidden unless developer mode is turned on",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsAppNotifications": "Powiadomienia",
+  "@labelSettingsAppNotifications": {
+    "description": "Label for the App notifications settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptHomeserver": "Serwer domowy",
+  "@promptHomeserver": {
+    "description": "Placeholder text for homeserver field on login form",
     "type": "text",
     "placeholders": {}
   }
