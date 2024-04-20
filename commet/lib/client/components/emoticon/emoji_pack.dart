@@ -17,6 +17,8 @@ abstract class EmoticonPack {
 
   List<Emoticon> get stickers;
 
+  List<String> getShortcodes();
+
   ImageProvider? get image;
   IconData? get icon;
 
@@ -36,6 +38,8 @@ abstract class EmoticonPack {
 
   Future<void> markAsSticker(bool isStickerPack);
 
+  Emoticon? getByShortcode(String shortcode);
+
   Future<void> addEmoticon(
       {required String slug,
       String? shortcode,
@@ -45,4 +49,6 @@ abstract class EmoticonPack {
       bool? isSticker});
 
   Future<void> markAsGlobal(bool isGlobal);
+
+  List<Emoticon> search(String searchText, [int limit = -1]);
 }

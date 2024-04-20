@@ -1,7 +1,9 @@
+import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/molecules/message_input.dart';
 import 'package:commet/ui/molecules/read_indicator.dart';
 import 'package:commet/ui/molecules/timeline_viewer.dart';
 import 'package:commet/ui/organisms/chat/chat.dart';
+import 'package:commet/utils/autofill_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart';
@@ -73,6 +75,8 @@ class ChatView extends StatelessWidget {
       onTextUpdated: state.onInputTextUpdated,
       addAttachment: state.addAttachment,
       removeAttachment: state.removeAttachment,
+      size: Layout.mobile ? 40 : 35,
+      iconScale: Layout.mobile ? 0.6 : 0.5,
       isProcessing: state.processing,
       enabled: state.room.permissions.canSendMessage,
       typingUsernames:
@@ -99,6 +103,7 @@ class ChatView extends StatelessWidget {
         room: state.room,
         initialList: state.room.timeline?.receipts,
       ),
+      processAutofill: (text) => AutofillUtils.search(text, state.room),
     );
   }
 }

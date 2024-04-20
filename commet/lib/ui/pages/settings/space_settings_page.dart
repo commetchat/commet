@@ -48,7 +48,7 @@ class _SpaceSettingsPageState extends State<SpaceSettingsPage> {
             prompt: promptLeaveSpaceConfirmation(widget.space.displayName),
             dangerous: true) ==
         true) {
-      if (mounted) Navigator.pop(context);
+      if (context.mounted) Navigator.pop(context);
       widget.space.client.leaveSpace(widget.space);
     }
   }

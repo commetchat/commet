@@ -14,7 +14,7 @@ dependencies:
   device_info_plus: ^9.0.3
   #fcm_shared_isolate: ^0.1.0
   file_picker: ^5.2.10
-  flutter_blurhash: ^0.7.0
+  flutter_blurhash: ^0.8.2
   flutter_markdown: ^0.6.9+1
   flutter_olm: ^1.2.0
   flutter_openssl_crypto: ^0.1.0
@@ -74,7 +74,7 @@ dependencies:
   tiamat: 
     path: ../tiamat/
   sqlite3_flutter_libs: ^0.5.18
-  flutter_native_splash: ^2.3.7
+  fuzzy: ^0.5.1
 
 dev_dependencies: 
   build_runner: any
@@ -122,7 +122,6 @@ flutter:
     - assets/js/package/
   shaders: 
     - assets/shader/texture_coordinate.frag
-    - assets/shader/star_trails.frag
   fonts: 
     - 
       family: Jellee
@@ -158,13 +157,3 @@ msix_config:
     clsid: 7685C041-9D17-4112-8FC4-386743A3D53E
     arguments: -ToastActivated
     display_name: Commet
-
-flutter_native_splash:
-  color: "#534CDD"
-  android: true
-  ios: false
-  web: true
-  android_12:
-    color: "#534CDD"
-  image_web: "assets/images/app_icon/app_icon_transparent.png"
-  color_web: "#303030"

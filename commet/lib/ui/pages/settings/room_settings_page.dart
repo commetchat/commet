@@ -48,7 +48,7 @@ class _RoomSettingsPageState extends State<RoomSettingsPage> {
             prompt: promptLeaveRoomConfirmation(widget.room.displayName),
             dangerous: true) ==
         true) {
-      if (mounted) Navigator.pop(context);
+      if (context.mounted) Navigator.pop(context);
       widget.room.client.leaveRoom(widget.room);
     }
   }

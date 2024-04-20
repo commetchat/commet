@@ -21,6 +21,7 @@ class Preferences {
   static const String _unifiedPushEndpoint = "unified_push_endpoint";
   static const String _pushGateway = "push_gateway";
   static const String _lastDownloadLocation = "last_download_location";
+  static const String _stickerCompatibilityMode = "sticker_compatibility_mode";
   final StreamController _onSettingChanged = StreamController.broadcast();
   Stream get onSettingChanged => _onSettingChanged.stream;
   bool isInit = false;
@@ -156,6 +157,15 @@ class Preferences {
 
   Future<void> setLastDownloadLocation(String value) async {
     await _preferences!.setString(_lastDownloadLocation, value);
+    _onSettingChanged.add(null);
+  }
+
+  //Workaround for: https://github.com/commetchat/commet/issues/202
+  bool get stickerCompatibilityMode =>
+      _preferences!.getBool(_stickerCompatibilityMode) ?? true;
+
+  Future<void> setStickerCompatibilityMode(bool value) async {
+    await _preferences!.setBool(_stickerCompatibilityMode, value);
     _onSettingChanged.add(null);
   }
 }

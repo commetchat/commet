@@ -8,6 +8,7 @@ import 'package:commet/client/matrix/components/emoticon/matrix_room_emoticon_co
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:flutter/widgets.dart';
+import 'package:fuzzy/fuzzy.dart';
 import 'package:matrix/matrix.dart';
 
 class MatrixEmoticonPack implements EmoticonPack {
@@ -17,6 +18,8 @@ class MatrixEmoticonPack implements EmoticonPack {
   @override
   final NotifyingList<MatrixEmoticon> emotes =
       NotifyingList.empty(growable: true);
+
+  late Map<String, Emoticon> shortcodeToEmoticon;
 
   @override
   late String displayName;
@@ -34,7 +37,7 @@ class MatrixEmoticonPack implements EmoticonPack {
   ) {
     var info = initialState['pack'];
     displayName = info?['display_name'] ?? component.getDefaultDisplayName();
-
+    shortcodeToEmoticon = <String, Emoticon>{};
     if (info?['avatar_url'] != null) {
       try {
         var uri = Uri.parse(info!['avatar_url']!);
@@ -65,12 +68,17 @@ class MatrixEmoticonPack implements EmoticonPack {
 
       if (url != null) {
         var uri = Uri.parse(url);
-        emotes.add(MatrixEmoticon(uri, component.client.getMatrixClient(),
+        var emote = MatrixEmoticon(uri, component.client.getMatrixClient(),
             shortcode: image,
             isEmojiPack: isEmojiPackCache,
             isStickerPack: isStickerPackCache,
             isMarkedEmoji: markedEmoji,
-            isMarkedSticker: markedSticker));
+            isMarkedSticker: markedSticker);
+        emotes.add(emote);
+
+        if (emote.shortcode != null) {
+          shortcodeToEmoticon[emote.shortcode!] = emote;
+        }
       }
     }
   }
@@ -93,6 +101,10 @@ class MatrixEmoticonPack implements EmoticonPack {
       var emote = MatrixEmoticon(uri, component.client.getMatrixClient(),
           shortcode: shortcode);
       emotes.add(emote);
+
+      if (emote.shortcode != null) {
+        shortcodeToEmoticon[emote.shortcode!] = emote;
+      }
     } catch (_) {}
   }
 
@@ -111,6 +123,10 @@ class MatrixEmoticonPack implements EmoticonPack {
   Future<void> deleteEmoticon(Emoticon emoticon) async {
     await component.deleteEmoticon(identifier, emoticon.shortcode!);
     emotes.remove(emoticon);
+
+    if (emoticon.shortcode != null) {
+      shortcodeToEmoticon.remove(emoticon.shortcode);
+    }
   }
 
   @override
@@ -183,5 +199,30 @@ class MatrixEmoticonPack implements EmoticonPack {
   @override
   Future<void> renameEmoticon(Emoticon emoticon, String name) {
     return component.renameEmoticon(identifier, emoticon.shortcode!, name);
+  }
+
+  @override
+  List<String> getShortcodes() {
+    return emoji.map((e) => e.shortcode!).toList();
+  }
+
+  @override
+  List<Emoticon> search(String searchText, [int limit = -1]) {
+    var fuzzy = Fuzzy<Emoticon>(emoji,
+        options: FuzzyOptions(threshold: 0.4, keys: [
+          WeightedKey(
+              name: "shortcode",
+              getter: (obj) {
+                return obj.shortcode ?? "";
+              },
+              weight: 1)
+        ]));
+
+    return fuzzy.search(searchText, limit).map((e) => e.item).toList();
+  }
+
+  @override
+  Emoticon? getByShortcode(String shortcode) {
+    return shortcodeToEmoticon[shortcode];
   }
 }
