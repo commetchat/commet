@@ -58,6 +58,9 @@ class SimulatedTimelineEvent implements TimelineEvent {
   @override
   bool get highlight => false;
 
+  @override
+  List<Uri>? links;
+
   SimulatedTimelineEvent({
     required this.body,
     required this.eventId,
