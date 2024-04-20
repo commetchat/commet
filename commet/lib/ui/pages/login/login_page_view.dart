@@ -4,8 +4,11 @@ import 'package:commet/client/client.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/atoms/shader/star_trails.dart';
 import 'package:commet/ui/pages/login/login_page.dart';
+import 'package:commet/utils/link_utils.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:tiamat/atoms/circle_button.dart';
@@ -158,6 +161,26 @@ class _LoginPageViewState extends State<LoginPageView> {
               const tiamat.Text.label(BuildConfig.VERSION_TAG),
               const tiamat.Text.label(" · "),
               tiamat.Text.label(BuildConfig.GIT_HASH.substring(0, 7)),
+              const tiamat.Text.label(" · "),
+              Text.rich(
+                TextSpan(
+                    style:
+                        const TextStyle(decoration: TextDecoration.underline),
+                    text: "Source Code",
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () => LinkUtils.open(
+                          Uri.parse("https://github.com/commetchat/commet"))),
+              ),
+              const tiamat.Text.label(" · "),
+              Text.rich(
+                TextSpan(
+                    style:
+                        const TextStyle(decoration: TextDecoration.underline),
+                    text: "License",
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () => LinkUtils.open(Uri.parse(
+                          "https://github.com/commetchat/commet/blob/main/LICENSE"))),
+              ),
             ],
           ),
         ));

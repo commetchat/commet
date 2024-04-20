@@ -122,6 +122,7 @@ flutter:
     - assets/js/package/
   shaders: 
     - assets/shader/texture_coordinate.frag
+    - assets/shader/star_trails.frag
   fonts: 
     - 
       family: Jellee
