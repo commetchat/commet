@@ -1,36 +1,53 @@
+import 'dart:async';
+
 import 'package:commet/client/components/push_notification/android/android_notifier.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/components/push_notification/notifier.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
-// import 'package:fcm_shared_isolate/fcm_shared_isolate.dart';
+import 'package:commet/service/background_service.dart';
+import 'package:commet/service/background_service_notifications/background_service_task_notification.dart';
+import 'package:commet/service/background_service_task.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
-Future<void> onMessage(dynamic message) async {
-  String? eventId = message['event_id'];
-  String? roomId = message['room_id'];
-  if (eventId == null || roomId == null) {
-    return;
-  }
+Future<void> onForegroundMessage(RemoteMessage message) async {
+  // ??
+  // String? eventId = message['event_id'];
+  // String? roomId = message['room_id'];
+  // if (eventId == null || roomId == null) {
+  //   return;
+  // }
 
-  var client =
-      clientManager!.clients.firstWhere((element) => element.hasRoom(roomId));
-  var room = client.getRoom(roomId);
-  var event = await room!.getEvent(eventId);
+  Log.i("Got firebase message: $message");
 
-  var user = client.getPeer(event!.senderId);
-  await user.loading;
+  // var client =
+  //     clientManager!.clients.firstWhere((element) => element.hasRoom(roomId));
+  // var room = client.getRoom(roomId);
+  // var event = await room!.getEvent(eventId);
 
-  NotificationManager.notify(MessageNotificationContent(
-      senderName: user.displayName,
-      senderId: user.identifier,
-      roomName: room.displayName,
-      content: event.body!,
-      eventId: eventId,
-      roomId: room.identifier,
-      clientId: client.identifier,
-      senderImage: user.avatar,
-      roomImage: await room.getShortcutImage(),
-      isDirectMessage: room.isDirectMessage));
+  // var user = client.getPeer(event!.senderId);
+  // await user.loading;
+
+  // NotificationManager.notify(MessageNotificationContent(
+  //     senderName: user.displayName,
+  //     senderId: user.identifier,
+  //     roomName: room.displayName,
+  //     content: event.body!,
+  //     eventId: eventId,
+  //     roomId: room.identifier,
+  //     clientId: client.identifier,
+  //     senderImage: user.avatar,
+  //     roomImage: await room.getShortcutImage(),
+  //     isDirectMessage: room.isDirectMessage));
+}
+
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  Log.i("Got background message: ${message.data}");
+  doBackgroundServiceTask(BackgroundServiceTaskNotification(
+      message.data["room_id"], message.data["event_id"]));
 }
 
 class FirebasePushNotifier implements Notifier {
@@ -49,18 +66,26 @@ class FirebasePushNotifier implements Notifier {
   @override
   bool get enabled => true;
 
-  dynamic fcm;
+  String? token;
 
   @override
   Future<void> init() async {
+    Log.i("Initializing firebase push notifier");
     await notifier.init();
 
-    var key = await fcm.getToken();
+    await Firebase.initializeApp();
+    Log.i("Initialized App");
+    FirebaseMessaging.instance.onTokenRefresh.listen((event) {
+      token = event;
+      Log.i("Got new token: $token");
+      preferences.setFcmKey(event);
+      preferences.setPushGateway("push.commet.chat");
+    });
 
-    preferences.setFcmKey(key);
+    await FirebaseMessaging.instance.setAutoInitEnabled(true);
 
-    preferences.setPushGateway("push.commet.chat");
-    fcm.setListeners(onMessage: onMessage);
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    FirebaseMessaging.onMessage.listen(onForegroundMessage);
   }
 
   @override
@@ -74,8 +99,8 @@ class FirebasePushNotifier implements Notifier {
   }
 
   @override
-  Future<String?> getToken() {
-    return fcm.getToken();
+  Future<String?> getToken() async {
+    return preferences.fcmKey;
   }
 
   @override

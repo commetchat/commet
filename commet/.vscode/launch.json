@@ -70,7 +70,9 @@
                 "--dart-define",
                 "PLATFORM=android",
                 "--dart-define",
-                "BUILD_MODE=debug"
+                "BUILD_MODE=debug",
+                "--dart-define",
+                "ENABLE_GOOGLE_SERVICES=true"
             ],
         },
         {
