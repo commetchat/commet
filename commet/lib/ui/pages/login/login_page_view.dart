@@ -114,75 +114,86 @@ class _LoginPageViewState extends State<LoginPageView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Stack(
-          children: [
-            ImageFiltered(
-              imageFilter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-              child: const StarTrailsBackground(),
-            ),
-            Material(
-              color: Colors.transparent,
-              child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: Stack(
-                  children: [
-                    loginField(context),
-                    info(),
-                  ],
+      resizeToAvoidBottomInset: false,
+      body: Stack(
+        children: [
+          ImageFiltered(
+            imageFilter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+            child: const StarTrailsBackground(),
+          ),
+          SafeArea(
+            child: Stack(
+              children: [
+                Scaffold(
+                  backgroundColor: Colors.transparent,
+                  body: Material(
+                    color: Colors.transparent,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Stack(
+                        children: [
+                          loginField(context),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
-              ),
+                if (widget.canNavigateBack)
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Align(
+                        alignment: Alignment.topLeft,
+                        child: CircleButton(
+                          radius: 25,
+                          icon: Icons.arrow_back,
+                          onPressed: () => Navigator.of(context).pop(),
+                        )),
+                  ),
+              ],
             ),
-            if (widget.canNavigateBack)
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Align(
-                    alignment: Alignment.topLeft,
-                    child: CircleButton(
-                      radius: 25,
-                      icon: Icons.arrow_back,
-                      onPressed: () => Navigator.of(context).pop(),
-                    )),
-              ),
-          ],
-        ),
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(
+                  0, 0, 0, MediaQuery.of(context).padding.bottom),
+              child: info(),
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget info() {
-    return Align(
-        alignment: Alignment.bottomCenter,
-        child: SizedBox(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const tiamat.Text.label(BuildConfig.VERSION_TAG),
-              const tiamat.Text.label(" · "),
-              tiamat.Text.label(BuildConfig.GIT_HASH.substring(0, 7)),
-              const tiamat.Text.label(" · "),
-              Text.rich(
-                TextSpan(
-                    style:
-                        const TextStyle(decoration: TextDecoration.underline),
-                    text: "Source Code",
-                    recognizer: TapGestureRecognizer()
-                      ..onTap = () => LinkUtils.open(
-                          Uri.parse("https://github.com/commetchat/commet"))),
-              ),
-              const tiamat.Text.label(" · "),
-              Text.rich(
-                TextSpan(
-                    style:
-                        const TextStyle(decoration: TextDecoration.underline),
-                    text: "License",
-                    recognizer: TapGestureRecognizer()
-                      ..onTap = () => LinkUtils.open(Uri.parse(
-                          "https://github.com/commetchat/commet/blob/main/LICENSE"))),
-              ),
-            ],
+    return SizedBox(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const tiamat.Text.label(BuildConfig.VERSION_TAG),
+          const tiamat.Text.label(" · "),
+          tiamat.Text.label(BuildConfig.GIT_HASH.substring(0, 7)),
+          const tiamat.Text.label(" · "),
+          Text.rich(
+            TextSpan(
+                style: const TextStyle(decoration: TextDecoration.underline),
+                text: "Source Code",
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () => LinkUtils.open(
+                      Uri.parse("https://github.com/commetchat/commet"))),
           ),
-        ));
+          const tiamat.Text.label(" · "),
+          Text.rich(
+            TextSpan(
+                style: const TextStyle(decoration: TextDecoration.underline),
+                text: "License",
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () => LinkUtils.open(Uri.parse(
+                      "https://github.com/commetchat/commet/blob/main/LICENSE"))),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget loginField(BuildContext context) {
@@ -204,16 +215,14 @@ class _LoginPageViewState extends State<LoginPageView> {
           child: Padding(
             padding: const EdgeInsets.all(20.0),
             child: Column(mainAxisSize: MainAxisSize.min, children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  appIcon(context),
-                  const SizedBox(
-                    width: 8,
-                  ),
-                  appName(),
-                ],
+              Flexible(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    appIcon(context),
+                  ],
+                ),
               ),
               const SizedBox(height: 16),
               homeserverEntry(),
