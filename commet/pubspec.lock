@@ -624,8 +624,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: HEAD
-      resolved-ref: "92024a382c0fc12c0743846869817fb33f0f54ce"
+      ref: fix
+      resolved-ref: "8370a0f01798b1f070cc1ac2981de99e12af07bc"
       url: "https://github.com/commetchat/flutter_shortcuts.git"
     source: git
     version: "1.4.0"

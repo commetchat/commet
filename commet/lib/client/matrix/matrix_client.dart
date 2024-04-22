@@ -135,7 +135,8 @@ class MatrixClient extends Client {
         desc: "Title of a warning about encryption",
       );
 
-  static Future<void> loadFromDB(ClientManager manager) async {
+  static Future<void> loadFromDB(ClientManager manager,
+      {isBackgroundService = false}) async {
     await diagnostics.timeAsync("loadFromDB", () async {
       var clients = preferences.getRegisteredMatrixClients();
 
@@ -150,7 +151,7 @@ class MatrixClient extends Client {
           futures.add(diagnostics.timeAsync("Initializing client $clientName",
               () async {
             try {
-              await client.init(true);
+              await client.init(true, isBackgroundService: isBackgroundService);
             } catch (error, trace) {
               Log.e("Unable to load client $clientName from database");
               Log.onError(error, trace);
@@ -187,18 +188,22 @@ class MatrixClient extends Client {
           ? const matrix.NativeImplementationsDummy()
           : matrix.NativeImplementationsIsolate(compute);
   @override
-  Future<void> init(bool loadingFromCache) async {
+  Future<void> init(bool loadingFromCache,
+      {bool isBackgroundService = false}) async {
     if (!_matrixClient.isLogged()) {
       await diagnostics.timeAsync("Matrix client init", () async {
         await _matrixClient.init(
             waitForFirstSync: !loadingFromCache,
             waitUntilLoadCompletedLoaded: true,
+            startSyncLoop: !isBackgroundService,
             onMigration: () => Log.w("Matrix Database is migrating"));
       });
       self = MatrixPeer(this, _matrixClient, _matrixClient.userID!);
       peers.add(self!);
 
-      firstSync = _matrixClient.oneShotSync();
+      if (!isBackgroundService) {
+        firstSync = _matrixClient.oneShotSync();
+      }
     }
 
     _matrixClient.getConfig().then((value) {

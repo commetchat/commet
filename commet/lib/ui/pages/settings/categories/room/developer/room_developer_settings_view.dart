@@ -1,5 +1,6 @@
 import 'package:commet/client/room.dart';
 import 'package:commet/ui/atoms/code_block.dart';
+import 'package:commet/utils/shortcuts_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:commet/main.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';

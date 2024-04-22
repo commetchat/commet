@@ -153,8 +153,9 @@ Future<void> initNecessary() async {
 
   await Future.wait([
     if (fileCache != null) fileCache!.init(),
-    ClientManager.init(),
   ]);
+
+  clientManager = await ClientManager.init();
 
   shortcutsManager.init();
   NotificationManager.init();

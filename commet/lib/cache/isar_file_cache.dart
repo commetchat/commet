@@ -19,6 +19,8 @@ class IsarFileCache implements FileCache {
   Isar? db;
   IsarCollection<CachedFile>? files;
 
+  bool isInit = false;
+
   Future<String> newPath() async {
     final dir = await getTemporaryDirectory();
     String fileName = RandomUtils.getRandomString(30);
@@ -36,6 +38,12 @@ class IsarFileCache implements FileCache {
 
   @override
   Future<void> init() async {
+    if (isInit) {
+      return;
+    }
+
+    isInit = true;
+
     final dir = p.join(await AppConfig.getDatabasePath(), "cache");
     var directory = Directory(dir);
     if (!await directory.exists()) {

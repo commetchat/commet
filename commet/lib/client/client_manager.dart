@@ -69,15 +69,16 @@ class ClientManager {
       (previousValue, element) =>
           previousValue + element.displayNotificationCount);
 
-  static Future<void> init() async {
+  static Future<ClientManager> init({bool isBackgroundService = false}) async {
     final newClientManager = ClientManager();
 
     await Future.wait([
-      MatrixClient.loadFromDB(newClientManager),
+      MatrixClient.loadFromDB(newClientManager,
+          isBackgroundService: isBackgroundService),
       if (BuildConfig.DEBUG) SimulatedClient.loadFromDB(newClientManager),
     ]);
 
-    clientManager = newClientManager;
+    return newClientManager;
   }
 
   void addClient(Client client) {

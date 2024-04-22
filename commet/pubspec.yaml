@@ -75,7 +75,9 @@ dependencies:
   flutter_localizations: 
     sdk: flutter
   flutter_shortcuts: 
-    git: https://github.com/commetchat/flutter_shortcuts.git
+    git: 
+      url: https://github.com/commetchat/flutter_shortcuts.git
+      ref: fix
   tiamat: 
     path: ../tiamat/
   encrypted_url_preview: 

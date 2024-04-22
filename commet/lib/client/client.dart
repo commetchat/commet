@@ -77,7 +77,7 @@ abstract class Client {
   /// When the client receives an update from the server, this will be called
   Stream<void> get onSync;
 
-  Future<void> init(bool loadingFromCache);
+  Future<void> init(bool loadingFromCache, {bool isBackgroundService = false});
 
   /// Logout and invalidate the current session
   Future<void> logout();

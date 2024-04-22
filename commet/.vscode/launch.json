@@ -94,6 +94,20 @@
             "flutterMode": "release"
         },
         {
+            "name": "commet (release android)",
+            "request": "launch",
+            "type": "dart",
+            "toolArgs": [
+                "--dart-define",
+                "PLATFORM=android",
+                "--dart-define",
+                "BUILD_MODE=release",
+                "--dart-define",
+                "ENABLE_GOOGLE_SERVICES=true"
+            ],
+            "flutterMode": "release"
+        },
+        {
             "name": "commet (release mobile)",
             "request": "launch",
             "type": "dart",

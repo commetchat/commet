@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:commet/config/build_config.dart';
+import 'package:commet/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -23,6 +24,8 @@ class Preferences {
   static const String _lastDownloadLocation = "last_download_location";
   static const String _stickerCompatibilityMode = "sticker_compatibility_mode";
   static const String _urlPreviewInE2EEChat = "use_url_preview_in_e2ee_chat";
+  static const String _lastForegroundServiceSucceeded =
+      "did_last_foreground_service_run_succeed";
 
   final StreamController _onSettingChanged = StreamController.broadcast();
   Stream get onSettingChanged => _onSettingChanged.stream;
@@ -177,4 +180,15 @@ class Preferences {
 
   bool get urlPreviewInE2EEChat =>
       _preferences!.getBool(_urlPreviewInE2EEChat) ?? false;
+
+  bool? get didLastForegroundServiceRunSucceed =>
+      _preferences!.getBool(_lastForegroundServiceSucceeded);
+
+  Future<void> setLastForegroundServiceRunSucceeded(bool? value) async {
+    if (value == null) {
+      await _preferences!.remove(_lastForegroundServiceSucceeded);
+    } else {
+      await _preferences!.setBool(_lastForegroundServiceSucceeded, value);
+    }
+  }
 }

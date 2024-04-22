@@ -13,34 +13,33 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 Future<void> onForegroundMessage(RemoteMessage message) async {
-  // ??
-  // String? eventId = message['event_id'];
-  // String? roomId = message['room_id'];
-  // if (eventId == null || roomId == null) {
-  //   return;
-  // }
+  String? eventId = message.data['event_id'];
+  String? roomId = message.data['room_id'];
+  if (eventId == null || roomId == null) {
+    return;
+  }
 
   Log.i("Got firebase message: $message");
 
-  // var client =
-  //     clientManager!.clients.firstWhere((element) => element.hasRoom(roomId));
-  // var room = client.getRoom(roomId);
-  // var event = await room!.getEvent(eventId);
+  var client =
+      clientManager!.clients.firstWhere((element) => element.hasRoom(roomId));
+  var room = client.getRoom(roomId);
+  var event = await room!.getEvent(eventId);
 
-  // var user = client.getPeer(event!.senderId);
-  // await user.loading;
+  var user = client.getPeer(event!.senderId);
+  await user.loading;
 
-  // NotificationManager.notify(MessageNotificationContent(
-  //     senderName: user.displayName,
-  //     senderId: user.identifier,
-  //     roomName: room.displayName,
-  //     content: event.body!,
-  //     eventId: eventId,
-  //     roomId: room.identifier,
-  //     clientId: client.identifier,
-  //     senderImage: user.avatar,
-  //     roomImage: await room.getShortcutImage(),
-  //     isDirectMessage: room.isDirectMessage));
+  NotificationManager.notify(MessageNotificationContent(
+      senderName: user.displayName,
+      senderId: user.identifier,
+      roomName: room.displayName,
+      content: event.body!,
+      eventId: eventId,
+      roomId: room.identifier,
+      clientId: client.identifier,
+      senderImage: user.avatar,
+      roomImage: await room.getShortcutImage(),
+      isDirectMessage: room.isDirectMessage));
 }
 
 @pragma('vm:entry-point')
