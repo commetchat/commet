@@ -1,14 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
-import 'dart:ui';
 
 import 'package:commet/client/components/push_notification/android/android_notifier.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/components/push_notification/notifier.dart';
 import 'package:commet/client/components/push_notification/push_notification_component.dart';
-import 'package:commet/config/platform_utils.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/service/background_service.dart';
