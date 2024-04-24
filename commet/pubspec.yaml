@@ -13,8 +13,6 @@ dependencies:
   desktop_notifications: ^0.6.3
   device_info_plus: ^9.0.3
   file_picker: ^5.2.10
-  firebase_core: ^2.30.0
-  firebase_messaging: ^14.8.2
   flutter_background_service: ^5.0.5
   flutter_blurhash: ^0.8.2
   flutter_markdown: ^0.6.9+1
@@ -87,6 +85,14 @@ dependencies:
   encrypt: ^5.0.3
   pointycastle: ^3.7.4
 
+  ## ---- Putting some extra lines in here to help git with the diff
+  ## ---- Probably good to keep this stuff at the bottom of the list
+  ## Begin Google Services Dependencies
+  firebase_core: ^2.30.0
+  firebase_messaging: ^14.8.2
+  ## End Google Services Dependencies
+  ## ----
+  ## ----
 
 
 dev_dependencies: 
