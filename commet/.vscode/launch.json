@@ -71,8 +71,6 @@
                 "PLATFORM=android",
                 "--dart-define",
                 "BUILD_MODE=debug",
-                "--dart-define",
-                "ENABLE_GOOGLE_SERVICES=true"
             ],
         },
         {
@@ -102,8 +100,6 @@
                 "PLATFORM=android",
                 "--dart-define",
                 "BUILD_MODE=release",
-                "--dart-define",
-                "ENABLE_GOOGLE_SERVICES=true"
             ],
             "flutterMode": "release"
         },

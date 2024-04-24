@@ -88,8 +88,8 @@ dependencies:
   ## ---- Putting some extra lines in here to help git with the diff
   ## ---- Probably good to keep this stuff at the bottom of the list
   ## Begin Google Services Dependencies
-  firebase_core: ^2.30.0
-  firebase_messaging: ^14.8.2
+  #firebase_core: ^2.30.0
+  #firebase_messaging: ^14.8.2
   ## End Google Services Dependencies
   ## ----
   ## ----

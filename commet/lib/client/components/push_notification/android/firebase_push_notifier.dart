@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'dart:async';
 
 import 'package:commet/client/components/push_notification/android/android_notifier.dart';
@@ -8,10 +10,15 @@ import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/service/background_service.dart';
 import 'package:commet/service/background_service_notifications/background_service_task_notification.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 
-Future<void> onForegroundMessage(RemoteMessage message) async {
+// Manage these to enable / disable firebase
+// import 'package:firebase_core/firebase_core.dart';
+// import 'package:firebase_messaging/firebase_messaging.dart';
+dynamic Firebase;
+dynamic FirebaseMessaging;
+// --------
+
+Future<void> onForegroundMessage(dynamic message) async {
   String? eventId = message.data['event_id'];
   String? roomId = message.data['room_id'];
   if (eventId == null || roomId == null) {
@@ -42,7 +49,7 @@ Future<void> onForegroundMessage(RemoteMessage message) async {
 }
 
 @pragma('vm:entry-point')
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+Future<void> _firebaseMessagingBackgroundHandler(dynamic message) async {
   Log.i("Got background message: ${message.data}");
   doBackgroundServiceTask(BackgroundServiceTaskNotification(
       message.data["room_id"], message.data["event_id"]));
