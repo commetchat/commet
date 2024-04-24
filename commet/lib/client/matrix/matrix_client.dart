@@ -136,7 +136,7 @@ class MatrixClient extends Client {
       );
 
   static Future<void> loadFromDB(ClientManager manager,
-      {isBackgroundService = false}) async {
+      {bool isBackgroundService = false}) async {
     await diagnostics.timeAsync("loadFromDB", () async {
       var clients = preferences.getRegisteredMatrixClients();
 
@@ -282,9 +282,11 @@ class MatrixClient extends Client {
     }
 
     DatabaseFactory factory = databaseFactoryFfi;
-    var database = await factory.openDatabase(path);
+    var database = await factory.openDatabase(path,
+        options: OpenDatabaseOptions(singleInstance: false));
 
     final db = matrix.MatrixSdkDatabase(client.clientName, database: database);
+
     await db.open();
     return db;
   }
@@ -354,6 +356,12 @@ class MatrixClient extends Client {
   void _postLoginSuccess() {
     if (_matrixClient.userID != null) {
       self = MatrixPeer(this, _matrixClient, _matrixClient.userID!);
+    }
+
+    for (var component in getAllComponents()!) {
+      if (component is NeedsPostLoginInit) {
+        (component as NeedsPostLoginInit).postLoginInit();
+      }
     }
   }
 

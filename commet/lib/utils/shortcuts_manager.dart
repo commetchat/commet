@@ -1,10 +1,8 @@
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/config/platform_utils.dart';
-import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/custom_uri.dart';
 import 'package:commet/utils/event_bus.dart';

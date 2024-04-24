@@ -8,7 +8,6 @@ import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/service/background_service.dart';
 import 'package:commet/service/background_service_notifications/background_service_task_notification.dart';
-import 'package:commet/service/background_service_task.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 

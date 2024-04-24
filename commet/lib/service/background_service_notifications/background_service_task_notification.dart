@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 
 import 'package:commet/cache/file_cache.dart';
 import 'package:commet/client/client_manager.dart';
@@ -8,7 +9,6 @@ import 'package:commet/client/timeline.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/service/background_service_task.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 
 class BackgroundServiceTaskNotification extends BackgroundServiceTask {
@@ -23,24 +23,14 @@ class BackgroundNotificationsManager {
 
   BackgroundNotificationsManager(this.instance);
 
-  Future<ClientManager>? loadingManager;
-
   Timer? shutdownTimer;
-  int numRequests = 0;
 
-  void onReceived(Map<String, dynamic>? data) async {
-    numRequests += 1;
+  List<Map<String, dynamic>> queue = List.empty(growable: true);
+
+  Future<void> init() async {
     isHeadless = true;
-
-    Log.i("Received message from main isolate: $data");
-
-    if (shutdownTimer != null) {
-      Log.i("Cancelling shutdown, new event came in");
-      shutdownTimer!.cancel();
-      shutdownTimer = null;
-    }
-
     await NotificationManager.init();
+
     if (fileCache == null) {
       fileCache = FileCache.getFileCacheInstance();
 
@@ -51,28 +41,58 @@ class BackgroundNotificationsManager {
 
     shortcutsManager.init();
 
-    if (data == null ||
-        !data.containsKey("room_id") ||
-        !data.containsKey("event_id")) {
-      Log.i("Invalid call to BackgroundNotificationsManager.onReceived");
-      return;
-    }
+    clientManager = await ClientManager.init(isBackgroundService: true);
+  }
 
-    if (clientManager == null) {
-      if (loadingManager != null) {
-        await loadingManager;
-      } else {
-        loadingManager = ClientManager.init(isBackgroundService: true);
-        clientManager = await loadingManager!;
+  void onReceived(Map<String, dynamic>? data) async {
+    if (data != null) {
+      queue.add(data);
+      Log.i("Received message, adding to queue: (${queue.length}) $data");
+    }
+  }
+
+  Future<void> flushQueueLoop() async {
+    try {
+      while (true) {
+        if (queue.isEmpty) {
+          Log.i("Queue was empty, waiting a sec and double checking");
+          await Future.delayed(const Duration(seconds: 1));
+
+          if (queue.isEmpty) {
+            Log.i("Queue clear, exiting");
+            break;
+          } else {
+            Log.i("Something new came in, continuing");
+          }
+        }
+
+        var entry = queue.firstOrNull;
+        if (entry != null) {
+          Log.i("Processing entry: $entry");
+          Log.i("Current queue length: ${queue.length}");
+          queue.remove(entry);
+          await handleMessage(entry);
+        }
       }
+    } catch (e, s) {
+      Log.e("An error occured while processing the notification service loop");
+      Log.onError(e, s);
     }
 
-    if (clientManager == null) {
-      Log.i("Could not get instance of client manager!");
-    }
+    instance.stopSelf();
+  }
 
+  Future<void> handleMessage(Map<String, dynamic> data) async {
     var roomId = data["room_id"] as String;
     var eventId = data["event_id"] as String;
+
+    // for (var client in clientManager!.clients) {
+    //   Log.i("Looking for room: $roomId in client ${client.identifier}");
+
+    //   for (var room in client.rooms) {
+    //     Log.i("Has room: ${room.displayName}   (${room.identifier})");
+    //   }
+    // }
 
     var client =
         clientManager!.clients.firstWhere((element) => element.hasRoom(roomId));
@@ -104,14 +124,6 @@ class BackgroundNotificationsManager {
           senderImage: user.avatar,
           roomImage: room.avatar,
           isDirectMessage: room.isDirectMessage));
-    }
-
-    numRequests -= 1;
-
-    if (numRequests == 0) {
-      shutdownTimer = Timer(const Duration(milliseconds: 500), () {
-        instance.stopSelf();
-      });
     }
   }
 }

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
@@ -7,6 +6,7 @@ import 'package:commet/service/background_service_notifications/background_servi
 import 'package:commet/service/background_service_task.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+// ignore: depend_on_referenced_packages
 import 'package:flutter_background_service_android/flutter_background_service_android.dart';
 
 const AndroidNotificationChannel channel = AndroidNotificationChannel(
@@ -100,13 +100,6 @@ void onServiceStarted(ServiceInstance service) async {
   if (!preferences.isInit) {
     await preferences.init();
   }
-  preferences.setLastForegroundServiceRunSucceeded(true);
-
-  var notificationManager = BackgroundNotificationsManager(service);
-
-  service.on("on_message_received").listen(notificationManager.onReceived);
-
-  service.invoke("ready");
 
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
@@ -130,4 +123,16 @@ void onServiceStarted(ServiceInstance service) async {
       );
     }
   }
+
+  preferences.setLastForegroundServiceRunSucceeded(true);
+
+  var notificationManager = BackgroundNotificationsManager(service);
+  await notificationManager.init();
+
+  service.on("on_message_received").listen(notificationManager.onReceived);
+
+  service.invoke("ready");
+
+  await Future.delayed(const Duration(milliseconds: 200));
+  notificationManager.flushQueueLoop();
 }

@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:commet/config/build_config.dart';
-import 'package:commet/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
 
