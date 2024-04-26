@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:ffi';
+import 'dart:isolate';
 
 import 'package:commet/main.dart';
 import 'package:commet/utils/notifying_list.dart';
@@ -83,7 +85,7 @@ class Log {
   static void _print(LogEntry entry) {
     log.add(entry);
     // ignore: avoid_print
-    print(entry.content);
+    print("[${Isolate.current.controlPort.nativePort}]  ${entry.content}");
   }
 
   static void i(Object o) {
@@ -108,8 +110,9 @@ class Log {
 
   static void onError(Object object, StackTrace trace) {
     String? info = getDetailFromStackTrace(trace);
-    log.add(LogEntryException(
-        LogType.error, "${object.toString()} ($info)", object, trace));
+    var entry = LogEntryException(
+        LogType.error, "${object.toString()} ($info)", object, trace);
+    _print(entry);
   }
 
   static Function(FlutterErrorDetails)? _previousReporter;

@@ -29,7 +29,7 @@ class BackgroundNotificationsManager {
 
   Future<void> init() async {
     isHeadless = true;
-    await NotificationManager.init();
+    await NotificationManager.init(isBackgroundService: true);
 
     if (fileCache == null) {
       fileCache = FileCache.getFileCacheInstance();

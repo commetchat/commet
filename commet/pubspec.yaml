@@ -78,6 +78,8 @@ dependencies:
       ref: fix
   tiamat: 
     path: ../tiamat/
+  matrix_dart_sdk_isar_db:
+    git: https://github.com/commetchat/matrix-dart-sdk-isar-db.git
   encrypted_url_preview: 
     git: https://github.com/commetchat/encrypted_url_preview.git
   sqlite3_flutter_libs: ^0.5.18

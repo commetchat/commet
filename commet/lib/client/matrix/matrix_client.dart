@@ -17,6 +17,7 @@ import 'package:commet/ui/pages/matrix/authentication/matrix_uia_request.dart';
 import 'package:commet/utils/list_extension.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:flutter/foundation.dart';
+import 'package:matrix_dart_sdk_isar_db/matrix_dart_sdk_isar_db.dart';
 import 'package:path/path.dart' as p;
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
@@ -71,6 +72,7 @@ class MatrixClient extends Client {
 
     _id = identifier;
     _matrixClient = _createMatrixClient(identifier);
+    _components = ComponentRegistry.getMatrixComponents(this);
   }
 
   static String hash(String name) {
@@ -216,8 +218,6 @@ class MatrixClient extends Client {
     _updateSpacesList();
     _updateInviteList();
 
-    _components = ComponentRegistry.getMatrixComponents(this);
-
     _matrixClient.onKeyVerificationRequest.stream.listen((event) {
       AdaptiveDialog.show(navigator.currentContext!,
           builder: (_) => MatrixVerificationPage(request: event),
@@ -252,10 +252,10 @@ class MatrixClient extends Client {
         importantStateEvents: {"im.ponies.room_emotes", "m.room.power_levels"},
         supportedLoginTypes: {matrix.AuthenticationTypes.password},
         nativeImplementations: nativeImplementations,
-        legacyDatabaseBuilder: _hiveDatabaseBuilder,
+        legacyDatabaseBuilder: _databaseBuilder,
         logLevel:
             BuildConfig.RELEASE ? matrix.Level.warning : matrix.Level.verbose,
-        databaseBuilder: kIsWeb ? _hiveDatabaseBuilder : _databaseBuilder);
+        databaseBuilder: _isarDatabaseBuilder);
   }
 
   FutureOr<matrix.DatabaseApi> _hiveDatabaseBuilder(
@@ -263,6 +263,20 @@ class MatrixClient extends Client {
     final db = matrix.HiveCollectionsDatabase(
         client.clientName, await AppConfig.getHiveDatabasePath());
     await db.open();
+    return db;
+  }
+
+  FutureOr<matrix.DatabaseApi> _isarDatabaseBuilder(
+      matrix.Client client) async {
+    var path = await AppConfig.getIsarDatabasePath();
+    path = p.join(path, client.clientName, "data.db");
+    var dir = p.dirname(path);
+
+    if (!await Directory(dir).exists()) {
+      await Directory(dir).create(recursive: true);
+    }
+
+    var db = await MatrixSdkIsarDatabase.init(dir);
     return db;
   }
 
@@ -282,6 +296,7 @@ class MatrixClient extends Client {
     }
 
     DatabaseFactory factory = databaseFactoryFfi;
+    databaseFactory = factory;
     var database = await factory.openDatabase(path,
         options: OpenDatabaseOptions(singleInstance: false));
 

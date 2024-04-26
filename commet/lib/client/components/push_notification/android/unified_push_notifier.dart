@@ -125,6 +125,7 @@ class UnifiedPushNotifier implements Notifier {
     var json = jsonDecode(data) as Map<String, dynamic>;
 
     var notifData = json['notification'] as Map<String, dynamic>;
+    Log.i("Received message from unified push: $json");
 
     var eventId = notifData['event_id'] as String;
 

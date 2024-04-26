@@ -1,9 +1,12 @@
 import 'dart:async';
+import 'dart:isolate';
+import 'dart:ui';
 
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/service/background_service_notifications/background_service_task_notification.dart';
 import 'package:commet/service/background_service_task.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 // ignore: depend_on_referenced_packages
@@ -22,9 +25,14 @@ bool isReady = false;
 List<BackgroundServiceTask> _taskQueue = List.empty(growable: true);
 
 Future<void> doBackgroundServiceTask(BackgroundServiceTask task) async {
-  Log.i("Starting background service");
+  Log.i("Service: $_service");
+  bool isRunning = false;
+  if (_service != null) {
+    isRunning = await _service!.isRunning();
+  }
 
-  if (_service == null || await _service!.isRunning() == false) {
+  Log.i("Running: $isRunning");
+  if (isRunning == false) {
     _taskQueue.add(task);
     Log.i("Creating new service");
     await initBackgroundService();
@@ -71,8 +79,7 @@ Future<bool> initBackgroundService() async {
             notificationChannelId: channel.id,
             foregroundServiceNotificationId: id));
 
-    var result = await _service!.startService();
-    Log.i("Background service result: $result");
+    await _service!.startService();
 
     _service!.on("ready").listen((event) {
       var num = _taskQueue.length;
@@ -86,17 +93,24 @@ Future<bool> initBackgroundService() async {
     });
 
     return true;
-  } catch (_) {
-    Log.d("Failed to start background service!");
-    await preferences.init();
-    await preferences.setLastForegroundServiceRunSucceeded(false);
+  } catch (exception) {
+    if (exception is MissingPluginException) {
+      Log.d(
+          "Failed to start background service due to missing implementation. This wont show the banner, ${Isolate.current.debugName}");
+    } else {
+      Log.d(
+          "Failed to start background service!, ${Isolate.current.debugName}");
+      await preferences.init();
+      await preferences.setLastForegroundServiceRunSucceeded(false);
+    }
     return false;
   }
 }
 
 @pragma('vm:entry-point')
 void onServiceStarted(ServiceInstance service) async {
-  Log.i("Hello from background service");
+  DartPluginRegistrant.ensureInitialized();
+  Log.i("Hello from background service, ${Isolate.current.debugName}");
   if (!preferences.isInit) {
     await preferences.init();
   }

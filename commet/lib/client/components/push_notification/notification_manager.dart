@@ -1,4 +1,5 @@
 import 'package:commet/client/alert.dart';
+import 'package:commet/client/components/push_notification/android/android_notifier.dart';
 import 'package:commet/client/components/push_notification/android/firebase_push_notifier.dart';
 import 'package:commet/client/components/push_notification/android/unified_push_notifier.dart';
 import 'package:commet/client/components/push_notification/linux/linux_notifier.dart';
@@ -24,8 +25,8 @@ class NotificationManager {
 
   static Future<void>? notifierLoading;
 
-  static Future<void> init() async {
-    _notifier ??= _getNotifier();
+  static Future<void> init({bool isBackgroundService = false}) async {
+    _notifier ??= _getNotifier(isBackgroundService: isBackgroundService);
 
     _modifiers.clear;
     addModifier(NotificationModifierSuppressActiveRoom());
@@ -53,7 +54,7 @@ class NotificationManager {
     notifierLoading = _notifier?.init();
   }
 
-  static Notifier? _getNotifier() {
+  static Notifier? _getNotifier({bool isBackgroundService = false}) {
     if (PlatformUtils.isLinux) {
       return LinuxNotifier();
     }
@@ -63,11 +64,17 @@ class NotificationManager {
     }
 
     if (PlatformUtils.isAndroid) {
-      if (BuildConfig.ENABLE_GOOGLE_SERVICES) {
-        return FirebasePushNotifier();
-      }
+      // We dont want the background service to actually listen for incoming notifications
+      // The main isolate will listen and pass messages to the service
+      if (isBackgroundService) {
+        return AndroidNotifier();
+      } else {
+        if (BuildConfig.ENABLE_GOOGLE_SERVICES) {
+          return FirebasePushNotifier();
+        }
 
-      return UnifiedPushNotifier();
+        return UnifiedPushNotifier();
+      }
     }
 
     return null;

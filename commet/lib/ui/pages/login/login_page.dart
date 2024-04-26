@@ -1,5 +1,6 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/ui/pages/login/login_page_view.dart';
 import 'package:commet/utils/rng.dart';
 import 'package:flutter/material.dart';
@@ -43,7 +44,10 @@ class LoginPageState extends State<LoginPage> {
       } else {
         return LoginResult.failed;
       }
-    } catch (e) {
+    } catch (e, t) {
+      Log.onError(e, t);
+      Log.e(e.toString());
+      Log.e(t.toString());
       return LoginResult.error;
     }
   }
