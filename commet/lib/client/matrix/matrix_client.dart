@@ -1,14 +1,13 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:commet/client/alert.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/component.dart';
 import 'package:commet/client/components/component_registry.dart';
 import 'package:commet/client/invitation.dart';
+import 'package:commet/client/matrix/database/matrix_database.dart';
 import 'package:commet/client/matrix/extensions/matrix_client_extensions.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/room_preview.dart';
-import 'package:commet/config/app_config.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
@@ -17,18 +16,14 @@ import 'package:commet/ui/pages/matrix/authentication/matrix_uia_request.dart';
 import 'package:commet/utils/list_extension.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:flutter/foundation.dart';
-import 'package:matrix_dart_sdk_isar_db/matrix_dart_sdk_isar_db.dart';
-import 'package:path/path.dart' as p;
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
-import 'package:universal_html/html.dart' as html;
 import 'package:commet/client/client.dart';
 import 'package:commet/client/matrix/matrix_peer.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:matrix/matrix.dart' as matrix;
 import 'package:matrix/encryption.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import '../../ui/atoms/code_block.dart';
 import '../../ui/pages/matrix/verification/matrix_verification_page.dart';
@@ -244,66 +239,21 @@ class MatrixClient extends Client {
   bool isLoggedIn() => _matrixClient.isLogged();
 
   matrix.Client _createMatrixClient(String name) {
-    return matrix.Client(name,
-        verificationMethods: {
-          KeyVerificationMethod.emoji,
-          KeyVerificationMethod.numbers
-        },
-        importantStateEvents: {"im.ponies.room_emotes", "m.room.power_levels"},
-        supportedLoginTypes: {matrix.AuthenticationTypes.password},
-        nativeImplementations: nativeImplementations,
-        legacyDatabaseBuilder: _databaseBuilder,
-        logLevel:
-            BuildConfig.RELEASE ? matrix.Level.warning : matrix.Level.verbose,
-        databaseBuilder: _isarDatabaseBuilder);
-  }
-
-  FutureOr<matrix.DatabaseApi> _hiveDatabaseBuilder(
-      matrix.Client client) async {
-    final db = matrix.HiveCollectionsDatabase(
-        client.clientName, await AppConfig.getHiveDatabasePath());
-    await db.open();
-    return db;
-  }
-
-  FutureOr<matrix.DatabaseApi> _isarDatabaseBuilder(
-      matrix.Client client) async {
-    var path = await AppConfig.getIsarDatabasePath();
-    path = p.join(path, client.clientName, "data.db");
-    var dir = p.dirname(path);
-
-    if (!await Directory(dir).exists()) {
-      await Directory(dir).create(recursive: true);
-    }
-
-    var db = await MatrixSdkIsarDatabase.init(dir, client.clientName);
-    return db;
-  }
-
-  FutureOr<matrix.DatabaseApi> _databaseBuilder(matrix.Client client) async {
-    if (kIsWeb) {
-      await html.window.navigator.storage?.persist();
-      return matrix.MatrixSdkDatabase(client.clientName);
-    }
-
-    var path = await AppConfig.getDatabasePath();
-
-    path = p.join(path, client.clientName, "data.db");
-    var dir = p.dirname(path);
-
-    if (!await Directory(dir).exists()) {
-      await Directory(dir).create(recursive: true);
-    }
-
-    DatabaseFactory factory = databaseFactoryFfi;
-    databaseFactory = factory;
-    var database = await factory.openDatabase(path,
-        options: OpenDatabaseOptions(singleInstance: false));
-
-    final db = matrix.MatrixSdkDatabase(client.clientName, database: database);
-
-    await db.open();
-    return db;
+    return matrix.Client(
+      name,
+      verificationMethods: {
+        KeyVerificationMethod.emoji,
+        KeyVerificationMethod.numbers
+      },
+      importantStateEvents: {"im.ponies.room_emotes", "m.room.power_levels"},
+      supportedLoginTypes: {matrix.AuthenticationTypes.password},
+      nativeImplementations: nativeImplementations,
+      legacyDatabaseBuilder: (client) =>
+          getLegacyMatrixDatabase(client.clientName),
+      databaseBuilder: (client) => getMatrixDatabase(client.clientName),
+      logLevel:
+          BuildConfig.RELEASE ? matrix.Level.warning : matrix.Level.verbose,
+    );
   }
 
   matrix.Client getMatrixClient() {

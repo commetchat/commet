@@ -1,9 +1,8 @@
 import 'dart:async';
-import 'dart:ffi';
-import 'dart:isolate';
 
 import 'package:commet/main.dart';
 import 'package:commet/utils/notifying_list.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 enum LogType { info, debug, error, warning }
@@ -84,8 +83,9 @@ class Log {
 
   static void _print(LogEntry entry) {
     log.add(entry);
+
     // ignore: avoid_print
-    print("[${Isolate.current.controlPort.nativePort}]  ${entry.content}");
+    print(entry.content);
   }
 
   static void i(Object o) {
