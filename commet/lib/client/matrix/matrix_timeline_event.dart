@@ -234,11 +234,22 @@ class MatrixTimelineEvent implements TimelineEvent {
       formattedBody = body!;
     }
 
-    links = TextUtils.findUrls(formattedBody!);
+    var text = formattedBody!;
+    var start = text.indexOf("<mx-reply>");
+    var end = text.indexOf("</mx-reply>");
+
+    if (start != -1 && end != -1 && start < end) {
+      text = text.replaceRange(start, end, "");
+    }
+
+    links = TextUtils.findUrls(text);
+
     links?.removeWhere((element) => element.authority == "matrix.to");
     if (links?.isEmpty == true) {
       links = null;
     }
+
+    print("Found links: $links");
 
     formattedContent =
         Container(key: GlobalKey(), child: buildFormattedContent());
