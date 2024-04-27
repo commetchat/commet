@@ -7,17 +7,18 @@ import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
 
 class NotificationModifierSuppressActiveRoom implements NotificationModifier {
-  String roomId = "";
+  String? roomId = "";
 
   NotificationModifierSuppressActiveRoom() {
-    EventBus.onRoomOpened.stream.listen((event) {
-      roomId = event.identifier;
+    EventBus.onSelectedRoomChanged.stream.listen((event) {
+      roomId = event?.identifier;
     });
   }
 
   @override
   Future<NotificationContent?> process(NotificationContent content) async {
     if (content is! MessageNotificationContent) return content;
+    if (roomId == null) return content;
 
     if (BuildConfig.DESKTOP) {
       if (!await windowManager.isFocused()) {

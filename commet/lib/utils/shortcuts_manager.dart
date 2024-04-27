@@ -19,7 +19,7 @@ class ShortcutsManager {
     if (PlatformUtils.isAndroid) {
       shortcuts = FlutterShortcuts();
       loading = shortcuts!.initialize(debug: true);
-      EventBus.onRoomOpened.stream.listen(onRoomOpenedInUI);
+      EventBus.onSelectedRoomChanged.stream.listen(onRoomOpenedInUI);
     }
   }
 
@@ -49,7 +49,11 @@ class ShortcutsManager {
     await shortcuts?.clearShortcutItems();
   }
 
-  void onRoomOpenedInUI(Room event) async {
+  void onRoomOpenedInUI(Room? event) async {
+    if (event == null) {
+      return;
+    }
+
     await createShortcutForRoom(event);
   }
 

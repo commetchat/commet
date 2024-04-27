@@ -15,6 +15,6 @@ class EventBus {
   static StreamController<DropDoneDetails> onFileDropped =
       StreamController<DropDoneDetails>.broadcast();
 
-  static StreamController<Room> onRoomOpened =
-      StreamController<Room>.broadcast();
+  static StreamController<Room?> onSelectedRoomChanged =
+      StreamController<Room?>.broadcast();
 }
