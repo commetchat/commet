@@ -249,8 +249,6 @@ class MatrixTimelineEvent implements TimelineEvent {
       links = null;
     }
 
-    print("Found links: $links");
-
     formattedContent =
         Container(key: GlobalKey(), child: buildFormattedContent());
   }
