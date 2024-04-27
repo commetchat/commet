@@ -115,7 +115,21 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
             right: Margin.zero(),
           ),
         ),
-        "code": Style(backgroundColor: Colors.black.withAlpha(40))
+        "code": Style(backgroundColor: Colors.black.withAlpha(40)),
+        "blockquote": Style(
+          border: Border(
+              left: BorderSide(
+            color: Theme.of(context).colorScheme.primary,
+            width: 2,
+          )),
+          padding: HtmlPaddings(left: HtmlPadding(4)),
+          margin: Margins(
+            bottom: Margin.zero(),
+            left: Margin(4),
+            top: Margin.zero(),
+            right: Margin.zero(),
+          ),
+        )
       },
       onLinkTap: (url, attributes, element) {
         LinkUtils.open(Uri.parse(url!));
