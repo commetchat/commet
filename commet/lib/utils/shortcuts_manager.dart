@@ -38,7 +38,7 @@ class ShortcutsManager {
                 roomId: room.identifier, clientId: room.client.identifier)
             .toString(),
         shortLabel: room.displayName,
-        icon: cachedAvatar.toFilePath(),
+        icon: cachedAvatar?.toFilePath(),
         shortcutIconAsset: ShortcutIconAsset.fileAsset,
         conversationShortcut: true);
 
@@ -53,7 +53,7 @@ class ShortcutsManager {
     await createShortcutForRoom(event);
   }
 
-  static Future<Uri> getCachedAvatarImage(
+  static Future<Uri?> getCachedAvatarImage(
       {required Color placeholderColor,
       required String placeholderText,
       required String identifier,
@@ -94,7 +94,7 @@ class ShortcutsManager {
         .buffer
         .asUint8List();
 
-    cachedAvatar = await fileCache!.putFile(avatarId, bytes);
+    cachedAvatar = await fileCache?.putFile(avatarId, bytes);
 
     return cachedAvatar;
   }

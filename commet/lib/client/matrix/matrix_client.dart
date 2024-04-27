@@ -276,7 +276,7 @@ class MatrixClient extends Client {
       await Directory(dir).create(recursive: true);
     }
 
-    var db = await MatrixSdkIsarDatabase.init(dir);
+    var db = await MatrixSdkIsarDatabase.init(dir, client.clientName);
     return db;
   }
 

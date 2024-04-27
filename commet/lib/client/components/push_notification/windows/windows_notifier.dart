@@ -117,7 +117,7 @@ class WindowsNotifier implements Notifier {
         shouldZoomOut: false,
         imageProvider: content.senderImage);
 
-    avatarFilePath = avatar.toFilePath();
+    avatarFilePath = avatar == null ? "" : avatar.toFilePath();
 
     // ignore: prefer_function_declarations_over_variables
     var f = (String string) => Uri.encodeComponent(string);

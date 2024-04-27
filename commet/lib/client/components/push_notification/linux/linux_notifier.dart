@@ -79,10 +79,8 @@ class LinuxNotifier implements Notifier {
         shouldZoomOut: false,
         imageProvider: content.senderImage);
 
-    LinuxNotificationIcon icon = FilePathLinuxIcon(avatar.toFilePath());
-
     var details = LinuxNotificationDetails(
-      icon: icon,
+      icon: avatar == null ? null : FilePathLinuxIcon(avatar.toFilePath()),
       defaultActionName: "NAVIGATE_ROOM",
       category: LinuxNotificationCategory.imReceived,
     );

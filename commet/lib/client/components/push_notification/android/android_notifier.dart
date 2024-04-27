@@ -108,7 +108,9 @@ class AndroidNotifier implements Notifier {
         important: true,
         bot: false,
         key: content.senderId,
-        icon: BitmapFilePathAndroidIcon(userAvatar.toFilePath()));
+        icon: userAvatar == null
+            ? null
+            : BitmapFilePathAndroidIcon(userAvatar.toFilePath()));
 
     var message = Message(
       content.content,
