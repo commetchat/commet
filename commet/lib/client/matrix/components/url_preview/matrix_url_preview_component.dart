@@ -150,7 +150,7 @@ pQIDAQAB
     if (imageUrl != null) {
       var imageUri = Uri.parse(imageUrl);
       if (imageUri.scheme == "mxc") {
-        image = MatrixMxcImage(imageUri, client);
+        image = MatrixMxcImage(imageUri, client, doThumbnail: false);
       }
     }
 
