@@ -917,9 +917,11 @@ packages:
   matrix_dart_sdk_isar_db:
     dependency: "direct main"
     description:
-      path: "../../matrix_dart_sdk_isar_db"
-      relative: true
-    source: path
+      path: "."
+      ref: HEAD
+      resolved-ref: "8fb4b77c4b2403f9f574699edaa28381c1ff2d3f"
+      url: "https://github.com/commetchat/matrix-dart-sdk-isar-db.git"
+    source: git
     version: "0.0.1"
   media_kit:
     dependency: "direct main"
