@@ -29,6 +29,8 @@ class Log {
   static final NotifyingList<LogEntry> log =
       NotifyingList.empty(growable: true);
 
+  static String prefix = "";
+
   static ZoneSpecification spec = ZoneSpecification(
     print: (self, parent, zone, line) {
       parent.print(zone, line);
@@ -78,7 +80,7 @@ class Log {
         break;
     }
 
-    return '[Commet] $logsStr';
+    return '[Commet ($prefix)] $logsStr';
   }
 
   static void _print(LogEntry entry) {

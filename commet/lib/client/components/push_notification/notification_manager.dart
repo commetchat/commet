@@ -26,6 +26,8 @@ class NotificationManager {
   static Future<void>? notifierLoading;
 
   static Future<void> init({bool isBackgroundService = false}) async {
+    Log.i("Initializing NotificationManager");
+    Log.i("Existing notifier: $_notifier");
     _notifier ??= _getNotifier(isBackgroundService: isBackgroundService);
 
     _modifiers.clear;

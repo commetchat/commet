@@ -110,6 +110,7 @@ Future<bool> initBackgroundService() async {
 @pragma('vm:entry-point')
 void onServiceStarted(ServiceInstance service) async {
   DartPluginRegistrant.ensureInitialized();
+  Log.prefix = "background-service";
   Log.i("Hello from background service, ${Isolate.current.debugName}");
   if (!preferences.isInit) {
     await preferences.init();

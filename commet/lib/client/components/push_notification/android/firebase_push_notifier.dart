@@ -35,6 +35,8 @@ Future<void> onForegroundMessage(dynamic message) async {
   var user = client.getPeer(event!.senderId);
   await user.loading;
 
+  Log.i("Dispatching notification");
+
   NotificationManager.notify(MessageNotificationContent(
       senderName: user.displayName,
       senderId: user.identifier,
@@ -50,6 +52,7 @@ Future<void> onForegroundMessage(dynamic message) async {
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(dynamic message) async {
+  Log.prefix = "fcm-background";
   Log.i("Got background message: ${message.data}");
   doBackgroundServiceTask(BackgroundServiceTaskNotification(
       message.data["room_id"], message.data["event_id"]));
