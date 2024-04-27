@@ -16,6 +16,7 @@ import 'package:commet/client/matrix/matrix_timeline.dart';
 import 'package:commet/client/matrix/matrix_timeline_event.dart';
 import 'package:commet/client/permissions.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/image_utils.dart';
 import 'package:commet/utils/mime.dart';
@@ -493,6 +494,14 @@ class MatrixRoom extends Room {
     var event = await _matrixRoom.getEventById(eventId);
     if (event == null) {
       return null;
+    }
+
+    if (event.type == matrix.EventTypes.Encrypted) {
+      try {
+        await event.requestKey();
+      } catch (_) {
+        Log.i("Failed to decrypt event: $event");
+      }
     }
 
     return MatrixTimelineEvent(event, _matrixRoom.client);

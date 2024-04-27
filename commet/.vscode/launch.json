@@ -70,7 +70,7 @@
                 "--dart-define",
                 "PLATFORM=android",
                 "--dart-define",
-                "BUILD_MODE=debug"
+                "BUILD_MODE=debug",
             ],
         },
         {
@@ -88,6 +88,18 @@
                 "PLATFORM=desktop",
                 "--dart-define",
                 "BUILD_MODE=release"
+            ],
+            "flutterMode": "release"
+        },
+        {
+            "name": "commet (release android)",
+            "request": "launch",
+            "type": "dart",
+            "toolArgs": [
+                "--dart-define",
+                "PLATFORM=android",
+                "--dart-define",
+                "BUILD_MODE=release",
             ],
             "flutterMode": "release"
         },

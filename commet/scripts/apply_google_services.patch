@@ -1,5 +1,5 @@
 diff --git a/commet/android/app/build.gradle b/commet/android/app/build.gradle
-index e9ee824..c66714c 100644
+index 8897f07..bf609ea 100644
 --- a/commet/android/app/build.gradle
 +++ b/commet/android/app/build.gradle
 @@ -23,7 +23,7 @@ if (flutterVersionName == null) {
@@ -11,22 +11,6 @@ index e9ee824..c66714c 100644
  apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
  
  def keystoreProperties = new Properties()
-diff --git a/commet/android/app/src/main/kotlin/chat/commet/commet/FcmPushService.kt b/commet/android/app/src/main/kotlin/chat/commet/commet/FcmPushService.kt
-index 0df357b..00d3e31 100644
---- a/commet/android/app/src/main/kotlin/chat/commet/commet/FcmPushService.kt
-+++ b/commet/android/app/src/main/kotlin/chat/commet/commet/FcmPushService.kt
-@@ -1,4 +1,4 @@
--/* 
-+
- package chat.commet.commetapp
- 
- import com.famedly.fcm_shared_isolate.FcmSharedIsolateService
-@@ -35,4 +35,3 @@ class FcmPushService : FcmSharedIsolateService() {
-     }
- }
- 
--*/
-\ No newline at end of file
 diff --git a/commet/android/build.gradle b/commet/android/build.gradle
 index 7b03921..a059ce6 100644
 --- a/commet/android/build.gradle
@@ -41,37 +25,49 @@ index 7b03921..a059ce6 100644
  }
  
 diff --git a/commet/lib/client/components/push_notification/android/firebase_push_notifier.dart b/commet/lib/client/components/push_notification/android/firebase_push_notifier.dart
-index b30cd9b..a0800ef 100644
+index 67d69a7..beb0791 100644
 --- a/commet/lib/client/components/push_notification/android/firebase_push_notifier.dart
 +++ b/commet/lib/client/components/push_notification/android/firebase_push_notifier.dart
-@@ -3,7 +3,7 @@ import 'package:commet/client/components/push_notification/notification_content.
- import 'package:commet/client/components/push_notification/notification_manager.dart';
- import 'package:commet/client/components/push_notification/notifier.dart';
- import 'package:commet/main.dart';
--// import 'package:fcm_shared_isolate/fcm_shared_isolate.dart';
-+import 'package:fcm_shared_isolate/fcm_shared_isolate.dart';
+@@ -12,10 +12,10 @@ import 'package:commet/service/background_service.dart';
+ import 'package:commet/service/background_service_notifications/background_service_task_notification.dart';
  
- Future<void> onMessage(dynamic message) async {
-   String? eventId = message['event_id'];
-@@ -49,7 +49,7 @@ class FirebasePushNotifier implements Notifier {
-   @override
-   bool get enabled => true;
+ // Manage these to enable / disable firebase
+-// import 'package:firebase_core/firebase_core.dart';
+-// import 'package:firebase_messaging/firebase_messaging.dart';
+-dynamic Firebase;
+-dynamic FirebaseMessaging;
++import 'package:firebase_core/firebase_core.dart';
++import 'package:firebase_messaging/firebase_messaging.dart';
++//dynamic Firebase;
++//dynamic FirebaseMessaging;
+ // --------
  
--  dynamic fcm;
-+  FcmSharedIsolate fcm = FcmSharedIsolate();
+ Future<void> onForegroundMessage(dynamic message) async {
+diff --git a/commet/lib/config/build_config.dart b/commet/lib/config/build_config.dart
+index 5134142..417a061 100644
+--- a/commet/lib/config/build_config.dart
++++ b/commet/lib/config/build_config.dart
+@@ -20,7 +20,7 @@ class BuildConfig {
+       String.fromEnvironment('BUILD_DETAIL', defaultValue: "default");
  
-   @override
-   Future<void> init() async {
+   static const bool ENABLE_GOOGLE_SERVICES =
+-      bool.fromEnvironment("ENABLE_GOOGLE_SERVICES", defaultValue: false);
++      bool.fromEnvironment("ENABLE_GOOGLE_SERVICES", defaultValue: true);
+ 
+   static const bool DEBUG = _buildMode == _Constants._debug;
+ 
 diff --git a/commet/pubspec.yaml b/commet/pubspec.yaml
-index 819350f..054e21c 100644
+index 8163da0..e3bb1c5 100644
 --- a/commet/pubspec.yaml
 +++ b/commet/pubspec.yaml
-@@ -12,7 +12,7 @@ dependencies:
-   desktop_drop: ^0.4.1
-   desktop_notifications: ^0.6.3
-   device_info_plus: ^9.0.3
--  #fcm_shared_isolate: ^0.1.0
-+  fcm_shared_isolate: ^0.1.0
-   file_picker: ^5.2.10
-   flutter_blurhash: ^0.8.2
-   flutter_markdown: ^0.6.9+1
+@@ -88,8 +88,8 @@ dependencies:
+   ## ---- Putting some extra lines in here to help git with the diff
+   ## ---- Probably good to keep this stuff at the bottom of the list
+   ## Begin Google Services Dependencies
+-  #firebase_core: ^2.30.0
+-  #firebase_messaging: ^14.8.2
++  firebase_core: ^2.30.0
++  firebase_messaging: ^14.8.2
+   ## End Google Services Dependencies
+   ## ----
+   ## ----

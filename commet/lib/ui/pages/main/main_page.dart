@@ -137,7 +137,7 @@ class MainPageState extends State<MainPage> {
       _currentRoom = room;
     });
 
-    EventBus.onRoomOpened.add(room);
+    EventBus.onSelectedRoomChanged.add(room);
   }
 
   void clearRoomSelection() {
@@ -148,6 +148,8 @@ class MainPageState extends State<MainPage> {
       }
       _currentRoom = null;
     });
+
+    EventBus.onSelectedRoomChanged.add(null);
   }
 
   void clearSpaceSelection() {

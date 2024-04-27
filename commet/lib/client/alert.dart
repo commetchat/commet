@@ -5,6 +5,7 @@ enum AlertType { info, warning, critical }
 class Alert {
   late String Function() _messageGetter;
   late String Function() _titleGetter;
+  late Function()? action;
   AlertType type;
 
   String get title => _titleGetter();
@@ -12,7 +13,8 @@ class Alert {
 
   Alert(this.type,
       {required String Function() messageGetter,
-      required String Function() titleGetter}) {
+      required String Function() titleGetter,
+      this.action}) {
     _messageGetter = messageGetter;
     _titleGetter = titleGetter;
   }

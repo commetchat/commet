@@ -6,7 +6,6 @@ import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/simulated/simulated_client.dart';
 import 'package:commet/client/stale_info.dart';
 import 'package:commet/config/build_config.dart';
-import 'package:commet/main.dart';
 import 'package:commet/utils/notifying_list.dart';
 
 class ClientManager {
@@ -69,15 +68,16 @@ class ClientManager {
       (previousValue, element) =>
           previousValue + element.displayNotificationCount);
 
-  static Future<void> init() async {
+  static Future<ClientManager> init({bool isBackgroundService = false}) async {
     final newClientManager = ClientManager();
 
     await Future.wait([
-      MatrixClient.loadFromDB(newClientManager),
+      MatrixClient.loadFromDB(newClientManager,
+          isBackgroundService: isBackgroundService),
       if (BuildConfig.DEBUG) SimulatedClient.loadFromDB(newClientManager),
     ]);
 
-    clientManager = newClientManager;
+    return newClientManager;
   }
 
   void addClient(Client client) {

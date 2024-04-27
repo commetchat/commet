@@ -1,14 +1,13 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:commet/client/alert.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/component.dart';
 import 'package:commet/client/components/component_registry.dart';
 import 'package:commet/client/invitation.dart';
+import 'package:commet/client/matrix/database/matrix_database.dart';
 import 'package:commet/client/matrix/extensions/matrix_client_extensions.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/room_preview.dart';
-import 'package:commet/config/app_config.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
@@ -17,17 +16,14 @@ import 'package:commet/ui/pages/matrix/authentication/matrix_uia_request.dart';
 import 'package:commet/utils/list_extension.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:flutter/foundation.dart';
-import 'package:path/path.dart' as p;
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
-import 'package:universal_html/html.dart' as html;
 import 'package:commet/client/client.dart';
 import 'package:commet/client/matrix/matrix_peer.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:matrix/matrix.dart' as matrix;
 import 'package:matrix/encryption.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import '../../ui/atoms/code_block.dart';
 import '../../ui/pages/matrix/verification/matrix_verification_page.dart';
@@ -71,6 +67,7 @@ class MatrixClient extends Client {
 
     _id = identifier;
     _matrixClient = _createMatrixClient(identifier);
+    _components = ComponentRegistry.getMatrixComponents(this);
   }
 
   static String hash(String name) {
@@ -135,7 +132,8 @@ class MatrixClient extends Client {
         desc: "Title of a warning about encryption",
       );
 
-  static Future<void> loadFromDB(ClientManager manager) async {
+  static Future<void> loadFromDB(ClientManager manager,
+      {bool isBackgroundService = false}) async {
     await diagnostics.timeAsync("loadFromDB", () async {
       var clients = preferences.getRegisteredMatrixClients();
 
@@ -150,7 +148,7 @@ class MatrixClient extends Client {
           futures.add(diagnostics.timeAsync("Initializing client $clientName",
               () async {
             try {
-              await client.init(true);
+              await client.init(true, isBackgroundService: isBackgroundService);
             } catch (error, trace) {
               Log.e("Unable to load client $clientName from database");
               Log.onError(error, trace);
@@ -187,18 +185,22 @@ class MatrixClient extends Client {
           ? const matrix.NativeImplementationsDummy()
           : matrix.NativeImplementationsIsolate(compute);
   @override
-  Future<void> init(bool loadingFromCache) async {
+  Future<void> init(bool loadingFromCache,
+      {bool isBackgroundService = false}) async {
     if (!_matrixClient.isLogged()) {
       await diagnostics.timeAsync("Matrix client init", () async {
         await _matrixClient.init(
             waitForFirstSync: !loadingFromCache,
             waitUntilLoadCompletedLoaded: true,
+            startSyncLoop: !isBackgroundService,
             onMigration: () => Log.w("Matrix Database is migrating"));
       });
       self = MatrixPeer(this, _matrixClient, _matrixClient.userID!);
       peers.add(self!);
 
-      firstSync = _matrixClient.oneShotSync();
+      if (!isBackgroundService) {
+        firstSync = _matrixClient.oneShotSync();
+      }
     }
 
     _matrixClient.getConfig().then((value) {
@@ -210,8 +212,6 @@ class MatrixClient extends Client {
     _updateRoomslist();
     _updateSpacesList();
     _updateInviteList();
-
-    _components = ComponentRegistry.getMatrixComponents(this);
 
     _matrixClient.onKeyVerificationRequest.stream.listen((event) {
       AdaptiveDialog.show(navigator.currentContext!,
@@ -239,49 +239,21 @@ class MatrixClient extends Client {
   bool isLoggedIn() => _matrixClient.isLogged();
 
   matrix.Client _createMatrixClient(String name) {
-    return matrix.Client(name,
-        verificationMethods: {
-          KeyVerificationMethod.emoji,
-          KeyVerificationMethod.numbers
-        },
-        importantStateEvents: {"im.ponies.room_emotes", "m.room.power_levels"},
-        supportedLoginTypes: {matrix.AuthenticationTypes.password},
-        nativeImplementations: nativeImplementations,
-        legacyDatabaseBuilder: _hiveDatabaseBuilder,
-        logLevel:
-            BuildConfig.RELEASE ? matrix.Level.warning : matrix.Level.verbose,
-        databaseBuilder: kIsWeb ? _hiveDatabaseBuilder : _databaseBuilder);
-  }
-
-  FutureOr<matrix.DatabaseApi> _hiveDatabaseBuilder(
-      matrix.Client client) async {
-    final db = matrix.HiveCollectionsDatabase(
-        client.clientName, await AppConfig.getHiveDatabasePath());
-    await db.open();
-    return db;
-  }
-
-  FutureOr<matrix.DatabaseApi> _databaseBuilder(matrix.Client client) async {
-    if (kIsWeb) {
-      await html.window.navigator.storage?.persist();
-      return matrix.MatrixSdkDatabase(client.clientName);
-    }
-
-    var path = await AppConfig.getDatabasePath();
-
-    path = p.join(path, client.clientName, "data.db");
-    var dir = p.dirname(path);
-
-    if (!await Directory(dir).exists()) {
-      await Directory(dir).create(recursive: true);
-    }
-
-    DatabaseFactory factory = databaseFactoryFfi;
-    var database = await factory.openDatabase(path);
-
-    final db = matrix.MatrixSdkDatabase(client.clientName, database: database);
-    await db.open();
-    return db;
+    return matrix.Client(
+      name,
+      verificationMethods: {
+        KeyVerificationMethod.emoji,
+        KeyVerificationMethod.numbers
+      },
+      importantStateEvents: {"im.ponies.room_emotes", "m.room.power_levels"},
+      supportedLoginTypes: {matrix.AuthenticationTypes.password},
+      nativeImplementations: nativeImplementations,
+      legacyDatabaseBuilder: (client) =>
+          getLegacyMatrixDatabase(client.clientName),
+      databaseBuilder: (client) => getMatrixDatabase(client.clientName),
+      logLevel:
+          BuildConfig.RELEASE ? matrix.Level.warning : matrix.Level.verbose,
+    );
   }
 
   matrix.Client getMatrixClient() {
@@ -349,6 +321,12 @@ class MatrixClient extends Client {
   void _postLoginSuccess() {
     if (_matrixClient.userID != null) {
       self = MatrixPeer(this, _matrixClient, _matrixClient.userID!);
+    }
+
+    for (var component in getAllComponents()!) {
+      if (component is NeedsPostLoginInit) {
+        (component as NeedsPostLoginInit).postLoginInit();
+      }
     }
   }
 

@@ -423,6 +423,38 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_background_service:
+    dependency: "direct main"
+    description:
+      name: flutter_background_service
+      sha256: "94d9a143852729140e17254a53769383b03738cd92b6e588a8762003e6cd9dd9"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.0.5"
+  flutter_background_service_android:
+    dependency: transitive
+    description:
+      name: flutter_background_service_android
+      sha256: "30863ebafd8214b8e76d5e5c9f27887dc5cc303fcf3e89f71534f621fc486782"
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.2.2"
+  flutter_background_service_ios:
+    dependency: transitive
+    description:
+      name: flutter_background_service_ios
+      sha256: ab73657535876e16abc89e40f924df3e92ad3dee83f64d187081417e824709ed
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.0.0"
+  flutter_background_service_platform_interface:
+    dependency: transitive
+    description:
+      name: flutter_background_service_platform_interface
+      sha256: cd5720ff5b051d551a4734fae16683aace779bd0425e8d3f15d84a0cdcc2d8d9
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.0.0"
   flutter_blurhash:
     dependency: "direct main"
     description:
@@ -536,8 +568,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: HEAD
-      resolved-ref: "92024a382c0fc12c0743846869817fb33f0f54ce"
+      ref: fix
+      resolved-ref: "8370a0f01798b1f070cc1ac2981de99e12af07bc"
       url: "https://github.com/commetchat/flutter_shortcuts.git"
     source: git
     version: "1.4.0"
@@ -876,19 +908,21 @@ packages:
   matrix:
     dependency: "direct main"
     description:
-      name: matrix
-      sha256: "7a524ba09793aaf5358f107189d35baa94247149089f63c2ce7822197c170cea"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.24.3"
-  matrix_api_lite:
-    dependency: transitive
+      path: "."
+      ref: "krille/background-client"
+      resolved-ref: b4b17ffce87a409a4946e7f2972349b9cc2c91c6
+      url: "https://github.com/Airyzz/matrix-dart-sdk.git"
+    source: git
+    version: "0.26.1"
+  matrix_dart_sdk_isar_db:
+    dependency: "direct main"
     description:
-      name: matrix_api_lite
-      sha256: e78b333f49733f3ec4c014532ddcb5e9c68639b9b6ff0d89c094a6c284b80b74
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.7.4"
+      path: "."
+      ref: HEAD
+      resolved-ref: "92f0ad595e84e41644117adef3ee9c781398f06f"
+      url: "https://github.com/commetchat/matrix-dart-sdk-isar-db.git"
+    source: git
+    version: "0.0.1"
   media_kit:
     dependency: "direct main"
     description:
@@ -1061,10 +1095,10 @@ packages:
     dependency: "direct main"
     description:
       name: path_provider
-      sha256: b27217933eeeba8ff24845c34003b003b2b22151de3c908d0e679e8fe1aa078b
+      sha256: c9e7d3a4cd1410877472158bee69963a4579f78b68c65a2b7d40d1a7a88bb161
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.2"
+    version: "2.1.3"
   path_provider_android:
     dependency: transitive
     description:
@@ -2006,5 +2040,5 @@ packages:
     source: hosted
     version: "3.1.2"
 sdks:
-  dart: ">=3.3.0 <4.0.0"
+  dart: ">=3.3.3 <4.0.0"
   flutter: ">=3.19.0"

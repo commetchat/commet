@@ -7,9 +7,13 @@ import 'package:commet/client/components/push_notification/notification_content.
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/components/push_notification/notifier.dart';
 import 'package:commet/client/components/push_notification/push_notification_component.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
+import 'package:commet/service/background_service.dart';
+import 'package:commet/service/background_service_notifications/background_service_task_notification.dart';
 import 'package:commet/ui/pages/setup/menus/unified_push_setup.dart';
 import 'package:commet/utils/first_time_setup.dart';
+import 'package:flutter/material.dart';
 import 'package:unifiedpush/unifiedpush.dart';
 
 @pragma('vm:entry-point')
@@ -54,6 +58,7 @@ class UnifiedPushNotifier implements Notifier {
 
     await notifier.init();
 
+    Log.i("Initializing unified push");
     UnifiedPush.initialize(onMessage: onMessage, onNewEndpoint: onNewEndpoint);
 
     var distributor = await UnifiedPush.getDistributor();
@@ -83,19 +88,9 @@ class UnifiedPushNotifier implements Notifier {
     onEndpointChanged.add(endpoint);
   }
 
-  void onMessage(Uint8List message, String instance) async {
-    var data = utf8.decode(message);
-    var json = jsonDecode(data) as Map<String, dynamic>;
-
-    var notifData = json['notification'] as Map<String, dynamic>;
-
-    var roomId = notifData['room_id'] as String;
-    var eventId = notifData['event_id'] as String;
-
-    // Workaround for notifications being displayed twice sometimes. Not sure where its coming from...
-    if (notifiedEvents.contains(eventId)) {
-      return;
-    }
+  Future<void> onForegroundMessage(Map<String, dynamic> message) async {
+    var roomId = message['room_id'] as String;
+    var eventId = message['event_id'] as String;
 
     notifiedEvents.add(eventId);
 
@@ -118,6 +113,41 @@ class UnifiedPushNotifier implements Notifier {
         senderImage: user.avatar,
         roomImage: await room.getShortcutImage(),
         isDirectMessage: room.isDirectMessage));
+  }
+
+  Future<void> onBackgroundMessage(Map<String, dynamic> message) async {
+    doBackgroundServiceTask(BackgroundServiceTaskNotification(
+        message["room_id"], message["event_id"]));
+  }
+
+  void onMessage(Uint8List message, String instance) async {
+    var data = utf8.decode(message);
+    var json = jsonDecode(data) as Map<String, dynamic>;
+
+    var notifData = json['notification'] as Map<String, dynamic>;
+    Log.i("Received message from unified push: $json");
+
+    var eventId = notifData['event_id'] as String;
+
+    // Workaround for notifications being displayed twice sometimes. Not sure where its coming from...
+    if (notifiedEvents.contains(eventId)) {
+      return;
+    }
+    notifiedEvents.add(eventId);
+
+    switch (WidgetsBinding.instance.lifecycleState) {
+      case null:
+      case AppLifecycleState.detached:
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.hidden:
+      case AppLifecycleState.paused:
+        onBackgroundMessage(notifData);
+        break;
+      case AppLifecycleState.resumed:
+        onForegroundMessage(notifData);
+    }
+
+    Log.i("${WidgetsBinding.instance.lifecycleState}");
   }
 
   void onRegistrationFailed(String instance) {}

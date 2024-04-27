@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:commet/main.dart';
 import 'package:commet/utils/notifying_list.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 enum LogType { info, debug, error, warning }
@@ -27,6 +28,8 @@ class LogEntryException extends LogEntry {
 class Log {
   static final NotifyingList<LogEntry> log =
       NotifyingList.empty(growable: true);
+
+  static String prefix = "";
 
   static ZoneSpecification spec = ZoneSpecification(
     print: (self, parent, zone, line) {
@@ -77,11 +80,12 @@ class Log {
         break;
     }
 
-    return '[Commet] $logsStr';
+    return '[Commet ($prefix)] $logsStr';
   }
 
   static void _print(LogEntry entry) {
     log.add(entry);
+
     // ignore: avoid_print
     print(entry.content);
   }
@@ -108,8 +112,9 @@ class Log {
 
   static void onError(Object object, StackTrace trace) {
     String? info = getDetailFromStackTrace(trace);
-    log.add(LogEntryException(
-        LogType.error, "${object.toString()} ($info)", object, trace));
+    var entry = LogEntryException(
+        LogType.error, "${object.toString()} ($info)", object, trace);
+    _print(entry);
   }
 
   static Function(FlutterErrorDetails)? _previousReporter;

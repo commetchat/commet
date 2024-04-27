@@ -54,6 +54,7 @@ Future<void>? loading;
 
 @pragma('vm:entry-point')
 void bubble() async {
+  Log.prefix = "bubble";
   ensureBindingInit();
   await initNecessary();
   await initGuiRequirements();
@@ -71,6 +72,8 @@ void bubble() async {
       initialRoomId = uri.roomId;
     }
   }
+
+  Log.prefix = "bubble-$initialRoomId";
 
   var theme = preferences.theme;
   var initialTheme = {
@@ -104,6 +107,7 @@ void main() async {
 }
 
 void appMain() async {
+  Log.prefix = "main";
   try {
     if (BuildConfig.WEB) {
       var info = await DeviceInfoPlugin().deviceInfo;
@@ -153,8 +157,9 @@ Future<void> initNecessary() async {
 
   await Future.wait([
     if (fileCache != null) fileCache!.init(),
-    ClientManager.init(),
   ]);
+
+  clientManager = await ClientManager.init();
 
   shortcutsManager.init();
   NotificationManager.init();

@@ -12,8 +12,8 @@ dependencies:
   desktop_drop: ^0.4.1
   desktop_notifications: ^0.6.3
   device_info_plus: ^9.0.3
-  #fcm_shared_isolate: ^0.1.0
   file_picker: ^5.2.10
+  flutter_background_service: ^5.0.5
   flutter_blurhash: ^0.8.2
   flutter_markdown: ^0.6.9+1
   flutter_olm: ^1.2.0
@@ -31,7 +31,10 @@ dependencies:
   isar_flutter_libs: ^3.1.0+1
   isar_generator: ^3.1.0+1
   just_the_tooltip: ^0.0.12
-  matrix: ^0.24.1
+  matrix:
+    git: 
+      url: https://github.com/Airyzz/matrix-dart-sdk.git
+      ref: krille/background-client
   media_kit: ^1.1.7
   media_kit_libs_video: ^1.0.1
   media_kit_video: ^1.1.8
@@ -70,15 +73,29 @@ dependencies:
   flutter_localizations: 
     sdk: flutter
   flutter_shortcuts: 
-    git: https://github.com/commetchat/flutter_shortcuts.git
+    git: 
+      url: https://github.com/commetchat/flutter_shortcuts.git
+      ref: fix
   tiamat: 
     path: ../tiamat/
+  matrix_dart_sdk_isar_db:
+    git: https://github.com/commetchat/matrix-dart-sdk-isar-db.git
   encrypted_url_preview: 
     git: https://github.com/commetchat/encrypted_url_preview.git
   sqlite3_flutter_libs: ^0.5.18
   fuzzy: ^0.5.1
   encrypt: ^5.0.3
   pointycastle: ^3.7.4
+
+  ## ---- Putting some extra lines in here to help git with the diff
+  ## ---- Probably good to keep this stuff at the bottom of the list
+  ## Begin Google Services Dependencies
+  #firebase_core: ^2.30.0
+  #firebase_messaging: ^14.8.2
+  ## End Google Services Dependencies
+  ## ----
+  ## ----
+
 
 dev_dependencies: 
   build_runner: any
