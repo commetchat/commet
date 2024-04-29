@@ -33,7 +33,7 @@ class Log {
 
   static ZoneSpecification spec = ZoneSpecification(
     print: (self, parent, zone, line) {
-      parent.print(zone, line);
+      parent.print(zone, "($prefix) $line");
 
       if (line.startsWith("[Commet")) {
         return;
@@ -80,7 +80,7 @@ class Log {
         break;
     }
 
-    return '[Commet ($prefix)] $logsStr';
+    return '[Commet] $logsStr';
   }
 
   static void _print(LogEntry entry) {
