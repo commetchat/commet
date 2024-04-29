@@ -801,8 +801,8 @@ class MessageInputState extends State<MessageInput> {
       // to apply the normal behavior when click on select all
       onSelectAll: () =>
           editableTextState.selectAll(SelectionChangedCause.toolbar),
-      onLiveTextInput: null, onLookUp: () {}, onSearchWeb: () {},
-      onShare: () {},
+      onLiveTextInput: null, onLookUp: null, onSearchWeb: null,
+      onShare: null,
     );
   }
 
