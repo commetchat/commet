@@ -7,6 +7,7 @@ import 'package:commet/ui/molecules/message_popup_menu/message_popup_menu.dart';
 import 'package:commet/ui/molecules/timeline_event.dart';
 import 'package:commet/utils/common_strings.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:tiamat/atoms/seperator.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
@@ -27,30 +28,33 @@ class MessagePopupMenuViewDialog extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(0, 0, 0, 4),
-              child: ShaderMask(
-                blendMode: BlendMode.dstIn,
-                shaderCallback: (bounds) {
-                  return const LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.white,
-                      Colors.transparent,
-                    ],
-                    stops: [0.80, 1.0],
-                  ).createShader(bounds);
-                },
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxHeight: 100),
-                  child: SingleChildScrollView(
-                    physics: const NeverScrollableScrollPhysics(),
-                    child: SizedBox(
-                      child: TimelineEventView(
-                          hovered: true,
-                          event: event,
-                          timeline: state.timeline),
+            IgnorePointer(
+              ignoring: true,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(0, 0, 0, 4),
+                child: ShaderMask(
+                  blendMode: BlendMode.dstIn,
+                  shaderCallback: (bounds) {
+                    return const LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.white,
+                        Colors.transparent,
+                      ],
+                      stops: [0.80, 1.0],
+                    ).createShader(bounds);
+                  },
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxHeight: 100),
+                    child: SingleChildScrollView(
+                      physics: const NeverScrollableScrollPhysics(),
+                      child: SizedBox(
+                        child: TimelineEventView(
+                            hovered: true,
+                            event: event,
+                            timeline: state.timeline),
+                      ),
                     ),
                   ),
                 ),
