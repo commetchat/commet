@@ -919,7 +919,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "92f0ad595e84e41644117adef3ee9c781398f06f"
+      resolved-ref: "73d9bc83de38586c9e4efec08787e96382d424d4"
       url: "https://github.com/commetchat/matrix-dart-sdk-isar-db.git"
     source: git
     version: "0.0.1"
