@@ -98,6 +98,7 @@ abstract class TimelineEvent {
   List<Attachment>? get attachments;
   String? get bodyFormat;
   String? get formattedBody;
+  String get rawContent;
   List<Uri>? get links;
   String get rawContent;
 
