@@ -35,7 +35,7 @@ class Log {
     print: (self, parent, zone, line) {
       parent.print(zone, line);
 
-      if (line.startsWith("[Commet]")) {
+      if (line.startsWith("[Commet")) {
         return;
       }
 
