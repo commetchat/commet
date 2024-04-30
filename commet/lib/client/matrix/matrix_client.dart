@@ -8,6 +8,7 @@ import 'package:commet/client/matrix/database/matrix_database.dart';
 import 'package:commet/client/matrix/extensions/matrix_client_extensions.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/room_preview.dart';
+import 'package:commet/client/tasks/client_connection_status_task.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
@@ -15,6 +16,7 @@ import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/pages/matrix/authentication/matrix_uia_request.dart';
 import 'package:commet/utils/list_extension.dart';
 import 'package:commet/utils/notifying_list.dart';
+import 'package:commet/utils/stored_stream_controller.dart';
 import 'package:flutter/foundation.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
@@ -118,6 +120,10 @@ class MatrixClient extends Client {
 
   @override
   List<Space> get spaces => _spaces;
+
+  @override
+  StoredStreamController<ClientConnectionStatusUpdate> connectionStatusChanged =
+      StoredStreamController<ClientConnectionStatusUpdate>();
 
   static String get matrixClientOlmMissingMessage => Intl.message(
         "libolm is not installed or was not found. End to End Encryption will not be available until this is resolved",
@@ -239,7 +245,7 @@ class MatrixClient extends Client {
   bool isLoggedIn() => _matrixClient.isLogged();
 
   matrix.Client _createMatrixClient(String name) {
-    return matrix.Client(
+    var client = matrix.Client(
       name,
       verificationMethods: {
         KeyVerificationMethod.emoji,
@@ -254,6 +260,10 @@ class MatrixClient extends Client {
       logLevel:
           BuildConfig.RELEASE ? matrix.Level.warning : matrix.Level.verbose,
     );
+
+    client.onSyncStatus.stream.listen(onSyncStatusChanged);
+
+    return client;
   }
 
   matrix.Client getMatrixClient() {
@@ -275,6 +285,9 @@ class MatrixClient extends Client {
         if (server == "localhost") uri = Uri.http(server);
 
         _matrixClient = _createMatrixClient(name);
+
+        backgroundTaskManager.addTask(ClientConnectionStatusTask(this,
+            ClientConnectionStatusUpdate(ClientConnectionStatus.connecting)));
 
         await _matrixClient.checkHomeserver(uri);
 
@@ -595,5 +608,31 @@ class MatrixClient extends Client {
     _spaces.remove(space);
     space.close();
     return _matrixClient.leaveRoom(space.identifier);
+  }
+
+  void onSyncStatusChanged(matrix.SyncStatusUpdate event) {
+    ClientConnectionStatus value = ClientConnectionStatus.unknown;
+
+    var connected = _matrixClient.onSync.value != null &&
+        event.status != matrix.SyncStatus.error &&
+        _matrixClient.prevBatch != null;
+
+    if (connected) {
+      value = ClientConnectionStatus.connected;
+    } else {
+      value = switch (event.status) {
+        matrix.SyncStatus.waitingForResponse =>
+          ClientConnectionStatus.connecting,
+        matrix.SyncStatus.processing => ClientConnectionStatus.connecting,
+        matrix.SyncStatus.cleaningUp => ClientConnectionStatus.connecting,
+        matrix.SyncStatus.finished => ClientConnectionStatus.connected,
+        matrix.SyncStatus.error => ClientConnectionStatus.disconnected,
+      };
+    }
+
+    var result = ClientConnectionStatusUpdate(value);
+    result.progress = event.progress;
+
+    connectionStatusChanged.add(result);
   }
 }

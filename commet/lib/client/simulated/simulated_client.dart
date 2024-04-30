@@ -11,6 +11,7 @@ import 'package:commet/client/simulated/simulated_space.dart';
 import 'package:commet/utils/list_extension.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:commet/utils/rng.dart';
+import 'package:commet/utils/stored_stream_controller.dart';
 import 'package:flutter/material.dart';
 
 import '../client_manager.dart';
@@ -294,4 +295,8 @@ class SimulatedClient extends Client {
   Future<void> leaveSpace(Space space) async {
     spaces.remove(space);
   }
+
+  @override
+  StoredStreamController<ClientConnectionStatusUpdate> connectionStatusChanged =
+      StoredStreamController();
 }

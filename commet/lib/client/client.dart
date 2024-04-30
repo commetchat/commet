@@ -6,6 +6,7 @@ import 'package:commet/client/invitation.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/client/space.dart';
+import 'package:commet/utils/stored_stream_controller.dart';
 import 'package:flutter/material.dart';
 
 import 'peer.dart';
@@ -18,6 +19,20 @@ export 'package:commet/client/timeline.dart';
 enum LoginType {
   loginPassword,
   token,
+}
+
+class ClientConnectionStatusUpdate {
+  ClientConnectionStatus status;
+  double? progress;
+
+  ClientConnectionStatusUpdate(this.status);
+}
+
+enum ClientConnectionStatus {
+  unknown,
+  connected,
+  connecting,
+  disconnected,
 }
 
 enum LoginResult { success, failed, error, alreadyLoggedIn }
@@ -76,6 +91,9 @@ abstract class Client {
 
   /// When the client receives an update from the server, this will be called
   Stream<void> get onSync;
+
+  StoredStreamController<ClientConnectionStatusUpdate>
+      get connectionStatusChanged;
 
   Future<void> init(bool loadingFromCache, {bool isBackgroundService = false});
 
