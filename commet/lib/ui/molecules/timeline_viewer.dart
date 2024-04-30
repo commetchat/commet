@@ -65,7 +65,8 @@ class TimelineViewer extends StatefulWidget {
   State<TimelineViewer> createState() => TimelineViewerState();
 }
 
-class TimelineViewerState extends State<TimelineViewer> {
+class TimelineViewerState extends State<TimelineViewer>
+    with WidgetsBindingObserver {
   Key historyEventsKey = GlobalKey();
   ScrollController controller = ScrollController(initialScrollOffset: -999999);
   bool firstFrame = true;
@@ -106,7 +107,19 @@ class TimelineViewerState extends State<TimelineViewer> {
     eventChanged = widget.timeline.onChange.stream.listen(onEventChanged);
     eventRemoved = widget.timeline.onRemove.stream.listen(onEventRemoved);
     WidgetsBinding.instance.addPostFrameCallback(onAfterFirstFrame);
+    WidgetsBinding.instance.addObserver(this);
     super.initState();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    super.didChangeAppLifecycleState(state);
+
+    if (state == AppLifecycleState.resumed) {
+      if (attachedToBottom) {
+        widget.markAsRead?.call(widget.timeline.events.first);
+      }
+    }
   }
 
   @override
@@ -114,6 +127,7 @@ class TimelineViewerState extends State<TimelineViewer> {
     eventAdded.cancel();
     eventChanged.cancel();
     eventRemoved.cancel();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
@@ -169,15 +183,16 @@ class TimelineViewerState extends State<TimelineViewer> {
   }
 
   void onAfterFirstFrame(_) {
+    if (widget.timeline.events.isNotEmpty) {
+      widget.markAsRead?.call(widget.timeline.events.first);
+    }
+
     if (controller.hasClients) {
       double extent = controller.position.minScrollExtent;
       controller = ScrollController(initialScrollOffset: extent);
       controller.addListener(onScroll);
       setState(() {
         firstFrame = false;
-        if (widget.timeline.events.isEmpty) return;
-
-        widget.markAsRead?.call(widget.timeline.events.first);
       });
     }
   }
