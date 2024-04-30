@@ -22,9 +22,11 @@ Widget wbLoginPage(BuildContext context) {
 }
 
 class LoginPageView extends StatefulWidget {
-  const LoginPageView({this.state, super.key, this.canNavigateBack = false});
+  const LoginPageView(
+      {this.state, super.key, this.canNavigateBack = false, this.progress});
   final LoginPageState? state;
   final bool canNavigateBack;
+  final double? progress;
 
   @override
   State<LoginPageView> createState() => _LoginPageViewState();
@@ -213,7 +215,7 @@ class _LoginPageViewState extends State<LoginPageView> {
                     color: Theme.of(context).shadowColor.withAlpha(50))
               ]),
           child: Padding(
-            padding: const EdgeInsets.all(20.0),
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
             child: Column(mainAxisSize: MainAxisSize.min, children: [
               Flexible(
                 child: Row(
@@ -232,6 +234,19 @@ class _LoginPageViewState extends State<LoginPageView> {
               passwordEntry(),
               const SizedBox(height: 16),
               loginButton(),
+              SizedBox(
+                height: 15,
+                child: Center(
+                  child: SizedBox(
+                    height: 5,
+                    child: widget.progress == null
+                        ? null
+                        : LinearProgressIndicator(
+                            value: widget.progress,
+                          ),
+                  ),
+                ),
+              )
             ]),
           ),
         ),

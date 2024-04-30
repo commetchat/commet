@@ -5,7 +5,9 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/simulated/simulated_client.dart';
 import 'package:commet/client/stale_info.dart';
+import 'package:commet/client/tasks/client_connection_status_task.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/main.dart';
 import 'package:commet/utils/notifying_list.dart';
 
 class ClientManager {
@@ -32,6 +34,7 @@ class ClientManager {
   List<Space> get spaces => _spaces;
 
   final List<Client> _clientsList = List.empty(growable: true);
+  final Map<Client, List<StreamSubscription>> _clientSubscriptions = {};
 
   List<Client> get clients => _clientsList;
 
@@ -86,16 +89,31 @@ class ClientManager {
     _clientsList.add(client);
     onClientAdded.add(_clients.length - 1);
 
-    client.onSync.listen((_) => _synced());
+    _clientSubscriptions[client] = [
+      client.onSync.listen((_) => _synced()),
+      client.onRoomAdded.listen((index) => _onClientAddedRoom(client, index)),
+      client.onRoomRemoved
+          .listen((index) => _onClientRemovedRoom(client, index)),
+      client.onSpaceAdded.listen((index) => _addSpace(client, index)),
+      client.onSpaceRemoved
+          .listen((index) => _onClientRemovedSpace(client, index)),
+      client.connectionStatusChanged.stream
+          .listen((event) => _onClientConnectionStatusChanged(client, event)),
+    ];
+  }
 
-    client.onRoomAdded.listen((index) => _onClientAddedRoom(client, index));
+  void _onClientConnectionStatusChanged(
+      Client client, ClientConnectionStatusUpdate status) {
+    if (status.status == ClientConnectionStatus.connected) {
+      return;
+    }
 
-    client.onRoomRemoved.listen((index) => _onClientRemovedRoom(client, index));
-
-    client.onSpaceAdded.listen((index) => _addSpace(client, index));
-
-    client.onSpaceRemoved
-        .listen((index) => _onClientRemovedSpace(client, index));
+    if (backgroundTaskManager.tasks
+        .whereType<ClientConnectionStatusTask>()
+        .where((element) => element.client == client)
+        .isEmpty) {
+      backgroundTaskManager.addTask(ClientConnectionStatusTask(client, status));
+    }
   }
 
   void _onClientAddedRoom(Client client, int index) {
@@ -140,6 +158,14 @@ class ClientManager {
 
   Future<void> logoutClient(Client client) async {
     int clientIndex = _clientsList.indexOf(client);
+
+    var subs = _clientSubscriptions[client];
+    if (subs != null) {
+      for (var sub in subs) {
+        sub.cancel();
+      }
+      _clientSubscriptions.remove(client);
+    }
 
     var clientInfo = StalePeerInfo(
         index: clientIndex,
