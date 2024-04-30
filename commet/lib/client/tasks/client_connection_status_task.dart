@@ -66,6 +66,7 @@ class ClientConnectionStatusTask extends BackgroundTaskWithOptionalProgress {
     if (event.status != ClientConnectionStatus.connected) {
       shouldRemoveTask = false;
       timer?.cancel();
+      timer = null;
     }
 
     if (event.status == ClientConnectionStatus.connected && timer == null) {
