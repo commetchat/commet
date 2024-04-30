@@ -8,8 +8,8 @@ import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/utils/common_strings.dart';
 
 import 'package:flutter/material.dart' as m;
+import 'package:tiamat/atoms/context_menu.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
-import 'package:tiamat/tiamat.dart' as tiamat;
 
 import '../../atoms/tooltip.dart' as t;
 
@@ -105,21 +105,30 @@ class _MessagePopupMenuViewOverlayState
           padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
           child: Row(
             children: [
-              buildMenuEntry(m.Icons.reply, CommonStrings.promptReply, () {
+              buildMenuEntry(m.Icons.reply, CommonStrings.promptReply,
+                  callback: () {
                 widget.state.setReplyingEvent();
               }),
-              buildMenuEntry(m.Icons.add_reaction,
-                  CommonStrings.promptAddReaction, toggleTooltipMenu),
+              buildMenuEntry(
+                  m.Icons.add_reaction, CommonStrings.promptAddReaction,
+                  callback: toggleTooltipMenu),
               if (widget.state.isEditable)
-                buildMenuEntry(m.Icons.edit, CommonStrings.promptEdit, () {
+                buildMenuEntry(m.Icons.edit, CommonStrings.promptEdit,
+                    callback: () {
                   widget.state.setEditingEvent();
                 }),
               if (widget.state.isDeletable)
-                buildMenuEntry(m.Icons.delete, CommonStrings.promptDelete, () {
+                buildMenuEntry(m.Icons.delete, CommonStrings.promptDelete,
+                    callback: () {
                   widget.state.deleteEvent();
                 }),
-              buildMenuEntry(
-                  m.Icons.more_vert, CommonStrings.promptOptions, () => null),
+              buildMenuEntry(m.Icons.more_vert, CommonStrings.promptOptions,
+                  items: [
+                    ContextMenuItem(
+                        text: "Show Source",
+                        icon: Icons.code,
+                        onPressed: () => widget.state.showSource(context))
+                  ]),
             ],
           ),
         ),
@@ -127,19 +136,43 @@ class _MessagePopupMenuViewOverlayState
     );
   }
 
-  Widget buildMenuEntry(IconData icon, String label, Function()? callback) {
+  Widget buildMenuEntry(IconData icon, String label,
+      {Function()? callback, List<ContextMenuItem>? items}) {
     const double size = 32;
+    var pad = const EdgeInsets.all(3);
     return t.Tooltip(
       text: label,
       child: m.Padding(
         padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-        child: m.SizedBox(
-          width: size,
-          height: size,
-          child: tiamat.IconButton(
-            size: 20,
-            icon: icon,
-            onPressed: () => callback?.call(),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(size / 2),
+          child: Material(
+            color: Colors.transparent,
+            child: m.SizedBox(
+              width: size,
+              height: size,
+              child: items != null
+                  ? ContextMenu(
+                      modal: true,
+                      items: items,
+                      child: Padding(
+                        padding: pad,
+                        child: Icon(
+                          icon,
+                          size: size / 1.5,
+                        ),
+                      ),
+                    )
+                  : InkWell(
+                      onTap: callback,
+                      child: Padding(
+                          padding: pad,
+                          child: Icon(
+                            icon,
+                            size: size / 1.5,
+                          )),
+                    ),
+            ),
           ),
         ),
       ),

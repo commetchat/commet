@@ -98,6 +98,7 @@ abstract class TimelineEvent {
   List<Attachment>? get attachments;
   String? get bodyFormat;
   String? get formattedBody;
+  String get rawContent;
   List<Uri>? get links;
 
   /// This has a global key, and as such should only be displayed on screen in one place at a time.
