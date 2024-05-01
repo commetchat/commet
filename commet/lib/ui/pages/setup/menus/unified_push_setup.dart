@@ -30,6 +30,9 @@ class UnifiedPushSetup implements SetupMenu {
   @override
   Future<void> submit() async {
     NotificationManager.init();
+    if (preferences.unifiedPushEnabled == null) {
+      preferences.setUnifiedPushEnabled(false);
+    }
   }
 }
 
