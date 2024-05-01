@@ -193,6 +193,12 @@ class ClientManager {
       }
     }
 
+    for (int i = directMessages.length - 1; i >= 0; i--) {
+      if (directMessages[i].client == client) {
+        directMessages.removeAt(i);
+      }
+    }
+
     await client.logout();
     onClientRemoved.add(clientInfo);
     _clients.remove(client.identifier);
