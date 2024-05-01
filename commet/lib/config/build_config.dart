@@ -51,6 +51,8 @@ class BuildConfig {
 
   static const String app = "Commet";
 
+  static const String appSchema = "chat.commet";
+
   // IM SO SORRY
   static const String appName = MOBILE
       ? (ANDROID

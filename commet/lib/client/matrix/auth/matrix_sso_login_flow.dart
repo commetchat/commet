@@ -2,11 +2,15 @@ import 'package:commet/client/auth.dart';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
+import 'package:commet/config/build_config.dart';
+import 'package:commet/config/platform_utils.dart';
 import 'package:commet/debug/log.dart';
+import 'package:commet/utils/custom_uri.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 
+import 'package:universal_html/html.dart' as html;
 import 'package:matrix/matrix.dart' as matrix;
 
 class MatrixSSOLoginFlow implements SsoLoginFlow {
@@ -41,15 +45,31 @@ class MatrixSSOLoginFlow implements SsoLoginFlow {
     try {
       var mx = client.getMatrixClient();
 
+      String redirectUrl = SsoLoginUri().toString();
+
+      if (PlatformUtils.isWeb) {
+        redirectUrl = Uri.parse(html.window.location.href)
+            .resolve("auth.html")
+            .toString();
+      }
+
+      String callbackScheme = Uri.parse(redirectUrl).scheme;
+
+      // https://github.com/ThexXTURBOXx/flutter_web_auth_2/blob/2b67cb9674c7d3228de4f5728a73b09ae6598cf9/flutter_web_auth_2/README.md#windows-and-linux
+      if (PlatformUtils.isLinux || PlatformUtils.isWindows) {
+        redirectUrl = "http://localhost:3001/login";
+        callbackScheme = "http://localhost:3001";
+      }
+
       final url = mx.homeserver!.replace(
         path:
             '/_matrix/client/v3/login/sso/redirect${id == null ? '' : '/$id'}',
-        queryParameters: {'redirectUrl': "http://localhost:3001/login"},
+        queryParameters: {'redirectUrl': redirectUrl},
       );
 
       final result = await FlutterWebAuth2.authenticate(
         url: url.toString(),
-        callbackUrlScheme: "http://localhost:3001",
+        callbackUrlScheme: callbackScheme,
       );
 
       var token = Uri.parse(result).queryParameters['loginToken'];

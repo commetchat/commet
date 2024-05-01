@@ -1,3 +1,5 @@
+import 'package:commet/config/build_config.dart';
+
 class CustomURI {
   static CustomURI? parse(String text) {
     Uri? uri;
@@ -7,7 +9,7 @@ class CustomURI {
       return null;
     }
 
-    if (uri.scheme != "commet") {
+    if (uri.scheme != BuildConfig.appSchema) {
       return null;
     }
 
@@ -37,8 +39,20 @@ class OpenRoomURI implements CustomURI {
   @override
   String toString() {
     return Uri(
-        scheme: "commet",
+        scheme: BuildConfig.appSchema,
         host: "open_room",
         queryParameters: {"room_id": roomId, "client_id": clientId}).toString();
+  }
+}
+
+class SsoLoginUri implements CustomURI {
+  SsoLoginUri();
+
+  @override
+  String toString() {
+    return Uri(
+        scheme: BuildConfig.appSchema,
+        host: "login",
+        queryParameters: {}).toString();
   }
 }
