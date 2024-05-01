@@ -22,27 +22,36 @@ class AdaptiveDialog {
     }
 
     return m.showModalBottomSheet<T>(
-        context: context,
-        showDragHandle: true,
-        elevation: 0,
-        isDismissible: dismissible,
-        backgroundColor:
-            m.Theme.of(context).extension<ExtraColors>()!.surfaceLow1,
-        builder: (context) {
-          return SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: tiamat.Text.largeTitle(title),
-                ),
-                builder(context),
-              ],
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      elevation: 0,
+      isDismissible: dismissible,
+      backgroundColor:
+          m.Theme.of(context).extension<ExtraColors>()!.surfaceLow1,
+      builder: (context) {
+        return SingleChildScrollView(
+            child: Container(
+          padding:
+              EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: tiamat.Text.largeTitle(title),
+                  ),
+                  Center(child: builder(context)),
+                ],
+              ),
             ),
-          );
-        });
+          ),
+        ));
+      },
+    );
   }
 
   static Future<bool?> confirmation(BuildContext context,
