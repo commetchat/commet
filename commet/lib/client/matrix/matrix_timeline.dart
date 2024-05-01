@@ -78,8 +78,6 @@ class MatrixTimeline extends Timeline {
 
   @override
   void markAsRead(TimelineEvent event) async {
-    if (event.senderId == client.self!.identifier) return;
-
     if (event.type == EventType.edit ||
         event.status == TimelineEventStatus.synced) {
       _matrixTimeline?.setReadMarker();

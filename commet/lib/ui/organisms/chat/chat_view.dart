@@ -1,3 +1,4 @@
+import 'package:commet/client/timeline.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/molecules/message_input.dart';
 import 'package:commet/ui/molecules/read_indicator.dart';
@@ -52,13 +53,22 @@ class ChatView extends StatelessWidget {
           )
         : TimelineViewer(
             timeline: state.timeline!,
-            markAsRead: state.room.timeline!.markAsRead,
+            markAsRead: handleMarkAsRead,
             setReplyingEvent: (event) => state.setInteractingEvent(event,
                 type: EventInteractionType.reply),
             setEditingEvent: (event) => state.setInteractingEvent(event,
                 type: EventInteractionType.edit),
             onAddReaction: state.addReaction,
           );
+  }
+
+  void handleMarkAsRead(TimelineEvent event) async {
+    // Dont update read receipts if in background
+    if (WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed) {
+      return;
+    }
+
+    state.room.timeline!.markAsRead(event);
   }
 
   Widget input() {
