@@ -297,7 +297,11 @@ class SimulatedClient extends Client {
   }
 
   @override
-  Future<(List<LoginFlow>,)> setHomeserver(Uri uri) {
+  Future<
+      (
+        bool,
+        List<LoginFlow>,
+      )> setHomeserver(Uri uri) {
     throw UnimplementedError();
   }
 

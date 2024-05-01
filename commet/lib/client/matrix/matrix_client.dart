@@ -584,22 +584,33 @@ class MatrixClient extends Client {
   }
 
   @override
-  Future<(List<LoginFlow>,)> setHomeserver(Uri uri) async {
-    var result = await _matrixClient.checkHomeserver(uri);
+  Future<
+      (
+        bool,
+        List<LoginFlow>?,
+      )> setHomeserver(Uri uri) async {
+    try {
+      var result = await _matrixClient.checkHomeserver(uri);
 
-    var flows = result.$3;
+      var flows = result.$3;
 
-    var resultFlows = List<LoginFlow>.empty(growable: true);
+      var resultFlows = List<LoginFlow>.empty(growable: true);
 
-    if (flows.any((element) => element.type == "m.login.password")) {
-      resultFlows.add(MatrixPasswordLoginFlow());
+      if (flows.any((element) => element.type == "m.login.password")) {
+        resultFlows.add(MatrixPasswordLoginFlow());
+      }
+
+      if (flows.any((element) => element.type == "m.login.sso")) {
+        resultFlows.addAll(await _getSsoFlows());
+      }
+
+      return (
+        true,
+        resultFlows,
+      );
+    } catch (_) {
+      return (false, null);
     }
-
-    if (flows.any((element) => element.type == "m.login.sso")) {
-      resultFlows.addAll(await _getSsoFlows());
-    }
-
-    return (resultFlows,);
   }
 
   Future<List<LoginFlow>> _getSsoFlows() async {

@@ -40,9 +40,12 @@ class LoginPageState extends State<LoginPage> {
   double? progress;
   List<LoginFlow>? loginFlows;
   late Client loginClient;
+
   final Debouncer homeserverUpdateDebouncer =
       Debouncer(delay: const Duration(seconds: 1));
 
+  bool loadingServerInfo = false;
+  bool isServerValid = false;
   bool isLoggingIn = false;
 
   @override
@@ -64,6 +67,8 @@ class LoginPageState extends State<LoginPage> {
       updateHomeserver: (value) {
         setState(() {
           loginFlows = null;
+          isServerValid = false;
+          loadingServerInfo = true;
         });
         homeserverUpdateDebouncer.run(() => updateHomeserver(value));
       },
@@ -71,10 +76,17 @@ class LoginPageState extends State<LoginPage> {
       doSsoLogin: doSsoLogin,
       doPasswordLogin: doPasswordLogin,
       isLoggingIn: isLoggingIn,
+      loadingServerInfo: loadingServerInfo,
+      hasSsoSupport: loginFlows?.whereType<SsoLoginFlow>().isNotEmpty == true,
+      isServerValid: isServerValid,
     );
   }
 
   Future<void> doLogin(Future<LoginResult> Function() login) async {
+    if (isServerValid == false) {
+      return;
+    }
+
     setState(() {
       isLoggingIn = true;
     });
@@ -134,13 +146,17 @@ class LoginPageState extends State<LoginPage> {
   Future<void> updateHomeserver(String input) async {
     setState(() {
       loginFlows = null;
+      loadingServerInfo = true;
+      isServerValid = false;
     });
 
     var uri = Uri.https(input);
     var result = await loginClient.setHomeserver(uri);
 
     setState(() {
-      loginFlows = result.$1;
+      loadingServerInfo = false;
+      isServerValid = result.$1;
+      loginFlows = result.$2;
     });
   }
 }

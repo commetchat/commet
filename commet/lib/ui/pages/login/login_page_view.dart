@@ -33,12 +33,18 @@ class LoginPageView extends StatefulWidget {
       this.homeserverChecked,
       this.doSsoLogin,
       this.doPasswordLogin,
+      this.loadingServerInfo = false,
+      this.isServerValid = false,
+      this.hasSsoSupport = false,
       this.updateHomeserver});
   final bool canNavigateBack;
   final bool isLoggingIn;
   final bool? homeserverChecked;
   final double? progress;
   final List<LoginFlow>? flows;
+  final bool loadingServerInfo;
+  final bool isServerValid;
+  final bool hasSsoSupport;
   final Future<void> Function(SsoLoginFlow flow)? doSsoLogin;
   final Future<void> Function(
           PasswordLoginFlow flow, String username, String password)?
@@ -75,8 +81,6 @@ class _LoginPageViewState extends State<LoginPageView> {
 
   @override
   void initState() {
-    _homeserverTextField.addListener(_onHomeserverTextUpdated);
-
     if (_homeserverTextField.text != "") {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
         _onHomeserverTextUpdated();
@@ -244,7 +248,7 @@ class _LoginPageViewState extends State<LoginPageView> {
           ),
         ),
       ),
-      if (widget.flows != null)
+      if (widget.hasSsoSupport)
         Column(
           children: [
             Row(
@@ -348,17 +352,35 @@ class _LoginPageViewState extends State<LoginPageView> {
     );
   }
 
-  TextField homeserverEntry() {
+  Widget homeserverEntry() {
     return TextField(
       autocorrect: false,
       controller: _homeserverTextField,
       readOnly: widget.isLoggingIn,
+      onChanged: widget.updateHomeserver,
       inputFormatters: [FilteringTextInputFormatter.deny(RegExp("[ ]"))],
       decoration: InputDecoration(
-        prefixText: 'https://',
-        border: const OutlineInputBorder(),
-        labelText: promptHomeserver,
-      ),
+          prefixText: 'https://',
+          border: const OutlineInputBorder(),
+          labelText: promptHomeserver,
+          suffix: homeserverEntrySuffix()),
+    );
+  }
+
+  Widget homeserverEntrySuffix() {
+    if (widget.loadingServerInfo) {
+      return SizedBox(
+          width: 15,
+          height: 15,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+          ));
+    }
+
+    return Icon(
+      widget.isServerValid ? Icons.check : Icons.close,
+      size: 15,
+      color: widget.isServerValid ? Colors.greenAccent : Colors.redAccent,
     );
   }
 
