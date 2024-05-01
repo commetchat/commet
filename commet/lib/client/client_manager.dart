@@ -89,6 +89,14 @@ class ClientManager {
     _clientsList.add(client);
     onClientAdded.add(_clients.length - 1);
 
+    for (int i = 0; i < client.rooms.length; i++) {
+      _onClientAddedRoom(client, i);
+    }
+
+    for (int i = 0; i < client.spaces.length; i++) {
+      _addSpace(client, i);
+    }
+
     _clientSubscriptions[client] = [
       client.onSync.listen((_) => _synced()),
       client.onRoomAdded.listen((index) => _onClientAddedRoom(client, index)),

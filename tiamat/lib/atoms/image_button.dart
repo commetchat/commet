@@ -264,12 +264,14 @@ class ImageButton extends StatefulWidget {
       this.iconSize,
       this.placeholderColor,
       this.placeholderText,
+      this.backgroundColor,
       required this.size,
       this.icon});
   final void Function()? onTap;
   final ImageProvider? image;
   final double size;
   final double? iconSize;
+  final Color? backgroundColor;
   final String? placeholderText;
   final Color? placeholderColor;
   final IconData? icon;
@@ -338,6 +340,7 @@ class _ImageButtonState extends State<ImageButton> {
             borderRadius: value,
             child: Material(
               child: child,
+              color: widget.backgroundColor,
             ),
           ),
         );
