@@ -74,30 +74,32 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
               break;
           }
         },
-        child: OverlappingPanels(
-            key: panelsKey,
-            left: navigation(context),
-            main: Container(
-              child: shouldMainIgnoreInput
-                  ? IgnorePointer(
-                      child: Container(key: mainPanelKey, child: mainPanel()),
-                    )
-                  : Container(key: mainPanelKey, child: mainPanel()),
-            ),
-            onDragStart: () {},
-            onSideChange: (side) {
-              setState(() {
-                shouldMainIgnoreInput = side != RevealSide.main;
-              });
-            },
-            right: widget.state.currentRoom != null ? userList() : null));
+        child: Tile.low4(
+          child: OverlappingPanels(
+              key: panelsKey,
+              left: navigation(context),
+              main: Container(
+                child: shouldMainIgnoreInput
+                    ? IgnorePointer(
+                        child: Container(key: mainPanelKey, child: mainPanel()),
+                      )
+                    : Container(key: mainPanelKey, child: mainPanel()),
+              ),
+              onDragStart: () {},
+              onSideChange: (side) {
+                setState(() {
+                  shouldMainIgnoreInput = side != RevealSide.main;
+                });
+              },
+              right: widget.state.currentRoom != null ? userList() : null),
+        ));
   }
 
   Widget navigation(BuildContext newContext) {
-    return Row(
-      children: [
-        Tile.low4(
-          child: Padding(
+    return Tile.low4(
+      child: Row(
+        children: [
+          Padding(
             padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
             child: SafeArea(
               child: SideNavigationBar(
@@ -115,17 +117,17 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
               ),
             ),
           ),
-        ),
-        if (widget.state.currentView == MainPageSubView.home)
-          directMessagesView(),
-        if (widget.state.currentView == MainPageSubView.space &&
-            widget.state.currentSpace != null)
-          spaceRoomSelector(newContext),
-        if (backgroundTaskManager.tasks.isNotEmpty)
-          FloatingTile(
-            child: BackgroundTaskView(backgroundTaskManager),
-          )
-      ],
+          if (widget.state.currentView == MainPageSubView.home)
+            directMessagesView(),
+          if (widget.state.currentView == MainPageSubView.space &&
+              widget.state.currentSpace != null)
+            spaceRoomSelector(newContext),
+          if (backgroundTaskManager.tasks.isNotEmpty)
+            FloatingTile(
+              child: BackgroundTaskView(backgroundTaskManager),
+            )
+        ],
+      ),
     );
   }
 
@@ -187,7 +189,7 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
       return Tile.low1(
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(50, 20, 0, 0),
+            padding: const EdgeInsets.fromLTRB(20, 20, 0, 0),
             child: PeerList(
               key: ValueKey(
                   "room-participant-list-key-${widget.state.currentRoom!.localId}"),
@@ -249,7 +251,7 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
             ),
             Expanded(
                 child: Padding(
-              padding: const EdgeInsets.fromLTRB(0, 0, 50, 0),
+              padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
               child: SpaceViewer(
                 widget.state.currentSpace!,
                 key: ValueKey(

@@ -369,7 +369,7 @@ class _LoginPageViewState extends State<LoginPageView> {
 
   Widget homeserverEntrySuffix() {
     if (widget.loadingServerInfo) {
-      return SizedBox(
+      return const SizedBox(
           width: 15,
           height: 15,
           child: CircularProgressIndicator(

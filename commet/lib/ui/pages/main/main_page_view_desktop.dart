@@ -95,18 +95,12 @@ class MainPageViewDesktop extends StatelessWidget {
         child: Tile.low1(
           child: Column(
             children: [
-              SizedBox(
-                  height: 80,
-                  child: Tile.low2(
-                    borderBottom: true,
-                    child: SpaceHeader(
-                      state.currentSpace!,
-                      onTap: state.clearRoomSelection,
-                      backgroundColor: Theme.of(context)
-                          .extension<ExtraColors>()!
-                          .surfaceLow1,
-                    ),
-                  )),
+              SpaceHeader(
+                state.currentSpace!,
+                onTap: state.clearRoomSelection,
+                backgroundColor:
+                    Theme.of(context).extension<ExtraColors>()!.surfaceLow1,
+              ),
               Expanded(
                   child: SpaceViewer(
                 state.currentSpace!,
