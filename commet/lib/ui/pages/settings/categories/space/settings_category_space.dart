@@ -27,6 +27,10 @@ class SettingsCategorySpace implements SettingsCategory {
       name: "labelSpaceEmoticonSettings",
       desc: "Label for space emoticon settings");
 
+  String get labelSpacePermissionSettings => Intl.message("Permissions",
+      name: "labelSpacePermissionSettings",
+      desc: "Label for space permission settings");
+
   String get labelSpaceDeveloperSettings => Intl.message("Developer",
       name: "labelSpaceDeveloperSettings",
       desc: "Label for space developer settings");
@@ -73,7 +77,7 @@ class SettingsCategorySpace implements SettingsCategory {
             }),
       if (space is MatrixSpace)
         SettingsTab(
-            label: "Permissions",
+            label: labelSpacePermissionSettings,
             icon: Icons.admin_panel_settings,
             makeScrollable: false,
             pageBuilder: (context) {
