@@ -31,14 +31,15 @@ class _GeneralSettingsPage extends State<GeneralSettingsPage> {
       args: [proxyUrl],
       name: "labelGifSearchDescription");
 
-  String get labelEncryptedPreview =>
-      Intl.message("URL Preview in Encrypted Chats (Experimental)",
-          desc: "Label for the toggle for enabling and disabling gif search",
-          name: "labelEncryptedPreview");
+  String get labelEncryptedPreview => Intl.message(
+      "URL Preview in Encrypted Chats (Experimental)",
+      desc:
+          "Label for the toggle for enabling and disabling encrypted url preview",
+      name: "labelEncryptedPreview");
 
   String labelEncryptedPreviewDescription(proxyUrl) => Intl.message(
       "Enable use of a proxy server ($proxyUrl) to get url preview in an encrypted chat. The content of these requests will be hidden from your homeserver using Commet's 'encrypted url preview'\nLearn more: https://github.com/commetchat/encrypted_url_preview",
-      desc: "Explains that gifs will be fetched via proxy",
+      desc: "Explains briefly how encrypted url preview works",
       args: [proxyUrl],
       name: "labelEncryptedPreviewDescription");
 
