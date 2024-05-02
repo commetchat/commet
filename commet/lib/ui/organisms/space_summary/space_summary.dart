@@ -52,6 +52,7 @@ class _SpaceSummaryState extends State<SpaceSummary> {
       onRoomAdded: widget.space.onRoomAdded,
       avatar: widget.space.avatar,
       rooms: widget.space.rooms,
+      visibility: widget.space.visibility,
       joinRoom: joinRoom,
       openSpaceSettings: openSpaceSettings,
       onRoomSettingsButtonTap: openRoomSettings,
@@ -59,6 +60,7 @@ class _SpaceSummaryState extends State<SpaceSummary> {
       onRoomTap: widget.onRoomTap,
       showSpaceSettingsButton: widget.space.permissions.canEditAnything,
       onAddRoomButtonTap: onAddRoomButtonTap,
+      canAddRoom: widget.space.permissions.canEditChildren,
     );
   }
 

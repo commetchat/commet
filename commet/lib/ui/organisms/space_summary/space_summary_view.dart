@@ -35,6 +35,7 @@ class SpaceSummaryView extends StatefulWidget {
       this.openSpaceSettings,
       this.onAddRoomButtonTap,
       this.onRoomTap,
+      this.canAddRoom = false,
       this.onRoomSettingsButtonTap});
   final String displayName;
   final String? topic;
@@ -55,6 +56,7 @@ class SpaceSummaryView extends StatefulWidget {
   final Function(Room room)? onRoomTap;
   final Function()? onAddRoomButtonTap;
   final bool showSpaceSettingsButton;
+  final bool canAddRoom;
   @override
   State<SpaceSummaryView> createState() => SpaceSummaryViewState();
 }
@@ -215,15 +217,16 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
               return buildRoomPanel(animation, room);
             },
           ),
-          t.Tooltip(
-            text: tooltipAddRoom,
-            preferredDirection: AxisDirection.left,
-            child: tiamat.CircleButton(
-              radius: BuildConfig.MOBILE ? 24 : 16,
-              icon: Icons.add,
-              onPressed: () => widget.onAddRoomButtonTap?.call(),
-            ),
-          )
+          if (widget.canAddRoom)
+            t.Tooltip(
+              text: tooltipAddRoom,
+              preferredDirection: AxisDirection.left,
+              child: tiamat.CircleButton(
+                radius: BuildConfig.MOBILE ? 24 : 16,
+                icon: Icons.add,
+                onPressed: () => widget.onAddRoomButtonTap?.call(),
+              ),
+            )
         ],
       ),
     );
