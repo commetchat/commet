@@ -239,15 +239,12 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
       child: Tile.low1(
         child: Column(
           children: [
-            SizedBox(
-              height: 100.1,
-              child: SpaceHeader(
-                widget.state.currentSpace!,
-                backgroundColor: material.Theme.of(context)
-                    .extension<ExtraColors>()!
-                    .surfaceLow1,
-                onTap: clearSelectedRoom,
-              ),
+            SpaceHeader(
+              widget.state.currentSpace!,
+              backgroundColor: material.Theme.of(context)
+                  .extension<ExtraColors>()!
+                  .surfaceLow1,
+              onTap: clearSelectedRoom,
             ),
             Expanded(
                 child: Padding(
