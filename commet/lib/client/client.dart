@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:commet/client/auth.dart';
 import 'package:commet/client/components/component.dart';
 import 'package:commet/client/invitation.dart';
 import 'package:commet/client/room_preview.dart';
@@ -35,13 +36,9 @@ enum ClientConnectionStatus {
   disconnected,
 }
 
-enum LoginResult { success, failed, error, alreadyLoggedIn }
+enum LoginResult { success, failed, error, alreadyLoggedIn, cancelled }
 
 abstract class Client {
-  Future<LoginResult> login(
-      LoginType type, String userIdentifier, String server,
-      {String? password, String? token});
-
   /// Local identifier for this client instance
   String get identifier;
 
@@ -96,6 +93,14 @@ abstract class Client {
       get connectionStatusChanged;
 
   Future<void> init(bool loadingFromCache, {bool isBackgroundService = false});
+
+  Future<
+      (
+        bool,
+        List<LoginFlow>?,
+      )> setHomeserver(Uri uri);
+
+  Future<LoginResult> executeLoginFlow(LoginFlow flow);
 
   /// Logout and invalidate the current session
   Future<void> logout();

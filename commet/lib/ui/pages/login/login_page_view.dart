@@ -1,9 +1,9 @@
 import 'dart:ui';
 
-import 'package:commet/client/client.dart';
+import 'package:commet/client/auth.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/atoms/shader/star_trails.dart';
-import 'package:commet/ui/pages/login/login_page.dart';
+import 'package:commet/utils/common_strings.dart';
 import 'package:commet/utils/link_utils.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -18,15 +18,39 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 @UseCase(name: 'Login Page', type: LoginPageView)
 @Deprecated("widgetbook")
 Widget wbLoginPage(BuildContext context) {
-  return const LoginPageView();
+  return const LoginPageView(
+    isLoggingIn: false,
+  );
 }
 
 class LoginPageView extends StatefulWidget {
   const LoginPageView(
-      {this.state, super.key, this.canNavigateBack = false, this.progress});
-  final LoginPageState? state;
+      {super.key,
+      this.canNavigateBack = false,
+      this.progress,
+      this.flows,
+      required this.isLoggingIn,
+      this.homeserverChecked,
+      this.doSsoLogin,
+      this.doPasswordLogin,
+      this.loadingServerInfo = false,
+      this.isServerValid = false,
+      this.hasSsoSupport = false,
+      this.updateHomeserver});
   final bool canNavigateBack;
+  final bool isLoggingIn;
+  final bool? homeserverChecked;
   final double? progress;
+  final List<LoginFlow>? flows;
+  final bool loadingServerInfo;
+  final bool isServerValid;
+  final bool hasSsoSupport;
+  final Future<void> Function(SsoLoginFlow flow)? doSsoLogin;
+  final Future<void> Function(
+          PasswordLoginFlow flow, String username, String password)?
+      doPasswordLogin;
+
+  final Function(String)? updateHomeserver;
 
   @override
   State<LoginPageView> createState() => _LoginPageViewState();
@@ -38,24 +62,6 @@ class _LoginPageViewState extends State<LoginPageView> {
   );
   final TextEditingController _usernameTextField = TextEditingController();
   final TextEditingController _passwordTextField = TextEditingController();
-
-  bool _loading = false;
-
-  String get messageLoginFailed => Intl.message("Login Failed...",
-      name: "messageLoginFailed",
-      desc: "Generic text to show that an attempted login has failed");
-
-  String get messageLoginError => Intl.message("An error occured",
-      name: "messageLoginError",
-      desc:
-          "A generic error message to convey that an error occured when attempting to login");
-
-  String get messageAlreadyLoggedIn => Intl.message(
-        "You have already logged in to this account",
-        name: "messageAlreadyLoggedIn",
-        desc:
-            "An error message displayed when the user attempts to add an account which has already been logged in to on this device",
-      );
 
   String get promptHomeserver => Intl.message("Homeserver",
       name: "promptHomeserver",
@@ -73,44 +79,15 @@ class _LoginPageViewState extends State<LoginPageView> {
       name: "promptSubmitLogin",
       desc: "Prompt to submit the username and password, and attempt to login");
 
-  void doLogin() async {
-    setState(() {
-      _loading = true;
-    });
-
-    LoginResult result = await widget.state!.login(_homeserverTextField.text,
-        _usernameTextField.text, _passwordTextField.text);
-
-    setState(() {
-      _loading = false;
-    });
-
-    String? message;
-
-    switch (result) {
-      case LoginResult.success:
-        break;
-      case LoginResult.failed:
-        message = messageLoginFailed;
-        break;
-      case LoginResult.error:
-        message = messageLoginError;
-        break;
-      case LoginResult.alreadyLoggedIn:
-        message = messageAlreadyLoggedIn;
-        break;
+  @override
+  void initState() {
+    if (_homeserverTextField.text != "") {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        _onHomeserverTextUpdated();
+      });
     }
 
-    if (message != null) {
-      if (context.mounted) {
-        // ignore: use_build_context_synchronously
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(message),
-          ),
-        );
-      }
-    }
+    super.initState();
   }
 
   @override
@@ -199,58 +176,130 @@ class _LoginPageViewState extends State<LoginPageView> {
   }
 
   Widget loginField(BuildContext context) {
-    return Center(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 500),
-        child: Container(
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: Theme.of(context).extension<ExtraColors>()!.surfaceLow1,
-              border: Border.all(
-                  color: Theme.of(context).extension<ExtraColors>()!.outline,
-                  width: 1),
-              boxShadow: [
-                BoxShadow(
-                    blurRadius: 50,
-                    color: Theme.of(context).shadowColor.withAlpha(50))
-              ]),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-            child: Column(mainAxisSize: MainAxisSize.min, children: [
-              Flexible(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+    return Stack(
+      children: [
+        Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 500),
+            child: Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color:
+                      Theme.of(context).extension<ExtraColors>()!.surfaceLow1,
+                  border: Border.all(
+                      color:
+                          Theme.of(context).extension<ExtraColors>()!.outline,
+                      width: 1),
+                  boxShadow: [
+                    BoxShadow(
+                        blurRadius: 50,
+                        color: Theme.of(context).shadowColor.withAlpha(50))
+                  ]),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                child: Stack(
                   children: [
-                    appIcon(context),
+                    IgnorePointer(
+                      ignoring: widget.isLoggingIn,
+                      child: AnimatedOpacity(
+                          opacity: widget.isLoggingIn ? 0.5 : 1.0,
+                          duration: Durations.short2,
+                          child: loginInputs(context)),
+                    ),
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
-              homeserverEntry(),
-              const SizedBox(height: 16),
-              usernameEntry(),
-              const SizedBox(height: 16),
-              passwordEntry(),
-              const SizedBox(height: 16),
-              loginButton(),
-              SizedBox(
-                height: 15,
-                child: Center(
-                  child: SizedBox(
-                    height: 5,
-                    child: widget.progress == null
-                        ? null
-                        : LinearProgressIndicator(
-                            value: widget.progress,
-                          ),
+            ),
+          ),
+        ),
+        if (widget.isLoggingIn)
+          const Center(
+            child: CircularProgressIndicator(),
+          )
+      ],
+    );
+  }
+
+  Widget loginInputs(BuildContext context) {
+    return Column(mainAxisSize: MainAxisSize.min, children: [
+      Flexible(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            appIcon(context),
+          ],
+        ),
+      ),
+      const SizedBox(height: 16),
+      homeserverEntry(),
+      const SizedBox(height: 16),
+      usenamePasswordLoginInputs(),
+      SizedBox(
+        height: 15,
+        child: Center(
+          child: SizedBox(
+            height: 5,
+            child: widget.progress == null
+                ? null
+                : LinearProgressIndicator(
+                    value: widget.progress,
                   ),
-                ),
-              )
-            ]),
           ),
         ),
       ),
+      if (widget.hasSsoSupport)
+        Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const SizedBox(
+                  width: 100,
+                  height: 10,
+                  child: tiamat.Seperator(),
+                ),
+                tiamat.Text.labelLow(CommonStrings.labelOr),
+                const SizedBox(
+                  width: 100,
+                  height: 10,
+                  child: tiamat.Seperator(),
+                ),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                alignment: WrapAlignment.spaceBetween,
+                children: widget.flows!
+                    .whereType<SsoLoginFlow>()
+                    .map((e) => tiamat.ImageButton(
+                          placeholderText: e.name,
+                          image: e.icon,
+                          size: 40,
+                          backgroundColor: Colors.white,
+                          onTap: () => widget.doSsoLogin?.call(e),
+                        ))
+                    .toList(),
+              ),
+            )
+          ],
+        ),
+    ]);
+  }
+
+  Column usenamePasswordLoginInputs() {
+    return Column(
+      children: [
+        usernameEntry(),
+        const SizedBox(height: 16),
+        passwordEntry(),
+        const SizedBox(height: 16),
+        loginButton(),
+      ],
     );
   }
 
@@ -262,13 +311,17 @@ class _LoginPageViewState extends State<LoginPageView> {
   }
 
   SizedBox loginButton() {
+    var flow = widget.flows?.whereType<PasswordLoginFlow>().firstOrNull;
+
     return SizedBox(
       width: double.infinity,
       height: 50,
       child: tiamat.Button(
-        isLoading: _loading,
         text: promptSubmitLogin,
-        onTap: doLogin,
+        onTap: flow != null
+            ? () => widget.doPasswordLogin
+                ?.call(flow, _usernameTextField.text, _passwordTextField.text)
+            : null,
       ),
     );
   }
@@ -278,7 +331,7 @@ class _LoginPageViewState extends State<LoginPageView> {
       autocorrect: false,
       controller: _passwordTextField,
       obscureText: true,
-      readOnly: _loading,
+      readOnly: widget.isLoggingIn,
       decoration: InputDecoration(
         border: const OutlineInputBorder(),
         labelText: promptPassword,
@@ -290,7 +343,7 @@ class _LoginPageViewState extends State<LoginPageView> {
     return TextField(
       autocorrect: false,
       controller: _usernameTextField,
-      readOnly: _loading,
+      readOnly: widget.isLoggingIn,
       inputFormatters: [FilteringTextInputFormatter.deny(RegExp("[ ]"))],
       decoration: InputDecoration(
         border: const OutlineInputBorder(),
@@ -299,17 +352,35 @@ class _LoginPageViewState extends State<LoginPageView> {
     );
   }
 
-  TextField homeserverEntry() {
+  Widget homeserverEntry() {
     return TextField(
       autocorrect: false,
       controller: _homeserverTextField,
-      readOnly: _loading,
+      readOnly: widget.isLoggingIn,
+      onChanged: widget.updateHomeserver,
       inputFormatters: [FilteringTextInputFormatter.deny(RegExp("[ ]"))],
       decoration: InputDecoration(
-        prefixText: 'https://',
-        border: const OutlineInputBorder(),
-        labelText: promptHomeserver,
-      ),
+          prefixText: 'https://',
+          border: const OutlineInputBorder(),
+          labelText: promptHomeserver,
+          suffix: homeserverEntrySuffix()),
+    );
+  }
+
+  Widget homeserverEntrySuffix() {
+    if (widget.loadingServerInfo) {
+      return SizedBox(
+          width: 15,
+          height: 15,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+          ));
+    }
+
+    return Icon(
+      widget.isServerValid ? Icons.check : Icons.close,
+      size: 15,
+      color: widget.isServerValid ? Colors.greenAccent : Colors.redAccent,
     );
   }
 
@@ -322,5 +393,11 @@ class _LoginPageViewState extends State<LoginPageView> {
         theme: SvgTheme(currentColor: Theme.of(context).colorScheme.onPrimary),
       ),
     );
+  }
+
+  void _onHomeserverTextUpdated() {
+    if (widget.updateHomeserver != null) {
+      widget.updateHomeserver?.call(_homeserverTextField.text);
+    }
   }
 }

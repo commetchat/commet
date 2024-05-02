@@ -86,6 +86,7 @@ dependencies:
   fuzzy: ^0.5.1
   encrypt: ^5.0.3
   pointycastle: ^3.7.4
+  flutter_web_auth_2: ^3.1.1
 
   ## ---- Putting some extra lines in here to help git with the diff
   ## ---- Probably good to keep this stuff at the bottom of the list

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:typed_data';
+import 'package:commet/client/auth.dart';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/component.dart';
 import 'package:commet/client/components/component_registry.dart';
@@ -90,7 +91,6 @@ class SimulatedClient extends Client {
   @override
   List<Room> get directMessages => throw UnimplementedError();
 
-  @override
   Future<LoginResult> login(
       LoginType type, String userIdentifier, String server,
       {String? password, String? token}) async {
@@ -297,6 +297,20 @@ class SimulatedClient extends Client {
   }
 
   @override
+  Future<
+      (
+        bool,
+        List<LoginFlow>,
+      )> setHomeserver(Uri uri) {
+    throw UnimplementedError();
+  }
+
+  @override
   StoredStreamController<ClientConnectionStatusUpdate> connectionStatusChanged =
       StoredStreamController();
+
+  @override
+  Future<LoginResult> executeLoginFlow(LoginFlow flow) async {
+    return LoginResult.success;
+  }
 }
