@@ -479,17 +479,27 @@ class TimelineViewerState extends State<TimelineViewer>
   }
 
   bool shouldShowDate(int index) {
-    if (widget.timeline.events.length <= index + 1) {
+    var offsetIndex = index + 1;
+
+    if (widget.timeline.events.length <= offsetIndex) {
+      return false;
+    }
+
+    if ([
+          EventType.emote,
+          EventType.message,
+        ].contains(widget.timeline.events[index].type) ==
+        false) {
       return false;
     }
 
     if (widget.timeline.events[index].originServerTs.toLocal().day !=
-        widget.timeline.events[index + 1].originServerTs.toLocal().day) {
+        widget.timeline.events[offsetIndex].originServerTs.toLocal().day) {
       return true;
     }
 
     if (widget.timeline.events[index].originServerTs
-            .difference(widget.timeline.events[index + 1].originServerTs)
+            .difference(widget.timeline.events[offsetIndex].originServerTs)
             .inHours >
         2) return true;
 
