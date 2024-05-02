@@ -218,6 +218,7 @@ class AddSpaceOrRoomView extends StatefulWidget {
       this.onJoin,
       this.roomMode = false,
       this.rooms,
+      this.loading = false,
       this.onRoomsSelected,
       this.initialPhase});
   final List<Client>? clients;
@@ -228,6 +229,7 @@ class AddSpaceOrRoomView extends StatefulWidget {
   final Function(Iterable<Room> selectedRooms)? onRoomsSelected;
   final AddSpaceOrRoomPhase? initialPhase;
   final bool roomMode;
+  final bool loading;
 
   final List<Room>? rooms;
 
@@ -399,9 +401,16 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 400,
-      child: Container(child: buildPhase(context)),
+    return IgnorePointer(
+      ignoring: widget.loading,
+      child: AnimatedOpacity(
+        duration: Durations.short1,
+        opacity: widget.loading ? 0.5 : 1.0,
+        child: SizedBox(
+          width: 400,
+          child: Container(child: buildPhase(context)),
+        ),
+      ),
     );
   }
 
@@ -551,6 +560,7 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
               child: tiamat.Button.success(
+                isLoading: widget.loading,
                 text: widget.roomMode
                     ? promptConfirmRoomCreation
                     : promptConfirmSpaceCreation,
@@ -607,6 +617,7 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
                               tiamat.Text.label(labelCouldNotLoadRoomPreview)),
             ),
             tiamat.Button.success(
+              isLoading: widget.loading,
               text: widget.roomMode
                   ? promptConfirmRoomJoin
                   : promptConfirmSpaceJoin,
@@ -646,6 +657,7 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
           padding: const EdgeInsets.all(8.0),
           child: tiamat.Button(
             text: promptAddSelectedRooms,
+            isLoading: widget.loading,
             onTap: () {
               if (selectedRoomsState.currentState != null) {
                 widget.onRoomsSelected?.call(selectedRoomsState
