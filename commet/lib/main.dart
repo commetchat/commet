@@ -179,6 +179,7 @@ Future<void> initGuiRequirements() async {
     WindowManagement.init(),
     UnicodeEmojis.load(),
     initializeMessages(locale.languageCode)
+    // initializeMessagesDebug()
   ]);
 
   Intl.defaultLocale = locale.languageCode;
