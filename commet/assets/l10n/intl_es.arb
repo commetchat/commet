@@ -1413,5 +1413,89 @@
     "description": "Title for the permission to add an emoji reaction to a message",
     "type": "text",
     "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomHistoryVisibilityTitle": "Visualizar el historial",
+  "@labelMatrixPermissionsRoomHistoryVisibilityTitle": {
+    "description": "Title for the permission to add change room history settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomHistoryVisibilityDescription": "Permite al usuario cambiar la visibilidad del historial del chat en esta sala",
+  "@labelMatrixPermissionsRoomHistoryVisibilityDescription": {
+    "description": "describes the permission to change room history settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomAvatarTitle": "Establecer avatar de la sala",
+  "@labelMatrixPermissionsRoomAvatarTitle": {
+    "description": "Title for the permission to add change the rooms avatar image",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomAvatarDescription": "Cambiar el avatar de la sala",
+  "@labelMatrixPermissionsRoomAvatarDescription": {
+    "description": "Title for the permission to add change the rooms avatar image",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsChangeRoomPermissionsDescription": "Permitir al usuario cambiar la configuración de permisos",
+  "@labelMatrixPermissionsChangeRoomPermissionsDescription": {
+    "description": "Description for the permission to change permissions of the room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsChangeRoomNameTitle": "Cambiar nombre de sala",
+  "@labelMatrixPermissionsChangeRoomNameTitle": {
+    "description": "Title for the permission to add change the rooms name",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsChangeRoomNameDescription": "Permite al usuario cambiar el nombre de esta sala",
+  "@labelMatrixPermissionsChangeRoomNameDescription": {
+    "description": "Description for the permission to add change the rooms name",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsChangeRoomTopicTitle": "Cambiar tema de sala",
+  "@labelMatrixPermissionsChangeRoomTopicTitle": {
+    "description": "Title for the permission to add change the rooms topic",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsChangeRoomTopicDescription": "Permitir al usuario cambiar el tema de esta sala",
+  "@labelMatrixPermissionsChangeRoomTopicDescription": {
+    "description": "Description for the permission to add change the rooms topic",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsChangeRoomPermissionsTitle": "Cambiar permisos",
+  "@labelMatrixPermissionsChangeRoomPermissionsTitle": {
+    "description": "Title for the permission to change permissions of the room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsKickUserDescription": "Expulsar a otros usuarios de la sala",
+  "@labelMatrixPermissionsKickUserDescription": {
+    "description": "Description for the permission to kick other users out of the room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsBanUserTitle": "Banear usuarios",
+  "@labelMatrixPermissionsBanUserTitle": {
+    "description": "Title for the permission to ban other users from the room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsBanUserDescription": "Banear a otros usuarios de la sala",
+  "@labelMatrixPermissionsBanUserDescription": {
+    "description": "Description for the permission to ban other users from the room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsKickUserTitle": "Expulsar a los usuarios",
+  "@labelMatrixPermissionsKickUserTitle": {
+    "description": "Title for the permission to kick other users out of the room",
+    "type": "text",
+    "placeholders": {}
   }
 }
