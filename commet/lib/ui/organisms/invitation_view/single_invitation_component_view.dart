@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/invitation/invitation.dart';
 import 'package:commet/client/components/invitation/invitation_component.dart';
@@ -30,8 +32,26 @@ class _SingleInvitationComponentIncomingViewState
       desc: "Label for the list of incoming invitations",
       name: "labelInvitations");
 
+  StreamSubscription? sub;
+
+  @override
+  void initState() {
+    sub = widget.component.invitations.onListUpdated.listen((event) {
+      setState(() {});
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    sub?.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (widget.component.invitations.isEmpty) return Container();
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
       child: tiamat.Panel(
