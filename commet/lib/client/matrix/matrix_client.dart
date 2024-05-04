@@ -4,7 +4,6 @@ import 'package:commet/client/auth.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/component.dart';
 import 'package:commet/client/components/component_registry.dart';
-import 'package:commet/client/invitation.dart';
 import 'package:commet/client/matrix/auth/matrix_sso_login_flow.dart';
 import 'package:commet/client/matrix/auth/matrix_username_password_login_flow.dart';
 import 'package:commet/client/matrix/database/matrix_database.dart';
@@ -86,10 +85,6 @@ class MatrixClient extends Client {
 
   @override
   int? get maxFileSize => config?.mUploadSize;
-
-  final Map<String, Invitation> _invitations = {};
-  @override
-  List<Invitation> get invitations => _invitations.values.toList();
 
   @override
   String get identifier => _id;
@@ -218,7 +213,6 @@ class MatrixClient extends Client {
 
     _updateRoomslist();
     _updateSpacesList();
-    _updateInviteList();
 
     _matrixClient.onKeyVerificationRequest.stream.listen((event) {
       AdaptiveDialog.show(navigator.currentContext!,
@@ -240,7 +234,6 @@ class MatrixClient extends Client {
     _onSync.add(null);
     _updateRoomslist();
     _updateSpacesList();
-    _updateInviteList();
   }
 
   @override
@@ -291,33 +284,6 @@ class MatrixClient extends Client {
       if (component is NeedsPostLoginInit) {
         (component as NeedsPostLoginInit).postLoginInit();
       }
-    }
-  }
-
-  void _updateInviteList() {
-    var allRooms = _matrixClient.rooms.where((element) => !element.isSpace);
-    var invitedRooms = allRooms.where((element) => element.membership.isInvite);
-
-    for (var invite in invitedRooms) {
-      var state =
-          invite.states[matrix.EventTypes.RoomMember]![_matrixClient.userID!]!;
-      var sender = state.senderId;
-
-      var inviteId = state.eventId;
-      if (_invitations.containsKey(inviteId)) continue;
-
-      var avatar = invite.avatar != null
-          ? MatrixMxcImage(invite.avatar!, _matrixClient)
-          : null;
-      var entry = Invitation(
-          senderId: sender,
-          invitedToId: invite.id,
-          invitationId: state.eventId,
-          avatar: avatar,
-          color: MatrixPeer.hashColor(sender),
-          displayName: invite.getLocalizedDisplayname());
-
-      _invitations[inviteId] = entry;
     }
   }
 
@@ -444,29 +410,6 @@ class MatrixClient extends Client {
     MatrixRoom room = MatrixRoom(this, matrixRoom, _matrixClient);
     rooms.add(room);
     return room;
-  }
-
-  @override
-  Future<void> acceptInvitation(Invitation invitation) async {
-    if (!invitations.contains(invitation)) {
-      throw Exception(
-          "Tried to accept an invitation that does not belong to this client");
-    }
-
-    _invitations.remove(invitation.invitationId);
-    await joinRoom(invitation.invitedToId);
-    _updateInviteList();
-  }
-
-  @override
-  Future<void> rejectInvitation(Invitation invitation) async {
-    if (!invitations.contains(invitation)) {
-      throw Exception(
-          "Tried to reject an invitation that does not belong to this client");
-    }
-
-    _invitations.remove(invitation.invitationId);
-    await _matrixClient.leaveRoom(invitation.invitedToId);
   }
 
   @override

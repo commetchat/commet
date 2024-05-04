@@ -4,7 +4,7 @@ import 'package:commet/client/auth.dart';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/component.dart';
 import 'package:commet/client/components/component_registry.dart';
-import 'package:commet/client/invitation.dart';
+import 'package:commet/client/components/invitation/invitation.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/client/simulated/simulated_peer.dart';
 import 'package:commet/client/simulated/simulated_room.dart';
@@ -113,9 +113,6 @@ class SimulatedClient extends Client {
     _isLogged = false;
   }
 
-  @override
-  List<Invitation> get invitations => [];
-
   void _postLoginSuccess() {
     self = SimulatedPeer(
       this,
@@ -191,16 +188,6 @@ class SimulatedClient extends Client {
 
   @override
   Future<Room?> createDirectMessage(String userId) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> acceptInvitation(Invitation invitation) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> rejectInvitation(Invitation invitation) {
     throw UnimplementedError();
   }
 

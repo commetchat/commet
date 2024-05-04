@@ -1,6 +1,6 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
-import 'package:commet/client/invitation.dart';
+import 'package:commet/client/components/invitation/invitation.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/atoms/room_panel.dart';
 import 'package:commet/ui/molecules/alert_view.dart';
@@ -53,18 +53,13 @@ class HomeScreenView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
+    return Column(
       children: [
         if (clientManager.alertManager.alerts.isNotEmpty) alerts(),
         if (invitations?.isNotEmpty == true) invitationsList(),
         recentRooms(),
         roomsList(context)
-      ]
-          .map((e) => Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                child: e,
-              ))
-          .toList(),
+      ],
     );
   }
 
