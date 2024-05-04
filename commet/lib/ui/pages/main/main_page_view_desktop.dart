@@ -10,11 +10,14 @@ import 'package:commet/ui/molecules/user_list.dart';
 import 'package:commet/ui/organisms/background_task_view/background_task_view.dart';
 import 'package:commet/ui/organisms/home_screen/home_screen.dart';
 import 'package:commet/ui/organisms/chat/chat.dart';
+import 'package:commet/ui/organisms/room_members_list/room_members_list.dart';
 import 'package:commet/ui/organisms/side_navigation_bar.dart';
 import 'package:commet/ui/organisms/space_summary/space_summary.dart';
 import 'package:commet/ui/pages/main/main_page.dart';
 import 'package:commet/utils/event_bus.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:tiamat/atoms/tile.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
@@ -181,12 +184,8 @@ class MainPageViewDesktop extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: SizedBox(
-                      width: 200,
-                      child: PeerList(
-                          key: ValueKey(
-                              "room-participant-list-key-${state.currentRoom!.localId}"),
-                          state.currentRoom!),
-                    ),
+                        width: 200,
+                        child: RoomMembersListWidget(state.currentRoom!)),
                   ),
                 )
               ],
