@@ -25,9 +25,12 @@ Widget wbUserPanelWithAvatar(BuildContext context) {
 }
 
 class UserPanel extends material.StatefulWidget {
-  const UserPanel(this.peer, {super.key, this.userColor});
+  const UserPanel(this.peer,
+      {super.key, this.userColor, this.showFullId = false, this.onTap});
   final Peer peer;
   final Color? userColor;
+  final bool showFullId;
+  final void Function()? onTap;
 
   @override
   State<UserPanel> createState() => _UserPanelState();
@@ -48,12 +51,12 @@ class _UserPanelState extends material.State<UserPanel> {
     return UserPanelView(
       displayName: widget.peer.displayName,
       avatar: widget.peer.avatar,
-      detail: widget.peer.detail,
+      detail: widget.showFullId ? widget.peer.identifier : widget.peer.detail,
       color: widget.userColor,
       avatarColor: widget.userColor,
       nameColor: widget.userColor,
       padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-      onClicked: onUserPanelClicked,
+      onClicked: widget.onTap ?? onUserPanelClicked,
     );
   }
 

@@ -1,12 +1,9 @@
-import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
-import 'package:commet/client/components/invitation/invitation.dart';
 import 'package:commet/client/components/invitation/invitation_component.dart';
-import 'package:commet/ui/molecules/invitation_display.dart';
 import 'package:commet/ui/organisms/invitation_view/single_invitation_component_view.dart';
 import 'package:flutter/material.dart';
+// ignore: depend_on_referenced_packages
 import 'package:collection/collection.dart';
-import 'package:tiamat/tiamat.dart' as tiamat;
 
 class IncomingInvitationsWidget extends StatefulWidget {
   const IncomingInvitationsWidget(this.manager, {super.key});

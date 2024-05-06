@@ -4,6 +4,7 @@ import 'package:commet/client/components/invitation/invitation_component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/matrix/matrix_peer.dart';
+import 'package:commet/client/peer.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:matrix/matrix.dart';
@@ -41,7 +42,6 @@ class MatrixInvitationComponent
   }
 
   void _updateInviteList() async {
-    print("Invite list updating");
     var mx = client.getMatrixClient();
     var invitedRooms = mx.rooms.where((element) => element.membership.isInvite);
 
@@ -67,5 +67,20 @@ class MatrixInvitationComponent
 
       invitations.add(entry);
     }
+  }
+
+  @override
+  Future<void> inviteUserToRoom(
+      {required String userId, required String roomId}) {
+    var mx = client.getMatrixClient();
+    return mx.inviteUser(roomId, userId);
+  }
+
+  @override
+  Future<List<Peer>> searchUsers(String term) async {
+    var mx = client.getMatrixClient();
+    var result = await mx.searchUserDirectory(term);
+
+    return result.results.map((e) => client.getPeer(e.userId)).toList();
   }
 }

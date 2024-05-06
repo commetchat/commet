@@ -9,4 +9,9 @@ abstract class InvitationComponent<T extends Client> implements Component<T> {
   Future<void> acceptInvitation(Invitation invitation);
 
   Future<void> rejectInvitation(Invitation invitation);
+
+  Future<void> inviteUserToRoom(
+      {required String userId, required String roomId});
+
+  Future<List<Peer>> searchUsers(String term);
 }

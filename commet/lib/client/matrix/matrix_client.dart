@@ -8,7 +8,6 @@ import 'package:commet/client/matrix/auth/matrix_sso_login_flow.dart';
 import 'package:commet/client/matrix/auth/matrix_username_password_login_flow.dart';
 import 'package:commet/client/matrix/database/matrix_database.dart';
 import 'package:commet/client/matrix/extensions/matrix_client_extensions.dart';
-import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/debug/log.dart';
@@ -413,7 +412,8 @@ class MatrixClient extends Client {
   }
 
   @override
-  List<Room> get directMessages => throw UnimplementedError();
+  List<Room> get directMessages =>
+      _rooms.where((element) => element.isDirectMessage).toList();
 
   @override
   Peer getPeer(String identifier) {

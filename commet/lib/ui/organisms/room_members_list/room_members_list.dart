@@ -1,3 +1,4 @@
+import 'package:commet/client/components/invitation/invitation_component.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/molecules/user_list.dart';
@@ -18,23 +19,28 @@ class _RoomMembersListWidgetState extends State<RoomMembersListWidget> {
   @override
   Widget build(BuildContext context) {
     var iconSize = Layout.mobile ? 40.0 : 35.0;
+    var invitation = widget.room.client.getComponent<InvitationComponent>();
     return Column(
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            tiamat.Text.labelLow("Room Members"),
-            SizedBox(
-              width: iconSize,
-              height: iconSize,
-              child: tiamat.IconButton(
-                icon: Icons.person_add,
-                size: iconSize / 2,
-                onPressed: () => AdaptiveDialog.show(context,
-                    builder: (context) => SendInvitationWidget(),
-                    title: "Invite"),
+            const tiamat.Text.labelLow("Room Members"),
+            if (invitation != null &&
+                !widget.room.isDirectMessage &&
+                widget.room.permissions.canInviteUser)
+              SizedBox(
+                width: iconSize,
+                height: iconSize,
+                child: tiamat.IconButton(
+                  icon: Icons.person_add,
+                  size: iconSize / 2,
+                  onPressed: () => AdaptiveDialog.show(context,
+                      builder: (context) =>
+                          SendInvitationWidget(widget.room, invitation),
+                      title: "Invite"),
+                ),
               ),
-            ),
           ],
         ),
         Expanded(
