@@ -207,7 +207,7 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
       child: Tile.low1(
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(0, 0, 50, 0),
+            padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
