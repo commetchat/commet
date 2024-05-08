@@ -53,10 +53,10 @@ jobs:
           dir .\olm
           dir .\commet
           dir .\commet\build\windows
-          move .\olm\build\Release\olm.dll .\commet\build\windows\runner\Release\libolm.dll
+          move .\olm\build\Release\olm.dll .\commet\build\windows\x64\runner\Release\libolm.dll
       
       - name: Archive 
-        run: tar -a -c -f commet-windows.zip -C .\commet\build\windows\runner\ Release
+        run: tar -a -c -f commet-windows.zip -C .\commet\build\windows\x64\runner\Release
       
       - name: Upload to release
         if: github.event_name == 'release'
