@@ -2,7 +2,7 @@
 
 import 'dart:io';
 
-getDependencies() async {
+Future<ProcessResult> getDependencies() async {
   var process = Process.runSync(
     "flutter",
     [
@@ -14,9 +14,10 @@ getDependencies() async {
 
   print(process.stdout);
   print(process.stderr);
+  return process;
 }
 
-intlUtilsGenerate() async {
+Future<ProcessResult> intlUtilsGenerate() async {
   var process = await Process.run(
     "flutter",
     [
@@ -29,6 +30,7 @@ intlUtilsGenerate() async {
 
   print(process.stdout);
   print(process.stderr);
+  return process;
 }
 
 Future<List<File>> generateFileLists() async {
@@ -84,7 +86,7 @@ Future<List<File>> generateFileLists() async {
   return [sourcesFile, arbFile];
 }
 
-generateFromArb(List<File> files) async {
+Future<ProcessResult> generateFromArb(List<File> files) async {
   var process = await Process.run(
     "flutter",
     [
@@ -102,9 +104,10 @@ generateFromArb(List<File> files) async {
 
   print(process.stdout);
   print(process.stderr);
+  return process;
 }
 
-buildRunner() async {
+Future<ProcessResult> buildRunner() async {
   var process = await Process.run(
     "flutter",
     [
@@ -118,12 +121,28 @@ buildRunner() async {
 
   print(process.stdout);
   print(process.stderr);
+  return process;
 }
 
 void main() async {
-  await getDependencies();
-  await intlUtilsGenerate();
+  var result = await getDependencies();
+  if (result.exitCode != 0) {
+    exit(result.exitCode);
+  }
+
+  result = await intlUtilsGenerate();
+  if (result.exitCode != 0) {
+    exit(result.exitCode);
+  }
+
   var files = await generateFileLists();
-  await generateFromArb(files);
-  await buildRunner();
+  result = await generateFromArb(files);
+  if (result.exitCode != 0) {
+    exit(result.exitCode);
+  }
+
+  result = await buildRunner();
+  if (result.exitCode != 0) {
+    exit(result.exitCode);
+  }
 }
