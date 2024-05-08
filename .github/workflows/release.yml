@@ -39,6 +39,7 @@ jobs:
       - name: Code Generation
         run: |
           cd .\commet
+          git config --global core.longpaths true
           dart run scripts/codegen.dart
 
       - name: Build Windows App
