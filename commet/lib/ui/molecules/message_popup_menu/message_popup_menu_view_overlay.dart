@@ -11,6 +11,8 @@ import 'package:flutter/material.dart' as m;
 import 'package:tiamat/atoms/context_menu.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 
+import 'package:tiamat/tiamat.dart' as tiamat;
+
 class MessagePopupMenuViewOverlay extends StatefulWidget {
   final MessagePopupMenuState state;
 
@@ -137,6 +139,7 @@ class _MessagePopupMenuViewOverlayState
   Widget buildMenuEntry(IconData icon, String label,
       {Function()? callback, List<ContextMenuItem>? items}) {
     const double size = 32;
+    var pad = const EdgeInsets.all(2);
     return tiamat.Tooltip(
       text: label,
       child: m.Padding(

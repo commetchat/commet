@@ -4,11 +4,8 @@ import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/atoms/tiny_pill.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/pages/matrix/room_address_settings/matrix_room_add_local_alias_view.dart';
-import 'package:commet/widgetbook.dart';
 import 'package:flutter/material.dart';
 import 'package:implicitly_animated_list/implicitly_animated_list.dart';
-import 'package:isar/isar.dart';
-import 'package:matrix/matrix.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
@@ -104,9 +101,9 @@ class _MatrixRoomAddressSettingsViewState
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          tiamat.Text.labelLow("Other Addresses:"),
+          const tiamat.Text.labelLow("Other Addresses:"),
           if (widget.knownAliases.isEmpty)
-            SizedBox(
+            const SizedBox(
               height: 50,
               child: Center(
                 child: tiamat.Text.labelLow(
@@ -153,7 +150,7 @@ class _MatrixRoomAddressSettingsViewState
                           child: tiamat.Text.label(data),
                         ),
                       ),
-                      if (data == widget.mainAlias) TinyPill("Main"),
+                      if (data == widget.mainAlias) const TinyPill("Main"),
                     ],
                   ),
                   Align(
@@ -239,7 +236,7 @@ class _MatrixRoomAddressSettingsViewState
                       child: tiamat.Text.label(item),
                     ),
                   ),
-                  if (item == widget.mainAlias) TinyPill("Main"),
+                  if (item == widget.mainAlias) const TinyPill("Main"),
                 ],
               );
             },

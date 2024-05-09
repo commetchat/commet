@@ -1,6 +1,5 @@
 import 'package:commet/utils/debounce.dart';
 import 'package:flutter/material.dart';
-import 'package:test/test.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class MatrixRoomAddLocalAliasView extends StatefulWidget {
@@ -19,9 +18,9 @@ class MatrixRoomAddLocalAliasView extends StatefulWidget {
 class _MatrixRoomAddLocalAliasViewState
     extends State<MatrixRoomAddLocalAliasView> {
   TextEditingController controller = TextEditingController();
-  Debouncer debouncer = Debouncer(delay: Duration(milliseconds: 500));
+  Debouncer debouncer = Debouncer(delay: const Duration(milliseconds: 500));
 
-  bool? isAvailable = null;
+  bool? isAvailable;
   bool createLoading = false;
 
   @override
@@ -66,12 +65,14 @@ class _MatrixRoomAddLocalAliasViewState
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            if (isAvailable == false) tiamat.Text.error("Alias already in use"),
-            if (isAvailable == true) tiamat.Text.label("Alias is available!"),
+            if (isAvailable == false)
+              const tiamat.Text.error("Alias already in use"),
+            if (isAvailable == true)
+              const tiamat.Text.label("Alias is available!"),
             if (isAvailable == null && controller.text.isEmpty) Container(),
             if (isAvailable == null && controller.text.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.all(8.0),
+              const Padding(
+                padding: EdgeInsets.all(8.0),
                 child: SizedBox(
                     width: 15, height: 15, child: CircularProgressIndicator()),
               ),

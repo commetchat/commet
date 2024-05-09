@@ -86,6 +86,7 @@ class TextInput extends StatefulWidget {
       this.minLines,
       this.maxLength,
       this.obscureText = false,
+      this.onChanged,
       this.prefixText,
       this.suffixText,
       super.key});

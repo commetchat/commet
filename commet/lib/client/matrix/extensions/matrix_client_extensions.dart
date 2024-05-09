@@ -120,7 +120,7 @@ extension MatrixExtensions on Client {
   // This is stupid, is there a better way to do this?
   Future<bool> isRoomAliasAvailable(String alias) async {
     try {
-      var result = await request(
+      await request(
         RequestType.GET,
         '/client/v3/directory/room/${Uri.encodeComponent(alias)}',
       );
