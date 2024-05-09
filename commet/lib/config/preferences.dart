@@ -15,7 +15,7 @@ class Preferences {
   static const String _minimizeOnCloseKey = "minimize_on_close";
   static const String _developerMode = "developer_mode";
   static const String _tenorGifSearch = "enable_tenor_gif_search";
-  static const String _gifSearchProxyUrl = "gif_search_proxy_url";
+  static const String _proxyUrl = "proxy_url";
   static const String _fcmKey = "fcm_key";
   static const String _unifiedPushEnabled = "unified_push_enabled";
   static const String _unifiedPushEndpoint = "unified_push_endpoint";
@@ -109,8 +109,8 @@ class Preferences {
 
   bool get developerMode => _preferences?.getBool(_developerMode) ?? false;
 
-  String get gifProxyUrl =>
-      _preferences?.getString(_gifSearchProxyUrl) ?? "proxy.commet.chat";
+  String get proxyUrl =>
+      _preferences?.getString(_proxyUrl) ?? "proxy.commet.chat";
 
   Future<void> setDeveloperMode(bool value) async {
     await _preferences!.setBool(_developerMode, value);

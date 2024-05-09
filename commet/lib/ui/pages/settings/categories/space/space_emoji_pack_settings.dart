@@ -35,6 +35,7 @@ class _SpaceEmojiPackSettingsState extends State<SpaceEmojiPackSettings> {
       canCreatePack: component.canCreatePack,
       editable: widget.space.permissions.canEditRoomEmoticons,
       renameEmoticon: renameEmoticon,
+      importPack: importPack,
     );
   }
 
@@ -56,5 +57,10 @@ class _SpaceEmojiPackSettingsState extends State<SpaceEmojiPackSettings> {
   Future<void> renameEmoticon(
       EmoticonPack pack, Emoticon emoticon, String name) async {
     await pack.renameEmoticon(emoticon, name);
+  }
+
+  Future<void> importPack(String name, int avatarIndex, List<String> names,
+      List<Uint8List> imageDatas) async {
+    component.importEmoticonPack(name, avatarIndex, names, imageDatas);
   }
 }
