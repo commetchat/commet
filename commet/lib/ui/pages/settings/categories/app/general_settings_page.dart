@@ -59,7 +59,7 @@ class _GeneralSettingsPage extends State<GeneralSettingsPage> {
         settingToggle(
           enableTenor,
           title: labelGifSearchToggle,
-          description: labelGifSearchDescription(preferences.gifProxyUrl),
+          description: labelGifSearchDescription(preferences.proxyUrl),
           onChanged: (value) async {
             setState(() {
               enableTenor = value;

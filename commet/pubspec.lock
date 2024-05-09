@@ -1259,6 +1259,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.0.2"
+  protobuf:
+    dependency: transitive
+    description:
+      name: protobuf
+      sha256: "01dd9bd0fa02548bf2ceee13545d4a0ec6046459d847b6b061d8a27237108a08"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.0"
   provider:
     dependency: "direct main"
     description:
@@ -1504,7 +1512,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "851c15db2d46e55e3e8fb6ee6699ab66a0328ed6"
+      resolved-ref: "12ab7577a83bfec00d24a27da3d293cbdfad19bd"
       url: "https://github.com/commetchat/signal-sticker-api.git"
     source: git
     version: "1.0.0"

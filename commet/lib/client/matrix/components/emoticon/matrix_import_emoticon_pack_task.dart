@@ -7,7 +7,8 @@ import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/background_tasks/background_task_manager.dart';
 
-class MatrixImportEmoticonPackTask implements BackgroundTaskWithProgress {
+class MatrixImportEmoticonPackTask
+    implements BackgroundTaskWithIntegerProgress {
   @override
   late int total;
 
@@ -21,7 +22,7 @@ class MatrixImportEmoticonPackTask implements BackgroundTaskWithProgress {
   BackgroundTaskStatus status = BackgroundTaskStatus.running;
 
   StreamController<int> progressStream = StreamController.broadcast();
-  StreamController completedStream = StreamController.broadcast();
+  StreamController controller = StreamController.broadcast();
 
   @override
   void Function()? action;
@@ -36,7 +37,10 @@ class MatrixImportEmoticonPackTask implements BackgroundTaskWithProgress {
   Stream<int> get onProgress => progressStream.stream;
 
   @override
-  Stream<void> get completed => completedStream.stream;
+  bool shouldRemoveTask = false;
+
+  @override
+  Stream<void> get statusChanged => controller.stream;
 
   List<Uint8List> images;
   MatrixClient client;
@@ -66,6 +70,11 @@ class MatrixImportEmoticonPackTask implements BackgroundTaskWithProgress {
 
   void complete() {
     status = BackgroundTaskStatus.completed;
-    completedStream.add(null);
+    controller.add(null);
+
+    Timer(const Duration(seconds: 5), () {
+      shouldRemoveTask = true;
+      controller.add(null);
+    });
   }
 }
