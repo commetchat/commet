@@ -116,4 +116,22 @@ extension MatrixExtensions on Client {
 
     return roomData.containsKey(packKey);
   }
+
+  // This is stupid, is there a better way to do this?
+  Future<bool> isRoomAliasAvailable(String alias) async {
+    try {
+      await request(
+        RequestType.GET,
+        '/client/v3/directory/room/${Uri.encodeComponent(alias)}',
+      );
+      return false;
+    } catch (exception) {
+      if (exception is MatrixException) {
+        if (exception.error == MatrixError.M_NOT_FOUND) {
+          return true;
+        }
+      }
+      return false;
+    }
+  }
 }

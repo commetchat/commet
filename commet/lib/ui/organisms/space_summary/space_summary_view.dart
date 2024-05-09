@@ -11,7 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart';
-import '../../atoms/tooltip.dart' as t;
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class SpaceSummaryView extends StatefulWidget {
@@ -176,7 +175,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
   Padding buildSettingsButton() {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: t.Tooltip(
+      child: tiamat.Tooltip(
         text: tooltipSpaceSettings,
         preferredDirection: AxisDirection.left,
         child: tiamat.CircleButton(
@@ -217,16 +216,15 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
               return buildRoomPanel(animation, room);
             },
           ),
-          if (widget.canAddRoom)
-            t.Tooltip(
-              text: tooltipAddRoom,
-              preferredDirection: AxisDirection.left,
-              child: tiamat.CircleButton(
-                radius: BuildConfig.MOBILE ? 24 : 16,
-                icon: Icons.add,
-                onPressed: () => widget.onAddRoomButtonTap?.call(),
-              ),
-            )
+          tiamat.Tooltip(
+            text: tooltipAddRoom,
+            preferredDirection: AxisDirection.left,
+            child: tiamat.CircleButton(
+              radius: BuildConfig.MOBILE ? 24 : 16,
+              icon: Icons.add,
+              onPressed: () => widget.onAddRoomButtonTap?.call(),
+            ),
+          )
         ],
       ),
     );

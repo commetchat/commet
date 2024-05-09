@@ -13,7 +13,6 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 import '../../client/client.dart';
 import '../../client/components/emoticon/emoticon.dart';
 import '../atoms/message_attachment.dart';
-import '../atoms/tooltip.dart' as t;
 
 class TimelineEventView extends StatefulWidget {
   const TimelineEventView(
@@ -307,7 +306,7 @@ class _TimelineEventState extends State<TimelineEventView> {
 
   Widget buildMenuEntry(IconData icon, String label, Function()? callback) {
     const double size = 32;
-    return t.Tooltip(
+    return tiamat.Tooltip(
       text: label,
       child: m.Padding(
         padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
