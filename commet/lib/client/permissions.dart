@@ -27,4 +27,6 @@ class Permissions {
   bool get canEditRoomEmoticons => true;
 
   bool get canEditChildren => true;
+
+  bool get canInviteUser => true;
 }

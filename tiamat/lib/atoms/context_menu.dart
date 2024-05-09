@@ -218,7 +218,7 @@ class _ContextMenuState extends State<ContextMenu> {
   Widget buildOverlay(BuildContext overlayContext) {
     if (mounted)
       return GestureDetector(
-        behavior: HitTestBehavior.translucent,
+        behavior: HitTestBehavior.opaque,
         onTap: removeOverlay,
         child: Stack(
           children: [

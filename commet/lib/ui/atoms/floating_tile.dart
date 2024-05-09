@@ -1,4 +1,5 @@
 import 'package:commet/debug/log.dart';
+import 'package:commet/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
@@ -109,11 +110,17 @@ class _TileOverlayState extends State<TileOverlay> {
       Offset currentPos, Offset size, Rect bounds, EdgeInsets safeAreaPadding) {
     var p = 10.0;
 
+    var b = Rect.fromLTRB(
+        bounds.left / preferences.appScale,
+        bounds.top / preferences.appScale,
+        bounds.right / preferences.appScale,
+        bounds.bottom / preferences.appScale);
+
     var rect = Rect.fromLTRB(
-        bounds.left + p + safeAreaPadding.left,
-        bounds.top + p + safeAreaPadding.top,
-        bounds.right - p - size.dx - safeAreaPadding.right,
-        bounds.bottom - p - size.dy - safeAreaPadding.bottom);
+        b.left + p + safeAreaPadding.left,
+        b.top + p + safeAreaPadding.top,
+        b.right - p - size.dx - safeAreaPadding.right,
+        b.bottom - p - size.dy - safeAreaPadding.bottom);
 
     var points = [
       Offset(rect.left, rect.top),
@@ -139,6 +146,7 @@ class _TileOverlayState extends State<TileOverlay> {
     var size = MediaQuery.of(context).size;
 
     var childSize = childKey.currentContext?.size;
+
     if (childSize == null) {
       return;
     }

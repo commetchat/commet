@@ -6,10 +6,10 @@ import 'package:commet/ui/atoms/space_header.dart';
 import 'package:commet/ui/molecules/direct_message_list.dart';
 import 'package:commet/ui/molecules/overlapping_panels.dart';
 import 'package:commet/ui/molecules/space_viewer.dart';
-import 'package:commet/ui/molecules/user_list.dart';
 import 'package:commet/ui/organisms/background_task_view/background_task_view.dart';
 import 'package:commet/ui/organisms/chat/chat.dart';
 import 'package:commet/ui/organisms/home_screen/home_screen.dart';
+import 'package:commet/ui/organisms/room_members_list/room_members_list.dart';
 import 'package:commet/ui/organisms/side_navigation_bar.dart';
 import 'package:commet/ui/organisms/space_summary/space_summary.dart';
 import 'package:commet/ui/pages/main/main_page.dart';
@@ -189,11 +189,11 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
       return Tile.low1(
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 20, 0, 0),
-            child: PeerList(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+            child: RoomMembersListWidget(
+              widget.state.currentRoom!,
               key: ValueKey(
                   "room-participant-list-key-${widget.state.currentRoom!.localId}"),
-              widget.state.currentRoom!,
             ),
           ),
         ),
@@ -207,7 +207,7 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
       child: Tile.low1(
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(0, 0, 50, 0),
+            padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,

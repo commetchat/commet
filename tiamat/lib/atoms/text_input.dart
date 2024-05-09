@@ -86,6 +86,7 @@ class TextInput extends StatefulWidget {
       this.minLines,
       this.maxLength,
       this.obscureText = false,
+      this.onChanged,
       super.key});
   final String? placeholder;
   final Widget? icon;
@@ -95,6 +96,7 @@ class TextInput extends StatefulWidget {
   final int? maxLength;
   final String? label;
   final bool obscureText;
+  final void Function(String)? onChanged;
   @override
   State<TextInput> createState() => _TextInputState();
 }
@@ -107,6 +109,7 @@ class _TextInputState extends State<TextInput> {
       maxLines: widget.obscureText ? 1 : widget.maxLines,
       minLines: widget.minLines,
       obscureText: widget.obscureText,
+      onChanged: widget.onChanged,
       maxLength: widget.maxLength,
       cursorColor: material.Theme.of(context).highlightColor,
       decoration: material.InputDecoration(

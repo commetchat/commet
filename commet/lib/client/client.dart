@@ -3,7 +3,6 @@ import 'dart:typed_data';
 
 import 'package:commet/client/auth.dart';
 import 'package:commet/client/components/component.dart';
-import 'package:commet/client/invitation.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/client/space.dart';
@@ -67,9 +66,6 @@ abstract class Client {
 
   /// Gets list of all currently known users
   List<Peer> get peers;
-
-  /// Gets a list of invitations to join other rooms or spaces
-  List<Invitation> get invitations;
 
   /// When a room is added, this will be called with the index of the new room
   Stream<int> get onRoomAdded;
@@ -168,12 +164,6 @@ abstract class Client {
 
   /// Open a new direct message with another user
   Future<Room?> createDirectMessage(String userId);
-
-  /// Accept an invitation to join a room or space which this client is not yet a member of
-  Future<void> acceptInvitation(Invitation invitation);
-
-  /// Reject an invitation to join a room or space which this client is not yet a member of
-  Future<void> rejectInvitation(Invitation invitation);
 
   T? getComponent<T extends Component>();
 

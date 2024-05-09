@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
-import 'package:commet/client/invitation.dart';
+import 'package:commet/ui/organisms/invitation_view/incoming_invitations_view.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:commet/ui/organisms/home_screen/home_screen_view.dart';
 import 'package:flutter/material.dart';
@@ -23,13 +23,11 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   late List<Room> recentActivity;
   StreamSubscription? syncSub;
-  late List<Invitation> invitations;
 
   @override
   void initState() {
     syncSub = widget.clientManager.onSync.stream.listen(onSync);
     updateRecent();
-    refreshInvitations();
     super.initState();
   }
 
@@ -39,19 +37,9 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
-  void refreshInvitations() {
-    invitations = widget.clientManager.clients
-        .map((e) => e.invitations)
-        .fold(List.empty(growable: true), (previousValue, element) {
-      previousValue.addAll(element);
-      return previousValue;
-    });
-  }
-
   void onSync(void event) {
     setState(() {
       updateRecent();
-      refreshInvitations();
     });
   }
 
@@ -69,44 +57,21 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return HomeScreenView(
-      clientManager: widget.clientManager,
-      rooms: widget.clientManager.singleRooms,
-      recentActivity: recentActivity,
-      onRoomClicked: (room) =>
-          EventBus.openRoom.add((room.identifier, room.client.identifier)),
-      acceptInvite: acceptInvitation,
-      rejectInvite: rejectInvitation,
-      joinRoom: joinRoom,
-      createRoom: createRoom,
-      invitations: invitations,
+    return ListView(
+      padding: const EdgeInsets.all(8),
+      children: [
+        IncomingInvitationsWidget(widget.clientManager),
+        HomeScreenView(
+          clientManager: widget.clientManager,
+          rooms: widget.clientManager.singleRooms,
+          recentActivity: recentActivity,
+          onRoomClicked: (room) =>
+              EventBus.openRoom.add((room.identifier, room.client.identifier)),
+          joinRoom: joinRoom,
+          createRoom: createRoom,
+        ),
+      ],
     );
-  }
-
-  Future<void> acceptInvitation(Invitation invite) async {
-    for (var client in widget.clientManager.clients) {
-      if (client.invitations.contains(invite)) {
-        await client.acceptInvitation(invite);
-        break;
-      }
-    }
-
-    setState(() {
-      refreshInvitations();
-    });
-  }
-
-  Future<void> rejectInvitation(Invitation invite) async {
-    for (var client in widget.clientManager.clients) {
-      if (client.invitations.contains(invite)) {
-        await client.rejectInvitation(invite);
-        break;
-      }
-    }
-
-    setState(() {
-      refreshInvitations();
-    });
   }
 
   Future<void> joinRoom(Client client, String address) async {
