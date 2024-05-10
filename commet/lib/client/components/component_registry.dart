@@ -3,6 +3,7 @@ import 'package:commet/client/components/room_component.dart';
 import 'package:commet/client/components/space_component.dart';
 import 'package:commet/client/matrix/components/command_component/matrix_command_component.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_emoticon_component.dart';
+import 'package:commet/client/matrix/components/emoticon/matrix_emoticon_state_manager.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_room_emoticon_component.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_space_emoticon_component.dart';
 import 'package:commet/client/matrix/components/gif/matrix_gif_component.dart';
@@ -20,7 +21,8 @@ class ComponentRegistry {
   static List<Component<MatrixClient>> getMatrixComponents(
       MatrixClient client) {
     return [
-      MatrixEmoticonComponent(client),
+      MatrixEmoticonComponent(
+          client, MatrixEmoticonPersonalStateManager(client)),
       MatrixPushNotificationComponent(client),
       MatrixCommandComponent(client),
       MatrixUrlPreviewComponent(client),
