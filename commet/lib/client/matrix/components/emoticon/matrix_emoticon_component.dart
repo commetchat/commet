@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:commet/client/components/component.dart';
 import 'package:commet/client/components/emoticon/emoji_pack.dart';
 import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_emoticon_pack.dart';
@@ -10,7 +11,8 @@ import 'package:commet/utils/notifying_list.dart';
 import 'package:flutter/material.dart';
 
 /// Manages custom emoticon packs from the matrix user account state
-class MatrixEmoticonComponent extends EmoticonComponent<MatrixClient> {
+class MatrixEmoticonComponent extends EmoticonComponent<MatrixClient>
+    implements NeedsPostLoginInit {
   static const roomEmotesStateKey = "im.ponies.room_emotes";
   static const emoteRoomsStateKey = "im.ponies.emote_rooms";
 
@@ -23,7 +25,10 @@ class MatrixEmoticonComponent extends EmoticonComponent<MatrixClient> {
   final NotifyingList<EmoticonPack> _packs =
       NotifyingList.empty(growable: true);
 
-  MatrixEmoticonComponent(this.client) {
+  MatrixEmoticonComponent(this.client);
+
+  @override
+  void postLoginInit() {
     var state = getAllStates();
 
     if (state.isEmpty) return;
