@@ -224,11 +224,19 @@ class _MessageState extends State<Message> {
     return Padding(
         padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
         child: SizedBox(
-          child: tiamat.Text.labelLow(widget.showDetailed
-              ? intl.DateFormat().format(widget.sentTimeStamp.toLocal())
-              : intl.DateFormat(DateFormat.HOUR_MINUTE)
-                  .format(widget.sentTimeStamp.toLocal())),
-        ));
+            child: tiamat.Text.labelLow(widget.showDetailed
+                ? MediaQuery.of(context).alwaysUse24HourFormat
+                    ? intl.DateFormat.yMMMMd()
+                        .add_Hms()
+                        .format(widget.sentTimeStamp.toLocal())
+                    : intl.DateFormat.yMMMMd()
+                        .add_jms()
+                        .format(widget.sentTimeStamp.toLocal())
+                : MediaQuery.of(context).alwaysUse24HourFormat
+                    ? intl.DateFormat.Hm()
+                        .format(widget.sentTimeStamp.toLocal())
+                    : intl.DateFormat.jm()
+                        .format(widget.sentTimeStamp.toLocal()))));
   }
 
   Widget body() {

@@ -432,7 +432,8 @@ class TimelineViewerState extends State<TimelineViewer>
           Padding(
             padding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
             child: tiamat.Text.labelLow(TextUtils.timestampToLocalizedTime(
-                widget.timeline.events[actualIndex].originServerTs)),
+                widget.timeline.events[actualIndex].originServerTs,
+                MediaQuery.of(context).alwaysUse24HourFormat)),
           ),
           Expanded(
             child: Divider(
