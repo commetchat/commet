@@ -1,5 +1,8 @@
-on: push
 name: static-analysis
+on:
+  push:
+  pull_request:
+  merge_group:
 
 env:
   PROJECT_PATH: commet
