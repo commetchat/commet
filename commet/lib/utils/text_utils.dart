@@ -132,12 +132,14 @@ class TextUtils {
     return NewPasswordResult.valid;
   }
 
-  static String timestampToLocalizedTime(DateTime time) {
+  static String timestampToLocalizedTime(DateTime time, bool hour24Format) {
     var difference = DateTime.now().difference(time);
 
     if (difference.inDays == 0) {
-      return intl.DateFormat(intl.DateFormat.HOUR_MINUTE)
-          .format(time.toLocal());
+      return hour24Format
+          ? intl.DateFormat(intl.DateFormat.HOUR24_MINUTE)
+              .format(time.toLocal())
+          : intl.DateFormat(intl.DateFormat.HOUR_MINUTE).format(time.toLocal());
     }
 
     if (difference.inDays < 365) {
@@ -149,12 +151,15 @@ class TextUtils {
         .format(time.toLocal());
   }
 
-  static String timestampToLocalizedTimeSpecific(DateTime time) {
+  static String timestampToLocalizedTimeSpecific(
+      DateTime time, bool hour24Format) {
     var difference = DateTime.now().difference(time);
 
     if (difference.inDays < 7) {
-      return intl.DateFormat(intl.DateFormat.HOUR_MINUTE)
-          .format(time.toLocal());
+      return hour24Format
+          ? intl.DateFormat(intl.DateFormat.HOUR24_MINUTE)
+              .format(time.toLocal())
+          : intl.DateFormat(intl.DateFormat.HOUR_MINUTE).format(time.toLocal());
     }
     return intl.DateFormat().format(time.toLocal());
   }

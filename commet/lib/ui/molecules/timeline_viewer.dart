@@ -430,14 +430,11 @@ class TimelineViewerState extends State<TimelineViewer>
             ),
           ),
           Padding(
-              padding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
-              child: MediaQuery.of(context).alwaysUse24HourFormat
-                  ? tiamat.Text.labelLow(DateFormat.Hm().format(widget
-                      .timeline.events[actualIndex].originServerTs
-                      .toLocal()))
-                  : tiamat.Text.labelLow(DateFormat.jm().format(widget
-                      .timeline.events[actualIndex].originServerTs
-                      .toLocal()))),
+            padding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
+            child: tiamat.Text.labelLow(TextUtils.timestampToLocalizedTime(
+                widget.timeline.events[actualIndex].originServerTs,
+                MediaQuery.of(context).alwaysUse24HourFormat)),
+          ),
           Expanded(
             child: Divider(
               height: 1,
