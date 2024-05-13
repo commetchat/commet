@@ -4,6 +4,7 @@ import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_emoticon.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_emoticon_component.dart';
+import 'package:commet/client/matrix/components/emoticon/matrix_emoticon_state_manager.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_space_emoticon_component.dart';
 import 'package:commet/client/matrix/extensions/matrix_client_extensions.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
@@ -22,7 +23,8 @@ class MatrixRoomEmoticonComponent extends MatrixEmoticonComponent
   @override
   MatrixRoom room;
 
-  MatrixRoomEmoticonComponent(MatrixClient client, this.room) : super(client);
+  MatrixRoomEmoticonComponent(MatrixClient client, this.room)
+      : super(client, MatrixEmoticonRoomStateManager(room.matrixRoom));
 
   @override
   List<EmoticonPack> get availableEmoji =>
@@ -131,45 +133,6 @@ class MatrixRoomEmoticonComponent extends MatrixEmoticonComponent
     if (includeUnicode) result.addAll(UnicodeEmojis.packs!);
 
     return result;
-  }
-
-  @override
-  Map<String, dynamic> getState(String packKey) {
-    var states = getAllStates();
-    var data = states[packKey];
-
-    return data;
-  }
-
-  @override
-  Map<String, dynamic> getAllStates() {
-    if (!room.matrixRoom.states
-        .containsKey(MatrixEmoticonComponent.roomEmotesStateKey)) return {};
-
-    var state =
-        (room.matrixRoom.states[MatrixEmoticonComponent.roomEmotesStateKey]
-            as Map<String, matrix.Event>);
-
-    var result = <String, dynamic>{};
-
-    for (var key in state.keys) {
-      result[key] = state[key]!.content;
-    }
-
-    return result;
-  }
-
-  @override
-  Future<void> setState(String packKey, Map<String, dynamic> content) async {
-    var event = await room.matrixRoom.client.setRoomStateWithKey(
-        room.matrixRoom.id,
-        MatrixEmoticonComponent.roomEmotesStateKey,
-        packKey,
-        content);
-
-    var result = await room.matrixRoom.getEventById(event);
-    room.matrixRoom
-        .states[MatrixEmoticonComponent.roomEmotesStateKey]![packKey] = result!;
   }
 
   @override

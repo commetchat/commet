@@ -35,6 +35,10 @@ class MatrixEmoticonPack implements EmoticonPack {
     this.stateKey,
     Map<String, dynamic> initialState,
   ) {
+    updateFromState(initialState);
+  }
+
+  void updateFromState(Map<String, dynamic> initialState) {
     var info = initialState['pack'];
     displayName = info?['display_name'] ?? component.getDefaultDisplayName();
     shortcodeToEmoticon = <String, Emoticon>{};
@@ -54,8 +58,16 @@ class MatrixEmoticonPack implements EmoticonPack {
     bool isStickerPackCache = isStickerPack;
     bool isEmojiPackCache = isEmojiPack;
 
+    emotes.removeWhere((element) => images.containsKey(element.key) == false);
+    shortcodeToEmoticon.removeWhere((key, value) =>
+        emotes.any((element) => element.shortcode == key) == false);
+
     for (var image in images.keys) {
       var url = images[image]['url'];
+      if (url == null) {
+        continue;
+      }
+      var uri = Uri.parse(url);
 
       var usages = images[image]['usage'] as List?;
 
@@ -66,8 +78,21 @@ class MatrixEmoticonPack implements EmoticonPack {
         markedEmoji = usages.contains("emoticon");
       }
 
-      if (url != null) {
-        var uri = Uri.parse(url);
+      var existing =
+          emotes.where((element) => element.key == image).firstOrNull;
+
+      if (existing != null) {
+        existing.markAsSticker(markedSticker);
+        existing.markAsEmoji(markedEmoji);
+        existing.markPackAsEmoji(isEmojiPackCache);
+        existing.markPackAsSticker(isStickerPackCache);
+
+        if (uri != existing.emojiUrl) {
+          existing.emojiUrl = uri;
+          existing.setImage(
+              MatrixMxcImage(uri, component.client.getMatrixClient()));
+        }
+      } else {
         var emote = MatrixEmoticon(uri, component.client.getMatrixClient(),
             shortcode: image,
             isEmojiPack: isEmojiPackCache,
