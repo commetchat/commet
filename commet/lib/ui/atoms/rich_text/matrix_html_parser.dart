@@ -235,9 +235,11 @@ class MatrixEmoticonHtmlExtension extends HtmlExtension {
 class CodeBlockHtmlExtension extends HtmlExtension {
   @override
   InlineSpan build(ExtensionContext context) {
-    var element = context.element!.children.first;
-    var langauge = element.className.replaceAll('language-', '');
-    var code = element.text;
+    var element = context.element!.children.firstOrNull;
+    element ??= context.element;
+
+    var langauge = element?.className.replaceAll('language-', '');
+    var code = element!.text;
     return WidgetSpan(
         child: Codeblock(
       text: code,
