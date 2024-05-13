@@ -1,6 +1,5 @@
 name: static-analysis
 on:
-  push:
   pull_request:
   merge_group:
 
