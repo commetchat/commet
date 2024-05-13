@@ -20,12 +20,18 @@ class RichTextEditingController extends TextEditingController {
     var doc = md.Document(
         encodeHtml: false, extensionSet: md.ExtensionSet.gitHubFlavored);
 
-    var parsed = doc.parseLines(const LineSplitter().convert(text));
+    List<md.Node>? parsed;
+    try {
+      parsed = doc.parseLines(const LineSplitter().convert(text));
+    } catch (exception) {
+      return TextSpan(text: text);
+    }
 
     var children = <TextSpan>[];
     var style = Theme.of(context).textTheme.bodyMedium!;
 
     int currentIndex = 0;
+
     for (var element in parsed) {
       currentIndex =
           handleNode(context, currentIndex, text, children, style, element);
