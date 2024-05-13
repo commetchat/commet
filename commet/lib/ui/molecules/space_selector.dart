@@ -76,7 +76,6 @@ class _SpaceSelectorState extends State<SpaceSelector> {
 
   @override
   Widget build(BuildContext context) {
-    print("offset: ${MediaQuery.of(context).scale().padding.bottom}");
     return Column(
       children: [
         Flexible(
