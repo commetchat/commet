@@ -159,36 +159,39 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
         offset = scaledQuery.padding.bottom;
       }
       return Tile(
-        child: Padding(
-          padding: EdgeInsets.fromLTRB(0, 0, 0, offset),
-          child: Column(
-            children: [
-              SizedBox(
-                height: 50,
-                child: RoomHeader(
-                  widget.state.currentRoom!,
-                  onTap:
-                      widget.state.currentRoom?.permissions.canEditAnything ==
-                              true
-                          ? () => widget.state.navigateRoomSettings()
-                          : null,
+        child: ScaledSafeArea(
+          bottom: false,
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(0, 0, 0, offset),
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 50,
+                  child: RoomHeader(
+                    widget.state.currentRoom!,
+                    onTap:
+                        widget.state.currentRoom?.permissions.canEditAnything ==
+                                true
+                            ? () => widget.state.navigateRoomSettings()
+                            : null,
+                  ),
                 ),
-              ),
-              Flexible(
-                child: Chat(
-                  widget.state.currentRoom!,
-                  key: ValueKey(
-                      "room-timeline-key-${widget.state.currentRoom!.localId}"),
+                Flexible(
+                  child: Chat(
+                    widget.state.currentRoom!,
+                    key: ValueKey(
+                        "room-timeline-key-${widget.state.currentRoom!.localId}"),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       );
     }
 
     return Tile(
-        child: SafeArea(
+        child: ScaledSafeArea(
             child: HomeScreen(clientManager: widget.state.clientManager)));
   }
 
