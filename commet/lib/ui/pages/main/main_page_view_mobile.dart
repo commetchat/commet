@@ -181,7 +181,9 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
       );
     }
 
-    return Tile(child: HomeScreen(clientManager: widget.state.clientManager));
+    return Tile(
+        child: SafeArea(
+            child: HomeScreen(clientManager: widget.state.clientManager)));
   }
 
   Widget userList() {
