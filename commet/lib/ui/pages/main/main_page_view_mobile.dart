@@ -153,33 +153,35 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
     }
 
     if (widget.state.currentRoom != null) {
+      var scaledQuery = MediaQuery.of(context).scale();
+      var offset = scaledQuery.viewInsets.bottom;
+      if (offset == 0) {
+        offset = scaledQuery.padding.bottom;
+      }
       return Tile(
         child: Padding(
-          padding: EdgeInsets.fromLTRB(
-              0, 0, 0, MediaQuery.of(context).scale().viewInsets.bottom),
-          child: ScaledSafeArea(
-            child: Column(
-              children: [
-                SizedBox(
-                  height: 50,
-                  child: RoomHeader(
-                    widget.state.currentRoom!,
-                    onTap:
-                        widget.state.currentRoom?.permissions.canEditAnything ==
-                                true
-                            ? () => widget.state.navigateRoomSettings()
-                            : null,
-                  ),
+          padding: EdgeInsets.fromLTRB(0, 0, 0, offset),
+          child: Column(
+            children: [
+              SizedBox(
+                height: 50,
+                child: RoomHeader(
+                  widget.state.currentRoom!,
+                  onTap:
+                      widget.state.currentRoom?.permissions.canEditAnything ==
+                              true
+                          ? () => widget.state.navigateRoomSettings()
+                          : null,
                 ),
-                Flexible(
-                  child: Chat(
-                    widget.state.currentRoom!,
-                    key: ValueKey(
-                        "room-timeline-key-${widget.state.currentRoom!.localId}"),
-                  ),
+              ),
+              Flexible(
+                child: Chat(
+                  widget.state.currentRoom!,
+                  key: ValueKey(
+                      "room-timeline-key-${widget.state.currentRoom!.localId}"),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       );
