@@ -1,4 +1,5 @@
 import 'package:commet/config/layout_config.dart';
+import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
@@ -34,7 +35,7 @@ class AdaptiveDialog {
             child: Container(
           padding:
               EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-          child: SafeArea(
+          child: ScaledSafeArea(
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(

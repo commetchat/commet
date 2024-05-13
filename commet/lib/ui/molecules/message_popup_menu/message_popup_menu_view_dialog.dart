@@ -2,6 +2,7 @@ import 'package:commet/client/components/push_notification/notification_content.
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/timeline.dart';
 import 'package:commet/main.dart';
+import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/molecules/emoji_picker.dart';
 import 'package:commet/ui/molecules/message_popup_menu/message_popup_menu.dart';
 import 'package:commet/ui/molecules/timeline_event.dart';
@@ -23,7 +24,7 @@ class MessagePopupMenuViewDialog extends StatelessWidget {
   Widget buildMessageMenu(BuildContext context, TimelineEvent event) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-      child: SafeArea(
+      child: ScaledSafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

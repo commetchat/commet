@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/ui/atoms/room_header.dart';
+import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/organisms/chat/chat.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart';
@@ -51,7 +52,7 @@ class BubblePageState extends State<BubblePage> {
         : Tile(
             child: material.Scaffold(
               backgroundColor: material.Theme.of(context).colorScheme.surface,
-              body: SafeArea(
+              body: ScaledSafeArea(
                 child: Placeholder(
                   child: Column(
                     children: [

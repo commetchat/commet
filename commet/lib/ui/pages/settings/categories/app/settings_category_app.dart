@@ -137,12 +137,11 @@ class SettingsCategoryApp implements SettingsCategory {
         const SizedBox(
           height: 10,
         ),
-        if (BuildConfig.DESKTOP || preferences.developerMode)
-          Panel(
-            header: labelAppScale,
-            mode: TileType.surfaceLow2,
-            child: const UIScaleSelector(),
-          )
+        Panel(
+          header: labelAppScale,
+          mode: TileType.surfaceLow2,
+          child: const UIScaleSelector(),
+        )
       ],
     );
   }

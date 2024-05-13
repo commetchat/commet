@@ -2,6 +2,7 @@ import 'package:commet/client/room.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/floating_tile.dart';
 import 'package:commet/ui/atoms/room_header.dart';
+import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/atoms/space_header.dart';
 import 'package:commet/ui/molecules/direct_message_list.dart';
 import 'package:commet/ui/molecules/overlapping_panels.dart';
@@ -13,6 +14,7 @@ import 'package:commet/ui/organisms/room_members_list/room_members_list.dart';
 import 'package:commet/ui/organisms/side_navigation_bar.dart';
 import 'package:commet/ui/organisms/space_summary/space_summary.dart';
 import 'package:commet/ui/pages/main/main_page.dart';
+import 'package:commet/utils/scaled_app.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tiamat/atoms/tile.dart';
@@ -101,7 +103,8 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
-            child: SafeArea(
+            child: ScaledSafeArea(
+              bottom: false,
               child: SideNavigationBar(
                 currentUser: widget.state.getCurrentUser(),
                 onSpaceSelected: (index) {
@@ -134,7 +137,7 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
   Widget mainPanel() {
     if (widget.state.currentSpace != null && widget.state.currentRoom == null) {
       return Tile(
-        child: SafeArea(
+        child: ScaledSafeArea(
           child: ListView(children: [
             SpaceSummary(
               key: ValueKey(
@@ -151,9 +154,10 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
 
     if (widget.state.currentRoom != null) {
       return Tile(
-        child: material.Scaffold(
-          backgroundColor: material.Theme.of(context).colorScheme.surface,
-          body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(
+              0, 0, 0, MediaQuery.of(context).scale().viewInsets.bottom),
+          child: ScaledSafeArea(
             child: Column(
               children: [
                 SizedBox(
@@ -189,7 +193,7 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
   Widget userList() {
     if (widget.state.currentRoom != null) {
       return Tile.low1(
-        child: SafeArea(
+        child: ScaledSafeArea(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
             child: RoomMembersListWidget(
@@ -207,7 +211,7 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
   Widget directMessagesView() {
     return Flexible(
       child: Tile.low1(
-        child: SafeArea(
+        child: ScaledSafeArea(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
             child: Column(

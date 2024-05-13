@@ -1,5 +1,6 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/invitation/invitation_component.dart';
+import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/molecules/user_panel.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/utils/debounce.dart';
@@ -42,7 +43,7 @@ class _SendInvitationWidgetState extends State<SendInvitationWidget> {
           widget.room.memberIds.contains(element.directMessagePartnerID),
     );
 
-    return SafeArea(
+    return ScaledSafeArea(
       child: SizedBox(
           width: 500,
           child: Column(children: [
