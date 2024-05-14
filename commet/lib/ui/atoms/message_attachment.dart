@@ -1,21 +1,15 @@
 import 'package:commet/client/attachment.dart';
 import 'package:commet/config/build_config.dart';
-import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/lightbox.dart';
 import 'package:commet/ui/molecules/video_player/video_player.dart';
 import 'package:commet/utils/background_tasks/background_task_manager.dart';
 import 'package:commet/utils/download_utils.dart';
-import 'package:commet/utils/file_utils.dart';
 import 'package:commet/utils/mime.dart';
 import 'package:commet/utils/text_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
-import 'package:url_launcher/url_launcher.dart';
-
-import 'package:path/path.dart' as p;
 
 class MessageAttachment extends StatefulWidget {
   const MessageAttachment(this.attachment,

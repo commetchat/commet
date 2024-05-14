@@ -1,18 +1,13 @@
 import 'dart:async';
 
-import 'package:commet/cache/file_provider.dart';
-import 'package:commet/client/attachment.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/client/timeline.dart';
-import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/code_block.dart';
 import 'package:commet/ui/molecules/message_popup_menu/message_popup_menu_view_overlay.dart';
 import 'package:commet/ui/molecules/message_popup_menu/message_popup_menu_view_dialog.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
-import 'package:commet/utils/background_tasks/background_task_manager.dart';
 import 'package:commet/utils/download_utils.dart';
-import 'package:commet/utils/file_utils.dart';
 import 'package:flutter/material.dart';
 import '../../../client/client.dart';
 import 'package:flutter/services.dart' as services;
