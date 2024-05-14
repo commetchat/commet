@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/ui/atoms/dot_indicator.dart';
+import 'package:commet/utils/scaled_app.dart';
 
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart';
@@ -84,7 +85,8 @@ class _SpaceSelectorState extends State<SpaceSelector> {
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
+                padding: EdgeInsets.fromLTRB(
+                    0, 0, 0, MediaQuery.of(context).scale().padding.bottom),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -96,6 +98,7 @@ class _SpaceSelectorState extends State<SpaceSelector> {
                       ),
                     if (widget.header != null) const Seperator(),
                     AnimatedList(
+                        padding: const EdgeInsets.all(0),
                         key: _listKey,
                         physics: const NeverScrollableScrollPhysics(),
                         shrinkWrap: true,

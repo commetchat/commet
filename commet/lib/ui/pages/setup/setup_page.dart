@@ -1,4 +1,5 @@
 import 'package:commet/config/build_config.dart';
+import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/pages/setup/setup_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -33,7 +34,7 @@ class _SetupPageState extends State<SetupPage> {
       child: Tile.low1(
         child: Padding(
           padding: const EdgeInsets.all(BuildConfig.MOBILE ? 10 : 50.0),
-          child: SafeArea(
+          child: ScaledSafeArea(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
