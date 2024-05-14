@@ -7,6 +7,7 @@ import 'package:commet/ui/atoms/code_block.dart';
 import 'package:commet/ui/molecules/message_popup_menu/message_popup_menu_view_overlay.dart';
 import 'package:commet/ui/molecules/message_popup_menu/message_popup_menu_view_dialog.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
+import 'package:commet/utils/download_utils.dart';
 import 'package:flutter/material.dart';
 import '../../../client/client.dart';
 import 'package:flutter/services.dart' as services;
@@ -18,6 +19,7 @@ class MessagePopupMenu extends StatefulWidget {
   final bool isDeletable;
   final Stream<int>? onMessageChanged;
   final bool asDialog;
+  final bool canSaveAttachment;
   const MessagePopupMenu(this.event, this.timeline,
       {super.key,
       this.setEditingEvent,
@@ -26,6 +28,7 @@ class MessagePopupMenu extends StatefulWidget {
       this.isDeletable = false,
       this.addReaction,
       this.onPopupStateChanged,
+      this.canSaveAttachment = false,
       this.asDialog = false,
       this.isEditable = false});
 
@@ -41,6 +44,7 @@ class MessagePopupMenu extends StatefulWidget {
 class MessagePopupMenuState extends State<MessagePopupMenu> {
   bool get isEditable => widget.isEditable;
   bool get isDeletable => widget.isDeletable;
+  bool get canSaveAttachment => widget.canSaveAttachment;
   Timeline get timeline => widget.timeline;
   TimelineEvent get event => widget.event;
   Stream<int>? get onMessageChanged => widget.onMessageChanged;
@@ -96,5 +100,12 @@ class MessagePopupMenuState extends State<MessagePopupMenu> {
         );
       },
     );
+  }
+
+  void saveAttachment() async {
+    var attachment = widget.event.attachments?.firstOrNull;
+    if (attachment != null) {
+      DownloadUtils.downloadAttachment(attachment);
+    }
   }
 }

@@ -107,6 +107,18 @@ class MessagePopupMenuViewDialog extends StatelessWidget {
                   },
                 ),
               ),
+            if (state.canSaveAttachment)
+              SizedBox(
+                height: 50,
+                child: tiamat.TextButton(
+                  CommonStrings.promptDownload,
+                  icon: Icons.download,
+                  onTap: () {
+                    Navigator.pop(context);
+                    state.saveAttachment();
+                  },
+                ),
+              ),
             SizedBox(
               height: 50,
               child: tiamat.TextButton(

@@ -169,6 +169,7 @@ class TimelineViewerState extends State<TimelineViewer>
         isDeletable: widget.timeline.canDeleteEvent(event),
         setEditingEvent: widget.setEditingEvent,
         setReplyingEvent: widget.setReplyingEvent,
+        canSaveAttachment: event.attachments?.isNotEmpty ?? false,
         addReaction: widget.onAddReaction,
         onPopupStateChanged: (state) => messagePopupIsBeingInteracted = state,
       ),

@@ -1,19 +1,15 @@
 import 'package:commet/client/attachment.dart';
 import 'package:commet/config/build_config.dart';
-import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/lightbox.dart';
 import 'package:commet/ui/molecules/video_player/video_player.dart';
 import 'package:commet/utils/background_tasks/background_task_manager.dart';
-import 'package:commet/utils/file_utils.dart';
+import 'package:commet/utils/download_utils.dart';
 import 'package:commet/utils/mime.dart';
 import 'package:commet/utils/text_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
-import 'package:url_launcher/url_launcher.dart';
-
-import 'package:path/path.dart' as p;
 
 class MessageAttachment extends StatefulWidget {
   const MessageAttachment(this.attachment,
@@ -143,29 +139,31 @@ class _MessageAttachmentState extends State<MessageAttachment> {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Icon(icon),
-                ),
-                Flexible(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      tiamat.Text.labelEmphasised(
-                        fileName,
-                        maxLines: 1,
-                        overflow: TextOverflow.fade,
-                      ),
-                      if (fileSize != null)
-                        tiamat.Text.labelLow(
-                            TextUtils.readableFileSize(fileSize))
-                    ],
+            Flexible(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Icon(icon),
                   ),
-                ),
-              ],
+                  Flexible(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        tiamat.Text.labelEmphasised(
+                          fileName,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        if (fileSize != null)
+                          tiamat.Text.labelLow(
+                              TextUtils.readableFileSize(fileSize))
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
@@ -186,21 +184,7 @@ class _MessageAttachmentState extends State<MessageAttachment> {
   }
 
   Future<void> downloadAttachment(FileAttachment attachment) async {
-    var path = await FileUtils.getSaveFilePath(fileName: attachment.name);
-    if (path == null) return;
-
-    backgroundTaskManager.addTask(AsyncTask(
-      () => downloadTask(attachment, path),
-      "Downloading: ${widget.attachment.name}",
-      action: () {
-        var openPath = path;
-        if (BuildConfig.DESKTOP) {
-          openPath = p.dirname(path);
-        }
-        launchUrl(Uri.file(openPath), mode: LaunchMode.platformDefault);
-      },
-      isActionReady: () => true,
-    ));
+    return DownloadUtils.downloadAttachment(attachment);
   }
 
   Future<BackgroundTaskStatus> downloadTask(

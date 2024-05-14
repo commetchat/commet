@@ -122,6 +122,11 @@ class _MessagePopupMenuViewOverlayState
                     callback: () {
                   widget.state.deleteEvent();
                 }),
+              if (widget.state.canSaveAttachment)
+                buildMenuEntry(m.Icons.download, CommonStrings.promptDownload,
+                    callback: () {
+                  widget.state.saveAttachment();
+                }),
               buildMenuEntry(m.Icons.more_vert, CommonStrings.promptOptions,
                   items: [
                     ContextMenuItem(
