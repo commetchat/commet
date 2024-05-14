@@ -8,6 +8,7 @@ import 'package:commet/utils/file_utils.dart';
 import 'package:commet/utils/mime.dart';
 import 'package:commet/utils/text_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -143,29 +144,31 @@ class _MessageAttachmentState extends State<MessageAttachment> {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Icon(icon),
-                ),
-                Flexible(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      tiamat.Text.labelEmphasised(
-                        fileName,
-                        maxLines: 1,
-                        overflow: TextOverflow.fade,
-                      ),
-                      if (fileSize != null)
-                        tiamat.Text.labelLow(
-                            TextUtils.readableFileSize(fileSize))
-                    ],
+            Flexible(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Icon(icon),
                   ),
-                ),
-              ],
+                  Flexible(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        tiamat.Text.labelEmphasised(
+                          fileName,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        if (fileSize != null)
+                          tiamat.Text.labelLow(
+                              TextUtils.readableFileSize(fileSize))
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
