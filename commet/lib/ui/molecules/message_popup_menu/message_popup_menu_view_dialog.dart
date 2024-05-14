@@ -111,7 +111,7 @@ class MessagePopupMenuViewDialog extends StatelessWidget {
               SizedBox(
                 height: 50,
                 child: tiamat.TextButton(
-                  "Download",
+                  CommonStrings.promptDownload,
                   icon: Icons.download,
                   onTap: () {
                     Navigator.pop(context);
