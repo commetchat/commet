@@ -5,10 +5,13 @@ import 'package:commet/client/attachment.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/client/timeline.dart';
+import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/code_block.dart';
 import 'package:commet/ui/molecules/message_popup_menu/message_popup_menu_view_overlay.dart';
 import 'package:commet/ui/molecules/message_popup_menu/message_popup_menu_view_dialog.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
+import 'package:commet/utils/background_tasks/background_task_manager.dart';
+import 'package:commet/utils/download_utils.dart';
 import 'package:commet/utils/file_utils.dart';
 import 'package:flutter/material.dart';
 import '../../../client/client.dart';
@@ -106,32 +109,8 @@ class MessagePopupMenuState extends State<MessagePopupMenu> {
 
   void saveAttachment() async {
     var attachment = widget.event.attachments?.firstOrNull;
-    if (attachment == null) {
-      return;
-    }
-
-    FileProvider? file;
-    String name = "untitled";
-
-    // this is so dumb
-    if (attachment is ImageAttachment) {
-      file = attachment.file;
-      name = attachment.name;
-    } else if (attachment is VideoAttachment) {
-      file = attachment.videoFile;
-      name = attachment.name;
-    } else if (attachment is FileAttachment) {
-      file = attachment.provider;
-      name = attachment.name;
-    }
-
-    if (file == null) {
-      return;
-    }
-
-    var path = await FileUtils.getSaveFilePath(fileName: name);
-    if (path != null) {
-      file.save(path);
+    if (attachment != null) {
+      DownloadUtils.downloadAttachment(attachment);
     }
   }
 }

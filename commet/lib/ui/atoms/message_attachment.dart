@@ -4,6 +4,7 @@ import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/lightbox.dart';
 import 'package:commet/ui/molecules/video_player/video_player.dart';
 import 'package:commet/utils/background_tasks/background_task_manager.dart';
+import 'package:commet/utils/download_utils.dart';
 import 'package:commet/utils/file_utils.dart';
 import 'package:commet/utils/mime.dart';
 import 'package:commet/utils/text_utils.dart';
@@ -189,21 +190,7 @@ class _MessageAttachmentState extends State<MessageAttachment> {
   }
 
   Future<void> downloadAttachment(FileAttachment attachment) async {
-    var path = await FileUtils.getSaveFilePath(fileName: attachment.name);
-    if (path == null) return;
-
-    backgroundTaskManager.addTask(AsyncTask(
-      () => downloadTask(attachment, path),
-      "Downloading: ${widget.attachment.name}",
-      action: () {
-        var openPath = path;
-        if (BuildConfig.DESKTOP) {
-          openPath = p.dirname(path);
-        }
-        launchUrl(Uri.file(openPath), mode: LaunchMode.platformDefault);
-      },
-      isActionReady: () => true,
-    ));
+    return DownloadUtils.downloadAttachment(attachment);
   }
 
   Future<BackgroundTaskStatus> downloadTask(
