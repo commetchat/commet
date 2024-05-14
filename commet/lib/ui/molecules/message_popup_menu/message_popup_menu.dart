@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:commet/cache/file_provider.dart';
+import 'package:commet/client/attachment.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/client/timeline.dart';
@@ -7,6 +9,7 @@ import 'package:commet/ui/atoms/code_block.dart';
 import 'package:commet/ui/molecules/message_popup_menu/message_popup_menu_view_overlay.dart';
 import 'package:commet/ui/molecules/message_popup_menu/message_popup_menu_view_dialog.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
+import 'package:commet/utils/file_utils.dart';
 import 'package:flutter/material.dart';
 import '../../../client/client.dart';
 import 'package:flutter/services.dart' as services;
@@ -18,6 +21,7 @@ class MessagePopupMenu extends StatefulWidget {
   final bool isDeletable;
   final Stream<int>? onMessageChanged;
   final bool asDialog;
+  final bool canSaveAttachment;
   const MessagePopupMenu(this.event, this.timeline,
       {super.key,
       this.setEditingEvent,
@@ -26,6 +30,7 @@ class MessagePopupMenu extends StatefulWidget {
       this.isDeletable = false,
       this.addReaction,
       this.onPopupStateChanged,
+      this.canSaveAttachment = false,
       this.asDialog = false,
       this.isEditable = false});
 
@@ -41,6 +46,7 @@ class MessagePopupMenu extends StatefulWidget {
 class MessagePopupMenuState extends State<MessagePopupMenu> {
   bool get isEditable => widget.isEditable;
   bool get isDeletable => widget.isDeletable;
+  bool get canSaveAttachment => widget.canSaveAttachment;
   Timeline get timeline => widget.timeline;
   TimelineEvent get event => widget.event;
   Stream<int>? get onMessageChanged => widget.onMessageChanged;
@@ -96,5 +102,36 @@ class MessagePopupMenuState extends State<MessagePopupMenu> {
         );
       },
     );
+  }
+
+  void saveAttachment() async {
+    var attachment = widget.event.attachments?.firstOrNull;
+    if (attachment == null) {
+      return;
+    }
+
+    FileProvider? file;
+    String name = "untitled";
+
+    // this is so dumb
+    if (attachment is ImageAttachment) {
+      file = attachment.file;
+      name = attachment.name;
+    } else if (attachment is VideoAttachment) {
+      file = attachment.videoFile;
+      name = attachment.name;
+    } else if (attachment is FileAttachment) {
+      file = attachment.provider;
+      name = attachment.name;
+    }
+
+    if (file == null) {
+      return;
+    }
+
+    var path = await FileUtils.getSaveFilePath(fileName: name);
+    if (path != null) {
+      file.save(path);
+    }
   }
 }
