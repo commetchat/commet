@@ -28,11 +28,15 @@ class MatrixRoomEmoticonComponent extends MatrixEmoticonComponent
 
   @override
   List<EmoticonPack> get availableEmoji =>
-      _getAvailablePacks(includeUnicode: true);
+      _getAvailablePacks(includeUnicode: true)
+          .where((element) => element.emoji.isNotEmpty)
+          .toList();
 
   @override
   List<EmoticonPack> get availableStickers =>
-      _getAvailablePacks(includeUnicode: false);
+      _getAvailablePacks(includeUnicode: false)
+          .where((element) => element.stickers.isNotEmpty)
+          .toList();
 
   @override
   bool get canCreatePack => room.permissions.canEditRoomEmoticons;
