@@ -38,6 +38,12 @@ class MatrixRoomEmoticonComponent extends MatrixEmoticonComponent
   bool get canCreatePack => room.permissions.canEditRoomEmoticons;
 
   @override
+  String get ownerId => room.identifier;
+
+  @override
+  String get ownerDisplayName => room.displayName;
+
+  @override
   List<EmoticonPack> get availablePacks {
     List<EmoticonPack> packs = List.from(ownedPacks, growable: true);
 

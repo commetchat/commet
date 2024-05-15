@@ -50,10 +50,11 @@ extension MatrixExtensions on Client {
 
   Future<void> addEmoticonRoomPack(String roomId, String packKey) async {
     var state = BasicEvent(
-        type: MatrixEmoticonComponent.roomEmotesStateKey, content: {});
+        type: MatrixEmoticonComponent.globalEmoteRoomsStateKey, content: {});
 
-    if (accountData.containsKey(MatrixEmoticonComponent.roomEmotesStateKey)) {
-      state = accountData[MatrixEmoticonComponent.roomEmotesStateKey]!;
+    if (accountData
+        .containsKey(MatrixEmoticonComponent.globalEmoteRoomsStateKey)) {
+      state = accountData[MatrixEmoticonComponent.globalEmoteRoomsStateKey]!;
     }
 
     if (!state.content.containsKey("rooms")) {
@@ -68,16 +69,17 @@ extension MatrixExtensions on Client {
     var roomPacks = rooms[roomId] as Map;
     roomPacks[packKey] = {};
 
-    await setAccountData(
-        userID!, MatrixEmoticonComponent.roomEmotesStateKey, state.content);
+    await setAccountData(userID!,
+        MatrixEmoticonComponent.globalEmoteRoomsStateKey, state.content);
   }
 
   Future<void> removeEmoticonRoomPack(String roomId, String packKey) async {
     var state = BasicEvent(
-        type: MatrixEmoticonComponent.roomEmotesStateKey, content: {});
+        type: MatrixEmoticonComponent.globalEmoteRoomsStateKey, content: {});
 
-    if (accountData.containsKey(MatrixEmoticonComponent.roomEmotesStateKey)) {
-      state = accountData[MatrixEmoticonComponent.roomEmotesStateKey]!;
+    if (accountData
+        .containsKey(MatrixEmoticonComponent.globalEmoteRoomsStateKey)) {
+      state = accountData[MatrixEmoticonComponent.globalEmoteRoomsStateKey]!;
     }
 
     if (!state.content.containsKey("rooms")) {
@@ -92,17 +94,18 @@ extension MatrixExtensions on Client {
     var roomPacks = rooms[roomId] as Map;
     roomPacks.remove(packKey);
 
-    await setAccountData(
-        userID!, MatrixEmoticonComponent.roomEmotesStateKey, state.content);
+    await setAccountData(userID!,
+        MatrixEmoticonComponent.globalEmoteRoomsStateKey, state.content);
   }
 
   bool isEmoticonPackGloballyAvailable(String roomId, String packKey) {
-    if (!accountData.containsKey(MatrixEmoticonComponent.roomEmotesStateKey)) {
+    if (!accountData
+        .containsKey(MatrixEmoticonComponent.globalEmoteRoomsStateKey)) {
       return false;
     }
 
     var state =
-        accountData[MatrixEmoticonComponent.roomEmotesStateKey]!.content;
+        accountData[MatrixEmoticonComponent.globalEmoteRoomsStateKey]!.content;
     if (!state.containsKey("rooms")) {
       return false;
     }

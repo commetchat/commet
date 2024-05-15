@@ -13,13 +13,17 @@ import 'package:flutter/material.dart';
 /// Manages custom emoticon packs from the matrix user account state
 class MatrixEmoticonComponent extends EmoticonComponent<MatrixClient> {
   static const roomEmotesStateKey = "im.ponies.room_emotes";
-  static const emoteRoomsStateKey = "im.ponies.emote_rooms";
+  static const globalEmoteRoomsStateKey = "im.ponies.emote_rooms";
 
   @override
   bool get canCreatePack => ownedPacks.isEmpty;
 
   @override
   MatrixClient client;
+
+  String get ownerId => client.identifier;
+
+  String get ownerDisplayName => client.self?.displayName ?? client.identifier;
 
   MatrixEmoticonStateManager state;
 
@@ -156,10 +160,11 @@ class MatrixEmoticonComponent extends EmoticonComponent<MatrixClient> {
   List<EmoticonPack> globalPacks() {
     var matrixClient = client.getMatrixClient();
 
-    if (!matrixClient.accountData.containsKey(emoteRoomsStateKey)) return [];
+    if (!matrixClient.accountData.containsKey(globalEmoteRoomsStateKey))
+      return [];
 
-    var rooms = matrixClient.accountData[emoteRoomsStateKey]!.content['rooms']
-        as Map<String, Object?>;
+    var rooms = matrixClient.accountData[globalEmoteRoomsStateKey]!
+        .content['rooms'] as Map<String, Object?>;
 
     var packs = List<EmoticonPack>.empty(growable: true);
 
@@ -168,6 +173,9 @@ class MatrixEmoticonComponent extends EmoticonComponent<MatrixClient> {
       var space = client.getSpace(roomId);
 
       if (room == null && space == null) continue;
+      if (rooms[roomId] is! Map<String, dynamic>) {
+        continue;
+      }
 
       var packKeys = rooms[roomId] as Map<String, dynamic>;
 

@@ -40,7 +40,15 @@ class _AccountEmojiViewState extends State<AccountEmojiView> {
               ),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),
-              child: tiamat.Text.labelEmphasised(pack.displayName),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  tiamat.Text.labelEmphasised(pack.displayName),
+                  tiamat.Text.labelLow(
+                      "${pack.ownerDisplayName} - (${pack.ownerId})"),
+                ],
+              ),
             ),
           ],
         ),

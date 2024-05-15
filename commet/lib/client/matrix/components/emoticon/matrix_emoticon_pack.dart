@@ -5,6 +5,8 @@ import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_emoticon.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_emoticon_component.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_room_emoticon_component.dart';
+import 'package:commet/client/matrix/components/emoticon/matrix_space_emoticon_component.dart';
+import 'package:commet/client/matrix/extensions/matrix_client_extensions.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:flutter/widgets.dart';
@@ -176,9 +178,19 @@ class MatrixEmoticonPack implements EmoticonPack {
 
   @override
   Future<void> markAsGlobal(bool isGlobal) async {
+    late Room room;
     if (component is MatrixRoomEmoticonComponent) {
-      await (component as MatrixRoomEmoticonComponent)
-          .markAsGlobal(isGlobal, identifier);
+      room = (component as MatrixRoomEmoticonComponent).room.matrixRoom;
+    } else if (component is MatrixSpaceEmoticonComponent) {
+      room = (component as MatrixSpaceEmoticonComponent).space.matrixRoom;
+    } else {
+      return;
+    }
+
+    if (isGlobal) {
+      return room.client.addEmoticonRoomPack(room.id, identifier);
+    } else {
+      return room.client.removeEmoticonRoomPack(room.id, identifier);
     }
   }
 
@@ -250,4 +262,10 @@ class MatrixEmoticonPack implements EmoticonPack {
   Emoticon? getByShortcode(String shortcode) {
     return shortcodeToEmoticon[shortcode];
   }
+
+  @override
+  String get ownerId => component.ownerId;
+
+  @override
+  String get ownerDisplayName => component.ownerDisplayName;
 }
