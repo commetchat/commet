@@ -1,4 +1,5 @@
 import 'package:commet/client/components/emoticon/emoji_pack.dart';
+import 'package:commet/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -45,8 +46,9 @@ class _AccountEmojiViewState extends State<AccountEmojiView> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   tiamat.Text.labelEmphasised(pack.displayName),
-                  tiamat.Text.labelLow(
-                      "${pack.ownerDisplayName} - (${pack.ownerId})"),
+                  tiamat.Text.labelLow(preferences.developerMode
+                      ? "${pack.ownerDisplayName} - (${pack.ownerId})"
+                      : pack.ownerDisplayName),
                 ],
               ),
             ),
