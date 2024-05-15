@@ -67,6 +67,11 @@ class MatrixEmoticonComponent extends EmoticonComponent<MatrixClient> {
 
     for (var key in newState.keys) {
       var s = newState[key];
+      if (s is! Map<String, dynamic>) continue;
+      if (s.isEmpty) {
+        _packs.removeWhere((element) => element.identifier == key);
+        continue;
+      }
 
       var existing =
           _packs.where((element) => element.identifier == key).firstOrNull;
@@ -208,16 +213,8 @@ class MatrixEmoticonComponent extends EmoticonComponent<MatrixClient> {
     return packs;
   }
 
-  Map<String, dynamic> getState(String packKey) {
-    return client
-            .getMatrixClient()
-            .accountData['im.ponies.user_emotes']
-            ?.content ??
-        {};
-  }
-
   Future<void> deleteEmoticon(String packKey, String emoteName) async {
-    var content = getState(packKey);
+    var content = state.getState(packKey);
 
     if (content.containsKey('images')) {
       var images = content['images'] as Map<String, dynamic>;
@@ -230,7 +227,7 @@ class MatrixEmoticonComponent extends EmoticonComponent<MatrixClient> {
 
   Future<void> renameEmoticon(
       String packKey, String emoteName, String newName) async {
-    var content = getState(packKey);
+    var content = state.getState(packKey);
 
     if (content.containsKey('images')) {
       var images = content['images'] as Map<String, dynamic>;
@@ -250,7 +247,7 @@ class MatrixEmoticonComponent extends EmoticonComponent<MatrixClient> {
 
   Future<void> setEmoticonUsages(
       String packKey, String emoteName, List<String>? usages) async {
-    var content = getState(packKey);
+    var content = state.getState(packKey);
 
     if (content.containsKey('images')) {
       var images = content['images'] as Map<String, dynamic>;
@@ -274,7 +271,7 @@ class MatrixEmoticonComponent extends EmoticonComponent<MatrixClient> {
   }
 
   Future<void> setPackUsages(String packKey, List<String>? usages) async {
-    var content = getState(packKey);
+    var content = state.getState(packKey);
 
     var pack = content['pack'] as Map<String, dynamic>?;
 
@@ -291,7 +288,7 @@ class MatrixEmoticonComponent extends EmoticonComponent<MatrixClient> {
     String emoteName,
     Uint8List data,
   ) async {
-    var content = getState(packKey);
+    var content = state.getState(packKey);
 
     Uri url = await client.getMatrixClient().uploadContent(data);
 

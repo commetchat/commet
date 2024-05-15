@@ -136,7 +136,8 @@ class MatrixEmoticonPack implements EmoticonPack {
   }
 
   List? _getUsage() {
-    var info = component.getState(identifier)['pack'] as Map<String, dynamic>?;
+    var info =
+        component.state.getState(identifier)['pack'] as Map<String, dynamic>?;
     if (info == null) return null;
 
     var usage = info.tryGet("usage") as List?;
