@@ -8,6 +8,8 @@ abstract class EmoticonPack {
   String get identifier;
   String get attribution;
   String get displayName;
+  String get ownerId;
+  String get ownerDisplayName;
 
   Stream<int> get onEmoticonAdded;
 

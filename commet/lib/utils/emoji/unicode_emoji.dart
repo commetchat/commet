@@ -222,6 +222,12 @@ class UnicodeEmoticonPack implements EmoticonPack {
   Emoticon? getByShortcode(String shortcode) {
     return _emojiByShortcode?.tryGet(shortcode);
   }
+
+  @override
+  String get ownerDisplayName => "";
+
+  @override
+  String get ownerId => "";
 }
 
 class UnicodeEmoticon extends Emoticon {
