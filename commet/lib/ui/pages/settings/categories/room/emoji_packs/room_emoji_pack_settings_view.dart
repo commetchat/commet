@@ -401,16 +401,18 @@ class _EmojiPackEditorState extends State<EmojiPackEditor> {
                     sizeFactor: CommonAnimations.easeOut(animation),
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(8, 2, 9, 2),
-                      child: EmojiEditor(widget.pack.emotes[index],
-                          deleteEmoji: () => deleteEmoji(index),
-                          editable: widget.editable,
-                          setIsEmoji: (value) => widget.pack
-                              .markEmoticonAsEmoji(
-                                  widget.pack.emotes[index], value),
-                          setIsSticker: (value) => widget.pack
-                              .markEmoticonAsSticker(
-                                  widget.pack.emotes[index], value),
-                          renameEmoji: (name) => renameEmoji(index, name)),
+                      child: index >= widget.pack.emotes.length
+                          ? Container()
+                          : EmojiEditor(widget.pack.emotes[index],
+                              deleteEmoji: () => deleteEmoji(index),
+                              editable: widget.editable,
+                              setIsEmoji: (value) => widget.pack
+                                  .markEmoticonAsEmoji(
+                                      widget.pack.emotes[index], value),
+                              setIsSticker: (value) => widget.pack
+                                  .markEmoticonAsSticker(
+                                      widget.pack.emotes[index], value),
+                              renameEmoji: (name) => renameEmoji(index, name)),
                     ),
                   );
                 },
