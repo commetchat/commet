@@ -10,6 +10,7 @@ class Preferences {
   SharedPreferences? _preferences;
 
   static const String registeredMatrixClients = "registered_matrix_clients";
+  static const String _shouldFollowSystemTheme = "should_follow_system_theme";
   static const String themeKey = "app_theme";
   static const String appScaleKey = "app_scale";
   static const String _minimizeOnCloseKey = "minimize_on_close";
@@ -76,6 +77,13 @@ class Preferences {
     } catch (e) {
       return AppTheme.dark;
     }
+  }
+
+  bool get shouldFollowSystemTheme =>
+      _preferences!.getBool(_shouldFollowSystemTheme) ?? false;
+
+  void setShouldFollowSystemTheme(bool value) {
+    _preferences!.setBool(_shouldFollowSystemTheme, value);
   }
 
   void setTheme(AppTheme theme) {

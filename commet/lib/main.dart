@@ -256,6 +256,15 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ThemeChanger(
+        shouldFollowSystemTheme: () => preferences.shouldFollowSystemTheme,
+        getDarkTheme: () {
+          if (preferences.theme == AppTheme.amoled) {
+            return ThemeAmoled.theme;
+          } else {
+            return ThemeDark.theme;
+          }
+        },
+        getLightTheme: () => ThemeLight.theme,
         initialTheme: {
           AppTheme.dark: ThemeDark.theme,
           AppTheme.light: ThemeLight.theme,
