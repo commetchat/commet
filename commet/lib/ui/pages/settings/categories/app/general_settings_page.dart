@@ -9,10 +9,10 @@ class GeneralSettingsPage extends StatefulWidget {
   const GeneralSettingsPage({super.key});
 
   @override
-  State<GeneralSettingsPage> createState() => _GeneralSettingsPage();
+  State<GeneralSettingsPage> createState() => GeneralSettingsPageState();
 }
 
-class _GeneralSettingsPage extends State<GeneralSettingsPage> {
+class GeneralSettingsPageState extends State<GeneralSettingsPage> {
   bool enableTenor = false;
   bool enableEncryptedPreview = false;
 
@@ -92,7 +92,7 @@ class _GeneralSettingsPage extends State<GeneralSettingsPage> {
     );
   }
 
-  Row settingToggle(bool state,
+  static Row settingToggle(bool state,
       {required String title,
       required String description,
       void Function(bool)? onChanged}) {
