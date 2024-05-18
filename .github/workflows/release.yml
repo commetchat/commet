@@ -172,7 +172,10 @@ jobs:
           asset_content_type: application/vnd.android.package-archive
 
   release-linux-debian:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, ubuntu-24.04]
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -218,7 +221,7 @@ jobs:
         with:
           upload_url: ${{ github.event.release.upload_url }}
           asset_path: commet-pkg/commet-linux-x64.deb
-          asset_name: commet-linux-x64.deb
+          asset_name: commet-${{ matrix.os }}-x64.deb
           asset_content_type: application/vnd.debian.binary-package
 
   release-linux-flatpak:
