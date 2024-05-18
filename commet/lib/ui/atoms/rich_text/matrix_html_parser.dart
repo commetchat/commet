@@ -130,6 +130,7 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
             top: Margin.zero(),
             right: Margin.zero(),
           ),
+          whiteSpace: WhiteSpace.pre,
         )
       },
       onLinkTap: (url, attributes, element) {
