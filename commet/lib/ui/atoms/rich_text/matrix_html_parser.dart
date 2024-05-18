@@ -114,6 +114,7 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
             top: Margin.zero(),
             right: Margin.zero(),
           ),
+          whiteSpace: WhiteSpace.pre, // handled whitespace for #237
         ),
         "code": Style(backgroundColor: Colors.black.withAlpha(40)),
         "blockquote": Style(
@@ -129,6 +130,7 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
             top: Margin.zero(),
             right: Margin.zero(),
           ),
+          whiteSpace: WhiteSpace.pre,
         )
       },
       onLinkTap: (url, attributes, element) {
