@@ -1276,5 +1276,110 @@
     "description": "Generic prompt to go home, usually will go back to a main menu, or similar",
     "type": "text",
     "placeholders": {}
+  },
+  "labelSpacePermissionSettings": "Berechtigungen",
+  "@labelSpacePermissionSettings": {
+    "description": "Label for space permission settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsPermissions": "Berechtigungen",
+  "@labelRoomSettingsPermissions": {
+    "description": "Label for room permission settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoleAdmin": "Admin",
+  "@labelMatrixPermissionsRoleAdmin": {
+    "description": "Label for the room administrator role",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoleModerator": "Moderator",
+  "@labelMatrixPermissionsRoleModerator": {
+    "description": "Label for the room moderator role",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoleMember": "Raummitglied",
+  "@labelMatrixPermissionsRoleMember": {
+    "description": "Label for the room member role",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsSpaceManageChildrenTitle": "Kinder verwalten",
+  "@labelMatrixPermissionsSpaceManageChildrenTitle": {
+    "description": "Title for permission to manage children",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomSendMessagesTitle": "Nachrichten senden",
+  "@labelMatrixPermissionsRoomSendMessagesTitle": {
+    "description": "Title for the permission to send messages",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomAddReactionsDescription": "Reaktionen zu Nachrichten hinzufügen",
+  "@labelMatrixPermissionsRoomAddReactionsDescription": {
+    "description": "describes the permission to add an emoji reaction to a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomAvatarTitle": "Raumavatar festlegen",
+  "@labelMatrixPermissionsRoomAvatarTitle": {
+    "description": "Title for the permission to add change the rooms avatar image",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsChangeRoomNameTitle": "Raumname ändern",
+  "@labelMatrixPermissionsChangeRoomNameTitle": {
+    "description": "Title for the permission to add change the rooms name",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsChangeRoomTopicTitle": "Raumthema ändern",
+  "@labelMatrixPermissionsChangeRoomTopicTitle": {
+    "description": "Title for the permission to add change the rooms topic",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsChangeRoomPermissionsTitle": "Berechtigungen ändern",
+  "@labelMatrixPermissionsChangeRoomPermissionsTitle": {
+    "description": "Title for the permission to change permissions of the room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsBanUserTitle": "Benutzer sperren",
+  "@labelMatrixPermissionsBanUserTitle": {
+    "description": "Title for the permission to ban other users from the room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomDeleteMessagesTitle": "Nachrichten löschen",
+  "@labelMatrixPermissionsRoomDeleteMessagesTitle": {
+    "description": "Title for permission to delete messages",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomAddReactionsTitle": "Reaktionen hinzufügen",
+  "@labelMatrixPermissionsRoomAddReactionsTitle": {
+    "description": "Title for the permission to add an emoji reaction to a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomHistoryVisibilityTitle": "Verlaufssichtbarkeit",
+  "@labelMatrixPermissionsRoomHistoryVisibilityTitle": {
+    "description": "Title for the permission to add change room history settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageUserEmote": "*{user} {emote}",
+  "@messageUserEmote": {
+    "description": "Message to display when a user does a custom emote (/me)",
+    "type": "text",
+    "placeholders": {
+      "user": {},
+      "emote": {}
+    }
   }
 }
