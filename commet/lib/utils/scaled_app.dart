@@ -68,6 +68,10 @@ class ScaledWidgetsFlutterBinding extends WidgetsFlutterBinding {
   ViewConfiguration createViewConfigurationFor(RenderView renderView) {
     final FlutterView view = platformDispatcher.implicitView!;
     final devicePixelRatio = view.devicePixelRatio;
+
+    final BoxConstraints physicalConstraints =
+        BoxConstraints.fromViewConstraints(view.physicalConstraints);
+
     final physicalSize = view.physicalSize;
 
     if (physicalSize.isEmpty) {
@@ -75,7 +79,8 @@ class ScaledWidgetsFlutterBinding extends WidgetsFlutterBinding {
     } else {
       devicePixelRatioScaled = devicePixelRatio * scale;
       return ViewConfiguration(
-        size: physicalSize / devicePixelRatioScaled,
+        physicalConstraints: physicalConstraints,
+        logicalConstraints: physicalConstraints / devicePixelRatioScaled,
         devicePixelRatio: devicePixelRatioScaled,
       );
     }

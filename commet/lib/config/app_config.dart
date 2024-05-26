@@ -13,6 +13,14 @@ class AppConfig {
     return join(dir.path, "db");
   }
 
+  static Future<String> getDriftDatabasePath() async {
+    if (BuildConfig.WEB) {
+      return "commet";
+    }
+    final dir = await getApplicationSupportDirectory();
+    return join(dir.path, "drift");
+  }
+
   static Future<String> getIsarDatabasePath() async {
     if (BuildConfig.WEB) {
       return "commet";

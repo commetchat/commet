@@ -153,7 +153,7 @@ class _MatrixRoomPermissionsViewState extends State<MatrixRoomPermissionsView> {
         child: Tile.low1(
           child: MouseRegion(
             cursor: widget.canEdit
-                ? MaterialStateMouseCursor.clickable
+                ? WidgetStateMouseCursor.clickable
                 : MouseCursor.defer,
             child: Padding(
               padding: const EdgeInsets.fromLTRB(8, 8, 30, 8),

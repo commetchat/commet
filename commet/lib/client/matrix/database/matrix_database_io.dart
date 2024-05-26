@@ -2,11 +2,13 @@ import 'dart:io';
 
 import 'package:commet/config/app_config.dart';
 import 'package:matrix/matrix.dart';
-import 'package:matrix_dart_sdk_isar_db/matrix_dart_sdk_isar_db.dart';
+import 'package:matrix_dart_sdk_drift_db/matrix_dart_sdk_drift_db.dart';
 import 'package:path/path.dart' as p;
+// ignore: depend_on_referenced_packages
+import 'package:drift/native.dart';
 
 Future<DatabaseApi> getMatrixDatabaseImplementation(String clientName) async {
-  var path = await AppConfig.getIsarDatabasePath();
+  var path = await AppConfig.getDriftDatabasePath();
   path = p.join(path, clientName, "data.db");
   var dir = p.dirname(path);
 
@@ -14,7 +16,8 @@ Future<DatabaseApi> getMatrixDatabaseImplementation(String clientName) async {
     await Directory(dir).create(recursive: true);
   }
 
-  var db = await MatrixSdkIsarDatabase.init(dir, clientName);
+  var db = await MatrixSdkDriftDatabase.init(
+      NativeDatabase.createInBackground(File(path)));
   return db;
 }
 

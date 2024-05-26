@@ -25,11 +25,8 @@ dependencies:
   http: ^1.1.0
   implicitly_animated_list: ^2.2.0
   intl: any
-  intl_translation: ^0.18.2
+  intl_translation: ^0.20.0
   intl_utils: any
-  isar: ^3.1.0+1
-  isar_flutter_libs: ^3.1.0+1
-  isar_generator: ^3.1.0+1
   just_the_tooltip: ^0.0.12
   matrix:
     git: 
@@ -76,8 +73,8 @@ dependencies:
       ref: fix
   tiamat: 
     path: ../tiamat/
-  matrix_dart_sdk_isar_db:
-    git: https://github.com/commetchat/matrix-dart-sdk-isar-db.git
+  matrix_dart_sdk_drift_db:
+    path: ../../matrix-dart-sdk-drift-db
   encrypted_url_preview: 
     git: https://github.com/commetchat/encrypted_url_preview.git
   signal_sticker_api: 
