@@ -74,7 +74,7 @@ dependencies:
   tiamat: 
     path: ../tiamat/
   matrix_dart_sdk_drift_db:
-    path: ../../matrix-dart-sdk-drift-db
+    git: https://github.com/commetchat/matrix-dart-sdk-drift-db.git
   encrypted_url_preview: 
     git: https://github.com/commetchat/encrypted_url_preview.git
   signal_sticker_api: 

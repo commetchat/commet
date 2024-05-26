@@ -917,9 +917,11 @@ packages:
   matrix_dart_sdk_drift_db:
     dependency: "direct main"
     description:
-      path: "../../matrix-dart-sdk-drift-db"
-      relative: true
-    source: path
+      path: "."
+      ref: HEAD
+      resolved-ref: "36b3a1a90bf6750b92526884e51c991d2015f960"
+      url: "https://github.com/commetchat/matrix-dart-sdk-drift-db.git"
+    source: git
     version: "0.0.1"
   media_kit:
     dependency: "direct main"
