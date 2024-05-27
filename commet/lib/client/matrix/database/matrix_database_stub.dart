@@ -4,7 +4,7 @@ Future<DatabaseApi> getMatrixDatabaseImplementation(String clientName) async {
   throw UnimplementedError();
 }
 
-Future<DatabaseApi> getLegacyMatrixDatabaseImplementation(
+Future<DatabaseApi?> getLegacyMatrixDatabaseImplementation(
     String clientName) async {
   throw UnimplementedError();
 }

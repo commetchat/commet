@@ -17,23 +17,7 @@ class AppConfig {
     if (BuildConfig.WEB) {
       return "commet";
     }
-    final dir = await getApplicationSupportDirectory();
-    return join(dir.path, "drift");
-  }
-
-  static Future<String> getIsarDatabasePath() async {
-    if (BuildConfig.WEB) {
-      return "commet";
-    }
-    final dir = await getApplicationSupportDirectory();
-    return join(dir.path, "isar");
-  }
-
-  static Future<String> getHiveDatabasePath() async {
-    if (BuildConfig.WEB) {
-      return "commet";
-    }
-    final dir = await getApplicationSupportDirectory();
-    return join(dir.path, "hive");
+    final dir = await getDatabasePath();
+    return join(dir, "account", "drift");
   }
 }

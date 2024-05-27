@@ -249,8 +249,6 @@ class MatrixClient extends Client {
       },
       supportedLoginTypes: {matrix.AuthenticationTypes.password},
       nativeImplementations: nativeImplementations,
-      legacyDatabaseBuilder: (client) =>
-          getLegacyMatrixDatabase(client.clientName),
       databaseBuilder: (client) => getMatrixDatabase(client.clientName),
     );
 

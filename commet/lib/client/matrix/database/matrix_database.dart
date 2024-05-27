@@ -8,6 +8,6 @@ Future<DatabaseApi> getMatrixDatabase(String clientName) {
   return getMatrixDatabaseImplementation(clientName);
 }
 
-Future<DatabaseApi> getLegacyMatrixDatabase(String clientName) {
+Future<DatabaseApi?> getLegacyMatrixDatabase(String clientName) {
   return getLegacyMatrixDatabaseImplementation(clientName);
 }

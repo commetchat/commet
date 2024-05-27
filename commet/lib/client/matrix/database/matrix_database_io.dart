@@ -21,11 +21,7 @@ Future<DatabaseApi> getMatrixDatabaseImplementation(String clientName) async {
   return db;
 }
 
-Future<DatabaseApi> getLegacyMatrixDatabaseImplementation(
+Future<DatabaseApi?> getLegacyMatrixDatabaseImplementation(
     String clientName) async {
-  // ignore: deprecated_member_use
-  final db = HiveCollectionsDatabase(
-      clientName, await AppConfig.getHiveDatabasePath());
-  await db.open();
-  return db;
+  return null;
 }
