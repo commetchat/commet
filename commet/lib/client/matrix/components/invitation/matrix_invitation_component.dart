@@ -5,7 +5,6 @@ import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/matrix/matrix_peer.dart';
 import 'package:commet/client/matrix/matrix_profile.dart';
-import 'package:commet/client/peer.dart';
 import 'package:commet/client/profile.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/utils/notifying_list.dart';

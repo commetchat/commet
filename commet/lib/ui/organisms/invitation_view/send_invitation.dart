@@ -2,7 +2,6 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/components/invitation/invitation_component.dart';
 import 'package:commet/client/profile.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
-import 'package:commet/ui/molecules/user_panel.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/utils/debounce.dart';
 import 'package:flutter/material.dart';

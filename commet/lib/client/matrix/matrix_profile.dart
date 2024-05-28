@@ -1,9 +1,7 @@
-import 'dart:ui';
-
 import 'package:commet/client/matrix/matrix_member.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/profile.dart';
-import 'package:flutter/src/painting/image_provider.dart';
+import 'package:flutter/widgets.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
 class MatrixProfile implements Profile {

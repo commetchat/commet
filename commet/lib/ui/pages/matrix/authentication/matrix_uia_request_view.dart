@@ -6,51 +6,6 @@ import 'package:matrix/src/utils/uia_request.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:flutter/material.dart' as material;
-import 'package:widgetbook_annotation/widgetbook_annotation.dart';
-
-@UseCase(name: 'Wait for user', type: MatrixUIARequestView)
-@Deprecated("widgetbook")
-Widget wbUIARequestView(BuildContext context) {
-  return const material.Scaffold(
-    body: PopupDialog(
-      title: "Authentication Request",
-      content: MatrixUIARequestView(UiaRequestState.waitForUser),
-    ),
-  );
-}
-
-@UseCase(name: 'Loading', type: MatrixUIARequestView)
-@Deprecated("widgetbook")
-Widget wbUIARequestViewLoading(BuildContext context) {
-  return const material.Scaffold(
-    body: PopupDialog(
-      title: "Authentication Request",
-      content: MatrixUIARequestView(UiaRequestState.loading),
-    ),
-  );
-}
-
-@UseCase(name: 'Done', type: MatrixUIARequestView)
-@Deprecated("widgetbook")
-Widget wbUIARequestViewDone(BuildContext context) {
-  return const material.Scaffold(
-    body: PopupDialog(
-      title: "Authentication Request",
-      content: MatrixUIARequestView(UiaRequestState.done),
-    ),
-  );
-}
-
-@UseCase(name: 'Fail', type: MatrixUIARequestView)
-@Deprecated("widgetbook")
-Widget wbUIARequestViewError(BuildContext context) {
-  return const material.Scaffold(
-    body: PopupDialog(
-      title: "Authentication Request",
-      content: MatrixUIARequestView(UiaRequestState.fail),
-    ),
-  );
-}
 
 class MatrixUIARequestView extends StatefulWidget {
   const MatrixUIARequestView(this.state,

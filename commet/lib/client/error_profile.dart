@@ -1,8 +1,5 @@
-import 'dart:ui';
-
 import 'package:commet/client/profile.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/painting/image_provider.dart';
 
 class ErrorProfile implements Profile {
   @override

@@ -1,32 +1,10 @@
-import 'package:commet/client/client.dart';
 import 'package:commet/client/member.dart';
 import 'package:commet/ui/atoms/shimmer_loading.dart';
-import 'package:commet/ui/navigation/adaptive_dialog.dart';
-import 'package:commet/ui/organisms/user_profile/user_profile.dart';
 import 'package:flutter/material.dart' as material;
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
-
-import 'package:widgetbook_annotation/widgetbook_annotation.dart';
-
-@UseCase(name: 'No Avatar', type: UserPanelView)
-@Deprecated("widgetbook")
-Widget wbUserPanelDefault(BuildContext context) {
-  return const Center(child: UserPanelView(displayName: "User"));
-}
-
-@UseCase(name: 'With Avatar', type: UserPanelView)
-@Deprecated("widgetbook")
-Widget wbUserPanelWithAvatar(BuildContext context) {
-  return const Center(
-      child: UserPanelView(
-    displayName: "User",
-    avatar: AssetImage("assets/images/placeholder/generic/checker_purple.png"),
-  ));
-}
 
 class MemberPanel extends material.StatefulWidget {
   const MemberPanel(this.peer,

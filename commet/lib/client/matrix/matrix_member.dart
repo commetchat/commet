@@ -1,5 +1,3 @@
-import 'package:commet/client/client.dart';
-import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/member.dart';
 import 'package:flutter/material.dart';

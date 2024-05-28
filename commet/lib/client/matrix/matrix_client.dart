@@ -24,7 +24,6 @@ import 'package:flutter/foundation.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
 import 'package:commet/client/client.dart';
-import 'package:commet/client/matrix/matrix_peer.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:matrix/matrix.dart' as matrix;

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:ui';
 import 'package:commet/client/components/component_registry.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
