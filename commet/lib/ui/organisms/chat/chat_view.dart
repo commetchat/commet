@@ -29,7 +29,9 @@ class ChatView extends StatelessWidget {
 
   String? get relatedEventSenderName => state.interactingEvent == null
       ? null
-      : state.room.getMember(state.interactingEvent!.senderId)!.displayName;
+      : state.room
+          .getMemberOrFallback(state.interactingEvent!.senderId)!
+          .displayName;
 
   Color? get relatedEventSenderColor => state.interactingEvent == null
       ? null

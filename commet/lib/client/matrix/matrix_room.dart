@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:ui';
 import 'package:commet/client/components/component_registry.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
@@ -236,7 +237,7 @@ class MatrixRoom extends Room {
       return;
     }
 
-    var sender = getMember(event.senderId);
+    var sender = getMemberOrFallback(event.senderId);
 
     if (sender == null) {
       return;
@@ -492,16 +493,24 @@ class MatrixRoom extends Room {
   }
 
   @override
-  Future<List<Member>> fetchMembersList() async {
-    var results = await _matrixRoom
-        .requestParticipants([matrix.Membership.join], true, false);
+  List<Member> membersList() {
+    var users = _matrixRoom.getParticipants();
+    return users.map((e) => MatrixMember(_matrixRoom.client, e)).toList();
+  }
 
-    print("Got results: $results");
+  @override
+  Future<List<Member>> fetchMembersList({bool cache = false}) async {
+    var results = await _matrixRoom
+        .requestParticipants([matrix.Membership.join], true, cache);
+
     return results.map((e) => MatrixMember(_matrixRoom.client, e)).toList();
   }
 
   @override
-  Member? getMember(String id) {
+  bool get isMembersListComplete => _matrixRoom.participantListComplete;
+
+  @override
+  Member? getMemberOrFallback(String id) {
     return MatrixMember(
         _matrixRoom.client, _matrixRoom.unsafeGetUserFromMemoryOrFallback(id));
   }

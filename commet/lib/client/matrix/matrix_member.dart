@@ -15,7 +15,7 @@ class MatrixMember implements Member {
       : null;
 
   @override
-  String? detail;
+  String? get detail => matrixUser.id.domain;
 
   @override
   String get displayName => matrixUser.calcDisplayname();

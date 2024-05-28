@@ -116,11 +116,12 @@ class _TimelineEventState extends State<TimelineEventView> {
           "Text that is placed below a message when the message fails to send",
       name: "errorMessageFailedToSend");
 
-  String get displayName =>
-      widget.timeline.room.getMember(widget.event.senderId)!.displayName;
+  String get displayName => widget.timeline.room
+      .getMemberOrFallback(widget.event.senderId)!
+      .displayName;
 
   ImageProvider? get avatar =>
-      widget.timeline.room.getMember(widget.event.senderId)!.avatar;
+      widget.timeline.room.getMemberOrFallback(widget.event.senderId)!.avatar;
 
   Color get color => widget.timeline.room.getColorOfUser(widget.event.senderId);
 
@@ -130,7 +131,9 @@ class _TimelineEventState extends State<TimelineEventView> {
 
   String? get relatedEventDisplayName => relatedEvent == null
       ? null
-      : widget.timeline.room.getMember(relatedEvent!.senderId)!.displayName;
+      : widget.timeline.room
+          .getMemberOrFallback(relatedEvent!.senderId)!
+          .displayName;
 
   UrlPreviewData? urlPreviews;
   bool loadingUrlPreviews = false;

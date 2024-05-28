@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ffi';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/components/room_component.dart';
@@ -96,7 +97,11 @@ abstract class Room {
   Future<List<ProcessedAttachment>> processAttachments(
       List<PendingFileAttachment> attachments);
 
-  Future<List<Member>> fetchMembersList();
+  List<Member> membersList();
+
+  Future<List<Member>> fetchMembersList({bool cache = false});
+
+  bool get isMembersListComplete;
 
   /// A locally unique identifier, to distinguish between rooms when two or more accounts in this app are in the same room
   String get localId => "${client.identifier}:$identifier";
@@ -133,7 +138,7 @@ abstract class Room {
 
   Future<TimelineEvent?> getEvent(String eventId);
 
-  Member? getMember(String id);
+  Member? getMemberOrFallback(String id);
 
   @override
   bool operator ==(Object other) {
