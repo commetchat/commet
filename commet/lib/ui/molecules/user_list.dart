@@ -1,45 +1,42 @@
 import 'dart:async';
 
 import 'package:commet/client/client.dart';
+import 'package:commet/client/member.dart';
 import 'package:commet/ui/molecules/user_panel.dart';
 import 'package:flutter/material.dart';
 
 import '../../client/room.dart';
 
-class PeerList extends StatefulWidget {
-  const PeerList(this.room, {super.key});
+class RoomMemberList extends StatefulWidget {
+  const RoomMemberList(this.room, {super.key});
   final Room room;
 
   @override
-  State<PeerList> createState() => _PeerListState();
+  State<RoomMemberList> createState() => _RoomMemberListState();
 }
 
-class _PeerListState extends State<PeerList> {
-  int _count = 0;
-  StreamSubscription? subscription;
+class _RoomMemberListState extends State<RoomMemberList> {
+  List<Member>? roomMembers;
 
   @override
   void initState() {
-    _count = widget.room.memberIds.length;
-    subscription = widget.room.membersUpdated.listen(onMembersListUpdated);
-    //widget.room.loadMembers();
-    super.initState();
-  }
+    widget.room.fetchMembersList().then((value) => setState(() {
+          roomMembers = value;
+        }));
 
-  void onMembersListUpdated(void event) {
-    setState(() {
-      _count = widget.room.memberIds.length;
-    });
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (roomMembers == null) {
+      return CircularProgressIndicator();
+    }
     return ListView.builder(
-      itemCount: _count,
-      itemBuilder: (context, i) => UserPanel(
-        widget.room.client.getPeer(widget.room.memberIds.elementAt(i)),
-        userColor:
-            widget.room.getColorOfUser(widget.room.memberIds.elementAt(i)),
+      itemCount: roomMembers!.length,
+      itemBuilder: (context, i) => MemberPanel(
+        roomMembers![i],
+        userColor: widget.room.getColorOfUser(roomMembers![i].identifier),
       ),
     );
   }

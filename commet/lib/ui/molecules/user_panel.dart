@@ -1,4 +1,5 @@
 import 'package:commet/client/client.dart';
+import 'package:commet/client/member.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/organisms/user_profile/user_profile.dart';
 import 'package:flutter/material.dart' as material;
@@ -24,28 +25,19 @@ Widget wbUserPanelWithAvatar(BuildContext context) {
   ));
 }
 
-class UserPanel extends material.StatefulWidget {
-  const UserPanel(this.peer,
+class MemberPanel extends material.StatefulWidget {
+  const MemberPanel(this.peer,
       {super.key, this.userColor, this.showFullId = false, this.onTap});
-  final Peer peer;
+  final Member peer;
   final Color? userColor;
   final bool showFullId;
   final void Function()? onTap;
 
   @override
-  State<UserPanel> createState() => _UserPanelState();
+  State<MemberPanel> createState() => _MemberPanelState();
 }
 
-class _UserPanelState extends material.State<UserPanel> {
-  @override
-  void initState() {
-    widget.peer.loading?.then((value) {
-      if (mounted) setState(() {});
-    });
-
-    super.initState();
-  }
-
+class _MemberPanelState extends material.State<MemberPanel> {
   @override
   material.Widget build(material.BuildContext context) {
     return UserPanelView(
@@ -61,12 +53,14 @@ class _UserPanelState extends material.State<UserPanel> {
   }
 
   void onUserPanelClicked() {
-    AdaptiveDialog.show(context,
-        builder: (_) => UserProfile(
-              user: widget.peer,
-              dismiss: () => Navigator.pop(context),
-            ),
-        title: "User");
+    // TODO: Update user profile display
+
+    // AdaptiveDialog.show(context,
+    //     builder: (_) => UserProfile(
+    //           user: widget.peer,
+    //           dismiss: () => Navigator.pop(context),
+    //         ),
+    //     title: "User");
   }
 }
 

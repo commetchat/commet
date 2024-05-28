@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
+import 'package:commet/client/profile.dart';
 import 'package:commet/ui/atoms/dot_indicator.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/pages/add_space_or_room/add_space_or_room.dart';
@@ -30,7 +31,7 @@ class SideNavigationBar extends StatefulWidget {
   static ValueKey settingsKey =
       const ValueKey("SIDE_NAVIGATION_SETTINGS_BUTTON");
 
-  final Peer currentUser;
+  final Profile currentUser;
   final void Function(int index)? onSpaceSelected;
   final void Function()? clearSpaceSelection;
   final void Function()? onDirectMessagesSelected;

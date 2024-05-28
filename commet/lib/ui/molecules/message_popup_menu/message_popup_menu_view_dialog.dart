@@ -150,11 +150,10 @@ class MessagePopupMenuViewDialog extends StatelessWidget {
                   icon: Icons.notification_add,
                   onTap: () async {
                     var room = state.timeline.room;
-                    var user = room.client.getPeer(state.event.senderId);
-                    await user.loading;
-
+                    var user =
+                        await room.client.getProfile(state.event.senderId);
                     var content = MessageNotificationContent(
-                      senderName: user.displayName,
+                      senderName: user!.displayName,
                       senderImage: user.avatar,
                       senderId: user.identifier,
                       roomName: room.displayName,

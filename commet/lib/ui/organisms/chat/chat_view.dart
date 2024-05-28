@@ -29,7 +29,7 @@ class ChatView extends StatelessWidget {
 
   String? get relatedEventSenderName => state.interactingEvent == null
       ? null
-      : state.room.client.getPeer(state.interactingEvent!.senderId).displayName;
+      : state.room.getMember(state.interactingEvent!.senderId)!.displayName;
 
   Color? get relatedEventSenderColor => state.interactingEvent == null
       ? null

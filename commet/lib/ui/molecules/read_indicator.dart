@@ -1,3 +1,4 @@
+import 'package:commet/client/member.dart';
 import 'package:commet/utils/common_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:implicitly_animated_list/implicitly_animated_list.dart';
@@ -82,15 +83,10 @@ class SingleUserReadIndicator extends StatefulWidget {
 }
 
 class _SingleUserReadIndicatorState extends State<SingleUserReadIndicator> {
-  late Peer peer;
+  late Member member;
   @override
   void initState() {
-    peer = widget.room.client.getPeer(widget.identifier);
-    peer.loading?.then((_) {
-      if (mounted) {
-        setState(() {});
-      }
-    });
+    member = widget.room.getMember(widget.identifier)!;
     super.initState();
   }
 
@@ -98,9 +94,9 @@ class _SingleUserReadIndicatorState extends State<SingleUserReadIndicator> {
   Widget build(BuildContext context) {
     return Avatar(
       radius: 10,
-      image: peer.avatar,
+      image: member.avatar,
       placeholderColor: widget.room.getColorOfUser(widget.identifier),
-      placeholderText: peer.displayName,
+      placeholderText: member.displayName,
     );
   }
 }

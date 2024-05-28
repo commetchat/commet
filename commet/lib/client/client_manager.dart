@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:commet/client/alert.dart';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
-import 'package:commet/client/simulated/simulated_client.dart';
 import 'package:commet/client/stale_info.dart';
 import 'package:commet/client/tasks/client_connection_status_task.dart';
 import 'package:commet/config/build_config.dart';
@@ -77,7 +76,6 @@ class ClientManager {
     await Future.wait([
       MatrixClient.loadFromDB(newClientManager,
           isBackgroundService: isBackgroundService),
-      if (BuildConfig.DEBUG) SimulatedClient.loadFromDB(newClientManager),
     ]);
 
     return newClientManager;
@@ -216,9 +214,7 @@ class ClientManager {
   }
 
   bool isLoggedIn() {
-    return _clients.values
-        .where((element) => element is! SimulatedClient)
-        .any((element) => element.isLoggedIn());
+    return _clients.values.any((element) => element.isLoggedIn());
   }
 
   Future<void> close() async {

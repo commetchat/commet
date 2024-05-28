@@ -117,10 +117,10 @@ class _TimelineEventState extends State<TimelineEventView> {
       name: "errorMessageFailedToSend");
 
   String get displayName =>
-      widget.timeline.room.client.getPeer(widget.event.senderId).displayName;
+      widget.timeline.room.getMember(widget.event.senderId)!.displayName;
 
   ImageProvider? get avatar =>
-      widget.timeline.room.client.getPeer(widget.event.senderId).avatar;
+      widget.timeline.room.getMember(widget.event.senderId)!.avatar;
 
   Color get color => widget.timeline.room.getColorOfUser(widget.event.senderId);
 
@@ -130,7 +130,7 @@ class _TimelineEventState extends State<TimelineEventView> {
 
   String? get relatedEventDisplayName => relatedEvent == null
       ? null
-      : widget.timeline.client.getPeer(relatedEvent!.senderId).displayName;
+      : widget.timeline.room.getMember(relatedEvent!.senderId)!.displayName;
 
   UrlPreviewData? urlPreviews;
   bool loadingUrlPreviews = false;
@@ -143,10 +143,6 @@ class _TimelineEventState extends State<TimelineEventView> {
         fetchRelatedEvent();
       }
     }
-
-    widget.timeline.client.getPeer(widget.event.senderId).loading?.then((_) {
-      if (mounted) setState(() {});
-    });
 
     var component =
         widget.timeline.room.client.getComponent<UrlPreviewComponent>();

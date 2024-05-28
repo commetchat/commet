@@ -54,8 +54,6 @@ dependencies:
   unifiedpush: ^5.0.1
   universal_html: ^2.2.4
   url_launcher: ^6.1.11
-  widgetbook: ^3.2.0
-  widgetbook_annotation: ^3.0.0
   win_toast: ^0.3.0
   window_manager: ^0.3.4
   flutter: 
@@ -106,7 +104,6 @@ dev_dependencies:
   flutter_lints: ^2.0.0
   msix: ^3.7.0
   pubspec_dependency_sorter: ^1.0.4
-  widgetbook_generator: ^3.1.0
   flutter_test: 
     sdk: flutter
   integration_test: 

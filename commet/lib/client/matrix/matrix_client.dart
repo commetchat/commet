@@ -4,10 +4,13 @@ import 'package:commet/client/auth.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/component.dart';
 import 'package:commet/client/components/component_registry.dart';
+import 'package:commet/client/error_profile.dart';
 import 'package:commet/client/matrix/auth/matrix_sso_login_flow.dart';
 import 'package:commet/client/matrix/auth/matrix_username_password_login_flow.dart';
 import 'package:commet/client/matrix/database/matrix_database.dart';
 import 'package:commet/client/matrix/extensions/matrix_client_extensions.dart';
+import 'package:commet/client/matrix/matrix_profile.dart';
+import 'package:commet/client/profile.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/debug/log.dart';
@@ -155,8 +158,8 @@ class MatrixClient extends Client {
             } catch (error, trace) {
               Log.e("Unable to load client $clientName from database");
               Log.onError(error, trace);
-              client.self = MatrixPeer(client, client._matrixClient,
-                  "@failed_to_load:${clientName.substring(0, 8)}");
+
+              client.self = ErrorProfile();
               manager.alertManager.addAlert(Alert(AlertType.warning,
                   messageGetter: () =>
                       "One of the registered accounts (${clientName.substring(0, 8)}...) was unable to load correctly, please check the logs for more details",
@@ -198,8 +201,8 @@ class MatrixClient extends Client {
             startSyncLoop: !isBackgroundService,
             onMigration: () => Log.w("Matrix Database is migrating"));
       });
-      self = MatrixPeer(this, _matrixClient, _matrixClient.userID!);
-      peers.add(self!);
+      self =
+          MatrixProfile(_matrixClient, await _matrixClient.fetchOwnProfile());
 
       if (!isBackgroundService) {
         firstSync = _matrixClient.oneShotSync();
@@ -274,9 +277,10 @@ class MatrixClient extends Client {
     return _matrixClient.logout();
   }
 
-  void _postLoginSuccess() {
+  void _postLoginSuccess() async {
     if (_matrixClient.userID != null) {
-      self = MatrixPeer(this, _matrixClient, _matrixClient.userID!);
+      self =
+          MatrixProfile(_matrixClient, await _matrixClient.fetchOwnProfile());
     }
 
     for (var component in getAllComponents()!) {
@@ -372,13 +376,15 @@ class MatrixClient extends Client {
   Future<void> setAvatar(Uint8List bytes, String mimeType) async {
     await _matrixClient.setAvatar(matrix.MatrixImageFile(
         bytes: bytes, name: "avatar", mimeType: mimeType));
-    await (self as MatrixPeer).refreshAvatar();
+    // TODO: Handle refresh avatar
+    // await (self as MatrixPeer).refreshAvatar();
   }
 
   @override
   Future<void> setDisplayName(String name) async {
     await _matrixClient.setDisplayName(_matrixClient.userID!, name);
-    self!.displayName = name;
+    // TODO: Handle display name update
+    // self!.displayName = name;
   }
 
   @override
@@ -416,14 +422,9 @@ class MatrixClient extends Client {
       _rooms.where((element) => element.isDirectMessage).toList();
 
   @override
-  Peer getPeer(String identifier) {
-    var result = _peersMap[identifier];
-    if (result != null) return result;
-
-    var peer = MatrixPeer(this, _matrixClient, identifier);
-    _peersMap[identifier] = peer;
-    _peers.add(peer);
-    return peer;
+  Future<Profile?> getProfile(String identifier) async {
+    var profile = await _matrixClient.getProfileFromUserId(identifier);
+    return MatrixProfile(_matrixClient, profile);
   }
 
   @override

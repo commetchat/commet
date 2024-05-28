@@ -32,8 +32,7 @@ Future<void> onForegroundMessage(dynamic message) async {
   var room = client.getRoom(roomId);
   var event = await room!.getEvent(eventId);
 
-  var user = client.getPeer(event!.senderId);
-  await user.loading;
+  var user = room.getMember(event!.senderId)!;
 
   Log.i("Dispatching notification");
 
