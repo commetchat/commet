@@ -14,6 +14,7 @@ import 'package:commet/ui/organisms/side_navigation_bar.dart';
 import 'package:commet/ui/organisms/space_summary/space_summary.dart';
 import 'package:commet/ui/pages/main/main_page.dart';
 import 'package:commet/utils/event_bus.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tiamat/atoms/tile.dart';
@@ -179,11 +180,25 @@ class MainPageViewDesktop extends StatelessWidget {
                 ),
                 if (state.currentThreadId != null)
                   Flexible(
-                    child: Chat(
-                      state.currentRoom!,
-                      threadId: state.currentThreadId,
-                      key: ValueKey(
-                          "room-timeline-key-${state.currentRoom!.localId}_thread_${state.currentThreadId!}"),
+                    child: Stack(
+                      children: [
+                        Chat(
+                          state.currentRoom!,
+                          threadId: state.currentThreadId,
+                          key: ValueKey(
+                              "room-timeline-key-${state.currentRoom!.localId}_thread_${state.currentThreadId!}"),
+                        ),
+                        Align(
+                          alignment: Alignment.topRight,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: tiamat.CircleButton(
+                              icon: Icons.close,
+                              onPressed: () => EventBus.closeThread.add(null),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 if (state.currentThreadId == null)

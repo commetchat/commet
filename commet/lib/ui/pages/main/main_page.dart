@@ -77,6 +77,7 @@ class MainPageState extends State<MainPage> {
 
     EventBus.openRoom.stream.listen(onOpenRoomSignal);
     EventBus.openThread.stream.listen(onOpenThreadSignal);
+    EventBus.closeThread.stream.listen(onCloseThreadSignal);
     SchedulerBinding.instance.scheduleFrameCallback(onFirstFrame);
   }
 
@@ -242,6 +243,12 @@ class MainPageState extends State<MainPage> {
 
     setState(() {
       _currentThreadId = threadEventRootId;
+    });
+  }
+
+  void onCloseThreadSignal(void event) {
+    setState(() {
+      _currentThreadId = null;
     });
   }
 }

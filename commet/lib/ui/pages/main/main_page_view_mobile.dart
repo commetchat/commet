@@ -49,6 +49,10 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
     EventBus.openThread.stream.listen((event) {
       panelsKey.currentState?.reveal(RevealSide.right);
     });
+    EventBus.closeThread.stream.listen((event) {
+      panelsKey.currentState?.reveal(RevealSide.main);
+    });
+
     super.initState();
   }
 
@@ -104,11 +108,31 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
   Widget? rightPanel(BuildContext context) {
     if (widget.state.currentThreadId != null &&
         widget.state.currentRoom != null) {
-      return Chat(
-        widget.state.currentRoom!,
-        threadId: widget.state.currentThreadId,
-        key: ValueKey(
-            "room-timeline-key-${widget.state.currentRoom!.localId}_thread_${widget.state.currentThreadId!}"),
+      return keyboardAdaptor(
+        ignore: panelsKey.currentState?.currentSide != RevealSide.right,
+        Stack(
+          children: [
+            Chat(
+              widget.state.currentRoom!,
+              threadId: widget.state.currentThreadId,
+              key: ValueKey(
+                  "room-timeline-key-${widget.state.currentRoom!.localId}_thread_${widget.state.currentThreadId!}"),
+            ),
+            ScaledSafeArea(
+              child: Align(
+                alignment: Alignment.topRight,
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: tiamat.CircleButton(
+                    icon: Icons.close,
+                    radius: 24,
+                    onPressed: () => EventBus.closeThread.add(null),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       );
     }
 
@@ -156,6 +180,22 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
     );
   }
 
+  Widget keyboardAdaptor(Widget child, {bool ignore = false}) {
+    var scaledQuery = MediaQuery.of(context).scale();
+    var offset = scaledQuery.viewInsets.bottom;
+    if (offset == 0 || ignore) {
+      offset = scaledQuery.padding.bottom;
+    }
+
+    return ScaledSafeArea(
+        bottom: false,
+        child: AnimatedPadding(
+            curve: Curves.easeOutCubic,
+            duration: Durations.medium1,
+            padding: EdgeInsets.fromLTRB(0, 0, 0, offset),
+            child: child));
+  }
+
   Widget mainPanel() {
     if (widget.state.currentSpace != null && widget.state.currentRoom == null) {
       return Tile(
@@ -181,32 +221,29 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
         offset = scaledQuery.padding.bottom;
       }
       return Tile(
-        child: ScaledSafeArea(
-          bottom: false,
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(0, 0, 0, offset),
-            child: Column(
-              children: [
-                SizedBox(
-                  height: 50,
-                  child: RoomHeader(
-                    widget.state.currentRoom!,
-                    onTap:
-                        widget.state.currentRoom?.permissions.canEditAnything ==
-                                true
-                            ? () => widget.state.navigateRoomSettings()
-                            : null,
-                  ),
+        child: keyboardAdaptor(
+          ignore: panelsKey.currentState?.currentSide != RevealSide.main,
+          Column(
+            children: [
+              SizedBox(
+                height: 50,
+                child: RoomHeader(
+                  widget.state.currentRoom!,
+                  onTap:
+                      widget.state.currentRoom?.permissions.canEditAnything ==
+                              true
+                          ? () => widget.state.navigateRoomSettings()
+                          : null,
                 ),
-                Flexible(
-                  child: Chat(
-                    widget.state.currentRoom!,
-                    key: ValueKey(
-                        "room-timeline-key-${widget.state.currentRoom!.localId}"),
-                  ),
+              ),
+              Flexible(
+                child: Chat(
+                  widget.state.currentRoom!,
+                  key: ValueKey(
+                      "room-timeline-key-${widget.state.currentRoom!.localId}"),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       );

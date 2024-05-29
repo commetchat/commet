@@ -1,3 +1,4 @@
+import 'package:commet/client/timeline.dart';
 import 'package:commet/ui/molecules/emoji_picker.dart';
 import 'package:commet/ui/molecules/message_popup_menu/message_popup_menu.dart';
 import 'package:commet/utils/event_bus.dart';
@@ -91,6 +92,12 @@ class _MessagePopupMenuViewOverlayState
     }
   }
 
+  static const interactableTypes = [
+    EventType.message,
+    EventType.emote,
+    EventType.sticker
+  ];
+
   Widget buildMenu(BuildContext context) {
     return m.Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
@@ -106,13 +113,15 @@ class _MessagePopupMenuViewOverlayState
           padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
           child: Row(
             children: [
-              buildMenuEntry(m.Icons.reply, CommonStrings.promptReply,
-                  callback: () {
-                widget.state.setReplyingEvent();
-              }),
-              buildMenuEntry(
-                  m.Icons.add_reaction, CommonStrings.promptAddReaction,
-                  callback: toggleTooltipMenu),
+              if (interactableTypes.contains(widget.state.event.type))
+                buildMenuEntry(m.Icons.reply, CommonStrings.promptReply,
+                    callback: () {
+                  widget.state.setReplyingEvent();
+                }),
+              if (interactableTypes.contains(widget.state.event.type))
+                buildMenuEntry(
+                    m.Icons.add_reaction, CommonStrings.promptAddReaction,
+                    callback: toggleTooltipMenu),
               if (widget.state.isEditable)
                 buildMenuEntry(m.Icons.edit, CommonStrings.promptEdit,
                     callback: () {
@@ -134,14 +143,15 @@ class _MessagePopupMenuViewOverlayState
                         text: "Show Source",
                         icon: Icons.code,
                         onPressed: () => widget.state.showSource(context)),
-                    ContextMenuItem(
-                        text: "Reply in Thread",
-                        icon: Icons.message,
-                        onPressed: () => EventBus.openThread.add((
-                              widget.state.timeline.client.identifier,
-                              widget.state.timeline.room.identifier,
-                              widget.state.event.eventId
-                            )))
+                    if (interactableTypes.contains(widget.state.event.type))
+                      ContextMenuItem(
+                          text: "Reply in Thread",
+                          icon: Icons.message,
+                          onPressed: () => EventBus.openThread.add((
+                                widget.state.timeline.client.identifier,
+                                widget.state.timeline.room.identifier,
+                                widget.state.event.eventId
+                              )))
                   ]),
             ],
           ),
