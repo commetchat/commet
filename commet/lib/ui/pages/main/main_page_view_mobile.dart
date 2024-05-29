@@ -110,7 +110,6 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
         widget.state.currentRoom != null) {
       return Tile(
         child: keyboardAdaptor(
-          ignore: panelsKey.currentState?.currentSide != RevealSide.right,
           Stack(
             children: [
               Chat(
@@ -221,7 +220,6 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
       }
       return Tile(
         child: keyboardAdaptor(
-          ignore: panelsKey.currentState?.currentSide != RevealSide.main,
           Column(
             children: [
               SizedBox(
