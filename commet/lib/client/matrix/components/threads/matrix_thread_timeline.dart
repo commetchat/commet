@@ -73,7 +73,21 @@ class MatrixThreadTimeline implements Timeline {
 
     var chunk = List<Map<String, dynamic>>.from(data["chunk"] as Iterable);
 
-    var mxevents = chunk.map((e) => matrix.Event.fromJson(e, room.matrixRoom));
+    var mxevents =
+        chunk.map((e) => matrix.Event.fromJson(e, room.matrixRoom)).toList();
+
+    for (var i = 0; i < mxevents.length; i++) {
+      var event = mxevents[i];
+
+      if (event.type == "m.room.encrypted") {
+        var decrypted =
+            await mx.encryption?.decryptRoomEvent(room.identifier, event);
+        if (decrypted != null) {
+          mxevents[i] = decrypted;
+        }
+      }
+    }
+
     var convertedEvents =
         mxevents.map((e) => MatrixTimelineEvent(e, mx)).toList();
 
@@ -83,8 +97,15 @@ class MatrixThreadTimeline implements Timeline {
       finished = true;
       var root = data["original_event"] as Map<String, dynamic>?;
       if (root != null) {
-        var event = MatrixTimelineEvent(
-            matrix.Event.fromJson(root, room.matrixRoom), mx);
+        var matrixEvent = matrix.Event.fromJson(root, room.matrixRoom);
+        if (matrixEvent.type == "m.room.encrypted") {
+          var decrypted = await mx.encryption
+              ?.decryptRoomEvent(room.identifier, matrixEvent);
+          if (decrypted != null) {
+            matrixEvent = decrypted;
+          }
+        }
+        var event = MatrixTimelineEvent(matrixEvent, mx);
         convertedEvents.add(event);
       }
     }
