@@ -55,6 +55,7 @@ class ThreadReplyFooter extends StatelessWidget {
                         senderImage: senderAvatar,
                         senderName: senderName,
                         senderColor: senderColor,
+                        maxLines: 3,
                       ),
                     ),
                   ),

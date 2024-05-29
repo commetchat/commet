@@ -11,6 +11,7 @@ class GenericRoomEvent extends StatelessWidget {
       this.leftPadding = 44,
       this.senderColor,
       this.senderName,
+      this.maxLines,
       this.padding = const EdgeInsets.fromLTRB(20, 8, 20, 8),
       super.key});
   final String text;
@@ -20,6 +21,7 @@ class GenericRoomEvent extends StatelessWidget {
   final ImageProvider? senderImage;
   final double leftPadding;
   final EdgeInsets padding;
+  final int? maxLines;
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +62,11 @@ class GenericRoomEvent extends StatelessWidget {
                 Expanded(
                   child: Row(
                     children: [
-                      Flexible(child: tiamat.Text.labelLow(text)),
+                      Flexible(
+                          child: tiamat.Text.labelLow(
+                        text,
+                        maxLines: maxLines,
+                      )),
                     ],
                   ),
                 )
