@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:commet/client/room.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/floating_tile.dart';
@@ -183,10 +185,7 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
 
   Widget keyboardAdaptor(Widget child, {bool ignore = false}) {
     var scaledQuery = MediaQuery.of(context).scale();
-    var offset = scaledQuery.viewInsets.bottom;
-    if (offset == 0 || ignore) {
-      offset = scaledQuery.padding.bottom;
-    }
+    var offset = max(scaledQuery.viewInsets.bottom, scaledQuery.padding.bottom);
 
     return ScaledSafeArea(
         bottom: false,
