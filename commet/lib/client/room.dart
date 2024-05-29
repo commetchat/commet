@@ -3,6 +3,7 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/components/room_component.dart';
 import 'package:commet/client/member.dart';
+import 'package:commet/client/role.dart';
 import 'package:flutter/material.dart';
 import 'attachment.dart';
 import 'permissions.dart';
@@ -99,6 +100,10 @@ abstract class Room {
   List<Member> membersList();
 
   Future<List<Member>> fetchMembersList({bool cache = false});
+
+  List<(Member, Role)> importantMembers();
+
+  Role getMemberRole(String identifier);
 
   bool get isMembersListComplete;
 

@@ -56,4 +56,14 @@ class MatrixMember implements Member {
 
   @override
   Color get defaultColor => hashColor(identifier);
+
+  @override
+  bool operator ==(Object other) {
+    if (other is! MatrixMember) return false;
+    if (identical(this, other)) return true;
+    return identifier == other.identifier;
+  }
+
+  @override
+  int get hashCode => identifier.hashCode;
 }

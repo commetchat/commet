@@ -2,6 +2,7 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/components/invitation/invitation_component.dart';
 import 'package:commet/client/profile.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
+import 'package:commet/ui/molecules/profile/mini_profile_view.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/utils/debounce.dart';
 import 'package:flutter/material.dart';
@@ -61,10 +62,12 @@ class _SendInvitationWidgetState extends State<SendInvitationWidget> {
                       : ListView.builder(
                           itemCount: searchResults!.length,
                           shrinkWrap: true,
-                          // TODO: Mini profile view
                           itemBuilder: (context, index) {
-                            return tiamat.Text(
-                                searchResults![index].identifier);
+                            return MiniProfileView(
+                              client: widget.component.client,
+                              userId: searchResults![index].identifier,
+                              initialProfile: searchResults![index],
+                            );
                           },
                         )),
             if (showRecommendations && recommended.isNotEmpty)
@@ -77,8 +80,9 @@ class _SendInvitationWidgetState extends State<SendInvitationWidget> {
                     itemCount: recommended.length,
                     itemBuilder: (context, index) {
                       var room = recommended[index];
-                      // TODO: Mini Profile View
-                      return tiamat.Text(room.directMessagePartnerID!);
+                      return MiniProfileView(
+                          client: room.client,
+                          userId: room.directMessagePartnerID!);
                     },
                   ),
                 ],

@@ -4,39 +4,58 @@ import 'package:commet/utils/event_bus.dart';
 import 'package:commet/ui/organisms/user_profile/user_profile_view.dart';
 import 'package:flutter/material.dart';
 
-class UserProfile extends StatelessWidget {
+class UserProfile extends StatefulWidget {
   const UserProfile(
-      {super.key, required this.user, required this.client, this.dismiss});
+      {super.key, required this.userId, required this.client, this.dismiss});
   final Client client;
-  final Profile user;
+  final String userId;
   final Function? dismiss;
 
   @override
+  State<UserProfile> createState() => _UserProfileState();
+}
+
+class _UserProfileState extends State<UserProfile> {
+  Profile? profile;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.client.getProfile(widget.userId).then((value) => setState(() {
+          profile = value;
+        }));
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (profile == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
     return UserProfileView(
-      userAvatar: user.avatar,
-      displayName: user.displayName,
-      identifier: user.identifier,
-      userColor: user.defaultColor,
-      isSelf: client.self == user,
+      userAvatar: profile!.avatar,
+      displayName: profile!.displayName,
+      identifier: profile!.identifier,
+      userColor: profile!.defaultColor,
+      isSelf: widget.client.self == profile,
       onMessageButtonClicked: openDirectMessage,
     );
   }
 
   Future<void> openDirectMessage() async {
-    var existingRooms = client.directMessages
-        .where((element) => user.identifier == element.directMessagePartnerID);
+    var existingRooms = widget.client.directMessages.where(
+        (element) => profile!.identifier == element.directMessagePartnerID);
 
     if (existingRooms.isNotEmpty) {
       EventBus.openRoom
-          .add((existingRooms.first.identifier, client.identifier));
+          .add((existingRooms.first.identifier, widget.client.identifier));
     } else {
-      var room = await client.createDirectMessage(user.identifier);
+      var room = await widget.client.createDirectMessage(profile!.identifier);
       if (room != null) {
-        EventBus.openRoom.add((room.identifier, client.identifier));
+        EventBus.openRoom.add((room.identifier, widget.client.identifier));
       }
     }
 
-    dismiss?.call();
+    widget.dismiss?.call();
   }
 }

@@ -179,7 +179,7 @@ class MainPageViewDesktop extends StatelessWidget {
                 ),
                 Tile.low1(
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
                     child: SizedBox(
                         width: 200,
                         child: RoomMembersListWidget(state.currentRoom!)),

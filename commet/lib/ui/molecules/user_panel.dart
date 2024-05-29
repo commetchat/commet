@@ -1,5 +1,8 @@
+import 'package:commet/client/client.dart';
 import 'package:commet/client/member.dart';
 import 'package:commet/ui/atoms/shimmer_loading.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
+import 'package:commet/ui/organisms/user_profile/user_profile.dart';
 import 'package:flutter/material.dart' as material;
 import 'package:flutter/material.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
@@ -7,9 +10,15 @@ import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class MemberPanel extends material.StatefulWidget {
-  const MemberPanel(this.peer,
-      {super.key, this.userColor, this.showFullId = false, this.onTap});
-  final Member peer;
+  const MemberPanel(
+      {super.key,
+      required this.member,
+      required this.client,
+      this.userColor,
+      this.showFullId = false,
+      this.onTap});
+  final Member member;
+  final Client client;
   final Color? userColor;
   final bool showFullId;
   final void Function()? onTap;
@@ -22,9 +31,10 @@ class _MemberPanelState extends material.State<MemberPanel> {
   @override
   material.Widget build(material.BuildContext context) {
     return UserPanelView(
-      displayName: widget.peer.displayName,
-      avatar: widget.peer.avatar,
-      detail: widget.showFullId ? widget.peer.identifier : widget.peer.detail,
+      displayName: widget.member.displayName,
+      avatar: widget.member.avatar,
+      detail:
+          widget.showFullId ? widget.member.identifier : widget.member.detail,
       color: widget.userColor,
       avatarColor: widget.userColor,
       nameColor: widget.userColor,
@@ -33,14 +43,13 @@ class _MemberPanelState extends material.State<MemberPanel> {
   }
 
   void onUserPanelClicked() {
-    // TODO: Update user profile display
-
-    // AdaptiveDialog.show(context,
-    //     builder: (_) => UserProfile(
-    //           user: widget.peer,
-    //           dismiss: () => Navigator.pop(context),
-    //         ),
-    //     title: "User");
+    AdaptiveDialog.show(context,
+        builder: (_) => UserProfile(
+              userId: widget.member.identifier,
+              client: widget.client,
+              dismiss: () => Navigator.pop(context),
+            ),
+        title: "User");
   }
 }
 
