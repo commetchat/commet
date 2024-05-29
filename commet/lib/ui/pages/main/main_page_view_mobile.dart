@@ -14,6 +14,7 @@ import 'package:commet/ui/organisms/room_members_list/room_members_list.dart';
 import 'package:commet/ui/organisms/side_navigation_bar.dart';
 import 'package:commet/ui/organisms/space_summary/space_summary.dart';
 import 'package:commet/ui/pages/main/main_page.dart';
+import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/scaled_app.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -45,6 +46,9 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
   @override
   void initState() {
     panelsKey = GlobalKey<OverlappingPanelsState>();
+    EventBus.openThread.stream.listen((event) {
+      panelsKey.currentState?.reveal(RevealSide.right);
+    });
     super.initState();
   }
 
@@ -77,24 +81,42 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
           }
         },
         child: Tile.low4(
-          child: OverlappingPanels(
-              key: panelsKey,
-              left: navigation(context),
-              main: Container(
-                child: shouldMainIgnoreInput
-                    ? IgnorePointer(
-                        child: Container(key: mainPanelKey, child: mainPanel()),
-                      )
-                    : Container(key: mainPanelKey, child: mainPanel()),
-              ),
-              onDragStart: () {},
-              onSideChange: (side) {
-                setState(() {
-                  shouldMainIgnoreInput = side != RevealSide.main;
-                });
-              },
-              right: widget.state.currentRoom != null ? userList() : null),
-        ));
+            child: OverlappingPanels(
+          key: panelsKey,
+          left: navigation(context),
+          main: Container(
+            child: shouldMainIgnoreInput
+                ? IgnorePointer(
+                    child: Container(key: mainPanelKey, child: mainPanel()),
+                  )
+                : Container(key: mainPanelKey, child: mainPanel()),
+          ),
+          onDragStart: () {},
+          onSideChange: (side) {
+            setState(() {
+              shouldMainIgnoreInput = side != RevealSide.main;
+            });
+          },
+          right: rightPanel(context),
+        )));
+  }
+
+  Widget? rightPanel(BuildContext context) {
+    if (widget.state.currentThreadId != null &&
+        widget.state.currentRoom != null) {
+      return Chat(
+        widget.state.currentRoom!,
+        threadId: widget.state.currentThreadId,
+        key: ValueKey(
+            "room-timeline-key-${widget.state.currentRoom!.localId}_thread_${widget.state.currentThreadId!}"),
+      );
+    }
+
+    if (widget.state.currentRoom != null) {
+      return userList();
+    }
+
+    return null;
   }
 
   Widget navigation(BuildContext newContext) {

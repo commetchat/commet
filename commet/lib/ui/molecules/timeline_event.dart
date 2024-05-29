@@ -1,3 +1,4 @@
+import 'package:commet/client/components/threads/thread_component.dart';
 import 'package:commet/client/components/url_preview/url_preview_component.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/main.dart';
@@ -30,6 +31,9 @@ class TimelineEventView extends StatefulWidget {
       this.deleteEvent,
       this.canDeleteEvent = false,
       this.useCachedFormat = false,
+      this.threadsComponent,
+      this.isInThread = false,
+      this.onThreadOpened,
       this.debugInfo});
   final TimelineEvent event;
   final bool hovered;
@@ -43,8 +47,11 @@ class TimelineEventView extends StatefulWidget {
   final Function()? setReplyingEvent;
   final Function()? setEditingEvent;
   final Function()? deleteEvent;
+  final Function()? onThreadOpened;
   final bool canDeleteEvent;
+  final bool isInThread;
   final Function(Emoticon emote)? onReactionTapped;
+  final ThreadsComponent? threadsComponent;
 
   @override
   State<TimelineEventView> createState() => _TimelineEventState();
@@ -220,7 +227,21 @@ class _TimelineEventState extends State<TimelineEventView> {
     switch (widget.event.type) {
       case EventType.message:
       case EventType.sticker:
-        return Message(
+        if (widget.isInThread == false &&
+            widget.threadsComponent
+                    ?.isEventInResponseToThread(event, widget.timeline) ==
+                true) {
+          return null;
+          return GenericRoomEvent(
+            leftPadding: 0,
+            event.body ?? "",
+            senderImage: avatar,
+            senderName: displayName,
+            senderColor: color,
+          );
+        }
+
+        Widget result = Message(
           senderName: displayName,
           senderColor: color,
           senderAvatar: avatar,
@@ -237,7 +258,9 @@ class _TimelineEventState extends State<TimelineEventView> {
                   : relatedEvent?.attachments?.firstOrNull?.name),
           replySenderName: relatedEventDisplayName,
           replySenderColor: replyColor,
-          isInReply: widget.event.relatedEventId != null,
+          isInReply:
+              widget.event.relationshipType == EventRelationshipType.reply &&
+                  widget.event.relatedEventId != null,
           edited: widget.event.edited,
           onReactionTapped: widget.onReactionTapped,
           links: urlPreviews,
@@ -247,6 +270,25 @@ class _TimelineEventState extends State<TimelineEventView> {
               ? tiamat.Text.error(errorMessageFailedToSend)
               : null,
         );
+
+        if (widget.threadsComponent?.isHeadOfThread(event, widget.timeline) ==
+            true) {
+          result = Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              result,
+              tiamat.TextButton(
+                icon: m.Icons.message,
+                "Thread Started",
+                onTap: () => widget.onThreadOpened?.call(),
+              )
+            ],
+          );
+        }
+
+        return result;
       case EventType.encrypted:
         return Message(
             senderName: displayName,

@@ -4,10 +4,19 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:flutter/material.dart' as m;
 
 class GenericRoomEvent extends StatelessWidget {
-  const GenericRoomEvent(this.text, {this.icon, this.senderImage, super.key});
+  const GenericRoomEvent(this.text,
+      {this.icon,
+      this.senderImage,
+      this.leftPadding = 44,
+      this.senderColor,
+      this.senderName,
+      super.key});
   final String text;
+  final String? senderName;
+  final Color? senderColor;
   final IconData? icon;
   final ImageProvider? senderImage;
+  final double leftPadding;
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +32,7 @@ class GenericRoomEvent extends StatelessWidget {
               children: [
                 if (icon != null)
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(44, 0, 8, 0),
+                    padding: EdgeInsets.fromLTRB(leftPadding, 0, 8, 0),
                     child: Icon(
                       icon,
                       size: 20,
@@ -31,10 +40,18 @@ class GenericRoomEvent extends StatelessWidget {
                   ),
                 if (senderImage != null)
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(44, 0, 8, 0),
+                    padding: EdgeInsets.fromLTRB(leftPadding, 0, 8, 0),
                     child: Avatar(
                       image: senderImage,
                       radius: 10,
+                    ),
+                  ),
+                if (senderName != null)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+                    child: tiamat.Text.name(
+                      senderName!,
+                      color: senderColor,
                     ),
                   ),
                 Flexible(

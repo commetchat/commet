@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:commet/client/components/threads/thread_component.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/main.dart';
@@ -48,6 +49,9 @@ class TimelineViewer extends StatefulWidget {
       this.onAddReaction,
       this.onReactionTapped,
       this.doMessageOverlayMenu = true,
+      this.threads,
+      this.onThreadOpened,
+      this.isThreadTimeline = false,
       Key? key})
       : super(key: key);
 
@@ -60,6 +64,9 @@ class TimelineViewer extends StatefulWidget {
   final Function(TimelineEvent event)? onEventLongPress;
   final Function(TimelineEvent event, Emoticon emote)? onAddReaction;
   final Function(TimelineEvent event, Emoticon emote)? onReactionTapped;
+  final Function(TimelineEvent threadRootEvent)? onThreadOpened;
+  final ThreadsComponent? threads;
+  final bool isThreadTimeline;
 
   @override
   State<TimelineViewer> createState() => TimelineViewerState();
@@ -475,6 +482,10 @@ class TimelineViewerState extends State<TimelineViewer>
               widget.setReplyingEvent?.call(widget.timeline.events[index]),
           onLongPress: () => onEventLongPress(widget.timeline.events[index]),
           useCachedFormat: true,
+          threadsComponent: widget.threads,
+          onThreadOpened: () =>
+              widget.onThreadOpened?.call(widget.timeline.events[index]),
+          isInThread: widget.isThreadTimeline,
         ),
       ),
     );

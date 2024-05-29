@@ -320,6 +320,8 @@ class MatrixRoom extends Room {
       {String? message,
       TimelineEvent? inReplyTo,
       TimelineEvent? replaceEvent,
+      String? threadRootEventId,
+      String? threadLastEventId,
       List<ProcessedAttachment>? processedAttachments}) async {
     matrix.Event? replyingTo;
 
@@ -354,7 +356,10 @@ class MatrixRoom extends Room {
       }
 
       var id = await _matrixRoom.sendEvent(event,
-          inReplyTo: replyingTo, editEventId: replaceEvent?.eventId);
+          inReplyTo: replyingTo,
+          editEventId: replaceEvent?.eventId,
+          threadLastEventId: threadLastEventId,
+          threadRootEventId: threadRootEventId);
 
       if (id != null) {
         var event = await _matrixRoom.getEventById(id);
