@@ -1,5 +1,6 @@
 import 'package:commet/ui/molecules/emoji_picker.dart';
 import 'package:commet/ui/molecules/message_popup_menu/message_popup_menu.dart';
+import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
 import 'dart:async';
@@ -132,7 +133,15 @@ class _MessagePopupMenuViewOverlayState
                     ContextMenuItem(
                         text: "Show Source",
                         icon: Icons.code,
-                        onPressed: () => widget.state.showSource(context))
+                        onPressed: () => widget.state.showSource(context)),
+                    ContextMenuItem(
+                        text: "Reply in Thread",
+                        icon: Icons.message,
+                        onPressed: () => EventBus.openThread.add((
+                              widget.state.timeline.client.identifier,
+                              widget.state.timeline.room.identifier,
+                              widget.state.event.eventId
+                            )))
                   ]),
             ],
           ),
