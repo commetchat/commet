@@ -7,6 +7,7 @@ import 'package:commet/ui/molecules/emoji_picker.dart';
 import 'package:commet/ui/molecules/message_popup_menu/message_popup_menu.dart';
 import 'package:commet/ui/molecules/timeline_event.dart';
 import 'package:commet/utils/common_strings.dart';
+import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/atoms/seperator.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -95,6 +96,21 @@ class MessagePopupMenuViewDialog extends StatelessWidget {
                   },
                 ),
               ),
+            SizedBox(
+              height: 50,
+              child: tiamat.TextButton(
+                "Reply in thread",
+                icon: Icons.message_rounded,
+                onTap: () {
+                  EventBus.openThread.add((
+                    state.timeline.client.identifier,
+                    state.timeline.room.identifier,
+                    event.eventId
+                  ));
+                  Navigator.pop(context);
+                },
+              ),
+            ),
             if (state.isDeletable)
               SizedBox(
                 height: 50,

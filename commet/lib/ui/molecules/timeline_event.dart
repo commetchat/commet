@@ -145,23 +145,6 @@ class _TimelineEventState extends State<TimelineEventView> {
 
   UrlPreviewData? urlPreviews;
   bool loadingUrlPreviews = false;
-  TimelineEvent? threadReplyEvent;
-
-  String? get threadReplyEventDisplayName => threadReplyEvent == null
-      ? null
-      : widget.timeline.room
-          .getMemberOrFallback(threadReplyEvent!.senderId)!
-          .displayName;
-
-  Color get threadReplyColor => threadReplyEvent == null
-      ? m.Theme.of(context).colorScheme.onPrimary
-      : widget.timeline.room.getColorOfUser(threadReplyEvent!.senderId);
-
-  ImageProvider? get threadReplyAvatar => threadReplyEvent == null
-      ? null
-      : widget.timeline.room
-          .getMemberOrFallback(threadReplyEvent!.senderId)!
-          .avatar;
 
   @override
   void initState() {
@@ -172,12 +155,10 @@ class _TimelineEventState extends State<TimelineEventView> {
       }
     }
 
-    if (widget.threadsComponent
-            ?.isHeadOfThread(widget.event, widget.timeline) ==
-        true) {
-      threadReplyEvent = widget.threadsComponent!
-          .getFirstReplyToThread(widget.event, widget.timeline);
-    }
+    if (widget.isInThread == false &&
+        widget.threadsComponent
+                ?.isHeadOfThread(widget.event, widget.timeline) ==
+            true) {}
 
     var component =
         widget.timeline.room.client.getComponent<UrlPreviewComponent>();
@@ -252,7 +233,8 @@ class _TimelineEventState extends State<TimelineEventView> {
     switch (widget.event.type) {
       case EventType.message:
       case EventType.sticker:
-        if (widget.isInThread == false &&
+        if (event.status != TimelineEventStatus.error &&
+            widget.isInThread == false &&
             widget.threadsComponent
                     ?.isEventInResponseToThread(event, widget.timeline) ==
                 true) {
@@ -289,9 +271,12 @@ class _TimelineEventState extends State<TimelineEventView> {
               : null,
         );
 
-        if (widget.threadsComponent?.isHeadOfThread(event, widget.timeline) ==
-                true &&
-            threadReplyEvent != null) {
+        if (!widget.isInThread &&
+            widget.threadsComponent?.isHeadOfThread(event, widget.timeline) ==
+                true) {
+          var threadReplyEvent = widget.threadsComponent!
+              .getFirstReplyToThread(widget.event, widget.timeline);
+
           result = Column(
             mainAxisAlignment: MainAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
@@ -302,9 +287,14 @@ class _TimelineEventState extends State<TimelineEventView> {
                 padding: const EdgeInsets.fromLTRB(8, 0, 8, 4),
                 child: ThreadReplyFooter(
                   body: threadReplyEvent!.body ?? "",
-                  senderName: threadReplyEventDisplayName ?? "Unknown User",
-                  senderAvatar: threadReplyAvatar,
-                  senderColor: threadReplyColor,
+                  senderName: widget.timeline.room
+                      .getMemberOrFallback(threadReplyEvent.senderId)!
+                      .displayName,
+                  senderAvatar: widget.timeline.room
+                      .getMemberOrFallback(threadReplyEvent.senderId)!
+                      .avatar,
+                  senderColor: widget.timeline.room
+                      .getColorOfUser(threadReplyEvent.senderId),
                   onTap: widget.onThreadOpened,
                 ),
               ),

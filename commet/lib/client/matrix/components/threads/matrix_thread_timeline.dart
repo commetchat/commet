@@ -59,7 +59,7 @@ class MatrixThreadTimeline implements Timeline {
   }
 
   Future<List<TimelineEvent>> getThreadEvents(
-      {int limit = 10, String? nextBatch}) async {
+      {int limit = 20, String? nextBatch}) async {
     var client = this.client as MatrixClient;
     var room = this.room as MatrixRoom;
 

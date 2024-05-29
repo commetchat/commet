@@ -133,12 +133,25 @@ class MatrixThreadsComponent implements ThreadsComponent<MatrixClient> {
       return null;
     }
 
-    room.sendMessage(
+    var newMessage = await room.sendMessage(
         message: message,
         inReplyTo: inReplyTo,
         replaceEvent: replaceEvent,
         processedAttachments: processedAttachments,
-        threadRootEventId: threadRootEventId);
+        threadRootEventId: threadRootEventId) as MatrixTimelineEvent?;
+
+    if (room.timeline != null) {
+      var index = room.timeline!.events
+          .indexWhere((element) => element.eventId == threadRootEventId);
+
+      (room.timeline as MatrixTimeline)
+          .matrixTimeline!
+          .addAggregatedEvent(newMessage!.event);
+
+      if (index != -1) {
+        room.timeline!.notifyChanged(index);
+      }
+    }
 
     return null;
   }
