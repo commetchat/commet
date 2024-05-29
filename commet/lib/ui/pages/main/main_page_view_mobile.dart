@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:commet/client/room.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/floating_tile.dart';
@@ -108,30 +110,31 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
   Widget? rightPanel(BuildContext context) {
     if (widget.state.currentThreadId != null &&
         widget.state.currentRoom != null) {
-      return keyboardAdaptor(
-        ignore: panelsKey.currentState?.currentSide != RevealSide.right,
-        Stack(
-          children: [
-            Chat(
-              widget.state.currentRoom!,
-              threadId: widget.state.currentThreadId,
-              key: ValueKey(
-                  "room-timeline-key-${widget.state.currentRoom!.localId}_thread_${widget.state.currentThreadId!}"),
-            ),
-            ScaledSafeArea(
-              child: Align(
-                alignment: Alignment.topRight,
-                child: Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: tiamat.CircleButton(
-                    icon: Icons.close,
-                    radius: 24,
-                    onPressed: () => EventBus.closeThread.add(null),
+      return Tile(
+        child: keyboardAdaptor(
+          Stack(
+            children: [
+              Chat(
+                widget.state.currentRoom!,
+                threadId: widget.state.currentThreadId,
+                key: ValueKey(
+                    "room-timeline-key-${widget.state.currentRoom!.localId}_thread_${widget.state.currentThreadId!}"),
+              ),
+              ScaledSafeArea(
+                child: Align(
+                  alignment: Alignment.topRight,
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: tiamat.CircleButton(
+                      icon: Icons.close,
+                      radius: 24,
+                      onPressed: () => EventBus.closeThread.add(null),
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       );
     }
@@ -182,18 +185,12 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
 
   Widget keyboardAdaptor(Widget child, {bool ignore = false}) {
     var scaledQuery = MediaQuery.of(context).scale();
-    var offset = scaledQuery.viewInsets.bottom;
-    if (offset == 0 || ignore) {
-      offset = scaledQuery.padding.bottom;
-    }
+    var offset = max(scaledQuery.viewInsets.bottom, scaledQuery.padding.bottom);
 
     return ScaledSafeArea(
         bottom: false,
-        child: AnimatedPadding(
-            curve: Curves.easeOutCubic,
-            duration: Durations.medium1,
-            padding: EdgeInsets.fromLTRB(0, 0, 0, offset),
-            child: child));
+        child: Padding(
+            padding: EdgeInsets.fromLTRB(0, 0, 0, offset), child: child));
   }
 
   Widget mainPanel() {
@@ -222,7 +219,6 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
       }
       return Tile(
         child: keyboardAdaptor(
-          ignore: panelsKey.currentState?.currentSide != RevealSide.main,
           Column(
             children: [
               SizedBox(
