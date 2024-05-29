@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tiamat/atoms/avatar.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -10,6 +11,7 @@ class GenericRoomEvent extends StatelessWidget {
       this.leftPadding = 44,
       this.senderColor,
       this.senderName,
+      this.padding = const EdgeInsets.fromLTRB(20, 8, 20, 8),
       super.key});
   final String text;
   final String? senderName;
@@ -17,6 +19,7 @@ class GenericRoomEvent extends StatelessWidget {
   final IconData? icon;
   final ImageProvider? senderImage;
   final double leftPadding;
+  final EdgeInsets padding;
 
   @override
   Widget build(BuildContext context) {
@@ -25,9 +28,9 @@ class GenericRoomEvent extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(2.0),
         child: Align(
-          alignment: Alignment.centerLeft,
+          alignment: Alignment.topLeft,
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
+            padding: padding,
             child: Row(
               children: [
                 if (icon != null)
@@ -54,7 +57,7 @@ class GenericRoomEvent extends StatelessWidget {
                       color: senderColor,
                     ),
                   ),
-                Flexible(
+                Expanded(
                   child: Row(
                     children: [
                       Flexible(child: tiamat.Text.labelLow(text)),

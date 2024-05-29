@@ -18,4 +18,6 @@ abstract class ThreadsComponent<T extends Client> implements Component<T> {
     TimelineEvent? replaceEvent,
     List<ProcessedAttachment>? processedAttachments,
   });
+
+  TimelineEvent? getFirstReplyToThread(TimelineEvent event, Timeline timeline);
 }

@@ -242,7 +242,6 @@ class MainPageState extends State<MainPage> {
 
     setState(() {
       _currentThreadId = threadEventRootId;
-      print("Opening thread: $threadEventRootId");
     });
   }
 }

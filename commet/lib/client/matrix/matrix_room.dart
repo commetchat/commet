@@ -332,7 +332,9 @@ class MatrixRoom extends Room {
     if (processedAttachments != null) {
       Future.wait(processedAttachments
           .whereType<MatrixProcessedAttachment>()
-          .map((e) => _matrixRoom.sendFileEvent(e.file)));
+          .map((e) => _matrixRoom.sendFileEvent(e.file,
+              threadLastEventId: threadLastEventId,
+              threadRootEventId: threadRootEventId)));
     }
 
     if (message != null && message.trim().isNotEmpty) {

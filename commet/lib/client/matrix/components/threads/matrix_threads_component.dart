@@ -46,19 +46,56 @@ class MatrixThreadsComponent implements ThreadsComponent<MatrixClient> {
 
   @override
   bool isHeadOfThread(TimelineEvent event, Timeline timeline) {
-    if (timeline is! MatrixTimeline) {
+    matrix.Timeline? tl;
+
+    if (timeline is MatrixTimeline) {
+      tl = timeline.matrixTimeline;
+    }
+
+    if (timeline is MatrixThreadTimeline) {
+      tl = timeline.mainRoomTimeline.matrixTimeline;
+    }
+
+    if (tl == null) {
       return false;
     }
+
     if (event is! MatrixTimelineEvent) {
       return false;
     }
 
-    if (timeline.matrixTimeline == null) {
-      return false;
+    return event.event.hasAggregatedEvents(tl, matrix.RelationshipTypes.thread);
+  }
+
+  @override
+  TimelineEvent? getFirstReplyToThread(TimelineEvent event, Timeline timeline) {
+    matrix.Timeline? tl;
+
+    if (timeline is MatrixTimeline) {
+      tl = timeline.matrixTimeline;
     }
 
-    return event.event.hasAggregatedEvents(
-        timeline.matrixTimeline!, matrix.RelationshipTypes.thread);
+    if (timeline is MatrixThreadTimeline) {
+      tl = timeline.mainRoomTimeline.matrixTimeline;
+    }
+
+    if (tl == null) {
+      return null;
+    }
+
+    if (event is! MatrixTimelineEvent) {
+      return null;
+    }
+
+    var events =
+        event.event.aggregatedEvents(tl, matrix.RelationshipTypes.thread);
+
+    var firstEvent = events.firstOrNull;
+    if (firstEvent == null) {
+      return null;
+    }
+
+    return MatrixTimelineEvent(firstEvent, client.getMatrixClient());
   }
 
   @override
@@ -70,32 +107,17 @@ class MatrixThreadsComponent implements ThreadsComponent<MatrixClient> {
     }
 
     var client = roomTimeline.client as MatrixClient;
-    var mx = client.getMatrixClient();
     var room = (roomTimeline.room as MatrixRoom);
-    var relatedEvents = await mx.request(matrix.RequestType.GET,
-        "/client/unstable/rooms/${room.identifier}/relations/$threadRootEventId/m.thread");
-
-    var chunk =
-        List<Map<String, dynamic>>.from(relatedEvents["chunk"] as Iterable);
-
-    var mxevents = chunk.map((e) => matrix.Event.fromJson(e, room.matrixRoom));
-
-    var events = mxevents.map((e) => MatrixTimelineEvent(e, mx)).toList();
-
-    var rootEvent =
-        await roomTimeline.matrixTimeline!.getEventById(threadRootEventId);
-
-    if (rootEvent != null) {
-      events.add(MatrixTimelineEvent(rootEvent, mx));
-    }
 
     var timeline = MatrixThreadTimeline(
         client: client,
         room: room,
-        events: events,
         threadRootId: threadRootEventId,
         mainRoomTimeline: roomTimeline,
         component: this);
+
+    await timeline.loadMoreHistory();
+
     return timeline;
   }
 
@@ -107,8 +129,6 @@ class MatrixThreadsComponent implements ThreadsComponent<MatrixClient> {
       TimelineEvent? inReplyTo,
       TimelineEvent? replaceEvent,
       List<ProcessedAttachment>? processedAttachments}) async {
-    print("Sending message in thread :)");
-
     if (room is! MatrixRoom) {
       return null;
     }

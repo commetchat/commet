@@ -2,6 +2,10 @@ import 'dart:async';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/threads/thread_component.dart';
+import 'package:commet/client/matrix/components/threads/matrix_threads_component.dart';
+import 'package:commet/client/matrix/matrix_client.dart';
+import 'package:commet/client/matrix/matrix_room.dart';
+import 'package:commet/client/matrix/matrix_timeline.dart';
 import 'package:commet/client/matrix/matrix_timeline_event.dart';
 
 import 'package:matrix/matrix.dart' as matrix;
@@ -16,7 +20,7 @@ class MatrixThreadTimeline implements Timeline {
   @override
   Room room;
 
-  Timeline mainRoomTimeline;
+  MatrixTimeline mainRoomTimeline;
 
   ThreadsComponent component;
 
@@ -31,18 +35,62 @@ class MatrixThreadTimeline implements Timeline {
   @override
   StreamController<int> onRemove = StreamController.broadcast();
 
+  late List<StreamSubscription> subs;
+
+  String? nextBatch;
+  bool finished = false;
+
+  Future? nextChunkRequest;
+
   MatrixThreadTimeline({
     required this.client,
     required this.room,
     required this.threadRootId,
-    required List<MatrixTimelineEvent> events,
     required this.mainRoomTimeline,
     required this.component,
+    this.nextBatch,
   }) {
-    this.events = List.from(events);
+    subs = [
+      mainRoomTimeline.onEventAdded.stream.listen(onMainTimelineEventAdded),
+      mainRoomTimeline.onChange.stream.listen(onMainTimelineEventChanged),
+      mainRoomTimeline.onRemove.stream.listen(onMainTimelineEventRemoved),
+    ];
 
-    mainRoomTimeline.onEventAdded.stream.listen(onMainTimelineEventAdded);
-    mainRoomTimeline.onChange.stream.listen(onMainTimelineEventChanged);
+    events = List.empty(growable: true);
+  }
+
+  Future<List<TimelineEvent>> getThreadEvents(
+      {int limit = 10, String? nextBatch}) async {
+    var client = this.client as MatrixClient;
+    var room = this.room as MatrixRoom;
+
+    var mx = client.getMatrixClient();
+    var data = await mx.request(matrix.RequestType.GET,
+        "/client/unstable/rooms/${room.identifier}/relations/$threadRootId/m.thread",
+        query: {
+          "limit": limit.toString(),
+          if (nextBatch != null) "from": nextBatch
+        });
+
+    var chunk = List<Map<String, dynamic>>.from(data["chunk"] as Iterable);
+
+    var mxevents = chunk.map((e) => matrix.Event.fromJson(e, room.matrixRoom));
+    var convertedEvents =
+        mxevents.map((e) => MatrixTimelineEvent(e, mx)).toList();
+
+    this.nextBatch = data["next_batch"] as String?;
+
+    if (this.nextBatch == null) {
+      finished = true;
+      var root = data["original_event"] as Map<String, dynamic>?;
+      if (root != null) {
+        var event = MatrixTimelineEvent(
+            matrix.Event.fromJson(root, room.matrixRoom), mx);
+        convertedEvents.add(event);
+      }
+    }
+
+    return convertedEvents;
   }
 
   @override
@@ -51,11 +99,15 @@ class MatrixThreadTimeline implements Timeline {
   }
 
   @override
-  Future<void> close() async {}
+  Future<void> close() async {
+    for (var sub in subs) {
+      sub.cancel();
+    }
+  }
 
   @override
   void deleteEvent(TimelineEvent event) {
-    return mainRoomTimeline.deleteEvent(event);
+    mainRoomTimeline.deleteEvent(event);
   }
 
   @override
@@ -77,19 +129,34 @@ class MatrixThreadTimeline implements Timeline {
   void insertEvent(int index, TimelineEvent event) {}
 
   @override
-  Future<void> loadMoreHistory() async {}
+  Future<void> loadMoreHistory() async {
+    if (finished) {
+      return;
+    }
+
+    if (nextChunkRequest != null) {
+      return;
+    }
+
+    nextChunkRequest = getThreadEvents(nextBatch: nextBatch);
+    var nextEvents = await nextChunkRequest;
+
+    nextChunkRequest = null;
+
+    for (var event in nextEvents) {
+      events.add(event);
+      onEventAdded.add(events.length - 1);
+    }
+  }
 
   @override
   void markAsRead(TimelineEvent event) {}
 
   @override
-  void notifyChanged(int index) {
-    // TODO: implement notifyChanged
-  }
+  void notifyChanged(int index) {}
 
   @override
-  // TODO: implement receipts
-  List<String>? get receipts => throw UnimplementedError();
+  List<String>? get receipts => null;
 
   @override
   TimelineEvent? tryGetEvent(String eventId) {
@@ -99,6 +166,10 @@ class MatrixThreadTimeline implements Timeline {
   bool isEventInThisThread(TimelineEvent event) {
     if (event is! MatrixTimelineEvent) {
       return false;
+    }
+
+    if (event.eventId == threadRootId) {
+      return true;
     }
 
     var mxEvent = event.event;
@@ -140,22 +211,28 @@ class MatrixThreadTimeline implements Timeline {
   }
 
   void onMainTimelineEventAdded(int index) {
-    print("Main timeline got a new event!");
-    if (index == 0) {
-      var event = mainRoomTimeline.events[index];
+    var event = mainRoomTimeline.events[index];
 
-      if (isEventInThisThread(event)) {
-        events.insert(0, event);
-        onEventAdded.add(0);
-      }
+    if (!isEventInThisThread(event)) {
+      return;
+    }
+
+    if (index == 0) {
+      events.insert(0, event);
+      onEventAdded.add(0);
+    } else {
+      // Theres gotta be a smarter way of doing this but whatever
+      var copy = List<TimelineEvent>.from(mainRoomTimeline.events);
+      copy.removeWhere((element) => !isEventInThisThread(element));
+
+      var newIndex = copy.indexOf(event);
+      events.insert(newIndex, event);
+      onEventAdded.add(newIndex);
     }
   }
 
   void onMainTimelineEventChanged(int index) {
-    print("An event from main timeline was changed:");
-
     var event = mainRoomTimeline.events[index];
-    print(event.eventId);
     if (isEventInThisThread(event)) {
       var index =
           events.indexWhere((element) => element.eventId == event.eventId);
@@ -163,6 +240,20 @@ class MatrixThreadTimeline implements Timeline {
       events[index] = event;
       if (index != -1) {
         onChange.add(index);
+      }
+    }
+  }
+
+  void onMainTimelineEventRemoved(int index) {
+    var event = mainRoomTimeline.events[index];
+    if (isEventInThisThread(event)) {
+      var index =
+          events.indexWhere((element) => element.eventId == event.eventId);
+
+      events.removeAt(index);
+
+      if (index != -1) {
+        onRemove.add(index);
       }
     }
   }

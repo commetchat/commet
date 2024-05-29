@@ -481,7 +481,7 @@ class TimelineViewerState extends State<TimelineViewer>
           setReplyingEvent: () =>
               widget.setReplyingEvent?.call(widget.timeline.events[index]),
           onLongPress: () => onEventLongPress(widget.timeline.events[index]),
-          useCachedFormat: true,
+          useCachedFormat: widget.isThreadTimeline,
           threadsComponent: widget.threads,
           onThreadOpened: () =>
               widget.onThreadOpened?.call(widget.timeline.events[index]),
@@ -492,6 +492,13 @@ class TimelineViewerState extends State<TimelineViewer>
   }
 
   bool shouldShowDate(int index) {
+    if (widget.isThreadTimeline &&
+        widget.threads?.isHeadOfThread(
+                widget.timeline.events[index], widget.timeline) ==
+            true) {
+      return true;
+    }
+
     var offsetIndex = index + 1;
 
     if (widget.timeline.events.length <= offsetIndex) {

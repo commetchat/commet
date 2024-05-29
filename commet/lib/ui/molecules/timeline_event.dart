@@ -3,6 +3,7 @@ import 'package:commet/client/components/url_preview/url_preview_component.dart'
 import 'package:commet/config/build_config.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/generic_room_event.dart';
+import 'package:commet/ui/atoms/thread_reply_footer.dart';
 import 'package:commet/ui/molecules/message.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' as m;
@@ -144,6 +145,23 @@ class _TimelineEventState extends State<TimelineEventView> {
 
   UrlPreviewData? urlPreviews;
   bool loadingUrlPreviews = false;
+  TimelineEvent? threadReplyEvent;
+
+  String? get threadReplyEventDisplayName => threadReplyEvent == null
+      ? null
+      : widget.timeline.room
+          .getMemberOrFallback(threadReplyEvent!.senderId)!
+          .displayName;
+
+  Color get threadReplyColor => threadReplyEvent == null
+      ? m.Theme.of(context).colorScheme.onPrimary
+      : widget.timeline.room.getColorOfUser(threadReplyEvent!.senderId);
+
+  ImageProvider? get threadReplyAvatar => threadReplyEvent == null
+      ? null
+      : widget.timeline.room
+          .getMemberOrFallback(threadReplyEvent!.senderId)!
+          .avatar;
 
   @override
   void initState() {
@@ -152,6 +170,13 @@ class _TimelineEventState extends State<TimelineEventView> {
       if (relatedEvent == null) {
         fetchRelatedEvent();
       }
+    }
+
+    if (widget.threadsComponent
+            ?.isHeadOfThread(widget.event, widget.timeline) ==
+        true) {
+      threadReplyEvent = widget.threadsComponent!
+          .getFirstReplyToThread(widget.event, widget.timeline);
     }
 
     var component =
@@ -232,13 +257,6 @@ class _TimelineEventState extends State<TimelineEventView> {
                     ?.isEventInResponseToThread(event, widget.timeline) ==
                 true) {
           return null;
-          return GenericRoomEvent(
-            leftPadding: 0,
-            event.body ?? "",
-            senderImage: avatar,
-            senderName: displayName,
-            senderColor: color,
-          );
         }
 
         Widget result = Message(
@@ -272,18 +290,24 @@ class _TimelineEventState extends State<TimelineEventView> {
         );
 
         if (widget.threadsComponent?.isHeadOfThread(event, widget.timeline) ==
-            true) {
+                true &&
+            threadReplyEvent != null) {
           result = Column(
             mainAxisAlignment: MainAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               result,
-              tiamat.TextButton(
-                icon: m.Icons.message,
-                "Thread Started",
-                onTap: () => widget.onThreadOpened?.call(),
-              )
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8, 0, 8, 4),
+                child: ThreadReplyFooter(
+                  body: threadReplyEvent!.body ?? "",
+                  senderName: threadReplyEventDisplayName ?? "Unknown User",
+                  senderAvatar: threadReplyAvatar,
+                  senderColor: threadReplyColor,
+                  onTap: widget.onThreadOpened,
+                ),
+              ),
             ],
           );
         }

@@ -77,7 +77,8 @@ class ChatState extends State<Chat> {
 
   @override
   void initState() {
-    Log.i("Initializing room timeline for: ${widget.room.displayName}");
+    Log.i(
+        "Initializing room timeline for: ${widget.room.displayName} ${widget.threadId ?? ""}");
 
     onFileDroppedSubscription =
         EventBus.onFileDropped.stream.listen(onFileDropped);
@@ -119,7 +120,8 @@ class ChatState extends State<Chat> {
 
   @override
   void dispose() {
-    Log.i("Disposing room timeline for: ${widget.room.displayName}");
+    Log.i(
+        "Disposing room timeline for: ${widget.room.displayName} ${widget.threadId ?? ""}");
 
     onFileDroppedSubscription?.cancel();
     super.dispose();
