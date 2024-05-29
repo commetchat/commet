@@ -181,7 +181,6 @@ class MatrixRoom extends Room {
     _onUpdateSubscription =
         _matrixRoom.onUpdate.stream.listen(onMatrixRoomUpdate);
 
-    _matrixRoom.client.onRoomState.stream.listen(onRoomStateUpdated);
     _matrixRoom.client.onEvent.stream.listen(onEvent);
 
     _permissions = MatrixRoomPermissions(_matrixRoom);
@@ -201,8 +200,6 @@ class MatrixRoom extends Room {
 
     _onUpdate.add(null);
   }
-
-  void onRoomStateUpdated(matrix.Event event) {}
 
   void onEvent(matrix.EventUpdate eventUpdate) async {
     if (eventUpdate.roomID != identifier) {
