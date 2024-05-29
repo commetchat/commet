@@ -44,7 +44,7 @@ class _RoomMembersListWidgetState extends State<RoomMembersListWidget> {
           ],
         ),
         Expanded(
-          child: PeerList(
+          child: RoomMemberList(
               key: ValueKey("room-participant-list-key-${widget.room.localId}"),
               widget.room),
         ),

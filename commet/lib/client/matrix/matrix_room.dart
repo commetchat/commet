@@ -9,12 +9,16 @@ import 'package:commet/client/components/room_component.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_room_emoticon_component.dart';
 import 'package:commet/client/matrix/matrix_attachment.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
+import 'package:commet/client/matrix/matrix_member.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/matrix/matrix_peer.dart';
+import 'package:commet/client/matrix/matrix_role.dart';
 import 'package:commet/client/matrix/matrix_room_permissions.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
 import 'package:commet/client/matrix/matrix_timeline_event.dart';
+import 'package:commet/client/member.dart';
 import 'package:commet/client/permissions.dart';
+import 'package:commet/client/role.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
@@ -96,9 +100,9 @@ class MatrixRoom extends Room {
   Iterable<String> get memberIds => _memberIds;
 
   @override
-  List<Peer> get typingPeers => _matrixRoom.typingUsers
-      .where((element) => element.id != client.self!.identifier)
-      .map((e) => client.getPeer(e.id))
+  List<Member> get typingPeers => _matrixRoom.typingUsers
+      .where((element) => client.self?.identifier != element.id)
+      .map((e) => MatrixMember(_matrixRoom.client, e))
       .toList();
 
   @override
@@ -175,19 +179,9 @@ class MatrixRoom extends Room {
       }
     }
 
-    var users = _matrixRoom.getParticipants();
-    for (var user in users) {
-      // Note this is not necessarily all users, this has the most effect on smaller rooms
-      // Where it is more likely that we are preloading important users
-      client.getPeer(user.id);
-    }
-
-    _memberIds.addAll(users.map((e) => e.id));
-
     _onUpdateSubscription =
         _matrixRoom.onUpdate.stream.listen(onMatrixRoomUpdate);
 
-    _matrixRoom.client.onRoomState.stream.listen(onRoomStateUpdated);
     _matrixRoom.client.onEvent.stream.listen(onEvent);
 
     _permissions = MatrixRoomPermissions(_matrixRoom);
@@ -206,15 +200,6 @@ class MatrixRoom extends Room {
     }
 
     _onUpdate.add(null);
-  }
-
-  void onRoomStateUpdated(matrix.Event event) {
-    if (event.roomId != identifier) return;
-
-    _memberIds.addAll(_matrixRoom
-        .getParticipants()
-        .where((element) => !memberIds.contains(element.id))
-        .map((e) => e.id));
   }
 
   void onEvent(matrix.EventUpdate eventUpdate) async {
@@ -251,10 +236,10 @@ class MatrixRoom extends Room {
       return;
     }
 
-    var sender = client.getPeer(event.senderId);
+    var sender = getMemberOrFallback(event.senderId);
 
-    if (sender.loading != null) {
-      await sender.loading;
+    if (sender == null) {
+      return;
     }
 
     var notification = MessageNotificationContent(
@@ -475,11 +460,10 @@ class MatrixRoom extends Room {
     if (avatar != null) return avatar;
 
     if (isDirectMessage) {
-      var user = client.getPeer(directMessagePartnerID!);
-      await user.loading;
+      var user = await client.getProfile(directMessagePartnerID!);
 
-      if (user.avatar != null) {
-        return user.avatar;
+      if (user?.avatar != null) {
+        return user!.avatar;
       }
     }
 
@@ -505,5 +489,52 @@ class MatrixRoom extends Room {
     }
 
     return MatrixTimelineEvent(event, _matrixRoom.client);
+  }
+
+  @override
+  List<Member> membersList() {
+    var users = _matrixRoom.getParticipants();
+    return users.map((e) => MatrixMember(_matrixRoom.client, e)).toList();
+  }
+
+  @override
+  Future<List<Member>> fetchMembersList({bool cache = false}) async {
+    var results = await _matrixRoom
+        .requestParticipants([matrix.Membership.join], true, cache);
+
+    return results.map((e) => MatrixMember(_matrixRoom.client, e)).toList();
+  }
+
+  @override
+  bool get isMembersListComplete => _matrixRoom.participantListComplete;
+
+  @override
+  Member? getMemberOrFallback(String id) {
+    return MatrixMember(
+        _matrixRoom.client, _matrixRoom.unsafeGetUserFromMemoryOrFallback(id));
+  }
+
+  @override
+  List<(Member, Role)> importantMembers() {
+    var state = _matrixRoom.states["m.room.power_levels"]?[""];
+    if (state == null) return [];
+
+    var roles = (state.content["users"] as Map<String, dynamic>);
+    var ids = roles.keys;
+
+    var result = ids
+        .map((e) => (getMemberOrFallback(e)!, MatrixRole(roles[e])))
+        .toList();
+
+    result.removeWhere((element) => element.$2.rank == 0);
+
+    result.sort((a, b) => b.$2.rank.compareTo(a.$2.rank));
+
+    return result;
+  }
+
+  @override
+  Role getMemberRole(String identifier) {
+    return MatrixRole(_matrixRoom.getPowerLevelByUserId(identifier));
   }
 }

@@ -13,9 +13,6 @@ import 'package:commet/client/matrix/components/url_preview/matrix_url_preview_c
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/matrix/matrix_space.dart';
-import 'package:commet/client/simulated/components/simulated_component.dart';
-import 'package:commet/client/simulated/components/simulated_emoticon_component.dart';
-import 'package:commet/client/simulated/simulated_client.dart';
 
 class ComponentRegistry {
   static List<Component<MatrixClient>> getMatrixComponents(
@@ -42,14 +39,6 @@ class ComponentRegistry {
       getMatrixSpaceComponents(MatrixClient client, MatrixSpace space) {
     return [
       MatrixSpaceEmoticonComponent(client, space),
-    ];
-  }
-
-  static List<Component<SimulatedClient>> getSimulatedComponents(
-      SimulatedClient client) {
-    return [
-      SimulatedComponent(client),
-      SimulatedEmoticonComponent(client),
     ];
   }
 }

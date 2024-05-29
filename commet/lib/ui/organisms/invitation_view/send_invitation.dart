@@ -1,7 +1,8 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/invitation/invitation_component.dart';
+import 'package:commet/client/profile.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
-import 'package:commet/ui/molecules/user_panel.dart';
+import 'package:commet/ui/molecules/profile/mini_profile_view.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/utils/debounce.dart';
 import 'package:flutter/material.dart';
@@ -22,10 +23,10 @@ class _SendInvitationWidgetState extends State<SendInvitationWidget> {
   late Debouncer debouncer;
 
   bool isSearching = false;
-  List<Peer>? searchResultUserIds;
+  List<Profile>? searchResults;
 
   bool get showRecommendations =>
-      !(isSearching || searchResultUserIds?.isNotEmpty == true);
+      !(isSearching || searchResults?.isNotEmpty == true);
 
   @override
   void initState() {
@@ -53,20 +54,19 @@ class _SendInvitationWidgetState extends State<SendInvitationWidget> {
               maxLines: 1,
               onChanged: onSearchTextChanged,
             ),
-            if (isSearching || searchResultUserIds != null)
+            if (isSearching || searchResults != null)
               SizedBox(
                   height: 300,
                   child: isSearching
                       ? const Center(child: CircularProgressIndicator())
                       : ListView.builder(
-                          itemCount: searchResultUserIds!.length,
+                          itemCount: searchResults!.length,
                           shrinkWrap: true,
                           itemBuilder: (context, index) {
-                            return UserPanel(
-                              searchResultUserIds![index],
-                              showFullId: true,
-                              onTap: () =>
-                                  invitePeer(searchResultUserIds![index]),
+                            return MiniProfileView(
+                              client: widget.component.client,
+                              userId: searchResults![index].identifier,
+                              initialProfile: searchResults![index],
                             );
                           },
                         )),
@@ -80,13 +80,9 @@ class _SendInvitationWidgetState extends State<SendInvitationWidget> {
                     itemCount: recommended.length,
                     itemBuilder: (context, index) {
                       var room = recommended[index];
-                      var peer =
-                          room.client.getPeer(room.directMessagePartnerID!);
-                      return UserPanel(
-                        peer,
-                        showFullId: true,
-                        onTap: () => invitePeer(peer),
-                      );
+                      return MiniProfileView(
+                          client: room.client,
+                          userId: room.directMessagePartnerID!);
                     },
                   ),
                 ],
@@ -98,7 +94,7 @@ class _SendInvitationWidgetState extends State<SendInvitationWidget> {
   void onSearchTextChanged(String value) async {
     setState(() {
       isSearching = value.isNotEmpty;
-      searchResultUserIds = null;
+      searchResults = null;
       debouncer.cancel();
     });
 
@@ -112,7 +108,7 @@ class _SendInvitationWidgetState extends State<SendInvitationWidget> {
 
     setState(() {
       isSearching = false;
-      searchResultUserIds = result;
+      searchResults = result;
     });
   }
 

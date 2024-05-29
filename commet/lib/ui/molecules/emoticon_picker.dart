@@ -3,58 +3,13 @@ import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/molecules/emoji_picker.dart';
 import 'package:commet/ui/molecules/gif_picker.dart';
 import 'package:commet/ui/molecules/sticker_picker.dart';
-import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:commet/client/components/gif/gif_search_result.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 import '../../client/components/emoticon/emoji_pack.dart';
 import '../../client/components/emoticon/emoticon.dart';
-
-@UseCase(name: 'Emoticon Picker', type: EmoticonPicker)
-@Deprecated("widgetbook")
-Widget wbEmoticonPicker(BuildContext context) {
-  return Center(
-    child: SizedBox(
-        //width: 350,
-        height: 450,
-        child: FutureBuilder(
-            future: UnicodeEmojis.load(),
-            builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) =>
-                snapshot.hasData
-                    ? EmoticonPicker(
-                        emoji: snapshot.data as List<EmoticonPack>,
-                        stickers: snapshot.data as List<EmoticonPack>,
-                      )
-                    : const Center(
-                        child: CircularProgressIndicator(),
-                      ))),
-  );
-}
-
-@UseCase(name: 'Emoticon Picker With Gif', type: EmoticonPicker)
-@Deprecated("widgetbook")
-Widget wbEmoticonPickerWithGif(BuildContext context) {
-  return Center(
-    child: SizedBox(
-        //width: 350,
-        height: 450,
-        child: FutureBuilder(
-            future: UnicodeEmojis.load(),
-            builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) =>
-                snapshot.hasData
-                    ? EmoticonPicker(
-                        emoji: snapshot.data as List<EmoticonPack>,
-                        stickers: snapshot.data as List<EmoticonPack>,
-                        allowGifSearch: true,
-                      )
-                    : const Center(
-                        child: CircularProgressIndicator(),
-                      ))),
-  );
-}
 
 class EmoticonPicker extends StatefulWidget {
   const EmoticonPicker({

@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:commet/config/build_config.dart';
+import 'package:commet/ui/atoms/role_view.dart';
 import 'package:commet/ui/pages/settings/categories/room/permissions/matrix/matrix_room_permissions_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -127,7 +128,14 @@ class _MatrixRoomPermissionsViewState extends State<MatrixRoomPermissionsView> {
   Widget itemBuilder(BuildContext context, int index) {
     var item = entries[index];
     if (item is MatrixRoomRoleEntry) {
-      return buildRole(item);
+      return Align(
+        alignment: Alignment.center,
+        child: RoleView(
+          name: item.name,
+          icon: item.icon,
+          powerLevel: item.powerlevel,
+        ),
+      );
     }
 
     if (item is MatrixRoomPermissionEntry) {
@@ -135,34 +143,6 @@ class _MatrixRoomPermissionsViewState extends State<MatrixRoomPermissionsView> {
     }
 
     return const Placeholder();
-  }
-
-  Widget buildRole(MatrixRoomRoleEntry item) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
-      child: Align(
-        alignment: Alignment.center,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: Tile.low2(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (item.icon != null) Icon(item.icon),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                    child: tiamat.Text.labelEmphasised(item.name),
-                  ),
-                  tiamat.Text.tiny('${item.powerlevel}')
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
   }
 
   Widget buildPermission(MatrixRoomPermissionEntry item, BuildContext context) {

@@ -102,11 +102,9 @@ class BackgroundNotificationsManager {
     Log.i("Found room: ${room?.displayName}");
 
     var event = await room!.getEvent(eventId);
-    var user = client.getPeer(event!.senderId);
-    await user.loading;
+    var user = room.getMemberOrFallback(event!.senderId)!;
 
-    Log.i("Got user: $user  (${user.avatar})");
-
+    Log.i("Got user: $user  ($user)");
     Log.i("Got event: ${event.body}");
     Log.i("Received background notification data: $event");
 

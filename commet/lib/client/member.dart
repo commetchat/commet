@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-abstract class Peer {
+abstract class Member {
   String get identifier;
   String get userName;
   String get displayName;

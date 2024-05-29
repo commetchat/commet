@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:commet/client/auth.dart';
 import 'package:commet/client/components/component.dart';
+import 'package:commet/client/profile.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/client/space.dart';
@@ -42,7 +43,7 @@ abstract class Client {
   String get identifier;
 
   /// The Peer owned by the current user session
-  Peer? self;
+  Profile? self;
 
   ValueKey get key => ValueKey(identifier);
 
@@ -120,7 +121,7 @@ abstract class Client {
 
   /// Gets a peer by ID. will return a peer object for any given ID and then load the data from the server.
   /// This is so that you can display any given peer without having to load the data for it
-  Peer getPeer(String identifier);
+  Future<Profile?> getProfile(String identifier);
 
   /// Create a new room
   Future<Room> createRoom(String name, RoomVisibility visibility,

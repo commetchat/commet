@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
+import 'package:commet/client/profile.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/setup/setup_page.dart';
@@ -43,7 +44,7 @@ class MainPageState extends State<MainPage> {
 
   ClientManager get clientManager => widget.clientManager;
 
-  Peer get currentUser => getCurrentUser();
+  Profile get currentUser => getCurrentUser();
   Space? get currentSpace => _currentSpace;
   Room? get currentRoom => _currentRoom;
 
@@ -90,7 +91,7 @@ class MainPageState extends State<MainPage> {
     super.dispose();
   }
 
-  Peer getCurrentUser() {
+  Profile getCurrentUser() {
     if (currentRoom != null) return currentRoom!.client.self!;
 
     if (currentSpace != null) return currentSpace!.client.self!;

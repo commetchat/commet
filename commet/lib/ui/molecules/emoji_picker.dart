@@ -1,5 +1,4 @@
 import 'package:commet/client/components/emoticon/emoticon.dart';
-import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -7,32 +6,6 @@ import 'package:tiamat/atoms/image_button.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:commet/client/components/emoticon/emoji_pack.dart';
 import 'package:commet/ui/atoms/emoji_widget.dart';
-
-import 'package:widgetbook_annotation/widgetbook_annotation.dart';
-
-@UseCase(name: 'Emoji Picker', type: EmojiPicker)
-@Deprecated("widgetbook")
-Widget wbEmojiPickerDefault(BuildContext context) {
-  return Center(
-    child: SizedBox(
-        width: 350,
-        height: 350,
-        child: FutureBuilder(
-            future: UnicodeEmojis.load(),
-            builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) =>
-                snapshot.hasData
-                    ? EmojiPicker(
-                        snapshot.data as List<EmoticonPack>,
-                        onEmoticonPressed: (emoticon) {
-                          // ignore: avoid_print
-                          print("Emoticon Clicked: ${emoticon.slug}");
-                        },
-                      )
-                    : const Center(
-                        child: CircularProgressIndicator(),
-                      ))),
-  );
-}
 
 class EmojiPicker extends StatelessWidget {
   EmojiPicker(this.packs,

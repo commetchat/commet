@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/components/room_component.dart';
+import 'package:commet/client/member.dart';
+import 'package:commet/client/role.dart';
 import 'package:flutter/material.dart';
 import 'attachment.dart';
 import 'permissions.dart';
@@ -57,7 +59,7 @@ abstract class Room {
   DateTime get lastEventTimestamp;
 
   /// Set of peers who are currently typing a message in this room
-  List<Peer> get typingPeers;
+  List<Member> get typingPeers;
 
   /// Debug info for developers
   String get developerInfo;
@@ -95,6 +97,16 @@ abstract class Room {
   Future<List<ProcessedAttachment>> processAttachments(
       List<PendingFileAttachment> attachments);
 
+  List<Member> membersList();
+
+  Future<List<Member>> fetchMembersList({bool cache = false});
+
+  List<(Member, Role)> importantMembers();
+
+  Role getMemberRole(String identifier);
+
+  bool get isMembersListComplete;
+
   /// A locally unique identifier, to distinguish between rooms when two or more accounts in this app are in the same room
   String get localId => "${client.identifier}:$identifier";
 
@@ -129,6 +141,8 @@ abstract class Room {
   Future<ImageProvider?> getShortcutImage();
 
   Future<TimelineEvent?> getEvent(String eventId);
+
+  Member? getMemberOrFallback(String id);
 
   @override
   bool operator ==(Object other) {

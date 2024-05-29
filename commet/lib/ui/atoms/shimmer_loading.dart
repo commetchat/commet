@@ -21,6 +21,22 @@ class Shimmer extends StatefulWidget {
     return context.findAncestorStateOfType<ShimmerState>();
   }
 
+  static const LinearGradient harshGradient = LinearGradient(
+    colors: [
+      Color.fromARGB(200, 65, 65, 65),
+      Color.fromARGB(200, 244, 244, 244),
+      Color.fromARGB(200, 65, 65, 65),
+    ],
+    stops: [
+      0.0,
+      0.3,
+      0.4,
+    ],
+    begin: Alignment(-1, 0),
+    end: Alignment(1, 0),
+    tileMode: TileMode.clamp,
+  );
+
   const Shimmer({
     super.key,
     this.linearGradient = _shimmerGradient,
