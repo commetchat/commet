@@ -101,6 +101,7 @@ class MatrixRoom extends Room {
 
   @override
   List<Member> get typingPeers => _matrixRoom.typingUsers
+      .where((element) => client.self?.identifier != element.id)
       .map((e) => MatrixMember(_matrixRoom.client, e))
       .toList();
 
