@@ -16,7 +16,11 @@ import 'package:tiamat/config/style/theme_extensions.dart';
 
 class MatrixHtmlParser {
   static Widget parse(String text, matrix.Client client) {
-    return MatrixHtmlState(text, client);
+    return MatrixHtmlState(
+      text,
+      client,
+      key: GlobalKey(),
+    );
   }
 }
 
