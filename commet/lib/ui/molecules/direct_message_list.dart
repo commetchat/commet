@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:implicitly_animated_list/implicitly_animated_list.dart';
 import 'package:tiamat/tiamat.dart';
@@ -67,7 +68,7 @@ class _DirectMessageListState extends State<DirectMessageList> {
   }
 
   void sortRooms() {
-    rooms.sort((a, b) {
+    mergeSort(rooms, compare: (a, b) {
       return b.lastEventTimestamp.compareTo(a.lastEventTimestamp);
     });
   }
