@@ -1211,7 +1211,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelAppScale": "App-Skalierung",
+  "labelAppScale": "Größe der Bedienelemente",
   "@labelAppScale": {
     "description": "Label for the setting which controls the UI scale of the overall app",
     "type": "text",
