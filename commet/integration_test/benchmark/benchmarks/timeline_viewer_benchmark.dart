@@ -119,12 +119,17 @@ extension BenchmarkTimeline on MatrixRoom {
     final r = Random(seed);
 
     var contentLength = r.nextInt(200) + 10;
+
     var event = matrix.Event.fromJson({
       'event_id': '\$$seed',
       'type': 'm.room.message',
       'content': {
         'body': '($seed) ${RandomUtils.getRandomSentence(contentLength)}',
-        'msgtype': 'm.text'
+        'msgtype': 'm.text',
+        if (seed < 90)
+          'm.relates_to': {
+            'm.in_reply_to': {'event_id': '\$${seed + 3}'}
+          },
       },
       'sender': _userId,
       'room_id': matrixRoom.id,
