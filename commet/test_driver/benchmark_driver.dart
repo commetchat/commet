@@ -32,6 +32,12 @@ Future<void> main() {
               "unit": "ms"
             },
             {
+              "name": "$key - Standard Deviation of Frame Rasterizer Time",
+              "value":
+                  summary.computeStandardDeviationFrameRasterizerTimeMillis(),
+              "unit": "ms"
+            },
+            {
               "name": "$key - Worst Build Time",
               "value": summary.computeWorstFrameBuildTimeMillis(),
               "unit": "ms"
@@ -45,7 +51,47 @@ Future<void> main() {
               "name": "$key - 95th Percentile Build Time",
               "value": summary.computePercentileFrameBuildTimeMillis(95),
               "unit": "ms"
-            }
+            },
+            {
+              "name": "$key - 95th Percentile Raster Time",
+              "value": summary.computePercentileFrameRasterizerTimeMillis(95),
+              "unit": "ms"
+            },
+            {
+              "name": "$key - 50th Percentile Build Time",
+              "value": summary.computePercentileFrameBuildTimeMillis(50),
+              "unit": "ms"
+            },
+            {
+              "name": "$key - 50th Percentile Raster Time",
+              "value": summary.computePercentileFrameRasterizerTimeMillis(50),
+              "unit": "ms"
+            },
+            {
+              "name": "$key - Frames missed build budget",
+              "value": summary.computeMissedFrameBuildBudgetCount(),
+              "unit": "Frames"
+            },
+            {
+              "name": "$key - Frame Count",
+              "value": summary.countFrames(),
+              "unit": "Frames"
+            },
+            {
+              "name": "$key - Raster Count",
+              "value": summary.countRasterizations(),
+              "unit": "Rasterizations"
+            },
+            {
+              "name": "$key - New generation garbage collections",
+              "value": summary.newGenerationGarbageCollections(),
+              "unit": "Collections"
+            },
+            {
+              "name": "$key - Old generation garbage collections",
+              "value": summary.oldGenerationGarbageCollections(),
+              "unit": "Collections"
+            },
           ]);
         }
 
