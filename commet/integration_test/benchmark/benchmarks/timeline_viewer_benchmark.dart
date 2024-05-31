@@ -119,8 +119,8 @@ extension BenchmarkTimeline on MatrixRoom {
   matrix.Event createRandomEvent(int seed) {
     final r = Random(seed);
 
-    // var relatedEventId = '\$${seed + 5}';
-    // bool canBeRelatedEvent = seed < 90;
+    var relatedEventId = '\$${seed + 5}';
+    bool canBeRelatedEvent = seed < 90;
 
     // var json = {
     //   'event_id': '\$$seed',
@@ -145,7 +145,7 @@ extension BenchmarkTimeline on MatrixRoom {
 
     var contentLength = r.nextInt(200) + 10;
 
-    // bool isThreadReply = r.nextBool();
+    bool isThreadReply = r.nextBool();
 
     var event = matrix.Event.fromJson({
       'event_id': '\$$seed',
@@ -153,14 +153,14 @@ extension BenchmarkTimeline on MatrixRoom {
       'content': {
         'body': '($seed) ${RandomUtils.getRandomSentence(contentLength)}',
         'msgtype': 'm.text',
-        // if (canBeRelatedEvent)
-        //   'm.relates_to': {
-        //     if (isThreadReply) 'event_id': '\$${seed + 3}',
-        //     if (isThreadReply) 'rel_type': 'm.thread',
-        //     if (isThreadReply) 'is_falling_back': true,
-        //     if (isThreadReply == false)
-        //       'm.in_reply_to': {'event_id': '\$${seed + 3}'}
-        //   },
+        if (canBeRelatedEvent)
+          'm.relates_to': {
+            if (isThreadReply) 'event_id': relatedEventId,
+            if (isThreadReply) 'rel_type': 'm.thread',
+            if (isThreadReply) 'is_falling_back': true,
+            if (isThreadReply == false)
+              'm.in_reply_to': {'event_id': relatedEventId}
+          },
       },
       'sender': _userId,
       'room_id': matrixRoom.id,
