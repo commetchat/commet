@@ -48,7 +48,7 @@ jobs:
           export DISPLAY=:99
           sudo Xvfb -ac :99 -screen 0 1920x1080x24 > /dev/null 2>&1 &
           ffmpeg -f x11grab -video_size 1920x1080 -framerate 15 -i :99 -vcodec libx264 -preset ultrafast -qp 0 -nostdin -loglevel quiet -pix_fmt yuv444p video.mkv &
-          flutter drive -d linux --driver=test_driver/benchmark_driver.dart --target=integration_test/scrolling_test.dart --profile  
+          flutter drive -d linux --driver=test_driver/benchmark_driver.dart --target=integration_test/benchmark/benchmark.dart --profile  
           INTEGRATION_TEST_EXIT_CODE=$?
           sleep 1
           kill $(pgrep ffmpeg)
