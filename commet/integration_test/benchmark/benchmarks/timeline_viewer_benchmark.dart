@@ -130,18 +130,18 @@ extension BenchmarkTimeline on MatrixRoom {
           DateTime.now().subtract(Duration(days: seed)).millisecondsSinceEpoch
     };
 
-    if (r.nextDouble() < 0.2 && canBeRelatedEvent) {
-      json['type'] = 'm.reaction';
-      json['content'] = {
-        'm.relates_to': {
-          'event_id': relatedEventId,
-          'rel_type': 'm.annotation',
-          'key': r.nextBool() ? 'String Reaction' : "❤️"
-        }
-      };
+    // if (r.nextDouble() < 0.2 && canBeRelatedEvent) {
+    //   json['type'] = 'm.reaction';
+    //   json['content'] = {
+    //     'm.relates_to': {
+    //       'event_id': relatedEventId,
+    //       'rel_type': 'm.annotation',
+    //       'key': r.nextBool() ? 'String Reaction' : "❤️"
+    //     }
+    //   };
 
-      return matrix.Event.fromJson(json, matrixRoom);
-    }
+    //   return matrix.Event.fromJson(json, matrixRoom);
+    // }
 
     var contentLength = r.nextInt(200) + 10;
 
@@ -153,14 +153,14 @@ extension BenchmarkTimeline on MatrixRoom {
       'content': {
         'body': '($seed) ${RandomUtils.getRandomSentence(contentLength)}',
         'msgtype': 'm.text',
-        if (canBeRelatedEvent)
-          'm.relates_to': {
-            if (isThreadReply) 'event_id': '\$${seed + 3}',
-            if (isThreadReply) 'rel_type': 'm.thread',
-            if (isThreadReply) 'is_falling_back': true,
-            if (isThreadReply == false)
-              'm.in_reply_to': {'event_id': '\$${seed + 3}'}
-          },
+        // if (canBeRelatedEvent)
+        //   'm.relates_to': {
+        //     if (isThreadReply) 'event_id': '\$${seed + 3}',
+        //     if (isThreadReply) 'rel_type': 'm.thread',
+        //     if (isThreadReply) 'is_falling_back': true,
+        //     if (isThreadReply == false)
+        //       'm.in_reply_to': {'event_id': '\$${seed + 3}'}
+        //   },
       },
       'sender': _userId,
       'room_id': matrixRoom.id,
