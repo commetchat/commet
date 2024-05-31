@@ -96,7 +96,6 @@ extension BenchmarkTimeline on MatrixRoom {
     ]);
 
     var mxTimeline = matrix.Timeline(chunk: chunk, room: matrixRoom);
-
     return MatrixTimeline(client, this, matrixRoom,
         initialTimeline: mxTimeline);
   }
