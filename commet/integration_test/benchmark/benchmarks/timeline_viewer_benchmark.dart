@@ -91,6 +91,7 @@ extension BenchmarkTimeline on MatrixRoom {
     var chunk = c.TimelineChunk(events: [
       for (var i = 0; i < 100; i++) createRandomEvent(i),
       createTestEndEvent(100),
+
       // create more events so it doent try to fetch more from server
       for (var i = 0; i < 50; i++) createRandomEvent(101 + i),
     ]);
@@ -119,16 +120,16 @@ extension BenchmarkTimeline on MatrixRoom {
   matrix.Event createRandomEvent(int seed) {
     final r = Random(seed);
 
-    var relatedEventId = '\$${seed + 5}';
-    bool canBeRelatedEvent = seed < 90;
+    // var relatedEventId = '\$${seed + 5}';
+    // bool canBeRelatedEvent = seed < 90;
 
-    var json = {
-      'event_id': '\$$seed',
-      'sender': _userId,
-      'room_id': matrixRoom.id,
-      'origin_server_ts':
-          DateTime.now().subtract(Duration(days: seed)).millisecondsSinceEpoch
-    };
+    // var json = {
+    //   'event_id': '\$$seed',
+    //   'sender': _userId,
+    //   'room_id': matrixRoom.id,
+    //   'origin_server_ts':
+    //       DateTime.now().subtract(Duration(days: seed)).millisecondsSinceEpoch
+    // };
 
     // if (r.nextDouble() < 0.2 && canBeRelatedEvent) {
     //   json['type'] = 'm.reaction';
@@ -145,7 +146,7 @@ extension BenchmarkTimeline on MatrixRoom {
 
     var contentLength = r.nextInt(200) + 10;
 
-    bool isThreadReply = r.nextBool();
+    // bool isThreadReply = r.nextBool();
 
     var event = matrix.Event.fromJson({
       'event_id': '\$$seed',
