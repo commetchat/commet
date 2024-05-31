@@ -3,7 +3,7 @@ on:
   pull_request:
   workflow_dispatch:
 
-name: Benchmark
+name: benchmark
 
 permissions:
   contents: write
@@ -14,7 +14,7 @@ env:
 
 jobs:
   benchmark:
-    name: Benchmark
+    name: benchmark
     runs-on: ubuntu-latest
     steps:
       - name: Checkout 
