@@ -46,7 +46,7 @@ void main() {
         await tester.scrollUntilVisible(
           itemFinder,
           50.0,
-          maxScrolls: 1000,
+          maxScrolls: 10000,
           scrollable: listFinder,
         );
       },
@@ -88,11 +88,11 @@ extension BenchmarkUtils on MatrixClient {
 extension BenchmarkTimeline on MatrixRoom {
   MatrixTimeline getBenchmarkTimeline() {
     var chunk = c.TimelineChunk(events: [
-      for (var i = 0; i < 100; i++) createRandomEvent(i),
-      createTestEndEvent(100),
+      for (var i = 0; i < 500; i++) createRandomEvent(i),
+      createTestEndEvent(500),
 
       // create more events so it doent try to fetch more from server
-      for (var i = 0; i < 50; i++) createRandomEvent(101 + i),
+      for (var i = 0; i < 50; i++) createRandomEvent(501 + i),
     ]);
 
     var mxTimeline = matrix.Timeline(chunk: chunk, room: matrixRoom);
