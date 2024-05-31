@@ -80,7 +80,6 @@ extension BenchmarkUtils on MatrixClient {
     }, mxRoom));
 
     var room = MatrixRoom(this, mxRoom, getMatrixClient());
-
     rooms.add(room);
     return room;
   }
