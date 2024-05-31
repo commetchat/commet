@@ -118,7 +118,33 @@ extension BenchmarkTimeline on MatrixRoom {
   matrix.Event createRandomEvent(int seed) {
     final r = Random(seed);
 
+    var relatedEventId = '\$${seed + 5}';
+    bool canBeRelatedEvent = seed < 90;
+
+    var json = {
+      'event_id': '\$$seed',
+      'sender': _userId,
+      'room_id': matrixRoom.id,
+      'origin_server_ts':
+          DateTime.now().subtract(Duration(days: seed)).millisecondsSinceEpoch
+    };
+
+    if (r.nextDouble() < 0.2 && canBeRelatedEvent) {
+      json['type'] = 'm.reaction';
+      json['content'] = {
+        'm.relates_to': {
+          'event_id': relatedEventId,
+          'rel_type': 'm.annotation',
+          'key': r.nextBool() ? 'String Reaction' : "❤️"
+        }
+      };
+
+      return matrix.Event.fromJson(json, matrixRoom);
+    }
+
     var contentLength = r.nextInt(200) + 10;
+
+    bool isThreadReply = r.nextBool();
 
     var event = matrix.Event.fromJson({
       'event_id': '\$$seed',
@@ -126,9 +152,13 @@ extension BenchmarkTimeline on MatrixRoom {
       'content': {
         'body': '($seed) ${RandomUtils.getRandomSentence(contentLength)}',
         'msgtype': 'm.text',
-        if (seed < 90)
+        if (canBeRelatedEvent)
           'm.relates_to': {
-            'm.in_reply_to': {'event_id': '\$${seed + 3}'}
+            if (isThreadReply) 'event_id': '\$${seed + 3}',
+            if (isThreadReply) 'rel_type': 'm.thread',
+            if (isThreadReply) 'is_falling_back': true,
+            if (isThreadReply == false)
+              'm.in_reply_to': {'event_id': '\$${seed + 3}'}
           },
       },
       'sender': _userId,
