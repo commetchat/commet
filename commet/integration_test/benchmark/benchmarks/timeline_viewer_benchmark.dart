@@ -1,10 +1,7 @@
 import 'dart:math';
 
-import 'package:commet/client/components/url_preview/url_preview_component.dart';
 import 'package:commet/client/matrix/matrix_profile.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
-import 'package:commet/client/room.dart';
-import 'package:commet/client/timeline.dart';
 import 'package:commet/ui/molecules/timeline_viewer.dart';
 import 'package:commet/utils/rng.dart';
 import 'package:flutter/material.dart';
