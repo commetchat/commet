@@ -123,7 +123,7 @@ extension BenchmarkTimeline on MatrixRoom {
     final r = Random(seed);
 
     var relatedEventId = '\$${seed + 5}';
-    bool canBeRelatedEvent = seed < 90;
+    bool canBeRelatedEvent = seed < 495;
 
     // var json = {
     //   'event_id': '\$$seed',
