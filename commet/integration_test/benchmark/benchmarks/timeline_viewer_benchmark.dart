@@ -1,7 +1,10 @@
 import 'dart:math';
 
+import 'package:commet/client/components/url_preview/url_preview_component.dart';
 import 'package:commet/client/matrix/matrix_profile.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
+import 'package:commet/client/room.dart';
+import 'package:commet/client/timeline.dart';
 import 'package:commet/ui/molecules/timeline_viewer.dart';
 import 'package:commet/utils/rng.dart';
 import 'package:flutter/material.dart';
@@ -14,10 +17,13 @@ import 'package:matrix/src/models/timeline_chunk.dart' as c;
 
 import 'package:tiamat/config/style/theme_dark.dart';
 
+import '../../mocks/matrix_client_component_mocks.dart';
+
 void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   var client = MatrixClient(identifier: "benchmark");
+  client.mockComponents();
   client.self = MatrixProfile(client.getMatrixClient(),
       matrix.Profile(userId: '@benchy:matrix.org', displayName: 'benchy'));
 
@@ -96,7 +102,7 @@ extension BenchmarkTimeline on MatrixRoom {
     ]);
 
     var mxTimeline = matrix.Timeline(chunk: chunk, room: matrixRoom);
-    
+
     return MatrixTimeline(client, this, matrixRoom,
         initialTimeline: mxTimeline);
   }
@@ -151,7 +157,8 @@ extension BenchmarkTimeline on MatrixRoom {
       'event_id': '\$$seed',
       'type': 'm.room.message',
       'content': {
-        'body': '($seed) ${RandomUtils.getRandomSentence(contentLength)}',
+        'body':
+            '($seed) https://example.com ${RandomUtils.getRandomSentence(contentLength)}',
         'msgtype': 'm.text',
         if (canBeRelatedEvent)
           'm.relates_to': {
