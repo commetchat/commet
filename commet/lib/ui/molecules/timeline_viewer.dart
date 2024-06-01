@@ -4,6 +4,7 @@ import 'package:commet/config/layout_config.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/molecules/message_popup_menu/message_popup_menu.dart';
 import 'package:commet/ui/molecules/timeline_event.dart';
+import 'package:commet/ui/molecules/timeline_event/timeline_event_2.dart';
 import 'package:commet/utils/text_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -305,6 +306,7 @@ class TimelineViewerState extends State<TimelineViewer>
       center: historyEventsKey,
       reverse: true,
       controller: controller,
+      cacheExtent: 200,
       anchor: 0,
       slivers: [
         //Beware, these are in reverse order
@@ -459,24 +461,13 @@ class TimelineViewerState extends State<TimelineViewer>
         });
       },
       child: Container(
-        color: hoveredIndex == index
-            ? Theme.of(context).hoverColor
-            : Colors.transparent,
-        child: TimelineEventView(
-          event: widget.timeline.events[index],
-          timeline: widget.timeline,
-          hovered: hoveredIndex == index,
-          onReactionTapped: (emote) =>
-              widget.onAddReaction?.call(widget.timeline.events[index], emote),
-          showSender: shouldShowSender(index),
-          setEditingEvent: () =>
-              widget.setEditingEvent?.call(widget.timeline.events[index]),
-          setReplyingEvent: () =>
-              widget.setReplyingEvent?.call(widget.timeline.events[index]),
-          onLongPress: () => onEventLongPress(widget.timeline.events[index]),
-          useCachedFormat: true,
-        ),
-      ),
+          color: hoveredIndex == index
+              ? Theme.of(context).hoverColor
+              : Colors.transparent,
+          child: TimelineEvent2(
+            timeline: widget.timeline,
+            eventIndex: index,
+          )),
     );
   }
 
