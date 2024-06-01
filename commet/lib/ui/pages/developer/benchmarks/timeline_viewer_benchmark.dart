@@ -36,8 +36,13 @@ class _BenchmarkTimelineViewerState extends State<BenchmarkTimelineViewer> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => Navigator.of(context).pop(),
+        child: Icon(Icons.chevron_left),
+      ),
       body: TimelineViewer(
         timeline: timeline,
+        doMessageOverlayMenu: false,
       ),
     );
   }

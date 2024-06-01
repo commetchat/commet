@@ -3,6 +3,8 @@ import 'package:commet/client/components/push_notification/notification_content.
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/config/app_config.dart';
 import 'package:commet/main.dart';
+import 'package:commet/ui/navigation/navigation_utils.dart';
+import 'package:commet/ui/pages/developer/benchmarks/timeline_viewer_benchmark.dart';
 import 'package:commet/utils/background_tasks/background_task_manager.dart';
 import 'package:commet/utils/background_tasks/mock_tasks.dart';
 import 'package:file_picker/file_picker.dart';
@@ -26,6 +28,7 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
     return Column(
         children: [
       performance(),
+      benchmarks(),
       windowSize(),
       notificationTests(),
       rendering(),
@@ -66,7 +69,6 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
   Widget rendering() {
     return ExpansionTile(
         title: const tiamat.Text.labelEmphasised("Rendering"),
-        initiallyExpanded: false,
         backgroundColor:
             Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
         collapsedBackgroundColor:
@@ -91,6 +93,29 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
               )
             ]),
           )
+        ]);
+  }
+
+  Widget benchmarks() {
+    return ExpansionTile(
+        title: const tiamat.Text.labelEmphasised("Benchmarks"),
+        initiallyExpanded: false,
+        backgroundColor:
+            Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+        collapsedBackgroundColor:
+            Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+        children: [
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              tiamat.Button(
+                text: "Timeline Viewer",
+                onTap: () => NavigationUtils.navigateTo(
+                    context, const BenchmarkTimelineViewer()),
+              )
+            ],
+          ),
         ]);
   }
 
