@@ -125,26 +125,26 @@ extension BenchmarkTimeline on MatrixRoom {
     var relatedEventId = '\$${seed + 5}';
     bool canBeRelatedEvent = seed < 495;
 
-    // var json = {
-    //   'event_id': '\$$seed',
-    //   'sender': _userId,
-    //   'room_id': matrixRoom.id,
-    //   'origin_server_ts':
-    //       DateTime.now().subtract(Duration(days: seed)).millisecondsSinceEpoch
-    // };
+    var json = {
+      'event_id': '\$$seed',
+      'sender': _userId,
+      'room_id': matrixRoom.id,
+      'origin_server_ts':
+          DateTime.now().subtract(Duration(days: seed)).millisecondsSinceEpoch
+    };
 
-    // if (r.nextDouble() < 0.2 && canBeRelatedEvent) {
-    //   json['type'] = 'm.reaction';
-    //   json['content'] = {
-    //     'm.relates_to': {
-    //       'event_id': relatedEventId,
-    //       'rel_type': 'm.annotation',
-    //       'key': r.nextBool() ? 'String Reaction' : "❤️"
-    //     }
-    //   };
+    if (r.nextDouble() < 0.33 && canBeRelatedEvent) {
+      json['type'] = 'm.reaction';
+      json['content'] = {
+        'm.relates_to': {
+          'event_id': relatedEventId,
+          'rel_type': 'm.annotation',
+          'key': r.nextBool() ? 'String Reaction' : "❤️"
+        }
+      };
 
-    //   return matrix.Event.fromJson(json, matrixRoom);
-    // }
+      return matrix.Event.fromJson(json, matrixRoom);
+    }
 
     var contentLength = r.nextInt(200) + 10;
 
