@@ -74,3 +74,18 @@ jobs:
           fail-on-alert: false
           summary-always: true
           gh-repository: 'github.com/commetchat/commet_benchmark_results'
+
+      - name: Store benchmark result - separate results repo
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          name: Benchmark
+          tool: 'customBiggerIsBetter'
+          output-file-path: commet/build/customBiggerIsBetter.json
+          github-token: ${{ secrets.BENCHMARK_ACTION_BOT_TOKEN }}
+          auto-push: true
+          # Show alert with commit comment on detecting possible performance regression
+          alert-threshold: '350%'
+          comment-on-alert: true
+          fail-on-alert: false
+          summary-always: true
+          gh-repository: 'github.com/commetchat/commet_benchmark_results'
