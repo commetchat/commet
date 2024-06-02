@@ -1,3 +1,4 @@
+import 'package:commet/diagnostic/benchmark_values.dart';
 import 'package:commet/ui/pages/developer/benchmarks/benchmark_utils.dart';
 import 'package:commet/ui/pages/developer/benchmarks/timeline_viewer_benchmark.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +23,8 @@ void main() {
     final listFinder = find.byType(Scrollable);
     final itemFinder = find.text(finalEventMessage);
 
+    var reportKey = 'TimelineViewer Scrolling';
+
     await binding.traceAction(
       () async {
         // Scroll until the item to be found appears.
@@ -32,7 +35,15 @@ void main() {
           scrollable: listFinder,
         );
       },
-      reportKey: 'TimelineViewer Scrolling',
+      reportKey: reportKey,
     );
+
+    binding.reportData?[reportKey]["extra_values"] = [
+      {
+        "name": "$reportKey - Timeline Event Build Count",
+        "value": BenchmarkValues.numTimelineEventsBuilt,
+        "unit": "Builds",
+      }
+    ];
   });
 }

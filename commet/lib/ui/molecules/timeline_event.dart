@@ -1,5 +1,6 @@
 import 'package:commet/client/components/url_preview/url_preview_component.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/diagnostic/benchmark_values.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/generic_room_event.dart';
 import 'package:commet/ui/molecules/message.dart';
@@ -214,7 +215,7 @@ class _TimelineEventState extends State<TimelineEventView> {
 
   @override
   Widget build(BuildContext context) {
-    TimelineEventView.timelineEventBuildsCount += 1;
+    BenchmarkValues.numTimelineEventsBuilt += 1;
 
     return eventToWidget(widget.event) ?? Container();
   }

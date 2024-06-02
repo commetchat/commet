@@ -41,12 +41,13 @@ extension BenchmarkUtils on MatrixClient {
 
 extension BenchmarkTimeline on MatrixRoom {
   MatrixTimeline getBenchmarkTimeline() {
+    int count = 500;
     var chunk = c.TimelineChunk(events: [
-      for (var i = 0; i < 500; i++) createRandomEvent(i),
-      createTestEndEvent(500),
+      for (var i = 0; i < count; i++) createRandomEvent(i, count),
+      createTestEndEvent(count),
 
       // create more events so it doent try to fetch more from server
-      for (var i = 0; i < 50; i++) createRandomEvent(501 + i),
+      for (var i = 0; i < 50; i++) createRandomEvent(count + 1 + i, count),
     ]);
 
     var mxTimeline = matrix.Timeline(chunk: chunk, room: matrixRoom);
@@ -70,11 +71,11 @@ extension BenchmarkTimeline on MatrixRoom {
     return event;
   }
 
-  matrix.Event createRandomEvent(int seed) {
+  matrix.Event createRandomEvent(int seed, int limit) {
     final r = Random(seed);
 
     var relatedEventId = '\$${seed + 5}';
-    bool canBeRelatedEvent = seed < 495;
+    bool canBeRelatedEvent = seed < limit - 10;
 
     var json = {
       'event_id': '\$$seed',

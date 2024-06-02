@@ -1,6 +1,5 @@
 // ignore_for_file: depend_on_referenced_packages
 
-import 'package:commet/ui/molecules/timeline_event.dart';
 import 'package:flutter_driver/flutter_driver.dart';
 import 'dart:convert' show JsonEncoder;
 
@@ -15,18 +14,24 @@ Future<void> main() {
         var result = List<Map<String, dynamic>>.empty(growable: true);
 
         for (var key in data.keys) {
+          final File file =
+              fs.file(path.join(testOutputsDirectory, 'data.json'));
+
+          const JsonEncoder prettyEncoder = JsonEncoder.withIndent('  ');
+          await file.writeAsString(prettyEncoder.convert(data[key]));
+
           final timeline = Timeline.fromJson(
             data[key] as Map<String, dynamic>,
           );
 
           final summary = TimelineSummary.summarize(timeline);
 
+          if (data[key]["extra_values"] != null) {
+            result.addAll(
+                List<Map<String, dynamic>>.from(data[key]["extra_values"]));
+          }
+
           result.addAll([
-            {
-              "name": "Timeline Widget Build Count",
-              "value": TimelineEventView.timelineEventBuildsCount,
-              "unit": "Builds"
-            },
             {
               "name": "$key - Average Build Time",
               "value": summary.computeAverageFrameBuildTimeMillis(),
@@ -35,12 +40,6 @@ Future<void> main() {
             {
               "name": "$key - Average Raster Time",
               "value": summary.computeAverageFrameRasterizerTimeMillis(),
-              "unit": "ms"
-            },
-            {
-              "name": "$key - Standard Deviation of Frame Rasterizer Time",
-              "value":
-                  summary.computeStandardDeviationFrameRasterizerTimeMillis(),
               "unit": "ms"
             },
             {
@@ -54,23 +53,23 @@ Future<void> main() {
               "unit": "ms"
             },
             {
-              "name": "$key - 95th Percentile Build Time",
-              "value": summary.computePercentileFrameBuildTimeMillis(95),
+              "name": "$key - 99th Percentile Build Time",
+              "value": summary.computePercentileFrameBuildTimeMillis(99),
               "unit": "ms"
             },
             {
-              "name": "$key - 95th Percentile Raster Time",
-              "value": summary.computePercentileFrameRasterizerTimeMillis(95),
+              "name": "$key - 90th Percentile Build Time",
+              "value": summary.computePercentileFrameBuildTimeMillis(99),
               "unit": "ms"
             },
             {
-              "name": "$key - 50th Percentile Build Time",
-              "value": summary.computePercentileFrameBuildTimeMillis(50),
+              "name": "$key - 99th Percentile Raster Time",
+              "value": summary.computePercentileFrameRasterizerTimeMillis(99),
               "unit": "ms"
             },
             {
-              "name": "$key - 50th Percentile Raster Time",
-              "value": summary.computePercentileFrameRasterizerTimeMillis(50),
+              "name": "$key - 90th Percentile Raster Time",
+              "value": summary.computePercentileFrameRasterizerTimeMillis(90),
               "unit": "ms"
             },
           ]);
