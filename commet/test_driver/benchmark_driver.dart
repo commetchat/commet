@@ -11,37 +11,16 @@ Future<void> main() {
   return test.integrationDriver(
     responseDataCallback: (data) async {
       if (data != null) {
-        var smallerIsBetterResults =
-            List<Map<String, dynamic>>.empty(growable: true);
-        var biggerIsBetterResults =
-            List<Map<String, dynamic>>.empty(growable: true);
+        var result = List<Map<String, dynamic>>.empty(growable: true);
 
         for (var key in data.keys) {
           final timeline = Timeline.fromJson(
             data[key] as Map<String, dynamic>,
           );
 
-          int rasterCacheHits = timeline.events!
-              .where((element) => element.name == "raster cache hit")
-              .length;
-
-          final File file =
-              fs.file(path.join(testOutputsDirectory, 'data.json'));
-
-          const JsonEncoder prettyEncoder = JsonEncoder.withIndent('  ');
-          await file.writeAsString(prettyEncoder.convert(data));
-
           final summary = TimelineSummary.summarize(timeline);
 
-          biggerIsBetterResults.addAll([
-            {
-              "name": "Raster Cache Hits",
-              "value": rasterCacheHits,
-              "unit": "hits"
-            }
-          ]);
-
-          smallerIsBetterResults.addAll([
+          result.addAll([
             {
               "name": "$key - Average Build Time",
               "value": summary.computeAverageFrameBuildTimeMillis(),
@@ -116,17 +95,11 @@ Future<void> main() {
           ]);
         }
 
-        const JsonEncoder prettyEncoder = JsonEncoder.withIndent('  ');
-
-        final File smallerFile = fs.file(
+        final File file = fs.file(
             path.join(testOutputsDirectory, 'customSmallerIsBetter.json'));
-        await smallerFile
-            .writeAsString(prettyEncoder.convert(smallerIsBetterResults));
 
-        final File biggerFile = fs
-            .file(path.join(testOutputsDirectory, 'customBiggerIsBetter.json'));
-        await biggerFile
-            .writeAsString(prettyEncoder.convert(biggerIsBetterResults));
+        const JsonEncoder prettyEncoder = JsonEncoder.withIndent('  ');
+        await file.writeAsString(prettyEncoder.convert(result));
       }
     },
   );
