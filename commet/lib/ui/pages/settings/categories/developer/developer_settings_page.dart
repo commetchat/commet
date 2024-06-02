@@ -7,6 +7,7 @@ import 'package:commet/utils/background_tasks/background_task_manager.dart';
 import 'package:commet/utils/background_tasks/mock_tasks.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:path/path.dart' as p;
 import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -27,6 +28,7 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
       performance(),
       windowSize(),
       notificationTests(),
+      rendering(),
       error(),
       if (Platform.isAndroid) shortcuts(),
       backgroundTasks(),
@@ -59,6 +61,37 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
                   ),
                 ))
             .toList());
+  }
+
+  Widget rendering() {
+    return ExpansionTile(
+        title: const tiamat.Text.labelEmphasised("Rendering"),
+        initiallyExpanded: false,
+        backgroundColor:
+            Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+        collapsedBackgroundColor:
+            Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const tiamat.Text.label("Show repaints"),
+                  tiamat.Switch(
+                    state: debugRepaintRainbowEnabled,
+                    onChanged: (value) {
+                      setState(() {
+                        debugRepaintRainbowEnabled = value;
+                      });
+                    },
+                  ),
+                ],
+              )
+            ]),
+          )
+        ]);
   }
 
   Widget windowSize() {
