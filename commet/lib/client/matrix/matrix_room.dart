@@ -154,7 +154,7 @@ class MatrixRoom extends Room {
     }
 
     _lastStateEventTimestamp = DateTime.fromMillisecondsSinceEpoch(0);
-    matrix.Event? latest = room.states[matrix.EventTypes.Message]?[""];
+    matrix.Event? latest = room.lastEvent;
 
     if (latest != null) {
       lastEvent = MatrixTimelineEvent(latest, _matrixRoom.client);

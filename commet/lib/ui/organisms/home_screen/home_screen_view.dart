@@ -57,7 +57,7 @@ class HomeScreenView extends StatelessWidget {
       children: [
         if (clientManager.alertManager.alerts.isNotEmpty) alerts(),
         if (invitations?.isNotEmpty == true) invitationsList(),
-        recentRooms(),
+        if (recentActivity?.isNotEmpty == true) recentRooms(),
         roomsList(context)
       ],
     );
