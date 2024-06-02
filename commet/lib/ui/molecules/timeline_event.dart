@@ -46,6 +46,8 @@ class TimelineEventView extends StatefulWidget {
   final bool canDeleteEvent;
   final Function(Emoticon emote)? onReactionTapped;
 
+  static int timelineEventBuildsCount = 0;
+
   @override
   State<TimelineEventView> createState() => _TimelineEventState();
 }
@@ -212,6 +214,8 @@ class _TimelineEventState extends State<TimelineEventView> {
 
   @override
   Widget build(BuildContext context) {
+    TimelineEventView.timelineEventBuildsCount += 1;
+
     return eventToWidget(widget.event) ?? Container();
   }
 
