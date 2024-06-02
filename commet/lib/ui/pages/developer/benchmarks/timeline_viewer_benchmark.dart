@@ -7,8 +7,6 @@ import 'package:commet/ui/pages/developer/benchmarks/benchmark_utils.dart';
 import 'package:flutter/material.dart';
 
 import 'package:matrix/matrix.dart' as matrix;
-// ignore: implementation_imports
-import 'package:matrix/src/models/timeline_chunk.dart' as c;
 
 class BenchmarkTimelineViewer extends StatefulWidget {
   const BenchmarkTimelineViewer({super.key});
@@ -38,9 +36,10 @@ class _BenchmarkTimelineViewerState extends State<BenchmarkTimelineViewer> {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () => Navigator.of(context).pop(),
-        child: Icon(Icons.chevron_left),
+        child: const Icon(Icons.chevron_left),
       ),
       body: TimelineViewer(
+        key: const ValueKey("timeline-viewer-benchmark"),
         timeline: timeline,
         doMessageOverlayMenu: false,
       ),
