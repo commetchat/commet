@@ -1,5 +1,6 @@
 import 'package:commet/client/components/url_preview/url_preview_component.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/diagnostic/benchmark_values.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/generic_room_event.dart';
 import 'package:commet/ui/molecules/message.dart';
@@ -45,6 +46,8 @@ class TimelineEventView extends StatefulWidget {
   final Function()? deleteEvent;
   final bool canDeleteEvent;
   final Function(Emoticon emote)? onReactionTapped;
+
+  static int timelineEventBuildsCount = 0;
 
   @override
   State<TimelineEventView> createState() => _TimelineEventState();
@@ -212,6 +215,8 @@ class _TimelineEventState extends State<TimelineEventView> {
 
   @override
   Widget build(BuildContext context) {
+    BenchmarkValues.numTimelineEventsBuilt += 1;
+
     return eventToWidget(widget.event) ?? Container();
   }
 
@@ -328,6 +333,7 @@ class _TimelineEventState extends State<TimelineEventView> {
   }
 
   Widget buildBody() {
+    BenchmarkValues.numTimelineMessageBodyBuilt += 1;
     switch (widget.event.type) {
       case EventType.message:
         return buildMessageBody();

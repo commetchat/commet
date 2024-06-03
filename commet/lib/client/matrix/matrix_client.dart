@@ -37,7 +37,7 @@ import 'package:olm/olm.dart' as olm;
 
 class MatrixClient extends Client {
   late matrix.Client _matrixClient;
-  late final List<Component<MatrixClient>> _components;
+  late final List<Component<MatrixClient>> componentsInternal;
 
   Future? firstSync;
 
@@ -72,7 +72,7 @@ class MatrixClient extends Client {
     _id = identifier;
     _matrixClient = _createMatrixClient(identifier);
     _matrixClient.onSync.stream.listen(onMatrixClientSync);
-    _components = ComponentRegistry.getMatrixComponents(this);
+    componentsInternal = ComponentRegistry.getMatrixComponents(this);
   }
 
   static String hash(String name) {
@@ -471,7 +471,7 @@ class MatrixClient extends Client {
 
   @override
   T? getComponent<T extends Component>() {
-    for (var component in _components) {
+    for (var component in componentsInternal) {
       if (component is T) return component as T;
     }
 
@@ -481,7 +481,7 @@ class MatrixClient extends Client {
   @override
   List<T>? getAllComponents<T extends Component<Client>>() {
     List<T> components = List.empty(growable: true);
-    for (var component in _components) {
+    for (var component in componentsInternal) {
       if (component is T) {
         components.add(component as T);
       }
