@@ -333,6 +333,7 @@ class _TimelineEventState extends State<TimelineEventView> {
   }
 
   Widget buildBody() {
+    BenchmarkValues.numTimelineMessageBodyBuilt += 1;
     switch (widget.event.type) {
       case EventType.message:
         return buildMessageBody();

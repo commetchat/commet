@@ -43,6 +43,21 @@ void main() {
         "name": "$reportKey - Timeline Event Build Count",
         "value": BenchmarkValues.numTimelineEventsBuilt,
         "unit": "Builds",
+      },
+      {
+        "name": "$reportKey - Timeline Event Message Body Build Count",
+        "value": BenchmarkValues.numTimelineMessageBodyBuilt,
+        "unit": "Builds",
+      },
+      {
+        "name": "$reportKey - Timeline Event Message Reply Body Build Count",
+        "value": BenchmarkValues.numTimelineReplyBodyBuilt,
+        "unit": "Builds",
+      },
+      {
+        "name": "$reportKey - Timeline Event Message Url Preview Build Count",
+        "value": BenchmarkValues.numTimelineUrlPreviewBuilt,
+        "unit": "Builds",
       }
     ];
   });
