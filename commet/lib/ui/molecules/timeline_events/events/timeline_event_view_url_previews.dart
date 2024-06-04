@@ -67,14 +67,19 @@ class _TimelineEventViewUrlPreviewsState
     if (cachedData == null) {
       widget.component.getPreview(widget.timeline.room, event).then(
         (value) async {
-          final image = value?.image;
-          if (image != null) {
-            await precacheImage(image, context);
+          if (mounted) {
+            final image = value?.image;
+            if (image != null) {
+              if (context.mounted) {
+                await precacheImage(image, context);
+              }
+            }
+
+            setState(() {
+              data = value;
+              key = GlobalKey();
+            });
           }
-          setState(() {
-            data = value;
-            key = GlobalKey();
-          });
         },
       );
     }
