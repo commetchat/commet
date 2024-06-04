@@ -30,7 +30,7 @@ class ChatView extends StatelessWidget {
   String? get relatedEventSenderName => state.interactingEvent == null
       ? null
       : state.room
-          .getMemberOrFallback(state.interactingEvent!.senderId)!
+          .getMemberOrFallback(state.interactingEvent!.senderId)
           .displayName;
 
   Color? get relatedEventSenderColor => state.interactingEvent == null
@@ -54,6 +54,7 @@ class ChatView extends StatelessWidget {
             child: CircularProgressIndicator(),
           )
         : RoomTimelineWidget(
+            key: ValueKey("${state.room.identifier}-timeline"),
             timeline: state.timeline!,
             // markAsRead: handleMarkAsRead,
             // setReplyingEvent: (event) => state.setInteractingEvent(event,

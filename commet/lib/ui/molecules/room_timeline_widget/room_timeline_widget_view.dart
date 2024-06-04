@@ -1,7 +1,10 @@
 import 'dart:async';
 
 import 'package:commet/client/timeline.dart';
+import 'package:commet/config/build_config.dart';
 import 'package:commet/debug/log.dart';
+import 'package:commet/main.dart';
+import 'package:commet/ui/molecules/timeline_events/timeline_event_layout.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_view_entry.dart';
 import 'package:flutter/material.dart';
 
@@ -34,6 +37,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
   GlobalKey firstFrameScrollViewKey = GlobalKey();
   GlobalKey scrollViewKey = GlobalKey();
   GlobalKey centerKey = GlobalKey();
+  GlobalKey recentItemsKey = GlobalKey();
 
   late List<StreamSubscription> subscriptions;
 
@@ -73,6 +77,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
 
   void onEventAdded(int index) {
     setState(() {});
+
     if (index == 0 || index < recentItemsCount) {
       recentItemsCount += 1;
     } else {
@@ -96,6 +101,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
   }
 
   void onEventChanged(int index) {
+    Log.d("Event changed: $index");
     var event = widget.timeline.events[index];
     var existing = eventKeys[index];
     eventKeys[index] = (existing.$1, event.eventId);
@@ -106,7 +112,13 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
 
     assert(event.eventId == key.$2);
 
-    key.$1.currentState?.setState(() {});
+    var state = key.$1.currentState;
+
+    if (state is TimelineEventViewWidget) {
+      (state as TimelineViewEntryState).update(index);
+    } else {
+      Log.w("Failed to get state");
+    }
   }
 
   void onEventRemoved(int index) {
@@ -157,63 +169,93 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
 
   @override
   Widget build(BuildContext context) {
-    return Offstage(
-      offstage: firstFrame,
-      child: Scaffold(
-        body: CustomScrollView(
+    return Material(
+      color: Colors.transparent,
+      child: Offstage(
+        offstage: firstFrame,
+        child: CustomScrollView(
           key: firstFrame ? firstFrameScrollViewKey : scrollViewKey,
           controller: controller,
           reverse: true,
           center: centerKey,
           slivers: <Widget>[
             SliverList(
+              key: recentItemsKey,
               // Recent Items
               delegate: SliverChildBuilderDelegate(
-                (BuildContext context, int index) {
-                  int displayIndex = recentItemsCount - index - 1;
+                childCount: recentItemsCount,
+                addAutomaticKeepAlives: false,
+                (BuildContext context, int sliverIndex) {
+                  int timelineIndex = recentItemsCount - sliverIndex - 1;
                   numBuilds += 1;
 
-                  Log.d("Num Builds: $numBuilds");
-                  var key = eventKeys[displayIndex];
+                  var key = eventKeys[timelineIndex];
                   assert(
-                      key.$2 == widget.timeline.events[displayIndex].eventId);
+                      key.$2 == widget.timeline.events[timelineIndex].eventId);
 
                   return Container(
                     alignment: Alignment.center,
-                    color: Colors.blue[200 + index % 4 * 100]!.withAlpha(30),
+                    color: preferences.developerMode && BuildConfig.DEBUG
+                        ? Colors.blue[200 + sliverIndex % 4 * 100]!
+                            .withAlpha(30)
+                        : null,
                     child: TimelineViewEntry(
                         key: key.$1,
                         timeline: widget.timeline,
-                        index: displayIndex),
+                        initialIndex: timelineIndex),
                   );
                 },
-                childCount: recentItemsCount,
+                findChildIndexCallback: (key) {
+                  var timelineIndex =
+                      eventKeys.indexWhere((element) => element.$1 == key);
+                  if (timelineIndex == -1) {
+                    Log.w(
+                        "Failed to get timeline index for key: $timelineIndex");
+                    return null;
+                  }
+
+                  return recentItemsCount - timelineIndex - 1;
+                },
               ),
             ),
             SliverList(
               key: centerKey,
               // History Items
               delegate: SliverChildBuilderDelegate(
-                (BuildContext context, int index) {
+                addAutomaticKeepAlives: false,
+                childCount: historyItemsCount,
+                (BuildContext context, int sliverIndex) {
                   numBuilds += 1;
                   // ignore: avoid_print
                   Log.d("Num Builds: $numBuilds");
-                  var displayIndex = recentItemsCount + index;
+                  var timelineIndex = recentItemsCount + sliverIndex;
 
-                  var key = eventKeys[displayIndex];
+                  var key = eventKeys[timelineIndex];
                   assert(
-                      key.$2 == widget.timeline.events[displayIndex].eventId);
+                      key.$2 == widget.timeline.events[timelineIndex].eventId);
 
                   return Container(
                     alignment: Alignment.center,
-                    color: Colors.red[200 + index % 4 * 100]!.withAlpha(30),
+                    color: preferences.developerMode && BuildConfig.DEBUG
+                        ? Colors.red[200 + sliverIndex % 4 * 100]!.withAlpha(30)
+                        : null,
                     child: TimelineViewEntry(
                         key: key.$1,
                         timeline: widget.timeline,
-                        index: displayIndex),
+                        initialIndex: timelineIndex),
                   );
                 },
-                childCount: historyItemsCount,
+                findChildIndexCallback: (key) {
+                  var timelineIndex =
+                      eventKeys.indexWhere((element) => element.$1 == key);
+                  if (timelineIndex == -1) {
+                    Log.w(
+                        "Failed to get timeline index for key: $timelineIndex");
+                    return null;
+                  }
+
+                  return timelineIndex - recentItemsCount;
+                },
               ),
             ),
           ],

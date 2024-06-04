@@ -106,7 +106,7 @@ abstract class TimelineEvent {
   /// If you want to display the same message twice, use `buildFormattedContent()` to create a new widget
   Widget? get formattedContent;
 
-  Widget buildFormattedContent();
+  Widget? buildFormattedContent();
 
   String? get relatedEventId;
   String? get stateKey;

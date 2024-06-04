@@ -120,11 +120,11 @@ class _TimelineEventState extends State<TimelineEventView> {
       name: "errorMessageFailedToSend");
 
   String get displayName => widget.timeline.room
-      .getMemberOrFallback(widget.event.senderId)!
+      .getMemberOrFallback(widget.event.senderId)
       .displayName;
 
   ImageProvider? get avatar =>
-      widget.timeline.room.getMemberOrFallback(widget.event.senderId)!.avatar;
+      widget.timeline.room.getMemberOrFallback(widget.event.senderId).avatar;
 
   Color get color => widget.timeline.room.getColorOfUser(widget.event.senderId);
 
@@ -135,7 +135,7 @@ class _TimelineEventState extends State<TimelineEventView> {
   String? get relatedEventDisplayName => relatedEvent == null
       ? null
       : widget.timeline.room
-          .getMemberOrFallback(relatedEvent!.senderId)!
+          .getMemberOrFallback(relatedEvent!.senderId)
           .displayName;
 
   UrlPreviewData? urlPreviews;
@@ -380,7 +380,7 @@ class _TimelineEventState extends State<TimelineEventView> {
       // if the cache didnt have anything lets just build new content. This should really never happen though
       formatted ??= widget.event.buildFormattedContent();
 
-      return formatted;
+      return formatted!;
     }
 
     if (widget.event.body != null)

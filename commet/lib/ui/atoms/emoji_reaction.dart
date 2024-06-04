@@ -20,7 +20,7 @@ class EmojiReaction extends StatelessWidget {
   final int numReactions;
   final bool highlighted;
 
-  BorderRadius get borderRadius => BorderRadius.circular(12);
+  BorderRadius get borderRadius => BorderRadius.circular(8);
 
   @override
   Widget build(BuildContext context) {
