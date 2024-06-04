@@ -67,8 +67,9 @@ class _TimelineEventViewUrlPreviewsState
     if (cachedData == null) {
       widget.component.getPreview(widget.timeline.room, event).then(
         (value) async {
-          if (value?.image != null) {
-            await precacheImage(value!.image!, context);
+          final image = value?.image;
+          if (image != null) {
+            await precacheImage(image, context);
           }
           setState(() {
             data = value;
