@@ -1,4 +1,5 @@
 import 'package:commet/client/client.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/diagnostic/benchmark_values.dart';
 import 'package:commet/ui/molecules/timeline_event.dart';
 import 'package:flutter/material.dart';
@@ -11,10 +12,10 @@ class TimelineViewEntry extends StatefulWidget {
   final int index;
 
   @override
-  State<TimelineViewEntry> createState() => _TimelineViewEntryState();
+  State<TimelineViewEntry> createState() => TimelineViewEntryState();
 }
 
-class _TimelineViewEntryState extends State<TimelineViewEntry> {
+class TimelineViewEntryState extends State<TimelineViewEntry> {
   late String eventId;
 
   @override
@@ -25,10 +26,14 @@ class _TimelineViewEntryState extends State<TimelineViewEntry> {
     super.initState();
   }
 
+  void update() {
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     BenchmarkValues.numTimelineEventsBuilt += 1;
-    print(
+    Log.d(
         "Num times timeline event built: ${BenchmarkValues.numTimelineEventsBuilt}");
 
     return TimelineEventView(
