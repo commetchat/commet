@@ -3,6 +3,7 @@ import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_profile.dart';
 import 'package:commet/diagnostic/mocks/matrix_client_component_mocks.dart';
 import 'package:commet/ui/molecules/timeline_viewer.dart';
+import 'package:commet/ui/molecules/timeline_viewer_2.dart';
 import 'package:commet/ui/pages/developer/benchmarks/benchmark_utils.dart';
 import 'package:flutter/material.dart';
 
@@ -38,10 +39,10 @@ class _BenchmarkTimelineViewerState extends State<BenchmarkTimelineViewer> {
         onPressed: () => Navigator.of(context).pop(),
         child: const Icon(Icons.chevron_left),
       ),
-      body: TimelineViewer(
+      body: TimelineViewer2(
         key: const ValueKey("timeline-viewer-benchmark"),
         timeline: timeline,
-        doMessageOverlayMenu: false,
+        // doMessageOverlayMenu: false,
       ),
     );
   }
