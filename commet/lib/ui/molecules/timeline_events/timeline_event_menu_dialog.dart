@@ -83,21 +83,23 @@ class TimelineEventMenuDialog extends StatelessWidget {
     );
   }
 
-  void doAction(TimelineEventMenuEntry entry, BuildContext context) {
+  void doAction(TimelineEventMenuEntry entry, BuildContext context) async {
     if (entry.action != null) {
       entry.action?.call(context);
       return;
     }
 
     if (entry.secondaryMenuBuilder != null) {
-      showModalBottomSheet(
+      await showModalBottomSheet(
         context: context,
-        builder: (context) {
-          return entry.secondaryMenuBuilder!.call(context, () {
-            Navigator.of(context).pop();
+        builder: (newContext) {
+          return entry.secondaryMenuBuilder!.call(newContext, () {
+            Navigator.of(newContext).pop();
           });
         },
       );
+
+      if (context.mounted) Navigator.of(context).pop();
     }
   }
 }

@@ -38,6 +38,9 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
   late String eventId;
   late EventType eventType;
   late TimelineEventStatus status;
+
+  // Note that this index is only reliable on builds - if an item is inserted in to the list, this index will be out of sync until its updated.
+  // If you need to get the event which this widget represents, use the ID
   late int index;
 
   GlobalKey eventKey = GlobalKey();
@@ -113,20 +116,22 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
 
     if (status == TimelineEventStatus.removed) return Container();
 
-    var event = buildEvent();
+    var result = buildEvent();
 
     if (Layout.desktop) {
-      event = MouseRegion(
-        onEnter: (_) =>
-            widget.onEventHovered?.call(widget.timeline.events[index].eventId),
-        child: event,
+      result = MouseRegion(
+        onEnter: (_) => widget.onEventHovered?.call(eventId),
+        child: result,
       );
     }
 
     if (Layout.mobile) {
-      event = InkWell(
+      result = InkWell(
         onLongPress: () {
-          var event = widget.timeline.events[index];
+          var event = widget.timeline.tryGetEvent(eventId);
+          if (event == null) {
+            return;
+          }
 
           showModalBottomSheet(
               showDragHandle: true,
@@ -145,38 +150,38 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
                     ),
                   ));
         },
-        child: event,
+        child: result,
       );
     }
 
     if (selected) {
-      event = Container(
+      result = Container(
         color: Theme.of(context).hoverColor,
-        child: event,
+        child: result,
       );
     }
 
     if (timelineLayerLink != null) {
-      event = Stack(
+      result = Stack(
         alignment: Alignment.topRight,
         children: [
           CompositedTransformTarget(
               link: timelineLayerLink!, child: const SizedBox()),
-          event ?? Container()
+          result ?? Container()
         ],
       );
     }
 
     if (showDate) {
-      event = Column(
+      result = Column(
         children: [
           TimelineEventDateTimeMarker(time: time),
-          event ?? Container()
+          result ?? Container()
         ],
       );
     }
 
-    return event ?? Container();
+    return result ?? Container();
   }
 
   Widget? buildEvent() {
