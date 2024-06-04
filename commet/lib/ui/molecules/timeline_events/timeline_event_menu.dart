@@ -90,7 +90,7 @@ class TimelineEventMenu {
         ),
       if (canDeleteEvent)
         TimelineEventMenuEntry(
-            name: CommonStrings.promptAddReaction,
+            name: CommonStrings.promptDelete,
             icon: Icons.delete,
             action: (BuildContext context) => {
                   AdaptiveDialog.confirmation(context).then((value) {
