@@ -1,4 +1,5 @@
 import 'package:commet/client/timeline.dart';
+import 'package:commet/diagnostic/benchmark_values.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:flutter/material.dart' as material;
@@ -58,6 +59,7 @@ class _TimelineEventViewReplyState extends State<TimelineEventViewReply> {
 
   @override
   Widget build(BuildContext context) {
+    BenchmarkValues.numTimelineReplyBodyBuilt += 1;
     return IntrinsicHeight(
       child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
         SizedBox(

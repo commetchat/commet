@@ -97,7 +97,8 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
     showSender = shouldShowSender(eventIndex);
 
     if (event.bodyFormat != null) {
-      formattedContent = event.formattedContent!;
+      formattedContent =
+          Container(key: GlobalKey(), child: event.buildFormattedContent()!);
     }
 
     hasReactions = event.reactions != null && event.reactions!.isNotEmpty;

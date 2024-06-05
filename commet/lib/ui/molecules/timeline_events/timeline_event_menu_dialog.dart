@@ -1,7 +1,7 @@
 import 'package:commet/client/timeline.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
-import 'package:commet/ui/molecules/timeline_event.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_menu.dart';
+import 'package:commet/ui/molecules/timeline_events/timeline_view_entry.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/atoms/seperator.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -52,8 +52,10 @@ class TimelineEventMenuDialog extends StatelessWidget {
                     child: SingleChildScrollView(
                       physics: const NeverScrollableScrollPhysics(),
                       child: SizedBox(
-                        child: TimelineEventView(
-                            hovered: true, event: event, timeline: timeline),
+                        child: TimelineViewEntry(
+                          timeline: timeline,
+                          initialIndex: timeline.events.indexOf(event),
+                        ),
                       ),
                     ),
                   ),
@@ -86,8 +88,6 @@ class TimelineEventMenuDialog extends StatelessWidget {
     }
 
     if (entry.secondaryMenuBuilder != null) {
-      Navigator.of(context).pop();
-
       showModalBottomSheet(
         context: context,
         builder: (context) {

@@ -2,6 +2,8 @@ import 'package:commet/client/client.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/diagnostic/benchmark_values.dart';
+import 'package:commet/main.dart';
+import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_generic.dart';
 import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_message.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_layout.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_menu.dart';
@@ -138,10 +140,29 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
             key: eventKey,
             timeline: widget.timeline,
             initialIndex: widget.initialIndex);
-      default:
-        return Container(
+      case EventType.roomCreated:
+      case EventType.memberJoined:
+      case EventType.memberLeft:
+      case EventType.memberAvatar:
+      case EventType.memberDisplayName:
+      case EventType.memberInvited:
+      case EventType.memberInvitationRejected:
+      case EventType.emote:
+        return TimelineEventViewGeneric(
+          timeline: widget.timeline,
+          initialIndex: widget.initialIndex,
           key: eventKey,
         );
+      default:
+        return preferences.developerMode
+            ? TimelineEventViewGeneric(
+                timeline: widget.timeline,
+                initialIndex: widget.initialIndex,
+                key: eventKey,
+              )
+            : Container(
+                key: eventKey,
+              );
     }
   }
 

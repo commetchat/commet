@@ -6,6 +6,7 @@ import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/code_block.dart';
 import 'package:commet/ui/molecules/emoji_picker.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
+import 'package:commet/utils/common_strings.dart';
 import 'package:commet/utils/download_utils.dart';
 import 'package:flutter/material.dart';
 
@@ -33,17 +34,21 @@ class TimelineEventMenu {
 
     bool canDeleteEvent = timeline.canDeleteEvent(event);
 
-    bool canReply = setReplyingEvent != null;
+    bool canReply = [EventType.message, EventType.emote, EventType.sticker]
+            .contains(event.type) &&
+        setReplyingEvent != null;
 
     bool canSaveAttachment = event.attachments?.isNotEmpty ?? false;
 
     var emoticons = timeline.room.getComponent<RoomEmoticonComponent>();
-    bool canAddReaction = emoticons != null;
+    bool canAddReaction =
+        [EventType.message, EventType.sticker].contains(event.type) &&
+            emoticons != null;
 
     primaryActions = [
       if (canEditEvent)
         TimelineEventMenuEntry(
-            name: "Edit",
+            name: CommonStrings.promptEdit,
             icon: Icons.edit,
             action: (BuildContext context) {
               setEditingEvent?.call(event);
@@ -51,7 +56,7 @@ class TimelineEventMenu {
             }),
       if (canReply)
         TimelineEventMenuEntry(
-            name: "Reply",
+            name: CommonStrings.promptReply,
             icon: Icons.reply,
             action: (BuildContext context) {
               setReplyingEvent?.call(event);
@@ -59,7 +64,7 @@ class TimelineEventMenu {
             }),
       if (canSaveAttachment)
         TimelineEventMenuEntry(
-            name: "Download",
+            name: CommonStrings.promptDownload,
             icon: Icons.download,
             action: (BuildContext context) {
               var attachment = event.attachments?.firstOrNull;
@@ -70,7 +75,7 @@ class TimelineEventMenu {
             }),
       if (canAddReaction)
         TimelineEventMenuEntry(
-          name: "Add Reaction",
+          name: CommonStrings.promptAddReaction,
           icon: Icons.add_reaction,
           secondaryMenuBuilder: (context, dismissSecondaryMenu) {
             return EmojiPicker(emoticons.availableEmoji,
@@ -84,7 +89,7 @@ class TimelineEventMenu {
         ),
       if (canDeleteEvent)
         TimelineEventMenuEntry(
-            name: "Delete",
+            name: CommonStrings.promptAddReaction,
             icon: Icons.delete,
             action: (BuildContext context) => {
                   AdaptiveDialog.confirmation(context).then((value) {
@@ -101,6 +106,7 @@ class TimelineEventMenu {
           name: "Show Source",
           icon: Icons.code,
           action: (BuildContext context) {
+            onActionFinished?.call();
             AdaptiveDialog.show(
               context,
               title: "Source",
@@ -110,8 +116,6 @@ class TimelineEventMenu {
                 );
               },
             );
-
-            onActionFinished?.call();
           }),
       if (preferences.developerMode)
         TimelineEventMenuEntry(
