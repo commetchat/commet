@@ -31,10 +31,6 @@ class _TimelineEventViewGenericState extends State<TimelineEventViewGeneric>
           args: [user],
           name: "messagePlaceholderSticker");
 
-  String get messageFailedToDecrypt => Intl.message("Failed to decrypt event",
-      desc: "Placeholde text for when a message fails to decrypt",
-      name: "messageFailedToDecrypt");
-
   String messagePlaceholderUserCreatedRoom(String user) =>
       Intl.message("$user created the room!",
           desc: "Message body for when a user created the room",

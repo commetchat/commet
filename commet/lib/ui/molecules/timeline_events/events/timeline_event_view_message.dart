@@ -8,7 +8,9 @@ import 'package:commet/ui/molecules/timeline_events/timeline_event_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
+import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:intl/intl.dart' as intl;
+import 'package:intl/intl.dart';
 
 class TimelineEventViewMessage extends StatefulWidget {
   const TimelineEventViewMessage(
@@ -32,6 +34,10 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
     implements TimelineEventViewWidget {
   late String senderName;
   late Color senderColor;
+
+  String get messageFailedToDecrypt => Intl.message("Failed to decrypt event",
+      desc: "Placeholde text for when a message fails to decrypt",
+      name: "messageFailedToDecrypt");
 
   GlobalKey reactionsKey = GlobalKey();
 
@@ -101,6 +107,10 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
     senderColor = sender.defaultColor;
 
     showSender = shouldShowSender(eventIndex);
+
+    if (event.type == EventType.encrypted) {
+      formattedContent = tiamat.Text.error(messageFailedToDecrypt);
+    }
 
     if (event.bodyFormat != null) {
       formattedContent =

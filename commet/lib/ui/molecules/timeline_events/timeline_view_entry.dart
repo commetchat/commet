@@ -138,6 +138,7 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
     switch (eventType) {
       case EventType.message:
       case EventType.sticker:
+      case EventType.encrypted:
         return TimelineEventViewMessage(
             key: eventKey,
             timeline: widget.timeline,
