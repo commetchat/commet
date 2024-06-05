@@ -23,7 +23,7 @@ Commet is a client for [Matrix](https://matrix.org) focused on providing a featu
 
 # Features
 - Supports **Windows**, **Linux**, and **Android** (MacOS and iOS planned in future)
-- End to End Ecryption
+- End to End Encryption
 - Custom Emoji + Stickers
 - GIF Search
 - Multiple Accounts
