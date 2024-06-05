@@ -1,6 +1,8 @@
 import 'package:commet/main.dart';
+import 'package:commet/ui/molecules/room_timeline_widget/room_timeline_overlay_button.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_menu.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
 import 'package:tiamat/atoms/context_menu.dart';
 import 'package:tiamat/atoms/tile.dart';
@@ -11,8 +13,14 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:flutter/material.dart' as m;
 
 class TimelineOverlay extends StatefulWidget {
-  const TimelineOverlay({required this.link, super.key});
+  const TimelineOverlay(
+      {required this.link,
+      this.showMessageMenu = true,
+      this.jumpToLatest,
+      super.key});
   final LayerLink link;
+  final bool showMessageMenu;
+  final Function()? jumpToLatest;
 
   @override
   State<TimelineOverlay> createState() => TimelineOverlayState();
@@ -30,24 +38,48 @@ class TimelineOverlayState extends State<TimelineOverlay> {
 
   final double tooltipHeight = 300;
 
+  bool isAttatchedToBottom = true;
+
+  String get labelJumpToLatest => Intl.message("Jump to latest",
+      desc:
+          "Label for the button which jumps the room timeline view to the latest message",
+      name: "labelJumpToLatest");
+
   @override
   Widget build(BuildContext context) {
-    return Positioned(
-        right: 0,
-        top: 0,
-        child: CompositedTransformFollower(
-            targetAnchor: Alignment.topRight,
-            followerAnchor: openDownwards == true
-                ? Alignment.topRight
-                : Alignment.bottomRight,
-            showWhenUnlinked: false,
-            offset: Offset(-20, openDownwards == true ? -50 : 0),
-            link: widget.link,
-            child: MouseRegion(
-                child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-              child: buildTooltipMenu(child: buildPrimaryMenu(context)),
-            ))));
+    return Stack(
+      children: [
+        if (widget.showMessageMenu)
+          Positioned(
+              right: 0,
+              top: 0,
+              child: CompositedTransformFollower(
+                  targetAnchor: Alignment.topRight,
+                  followerAnchor: openDownwards == true
+                      ? Alignment.topRight
+                      : Alignment.bottomRight,
+                  showWhenUnlinked: false,
+                  offset: Offset(-20, openDownwards == true ? -50 : 0),
+                  link: widget.link,
+                  child: MouseRegion(
+                      child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                    child: buildTooltipMenu(child: buildPrimaryMenu(context)),
+                  )))),
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: AnimatedSlide(
+            offset: Offset(0, !isAttatchedToBottom ? 0 : 1),
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeInOutCubic,
+            child: RoomTimelineOverlayButton(
+              text: labelJumpToLatest,
+              onTap: widget.jumpToLatest,
+            ),
+          ),
+        )
+      ],
+    );
   }
 
   Widget buildTooltipMenu({required Widget child}) {
@@ -146,6 +178,14 @@ class TimelineOverlayState extends State<TimelineOverlay> {
       currentMenu = menu;
       selectedEntry = null;
     });
+  }
+
+  void setAttatchedToBottom(bool value) {
+    if (value != isAttatchedToBottom) {
+      setState(() {
+        isAttatchedToBottom = value;
+      });
+    }
   }
 
   Widget buildAction(

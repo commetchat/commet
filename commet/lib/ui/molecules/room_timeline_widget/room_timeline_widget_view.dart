@@ -157,10 +157,16 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
     widget.onViewScrolled?.call(
         offset: controller.offset,
         maxScrollExtent: controller.position.maxScrollExtent);
+
+    var overlayState = overlayKey.currentState as TimelineOverlayState?;
+    overlayState?.setAttatchedToBottom(attachedToBottom);
   }
 
   void animateAndSnapToBottom() {
     controller.position.hold(() {});
+
+    var overlayState = overlayKey.currentState as TimelineOverlayState?;
+    overlayState?.setAttatchedToBottom(attachedToBottom);
 
     animatingToBottom = true;
 
@@ -328,8 +334,11 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
                   ],
                 ),
               ),
-              if (Layout.desktop)
-                TimelineOverlay(key: overlayKey, link: selectedEventLayerLink)
+              TimelineOverlay(
+                  key: overlayKey,
+                  showMessageMenu: Layout.desktop,
+                  jumpToLatest: animateAndSnapToBottom,
+                  link: selectedEventLayerLink)
             ],
           ),
         ),
