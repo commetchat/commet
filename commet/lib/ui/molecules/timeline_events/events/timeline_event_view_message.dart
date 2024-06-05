@@ -55,7 +55,7 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
   late DateTime sentTime;
 
   UrlPreviewComponent? previewComponent;
-  bool hasLinks = false;
+  bool doUrlPreview = false;
 
   int index = 0;
 
@@ -93,7 +93,7 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
           ? TimelineEventViewReactions(
               key: reactionsKey, timeline: widget.timeline, initialIndex: index)
           : null,
-      urlPreviews: previewComponent != null && hasLinks
+      urlPreviews: previewComponent != null && doUrlPreview
           ? TimelineEventViewUrlPreviews(
               initialIndex: index,
               timeline: widget.timeline,
@@ -146,7 +146,10 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
 
     sentTime = event.originServerTs;
 
-    hasLinks = event.links?.isNotEmpty == true;
+    doUrlPreview =
+        previewComponent?.shouldGetPreviewData(widget.timeline.room, event) ==
+                true &&
+            event.links?.isNotEmpty == true;
   }
 
   String timestampToString(DateTime time) {
