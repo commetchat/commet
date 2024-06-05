@@ -28,6 +28,7 @@ class _RoomTimelineWidgetState extends State<RoomTimelineWidget> {
       key: timelineViewKey,
       timeline: widget.timeline,
       onViewScrolled: onViewScrolled,
+      onAttachedToBottom: onAttachedToBottom,
       setReplyingEvent: widget.setReplyingEvent,
       setEditingEvent: widget.setEditingEvent,
     );
@@ -49,6 +50,14 @@ class _RoomTimelineWidgetState extends State<RoomTimelineWidget> {
 
     if (offset > maxScrollExtent - loadingThreshold && loadingHistory == null) {
       loadMoreHistory();
+    }
+
+    if (state?.attachedToBottom == true) {}
+  }
+
+  void onAttachedToBottom() {
+    if (widget.timeline.events.isNotEmpty) {
+      widget.timeline.markAsRead(widget.timeline.events.first);
     }
   }
 

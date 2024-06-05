@@ -18,11 +18,13 @@ class RoomTimelineWidgetView extends StatefulWidget {
       this.onViewScrolled,
       this.setEditingEvent,
       this.setReplyingEvent,
+      this.onAttachedToBottom,
       super.key});
   final Timeline timeline;
   final Function(TimelineEvent event)? markAsRead;
   final Function(TimelineEvent? event)? setReplyingEvent;
   final Function(TimelineEvent? event)? setEditingEvent;
+  final Function()? onAttachedToBottom;
 
   final Function({required double offset, required double maxScrollExtent})?
       onViewScrolled;
@@ -52,6 +54,8 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
   SelectableEventViewWidget? selectedEventView;
 
   late List<StreamSubscription> subscriptions;
+
+  bool wasLastScrollAttachedToBottom = false;
 
   bool get attachedToBottom => controller.hasClients
       ? controller.offset - controller.positions.first.minScrollExtent < 50 ||
@@ -147,6 +151,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
       double extent = controller.position.minScrollExtent;
       controller = ScrollController(initialScrollOffset: extent);
       controller.addListener(onScroll);
+      widget.onAttachedToBottom?.call();
       setState(() {
         firstFrame = false;
       });
@@ -159,14 +164,21 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
         maxScrollExtent: controller.position.maxScrollExtent);
 
     var overlayState = overlayKey.currentState as TimelineOverlayState?;
-    overlayState?.setAttatchedToBottom(attachedToBottom);
+    overlayState?.setAttachedToBottom(attachedToBottom);
+
+    if (wasLastScrollAttachedToBottom == false && attachedToBottom) {
+      widget.onAttachedToBottom?.call();
+    }
+
+    wasLastScrollAttachedToBottom = attachedToBottom;
   }
 
   void animateAndSnapToBottom() {
     controller.position.hold(() {});
 
     var overlayState = overlayKey.currentState as TimelineOverlayState?;
-    overlayState?.setAttatchedToBottom(attachedToBottom);
+    overlayState?.setAttachedToBottom(attachedToBottom);
+    widget.onAttachedToBottom?.call();
 
     animatingToBottom = true;
 

@@ -180,7 +180,7 @@ class TimelineOverlayState extends State<TimelineOverlay> {
     });
   }
 
-  void setAttatchedToBottom(bool value) {
+  void setAttachedToBottom(bool value) {
     if (value != isAttatchedToBottom) {
       setState(() {
         isAttatchedToBottom = value;
