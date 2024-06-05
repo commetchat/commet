@@ -19,7 +19,7 @@ class TimelineViewEntry extends StatefulWidget {
       this.setEditingEvent,
       this.setReplyingEvent,
       this.showDetailed = false,
-      this.overrideShowSender = false,
+      this.singleEvent = false,
       super.key});
   final Timeline timeline;
   final int initialIndex;
@@ -27,7 +27,9 @@ class TimelineViewEntry extends StatefulWidget {
   final Function(TimelineEvent? event)? setReplyingEvent;
   final Function(TimelineEvent? event)? setEditingEvent;
   final bool showDetailed;
-  final bool overrideShowSender;
+
+  // Should be true if we are showing this event on its own, and not as part of a timeline
+  final bool singleEvent;
 
   @override
   State<TimelineViewEntry> createState() => TimelineViewEntryState();
@@ -68,6 +70,10 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
   }
 
   bool shouldEventShowDate(int index) {
+    if (widget.singleEvent) {
+      return false;
+    }
+
     var offsetIndex = index + 1;
 
     if (widget.timeline.events.length <= offsetIndex) {
@@ -193,7 +199,7 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
             key: eventKey,
             timeline: widget.timeline,
             detailed: widget.showDetailed || selected,
-            overrideShowSender: widget.overrideShowSender,
+            overrideShowSender: widget.singleEvent,
             initialIndex: widget.initialIndex);
       case EventType.roomCreated:
       case EventType.memberJoined:
