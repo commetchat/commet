@@ -59,6 +59,8 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
 
   int index = 0;
 
+  late bool edited;
+
   @override
   void initState() {
     currentUserIdentifier = widget.timeline.client.self!.identifier;
@@ -77,6 +79,7 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
       showSender: showSender,
       formattedContent: formattedContent,
       timestamp: timestampToString(sentTime),
+      edited: edited,
       attachments: attachments != null
           ? TimelineEventViewAttachments(attachments: attachments!)
           : null,
@@ -125,6 +128,7 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
 
     showSender = shouldShowSender(eventIndex);
 
+    edited = event.edited;
     if (event.type == EventType.encrypted) {
       formattedContent = tiamat.Text.error(messageFailedToDecrypt);
     }

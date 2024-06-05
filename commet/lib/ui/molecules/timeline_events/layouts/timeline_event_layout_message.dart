@@ -3,6 +3,7 @@ import 'package:commet/diagnostic/benchmark_values.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class TimelineEventLayoutMessage extends StatelessWidget {
@@ -17,6 +18,7 @@ class TimelineEventLayoutMessage extends StatelessWidget {
       this.reactions,
       this.timestamp,
       this.urlPreviews,
+      this.edited = false,
       this.avatarSize = 32,
       this.showSender = true});
   final String senderName;
@@ -28,9 +30,14 @@ class TimelineEventLayoutMessage extends StatelessWidget {
   final Widget? reactions;
   final Widget? urlPreviews;
   final bool showSender;
+  final bool edited;
   final String? timestamp;
 
   final double avatarSize;
+
+  String get messageEditedMarker => Intl.message("(Edited)",
+      name: "messageEditedMarker",
+      desc: "Short text to mark that a message has been edited");
 
   @override
   Widget build(BuildContext context) {
@@ -63,6 +70,7 @@ class TimelineEventLayoutMessage extends StatelessWidget {
                         ),
                       if (formattedContent != null)
                         RepaintBoundary(child: formattedContent!),
+                      if (edited) tiamat.Text.labelLow(messageEditedMarker),
                       if (attachments != null) attachments!,
                       if (urlPreviews != null) urlPreviews!,
                       if (reactions != null)
