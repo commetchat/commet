@@ -15,6 +15,7 @@ class TimelineEventLayoutMessage extends StatelessWidget {
       this.attachments,
       this.inResponseTo,
       this.reactions,
+      this.timestamp,
       this.avatarSize = 32,
       this.showSender = true});
   final String senderName;
@@ -25,6 +26,7 @@ class TimelineEventLayoutMessage extends StatelessWidget {
   final Widget? inResponseTo;
   final Widget? reactions;
   final bool showSender;
+  final String? timestamp;
 
   final double avatarSize;
 
@@ -48,7 +50,15 @@ class TimelineEventLayoutMessage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if (showSender) name(),
+                      if (showSender)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            name(),
+                            if (timestamp != null)
+                              tiamat.Text.labelLow(timestamp!),
+                          ],
+                        ),
                       if (formattedContent != null)
                         RepaintBoundary(child: formattedContent!),
                       if (attachments != null) attachments!,

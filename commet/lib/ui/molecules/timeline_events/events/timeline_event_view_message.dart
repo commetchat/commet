@@ -8,16 +8,20 @@ import 'package:commet/ui/molecules/timeline_events/timeline_event_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
+import 'package:intl/intl.dart' as intl;
+
 class TimelineEventViewMessage extends StatefulWidget {
   const TimelineEventViewMessage(
       {super.key,
       required this.timeline,
       this.showSender = true,
+      this.detailed = false,
       required this.initialIndex});
 
   final Timeline timeline;
   final int initialIndex;
   final bool showSender;
+  final bool detailed;
 
   @override
   State<TimelineEventViewMessage> createState() =>
@@ -38,6 +42,7 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
   bool isInResponse = false;
   bool showSender = false;
   late String currentUserIdentifier;
+  late DateTime sentTime;
 
   int index = 0;
 
@@ -56,6 +61,7 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
       senderAvatar: senderAvatar,
       showSender: showSender,
       formattedContent: formattedContent,
+      timestamp: timestampToString(sentTime),
       attachments: attachments != null
           ? TimelineEventViewAttachments(attachments: attachments!)
           : null,
@@ -106,6 +112,26 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
     attachments = event.attachments;
     isInResponse = event.relatedEventId != null &&
         event.relationshipType == EventRelationshipType.reply;
+
+    sentTime = event.originServerTs;
+  }
+
+  String timestampToString(DateTime time) {
+    var use24 = MediaQuery.of(context).alwaysUse24HourFormat;
+
+    if (widget.detailed) {
+      if (use24) {
+        return intl.DateFormat.yMMMMd().add_Hms().format(time.toLocal());
+      } else {
+        return intl.DateFormat.yMMMMd().add_jms().format(time.toLocal());
+      }
+    } else {
+      if (use24) {
+        return intl.DateFormat.Hm().format(time.toLocal());
+      } else {
+        return intl.DateFormat.jm().format(time.toLocal());
+      }
+    }
   }
 
   bool shouldShowSender(int index) {

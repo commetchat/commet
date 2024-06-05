@@ -55,6 +55,7 @@ class TimelineEventMenuDialog extends StatelessWidget {
                         child: TimelineViewEntry(
                           timeline: timeline,
                           initialIndex: timeline.events.indexOf(event),
+                          showDetailed: true,
                         ),
                       ),
                     ),

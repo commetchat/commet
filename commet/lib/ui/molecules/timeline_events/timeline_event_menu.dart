@@ -28,7 +28,8 @@ class TimelineEventMenu {
     this.setReplyingEvent,
     this.onActionFinished,
   }) {
-    bool canEditEvent = timeline.room.permissions.canUserEditMessages &&
+    bool canEditEvent = event.type == EventType.message &&
+        timeline.room.permissions.canUserEditMessages &&
         event.senderId == timeline.room.client.self!.identifier &&
         setEditingEvent != null;
 
@@ -117,7 +118,7 @@ class TimelineEventMenu {
               },
             );
           }),
-      if (preferences.developerMode)
+      if (preferences.developerMode && event.type == EventType.message)
         TimelineEventMenuEntry(
             name: "Show Notification",
             icon: Icons.notification_add,
