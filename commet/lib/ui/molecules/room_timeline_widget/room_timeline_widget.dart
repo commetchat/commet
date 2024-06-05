@@ -4,8 +4,14 @@ import 'package:commet/ui/molecules/room_timeline_widget/room_timeline_widget_vi
 import 'package:flutter/material.dart';
 
 class RoomTimelineWidget extends StatefulWidget {
-  const RoomTimelineWidget({required this.timeline, super.key});
+  const RoomTimelineWidget(
+      {required this.timeline,
+      this.setEditingEvent,
+      this.setReplyingEvent,
+      super.key});
   final Timeline timeline;
+  final Function(TimelineEvent? event)? setReplyingEvent;
+  final Function(TimelineEvent? event)? setEditingEvent;
 
   @override
   State<RoomTimelineWidget> createState() => _RoomTimelineWidgetState();
@@ -22,6 +28,8 @@ class _RoomTimelineWidgetState extends State<RoomTimelineWidget> {
       key: timelineViewKey,
       timeline: widget.timeline,
       onViewScrolled: onViewScrolled,
+      setReplyingEvent: widget.setReplyingEvent,
+      setEditingEvent: widget.setEditingEvent,
     );
   }
 

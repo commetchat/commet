@@ -16,6 +16,7 @@ class EmojiPicker extends StatelessWidget {
       this.onlyEmoji = false,
       this.onlyStickers = false,
       this.staggered = false,
+      this.preferredTooltipDirection = AxisDirection.right,
       this.packListAxis = Axis.vertical});
   final void Function(Emoticon emoticon)? onEmoticonPressed;
   final List<EmoticonPack> packs;
@@ -25,6 +26,7 @@ class EmojiPicker extends StatelessWidget {
   final bool staggered;
   final bool onlyStickers;
   final bool onlyEmoji;
+  final AxisDirection preferredTooltipDirection;
 
   final ItemScrollController itemScrollController = ItemScrollController();
 
@@ -112,7 +114,7 @@ class EmojiPicker extends StatelessWidget {
     return SizedBox(
       child: tiamat.Tooltip(
         text: packs[index].displayName,
-        preferredDirection: AxisDirection.right,
+        preferredDirection: preferredTooltipDirection,
         child: ImageButton(
           size: packButtonSize,
           iconSize: packButtonSize - 8,

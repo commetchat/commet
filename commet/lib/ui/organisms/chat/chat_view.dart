@@ -57,10 +57,10 @@ class ChatView extends StatelessWidget {
             key: ValueKey("${state.room.identifier}-timeline"),
             timeline: state.timeline!,
             // markAsRead: handleMarkAsRead,
-            // setReplyingEvent: (event) => state.setInteractingEvent(event,
-            //     type: EventInteractionType.reply),
-            // setEditingEvent: (event) => state.setInteractingEvent(event,
-            //     type: EventInteractionType.edit),
+            setReplyingEvent: (event) => state.setInteractingEvent(event,
+                type: EventInteractionType.reply),
+            setEditingEvent: (event) => state.setInteractingEvent(event,
+                type: EventInteractionType.edit),
             // onAddReaction: state.addReaction,
           );
   }
