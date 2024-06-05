@@ -26,6 +26,7 @@ class _TimelineEventViewUrlPreviewsState
     extends State<TimelineEventViewUrlPreviews>
     implements TimelineEventViewWidget {
   UrlPreviewData? data;
+  GlobalKey key = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +34,7 @@ class _TimelineEventViewUrlPreviewsState
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 2, 40, 2),
       child: UrlPreviewWidget(
+        key: key,
         data,
         onTap: () {
           LinkUtils.open(data!.uri);
@@ -57,11 +59,12 @@ class _TimelineEventViewUrlPreviewsState
     var cachedData =
         widget.component.getCachedPreview(widget.timeline.room, event);
 
-    if (cachedData != null) {
-      setState(() {
-        data = cachedData;
-      });
-    } else {
+    setState(() {
+      data = cachedData;
+      key = GlobalKey();
+    });
+
+    if (cachedData == null) {
       widget.component.getPreview(widget.timeline.room, event).then(
         (value) async {
           if (value?.image != null) {
@@ -69,6 +72,7 @@ class _TimelineEventViewUrlPreviewsState
           }
           setState(() {
             data = value;
+            key = GlobalKey();
           });
         },
       );

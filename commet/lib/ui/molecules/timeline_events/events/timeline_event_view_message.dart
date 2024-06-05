@@ -7,6 +7,7 @@ import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_r
 import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_url_previews.dart';
 import 'package:commet/ui/molecules/timeline_events/layouts/timeline_event_layout_message.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_layout.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -42,6 +43,7 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
       name: "messageFailedToDecrypt");
 
   GlobalKey reactionsKey = GlobalKey();
+  GlobalKey urlPreviewsKey = GlobalKey();
 
   Widget? formattedContent;
   ImageProvider? senderAvatar;
@@ -92,7 +94,9 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
           ? TimelineEventViewUrlPreviews(
               initialIndex: index,
               timeline: widget.timeline,
-              component: previewComponent!)
+              component: previewComponent!,
+              key: urlPreviewsKey,
+            )
           : null,
     );
   }
@@ -103,7 +107,7 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
       loadEventState(newIndex);
     });
 
-    for (var key in [reactionsKey]) {
+    for (var key in [reactionsKey, urlPreviewsKey]) {
       if (key.currentState is TimelineEventViewWidget) {
         (key.currentState as TimelineEventViewWidget).update(newIndex);
       }
