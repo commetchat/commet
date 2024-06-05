@@ -1,8 +1,10 @@
 import 'package:commet/client/attachment.dart';
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/url_preview/url_preview_component.dart';
 import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_attachments.dart';
 import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_reactions.dart';
 import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_reply.dart';
+import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_url_previews.dart';
 import 'package:commet/ui/molecules/timeline_events/layouts/timeline_event_layout_message.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_layout.dart';
 import 'package:flutter/material.dart';
@@ -16,13 +18,13 @@ class TimelineEventViewMessage extends StatefulWidget {
   const TimelineEventViewMessage(
       {super.key,
       required this.timeline,
-      this.showSender = true,
+      this.overrideShowSender = false,
       this.detailed = false,
       required this.initialIndex});
 
   final Timeline timeline;
   final int initialIndex;
-  final bool showSender;
+  final bool overrideShowSender;
   final bool detailed;
 
   @override
@@ -50,11 +52,16 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
   late String currentUserIdentifier;
   late DateTime sentTime;
 
+  UrlPreviewComponent? previewComponent;
+  bool hasLinks = false;
+
   int index = 0;
 
   @override
   void initState() {
     currentUserIdentifier = widget.timeline.client.self!.identifier;
+    previewComponent =
+        widget.timeline.room.client.getComponent<UrlPreviewComponent>();
     loadEventState(widget.initialIndex);
     super.initState();
   }
@@ -80,6 +87,12 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
       reactions: hasReactions
           ? TimelineEventViewReactions(
               key: reactionsKey, timeline: widget.timeline, initialIndex: index)
+          : null,
+      urlPreviews: previewComponent != null && hasLinks
+          ? TimelineEventViewUrlPreviews(
+              initialIndex: index,
+              timeline: widget.timeline,
+              component: previewComponent!)
           : null,
     );
   }
@@ -124,6 +137,8 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
         event.relationshipType == EventRelationshipType.reply;
 
     sentTime = event.originServerTs;
+
+    hasLinks = event.links?.isNotEmpty == true;
   }
 
   String timestampToString(DateTime time) {
@@ -145,6 +160,8 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
   }
 
   bool shouldShowSender(int index) {
+    if (widget.overrideShowSender) return true;
+
     if (widget.timeline.events.length <= index + 1) {
       return true;
     }

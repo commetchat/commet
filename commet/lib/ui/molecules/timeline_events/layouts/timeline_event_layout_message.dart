@@ -16,6 +16,7 @@ class TimelineEventLayoutMessage extends StatelessWidget {
       this.inResponseTo,
       this.reactions,
       this.timestamp,
+      this.urlPreviews,
       this.avatarSize = 32,
       this.showSender = true});
   final String senderName;
@@ -25,6 +26,7 @@ class TimelineEventLayoutMessage extends StatelessWidget {
   final Widget? attachments;
   final Widget? inResponseTo;
   final Widget? reactions;
+  final Widget? urlPreviews;
   final bool showSender;
   final String? timestamp;
 
@@ -62,6 +64,7 @@ class TimelineEventLayoutMessage extends StatelessWidget {
                       if (formattedContent != null)
                         RepaintBoundary(child: formattedContent!),
                       if (attachments != null) attachments!,
+                      if (urlPreviews != null) urlPreviews!,
                       if (reactions != null)
                         Padding(
                           padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
