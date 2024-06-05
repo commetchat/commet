@@ -5,6 +5,7 @@ import 'package:commet/diagnostic/benchmark_values.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_generic.dart';
 import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_message.dart';
+import 'package:commet/ui/molecules/timeline_events/timeline_event_date_time_marker.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_layout.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_menu.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_menu_dialog.dart';
@@ -42,6 +43,9 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
   bool selected = false;
   LayerLink? timelineLayerLink;
 
+  late DateTime time;
+  bool showDate = false;
+
   @override
   void initState() {
     loadState(widget.initialIndex);
@@ -54,6 +58,36 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
     eventType = event.type;
     status = event.status;
     index = eventIndex;
+    time = event.originServerTs;
+    showDate = shouldEventShowDate(eventIndex);
+  }
+
+  bool shouldEventShowDate(int index) {
+    var offsetIndex = index + 1;
+
+    if (widget.timeline.events.length <= offsetIndex) {
+      return false;
+    }
+
+    if ([
+          EventType.emote,
+          EventType.message,
+        ].contains(widget.timeline.events[index].type) ==
+        false) {
+      return false;
+    }
+
+    if (widget.timeline.events[index].originServerTs.toLocal().day !=
+        widget.timeline.events[offsetIndex].originServerTs.toLocal().day) {
+      return true;
+    }
+
+    if (widget.timeline.events[index].originServerTs
+            .difference(widget.timeline.events[offsetIndex].originServerTs)
+            .inHours >
+        2) return true;
+
+    return false;
   }
 
   @override
@@ -126,6 +160,15 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
         children: [
           CompositedTransformTarget(
               link: timelineLayerLink!, child: const SizedBox()),
+          event ?? Container()
+        ],
+      );
+    }
+
+    if (showDate) {
+      event = Column(
+        children: [
+          TimelineEventDateTimeMarker(time: time),
           event ?? Container()
         ],
       );
