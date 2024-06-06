@@ -92,18 +92,16 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
   }
 
   void onEventAdded(int index) {
-    setState(() {});
+    eventKeys.insert(index, (
+      GlobalKey(debugLabel: widget.timeline.events[index].eventId),
+      widget.timeline.events[index].eventId
+    ));
 
     if (index == 0 || index < recentItemsCount) {
       recentItemsCount += 1;
     } else {
       historyItemsCount = widget.timeline.events.length - recentItemsCount;
     }
-
-    eventKeys.insert(index, (
-      GlobalKey(debugLabel: widget.timeline.events[index].eventId),
-      widget.timeline.events[index].eventId
-    ));
 
     if (index == 0) {
       if (attachedToBottom || animatingToBottom) {
@@ -114,6 +112,8 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
         widget.markAsRead?.call(widget.timeline.events[0]);
       }
     }
+
+    setState(() {});
   }
 
   void onEventChanged(int index) {
