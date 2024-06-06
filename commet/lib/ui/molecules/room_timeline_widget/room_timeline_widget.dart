@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:commet/client/timeline.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/ui/molecules/room_timeline_widget/room_timeline_widget_view.dart';
@@ -21,6 +23,30 @@ class _RoomTimelineWidgetState extends State<RoomTimelineWidget> {
   Future? loadingHistory;
 
   GlobalKey timelineViewKey = GlobalKey();
+
+  StreamSubscription? sub;
+
+  @override
+  void initState() {
+    sub = widget.timeline.onEventAdded.stream.listen(onEventReceived);
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    sub?.cancel();
+    super.dispose();
+  }
+
+  void onEventReceived(int index) {
+    if (index == 0) {
+      var state = timelineViewKey.currentState as RoomTimelineWidgetViewState?;
+      if (state?.attachedToBottom == true) {
+        widget.timeline.markAsRead(widget.timeline.events[index]);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
