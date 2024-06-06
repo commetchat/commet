@@ -9,6 +9,8 @@ import 'package:commet/main.dart';
 import 'package:flutter/widgets.dart';
 import 'package:matrix/matrix.dart' as matrix;
 import 'package:encrypted_url_preview/encrypted_url_preview.dart';
+import 'package:matrix/matrix_api_lite.dart';
+import 'package:matrix/matrix_api_lite/model/matrix_exception.dart';
 
 class MatrixUrlPreviewComponent implements UrlPreviewComponent<MatrixClient> {
   @override
@@ -19,6 +21,8 @@ class MatrixUrlPreviewComponent implements UrlPreviewComponent<MatrixClient> {
   Map<String, UrlPreviewData> cache = {};
 
   EncryptedUrlPreview? privatePreviewGetter;
+
+  bool? serverSupportsUrlPreview;
 
   void createPrivatePreviewGetter() {
     privatePreviewGetter = EncryptedUrlPreview(
@@ -62,7 +66,10 @@ pQIDAQAB
       return null;
     }
 
-    cache[uri.toString()] = data!;
+    if (data != null) {
+      cache[uri.toString()] = data;
+    }
+
     return data;
   }
 
@@ -79,6 +86,10 @@ pQIDAQAB
   @override
   bool shouldGetPreviewData(Room room, TimelineEvent event) {
     if (room.isE2EE && preferences.urlPreviewInE2EEChat == false) {
+      return false;
+    }
+
+    if (serverSupportsUrlPreview == false) {
       return false;
     }
 
@@ -137,10 +148,24 @@ pQIDAQAB
 
   Future<UrlPreviewData?> fetchPreviewData(
       matrix.Client client, Uri url) async {
-    var response = await client.request(
-        matrix.RequestType.GET, "/media/v3/preview_url",
-        query: {"url": url.toString()});
+    late Map<String, Object?> response;
+    try {
+      response = await client.request(
+          matrix.RequestType.GET, "/media/v3/preview_url",
+          query: {"url": url.toString()});
+    } catch (e, s) {
+      if (e is MatrixException) {
+        if (e.error == MatrixError.M_UNRECOGNIZED) {
+          serverSupportsUrlPreview = false;
+        }
+      }
 
+      Log.onError(e, s);
+
+      return null;
+    }
+
+    serverSupportsUrlPreview = true;
     var title = response['og:title'] as String?;
     var siteName = response['og:site_name'] as String?;
     var imageUrl = response['og:image'] as String?;
