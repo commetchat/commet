@@ -1,4 +1,5 @@
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/threads/thread_component.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/diagnostic/benchmark_values.dart';
@@ -20,6 +21,7 @@ class TimelineViewEntry extends StatefulWidget {
       this.setReplyingEvent,
       this.showDetailed = false,
       this.singleEvent = false,
+      this.isThreadTimeline = false,
       super.key});
   final Timeline timeline;
   final int initialIndex;
@@ -27,6 +29,7 @@ class TimelineViewEntry extends StatefulWidget {
   final Function(TimelineEvent? event)? setReplyingEvent;
   final Function(TimelineEvent? event)? setEditingEvent;
   final bool showDetailed;
+  final bool isThreadTimeline;
 
   // Should be true if we are showing this event on its own, and not as part of a timeline
   final bool singleEvent;
@@ -48,13 +51,21 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
   GlobalKey eventKey = GlobalKey();
 
   bool selected = false;
+  bool isThreadReply = false;
   LayerLink? timelineLayerLink;
 
   late DateTime time;
   bool showDate = false;
 
+  ThreadsComponent? threads;
   @override
   void initState() {
+    threads = widget.timeline.room.client.getComponent<ThreadsComponent>();
+
+    isThreadReply = threads?.isEventInResponseToThread(
+            widget.timeline.events[widget.initialIndex], widget.timeline) ??
+        false;
+
     loadState(widget.initialIndex);
     super.initState();
   }
@@ -72,6 +83,14 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
   bool shouldEventShowDate(int index) {
     if (widget.singleEvent) {
       return false;
+    }
+
+    if (widget.isThreadTimeline) {
+      if (threads?.isHeadOfThread(
+              widget.timeline.events[index], widget.timeline) ==
+          true) {
+        return true;
+      }
     }
 
     var offsetIndex = index + 1;
@@ -147,6 +166,7 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
                     timeline: widget.timeline,
                     menu: TimelineEventMenu(
                       timeline: widget.timeline,
+                      isThreadTimeline: widget.isThreadTimeline,
                       event: event,
                       setEditingEvent: widget.setEditingEvent,
                       setReplyingEvent: widget.setReplyingEvent,
@@ -193,12 +213,15 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
       case EventType.message:
       case EventType.sticker:
       case EventType.encrypted:
-        return TimelineEventViewMessage(
-            key: eventKey,
-            timeline: widget.timeline,
-            detailed: widget.showDetailed || selected,
-            overrideShowSender: widget.singleEvent,
-            initialIndex: widget.initialIndex);
+        if ((widget.isThreadTimeline) ||
+            (!widget.isThreadTimeline && !isThreadReply))
+          return TimelineEventViewMessage(
+              key: eventKey,
+              timeline: widget.timeline,
+              isThreadTimeline: widget.isThreadTimeline,
+              detailed: widget.showDetailed || selected,
+              overrideShowSender: widget.singleEvent,
+              initialIndex: widget.initialIndex);
       case EventType.roomCreated:
       case EventType.memberJoined:
       case EventType.memberLeft:
@@ -213,16 +236,17 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
           key: eventKey,
         );
       default:
-        return preferences.developerMode
-            ? TimelineEventViewGeneric(
-                timeline: widget.timeline,
-                initialIndex: widget.initialIndex,
-                key: eventKey,
-              )
-            : Container(
-                key: eventKey,
-              );
+        break;
     }
+    return preferences.developerMode
+        ? TimelineEventViewGeneric(
+            timeline: widget.timeline,
+            initialIndex: widget.initialIndex,
+            key: eventKey,
+          )
+        : Container(
+            key: eventKey,
+          );
   }
 
   @override

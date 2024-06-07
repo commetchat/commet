@@ -16,6 +16,7 @@ class TimelineEventLayoutMessage extends StatelessWidget {
       this.inResponseTo,
       this.reactions,
       this.timestamp,
+      this.thread,
       this.urlPreviews,
       this.edited = false,
       this.avatarSize = 32,
@@ -28,6 +29,7 @@ class TimelineEventLayoutMessage extends StatelessWidget {
   final Widget? inResponseTo;
   final Widget? reactions;
   final Widget? urlPreviews;
+  final Widget? thread;
   final bool showSender;
   final bool edited;
   final String? timestamp;
@@ -80,7 +82,8 @@ class TimelineEventLayoutMessage extends StatelessWidget {
                 ),
               )
             ],
-          )
+          ),
+          if (thread != null) thread!,
         ],
       ),
     );

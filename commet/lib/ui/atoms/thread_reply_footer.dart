@@ -1,6 +1,6 @@
-import 'package:commet/ui/atoms/generic_room_event.dart';
 import 'package:commet/ui/molecules/message.dart';
 import 'package:flutter/material.dart';
+import 'package:tiamat/tiamat.dart' as tiamat;
 
 class ThreadReplyFooter extends StatelessWidget {
   const ThreadReplyFooter(
@@ -25,7 +25,7 @@ class ThreadReplyFooter extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(22, 0, 0, 0),
+            padding: const EdgeInsets.fromLTRB(14, 0, 0, 0),
             child: IntrinsicHeight(
               child: Row(
                 mainAxisSize: MainAxisSize.max,
@@ -40,22 +40,43 @@ class ThreadReplyFooter extends StatelessWidget {
                     ),
                   ),
                   const Padding(
-                    padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
-                    child: Icon(
-                      Icons.message_rounded,
-                      size: 15,
+                    padding: EdgeInsets.all(8),
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
+                      child: Icon(
+                        Icons.message_rounded,
+                        size: 15,
+                      ),
                     ),
                   ),
                   Flexible(
-                    child: IntrinsicHeight(
-                      child: GenericRoomEvent(
-                        padding: const EdgeInsets.fromLTRB(4, 4, 0, 4),
-                        leftPadding: 0,
-                        body,
-                        senderImage: senderAvatar,
-                        senderName: senderName,
-                        senderColor: senderColor,
-                        maxLines: 3,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(8, 4, 0, 4),
+                      child: Row(
+                        children: [
+                          tiamat.Avatar(
+                            image: senderAvatar,
+                            placeholderColor: senderColor,
+                            placeholderText: senderName,
+                            radius: 10,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(8, 0, 12, 0),
+                            child: tiamat.Text(
+                              senderName,
+                              color: senderColor,
+                              maxLines: 1,
+                              autoAdjustBrightness: true,
+                            ),
+                          ),
+                          Flexible(
+                            child: tiamat.Text.labelLow(
+                              body,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),

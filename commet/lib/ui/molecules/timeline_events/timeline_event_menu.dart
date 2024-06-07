@@ -8,6 +8,7 @@ import 'package:commet/ui/molecules/emoji_picker.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/utils/common_strings.dart';
 import 'package:commet/utils/download_utils.dart';
+import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
 
 class TimelineEventMenu {
@@ -21,12 +22,15 @@ class TimelineEventMenu {
   final Function(TimelineEvent event)? setReplyingEvent;
   final Function()? onActionFinished;
 
+  final bool isThreadTimeline;
+
   TimelineEventMenu({
     required this.timeline,
     required this.event,
     this.setEditingEvent,
     this.setReplyingEvent,
     this.onActionFinished,
+    this.isThreadTimeline = false,
   }) {
     bool canEditEvent = event.type == EventType.message &&
         timeline.room.permissions.canUserEditMessages &&
@@ -45,6 +49,9 @@ class TimelineEventMenu {
     bool canAddReaction =
         [EventType.message, EventType.sticker].contains(event.type) &&
             emoticons != null;
+
+    bool canReplyInThread =
+        !isThreadTimeline && event.type == EventType.message;
 
     primaryActions = [
       if (canEditEvent)
@@ -86,6 +93,19 @@ class TimelineEventMenu {
               await Future.delayed(const Duration(milliseconds: 100));
               dismissSecondaryMenu();
             });
+          },
+        ),
+      if (canReplyInThread)
+        TimelineEventMenuEntry(
+          name: "Reply in Thread",
+          icon: Icons.message_rounded,
+          action: (context) {
+            EventBus.openThread.add((
+              timeline.client.identifier,
+              timeline.room.identifier,
+              event.eventId
+            ));
+            onActionFinished?.call();
           },
         ),
       if (canDeleteEvent)

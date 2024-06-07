@@ -1,9 +1,11 @@
 import 'package:commet/client/attachment.dart';
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/threads/thread_component.dart';
 import 'package:commet/client/components/url_preview/url_preview_component.dart';
 import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_attachments.dart';
 import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_reactions.dart';
 import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_reply.dart';
+import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_thread.dart';
 import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_url_previews.dart';
 import 'package:commet/ui/molecules/timeline_events/layouts/timeline_event_layout_message.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_layout.dart';
@@ -19,6 +21,7 @@ class TimelineEventViewMessage extends StatefulWidget {
   const TimelineEventViewMessage(
       {super.key,
       required this.timeline,
+      this.isThreadTimeline = false,
       this.overrideShowSender = false,
       this.detailed = false,
       required this.initialIndex});
@@ -27,6 +30,7 @@ class TimelineEventViewMessage extends StatefulWidget {
   final int initialIndex;
   final bool overrideShowSender;
   final bool detailed;
+  final bool isThreadTimeline;
 
   @override
   State<TimelineEventViewMessage> createState() =>
@@ -57,6 +61,9 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
   UrlPreviewComponent? previewComponent;
   bool doUrlPreview = false;
 
+  ThreadsComponent? threadComponent;
+  bool isHeadOfThread = false;
+
   int index = 0;
 
   late bool edited;
@@ -66,6 +73,12 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
     currentUserIdentifier = widget.timeline.client.self!.identifier;
     previewComponent =
         widget.timeline.room.client.getComponent<UrlPreviewComponent>();
+
+    if (!widget.isThreadTimeline) {
+      threadComponent =
+          widget.timeline.room.client.getComponent<ThreadsComponent>();
+    }
+
     loadEventState(widget.initialIndex);
     super.initState();
   }
@@ -100,6 +113,12 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
               component: previewComponent!,
               key: urlPreviewsKey,
             )
+          : null,
+      thread: isHeadOfThread
+          ? TimelineEventViewThread(
+              initialIndex: index,
+              timeline: widget.timeline,
+              component: threadComponent!)
           : null,
     );
   }
@@ -143,6 +162,9 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
     attachments = event.attachments;
     isInResponse = event.relatedEventId != null &&
         event.relationshipType == EventRelationshipType.reply;
+
+    isHeadOfThread =
+        threadComponent?.isHeadOfThread(event, widget.timeline) ?? false;
 
     sentTime = event.originServerTs;
 

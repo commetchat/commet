@@ -5,7 +5,6 @@ import 'package:commet/ui/molecules/read_indicator.dart';
 import 'package:commet/ui/molecules/room_timeline_widget/room_timeline_widget.dart';
 import 'package:commet/ui/organisms/chat/chat.dart';
 import 'package:commet/utils/autofill_utils.dart';
-import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart';

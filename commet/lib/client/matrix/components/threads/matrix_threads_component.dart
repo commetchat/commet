@@ -36,11 +36,14 @@ class MatrixThreadsComponent implements ThreadsComponent<MatrixClient> {
       return true;
     }
 
-    var replyingEventID = relation["m.in_reply_to"]["event_id"];
-    var replyingEvent = timeline.tryGetEvent(replyingEventID);
-    if (replyingEvent != null) {
-      return isEventInResponseToThread(replyingEvent, timeline);
+    if (relation.containsKey("m.in_reply_to")) {
+      var replyingEventID = relation["m.in_reply_to"]["event_id"];
+      var replyingEvent = timeline.tryGetEvent(replyingEventID);
+      if (replyingEvent != null) {
+        return isEventInResponseToThread(replyingEvent, timeline);
+      }
     }
+
     return false;
   }
 
@@ -53,6 +56,9 @@ class MatrixThreadsComponent implements ThreadsComponent<MatrixClient> {
     }
 
     if (timeline is MatrixThreadTimeline) {
+      if (event.eventId == timeline.threadRootId) {
+        return true;
+      }
       tl = timeline.mainRoomTimeline.matrixTimeline;
     }
 
@@ -62,6 +68,14 @@ class MatrixThreadsComponent implements ThreadsComponent<MatrixClient> {
 
     if (event is! MatrixTimelineEvent) {
       return false;
+    }
+
+    if (event.event.unsigned?.containsKey("m.relations") == true) {
+      var relations =
+          event.event.unsigned!["m.relations"] as Map<String, dynamic>;
+      if (relations.containsKey("m.thread")) {
+        return true;
+      }
     }
 
     return event.event.hasAggregatedEvents(tl, matrix.RelationshipTypes.thread);
@@ -85,6 +99,19 @@ class MatrixThreadsComponent implements ThreadsComponent<MatrixClient> {
 
     if (event is! MatrixTimelineEvent) {
       return null;
+    }
+
+    if (event.event.unsigned?.containsKey("m.relations") == true) {
+      var relations =
+          event.event.unsigned!["m.relations"] as Map<String, dynamic>;
+      if (relations.containsKey("m.thread")) {
+        var info = relations["m.thread"] as Map<String, dynamic>;
+        if (info.containsKey("latest_event") == true) {
+          var matrixEvent =
+              matrix.Event.fromJson(info["latest_event"], tl.room);
+          return MatrixTimelineEvent(matrixEvent, tl.room.client);
+        }
+      }
     }
 
     var events =
