@@ -86,7 +86,7 @@ class _SingleUserReadIndicatorState extends State<SingleUserReadIndicator> {
   late Member member;
   @override
   void initState() {
-    member = widget.room.getMemberOrFallback(widget.identifier)!;
+    member = widget.room.getMemberOrFallback(widget.identifier);
     super.initState();
   }
 

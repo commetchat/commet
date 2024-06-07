@@ -65,10 +65,6 @@ class MatrixClient extends Client {
       : matrix.NativeImplementationsIsolate(compute);
 
   MatrixClient({required String identifier}) {
-    if (preferences.developerMode) {
-      matrix.Logs().level = matrix.Level.verbose;
-    }
-
     _id = identifier;
     _matrixClient = _createMatrixClient(identifier);
     _matrixClient.onSync.stream.listen(onMatrixClientSync);
@@ -231,7 +227,6 @@ class MatrixClient extends Client {
   }
 
   void onMatrixClientSync(matrix.SyncUpdate update) {
-    Log.d("On Matrix Sync!");
     _onSync.add(null);
     _updateRoomslist();
     _updateSpacesList();
@@ -257,8 +252,6 @@ class MatrixClient extends Client {
       legacyDatabaseBuilder: (client) =>
           getLegacyMatrixDatabase(client.clientName),
       databaseBuilder: (client) => getMatrixDatabase(client.clientName),
-      logLevel:
-          BuildConfig.RELEASE ? matrix.Level.warning : matrix.Level.verbose,
     );
 
     client.onSyncStatus.stream.listen(onSyncStatusChanged);

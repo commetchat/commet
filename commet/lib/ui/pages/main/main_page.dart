@@ -3,7 +3,6 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/profile.dart';
 import 'package:commet/config/layout_config.dart';
-import 'package:commet/main.dart';
 import 'package:commet/ui/pages/setup/setup_page.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:commet/ui/navigation/navigation_utils.dart';
@@ -69,9 +68,10 @@ class MainPageState extends State<MainPage> {
         selectRoom(room);
       }
     }
-    backgroundTaskManager.onListUpdate.listen((event) {
-      setState(() {});
-    });
+
+    // backgroundTaskManager.onListUpdate.listen((event) {
+    //   setState(() {});
+    // });
 
     EventBus.openRoom.stream.listen(onOpenRoomSignal);
     SchedulerBinding.instance.scheduleFrameCallback(onFirstFrame);
@@ -119,7 +119,6 @@ class MainPageState extends State<MainPage> {
     clearRoomSelection();
 
     onSpaceUpdateSubscription?.cancel();
-    onSpaceUpdateSubscription = space?.onUpdate.listen(onSpaceUpdated);
     setState(() {
       _previousSpace = _currentSpace;
       _currentSpace = space;
@@ -131,7 +130,6 @@ class MainPageState extends State<MainPage> {
     if (room == currentRoom) return;
 
     onRoomUpdateSubscription?.cancel();
-    onRoomUpdateSubscription = room.onUpdate.listen(onRoomUpdated);
 
     setState(() {
       _previousRoom = currentRoom;
@@ -171,14 +169,6 @@ class MainPageState extends State<MainPage> {
       _currentView = MainPageSubView.home;
       clearSpaceSelection();
     });
-  }
-
-  void onSpaceUpdated(void _) {
-    setState(() {});
-  }
-
-  void onRoomUpdated(void _) {
-    setState(() {});
   }
 
   void onOpenRoomSignal((String, String?) strings) {

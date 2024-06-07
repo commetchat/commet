@@ -142,7 +142,7 @@ abstract class Room {
 
   Future<TimelineEvent?> getEvent(String eventId);
 
-  Member? getMemberOrFallback(String id);
+  Member getMemberOrFallback(String id);
 
   @override
   bool operator ==(Object other) {

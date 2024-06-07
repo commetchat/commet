@@ -2,7 +2,7 @@ import 'package:commet/client/timeline.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/molecules/message_input.dart';
 import 'package:commet/ui/molecules/read_indicator.dart';
-import 'package:commet/ui/molecules/timeline_viewer.dart';
+import 'package:commet/ui/molecules/room_timeline_widget/room_timeline_widget.dart';
 import 'package:commet/ui/organisms/chat/chat.dart';
 import 'package:commet/utils/autofill_utils.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +30,7 @@ class ChatView extends StatelessWidget {
   String? get relatedEventSenderName => state.interactingEvent == null
       ? null
       : state.room
-          .getMemberOrFallback(state.interactingEvent!.senderId)!
+          .getMemberOrFallback(state.interactingEvent!.senderId)
           .displayName;
 
   Color? get relatedEventSenderColor => state.interactingEvent == null
@@ -53,14 +53,15 @@ class ChatView extends StatelessWidget {
         ? const Center(
             child: CircularProgressIndicator(),
           )
-        : TimelineViewer(
+        : RoomTimelineWidget(
+            key: ValueKey("${state.room.identifier}-timeline"),
             timeline: state.timeline!,
-            markAsRead: handleMarkAsRead,
+            // markAsRead: handleMarkAsRead,
             setReplyingEvent: (event) => state.setInteractingEvent(event,
                 type: EventInteractionType.reply),
             setEditingEvent: (event) => state.setInteractingEvent(event,
                 type: EventInteractionType.edit),
-            onAddReaction: state.addReaction,
+            // onAddReaction: state.addReaction,
           );
   }
 
