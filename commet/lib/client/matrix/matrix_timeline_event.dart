@@ -291,7 +291,11 @@ class MatrixTimelineEvent implements TimelineEvent {
   }
 
   @override
-  Widget buildFormattedContent() {
+  Widget? buildFormattedContent() {
+    if (formattedBody == null) {
+      return null;
+    }
+
     return MatrixHtmlParser.parse(formattedBody!, event.room.client);
   }
 

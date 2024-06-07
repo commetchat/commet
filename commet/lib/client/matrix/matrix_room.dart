@@ -154,7 +154,7 @@ class MatrixRoom extends Room {
     }
 
     _lastStateEventTimestamp = DateTime.fromMillisecondsSinceEpoch(0);
-    matrix.Event? latest = room.states[matrix.EventTypes.Message]?[""];
+    matrix.Event? latest = room.lastEvent;
 
     if (latest != null) {
       lastEvent = MatrixTimelineEvent(latest, _matrixRoom.client);
@@ -179,10 +179,13 @@ class MatrixRoom extends Room {
       }
     }
 
-    _onUpdateSubscription =
-        _matrixRoom.onUpdate.stream.listen(onMatrixRoomUpdate);
+    _onUpdateSubscription = _matrixRoom.client.onRoomState.stream
+        .where((event) => event.roomId == _matrixRoom.id)
+        .listen(onRoomStateUpdated);
 
-    _matrixRoom.client.onEvent.stream.listen(onEvent);
+    _matrixRoom.client.onEvent.stream
+        .where((event) => event.roomID == _matrixRoom.id)
+        .listen(onEvent);
 
     _permissions = MatrixRoomPermissions(_matrixRoom);
   }
@@ -237,10 +240,6 @@ class MatrixRoom extends Room {
     }
 
     var sender = getMemberOrFallback(event.senderId);
-
-    if (sender == null) {
-      return;
-    }
 
     var notification = MessageNotificationContent(
         senderName: sender.displayName,
@@ -378,9 +377,11 @@ class MatrixRoom extends Room {
     await _matrixRoom.enableEncryption();
   }
 
-  void onMatrixRoomUpdate(String event) async {
+  void onRoomStateUpdated(matrix.Event event) async {
     _displayName = _matrixRoom.getLocalizedDisplayname();
-    _onUpdate.add(null);
+    if (event.type == "m.room.name") {
+      _onUpdate.add(null);
+    }
   }
 
   @override
@@ -516,7 +517,7 @@ class MatrixRoom extends Room {
   bool get isMembersListComplete => _matrixRoom.participantListComplete;
 
   @override
-  Member? getMemberOrFallback(String id) {
+  Member getMemberOrFallback(String id) {
     return MatrixMember(
         _matrixRoom.client, _matrixRoom.unsafeGetUserFromMemoryOrFallback(id));
   }
@@ -529,9 +530,8 @@ class MatrixRoom extends Room {
     var roles = (state.content["users"] as Map<String, dynamic>);
     var ids = roles.keys;
 
-    var result = ids
-        .map((e) => (getMemberOrFallback(e)!, MatrixRole(roles[e])))
-        .toList();
+    var result =
+        ids.map((e) => (getMemberOrFallback(e), MatrixRole(roles[e]))).toList();
 
     result.removeWhere((element) => element.$2.rank == 0);
 

@@ -1,6 +1,7 @@
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/components/url_preview/url_preview_component.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/diagnostic/benchmark_values.dart';
 import 'package:commet/ui/atoms/emoji_reaction.dart';
 import 'package:commet/ui/molecules/url_preview_widget.dart';
 import 'package:commet/utils/link_utils.dart';
@@ -144,6 +145,7 @@ class _MessageState extends State<Message> {
   }
 
   Widget urlPreviews() {
+    BenchmarkValues.numTimelineUrlPreviewBuilt += 1;
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 0, 40, 0),
       child: UrlPreviewWidget(
@@ -183,6 +185,7 @@ class _MessageState extends State<Message> {
   }
 
   Widget replyText() {
+    BenchmarkValues.numTimelineReplyBodyBuilt += 1;
     return SizedBox(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.baseline,

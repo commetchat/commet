@@ -57,7 +57,7 @@ class HomeScreenView extends StatelessWidget {
       children: [
         if (clientManager.alertManager.alerts.isNotEmpty) alerts(),
         if (invitations?.isNotEmpty == true) invitationsList(),
-        recentRooms(),
+        if (recentActivity?.isNotEmpty == true) recentRooms(),
         roomsList(context)
       ],
     );
@@ -95,7 +95,7 @@ class HomeScreenView extends StatelessWidget {
               body: room.lastEvent?.body,
               recentEventSender: room.lastEvent != null
                   ? room
-                      .getMemberOrFallback(room.lastEvent!.senderId)!
+                      .getMemberOrFallback(room.lastEvent!.senderId)
                       .displayName
                   : null,
               recentEventSenderColor: room.lastEvent != null
@@ -134,7 +134,7 @@ class HomeScreenView extends StatelessWidget {
                   body: room.lastEvent?.body,
                   recentEventSender: room.lastEvent != null
                       ? room
-                          .getMemberOrFallback(room.lastEvent!.senderId)!
+                          .getMemberOrFallback(room.lastEvent!.senderId)
                           .displayName
                       : null,
                   recentEventSenderColor: room.lastEvent != null

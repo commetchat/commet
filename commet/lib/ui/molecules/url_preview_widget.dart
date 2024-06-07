@@ -32,6 +32,12 @@ class _UrlPreviewWidgetState extends State<UrlPreviewWidget> {
   }
 
   @override
+  void didChangeDependencies() {
+    setState(() {});
+    super.didChangeDependencies();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),

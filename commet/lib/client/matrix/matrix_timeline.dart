@@ -16,12 +16,18 @@ class MatrixTimeline extends Timeline {
   MatrixTimeline(
     Client client,
     Room room,
-    matrix.Room matrixRoom,
-  ) {
+    matrix.Room matrixRoom, {
+    matrix.Timeline? initialTimeline,
+  }) {
     events = List.empty(growable: true);
     _matrixRoom = matrixRoom;
     this.client = client;
     this.room = room;
+    _matrixTimeline = initialTimeline;
+
+    if (_matrixTimeline != null) {
+      convertAllTimelineEvents();
+    }
   }
 
   Future<void> initTimeline() async {
@@ -35,6 +41,10 @@ class MatrixTimeline extends Timeline {
 
     // This could maybe make load times realllly slow if we have a ton of stuff in the cache?
     // Might be better to only convert as many as we would need to display immediately and then convert the rest on demand
+    convertAllTimelineEvents();
+  }
+
+  void convertAllTimelineEvents() {
     for (int i = 0; i < _matrixTimeline!.events.length; i++) {
       var converted = MatrixTimelineEvent(
           _matrixTimeline!.events[i], _matrixTimeline!.room.client,
