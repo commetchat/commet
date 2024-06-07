@@ -42,8 +42,6 @@ class TimelineEventLayoutMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     BenchmarkValues.numTimelineMessageBodyBuilt += 1;
-    Log.d(
-        "Num times messageevent body built: ${BenchmarkValues.numTimelineMessageBodyBuilt}");
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 2, 8, 2),
       child: Column(

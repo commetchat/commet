@@ -117,8 +117,6 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
   @override
   Widget build(BuildContext context) {
     BenchmarkValues.numTimelineEventsBuilt += 1;
-    Log.d(
-        "Num times timeline event built: ${BenchmarkValues.numTimelineEventsBuilt} ($eventId)");
 
     if (status == TimelineEventStatus.removed) return Container();
 

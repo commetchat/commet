@@ -88,7 +88,6 @@ class _RoomTimelineWidgetState extends State<RoomTimelineWidget> {
   }
 
   void loadMoreHistory() async {
-    Log.d("Loading more history!");
     loadingHistory = widget.timeline.loadMoreHistory();
     await loadingHistory;
     loadingHistory = null;

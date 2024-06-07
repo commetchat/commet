@@ -117,7 +117,6 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
   }
 
   void onEventChanged(int index) {
-    Log.d("Event changed: $index");
     var event = widget.timeline.events[index];
     var existing = eventKeys[index];
     eventKeys[index] = (existing.$1, event.eventId);
@@ -307,7 +306,6 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
                         (BuildContext context, int sliverIndex) {
                           numBuilds += 1;
                           // ignore: avoid_print
-                          Log.d("Num Builds: $numBuilds");
                           var timelineIndex = recentItemsCount + sliverIndex;
 
                           var key = eventKeys[timelineIndex];
