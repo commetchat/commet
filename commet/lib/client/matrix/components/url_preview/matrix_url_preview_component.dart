@@ -11,7 +11,6 @@ import 'package:flutter/widgets.dart';
 import 'package:matrix/matrix.dart' as matrix;
 import 'package:encrypted_url_preview/encrypted_url_preview.dart';
 import 'package:matrix/matrix_api_lite.dart';
-import 'package:matrix/matrix_api_lite/model/matrix_exception.dart';
 
 class MatrixUrlPreviewComponent implements UrlPreviewComponent<MatrixClient> {
   @override

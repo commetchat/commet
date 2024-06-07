@@ -1,4 +1,3 @@
-import 'package:commet/debug/log.dart';
 import 'package:commet/diagnostic/benchmark_values.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
