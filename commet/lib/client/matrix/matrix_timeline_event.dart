@@ -387,4 +387,14 @@ class MatrixTimelineEvent implements TimelineEvent {
   @override
   String get rawContent => const JsonEncoder.withIndent("  ")
       .convert(const JsonDecoder().convert(jsonEncode(event.toJson())));
+
+  @override
+  bool operator ==(Object other) {
+    if (other is! MatrixTimelineEvent) return false;
+
+    return eventId == other.eventId;
+  }
+
+  @override
+  int get hashCode => eventId.hashCode;
 }

@@ -213,7 +213,8 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
       case EventType.message:
       case EventType.sticker:
       case EventType.encrypted:
-        if ((widget.isThreadTimeline) ||
+        if (widget.singleEvent ||
+            (widget.isThreadTimeline) ||
             (!widget.isThreadTimeline && !isThreadReply))
           return TimelineEventViewMessage(
               key: eventKey,
