@@ -6,6 +6,7 @@ import 'package:commet/client/room.dart';
 import 'package:commet/client/timeline.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
+import 'package:commet/utils/mime.dart';
 import 'package:flutter/widgets.dart';
 import 'package:matrix/matrix.dart' as matrix;
 import 'package:encrypted_url_preview/encrypted_url_preview.dart';
@@ -171,11 +172,23 @@ pQIDAQAB
     var imageUrl = response['og:image'] as String?;
     var description = response['og:description'] as String?;
 
+    var type = response["og:image:type"] as String?;
+    if (type != null) {
+      if (Mime.displayableTypes.contains(type) == false) {
+        imageUrl = null;
+      }
+    }
+
     ImageProvider? image;
     if (imageUrl != null) {
       var imageUri = Uri.parse(imageUrl);
       if (imageUri.scheme == "mxc") {
-        image = MatrixMxcImage(imageUri, client, doThumbnail: false);
+        try {
+          image = MatrixMxcImage(imageUri, client, doThumbnail: false);
+        } catch (exception, stack) {
+          Log.onError(exception, stack);
+          Log.w("Failed to get mxc image");
+        }
       }
     }
 
