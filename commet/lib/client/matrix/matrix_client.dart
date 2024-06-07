@@ -227,7 +227,6 @@ class MatrixClient extends Client {
   }
 
   void onMatrixClientSync(matrix.SyncUpdate update) {
-    Log.d("On Matrix Sync!");
     _onSync.add(null);
     _updateRoomslist();
     _updateSpacesList();
