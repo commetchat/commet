@@ -79,11 +79,12 @@ dependencies:
     git: https://github.com/commetchat/encrypted_url_preview.git
   signal_sticker_api: 
     git: https://github.com/commetchat/signal-sticker-api.git
-  sqlite3_flutter_libs: ^0.5.18
+  sqlite3_flutter_libs: ^0.5.23
   fuzzy: ^0.5.1
   encrypt: ^5.0.3
   pointycastle: ^3.7.4
   flutter_web_auth_2: ^3.1.1
+  drift: ^2.18.0
 
   ## ---- Putting some extra lines in here to help git with the diff
   ## ---- Probably good to keep this stuff at the bottom of the list
@@ -96,7 +97,7 @@ dependencies:
 
 
 dev_dependencies: 
-  build_runner: any
+  build_runner: ^2.4.11
   flutter_launcher_icons: ^0.13.1
   flutter_lints: ^2.0.0
   msix: ^3.7.0
@@ -105,6 +106,7 @@ dev_dependencies:
     sdk: flutter
   integration_test: 
     sdk: flutter
+  drift_dev: ^2.18.0
 
 flutter_intl: 
   class_name: T

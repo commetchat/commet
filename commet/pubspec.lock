@@ -9,14 +9,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "67.0.0"
-  accessibility_tools:
-    dependency: transitive
-    description:
-      name: accessibility_tools
-      sha256: "0a16adc8dfa3a7ebd38775135d86443011a65d4ecbb438913e4992b5d29135fe"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.0"
   analyzer:
     dependency: transitive
     description:
@@ -133,10 +125,10 @@ packages:
     dependency: "direct dev"
     description:
       name: build_runner
-      sha256: "3ac61a79bfb6f6cc11f693591063a7f19a7af628dc52f141743edac5c16e8c22"
+      sha256: "644dc98a0f179b872f612d3eb627924b578897c629788e858157fa5e704ca0c7"
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.9"
+    version: "2.4.11"
   build_runner_core:
     dependency: transitive
     description:
@@ -329,14 +321,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.3"
-  device_frame:
-    dependency: transitive
-    description:
-      name: device_frame
-      sha256: afe76182aec178d171953d9b4a50a43c57c7cf3c77d8b09a48bf30c8fa04dd9d
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.1.0"
   device_info_plus:
     dependency: "direct main"
     description:
@@ -639,14 +623,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  freezed_annotation:
-    dependency: transitive
-    description:
-      name: freezed_annotation
-      sha256: c3fd9336eb55a38cc1bbd79ab17573113a8deccd0ecbbf926cca3c62803b5c2d
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.4.1"
   frontend_server_client:
     dependency: transitive
     description:
@@ -764,14 +740,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.0"
-  inspector:
-    dependency: transitive
-    description:
-      name: inspector
-      sha256: "40ba0ac1c819c85139bfec9d1e283804581a8985c91f19d00e93212cf29226b1"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.1.0"
   integration_test:
     dependency: "direct dev"
     description: flutter
@@ -1331,14 +1299,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.5"
-  resizable_widget:
-    dependency: transitive
-    description:
-      name: resizable_widget
-      sha256: db2919754b93f386b9b3fb15e9f48f6c9d6d41f00a24397629133c99df86606a
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.5"
   safe_local_storage:
     dependency: transitive
     description:
@@ -1605,10 +1565,10 @@ packages:
     dependency: "direct main"
     description:
       name: sqlite3_flutter_libs
-      sha256: "1e62698dc1ab396152ccaf3b3990d826244e9f3c8c39b51805f209adcd6dbea3"
+      sha256: "9f89a7e7dc36eac2035808427eba1c3fbd79e59c3a22093d8dace6d36b1fe89e"
       url: "https://pub.dev"
     source: hosted
-    version: "0.5.22"
+    version: "0.5.23"
   sqlparser:
     dependency: transitive
     description:
@@ -1992,30 +1952,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.0"
-  widgetbook:
-    dependency: "direct main"
-    description:
-      name: widgetbook
-      sha256: be0588cd864a70bd2817ca2fab0dbd147c460b712cfe53fd13e6fd46b5c3f368
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.7.1"
   widgetbook_annotation:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: widgetbook_annotation
       sha256: c2d881d0241525b36aa3777d0ac406d198528ed28b84ca73b7dd9f59189d6bb0
       url: "https://pub.dev"
     source: hosted
     version: "3.1.0"
-  widgetbook_generator:
-    dependency: "direct dev"
-    description:
-      name: widgetbook_generator
-      sha256: d81512780bb4d137d59f0694328f446433fe5228cf8191e918046cc4f09c128b
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.7.0"
   win32:
     dependency: transitive
     description:
@@ -2081,5 +2025,5 @@ packages:
     source: hosted
     version: "3.1.2"
 sdks:
-  dart: ">=3.3.3 <4.0.0"
+  dart: ">=3.4.0 <4.0.0"
   flutter: ">=3.19.0"
