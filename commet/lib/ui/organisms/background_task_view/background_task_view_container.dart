@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/floating_tile.dart';
 import 'package:commet/ui/organisms/background_task_view/background_task_view.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class BackgroundTaskViewContainer extends StatefulWidget {
