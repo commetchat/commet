@@ -109,7 +109,10 @@ class MatrixThreadsComponent implements ThreadsComponent<MatrixClient> {
         if (info.containsKey("latest_event") == true) {
           var matrixEvent =
               matrix.Event.fromJson(info["latest_event"], tl.room);
-          return MatrixTimelineEvent(matrixEvent, tl.room.client);
+
+          tl.addAggregatedEvent(matrixEvent);
+
+          return MatrixTimelineEvent(matrixEvent, tl.room.client, timeline: tl);
         }
       }
     }

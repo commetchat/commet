@@ -88,8 +88,14 @@ class MatrixThreadTimeline implements Timeline {
       }
     }
 
-    var convertedEvents =
-        mxevents.map((e) => MatrixTimelineEvent(e, mx)).toList();
+    for (var event in mxevents) {
+      mainRoomTimeline.matrixTimeline?.addAggregatedEvent(event);
+    }
+
+    var convertedEvents = mxevents
+        .map((e) => MatrixTimelineEvent(e, mx,
+            timeline: mainRoomTimeline.matrixTimeline))
+        .toList();
 
     this.nextBatch = data["next_batch"] as String?;
 
