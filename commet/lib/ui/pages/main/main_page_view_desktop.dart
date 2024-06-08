@@ -7,6 +7,7 @@ import 'package:commet/ui/atoms/space_header.dart';
 import 'package:commet/ui/molecules/direct_message_list.dart';
 import 'package:commet/ui/molecules/space_viewer.dart';
 import 'package:commet/ui/organisms/background_task_view/background_task_view.dart';
+import 'package:commet/ui/organisms/background_task_view/background_task_view_container.dart';
 import 'package:commet/ui/organisms/home_screen/home_screen.dart';
 import 'package:commet/ui/organisms/chat/chat.dart';
 import 'package:commet/ui/organisms/room_members_list/room_members_list.dart';
@@ -81,10 +82,7 @@ class MainPageViewDesktop extends StatelessWidget {
               EventBus.onFileDropped.add(details);
             },
           ),
-        if (backgroundTaskManager.tasks.isNotEmpty)
-          FloatingTile(
-            child: BackgroundTaskView(backgroundTaskManager),
-          )
+        const BackgroundTaskViewContainer()
       ],
     );
   }
