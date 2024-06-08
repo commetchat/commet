@@ -1,6 +1,7 @@
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/molecules/message.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class ThreadReplyFooter extends StatelessWidget {
@@ -71,9 +72,9 @@ class ThreadReplyFooter extends StatelessWidget {
                                 autoAdjustBrightness: true,
                               ),
                             ),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(12, 0, 0, 0),
-                            child: Flexible(
+                          Flexible(
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(12, 0, 0, 0),
                               child: tiamat.Text.labelLow(
                                 body,
                                 maxLines: 2,
