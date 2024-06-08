@@ -85,8 +85,7 @@ class MatrixEmoticonComponent extends EmoticonComponent<MatrixClient> {
   }
 
   @override
-  Future<EmoticonPack> createEmoticonPack(
-      String name, Uint8List? avatarData) async {
+  Future<void> createEmoticonPack(String name, Uint8List? avatarData) async {
     Uri? avatar;
     if (avatarData != null) {
       avatar = await client.getMatrixClient().uploadContent(avatarData);
@@ -102,9 +101,6 @@ class MatrixEmoticonComponent extends EmoticonComponent<MatrixClient> {
     String stateKey = getNewPackKeyState(name);
 
     await state.setState(stateKey, content);
-    var pack = MatrixEmoticonPack(this, stateKey, content);
-    _packs.add(pack);
-    return pack;
   }
 
   @override
@@ -134,8 +130,6 @@ class MatrixEmoticonComponent extends EmoticonComponent<MatrixClient> {
 
     await state.setState(stateKey, content);
 
-    var pack = MatrixEmoticonPack(this, stateKey, content);
-    _packs.add(pack);
     task.complete();
   }
 
