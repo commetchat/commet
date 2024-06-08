@@ -63,7 +63,7 @@ class ThreadReplyFooter extends StatelessWidget {
                           ),
                           if (Layout.desktop)
                             Padding(
-                              padding: const EdgeInsets.fromLTRB(8, 0, 12, 0),
+                              padding: const EdgeInsets.fromLTRB(12, 0, 0, 0),
                               child: tiamat.Text(
                                 senderName,
                                 color: senderColor,
@@ -71,11 +71,14 @@ class ThreadReplyFooter extends StatelessWidget {
                                 autoAdjustBrightness: true,
                               ),
                             ),
-                          Flexible(
-                            child: tiamat.Text.labelLow(
-                              body,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(12, 0, 0, 0),
+                            child: Flexible(
+                              child: tiamat.Text.labelLow(
+                                body,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                           ),
                         ],
