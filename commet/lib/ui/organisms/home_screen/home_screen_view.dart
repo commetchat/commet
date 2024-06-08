@@ -65,7 +65,7 @@ class HomeScreenView extends StatelessWidget {
 
   Widget alerts() {
     return Panel(
-        mode: TileType.surfaceLow2,
+        mode: TileType.surfaceContainerLow,
         header: labelHomeAlerts,
         child: ImplicitlyAnimatedList(
           shrinkWrap: true,
@@ -163,7 +163,7 @@ class HomeScreenView extends StatelessWidget {
 
   Widget invitationsList() {
     return Panel(
-        mode: TileType.surfaceLow1,
+        mode: TileType.surfaceContainer,
         header: labelHomeInvitations,
         child: ImplicitlyAnimatedList(
           physics: const NeverScrollableScrollPhysics(),

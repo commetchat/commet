@@ -145,7 +145,8 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
   }
 
   Widget navigation(BuildContext newContext) {
-    return Tile.low4(
+    return Tile(
+      mode: TileType.surfaceDim,
       child: Row(
         children: [
           Padding(
@@ -302,9 +303,8 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
           children: [
             SpaceHeader(
               widget.state.currentSpace!,
-              backgroundColor: material.Theme.of(context)
-                  .extension<ExtraColors>()!
-                  .surfaceLow1,
+              backgroundColor:
+                  material.Theme.of(context).colorScheme.surfaceContainerLow,
               onTap: clearSelectedRoom,
             ),
             Expanded(

@@ -54,7 +54,7 @@ class GeneralSettingsPageState extends State<GeneralSettingsPage> {
   Widget build(BuildContext context) {
     return Panel(
       header: labelThirdPartyServicesTitle,
-      mode: TileType.surfaceLow2,
+      mode: TileType.surfaceContainerLow,
       child: Column(children: [
         settingToggle(
           enableTenor,

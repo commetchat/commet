@@ -1,12 +1,16 @@
+import 'dart:math';
+
 import 'package:commet/config/preferences.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/settings/categories/app/general_settings_page.dart';
 import 'package:commet/utils/common_strings.dart';
 import 'package:commet/utils/scaled_app.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart' as m;
 import 'package:intl/intl.dart';
 import 'package:tiamat/config/config.dart';
+import 'package:tiamat/config/style/theme_light.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:tiamat/tiamat.dart';
 
@@ -51,7 +55,7 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
         themeSettings(context),
         Panel(
           header: labelAppScale,
-          mode: TileType.surfaceLow2,
+          mode: TileType.surfaceContainerLow,
           child: const UIScaleSelector(),
         )
       ],
@@ -63,7 +67,7 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
       children: [
         Panel(
           header: labelSettingsAppTheme,
-          mode: TileType.surfaceLow2,
+          mode: TileType.surfaceContainerLow,
           child: Column(children: [
             TextButton(labelThemeLight, onTap: () {
               preferences.setTheme(AppTheme.light);
@@ -76,6 +80,26 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
             TextButton(labelThemeAmoled, onTap: () {
               preferences.setTheme(AppTheme.amoled);
               ThemeChanger.setTheme(context, ThemeAmoled.theme);
+            }),
+            TextButton("Random Dark", onTap: () {
+              var random = Random();
+              var color = Color.fromARGB(255, random.nextInt(255),
+                  random.nextInt(255), random.nextInt(255));
+              ThemeChanger.setTheme(
+                  context,
+                  ThemeDark.theme.copyWith(
+                      colorScheme: m.ColorScheme.fromSeed(
+                          brightness: Brightness.dark, seedColor: color)));
+            }),
+            TextButton("Random Light", onTap: () {
+              var random = Random();
+              var color = Color.fromARGB(255, random.nextInt(255),
+                  random.nextInt(255), random.nextInt(255));
+              ThemeChanger.setTheme(
+                  context,
+                  ThemeLight.theme.copyWith(
+                      colorScheme: m.ColorScheme.fromSeed(
+                          brightness: Brightness.light, seedColor: color)));
             }),
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),

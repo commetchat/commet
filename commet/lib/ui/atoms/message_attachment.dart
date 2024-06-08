@@ -88,7 +88,7 @@ class _MessageAttachmentState extends State<MessageAttachment> {
         child: Panel(
             mainAxisSize: MainAxisSize.min,
             header: attachment.name,
-            mode: TileType.surfaceLow2,
+            mode: TileType.surfaceContainerLow,
             padding: 0,
             child: SizedBox(
                 height: 200,
@@ -130,9 +130,8 @@ class _MessageAttachmentState extends State<MessageAttachment> {
     return Container(
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          color: Theme.of(context).extension<ExtraColors>()!.surfaceLow1,
-          border: Border.all(
-              color: Theme.of(context).extension<ExtraColors>()!.outline)),
+          color: Theme.of(context).colorScheme.surfaceContainer,
+          border: Border.all(color: Theme.of(context).colorScheme.outline)),
       child: Padding(
         padding: const EdgeInsets.all(2.0),
         child: Row(

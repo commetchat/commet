@@ -20,15 +20,13 @@ class CircleButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         shape: BoxShape.circle,
-        border: Border.all(
-            color: Theme.of(context).extension<ExtraColors>()!.outline,
-            width: 1.2),
       ),
+      clipBehavior: Clip.antiAlias,
       child: ClipOval(
         child: Material(
-          color: Theme.of(context).extension<ExtraColors>()!.surfaceLow3,
+          color: Theme.of(context).colorScheme.tertiaryContainer,
           borderRadius: BorderRadius.circular(radius),
           child: InkWell(
             splashColor: Theme.of(context).highlightColor, // Splash color
@@ -42,6 +40,7 @@ class CircleButton extends StatelessWidget {
                     ? Align(
                         alignment: Alignment.center,
                         child: Icon(
+                          color: Theme.of(context).colorScheme.tertiary,
                           icon,
                           size: radius,
                         ))

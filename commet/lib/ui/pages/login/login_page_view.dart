@@ -175,12 +175,9 @@ class _LoginPageViewState extends State<LoginPageView> {
             child: Container(
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color:
-                      Theme.of(context).extension<ExtraColors>()!.surfaceLow1,
+                  color: Theme.of(context).colorScheme.surfaceContainer,
                   border: Border.all(
-                      color:
-                          Theme.of(context).extension<ExtraColors>()!.outline,
-                      width: 1),
+                      color: Theme.of(context).colorScheme.outline, width: 1),
                   boxShadow: [
                     BoxShadow(
                         blurRadius: 50,

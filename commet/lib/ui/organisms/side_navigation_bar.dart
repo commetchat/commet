@@ -53,8 +53,7 @@ class SideNavigationBar extends StatefulWidget {
           offset: 5,
           tailLength: 5,
           tailBaseWidth: 5,
-          backgroundColor:
-              Theme.of(context).extension<ExtraColors>()!.surfaceLow4,
+          backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
           child: child),
     );
   }

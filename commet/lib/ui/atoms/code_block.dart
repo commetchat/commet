@@ -93,10 +93,9 @@ class Codeblock extends StatelessWidget {
     return Container(
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            color: Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+            color: Theme.of(context).colorScheme.surfaceContainerLow,
             border: Border.all(
-                color: Theme.of(context).extension<ExtraColors>()!.surfaceHigh1,
-                width: 2)),
+                color: Theme.of(context).colorScheme.outline, width: 2)),
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: language != null

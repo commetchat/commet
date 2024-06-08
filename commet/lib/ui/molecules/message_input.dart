@@ -402,8 +402,8 @@ class MessageInputState extends State<MessageInput> {
                               child: Container(
                                 decoration: BoxDecoration(
                                     color: Theme.of(context)
-                                        .extension<ExtraColors>()!
-                                        .surfaceLow2),
+                                        .colorScheme
+                                        .surfaceContainerLow),
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -507,7 +507,7 @@ class MessageInputState extends State<MessageInput> {
                   borderRadius: BorderRadius.circular(3),
                   child: Material(
                     color: selected
-                        ? Theme.of(context).extension<ExtraColors>()!.highlight
+                        ? Theme.of(context).colorScheme.surfaceContainerHighest
                         : Colors.transparent,
                     child: InkWell(
                       onTap: () => applyAutoFill(data),

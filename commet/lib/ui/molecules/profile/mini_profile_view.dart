@@ -42,7 +42,7 @@ class _MiniProfileViewState extends State<MiniProfileView> {
 
   @override
   Widget build(BuildContext context) {
-    var shimmerColor = Theme.of(context).extension<ExtraColors>()!.highlight;
+    var shimmerColor = Theme.of(context).colorScheme.surfaceContainerHighest;
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),

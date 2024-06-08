@@ -40,7 +40,7 @@ class _WindowSettingsPageState extends State<WindowSettingsPage> {
   Widget build(BuildContext context) {
     return Panel(
       header: labelSettingsWindowBehaviourTitle,
-      mode: TileType.surfaceLow2,
+      mode: TileType.surfaceContainerLow,
       child: Column(children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -149,8 +149,7 @@ class DropdownSelectorState<T> extends State<DropdownSelector<T>> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
           side: BorderSide(
-              color: Theme.of(context).extension<ExtraColors>()!.outline,
-              width: 1.4),
+              color: Theme.of(context).colorScheme.outline, width: 1.4),
         ),
         color: Colors.transparent,
         child: LayoutBuilder(
@@ -165,9 +164,7 @@ class DropdownSelectorState<T> extends State<DropdownSelector<T>> {
                     borderRadius: BorderRadius.only(
                         bottomRight: Radius.circular(10),
                         bottomLeft: Radius.circular(10)),
-                    color: Theme.of(context)
-                        .extension<ExtraColors>()!
-                        .surfaceHigh1)),
+                    color: Theme.of(context).colorScheme.surfaceContainerHigh)),
             items: widget.items.map((value) {
               return DropdownMenuItem(
                 alignment: Alignment.centerLeft,

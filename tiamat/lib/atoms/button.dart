@@ -95,29 +95,35 @@ class Button extends StatelessWidget {
 
     switch (type) {
       case ButtonType.primary:
-        style = Theme.of(context).elevatedButtonTheme.style!;
+        style = Theme.of(context).elevatedButtonTheme.style!.copyWith(
+            foregroundColor: WidgetStatePropertyAll(
+                Theme.of(context).colorScheme.onPrimaryContainer),
+            backgroundColor: WidgetStatePropertyAll(
+                Theme.of(context).colorScheme.primaryContainer));
         break;
       case ButtonType.secondary:
         style = Theme.of(context).elevatedButtonTheme.style!.copyWith(
-            backgroundColor: MaterialStatePropertyAll(
-                Theme.of(context).extension<ExtraColors>()!.highlight));
+            foregroundColor: WidgetStatePropertyAll(
+                Theme.of(context).colorScheme.onSecondaryContainer),
+            backgroundColor: WidgetStatePropertyAll(
+                Theme.of(context).colorScheme.secondaryContainer));
         break;
       case ButtonType.success:
         style = Theme.of(context).elevatedButtonTheme.style!.copyWith(
-            backgroundColor: MaterialStatePropertyAll(Colors.green.shade400));
+            backgroundColor: WidgetStatePropertyAll(Colors.green.shade400));
 
         break;
       case ButtonType.danger:
         style = Theme.of(context).elevatedButtonTheme.style!.copyWith(
-            backgroundColor: const MaterialStatePropertyAll(Colors.transparent),
-            shadowColor: const MaterialStatePropertyAll(Colors.transparent),
-            side: MaterialStatePropertyAll(BorderSide(
+            backgroundColor: const WidgetStatePropertyAll(Colors.transparent),
+            shadowColor: const WidgetStatePropertyAll(Colors.transparent),
+            side: WidgetStatePropertyAll(BorderSide(
                 color: Theme.of(context).colorScheme.error, width: 1)));
         break;
       case ButtonType.critical:
         style = Theme.of(context).elevatedButtonTheme.style!.copyWith(
             backgroundColor:
-                MaterialStatePropertyAll(Theme.of(context).colorScheme.error));
+                WidgetStatePropertyAll(Theme.of(context).colorScheme.error));
         break;
     }
 
@@ -132,7 +138,10 @@ class Button extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: isLoading == true
               ? makeLoadingIndicator(context)
-              : tiamat.Text.label(text),
+              : tiamat.Text(
+                  text,
+                  color: style.foregroundColor?.resolve({}),
+                ),
         ));
   }
 

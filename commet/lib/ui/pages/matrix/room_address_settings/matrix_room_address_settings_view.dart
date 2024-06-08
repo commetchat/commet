@@ -78,7 +78,7 @@ class _MatrixRoomAddressSettingsViewState
   Widget build(BuildContext context) {
     return Panel(
       header: "Room Addresses",
-      mode: TileType.surfaceLow2,
+      mode: TileType.surfaceContainerLow,
       child: Column(
         children: [
           if (widget.knownAliases.isNotEmpty)
@@ -96,7 +96,7 @@ class _MatrixRoomAddressSettingsViewState
     double boxSize = Layout.mobile ? 40 : 30;
     double iconSize = Layout.mobile ? 25 : 20;
     return Panel(
-      mode: TileType.surfaceLow1,
+      mode: TileType.surfaceContainer,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,

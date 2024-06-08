@@ -55,7 +55,7 @@ class _SingleInvitationComponentIncomingViewState
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
       child: tiamat.Panel(
-          mode: tiamat.TileType.surfaceLow1,
+          mode: tiamat.TileType.surfaceContainer,
           header: widget.showCurrentUserId
               ? labelInvitationsForUser(
                   widget.component.client.self!.displayName)

@@ -78,12 +78,11 @@ class RichTextEditingController extends TextEditingController {
           break;
         case "code":
           style = style.copyWith(
-              color: Theme.of(context).extension<ExtraColors>()!.codeHighlight,
-              fontFamily: "code");
+              color: Theme.of(context).colorScheme.primary, fontFamily: "code");
           break;
         case "pre":
           style = style.copyWith(
-              color: Theme.of(context).extension<ExtraColors>()!.highlight,
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
               fontFamily: "code");
           break;
         case "a":

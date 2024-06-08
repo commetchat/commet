@@ -105,7 +105,7 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
   Panel sessionsPanel() {
     return Panel(
       header: labelMatrixAccountSessions,
-      mode: TileType.surfaceLow2,
+      mode: TileType.surfaceContainerLow,
       child: devices == null
           ? const CircularProgressIndicator()
           : ListView.builder(
@@ -133,7 +133,7 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
   Panel crossSigningPanel() {
     return Panel(
         header: labelMatrixCrossSigningAndBackup,
-        mode: TileType.surfaceLow2,
+        mode: TileType.surfaceContainerLow,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
           child: Column(

@@ -11,9 +11,9 @@ class RoomHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Tile(
-      borderBottom: true,
+    return Tile.low(
       child: m.Material(
+        color: m.Colors.transparent,
         child: m.InkWell(
           onTap: onTap,
           child: Padding(

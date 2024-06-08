@@ -40,7 +40,6 @@ class ChatView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Tile(
-      borderLeft: true,
       child: Column(children: [
         Expanded(child: timeline()),
         input(),

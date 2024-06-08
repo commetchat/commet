@@ -41,12 +41,13 @@ class ThreadReplyFooter extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const Padding(
-                    padding: EdgeInsets.all(8),
+                  Padding(
+                    padding: const EdgeInsets.all(8),
                     child: Padding(
-                      padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
+                      padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
                       child: Icon(
                         Icons.message_rounded,
+                        color: Theme.of(context).colorScheme.secondary,
                         size: 15,
                       ),
                     ),

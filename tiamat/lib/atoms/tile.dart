@@ -47,96 +47,34 @@ Widget tileAll(BuildContext context) {
     mainAxisSize: MainAxisSize.max,
     children: [
       Expanded(
-          child: Tile.high(
-        child: Center(
-          child: tiamat.Text.body(
-            "Hello, World!",
-          ),
-        ),
-      )),
-      Expanded(
           child: Tile(
               child: Center(
                   child: tiamat.Text.body(
-        "Hello, World!",
+        "Surface",
       )))),
       Expanded(
-          child: Tile.low1(
+          child: Tile.surfaceContainer(
               child: Center(
                   child: tiamat.Text.body(
-        "Hello, World!",
+        "Surface Container",
       )))),
       Expanded(
-          child: Tile.low2(
+          child: Tile.low(
               child: Center(
                   child: tiamat.Text.body(
-        "Hello, World!",
+        "Low",
       )))),
       Expanded(
-          child: Tile.low3(
+          child: Tile.lowest(
               child: Center(
                   child: tiamat.Text.body(
-        "Hello, World!",
+        "Lowest",
       )))),
-      Expanded(
-          child: Tile.low4(
-              child: Center(
-                  child: tiamat.Text.body(
-        "Hello, World!",
-      )))),
-    ],
-  );
-}
-
-@UseCase(name: 'All with border', type: Tile)
-Widget tileAllBorders(BuildContext context) {
-  return Column(
-    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-    crossAxisAlignment: CrossAxisAlignment.center,
-    mainAxisSize: MainAxisSize.max,
-    children: [
       Expanded(
           child: Tile.high(
               child: Center(
-                child: tiamat.Text.body(
-                  "Hello, World!",
-                ),
-              ),
-              borderBottom: true)),
-      Expanded(
-          child: Tile(
-              child: Center(
                   child: tiamat.Text.body(
-                "Hello, World!",
-              )),
-              borderBottom: true)),
-      Expanded(
-          child: Tile.low1(
-              child: Center(
-                  child: tiamat.Text.body(
-                "Hello, World!",
-              )),
-              borderBottom: true)),
-      Expanded(
-          child: Tile.low2(
-              child: Center(
-                  child: tiamat.Text.body(
-                "Hello, World!",
-              )),
-              borderBottom: true)),
-      Expanded(
-          child: Tile.low3(
-        child: Center(
-            child: tiamat.Text.body(
-          "Hello, World!",
-        )),
-        borderBottom: true,
-      )),
-      Expanded(
-          child: Tile.low4(
-              child: Center(
-                  child: tiamat.Text.body(
-        "Hello, World!",
+        "High",
       )))),
     ],
   );
@@ -144,11 +82,13 @@ Widget tileAllBorders(BuildContext context) {
 
 enum TileType {
   surface,
-  surfaceLow1,
-  surfaceLow2,
-  surfaceLow3,
-  surfaceLow4,
-  surfaceHigh
+  surfaceContainer, // surfaceLow1,
+  // surfaceLow2,
+  surfaceContainerLow, // surfaceLow3,
+  surfaceContainerLowest, // surfaceLow4,
+  surfaceContainerHigh, // surfaceHigh
+  surfaceContainerHighest,
+  surfaceDim,
 }
 
 class Tile extends StatelessWidget {
@@ -174,6 +114,7 @@ class Tile extends StatelessWidget {
   final bool borderTop;
   final bool borderBottom;
 
+  @Deprecated("Use surfaceContainer")
   const Tile.low1(
       {Key? key,
       this.child,
@@ -182,10 +123,25 @@ class Tile extends StatelessWidget {
       this.borderTop = false,
       this.borderLeft = false,
       this.borderRight = false})
-      : mode = TileType.surfaceLow1,
+      : mode = TileType.surfaceContainer,
         glassOpacity = 0.4,
         glassSigma = 5,
         super(key: key);
+
+  const Tile.surfaceContainer(
+      {Key? key,
+      this.child,
+      this.decoration,
+      this.borderBottom = false,
+      this.borderTop = false,
+      this.borderLeft = false,
+      this.borderRight = false})
+      : mode = TileType.surfaceContainer,
+        glassOpacity = 0.4,
+        glassSigma = 5,
+        super(key: key);
+
+  @Deprecated("Use Low")
   const Tile.low2(
       {Key? key,
       this.child,
@@ -194,10 +150,25 @@ class Tile extends StatelessWidget {
       this.borderTop = false,
       this.borderLeft = false,
       this.borderRight = false})
-      : mode = TileType.surfaceLow2,
+      : mode = TileType.surfaceContainerLow,
         glassOpacity = 0.5,
         glassSigma = 7,
         super(key: key);
+
+  const Tile.low(
+      {Key? key,
+      this.child,
+      this.decoration,
+      this.borderBottom = false,
+      this.borderTop = false,
+      this.borderLeft = false,
+      this.borderRight = false})
+      : mode = TileType.surfaceContainerLow,
+        glassOpacity = 0.4,
+        glassSigma = 5,
+        super(key: key);
+
+  @Deprecated("Use Low")
   const Tile.low3(
       {Key? key,
       this.child,
@@ -206,10 +177,12 @@ class Tile extends StatelessWidget {
       this.borderTop = false,
       this.borderLeft = false,
       this.borderRight = false})
-      : mode = TileType.surfaceLow3,
+      : mode = TileType.surfaceContainerLow,
         glassOpacity = 0.6,
         glassSigma = 8,
         super(key: key);
+
+  @Deprecated("Use Lowest")
   const Tile.low4(
       {Key? key,
       this.child,
@@ -218,10 +191,24 @@ class Tile extends StatelessWidget {
       this.borderTop = false,
       this.borderLeft = false,
       this.borderRight = false})
-      : mode = TileType.surfaceLow4,
+      : mode = TileType.surfaceContainerLowest,
         glassOpacity = 0.7,
         glassSigma = 10,
         super(key: key);
+
+  const Tile.lowest(
+      {Key? key,
+      this.child,
+      this.decoration,
+      this.borderBottom = false,
+      this.borderTop = false,
+      this.borderLeft = false,
+      this.borderRight = false})
+      : mode = TileType.surfaceContainerLowest,
+        glassOpacity = 0.4,
+        glassSigma = 5,
+        super(key: key);
+
   const Tile.high(
       {Key? key,
       this.child,
@@ -230,7 +217,7 @@ class Tile extends StatelessWidget {
       this.borderTop = false,
       this.borderLeft = false,
       this.borderRight = false})
-      : mode = TileType.surfaceHigh,
+      : mode = TileType.surfaceContainerHigh,
         glassOpacity = 0.2,
         glassSigma = 5,
         super(key: key);
@@ -243,26 +230,28 @@ class Tile extends StatelessWidget {
       case TileType.surface:
         color = Theme.of(context).colorScheme.surface;
         break;
-      case TileType.surfaceLow1:
-        color = Theme.of(context).extension<ExtraColors>()!.surfaceLow1;
+      case TileType.surfaceDim:
+        color = Theme.of(context).colorScheme.surfaceDim;
         break;
-      case TileType.surfaceLow2:
-        color = Theme.of(context).extension<ExtraColors>()!.surfaceLow2;
+      case TileType.surfaceContainer:
+        color = Theme.of(context).colorScheme.surfaceContainer;
         break;
-      case TileType.surfaceLow3:
-        color = Theme.of(context).extension<ExtraColors>()!.surfaceLow3;
+      case TileType.surfaceContainerLow:
+        color = Theme.of(context).colorScheme.surfaceContainerLow;
         break;
-      case TileType.surfaceLow4:
-        color = Theme.of(context).extension<ExtraColors>()!.surfaceLow4;
+      case TileType.surfaceContainerLowest:
+        color = Theme.of(context).colorScheme.surfaceContainerLowest;
         break;
-      case TileType.surfaceHigh:
-        color = Theme.of(context).extension<ExtraColors>()!.surfaceHigh1;
+      case TileType.surfaceContainerHigh:
+        color = Theme.of(context).colorScheme.surfaceContainerHigh;
+        break;
+      case TileType.surfaceContainerHighest:
+        color = Theme.of(context).colorScheme.surfaceContainerHighest;
         break;
     }
 
     bool frosted = Theme.of(context).extension<ThemeSettings>()!.frosted;
-    var border =
-        BorderSide(color: Theme.of(context).extension<ExtraColors>()!.outline);
+    var border = BorderSide(color: Theme.of(context).colorScheme.outline);
 
     if (!frosted) {
       return Container(

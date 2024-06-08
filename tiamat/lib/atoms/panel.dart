@@ -16,7 +16,7 @@ Widget wbPanel(BuildContext context) {
           child: Padding(
         padding: EdgeInsets.all(20.0),
         child: Panel(
-          mode: TileType.surfaceLow2,
+          mode: TileType.surface,
           header: "Example Panel",
           child: Placeholder(),
         ),
@@ -47,20 +47,23 @@ class Panel extends StatelessWidget {
       case TileType.surface:
         color = Theme.of(context).colorScheme.surface;
         break;
-      case TileType.surfaceLow1:
-        color = Theme.of(context).extension<ExtraColors>()!.surfaceLow1;
+      case TileType.surfaceDim:
+        color = Theme.of(context).colorScheme.surfaceDim;
         break;
-      case TileType.surfaceLow2:
-        color = Theme.of(context).extension<ExtraColors>()!.surfaceLow2;
+      case TileType.surfaceContainer:
+        color = Theme.of(context).colorScheme.surfaceContainer;
         break;
-      case TileType.surfaceLow3:
-        color = Theme.of(context).extension<ExtraColors>()!.surfaceLow3;
+      case TileType.surfaceContainerLow:
+        color = Theme.of(context).colorScheme.surfaceContainerLow;
         break;
-      case TileType.surfaceLow4:
-        color = Theme.of(context).extension<ExtraColors>()!.surfaceLow4;
+      case TileType.surfaceContainerLowest:
+        color = Theme.of(context).colorScheme.surfaceContainerLowest;
         break;
-      case TileType.surfaceHigh:
-        color = Theme.of(context).extension<ExtraColors>()!.surfaceHigh1;
+      case TileType.surfaceContainerHigh:
+        color = Theme.of(context).colorScheme.surfaceContainerHigh;
+        break;
+      case TileType.surfaceContainerHighest:
+        color = Theme.of(context).colorScheme.surfaceContainerHighest;
         break;
     }
 

@@ -78,7 +78,7 @@ class _UrlPreviewWidgetState extends State<UrlPreviewWidget> {
   }
 
   Widget buildLoadingDisplay() {
-    var color = Theme.of(context).extension<ExtraColors>()!.surfaceLow4;
+    var color = Theme.of(context).colorScheme.surfaceContainerLowest;
     return Shimmer(
       child: ShimmerLoading(
         isLoading: true,

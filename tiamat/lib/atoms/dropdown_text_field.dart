@@ -98,8 +98,7 @@ class DropdownTextFieldState extends State<DropdownTextField> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
           side: BorderSide(
-              color: Theme.of(context).extension<ExtraColors>()!.outline,
-              width: 1.4),
+              color: Theme.of(context).colorScheme.outline, width: 1.4),
         ),
         color: Colors.transparent,
         child: LayoutBuilder(
@@ -116,8 +115,8 @@ class DropdownTextFieldState extends State<DropdownTextField> {
                               bottomRight: Radius.circular(10),
                               bottomLeft: Radius.circular(10)),
                           color: Theme.of(context)
-                              .extension<ExtraColors>()!
-                              .surfaceHigh1)),
+                              .colorScheme
+                              .surfaceContainerHigh)),
                   selectedItemBuilder: (context) {
                     return _items.mapIndexed<Widget>((value, index) {
                       if (index == _items.length - 1) {

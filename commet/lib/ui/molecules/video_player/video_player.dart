@@ -162,8 +162,8 @@ class VideoPlayerState extends State<VideoPlayer> {
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       backgroundColor: Theme.of(context)
-                          .extension<ExtraColors>()!
-                          .surfaceLow4
+                          .colorScheme
+                          .surfaceContainerLowest
                           .withAlpha(200),
                       child: Row(
                         mainAxisSize: MainAxisSize.max,

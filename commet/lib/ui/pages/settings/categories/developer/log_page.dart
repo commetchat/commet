@@ -91,8 +91,8 @@ class _LogPageState extends State<LogPage> {
     }
 
     var background = index % 2 == 0
-        ? Theme.of(context).extension<ExtraColors>()!.surfaceLow2
-        : Theme.of(context).extension<ExtraColors>()!.surfaceLow3;
+        ? Theme.of(context).colorScheme.surfaceContainerLow
+        : Theme.of(context).colorScheme.surfaceContainerHigh;
 
     return Padding(
       padding: const EdgeInsets.all(4.0),

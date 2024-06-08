@@ -120,10 +120,10 @@ class TimelineOverlayState extends State<TimelineOverlay> {
           key: menuKey,
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
-              color: m.Theme.of(context).colorScheme.surface,
+              color: m.Theme.of(context).colorScheme.surfaceDim,
               border: Border.all(
                   color:
-                      m.Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+                      m.Theme.of(context).colorScheme.surfaceContainerHighest,
                   width: 1)),
           child: currentMenu != null
               ? Padding(
@@ -223,6 +223,7 @@ class TimelineOverlayState extends State<TimelineOverlay> {
                       child: Padding(
                           padding: pad,
                           child: Icon(
+                            color: Theme.of(context).colorScheme.secondary,
                             icon,
                             size: size / 1.5,
                           )),

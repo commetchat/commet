@@ -5,7 +5,15 @@ import 'package:flutter/material.dart';
 class ThemeLightColors {
   static const Color surfaceHigh1 = Color.fromARGB(255, 245, 245, 245);
   static const Color primary = Color.fromARGB(255, 106, 141, 255);
-  static const Color surface = Color.fromARGB(255, 255, 255, 255);
+  static const Color surface = Color.fromARGB(255, 245, 250, 251);
+  static const Color surfaceContainer = Color.fromARGB(255, 233, 239, 240);
+  static const Color surfaceContainerLow = Color.fromARGB(255, 239, 245, 246);
+  static const Color surfaceContainerLowest =
+      Color.fromARGB(255, 255, 255, 255);
+  static const Color surfaceContainerHigh = Color.fromARGB(255, 227, 233, 234);
+  static const Color surfaceContainerHighest =
+      Color.fromARGB(255, 222, 227, 229);
+
   static const Color secondary = Color.fromARGB(255, 90, 90, 90);
   static const Color surfaceLow1 = Color.fromARGB(255, 245, 245, 245);
   static const Color surfaceLow2 = Color.fromARGB(255, 240, 240, 240);
@@ -23,30 +31,14 @@ class ThemeLight {
       fontFamily: "RobotoCustom",
       fontFamilyFallback: ThemeCommon.fontFamilyFallback(),
       extensions: const <ThemeExtension<dynamic>>[
-        ExtraColors(
-            surfaceHigh1: ThemeLightColors.surfaceHigh1,
-            surfaceLow1: ThemeLightColors.surfaceLow1,
-            surfaceLow2: ThemeLightColors.surfaceLow2,
-            surfaceLow3: ThemeLightColors.surfaceLow3,
-            surfaceLow4: ThemeLightColors.surfaceLow4,
-            highlight: ThemeLightColors.highlightColor,
-            outline: ThemeLightColors.outlineColor,
-            codeHighlight: Color(0xffa626a4)),
         ThemeSettings(frosted: false)
       ],
-      colorScheme: ColorScheme(
-        primary: const Color.fromARGB(255, 106, 141, 255),
-        secondary: ThemeLightColors.secondary,
-        surface: ThemeLightColors.surface,
-        background: ThemeLightColors.surfaceLow4,
-        error: const Color.fromARGB(255, 255, 91, 91),
-        onPrimary: ThemeLightColors.onSurface,
-        onSecondary: ThemeLightColors.onSurface,
-        onSurface: ThemeLightColors.onSurface,
-        onBackground: ThemeLightColors.onSurface,
-        onError: Colors.white,
-        brightness: Brightness.light,
-      ),
+      colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.white,
+          brightness: Brightness.light,
+          primaryContainer: ThemeLightColors.primary,
+          onPrimaryContainer: Colors.white,
+          primary: ThemeLightColors.primary),
       shadowColor: Colors.black.withAlpha(100),
       sliderTheme: SliderThemeData(
           inactiveTrackColor: ThemeLightColors.primary.withAlpha(100)),
@@ -55,11 +47,9 @@ class ThemeLight {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
           style: ButtonStyle(
-              backgroundColor:
-                  MaterialStatePropertyAll(ThemeLightColors.primary),
-              shape: MaterialStatePropertyAll(
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-              ))),
+              shape: WidgetStatePropertyAll(
+        RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ))),
       iconTheme: const IconThemeData(color: ThemeLightColors.secondary),
       dividerColor: ThemeLightColors.outlineColor,
       dialogBackgroundColor: ThemeLightColors.surface,
@@ -69,12 +59,12 @@ class ThemeLight {
           backgroundColor: ThemeLightColors.surface, shadowColor: Colors.black),
       textButtonTheme: TextButtonThemeData(
           style: ButtonStyle(
-        overlayColor: const MaterialStatePropertyAll<Color>(Colors.black12),
+        overlayColor: const WidgetStatePropertyAll<Color>(Colors.black12),
         foregroundColor:
-            const MaterialStatePropertyAll<Color>(ThemeLightColors.secondary),
-        shape: MaterialStatePropertyAll<OutlinedBorder>(
+            const WidgetStatePropertyAll<Color>(ThemeLightColors.secondary),
+        shape: WidgetStatePropertyAll<OutlinedBorder>(
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-        textStyle: const MaterialStatePropertyAll<TextStyle>(
+        textStyle: const WidgetStatePropertyAll<TextStyle>(
           TextStyle(color: Colors.white),
         ),
       )));

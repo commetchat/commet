@@ -187,8 +187,9 @@ class TextButton extends StatelessWidget {
     return material.TextButton(
         clipBehavior: Clip.antiAlias,
         style: ButtonStyle(
-          backgroundColor: MaterialStatePropertyAll(
-              highlighted ? Theme.of(context).highlightColor : null),
+          backgroundColor: MaterialStatePropertyAll(highlighted
+              ? Theme.of(context).colorScheme.secondaryContainer
+              : null),
         ),
         child: material.Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -216,7 +217,11 @@ class TextButton extends StatelessWidget {
                                   size: iconSize,
                                   icon!,
                                   weight: 0.5,
-                                  color: iconColor,
+                                  color: highlighted
+                                      ? Theme.of(context)
+                                          .colorScheme
+                                          .onSecondaryContainer
+                                      : iconColor,
                                 ),
                         ),
                       ),
@@ -227,7 +232,11 @@ class TextButton extends StatelessWidget {
                         alignment: Alignment.centerLeft,
                         child: tiamat.Text.labelEmphasised(
                           text,
-                          color: textColor,
+                          color: highlighted
+                              ? Theme.of(context)
+                                  .colorScheme
+                                  .onSecondaryContainer
+                              : textColor,
                         )),
                   ),
                 ],

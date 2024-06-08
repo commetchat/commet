@@ -28,8 +28,7 @@ class AdaptiveDialog {
       showDragHandle: true,
       elevation: 0,
       isDismissible: dismissible,
-      backgroundColor:
-          m.Theme.of(context).extension<ExtraColors>()!.surfaceLow1,
+      backgroundColor: m.Theme.of(context).colorScheme.surfaceContainerLow,
       builder: (context) {
         return SingleChildScrollView(
             child: Container(

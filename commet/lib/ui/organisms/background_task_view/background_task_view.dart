@@ -41,7 +41,7 @@ class _BackgroundTaskViewState extends State<BackgroundTaskView> {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(8),
           child: Container(
-            color: Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+            color: Theme.of(context).colorScheme.surfaceContainerHigh,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.start,

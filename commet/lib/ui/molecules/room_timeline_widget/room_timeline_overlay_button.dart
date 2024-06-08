@@ -26,9 +26,9 @@ class RoomTimelineOverlayButton extends StatelessWidget {
               ],
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                  color: Theme.of(context).extension<ExtraColors>()!.highlight,
+                  color: Theme.of(context).colorScheme.surfaceContainerHigh,
                   width: 1),
-              color: Theme.of(context).extension<ExtraColors>()!.surfaceHigh1),
+              color: Theme.of(context).colorScheme.surfaceContainer),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(20),
             child: Material(

@@ -34,7 +34,8 @@ class MainPageViewDesktop extends StatelessWidget {
         Row(
           mainAxisSize: MainAxisSize.max,
           children: [
-            Tile.low4(
+            Tile(
+              mode: TileType.surfaceDim,
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
                 child: SideNavigationBar(
@@ -94,7 +95,7 @@ class MainPageViewDesktop extends StatelessWidget {
                 state.currentSpace!,
                 onTap: state.clearRoomSelection,
                 backgroundColor:
-                    Theme.of(context).extension<ExtraColors>()!.surfaceLow1,
+                    Theme.of(context).colorScheme.surfaceContainerLow,
               ),
               Expanded(
                   child: SpaceViewer(
@@ -114,7 +115,6 @@ class MainPageViewDesktop extends StatelessWidget {
     return Row(
       children: [
         Tile.low1(
-          borderRight: true,
           child: Padding(
             padding: const EdgeInsets.fromLTRB(4, 0, 8, 0),
             child: SizedBox(

@@ -79,7 +79,7 @@ class UserPanelView extends material.StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var shimmerColor = Theme.of(context).extension<ExtraColors>()!.highlight;
+    var shimmerColor = Theme.of(context).colorScheme.surfaceContainerHighest;
 
     var widget = ClipRRect(
       borderRadius: BorderRadius.circular(5),

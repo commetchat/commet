@@ -48,10 +48,9 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
     return ExpansionTile(
         title: const tiamat.Text.labelEmphasised("Performance"),
         initiallyExpanded: false,
-        backgroundColor:
-            Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+        backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
         collapsedBackgroundColor:
-            Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+            Theme.of(context).colorScheme.surfaceContainerLow,
         children: diagnostics.results
             .map((e) => Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -69,10 +68,9 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
   Widget rendering() {
     return ExpansionTile(
         title: const tiamat.Text.labelEmphasised("Rendering"),
-        backgroundColor:
-            Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+        backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
         collapsedBackgroundColor:
-            Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+            Theme.of(context).colorScheme.surfaceContainerLow,
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -100,10 +98,9 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
     return ExpansionTile(
         title: const tiamat.Text.labelEmphasised("Benchmarks"),
         initiallyExpanded: false,
-        backgroundColor:
-            Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+        backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
         collapsedBackgroundColor:
-            Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+            Theme.of(context).colorScheme.surfaceContainerLow,
         children: [
           Wrap(
             spacing: 8,
@@ -123,10 +120,9 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
     return ExpansionTile(
         title: const tiamat.Text.labelEmphasised("Window Size"),
         initiallyExpanded: false,
-        backgroundColor:
-            Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+        backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
         collapsedBackgroundColor:
-            Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+            Theme.of(context).colorScheme.surfaceContainerLow,
         children: [
           Wrap(
             spacing: 8,
@@ -183,9 +179,9 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
   Widget notificationTests() {
     return ExpansionTile(
       title: const tiamat.Text.labelEmphasised("Notifications"),
-      backgroundColor: Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
       collapsedBackgroundColor:
-          Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+          Theme.of(context).colorScheme.surfaceContainerLow,
       children: [
         Wrap(spacing: 8, runSpacing: 8, children: [
           tiamat.Button(
@@ -216,9 +212,9 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
   Widget shortcuts() {
     return ExpansionTile(
       title: const tiamat.Text.labelEmphasised("Shortcuts"),
-      backgroundColor: Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
       collapsedBackgroundColor:
-          Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+          Theme.of(context).colorScheme.surfaceContainerLow,
       children: [
         Wrap(spacing: 8, runSpacing: 8, children: [
           tiamat.Button(
@@ -235,9 +231,9 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
   Widget backgroundTasks() {
     return ExpansionTile(
       title: const tiamat.Text.labelEmphasised("Background Tasks"),
-      backgroundColor: Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
       collapsedBackgroundColor:
-          Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+          Theme.of(context).colorScheme.surfaceContainerLow,
       children: [
         Wrap(spacing: 8, runSpacing: 8, children: [
           tiamat.Button(
@@ -261,9 +257,9 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
   Widget error() {
     return ExpansionTile(
       title: const tiamat.Text.labelEmphasised("Error"),
-      backgroundColor: Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
       collapsedBackgroundColor:
-          Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+          Theme.of(context).colorScheme.surfaceContainerLow,
       children: [
         Wrap(spacing: 8, runSpacing: 8, children: [
           tiamat.Button(
@@ -281,9 +277,9 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
   Widget dumpDatabases() {
     return ExpansionTile(
       title: const tiamat.Text.labelEmphasised("Dump Databases"),
-      backgroundColor: Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
       collapsedBackgroundColor:
-          Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+          Theme.of(context).colorScheme.surfaceContainerLow,
       children: [
         Wrap(spacing: 8, runSpacing: 8, children: [
           tiamat.Button(

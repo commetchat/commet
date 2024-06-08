@@ -266,9 +266,7 @@ class CodeHtmlExtension extends HtmlExtension {
         text: context.node.text,
         style: TextStyle(
             fontFamily: "Code",
-            color: Theme.of(context.buildContext!)
-                .extension<ExtraColors>()!
-                .codeHighlight));
+            color: Theme.of(context.buildContext!).colorScheme.primary));
   }
 
   static const Set<String> tags = {"code"};

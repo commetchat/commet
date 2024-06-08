@@ -202,7 +202,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
   Widget buildRoomList() {
     return Panel(
       header: labelSpaceRoomsList,
-      mode: TileType.surfaceLow1,
+      mode: TileType.surfaceContainer,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
@@ -259,7 +259,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
   Widget buildPreviewList() {
     return Panel(
       header: labelSpaceAvailableRoomsList,
-      mode: TileType.surfaceLow1,
+      mode: TileType.surfaceContainer,
       child: AnimatedList(
         initialItemCount: childPreviewCount,
         key: _previewListKey,

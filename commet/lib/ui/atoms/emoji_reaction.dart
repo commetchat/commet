@@ -27,8 +27,7 @@ class EmojiReaction extends StatelessWidget {
     var bgColor = material.Theme.of(context).colorScheme.primary;
 
     if (!highlighted) {
-      bgColor =
-          material.Theme.of(context).extension<ExtraColors>()!.surfaceLow3;
+      bgColor = material.Theme.of(context).colorScheme.surfaceContainerLow;
     }
 
     return material.InkWell(

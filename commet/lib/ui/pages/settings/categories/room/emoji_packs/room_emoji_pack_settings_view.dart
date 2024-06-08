@@ -321,10 +321,9 @@ class _EmojiPackEditorState extends State<EmojiPackEditor> {
         borderRadius: BorderRadius.circular(10),
         child: ExpansionTile(
             initiallyExpanded: widget.initiallyExpanded,
-            backgroundColor:
-                Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+            backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
             collapsedBackgroundColor:
-                Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+                Theme.of(context).colorScheme.surfaceContainerLow,
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
