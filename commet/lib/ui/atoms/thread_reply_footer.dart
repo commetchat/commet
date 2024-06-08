@@ -1,3 +1,4 @@
+import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/molecules/message.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -60,15 +61,16 @@ class ThreadReplyFooter extends StatelessWidget {
                             placeholderText: senderName,
                             radius: 10,
                           ),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(8, 0, 12, 0),
-                            child: tiamat.Text(
-                              senderName,
-                              color: senderColor,
-                              maxLines: 1,
-                              autoAdjustBrightness: true,
+                          if (Layout.desktop)
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(8, 0, 12, 0),
+                              child: tiamat.Text(
+                                senderName,
+                                color: senderColor,
+                                maxLines: 1,
+                                autoAdjustBrightness: true,
+                              ),
                             ),
-                          ),
                           Flexible(
                             child: tiamat.Text.labelLow(
                               body,
