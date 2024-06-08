@@ -15,6 +15,11 @@ class MxcFileProvider implements FileProvider {
 
   @override
   Future<Uri?> resolve({String? savePath}) async {
+    var cached = await fileCache?.getFile(fileIdentifier);
+    if (cached != null) {
+      return cached;
+    }
+
     var bytes = await getFileData();
 
     if (bytes == null) {
@@ -36,6 +41,11 @@ class MxcFileProvider implements FileProvider {
 
   Future<Uint8List?> getFileData() async {
     Uint8List? bytes;
+
+    var cached = await fileCache?.getFile(fileIdentifier);
+    if (cached != null) {
+      return File.fromUri(cached).readAsBytes();
+    }
 
     if (event != null) {
       var file = await event!.downloadAndDecryptAttachment();

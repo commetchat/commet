@@ -118,21 +118,7 @@ class MatrixEmoticonPack implements EmoticonPack {
       String? mimeType,
       bool? isEmoji,
       bool? isSticker}) async {
-    var result = await component.createEmoticon(identifier, shortcode!, data);
-    if (result == null) return;
-
-    var url = result['images'][shortcode]['url'];
-
-    try {
-      var uri = Uri.parse(url);
-      var emote = MatrixEmoticon(uri, component.client.getMatrixClient(),
-          shortcode: shortcode);
-      emotes.add(emote);
-
-      if (emote.shortcode != null) {
-        shortcodeToEmoticon[emote.shortcode!] = emote;
-      }
-    } catch (_) {}
+    await component.createEmoticon(identifier, shortcode!, data);
   }
 
   List? _getUsage() {

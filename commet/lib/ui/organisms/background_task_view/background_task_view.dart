@@ -14,10 +14,18 @@ class BackgroundTaskView extends StatefulWidget {
 }
 
 class _BackgroundTaskViewState extends State<BackgroundTaskView> {
+  StreamSubscription? sub;
+
   @override
   void initState() {
     super.initState();
-    widget.manager.onListUpdate.listen(onTaskListUpdated);
+    sub = widget.manager.onListUpdate.listen(onTaskListUpdated);
+  }
+
+  @override
+  void dispose() {
+    sub?.cancel();
+    super.dispose();
   }
 
   @override

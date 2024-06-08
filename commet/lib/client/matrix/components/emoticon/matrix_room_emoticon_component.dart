@@ -8,6 +8,7 @@ import 'package:commet/client/matrix/components/emoticon/matrix_emoticon_state_m
 import 'package:commet/client/matrix/components/emoticon/matrix_space_emoticon_component.dart';
 import 'package:commet/client/matrix/extensions/matrix_client_extensions.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
+import 'package:commet/client/matrix/matrix_mxc_file_provider.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
@@ -16,6 +17,7 @@ import 'package:commet/client/timeline.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:commet/utils/image_utils.dart';
+import 'package:commet/utils/mime.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
 class MatrixRoomEmoticonComponent extends MatrixEmoticonComponent
@@ -86,6 +88,14 @@ class MatrixRoomEmoticonComponent extends MatrixEmoticonComponent
     String? mimeType;
     if (sticker.image is MatrixMxcImage) {
       mimeType = (sticker.image as MatrixMxcImage).mimeType;
+    }
+
+    // Sometimes MatrixMxcImage doesnt have mimetype loaded, so we need to look it up manually
+    if (mimeType == null) {
+      var provider =
+          MxcFileProvider(client.getMatrixClient(), sticker.emojiUrl);
+      var data = await provider.getFileData();
+      mimeType = Mime.lookupType("", data: data);
     }
 
     var content = {
