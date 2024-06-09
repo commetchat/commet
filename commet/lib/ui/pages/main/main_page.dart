@@ -34,6 +34,7 @@ class MainPageState extends State<MainPage> {
   Room? _currentRoom;
   Room? _previousRoom;
   Space? _previousSpace;
+  String? _currentThreadId;
   MainPageSubView _currentView = MainPageSubView.home;
 
   StreamSubscription? onSpaceUpdateSubscription;
@@ -46,6 +47,7 @@ class MainPageState extends State<MainPage> {
   Profile get currentUser => getCurrentUser();
   Space? get currentSpace => _currentSpace;
   Room? get currentRoom => _currentRoom;
+  String? get currentThreadId => _currentThreadId;
 
   @override
   void initState() {
@@ -74,6 +76,8 @@ class MainPageState extends State<MainPage> {
     // });
 
     EventBus.openRoom.stream.listen(onOpenRoomSignal);
+    EventBus.openThread.stream.listen(onOpenThreadSignal);
+    EventBus.closeThread.stream.listen(onCloseThreadSignal);
     SchedulerBinding.instance.scheduleFrameCallback(onFirstFrame);
   }
 
@@ -134,6 +138,7 @@ class MainPageState extends State<MainPage> {
     setState(() {
       _previousRoom = currentRoom;
       _currentRoom = room;
+      _currentThreadId = null;
     });
 
     EventBus.onSelectedRoomChanged.add(room);
@@ -207,5 +212,33 @@ class MainPageState extends State<MainPage> {
             room: currentRoom!,
           ));
     }
+  }
+
+  void onOpenThreadSignal((String, String, String) event) {
+    var clientId = event.$1;
+    var roomId = event.$2;
+    var threadEventRootId = event.$3;
+
+    var client = clientManager.getClient(clientId);
+    if (client == null) {
+      return;
+    }
+
+    var room = client.getRoom(roomId);
+    if (room == null) {
+      return;
+    }
+
+    selectRoom(room);
+
+    setState(() {
+      _currentThreadId = threadEventRootId;
+    });
+  }
+
+  void onCloseThreadSignal(void event) {
+    setState(() {
+      _currentThreadId = null;
+    });
   }
 }

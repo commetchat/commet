@@ -9,10 +9,12 @@ class RoomTimelineWidget extends StatefulWidget {
       {required this.timeline,
       this.setEditingEvent,
       this.setReplyingEvent,
+      this.isThreadTimeline = false,
       super.key});
   final Timeline timeline;
   final Function(TimelineEvent? event)? setReplyingEvent;
   final Function(TimelineEvent? event)? setEditingEvent;
+  final bool isThreadTimeline;
 
   @override
   State<RoomTimelineWidget> createState() => _RoomTimelineWidgetState();
@@ -54,6 +56,7 @@ class _RoomTimelineWidgetState extends State<RoomTimelineWidget> {
       timeline: widget.timeline,
       onViewScrolled: onViewScrolled,
       onAttachedToBottom: onAttachedToBottom,
+      isThreadTimeline: widget.isThreadTimeline,
       setReplyingEvent: widget.setReplyingEvent,
       setEditingEvent: widget.setEditingEvent,
     );

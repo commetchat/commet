@@ -7,6 +7,7 @@ import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/client/components/gif/gif_component.dart';
 import 'package:commet/client/components/gif/gif_search_result.dart';
+import 'package:commet/client/components/threads/thread_component.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/client/timeline.dart';
 import 'package:commet/debug/log.dart';
@@ -22,8 +23,9 @@ import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class Chat extends StatefulWidget {
-  const Chat(this.room, {super.key});
+  const Chat(this.room, {this.threadId, super.key});
   final Room room;
+  final String? threadId;
   @override
   State<Chat> createState() => ChatState();
 }
@@ -38,6 +40,8 @@ class ChatState extends State<Chat> {
   Timeline? _timeline;
 
   Timeline? get timeline => _timeline;
+
+  ThreadsComponent? threadsComponent;
 
   String get labelChatPageFileTooLarge => Intl.message(
       "This file is too large to upload!",
@@ -69,21 +73,29 @@ class ChatState extends State<Chat> {
       Debouncer(delay: const Duration(seconds: 5));
   DateTime lastSetTyping = DateTime.fromMicrosecondsSinceEpoch(0);
 
+  bool get isThread => widget.threadId != null;
+
   @override
   void initState() {
-    Log.i("Initializing room timeline for: ${widget.room.displayName}");
+    Log.i(
+        "Initializing room timeline for: ${widget.room.displayName} ${widget.threadId ?? ""}");
 
     onFileDroppedSubscription =
         EventBus.onFileDropped.stream.listen(onFileDropped);
 
-    if (room.timeline != null) {
-      _timeline = room.timeline;
-    } else {
-      loadTimeline();
-    }
-
     gifs = room.getComponent<GifComponent>();
     emoticons = room.getComponent<RoomEmoticonComponent>();
+    threadsComponent = room.client.getComponent<ThreadsComponent>();
+
+    if (widget.threadId != null && threadsComponent != null) {
+      loadThreadTimeline();
+    } else {
+      if (room.timeline != null) {
+        _timeline = room.timeline;
+      } else {
+        loadTimeline();
+      }
+    }
 
     super.initState();
   }
@@ -95,9 +107,21 @@ class ChatState extends State<Chat> {
     });
   }
 
+  Future<void> loadThreadTimeline() async {
+    Timeline? timeline = room.timeline;
+    timeline ??= await room.loadTimeline();
+
+    var threadTimeline = await threadsComponent!.getThreadTimeline(
+        roomTimeline: timeline, threadRootEventId: widget.threadId!);
+    setState(() {
+      _timeline = threadTimeline;
+    });
+  }
+
   @override
   void dispose() {
-    Log.i("Disposing room timeline for: ${widget.room.displayName}");
+    Log.i(
+        "Disposing room timeline for: ${widget.room.displayName} ${widget.threadId ?? ""}");
 
     onFileDroppedSubscription?.cancel();
     super.dispose();
@@ -150,6 +174,19 @@ class ChatState extends State<Chat> {
     if (component?.isExecutable(message) == true) {
       component?.executeCommand(message, room,
           interactingEvent: interactingEvent, type: interactionType);
+    }
+    if (isThread) {
+      threadsComponent!.sendMessage(
+          threadRootEventId: widget.threadId!,
+          room: room,
+          message: message,
+          inReplyTo: interactionType == EventInteractionType.reply
+              ? interactingEvent
+              : null,
+          replaceEvent: interactionType == EventInteractionType.edit
+              ? interactingEvent
+              : null,
+          processedAttachments: processedAttachments);
     } else {
       room.sendMessage(
           message: message,
@@ -235,6 +272,10 @@ class ChatState extends State<Chat> {
   }
 
   void onInputTextUpdated(String currentText) {
+    if (isThread) {
+      return;
+    }
+
     if (currentText.isEmpty) {
       stopTyping();
       typingStatusDebouncer.cancel();

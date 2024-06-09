@@ -65,6 +65,12 @@ class MatrixClient extends Client {
       : matrix.NativeImplementationsIsolate(compute);
 
   MatrixClient({required String identifier}) {
+    if (preferences.developerMode) {
+      matrix.Logs().level = matrix.Level.verbose;
+    } else {
+      matrix.Logs().level = matrix.Level.warning;
+    }
+
     _id = identifier;
     _matrixClient = _createMatrixClient(identifier);
     _matrixClient.onSync.stream.listen(onMatrixClientSync);
@@ -252,6 +258,7 @@ class MatrixClient extends Client {
       legacyDatabaseBuilder: (client) =>
           getLegacyMatrixDatabase(client.clientName),
       databaseBuilder: (client) => getMatrixDatabase(client.clientName),
+      logLevel: BuildConfig.RELEASE ? matrix.Level.warning : matrix.Level.info,
     );
 
     client.onSyncStatus.stream.listen(onSyncStatusChanged);

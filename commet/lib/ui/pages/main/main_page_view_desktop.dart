@@ -165,21 +165,45 @@ class MainPageViewDesktop extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.max,
               children: [
-                Expanded(
+                Flexible(
                   child: Chat(
                     state.currentRoom!,
                     key: ValueKey(
                         "room-timeline-key-${state.currentRoom!.localId}"),
                   ),
                 ),
-                Tile.low1(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
-                    child: SizedBox(
-                        width: 200,
-                        child: RoomMembersListWidget(state.currentRoom!)),
+                if (state.currentThreadId != null)
+                  Flexible(
+                    child: Stack(
+                      children: [
+                        Chat(
+                          state.currentRoom!,
+                          threadId: state.currentThreadId,
+                          key: ValueKey(
+                              "room-timeline-key-${state.currentRoom!.localId}_thread_${state.currentThreadId!}"),
+                        ),
+                        Align(
+                          alignment: Alignment.topRight,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: tiamat.CircleButton(
+                              icon: Icons.close,
+                              onPressed: () => EventBus.closeThread.add(null),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                )
+                if (state.currentThreadId == null)
+                  Tile.low1(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+                      child: SizedBox(
+                          width: 200,
+                          child: RoomMembersListWidget(state.currentRoom!)),
+                    ),
+                  )
               ],
             ),
           ),

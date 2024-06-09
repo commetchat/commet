@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:commet/client/room.dart';
 import 'package:commet/ui/atoms/room_header.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
@@ -12,6 +14,7 @@ import 'package:commet/ui/organisms/room_members_list/room_members_list.dart';
 import 'package:commet/ui/organisms/side_navigation_bar.dart';
 import 'package:commet/ui/organisms/space_summary/space_summary.dart';
 import 'package:commet/ui/pages/main/main_page.dart';
+import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/scaled_app.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -43,6 +46,13 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
   @override
   void initState() {
     panelsKey = GlobalKey<OverlappingPanelsState>();
+    EventBus.openThread.stream.listen((event) {
+      panelsKey.currentState?.reveal(RevealSide.right);
+    });
+    EventBus.closeThread.stream.listen((event) {
+      panelsKey.currentState?.reveal(RevealSide.main);
+    });
+
     super.initState();
   }
 
@@ -75,24 +85,63 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
           }
         },
         child: Tile.low4(
-          child: OverlappingPanels(
-              key: panelsKey,
-              left: navigation(context),
-              main: Container(
-                child: shouldMainIgnoreInput
-                    ? IgnorePointer(
-                        child: Container(key: mainPanelKey, child: mainPanel()),
-                      )
-                    : Container(key: mainPanelKey, child: mainPanel()),
+            child: OverlappingPanels(
+          key: panelsKey,
+          left: navigation(context),
+          main: Container(
+            child: shouldMainIgnoreInput
+                ? IgnorePointer(
+                    child: Container(key: mainPanelKey, child: mainPanel()),
+                  )
+                : Container(key: mainPanelKey, child: mainPanel()),
+          ),
+          onDragStart: () {},
+          onSideChange: (side) {
+            setState(() {
+              shouldMainIgnoreInput = side != RevealSide.main;
+            });
+          },
+          right: rightPanel(context),
+        )));
+  }
+
+  Widget? rightPanel(BuildContext context) {
+    if (widget.state.currentThreadId != null &&
+        widget.state.currentRoom != null) {
+      return Tile(
+        child: keyboardAdaptor(
+          Stack(
+            children: [
+              Chat(
+                widget.state.currentRoom!,
+                threadId: widget.state.currentThreadId,
+                key: ValueKey(
+                    "room-timeline-key-${widget.state.currentRoom!.localId}_thread_${widget.state.currentThreadId!}"),
               ),
-              onDragStart: () {},
-              onSideChange: (side) {
-                setState(() {
-                  shouldMainIgnoreInput = side != RevealSide.main;
-                });
-              },
-              right: widget.state.currentRoom != null ? userList() : null),
-        ));
+              ScaledSafeArea(
+                child: Align(
+                  alignment: Alignment.topRight,
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: tiamat.CircleButton(
+                      icon: Icons.close,
+                      radius: 24,
+                      onPressed: () => EventBus.closeThread.add(null),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (widget.state.currentRoom != null) {
+      return userList();
+    }
+
+    return null;
   }
 
   Widget navigation(BuildContext newContext) {
@@ -129,6 +178,16 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
     );
   }
 
+  Widget keyboardAdaptor(Widget child, {bool ignore = false}) {
+    var scaledQuery = MediaQuery.of(context).scale();
+    var offset = max(scaledQuery.viewInsets.bottom, scaledQuery.padding.bottom);
+
+    return ScaledSafeArea(
+        bottom: false,
+        child: Padding(
+            padding: EdgeInsets.fromLTRB(0, 0, 0, offset), child: child));
+  }
+
   Widget mainPanel() {
     if (widget.state.currentSpace != null && widget.state.currentRoom == null) {
       return Tile(
@@ -154,32 +213,28 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
         offset = scaledQuery.padding.bottom;
       }
       return Tile(
-        child: ScaledSafeArea(
-          bottom: false,
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(0, 0, 0, offset),
-            child: Column(
-              children: [
-                SizedBox(
-                  height: 50,
-                  child: RoomHeader(
-                    widget.state.currentRoom!,
-                    onTap:
-                        widget.state.currentRoom?.permissions.canEditAnything ==
-                                true
-                            ? () => widget.state.navigateRoomSettings()
-                            : null,
-                  ),
+        child: keyboardAdaptor(
+          Column(
+            children: [
+              SizedBox(
+                height: 50,
+                child: RoomHeader(
+                  widget.state.currentRoom!,
+                  onTap:
+                      widget.state.currentRoom?.permissions.canEditAnything ==
+                              true
+                          ? () => widget.state.navigateRoomSettings()
+                          : null,
                 ),
-                Flexible(
-                  child: Chat(
-                    widget.state.currentRoom!,
-                    key: ValueKey(
-                        "room-timeline-key-${widget.state.currentRoom!.localId}"),
-                  ),
+              ),
+              Flexible(
+                child: Chat(
+                  widget.state.currentRoom!,
+                  key: ValueKey(
+                      "room-timeline-key-${widget.state.currentRoom!.localId}"),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       );

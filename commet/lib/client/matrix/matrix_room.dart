@@ -319,6 +319,8 @@ class MatrixRoom extends Room {
       {String? message,
       TimelineEvent? inReplyTo,
       TimelineEvent? replaceEvent,
+      String? threadRootEventId,
+      String? threadLastEventId,
       List<ProcessedAttachment>? processedAttachments}) async {
     matrix.Event? replyingTo;
 
@@ -329,7 +331,9 @@ class MatrixRoom extends Room {
     if (processedAttachments != null) {
       Future.wait(processedAttachments
           .whereType<MatrixProcessedAttachment>()
-          .map((e) => _matrixRoom.sendFileEvent(e.file)));
+          .map((e) => _matrixRoom.sendFileEvent(e.file,
+              threadLastEventId: threadLastEventId,
+              threadRootEventId: threadRootEventId)));
     }
 
     if (message != null && message.trim().isNotEmpty) {
@@ -353,7 +357,10 @@ class MatrixRoom extends Room {
       }
 
       var id = await _matrixRoom.sendEvent(event,
-          inReplyTo: replyingTo, editEventId: replaceEvent?.eventId);
+          inReplyTo: replyingTo,
+          editEventId: replaceEvent?.eventId,
+          threadLastEventId: threadLastEventId,
+          threadRootEventId: threadRootEventId);
 
       if (id != null) {
         var event = await _matrixRoom.getEventById(id);

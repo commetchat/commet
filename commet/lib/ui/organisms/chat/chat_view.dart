@@ -61,7 +61,14 @@ class ChatView extends StatelessWidget {
                 type: EventInteractionType.reply),
             setEditingEvent: (event) => state.setInteractingEvent(event,
                 type: EventInteractionType.edit),
-            // onAddReaction: state.addReaction,
+            isThreadTimeline: state.isThread,
+            // onThreadOpened: (event) {
+            //   EventBus.openThread.add((
+            //     state.room.client.identifier,
+            //     state.room.identifier,
+            //     event.eventId
+            //   ));
+            // },
           );
   }
 

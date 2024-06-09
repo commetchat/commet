@@ -8,6 +8,14 @@ class EventBus {
   static StreamController<(String, String?)> openRoom =
       StreamController<(String, String?)>.broadcast();
 
+  /// 0] Client Id
+  /// 1] Room Id
+  /// 2] Thread Root Event Id
+  static StreamController<(String, String, String)> openThread =
+      StreamController<(String, String, String)>.broadcast();
+
+  static StreamController<void> closeThread = StreamController.broadcast();
+
   /// Called when the user initially logs in to the app, or on app startup when atleast one user account is already logged in
   static StreamController<BuildContext> onLoggedIn =
       StreamController<BuildContext>.broadcast();

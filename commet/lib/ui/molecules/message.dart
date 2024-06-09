@@ -301,3 +301,42 @@ class ReplyLinePainter extends CustomPainter {
     return true;
   }
 }
+
+class ThreadLinePainter extends CustomPainter {
+  Color pathColor;
+  double strokeWidth;
+  double radius;
+  double padding;
+  ThreadLinePainter(
+      {this.pathColor = Colors.white,
+      this.strokeWidth = 1.5,
+      this.radius = 3,
+      this.padding = 2}) {
+    _paint = Paint()
+      ..color = pathColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = strokeWidth
+      ..strokeCap = StrokeCap.round;
+  }
+
+  late Paint _paint;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Path path = Path();
+    path.moveTo(strokeWidth / 2, 0);
+    path.relativeLineTo(0, (size.height / 2) - radius);
+    path.relativeArcToPoint(
+      Offset(radius, radius),
+      clockwise: false,
+      radius: Radius.circular(radius),
+    );
+    path.relativeLineTo(size.width - radius - strokeWidth, 0);
+    canvas.drawPath(path, _paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return true;
+  }
+}

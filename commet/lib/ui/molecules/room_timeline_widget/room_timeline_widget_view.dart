@@ -19,12 +19,14 @@ class RoomTimelineWidgetView extends StatefulWidget {
       this.setEditingEvent,
       this.setReplyingEvent,
       this.onAttachedToBottom,
+      this.isThreadTimeline = false,
       super.key});
   final Timeline timeline;
   final Function(TimelineEvent event)? markAsRead;
   final Function(TimelineEvent? event)? setReplyingEvent;
   final Function(TimelineEvent? event)? setEditingEvent;
   final Function()? onAttachedToBottom;
+  final bool isThreadTimeline;
 
   final Function({required double offset, required double maxScrollExtent})?
       onViewScrolled;
@@ -218,6 +220,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
         var event = widget.timeline.tryGetEvent(eventId)!;
         overlayState?.setMenu(TimelineEventMenu(
           timeline: widget.timeline,
+          isThreadTimeline: widget.isThreadTimeline,
           event: event,
           setEditingEvent: (event) => widget.setEditingEvent?.call(event),
           setReplyingEvent: (event) => widget.setReplyingEvent?.call(event),
@@ -281,6 +284,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
                                 onEventHovered: eventHovered,
                                 setEditingEvent: widget.setEditingEvent,
                                 setReplyingEvent: widget.setReplyingEvent,
+                                isThreadTimeline: widget.isThreadTimeline,
                                 initialIndex: timelineIndex),
                           );
                         },
@@ -325,6 +329,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
                                 timeline: widget.timeline,
                                 setEditingEvent: widget.setEditingEvent,
                                 setReplyingEvent: widget.setReplyingEvent,
+                                isThreadTimeline: widget.isThreadTimeline,
                                 initialIndex: timelineIndex),
                           );
                         },

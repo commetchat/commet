@@ -51,7 +51,7 @@ class MatrixTimelineEvent implements TimelineEvent {
   Map<Emoticon, Set<String>>? reactions;
 
   @override
-  String? get relatedEventId => event.relationshipEventId;
+  String? get relatedEventId => getRelatedEventId();
 
   @override
   EventRelationshipType? relationshipType;
@@ -86,11 +86,7 @@ class MatrixTimelineEvent implements TimelineEvent {
 
     try {
       if (event.relationshipType != null) {
-        switch (event.relationshipType) {
-          case "m.in_reply_to":
-            relationshipType = EventRelationshipType.reply;
-            break;
-        }
+        handleRelationshipType();
       }
 
       displayEvent = timeline != null ? event.getDisplayEvent(timeline) : null;
@@ -118,6 +114,45 @@ class MatrixTimelineEvent implements TimelineEvent {
         rethrow;
       }
     }
+  }
+
+  void handleRelationshipType() {
+    switch (event.relationshipType) {
+      case "m.in_reply_to":
+        relationshipType = EventRelationshipType.reply;
+        break;
+      case "m.thread":
+        if (getThreadRichResponseId() != null) {
+          relationshipType = EventRelationshipType.reply;
+        }
+    }
+  }
+
+  String? getThreadRichResponseId() {
+    var rel = event.content["m.relates_to"] as Map<String, dynamic>?;
+    if (rel == null) {
+      return null;
+    }
+
+    var reponse = rel["m.in_reply_to"] as Map<String, dynamic>?;
+
+    if (reponse == null) {
+      return null;
+    }
+
+    if (rel["is_falling_back"] == true) {
+      return null;
+    }
+
+    return reponse["event_id"];
+  }
+
+  String? getRelatedEventId() {
+    if (event.relationshipType == "m.thread") {
+      return getThreadRichResponseId();
+    }
+
+    return event.relationshipEventId;
   }
 
   EventType? convertType(matrix.Event event) {
@@ -352,4 +387,14 @@ class MatrixTimelineEvent implements TimelineEvent {
   @override
   String get rawContent => const JsonEncoder.withIndent("  ")
       .convert(const JsonDecoder().convert(jsonEncode(event.toJson())));
+
+  @override
+  bool operator ==(Object other) {
+    if (other is! MatrixTimelineEvent) return false;
+
+    return eventId == other.eventId;
+  }
+
+  @override
+  int get hashCode => eventId.hashCode;
 }

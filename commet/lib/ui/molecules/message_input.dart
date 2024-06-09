@@ -149,15 +149,13 @@ class MessageInputState extends State<MessageInput> {
 
     setInputTextSubscription = widget.setInputText?.listen(onSetInputText);
 
-    controller.addListener(onTextfieldUpdated);
-
     textFocus = FocusNode(onKeyEvent: onKey);
 
     super.initState();
   }
 
   String? lastSearchText;
-  void onTextfieldUpdated() {
+  void onTextfieldUpdated(String value) {
     widget.onTextUpdated?.call(controller.text);
     var range = getAutofillTextRange();
 
@@ -165,7 +163,7 @@ class MessageInputState extends State<MessageInput> {
       return;
     }
 
-    var text = controller.text.substring(range.$1, range.$2);
+    var text = value.substring(range.$1, range.$2);
 
     if (text == "") {
       setState(() {
@@ -575,6 +573,7 @@ class MessageInputState extends State<MessageInput> {
       child: Stack(
         children: [
           TextField(
+            onChanged: onTextfieldUpdated,
             controller: controller,
             focusNode: textFocus,
             readOnly: !widget.enabled,
