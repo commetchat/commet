@@ -25,11 +25,8 @@ dependencies:
   http: ^1.1.0
   implicitly_animated_list: ^2.2.0
   intl: any
-  intl_translation: ^0.18.2
+  intl_translation: ^0.20.0
   intl_utils: any
-  isar: ^3.1.0+1
-  isar_flutter_libs: ^3.1.0+1
-  isar_generator: ^3.1.0+1
   just_the_tooltip: ^0.0.12
   matrix:
     git: 
@@ -76,17 +73,18 @@ dependencies:
       ref: fix
   tiamat: 
     path: ../tiamat/
-  matrix_dart_sdk_isar_db:
-    git: https://github.com/commetchat/matrix-dart-sdk-isar-db.git
+  matrix_dart_sdk_drift_db:
+    git: https://github.com/commetchat/matrix-dart-sdk-drift-db.git
   encrypted_url_preview: 
     git: https://github.com/commetchat/encrypted_url_preview.git
   signal_sticker_api: 
     git: https://github.com/commetchat/signal-sticker-api.git
-  sqlite3_flutter_libs: ^0.5.18
+  sqlite3_flutter_libs: ^0.5.23
   fuzzy: ^0.5.1
   encrypt: ^5.0.3
   pointycastle: ^3.7.4
   flutter_web_auth_2: ^3.1.1
+  drift: ^2.18.0
 
   ## ---- Putting some extra lines in here to help git with the diff
   ## ---- Probably good to keep this stuff at the bottom of the list
@@ -99,7 +97,7 @@ dependencies:
 
 
 dev_dependencies: 
-  build_runner: any
+  build_runner: ^2.4.11
   flutter_launcher_icons: ^0.13.1
   flutter_lints: ^2.0.0
   msix: ^3.7.0
@@ -108,6 +106,7 @@ dev_dependencies:
     sdk: flutter
   integration_test: 
     sdk: flutter
+  drift_dev: ^2.18.0
 
 flutter_intl: 
   class_name: T

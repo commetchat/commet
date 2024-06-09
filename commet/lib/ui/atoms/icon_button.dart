@@ -31,7 +31,7 @@ class _IconButtonState extends State<IconButton> {
                 hovered = false;
               });
             },
-            cursor: MaterialStateMouseCursor.clickable,
+            cursor: WidgetStateMouseCursor.clickable,
             child: Padding(
               padding: const EdgeInsets.all(4.0),
               child: SizedBox(

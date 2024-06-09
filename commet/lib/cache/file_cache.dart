@@ -1,5 +1,5 @@
 import 'file_cache_stub.dart'
-    if (dart.library.io) "package:commet/cache/isar_file_cache.dart";
+    if (dart.library.io) "package:commet/cache/drift_file_cache.dart";
 
 import 'package:flutter/foundation.dart';
 
