@@ -16,7 +16,10 @@ dependencies:
   dropdown_button2: ^2.0.0
   just_the_tooltip: ^0.0.12
   path: ^1.9.0
-  dynamic_color: ^1.7.0
+  dynamic_color: 
+    git: 
+      url: https://github.com/Airyzz/material-flutter-packages.git
+      path: ./packages/dynamic_color
 
 dev_dependencies:
   build_runner:

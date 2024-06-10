@@ -204,10 +204,11 @@ packages:
   dynamic_color:
     dependency: "direct main"
     description:
-      name: dynamic_color
-      sha256: eae98052fa6e2826bdac3dd2e921c6ce2903be15c6b7f8b6d8a5d49b5086298d
-      url: "https://pub.dev"
-    source: hosted
+      path: "packages/dynamic_color"
+      ref: HEAD
+      resolved-ref: c23b9658c1ada18021bb1356b921f574217d0668
+      url: "https://github.com/Airyzz/material-flutter-packages.git"
+    source: git
     version: "1.7.0"
   fake_async:
     dependency: transitive
