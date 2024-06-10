@@ -112,6 +112,16 @@ class Preferences {
           WidgetsBinding.instance.platformDispatcher.platformBrightness;
     }
 
+    if (overrideBrightness == null && shouldFollowSystemColors) {
+      if (theme == AppTheme.dark) {
+        overrideBrightness = Brightness.dark;
+      }
+
+      if (theme == AppTheme.light) {
+        overrideBrightness = Brightness.light;
+      }
+    }
+
     if (overrideBrightness != null && shouldFollowSystemColors) {
       return ThemeYou.theme(overrideBrightness);
     }
