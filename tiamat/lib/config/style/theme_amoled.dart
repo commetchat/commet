@@ -26,18 +26,7 @@ class ThemeAmoled {
       fontFamily: "RobotoCustom",
       fontFamilyFallback: ThemeCommon.fontFamilyFallback(),
       useMaterial3: true,
-      extensions: const <ThemeExtension<dynamic>>[
-        ExtraColors(
-            surfaceHigh1: ThemeAmoledColors.surfaceHigh1,
-            surfaceLow1: ThemeAmoledColors.surfaceLow1,
-            surfaceLow2: ThemeAmoledColors.surfaceLow2,
-            surfaceLow3: ThemeAmoledColors.surfaceLow3,
-            surfaceLow4: ThemeAmoledColors.surfaceLow4,
-            highlight: ThemeAmoledColors.highlightColor,
-            outline: ThemeAmoledColors.outlineColor,
-            codeHighlight: Color(0xffc678dd)),
-        ThemeSettings(frosted: false),
-      ],
+      extensions: [ThemeSettings()],
       colorScheme: ColorScheme(
           primary: Color.fromARGB(255, 113, 146, 255),
           secondary: ThemeAmoledColors.secondary,

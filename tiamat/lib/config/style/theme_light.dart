@@ -29,10 +29,8 @@ class ThemeLight {
       brightness: Brightness.light,
       useMaterial3: true,
       fontFamily: "RobotoCustom",
+      extensions: [ThemeSettings()],
       fontFamilyFallback: ThemeCommon.fontFamilyFallback(),
-      extensions: const <ThemeExtension<dynamic>>[
-        ThemeSettings(frosted: false)
-      ],
       colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.white,
           brightness: Brightness.light,

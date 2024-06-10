@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:commet/config/preferences.dart';
@@ -9,10 +10,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart' as m;
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:tiamat/config/config.dart';
 import 'package:tiamat/config/style/theme_light.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:tiamat/tiamat.dart';
+import 'package:path/path.dart' as path;
 
 class AppearanceSettingsPage extends StatefulWidget {
   const AppearanceSettingsPage({super.key});
@@ -22,8 +25,6 @@ class AppearanceSettingsPage extends StatefulWidget {
 }
 
 class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
-  late bool shouldFollowSystemTheme;
-
   String get labelSettingsAppTheme => Intl.message("Theme",
       name: "labelSettingsAppTheme",
       desc: "Label for theme section of app appearance");
@@ -44,7 +45,6 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
 
   @override
   void initState() {
-    shouldFollowSystemTheme = preferences.shouldFollowSystemTheme;
     super.initState();
   }
 
@@ -69,59 +69,60 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
           header: labelSettingsAppTheme,
           mode: TileType.surfaceContainerLow,
           child: Column(children: [
-            TextButton(labelThemeLight, onTap: () {
+            TextButton(labelThemeLight, onTap: () async {
               preferences.setTheme(AppTheme.light);
-              ThemeChanger.setTheme(context, ThemeLight.theme);
+              var theme = await preferences.resolveTheme(
+                  overrideBrightness: Brightness.light);
+              ThemeChanger.setTheme(context, theme);
             }),
-            TextButton(labelThemeDark, onTap: () {
+            TextButton(labelThemeDark, onTap: () async {
               preferences.setTheme(AppTheme.dark);
-              ThemeChanger.setTheme(context, ThemeDark.theme);
+              var theme = await preferences.resolveTheme(
+                  overrideBrightness: Brightness.dark);
+              ThemeChanger.setTheme(context, theme);
             }),
-            TextButton(labelThemeAmoled, onTap: () {
-              preferences.setTheme(AppTheme.amoled);
-              ThemeChanger.setTheme(context, ThemeAmoled.theme);
+            TextButton(labelThemeAmoled, onTap: () async {
+              setState(() {
+                preferences.setTheme(AppTheme.amoled);
+              });
+
+              var theme = await preferences.resolveTheme(
+                  overrideBrightness: Brightness.dark);
+              ThemeChanger.setTheme(context, theme);
             }),
-            TextButton("Random Dark", onTap: () {
-              var random = Random();
-              var color = Color.fromARGB(255, random.nextInt(255),
-                  random.nextInt(255), random.nextInt(255));
-              ThemeChanger.setTheme(
-                  context,
-                  ThemeDark.theme.copyWith(
-                      colorScheme: m.ColorScheme.fromSeed(
-                          brightness: Brightness.dark, seedColor: color)));
-            }),
-            TextButton("Random Light", onTap: () {
-              var random = Random();
-              var color = Color.fromARGB(255, random.nextInt(255),
-                  random.nextInt(255), random.nextInt(255));
-              ThemeChanger.setTheme(
-                  context,
-                  ThemeLight.theme.copyWith(
-                      colorScheme: m.ColorScheme.fromSeed(
-                          brightness: Brightness.light, seedColor: color)));
+            TextButton("Load from file", onTap: () async {
+              var dir = await getApplicationSupportDirectory();
+              var file = path.join(dir.path, "theme", "custom", "theme.json");
+              ThemeChanger.setThemeFromFile(context, File(file));
             }),
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
               child: GeneralSettingsPageState.settingToggle(
-                shouldFollowSystemTheme,
-                title: "Follow System Theme",
-                description: "Automatically follow System Theme",
-                onChanged: (value) {
+                preferences.shouldFollowSystemTheme,
+                title: "Follow System Brightness",
+                description: "Automatically follow system Light / Dark mode",
+                onChanged: (value) async {
                   setState(() {
-                    shouldFollowSystemTheme = value;
-                    preferences.setShouldFollowSystemTheme(value);
+                    preferences.setShouldFollowSystemBrightness(value);
                   });
-                  if (value) {
-                    ThemeChanger.updateSystemTheme(context);
-                  } else {
-                    var theme = {
-                      AppTheme.dark: ThemeDark.theme,
-                      AppTheme.light: ThemeLight.theme,
-                      AppTheme.amoled: ThemeAmoled.theme,
-                    }[preferences.theme];
-                    ThemeChanger.setTheme(context, theme!);
-                  }
+
+                  var theme = await preferences.resolveTheme();
+                  ThemeChanger.setTheme(context, theme);
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
+              child: GeneralSettingsPageState.settingToggle(
+                preferences.shouldFollowSystemColors,
+                title: "Follow System Colors",
+                description: "Automatically follow system color scheme",
+                onChanged: (value) async {
+                  setState(() {
+                    preferences.setShouldFollowSystemColors(value);
+                  });
+                  var theme = await preferences.resolveTheme();
+                  ThemeChanger.setTheme(context, theme);
                 },
               ),
             ),

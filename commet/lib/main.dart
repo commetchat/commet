@@ -217,9 +217,11 @@ Future<void> startGui() async {
     return scale;
   };
 
+  var initialTheme = await preferences.resolveTheme();
+
   runApp(App(
     clientManager: clientManager!,
-    initialTheme: preferences.theme,
+    initialTheme: initialTheme,
     initialClientId: initialClientId,
     initialRoom: initialRoomId,
   ));
@@ -243,11 +245,11 @@ class App extends StatelessWidget {
   const App(
       {Key? key,
       required this.clientManager,
-      this.initialTheme = AppTheme.dark,
+      this.initialTheme,
       this.initialRoom,
       this.initialClientId})
       : super(key: key);
-  final AppTheme initialTheme;
+  final ThemeData? initialTheme;
   final ClientManager clientManager;
 
   final String? initialRoom;
@@ -258,18 +260,12 @@ class App extends StatelessWidget {
     return ThemeChanger(
         shouldFollowSystemTheme: () => preferences.shouldFollowSystemTheme,
         getDarkTheme: () {
-          if (preferences.theme == AppTheme.amoled) {
-            return ThemeAmoled.theme;
-          } else {
-            return ThemeDark.theme;
-          }
+          return preferences.resolveTheme(overrideBrightness: Brightness.dark);
         },
-        getLightTheme: () => ThemeLight.theme,
-        initialTheme: {
-          AppTheme.dark: ThemeDark.theme,
-          AppTheme.light: ThemeLight.theme,
-          AppTheme.amoled: ThemeAmoled.theme,
-        }[initialTheme]!,
+        getLightTheme: () {
+          return preferences.resolveTheme(overrideBrightness: Brightness.light);
+        },
+        initialTheme: initialTheme ?? ThemeDark.theme,
         materialAppBuilder: (context, theme) {
           return MaterialApp(
             title: 'Commet',

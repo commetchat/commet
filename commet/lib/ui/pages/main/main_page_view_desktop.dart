@@ -29,59 +29,73 @@ class MainPageViewDesktop extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Row(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Tile(
-              mode: TileType.surfaceDim,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
-                child: SideNavigationBar(
-                  currentUser: state.currentUser,
-                  onSpaceSelected: (index) {
-                    state.selectSpace(state.clientManager.spaces[index]);
-                  },
-                  onHomeSelected: () {
-                    state.selectHome();
-                  },
-                  clearSpaceSelection: () {
-                    state.clearSpaceSelection();
-                  },
+    return tiamat.Foundation(
+      child: Stack(
+        children: [
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Tile(
+                caulkPadTop: true,
+                caulkPadBottom: true,
+                caulkPadRight: true,
+                caulkClipTopRight: true,
+                caulkClipBottomRight: true,
+                caulkBorderRight: true,
+                mode: TileType.surfaceDim,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
+                  child: SideNavigationBar(
+                    currentUser: state.currentUser,
+                    onSpaceSelected: (index) {
+                      state.selectSpace(state.clientManager.spaces[index]);
+                    },
+                    onHomeSelected: () {
+                      state.selectHome();
+                    },
+                    clearSpaceSelection: () {
+                      state.clearSpaceSelection();
+                    },
+                  ),
                 ),
               ),
-            ),
-            if (state.currentView == MainPageSubView.space &&
-                state.currentSpace != null)
-              spaceRoomSelector(context),
-            if (state.currentView == MainPageSubView.home)
-              Expanded(child: homeView()),
-            if (state.currentRoom != null &&
-                state.currentView != MainPageSubView.home)
-              roomChatView(),
-            if (state.currentSpace != null && state.currentRoom == null)
-              Expanded(
-                child: Tile(
-                  child: ListView(children: [
-                    SpaceSummary(
-                        key: ValueKey(
-                            "space-summary-key-${state.currentSpace!.localId}"),
-                        space: state.currentSpace!,
-                        onRoomTap: (room) => state.selectRoom(room)),
-                  ]),
+              if (state.currentView == MainPageSubView.space &&
+                  state.currentSpace != null)
+                spaceRoomSelector(context),
+              if (state.currentView == MainPageSubView.home)
+                Expanded(child: homeView()),
+              if (state.currentRoom != null &&
+                  state.currentView != MainPageSubView.home)
+                roomChatView(),
+              if (state.currentSpace != null && state.currentRoom == null)
+                Expanded(
+                  child: Tile(
+                    caulkPadTop: true,
+                    caulkPadBottom: true,
+                    caulkPadLeft: true,
+                    caulkClipTopLeft: true,
+                    caulkBorderLeft: true,
+                    caulkClipBottomLeft: true,
+                    child: ListView(children: [
+                      SpaceSummary(
+                          key: ValueKey(
+                              "space-summary-key-${state.currentSpace!.localId}"),
+                          space: state.currentSpace!,
+                          onRoomTap: (room) => state.selectRoom(room)),
+                    ]),
+                  ),
                 ),
-              ),
-          ],
-        ),
-        if (state.currentRoom != null)
-          DragDropFileTarget(
-            onDropComplete: (details) {
-              EventBus.onFileDropped.add(details);
-            },
+            ],
           ),
-        const BackgroundTaskViewContainer()
-      ],
+          if (state.currentRoom != null)
+            DragDropFileTarget(
+              onDropComplete: (details) {
+                EventBus.onFileDropped.add(details);
+              },
+            ),
+          const BackgroundTaskViewContainer()
+        ],
+      ),
     );
   }
 
@@ -89,6 +103,12 @@ class MainPageViewDesktop extends StatelessWidget {
     return SizedBox(
         width: 250,
         child: Tile.low1(
+          caulkPadTop: true,
+          caulkPadBottom: true,
+          caulkClipTopLeft: true,
+          caulkClipTopRight: true,
+          caulkClipBottomLeft: true,
+          caulkClipBottomRight: true,
           child: Column(
             children: [
               SpaceHeader(
@@ -115,6 +135,13 @@ class MainPageViewDesktop extends StatelessWidget {
     return Row(
       children: [
         Tile.low1(
+          caulkClipTopLeft: true,
+          caulkClipTopRight: true,
+          caulkClipBottomRight: true,
+          caulkClipBottomLeft: true,
+          caulkPadTop: true,
+          caulkPadBottom: true,
+          caulkBorderRight: true,
           child: Padding(
             padding: const EdgeInsets.fromLTRB(4, 0, 8, 0),
             child: SizedBox(
@@ -140,6 +167,11 @@ class MainPageViewDesktop extends StatelessWidget {
         if (state.currentRoom == null)
           Expanded(
             child: Tile(
+              caulkPadLeft: true,
+              caulkClipTopLeft: true,
+              caulkClipBottomLeft: true,
+              caulkPadTop: true,
+              caulkPadBottom: true,
               child: HomeScreen(clientManager: state.clientManager),
             ),
           ),
@@ -152,13 +184,20 @@ class MainPageViewDesktop extends StatelessWidget {
     return Expanded(
       child: Column(
         children: [
-          SizedBox(
-            height: 50,
-            child: RoomHeader(
-              state.currentRoom!,
-              onTap: state.currentRoom?.permissions.canEditAnything == true
-                  ? () => state.navigateRoomSettings()
-                  : null,
+          Tile.low(
+            caulkPadBottom: true,
+            caulkPadLeft: true,
+            caulkClipBottomLeft: true,
+            caulkBorderLeft: true,
+            caulkBorderBottom: true,
+            child: SizedBox(
+              height: 50,
+              child: RoomHeader(
+                state.currentRoom!,
+                onTap: state.currentRoom?.permissions.canEditAnything == true
+                    ? () => state.navigateRoomSettings()
+                    : null,
+              ),
             ),
           ),
           Expanded(
@@ -166,37 +205,57 @@ class MainPageViewDesktop extends StatelessWidget {
               mainAxisSize: MainAxisSize.max,
               children: [
                 Flexible(
-                  child: Chat(
-                    state.currentRoom!,
-                    key: ValueKey(
-                        "room-timeline-key-${state.currentRoom!.localId}"),
+                  child: Tile(
+                    caulkPadLeft: true,
+                    caulkClipTopLeft: true,
+                    caulkClipTopRight: true,
+                    caulkBorderRight: true,
+                    caulkPadBottom: true,
+                    caulkClipBottomLeft: true,
+                    caulkClipBottomRight: true,
+                    caulkBorderLeft: true,
+                    child: Chat(
+                      state.currentRoom!,
+                      key: ValueKey(
+                          "room-timeline-key-${state.currentRoom!.localId}"),
+                    ),
                   ),
                 ),
                 if (state.currentThreadId != null)
                   Flexible(
-                    child: Stack(
-                      children: [
-                        Chat(
-                          state.currentRoom!,
-                          threadId: state.currentThreadId,
-                          key: ValueKey(
-                              "room-timeline-key-${state.currentRoom!.localId}_thread_${state.currentThreadId!}"),
-                        ),
-                        Align(
-                          alignment: Alignment.topRight,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: tiamat.CircleButton(
-                              icon: Icons.close,
-                              onPressed: () => EventBus.closeThread.add(null),
+                    child: Tile(
+                      caulkPadLeft: true,
+                      caulkClipTopLeft: true,
+                      caulkClipBottomLeft: true,
+                      caulkPadBottom: true,
+                      child: Stack(
+                        children: [
+                          Chat(
+                            state.currentRoom!,
+                            threadId: state.currentThreadId,
+                            key: ValueKey(
+                                "room-timeline-key-${state.currentRoom!.localId}_thread_${state.currentThreadId!}"),
+                          ),
+                          Align(
+                            alignment: Alignment.topRight,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: tiamat.CircleButton(
+                                icon: Icons.close,
+                                onPressed: () => EventBus.closeThread.add(null),
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 if (state.currentThreadId == null)
                   Tile.low1(
+                    caulkPadLeft: true,
+                    caulkClipTopLeft: true,
+                    caulkClipBottomLeft: true,
+                    caulkPadBottom: true,
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
                       child: SizedBox(

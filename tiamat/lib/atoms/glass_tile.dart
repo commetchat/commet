@@ -57,15 +57,13 @@ class GlassTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        ClipRect(
-            child: ImageFiltered(
-                imageFilter: ImageFilter.blur(sigmaX: sigma, sigmaY: sigma),
-                child: const ShaderBackground())),
-        Container(
-            color: color.withAlpha((opacity * 255.0).toInt()), child: child!),
-      ],
+    return ClipRRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(
+            sigmaX: sigma, sigmaY: sigma, tileMode: TileMode.mirror),
+        child: Container(
+            color: color.withAlpha((opacity * 255.0).toInt()), child: child),
+      ),
     );
   }
 }

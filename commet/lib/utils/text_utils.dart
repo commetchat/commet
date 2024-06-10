@@ -45,7 +45,8 @@ class TextUtils {
     return _urlRegex.hasMatch(text);
   }
 
-  static List<InlineSpan> linkifyString(String text, {TextStyle? style}) {
+  static List<InlineSpan> linkifyString(String text,
+      {TextStyle? style, required BuildContext context}) {
     var matches = _urlRegex.allMatches(text);
     return formatMatches(
       matches,
@@ -53,7 +54,9 @@ class TextUtils {
       style: style,
       builder: (matchedText, theme) {
         return LinkSpan.create(matchedText,
-            destination: Uri.parse(matchedText), style: style);
+            context: context,
+            destination: Uri.parse(matchedText),
+            style: style);
       },
     );
   }

@@ -39,12 +39,10 @@ class ChatView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Tile(
-      child: Column(children: [
-        Expanded(child: timeline()),
-        input(),
-      ]),
-    );
+    return Column(children: [
+      Expanded(child: timeline()),
+      input(),
+    ]);
   }
 
   Widget timeline() {
@@ -81,48 +79,50 @@ class ChatView extends StatelessWidget {
   }
 
   Widget input() {
-    return MessageInput(
-      isRoomE2EE: state.room.isE2EE,
-      focusKeyboard: state.onFocusMessageInput.stream,
-      attachments: state.attachments,
-      interactionType: state.interactionType,
-      gifComponent: state.gifs,
-      onSendMessage: (message) {
-        state.sendMessage(message);
-        return MessageInputSendResult.success;
-      },
-      onTextUpdated: state.onInputTextUpdated,
-      addAttachment: state.addAttachment,
-      removeAttachment: state.removeAttachment,
-      size: Layout.mobile ? 40 : 35,
-      iconScale: Layout.mobile ? 0.6 : 0.5,
-      isProcessing: state.processing,
-      enabled: state.room.permissions.canSendMessage,
-      typingUsernames:
-          state.room.typingPeers.map((e) => e.displayName).toList(),
-      relatedEventBody: state.interactingEvent?.body,
-      relatedEventSenderName: relatedEventSenderName,
-      relatedEventSenderColor: relatedEventSenderColor,
-      setInputText: state.setMessageInputText.stream,
-      availibleEmoticons: state.emoticons?.availableEmoji,
-      availibleStickers: state.emoticons?.availableStickers,
-      sendSticker: state.sendSticker,
-      sendGif: state.sendGif,
-      editLastMessage: state.editLastMessage,
-      hintText: state.room.permissions.canSendMessage
-          ? state.room.isE2EE
-              ? sendEncryptedMessagePrompt
-              : sendUnencryptedMessagePrompt
-          : cantSentMessagePrompt,
-      cancelReply: () {
-        state.setInteractingEvent(null);
-      },
-      readIndicator: ReadIndicator(
-        key: ValueKey("room_read_indicator_key_${state.room.identifier}"),
-        room: state.room,
-        initialList: state.room.timeline?.receipts,
+    return ClipRRect(
+      child: MessageInput(
+        isRoomE2EE: state.room.isE2EE,
+        focusKeyboard: state.onFocusMessageInput.stream,
+        attachments: state.attachments,
+        interactionType: state.interactionType,
+        gifComponent: state.gifs,
+        onSendMessage: (message) {
+          state.sendMessage(message);
+          return MessageInputSendResult.success;
+        },
+        onTextUpdated: state.onInputTextUpdated,
+        addAttachment: state.addAttachment,
+        removeAttachment: state.removeAttachment,
+        size: Layout.mobile ? 40 : 35,
+        iconScale: Layout.mobile ? 0.6 : 0.5,
+        isProcessing: state.processing,
+        enabled: state.room.permissions.canSendMessage,
+        typingUsernames:
+            state.room.typingPeers.map((e) => e.displayName).toList(),
+        relatedEventBody: state.interactingEvent?.body,
+        relatedEventSenderName: relatedEventSenderName,
+        relatedEventSenderColor: relatedEventSenderColor,
+        setInputText: state.setMessageInputText.stream,
+        availibleEmoticons: state.emoticons?.availableEmoji,
+        availibleStickers: state.emoticons?.availableStickers,
+        sendSticker: state.sendSticker,
+        sendGif: state.sendGif,
+        editLastMessage: state.editLastMessage,
+        hintText: state.room.permissions.canSendMessage
+            ? state.room.isE2EE
+                ? sendEncryptedMessagePrompt
+                : sendUnencryptedMessagePrompt
+            : cantSentMessagePrompt,
+        cancelReply: () {
+          state.setInteractingEvent(null);
+        },
+        readIndicator: ReadIndicator(
+          key: ValueKey("room_read_indicator_key_${state.room.identifier}"),
+          room: state.room,
+          initialList: state.room.timeline?.receipts,
+        ),
+        processAutofill: (text) => AutofillUtils.search(text, state.room),
       ),
-      processAutofill: (text) => AutofillUtils.search(text, state.room),
     );
   }
 }

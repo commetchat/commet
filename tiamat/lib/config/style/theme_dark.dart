@@ -26,8 +26,8 @@ class ThemeDark {
       fontFamily: "RobotoCustom",
       fontFamilyFallback: ThemeCommon.fontFamilyFallback(),
       useMaterial3: true,
-      extensions: const <ThemeExtension<dynamic>>[
-        ThemeSettings(frosted: false),
+      extensions: [
+        ThemeSettings(),
       ],
       colorScheme: ColorScheme.fromSeed(
           seedColor: const Color.fromARGB(255, 106, 141, 255),

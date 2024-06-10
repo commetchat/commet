@@ -168,7 +168,10 @@ class _MatrixRoomPermissionsViewState extends State<MatrixRoomPermissionsView> {
                           if (item.icon != null)
                             Padding(
                               padding: const EdgeInsets.fromLTRB(0, 0, 12, 0),
-                              child: Icon(item.icon),
+                              child: Icon(
+                                item.icon,
+                                color: Theme.of(context).colorScheme.tertiary,
+                              ),
                             ),
                           Flexible(
                             child: Column(

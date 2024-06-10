@@ -1,8 +1,13 @@
 import 'dart:async';
 
 import 'package:commet/config/build_config.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tiamat/config/style/theme_amoled.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:tiamat/config/style/theme_dark.dart';
+import 'package:tiamat/config/style/theme_light.dart';
+import 'package:tiamat/config/style/theme_you.dart';
 
 enum AppTheme { light, dark, amoled }
 
@@ -11,6 +16,7 @@ class Preferences {
 
   static const String registeredMatrixClients = "registered_matrix_clients";
   static const String _shouldFollowSystemTheme = "should_follow_system_theme";
+  static const String _shouldFollowSystemColors = "should_follow_system_colors";
   static const String themeKey = "app_theme";
   static const String appScaleKey = "app_scale";
   static const String _minimizeOnCloseKey = "minimize_on_close";
@@ -82,12 +88,51 @@ class Preferences {
   bool get shouldFollowSystemTheme =>
       _preferences!.getBool(_shouldFollowSystemTheme) ?? false;
 
-  void setShouldFollowSystemTheme(bool value) {
+  void setShouldFollowSystemBrightness(bool value) {
     _preferences!.setBool(_shouldFollowSystemTheme, value);
   }
 
+  bool get shouldFollowSystemColors =>
+      _preferences!.getBool(_shouldFollowSystemColors) ?? false;
+
+  void setShouldFollowSystemColors(bool value) {
+    _preferences!.setBool(_shouldFollowSystemColors, value);
+  }
+
   void setTheme(AppTheme theme) {
+    if (theme == AppTheme.amoled) {
+      setShouldFollowSystemColors(false);
+    }
     _preferences!.setString(themeKey, theme.name);
+  }
+
+  Future<ThemeData> resolveTheme({Brightness? overrideBrightness}) async {
+    if (overrideBrightness == null && shouldFollowSystemTheme) {
+      overrideBrightness =
+          WidgetsBinding.instance.platformDispatcher.platformBrightness;
+    }
+
+    if (overrideBrightness != null && shouldFollowSystemColors) {
+      return ThemeYou.theme(overrideBrightness);
+    }
+
+    if (overrideBrightness == Brightness.dark) {
+      return switch (theme) {
+        AppTheme.dark => ThemeDark.theme,
+        AppTheme.amoled => ThemeAmoled.theme,
+        _ => ThemeDark.theme,
+      };
+    }
+
+    if (overrideBrightness == Brightness.light) {
+      return ThemeLight.theme;
+    }
+
+    return switch (theme) {
+      AppTheme.light => ThemeLight.theme,
+      AppTheme.dark => ThemeDark.theme,
+      AppTheme.amoled => ThemeAmoled.theme,
+    };
   }
 
   AppTheme get theme => _getTheme();
