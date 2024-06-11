@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:commet/config/preferences.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/settings/categories/app/general_settings_page.dart';
+import 'package:commet/ui/pages/settings/categories/app/theme_settings/theme_settings_widget.dart';
 import 'package:commet/utils/common_strings.dart';
 import 'package:commet/utils/scaled_app.dart';
 import 'package:flutter/foundation.dart';
@@ -28,15 +29,6 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
   String get labelSettingsAppTheme => Intl.message("Theme",
       name: "labelSettingsAppTheme",
       desc: "Label for theme section of app appearance");
-
-  String get labelThemeDark => Intl.message("Dark Theme",
-      name: "labelThemeDark", desc: "Label for the dark theme");
-
-  String get labelThemeLight => Intl.message("Light Theme",
-      name: "labelThemeLight", desc: "Label for the light theme");
-
-  String get labelThemeAmoled => Intl.message("Amoled",
-      name: "labelThemeAmoled", desc: "Label for the light theme");
 
   String get labelAppScale => Intl.message("App Scale",
       name: 'labelAppScale',
@@ -69,32 +61,7 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
           header: labelSettingsAppTheme,
           mode: TileType.surfaceContainerLow,
           child: Column(children: [
-            TextButton(labelThemeLight, onTap: () async {
-              preferences.setTheme(AppTheme.light);
-              var theme = await preferences.resolveTheme(
-                  overrideBrightness: Brightness.light);
-              ThemeChanger.setTheme(context, theme);
-            }),
-            TextButton(labelThemeDark, onTap: () async {
-              preferences.setTheme(AppTheme.dark);
-              var theme = await preferences.resolveTheme(
-                  overrideBrightness: Brightness.dark);
-              ThemeChanger.setTheme(context, theme);
-            }),
-            TextButton(labelThemeAmoled, onTap: () async {
-              setState(() {
-                preferences.setTheme(AppTheme.amoled);
-              });
-
-              var theme = await preferences.resolveTheme(
-                  overrideBrightness: Brightness.dark);
-              ThemeChanger.setTheme(context, theme);
-            }),
-            TextButton("Load from file", onTap: () async {
-              var dir = await getApplicationSupportDirectory();
-              var file = path.join(dir.path, "theme", "custom", "theme.json");
-              ThemeChanger.setThemeFromFile(context, File(file));
-            }),
+            ThemeListWidget(),
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
               child: GeneralSettingsPageState.settingToggle(

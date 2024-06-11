@@ -111,7 +111,9 @@ class ThemeChangerState extends State<ThemeChanger>
 
   onThemeFileChanged(FileSystemEvent event) {
     print("Received file event: $event");
-    _setThemeFromFile(File(event.path));
+    if (event.path == themeFile?.path) {
+      _setThemeFromFile(File(event.path));
+    }
   }
 
   void _setThemeFromFile(File file) async {
