@@ -1,1 +1,350 @@
-{}
+{
+  "labelRoomsList": "ルーム",
+  "@labelRoomsList": {
+    "description": "Header label for the list of rooms",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messagePlaceholderSticker": "{user}がステッカーを送信しました",
+  "@messagePlaceholderSticker": {
+    "description": "Message body for when a user sends a sticker",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messagePlaceholderUserCreatedRoom": "{user}がルームを作成しました!",
+  "@messagePlaceholderUserCreatedRoom": {
+    "description": "Message body for when a user created the room",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messagePlaceholderUserJoinedRoom": "{user}がルームに参加しました!",
+  "@messagePlaceholderUserJoinedRoom": {
+    "description": "Message body for when a user joins the room",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messagePlaceholderUserLeftRoom": "{user}がルームから退出しました",
+  "@messagePlaceholderUserLeftRoom": {
+    "description": "Message body for when a user leaves the room",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messagePlaceholderUserUpdatedAvatar": "{user}がアバターを変更しました",
+  "@messagePlaceholderUserUpdatedAvatar": {
+    "description": "Message body for when a user updates their avatar",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messagePlaceholderUserUpdatedName": "{user}が名前を変更しました",
+  "@messagePlaceholderUserUpdatedName": {
+    "description": "Message body for when a user updates their display name",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messagePlaceholderUserInvited": "{sender}が{invitedUser}を招待しました",
+  "@messagePlaceholderUserInvited": {
+    "description": "Message body for when a user invites another user to the room",
+    "type": "text",
+    "placeholders": {
+      "sender": {},
+      "invitedUser": {}
+    }
+  },
+  "messagePlaceholderUserRejectedInvite": "{user}が招待を拒否しました",
+  "@messagePlaceholderUserRejectedInvite": {
+    "description": "Message body for when a user rejected an invitation to a room",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "labelHomeInvitationBody": "ルームに招待されました",
+  "@labelHomeInvitationBody": {
+    "description": "Displays a short description explaining that an invitation to a room was received. Does not need to contain the name of the room or inviter",
+    "type": "text",
+    "placeholders": {}
+  },
+  "typingUsers": "{howMany,plural, =1{{user1}が入力中...}=2{{user1}と{user2}が入力中...}few{{user1}と{user2}と{user3}が入力中...}other{複数の人が入力中...}}",
+  "@typingUsers": {
+    "description": "Text to display which users are currently typing",
+    "type": "text",
+    "placeholders": {
+      "howMany": {},
+      "user1": {},
+      "user2": {},
+      "user3": {}
+    }
+  },
+  "sendEncryptedMessagePrompt": "暗号化されたメッセージの送信",
+  "@sendEncryptedMessagePrompt": {
+    "description": "Placeholder text for message input in an encrypted room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "sendUnencryptedMessagePrompt": "メッセージを送信",
+  "@sendUnencryptedMessagePrompt": {
+    "description": "Placeholder text for message input in an unencrypted room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelChatPageFileTooLarge": "ファイルが大きすぎてアップロードできません!",
+  "@labelChatPageFileTooLarge": {
+    "description": "Text that is shown when the user attempts to upload a file that is greater than the allowed size",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelChatPageFileTooLargeTitle": "最大ファイルサイズを超えました",
+  "@labelChatPageFileTooLargeTitle": {
+    "description": "Title for the dialog that is shown when the user attempts to upload a file that is greater than the allowed size",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelHomeRecentActivity": "最近のアクティビティ",
+  "@labelHomeRecentActivity": {
+    "description": "Short label for header of recent room activity",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelHomeAlerts": "アラート",
+  "@labelHomeAlerts": {
+    "description": "Short label for header of alerts",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelHomeRoomsList": "ルーム",
+  "@labelHomeRoomsList": {
+    "description": "Short label for header of rooms list",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelHomeInvitations": "招待リスト",
+  "@labelHomeInvitations": {
+    "description": "Short label for header of invitations list",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptAddSpace": "スペースを追加",
+  "@promptAddSpace": {
+    "description": "Prompt to add a new space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "tooltipSpaceSettings": "スペースの設定",
+  "@tooltipSpaceSettings": {
+    "description": "Tooltip for the button that opens space settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "tooltipAddRoom": "ルームを追加",
+  "@tooltipAddRoom": {
+    "description": "Tooltip for the button that adds a new room to a space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceRoomsList": "ルーム",
+  "@labelSpaceRoomsList": {
+    "description": "Header label for the list of rooms in a space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceAvailableRoomsList": "参加可能なルーム",
+  "@labelSpaceAvailableRoomsList": {
+    "description": "Header label for the list of rooms in a space, which the user has not yet joined but are available",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceVisibilityPublic": "公開スペース",
+  "@labelSpaceVisibilityPublic": {
+    "description": "Label to display that the space is publically available",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceVisibilityPrivate": "プライベートスペース",
+  "@labelSpaceVisibilityPrivate": {
+    "description": "Label to display that the space is private",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptOpenDirectMessage": "メッセージ",
+  "@promptOpenDirectMessage": {
+    "description": "Prompt on the button to open a direct message with another user",
+    "type": "text",
+    "placeholders": {}
+  },
+  "directMessagesListHeaderMobile": "ダイレクトメッセージ",
+  "@directMessagesListHeaderMobile": {
+    "description": "The header for the direct messages list on desktop",
+    "type": "text",
+    "placeholders": {}
+  },
+  "directMessagesListHeaderDesktop": "ダイレクトメッセージ",
+  "@directMessagesListHeaderDesktop": {
+    "description": "The header for the direct messages list on desktop",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceGettingText": "# {spaceName}\n\nへようこそ",
+  "@labelSpaceGettingText": {
+    "description": "Greeting to the space, supports markdown formatting",
+    "type": "text",
+    "placeholders": {
+      "spaceName": {}
+    }
+  },
+  "unifiedPushExplainer": "# Unified Push\nこのバージョンの CommetはGoogle Play Servicesなしで設計されています。 プッシュ通知を受信するには、 [Unified Push](https://unifiedpush.org/)を使用する必要があります。 \n\nすでにUnified Push対応ディストリビューターアプリがインストールされている場合は、以下で設定できます。\n",
+  "@unifiedPushExplainer": {
+    "description": "Explains the need for unified push. Supports markdown",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelEnableUnifiedPush": "Unified Pushを有効化",
+  "@labelEnableUnifiedPush": {
+    "description": "Label for the toggle to enable Unified Push",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelEnableUnifiedPushEndpoint": "エンドポイント",
+  "@labelEnableUnifiedPushEndpoint": {
+    "description": "Label for the Unified Push endpoint",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelUnifiedPushNoEndpointFound": "エンドポイントが見つかりません、問題が発生しました:(",
+  "@labelUnifiedPushNoEndpointFound": {
+    "description": "Message for when a unified push endpoint could not be registered",
+    "type": "text",
+    "placeholders": {}
+  },
+  "setupPageBeforeYouBegin": "始める前に…",
+  "@setupPageBeforeYouBegin": {
+    "description": "Title for first time setup page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceSettingsGeneral": "一般",
+  "@labelSpaceSettingsGeneral": {
+    "description": "Label for general space settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceAppearanceSettings": "外観",
+  "@labelSpaceAppearanceSettings": {
+    "description": "Label for space appearance settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceEmoticonSettings": "絵文字",
+  "@labelSpaceEmoticonSettings": {
+    "description": "Label for space emoticon settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpacePermissionSettings": "権限",
+  "@labelSpacePermissionSettings": {
+    "description": "Label for space permission settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceDeveloperSettings": "高度な設定",
+  "@labelSpaceDeveloperSettings": {
+    "description": "Label for space developer settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsCategorySpace": "スペース設定",
+  "@labelSettingsCategorySpace": {
+    "description": "Label for the overall space settings category",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsAppLogs": "ログ",
+  "@labelSettingsAppLogs": {
+    "description": "Label for the logs settings page, usually hidden unless developer mode is turned on",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelPushRuleNotifyAll": "すべてのメッセージ",
+  "@labelPushRuleNotifyAll": {
+    "description": "Label for the push rule which notifies for all received messages",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsNotifications": "通知",
+  "@labelRoomSettingsNotifications": {
+    "description": "Label for the notifications section in room settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptEnableEncryptionRoomSettings": "暗号化を有効化",
+  "@promptEnableEncryptionRoomSettings": {
+    "description": "Short prompt to enable encryption for a room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "errorMessageFailedToSend": "送信に失敗しました",
+  "@errorMessageFailedToSend": {
+    "description": "Text that is placed below a message when the message fails to send",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelJumpToLatest": "最新のメッセージを表示",
+  "@labelJumpToLatest": {
+    "description": "Label for the button which jumps the room timeline view to the latest message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelEmojiPickerStickerTab": "ステッカー",
+  "@labelEmojiPickerStickerTab": {
+    "description": "Label for the sticker tab in the emoji picker",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageEditedMarker": "(編集済み)",
+  "@messageEditedMarker": {
+    "description": "Short text to mark that a message has been edited",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelEmojiPickerEmojiTab": "絵文字",
+  "@labelEmojiPickerEmojiTab": {
+    "description": "Label for the emoji tab in emoji picker",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelEmojiPickerGifTab": "Gif",
+  "@labelEmojiPickerGifTab": {
+    "description": "Label for the gif search tab in the emoji picker",
+    "type": "text",
+    "placeholders": {}
+  },
+  "cantSentMessagePrompt": "このルームにメッセージを送信する権限がありません",
+  "@cantSentMessagePrompt": {
+    "description": "Text that explains the user cannot send a message in this room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelPushRuleMentionsAndKeywords": "メンションとキーワード",
+  "@labelPushRuleMentionsAndKeywords": {
+    "description": "Label for the push rule which notifies only for keywords and mentions",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelPushRuleNone": "ミュート",
+  "@labelPushRuleNone": {
+    "description": "Label for the push rule which sends no notifications",
+    "type": "text",
+    "placeholders": {}
+  }
+}
