@@ -257,13 +257,13 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelSpaceDeveloperSettings": "高度な設定",
+  "labelSpaceDeveloperSettings": "開発者",
   "@labelSpaceDeveloperSettings": {
     "description": "Label for space developer settings",
     "type": "text",
     "placeholders": {}
   },
-  "labelSettingsCategorySpace": "スペース設定",
+  "labelSettingsCategorySpace": "スペースの設定",
   "@labelSettingsCategorySpace": {
     "description": "Label for the overall space settings category",
     "type": "text",
@@ -344,6 +344,163 @@
   "labelPushRuleNone": "ミュート",
   "@labelPushRuleNone": {
     "description": "Label for the push rule which sends no notifications",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageUserEmote": "*{user} {emote}",
+  "@messageUserEmote": {
+    "description": "Message to display when a user does a custom emote (/me)",
+    "type": "text",
+    "placeholders": {
+      "user": {},
+      "emote": {}
+    }
+  },
+  "encryptionCannotBeDisabledExplanationRoomSettings": "一度暗号化を有効にすると、暗号化を無効にすることはできません",
+  "@encryptionCannotBeDisabledExplanationRoomSettings": {
+    "description": "Explains that encryption cannot be disabled once enabled",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptCreateEmoticonPack": "パックを作成",
+  "@promptCreateEmoticonPack": {
+    "description": "Prompt to create a new emoticon pack, for emoji or stickers",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmDeleteEmoticonPack": "**{packName}**を削除してもよろしいですか?",
+  "@promptConfirmDeleteEmoticonPack": {
+    "description": "Prompt to confirm deletion of an emoticon pack, supports markdown to emphasise the pack name",
+    "type": "text",
+    "placeholders": {
+      "packName": {}
+    }
+  },
+  "createEmoticonDialogTitle": "絵文字を作成",
+  "@createEmoticonDialogTitle": {
+    "description": "Title of a dialog that pops up when choosing to create a new emoticon",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptRenameEmoticon": "絵文字の名前を変更",
+  "@promptRenameEmoticon": {
+    "description": "Tooltip for button to rename emoticon",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptEmoticonPackName": "パックの名前",
+  "@promptEmoticonPackName": {
+    "description": "Prompt for the input of the name of an emoticon pack",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptEmojiName": "絵文字の名前",
+  "@promptEmojiName": {
+    "description": "Prompt for the input of the name of an emoji",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptStickerName": "ステッカーの名前",
+  "@promptStickerName": {
+    "description": "Prompt for the input of a sticker",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmCreateEmoticon": "作成しました!",
+  "@promptConfirmCreateEmoticon": {
+    "description": "Prompt to confirm the creation of an Emoticon Pack, Emoji, or Sticker",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsGeneral": "一般",
+  "@labelRoomSettingsGeneral": {
+    "description": "Label for general room settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsAppearance": "外観",
+  "@labelRoomSettingsAppearance": {
+    "description": "Label for room appearance settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsSecurity": "セキュリティー",
+  "@labelRoomSettingsSecurity": {
+    "description": "Label for room security settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsEmoticons": "絵文字",
+  "@labelRoomSettingsEmoticons": {
+    "description": "Label for room Emoticon settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmDeleteEmoticon": "**{emoticon}**を削除してもよろしいですか?",
+  "@promptConfirmDeleteEmoticon": {
+    "description": "Prompt to confirm deletion of an emoticon pack, supports markdown to emphasise the emote name",
+    "type": "text",
+    "placeholders": {
+      "emoticon": {}
+    }
+  },
+  "labelRoomSettingsDeveloper": "開発者",
+  "@labelRoomSettingsDeveloper": {
+    "description": "Label for room developer settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsCategory": "ルームの設定",
+  "@labelRoomSettingsCategory": {
+    "description": "Label for the overall settings category of a room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsPermissions": "権限",
+  "@labelRoomSettingsPermissions": {
+    "description": "Label for room permission settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomDeleteMessagesTitle": "メッセージを削除",
+  "@labelMatrixPermissionsRoomDeleteMessagesTitle": {
+    "description": "Title for permission to delete messages",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomSendMessagesTitle": "メッセージを送る",
+  "@labelMatrixPermissionsRoomSendMessagesTitle": {
+    "description": "Title for the permission to send messages",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomAddReactionsTitle": "リアクションを追加",
+  "@labelMatrixPermissionsRoomAddReactionsTitle": {
+    "description": "Title for the permission to add an emoji reaction to a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoleAdmin": "管理者",
+  "@labelMatrixPermissionsRoleAdmin": {
+    "description": "Label for the room administrator role",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoleMember": "ルームメンバー",
+  "@labelMatrixPermissionsRoleMember": {
+    "description": "Label for the room member role",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoleModerator": "モデレーター",
+  "@labelMatrixPermissionsRoleModerator": {
+    "description": "Label for the room moderator role",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomAddReactionsDescription": "メッセージにリアクションを追加する",
+  "@labelMatrixPermissionsRoomAddReactionsDescription": {
+    "description": "describes the permission to add an emoji reaction to a message",
     "type": "text",
     "placeholders": {}
   }
