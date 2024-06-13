@@ -8,7 +8,7 @@ import 'dart:io' show Platform;
 
 class ThemeAmoledColors {
   static const Color surfaceHigh1 = Color.fromARGB(255, 30, 30, 30);
-  static const Color secondary = Color.fromARGB(255, 150, 150, 150);
+  static const Color secondary = Color.fromARGB(255, 200, 200, 200);
   static const Color primary = Color.fromARGB(255, 106, 141, 255);
   static const Color surface = Colors.black;
   static const Color surfaceLow1 = Color.fromARGB(255, 10, 10, 10);
@@ -26,10 +26,11 @@ class ThemeAmoled {
       fontFamily: "RobotoCustom",
       fontFamilyFallback: ThemeCommon.fontFamilyFallback(),
       useMaterial3: true,
-      extensions: [ThemeSettings()],
-      colorScheme: ColorScheme(
+      extensions: [ThemeSettings(caulkBorders: true, caulkStrokeThickness: 1)],
+      colorScheme: const ColorScheme(
           primary: Color.fromARGB(255, 113, 146, 255),
           secondary: ThemeAmoledColors.secondary,
+          secondaryContainer: Color.fromARGB(255, 40, 40, 40),
           surface: ThemeAmoledColors.surface,
           background: ThemeAmoledColors.surfaceLow4,
           error: Color.fromARGB(255, 255, 124, 124),
@@ -38,6 +39,7 @@ class ThemeAmoled {
           onSurface: Colors.white,
           onBackground: Colors.black,
           onError: Colors.white,
+          tertiaryContainer: Colors.black,
           brightness: Brightness.dark,
           outline: ThemeAmoledColors.surfaceHigh1),
       listTileTheme: const ListTileThemeData(
