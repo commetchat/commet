@@ -148,8 +148,6 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
       children: [
         Tile(
           caulkPadRight: true,
-          caulkPadTop: true,
-          caulkPadBottom: true,
           caulkClipTopRight: true,
           caulkClipBottomRight: true,
           mode: TileType.surfaceDim,
@@ -254,8 +252,6 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
     if (widget.state.currentRoom != null) {
       return Tile.low1(
         caulkPadLeft: true,
-        caulkPadTop: true,
-        caulkPadBottom: true,
         caulkClipTopLeft: true,
         caulkClipBottomLeft: true,
         caulkBorderLeft: true,
@@ -279,8 +275,6 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
   Widget directMessagesView() {
     return Flexible(
       child: Tile.low1(
-        caulkPadTop: true,
-        caulkPadBottom: true,
         caulkClipTopLeft: true,
         caulkClipBottomLeft: true,
         caulkPadRight: true,
@@ -318,8 +312,6 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
   Widget spaceRoomSelector(BuildContext newContext) {
     return Flexible(
       child: Tile.low1(
-        caulkPadTop: true,
-        caulkPadBottom: true,
         caulkClipTopLeft: true,
         caulkClipBottomLeft: true,
         caulkPadRight: true,

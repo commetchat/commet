@@ -26,8 +26,11 @@ class ThemeDark {
       fontFamily: "RobotoCustom",
       fontFamilyFallback: ThemeCommon.fontFamilyFallback(),
       useMaterial3: true,
-      extensions: [
-        ThemeSettings(),
+      extensions: const [
+        ThemeSettings(caulkBorders: true, caulkBorderRadius: 1),
+        ExtraColors(
+            codeHighlight: Color(0xffc678dd),
+            linkColor: Color.fromARGB(255, 120, 120, 255))
       ],
       colorScheme: ColorScheme.fromSeed(
           seedColor: const Color.fromARGB(255, 106, 141, 255),
@@ -44,6 +47,9 @@ class ThemeDark {
           onSecondary: ThemeDarkColors.onSurface,
           onSurface: Colors.white,
           brightness: Brightness.dark,
+          tertiaryContainer: ThemeDarkColors.surface,
+          onTertiaryContainer: Colors.white,
+          tertiary: Colors.white,
           outline: ThemeDarkColors.surfaceContainerHigh),
       listTileTheme: const ListTileThemeData(
         tileColor: ThemeDarkColors.surface,

@@ -120,7 +120,7 @@ class ThemeChangerState extends State<ThemeChanger>
     var data = await file.readAsString();
     var json = const JsonDecoder().convert(data);
 
-    var theme = ThemeJsonConverter.fromJson(json, file);
+    var theme = await ThemeJsonConverter.fromJson(json, file);
     if (theme != null) {
       setTheme(theme);
     }

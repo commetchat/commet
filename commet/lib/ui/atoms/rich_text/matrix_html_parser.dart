@@ -262,11 +262,14 @@ class CodeBlockHtmlExtension extends HtmlExtension {
 class CodeHtmlExtension extends HtmlExtension {
   @override
   InlineSpan build(ExtensionContext context) {
+    var color = Theme.of(context.buildContext!)
+            .extension<ExtraColors>()
+            ?.codeHighlight ??
+        Theme.of(context.buildContext!).primaryColor;
+
     return TextSpan(
         text: context.node.text,
-        style: TextStyle(
-            fontFamily: "Code",
-            color: Theme.of(context.buildContext!).colorScheme.primary));
+        style: TextStyle(fontFamily: "Code", color: color));
   }
 
   static const Set<String> tags = {"code"};

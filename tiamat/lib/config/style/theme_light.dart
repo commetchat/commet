@@ -29,13 +29,19 @@ class ThemeLight {
       brightness: Brightness.light,
       useMaterial3: true,
       fontFamily: "RobotoCustom",
-      extensions: [ThemeSettings()],
+      extensions: const [
+        ThemeSettings(),
+        ExtraColors(
+            codeHighlight: Color(0xffc678dd),
+            linkColor: Color.fromARGB(255, 80, 80, 255))
+      ],
       fontFamilyFallback: ThemeCommon.fontFamilyFallback(),
       colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.white,
           brightness: Brightness.light,
           primaryContainer: ThemeLightColors.primary,
           onPrimaryContainer: Colors.white,
+          outline: Colors.white,
           primary: ThemeLightColors.primary),
       shadowColor: Colors.black.withAlpha(100),
       sliderTheme: SliderThemeData(

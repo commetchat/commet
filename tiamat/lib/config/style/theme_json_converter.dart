@@ -5,12 +5,15 @@ import 'package:tiamat/config/config.dart';
 import 'package:path/path.dart' as path;
 
 class ThemeJsonConverter {
-  static ThemeData? fromJson(Map<String, dynamic> json, File? file) {
+  static Future<ThemeData?> fromJson(
+      Map<String, dynamic> json, File? file) async {
     var base = json.tryGet<String>("base");
 
     var defaultTheme = switch (base) {
       "dark" => ThemeDark.theme,
       "light" => ThemeLight.theme,
+      "you_light" => await ThemeYou.theme(Brightness.light),
+      "you_dark" => await ThemeYou.theme(Brightness.dark),
       _ => ThemeDark.theme,
     };
 
@@ -74,61 +77,69 @@ class ThemeJsonConverter {
       }
 
       colorScheme = ColorScheme.fromSeed(
-        seedColor: seedColor,
-        brightness: defaultTheme.brightness,
-        dynamicSchemeVariant: variant,
-        primary: schemeData?.tryGetColor("primary"),
-        onPrimary: schemeData?.tryGetColor("onPrimary"),
-        primaryContainer: schemeData?.tryGetColor("primaryContainer"),
-        onPrimaryContainer: schemeData?.tryGetColor("onPrimaryContainer"),
-        primaryFixed: schemeData?.tryGetColor("primaryFixed"),
-        primaryFixedDim: schemeData?.tryGetColor("primaryFixedDim"),
-        onPrimaryFixed: schemeData?.tryGetColor("onPrimaryFixed"),
-        onPrimaryFixedVariant: schemeData?.tryGetColor("onPrimaryFixedVariant"),
-        secondary: schemeData?.tryGetColor("secondary"),
-        onSecondary: schemeData?.tryGetColor("onSecondary"),
-        secondaryContainer: schemeData?.tryGetColor("secondaryContainer"),
-        onSecondaryContainer: schemeData?.tryGetColor("onSecondaryContainer"),
-        secondaryFixed: schemeData?.tryGetColor("secondaryFixed"),
-        secondaryFixedDim: schemeData?.tryGetColor("secondaryFixedDim"),
-        onSecondaryFixed: schemeData?.tryGetColor("onSecondaryFixed"),
-        onSecondaryFixedVariant:
-            schemeData?.tryGetColor("onSecondaryFixedVariant"),
-        tertiary: schemeData?.tryGetColor("tertiary"),
-        onTertiary: schemeData?.tryGetColor("onTertiary"),
-        tertiaryContainer: schemeData?.tryGetColor("tertiaryContainer"),
-        onTertiaryContainer: schemeData?.tryGetColor("onTertiaryContainer"),
-        tertiaryFixed: schemeData?.tryGetColor("tertiaryFixed"),
-        tertiaryFixedDim: schemeData?.tryGetColor("tertiaryFixedDim"),
-        onTertiaryFixed: schemeData?.tryGetColor("onTertiaryFixed"),
-        onTertiaryFixedVariant:
-            schemeData?.tryGetColor("onTertiaryFixedVariant"),
-        error: schemeData?.tryGetColor("error"),
-        onError: schemeData?.tryGetColor("onError"),
-        errorContainer: schemeData?.tryGetColor("errorContainer"),
-        onErrorContainer: schemeData?.tryGetColor("onErrorContainer"),
-        outline: schemeData?.tryGetColor("outline"),
-        outlineVariant: schemeData?.tryGetColor("outlineVariant"),
-        surface: schemeData?.tryGetColor("surface"),
-        onSurface: schemeData?.tryGetColor("onSurface"),
-        surfaceDim: schemeData?.tryGetColor("surfaceDim"),
-        surfaceBright: schemeData?.tryGetColor("surfaceBright"),
-        surfaceContainerLowest:
-            schemeData?.tryGetColor("surfaceContainerLowest"),
-        surfaceContainerLow: schemeData?.tryGetColor("surfaceContainerLow"),
-        surfaceContainer: schemeData?.tryGetColor("surfaceContainer"),
-        surfaceContainerHigh: schemeData?.tryGetColor("surfaceContainerHigh"),
-        surfaceContainerHighest:
-            schemeData?.tryGetColor("surfaceContainerHighest"),
-        onSurfaceVariant: schemeData?.tryGetColor("onSurfaceVariant"),
-        inverseSurface: schemeData?.tryGetColor("inverseSurface"),
-        onInverseSurface: schemeData?.tryGetColor("onInverseSurface"),
-        inversePrimary: schemeData?.tryGetColor("inversePrimary"),
-        shadow: schemeData?.tryGetColor("shadow"),
-        scrim: schemeData?.tryGetColor("scrim"),
-        surfaceTint: schemeData?.tryGetColor("surfaceTint"),
-      );
+          seedColor: seedColor,
+          brightness: defaultTheme.brightness,
+          dynamicSchemeVariant: variant);
     }
+
+    colorScheme = colorScheme.copyWith(
+      primary: schemeData?.tryGetColor("primary"),
+      onPrimary: schemeData?.tryGetColor("onPrimary"),
+      primaryContainer: schemeData?.tryGetColor("primaryContainer"),
+      onPrimaryContainer: schemeData?.tryGetColor("onPrimaryContainer"),
+      primaryFixed: schemeData?.tryGetColor("primaryFixed"),
+      primaryFixedDim: schemeData?.tryGetColor("primaryFixedDim"),
+      onPrimaryFixed: schemeData?.tryGetColor("onPrimaryFixed"),
+      onPrimaryFixedVariant: schemeData?.tryGetColor("onPrimaryFixedVariant"),
+      secondary: schemeData?.tryGetColor("secondary"),
+      onSecondary: schemeData?.tryGetColor("onSecondary"),
+      secondaryContainer: schemeData?.tryGetColor("secondaryContainer"),
+      onSecondaryContainer: schemeData?.tryGetColor("onSecondaryContainer"),
+      secondaryFixed: schemeData?.tryGetColor("secondaryFixed"),
+      secondaryFixedDim: schemeData?.tryGetColor("secondaryFixedDim"),
+      onSecondaryFixed: schemeData?.tryGetColor("onSecondaryFixed"),
+      onSecondaryFixedVariant:
+          schemeData?.tryGetColor("onSecondaryFixedVariant"),
+      tertiary: schemeData?.tryGetColor("tertiary"),
+      onTertiary: schemeData?.tryGetColor("onTertiary"),
+      tertiaryContainer: schemeData?.tryGetColor("tertiaryContainer"),
+      onTertiaryContainer: schemeData?.tryGetColor("onTertiaryContainer"),
+      tertiaryFixed: schemeData?.tryGetColor("tertiaryFixed"),
+      tertiaryFixedDim: schemeData?.tryGetColor("tertiaryFixedDim"),
+      onTertiaryFixed: schemeData?.tryGetColor("onTertiaryFixed"),
+      onTertiaryFixedVariant: schemeData?.tryGetColor("onTertiaryFixedVariant"),
+      error: schemeData?.tryGetColor("error"),
+      onError: schemeData?.tryGetColor("onError"),
+      errorContainer: schemeData?.tryGetColor("errorContainer"),
+      onErrorContainer: schemeData?.tryGetColor("onErrorContainer"),
+      outline: schemeData?.tryGetColor("outline"),
+      outlineVariant: schemeData?.tryGetColor("outlineVariant"),
+      surface: schemeData?.tryGetColor("surface"),
+      onSurface: schemeData?.tryGetColor("onSurface"),
+      surfaceDim: schemeData?.tryGetColor("surfaceDim"),
+      surfaceBright: schemeData?.tryGetColor("surfaceBright"),
+      surfaceContainerLowest: schemeData?.tryGetColor("surfaceContainerLowest"),
+      surfaceContainerLow: schemeData?.tryGetColor("surfaceContainerLow"),
+      surfaceContainer: schemeData?.tryGetColor("surfaceContainer"),
+      surfaceContainerHigh: schemeData?.tryGetColor("surfaceContainerHigh"),
+      surfaceContainerHighest:
+          schemeData?.tryGetColor("surfaceContainerHighest"),
+      onSurfaceVariant: schemeData?.tryGetColor("onSurfaceVariant"),
+      inverseSurface: schemeData?.tryGetColor("inverseSurface"),
+      onInverseSurface: schemeData?.tryGetColor("onInverseSurface"),
+      inversePrimary: schemeData?.tryGetColor("inversePrimary"),
+      shadow: schemeData?.tryGetColor("shadow"),
+      scrim: schemeData?.tryGetColor("scrim"),
+      surfaceTint: schemeData?.tryGetColor("surfaceTint"),
+    );
+
+    var extraColors = defaultTheme.extension<ExtraColors>();
+
+    var codeHighlight = schemeData?.tryGetColor("codeHighlight");
+    var linkColor = schemeData?.tryGetColor("links");
+
+    extraColors = extraColors?.copyWith(
+        codeHighlight: codeHighlight, linkColor: linkColor) as ExtraColors;
 
     FoundationSettings foundation =
         loadFoundation(defaultTheme, colorScheme, json, file);
@@ -140,6 +151,7 @@ class ThemeJsonConverter {
       if (glass != null) glass,
       foundation,
       if (shadows != null) shadows,
+      extraColors
     ]);
 
     return data;

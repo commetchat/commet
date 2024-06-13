@@ -109,7 +109,7 @@ class Preferences {
     if (custom != null) {
       var jsonString = await custom.readAsString();
       var json = const JsonDecoder().convert(jsonString);
-      var themedata = ThemeJsonConverter.fromJson(json, custom);
+      var themedata = await ThemeJsonConverter.fromJson(json, custom);
       if (themedata != null) {
         return themedata;
       }

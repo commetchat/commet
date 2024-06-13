@@ -24,7 +24,10 @@ class ThemeYou {
         brightness: brightness,
         useMaterial3: true,
         fontFamily: "RobotoCustom",
-        extensions: [ThemeSettings()],
+        extensions: [
+          ThemeSettings(),
+          if (scheme != null) ExtraColors.fromScheme(scheme)
+        ],
         fontFamilyFallback: ThemeCommon.fontFamilyFallback(),
         colorScheme: scheme,
         shadowColor: Colors.black.withAlpha(100),

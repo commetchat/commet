@@ -9,7 +9,7 @@ import 'dart:io' show Platform;
 class ThemeAmoledColors {
   static const Color surfaceHigh1 = Color.fromARGB(255, 30, 30, 30);
   static const Color secondary = Color.fromARGB(255, 200, 200, 200);
-  static const Color primary = Color.fromARGB(255, 106, 141, 255);
+  static const Color primary = Colors.white;
   static const Color surface = Colors.black;
   static const Color surfaceLow1 = Color.fromARGB(255, 10, 10, 10);
   static const Color surfaceLow2 = Color.fromARGB(255, 15, 15, 15);
@@ -26,18 +26,18 @@ class ThemeAmoled {
       fontFamily: "RobotoCustom",
       fontFamilyFallback: ThemeCommon.fontFamilyFallback(),
       useMaterial3: true,
-      extensions: [ThemeSettings(caulkBorders: true, caulkStrokeThickness: 1)],
+      extensions: const [
+        ThemeSettings(caulkBorders: true, caulkStrokeThickness: 1)
+      ],
       colorScheme: const ColorScheme(
-          primary: Color.fromARGB(255, 113, 146, 255),
+          primary: Colors.white,
           secondary: ThemeAmoledColors.secondary,
           secondaryContainer: Color.fromARGB(255, 40, 40, 40),
           surface: ThemeAmoledColors.surface,
-          background: ThemeAmoledColors.surfaceLow4,
           error: Color.fromARGB(255, 255, 124, 124),
           onPrimary: Colors.white,
           onSecondary: ThemeAmoledColors.onSurface,
           onSurface: Colors.white,
-          onBackground: Colors.black,
           onError: Colors.white,
           tertiaryContainer: Colors.black,
           brightness: Brightness.dark,
@@ -51,8 +51,8 @@ class ThemeAmoled {
       elevatedButtonTheme: ElevatedButtonThemeData(
           style: ButtonStyle(
               backgroundColor:
-                  MaterialStatePropertyAll(ThemeAmoledColors.primary),
-              shape: MaterialStatePropertyAll(
+                  WidgetStatePropertyAll(ThemeAmoledColors.primary),
+              shape: WidgetStatePropertyAll(
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ))),
       dividerTheme:
@@ -65,15 +65,15 @@ class ThemeAmoled {
           shadowColor: Colors.black),
       dialogBackgroundColor: ThemeAmoledColors.highlightColor,
       switchTheme: const SwitchThemeData(
-          thumbColor: MaterialStatePropertyAll(ThemeAmoledColors.secondary)),
+          thumbColor: WidgetStatePropertyAll(ThemeAmoledColors.secondary)),
       dividerColor: ThemeAmoledColors.outlineColor,
       textButtonTheme: TextButtonThemeData(
           style: ButtonStyle(
-        overlayColor: const MaterialStatePropertyAll<Color>(Colors.white10),
-        foregroundColor: MaterialStatePropertyAll<Color>(Colors.grey.shade300),
-        shape: MaterialStatePropertyAll<OutlinedBorder>(
+        overlayColor: const WidgetStatePropertyAll<Color>(Colors.white10),
+        foregroundColor: WidgetStatePropertyAll<Color>(Colors.grey.shade300),
+        shape: WidgetStatePropertyAll<OutlinedBorder>(
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-        textStyle: const MaterialStatePropertyAll<TextStyle>(
+        textStyle: const WidgetStatePropertyAll<TextStyle>(
           TextStyle(
             color: Colors.white,
           ),

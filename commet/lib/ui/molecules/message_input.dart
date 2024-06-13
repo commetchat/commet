@@ -371,7 +371,7 @@ class MessageInputState extends State<MessageInput> {
 
   @override
   Widget build(BuildContext context) {
-    var padding = const EdgeInsets.fromLTRB(5, 0, 5, 0);
+    var padding = const EdgeInsets.fromLTRB(0, 0, 0, 0);
 
     return Material(
       color: Colors.transparent,
@@ -535,9 +535,9 @@ class MessageInputState extends State<MessageInput> {
     );
   }
 
-  Padding sendMessageButton() {
+  Widget sendMessageButton() {
     return Padding(
-        padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
+        padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
         child: SizedBox(
             width: widget.size,
             height: widget.size,
@@ -597,7 +597,7 @@ class MessageInputState extends State<MessageInput> {
 
   Padding addAttachmentButton() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
+      padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
       child: SizedBox(
         width: widget.size,
         height: widget.size,
