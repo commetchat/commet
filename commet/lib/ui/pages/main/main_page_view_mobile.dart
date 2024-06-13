@@ -18,6 +18,7 @@ import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/scaled_app.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:tiamat/atoms/foundation.dart';
 import 'package:tiamat/atoms/tile.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -84,17 +85,15 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
               break;
           }
         },
-        child: Tile.low4(
+        child: Foundation(
             child: OverlappingPanels(
           key: panelsKey,
           left: navigation(context),
-          main: Container(
-            child: shouldMainIgnoreInput
-                ? IgnorePointer(
-                    child: Container(key: mainPanelKey, child: mainPanel()),
-                  )
-                : Container(key: mainPanelKey, child: mainPanel()),
-          ),
+          main: Foundation(
+              child: IgnorePointer(
+            ignoring: shouldMainIgnoreInput,
+            child: Container(key: mainPanelKey, child: mainPanel()),
+          )),
           onDragStart: () {},
           onSideChange: (side) {
             setState(() {
@@ -145,14 +144,19 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
   }
 
   Widget navigation(BuildContext newContext) {
-    return Tile(
-      mode: TileType.surfaceDim,
-      child: Row(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
-            child: ScaledSafeArea(
-              bottom: false,
+    return Row(
+      children: [
+        Tile(
+          caulkPadRight: true,
+          caulkPadTop: true,
+          caulkPadBottom: true,
+          caulkClipTopRight: true,
+          caulkClipBottomRight: true,
+          mode: TileType.surfaceDim,
+          child: ScaledSafeArea(
+            bottom: false,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
               child: SideNavigationBar(
                 currentUser: widget.state.getCurrentUser(),
                 onSpaceSelected: (index) {
@@ -168,14 +172,14 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
               ),
             ),
           ),
-          if (widget.state.currentView == MainPageSubView.home)
-            directMessagesView(),
-          if (widget.state.currentView == MainPageSubView.space &&
-              widget.state.currentSpace != null)
-            spaceRoomSelector(newContext),
-          const BackgroundTaskViewContainer()
-        ],
-      ),
+        ),
+        if (widget.state.currentView == MainPageSubView.home)
+          directMessagesView(),
+        if (widget.state.currentView == MainPageSubView.space &&
+            widget.state.currentSpace != null)
+          spaceRoomSelector(newContext),
+        const BackgroundTaskViewContainer()
+      ],
     );
   }
 
@@ -249,6 +253,14 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
   Widget userList() {
     if (widget.state.currentRoom != null) {
       return Tile.low1(
+        caulkPadLeft: true,
+        caulkPadTop: true,
+        caulkPadBottom: true,
+        caulkClipTopLeft: true,
+        caulkClipBottomLeft: true,
+        caulkBorderLeft: true,
+        caulkBorderTop: true,
+        caulkBorderBottom: true,
         child: ScaledSafeArea(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
@@ -267,6 +279,13 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
   Widget directMessagesView() {
     return Flexible(
       child: Tile.low1(
+        caulkPadTop: true,
+        caulkPadBottom: true,
+        caulkClipTopLeft: true,
+        caulkClipBottomLeft: true,
+        caulkPadRight: true,
+        caulkClipTopRight: true,
+        caulkClipBottomRight: true,
         child: ScaledSafeArea(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
@@ -299,6 +318,13 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
   Widget spaceRoomSelector(BuildContext newContext) {
     return Flexible(
       child: Tile.low1(
+        caulkPadTop: true,
+        caulkPadBottom: true,
+        caulkClipTopLeft: true,
+        caulkClipBottomLeft: true,
+        caulkPadRight: true,
+        caulkClipTopRight: true,
+        caulkClipBottomRight: true,
         child: Column(
           children: [
             SpaceHeader(

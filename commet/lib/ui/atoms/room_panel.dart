@@ -192,7 +192,11 @@ class _RoomPanelState extends State<RoomPanel> {
               },
             ),
           ),
-        if (includeSettings) settingsButton(),
+        if (includeSettings)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
+            child: settingsButton(),
+          ),
       ],
     );
   }

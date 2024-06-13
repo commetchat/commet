@@ -76,11 +76,7 @@ void bubble() async {
   Log.prefix = "bubble-$initialRoomId";
 
   var theme = preferences.theme;
-  var initialTheme = {
-    AppTheme.dark: ThemeDark.theme,
-    AppTheme.light: ThemeLight.theme,
-    AppTheme.amoled: ThemeAmoled.theme,
-  }[theme];
+  var initialTheme = await preferences.resolveTheme();
 
   runApp(MaterialApp(
       title: 'Commet',
@@ -227,18 +223,17 @@ Future<void> startGui() async {
   ));
 }
 
-void enableEdgeToEdge() {
+void enableEdgeToEdge() async {
+  var theme = await preferences.resolveTheme();
   SystemChrome.setEnabledSystemUIMode(
       SystemUiMode.edgeToEdge); // Enable Edge-to-Edge on Android 10+
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-    systemNavigationBarColor:
-        Colors.transparent, // Setting a transparent navigation bar color
-    systemNavigationBarContrastEnforced: true, // Default
-    systemNavigationBarIconBrightness:
-        [AppTheme.amoled, AppTheme.dark].contains(preferences.theme)
-            ? Brightness.light
-            : Brightness.dark, // This defines the color of the scrim
-  ));
+      systemNavigationBarColor:
+          Colors.transparent, // Setting a transparent navigation bar color
+      systemNavigationBarContrastEnforced: true, // Default
+      systemNavigationBarIconBrightness: theme.brightness == Brightness.dark
+          ? Brightness.light
+          : Brightness.dark));
 }
 
 class App extends StatelessWidget {

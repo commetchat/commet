@@ -260,3 +260,21 @@ class FoundationSettings extends ThemeExtension<FoundationSettings> {
         color: Color.lerp(color, other.color, t)!);
   }
 }
+
+class ShadowSettings extends ThemeExtension<ShadowSettings> {
+  List<BoxShadow> shadows;
+
+  ShadowSettings(this.shadows);
+
+  @override
+  ThemeExtension<ShadowSettings> copyWith() {
+    throw UnimplementedError();
+  }
+
+  @override
+  ThemeExtension<ShadowSettings> lerp(
+      covariant ThemeExtension<ShadowSettings>? other, double t) {
+    if (other is! ShadowSettings) return this;
+    return other;
+  }
+}

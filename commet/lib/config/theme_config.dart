@@ -24,8 +24,19 @@ class ThemeConfig {
     return List<Directory>.from(directories);
   }
 
-  static Future<File> getFileFromThemeDir(Directory dir) async {
+  static Future<File?> getFileFromThemeDir(Directory dir) async {
     var file = File(path.join(dir.path, "theme.json"));
+    if ((await file.exists()) == false) {
+      return null;
+    }
+
     return file;
+  }
+
+  static Future<File?> getThemeByName(String name) async {
+    var dir = await getCustomThemesDir();
+    var themeDir = Directory(path.join(dir.path, name));
+
+    return getFileFromThemeDir(themeDir);
   }
 }

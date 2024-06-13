@@ -219,10 +219,13 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
           tiamat.Tooltip(
             text: tooltipAddRoom,
             preferredDirection: AxisDirection.left,
-            child: tiamat.CircleButton(
-              radius: BuildConfig.MOBILE ? 24 : 16,
-              icon: Icons.add,
-              onPressed: () => widget.onAddRoomButtonTap?.call(),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
+              child: tiamat.CircleButton(
+                radius: BuildConfig.MOBILE ? 24 : 16,
+                icon: Icons.add,
+                onPressed: () => widget.onAddRoomButtonTap?.call(),
+              ),
             ),
           )
         ],

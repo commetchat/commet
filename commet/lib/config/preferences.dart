@@ -1,15 +1,18 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:commet/config/build_config.dart';
+import 'package:commet/config/theme_config.dart';
+import 'package:commet/main.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tiamat/config/style/theme_amoled.dart';
+import 'package:tiamat/config/style/theme_changer.dart';
+import 'package:tiamat/config/style/theme_json_converter.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:tiamat/config/style/theme_dark.dart';
 import 'package:tiamat/config/style/theme_light.dart';
 import 'package:tiamat/config/style/theme_you.dart';
-
-enum AppTheme { light, dark, amoled }
 
 class Preferences {
   SharedPreferences? _preferences;
@@ -75,16 +78,6 @@ class Preferences {
     }
   }
 
-  AppTheme _getTheme() {
-    var name = _preferences!.getString(themeKey);
-    if (name == null) return AppTheme.dark;
-    try {
-      return AppTheme.values.byName(name);
-    } catch (e) {
-      return AppTheme.dark;
-    }
-  }
-
   bool get shouldFollowSystemTheme =>
       _preferences!.getBool(_shouldFollowSystemTheme) ?? false;
 
@@ -99,11 +92,11 @@ class Preferences {
     _preferences!.setBool(_shouldFollowSystemColors, value);
   }
 
-  void setTheme(AppTheme theme) {
-    if (theme == AppTheme.amoled) {
+  void setTheme(String theme) {
+    if (theme == "amoled") {
       setShouldFollowSystemColors(false);
     }
-    _preferences!.setString(themeKey, theme.name);
+    _preferences!.setString(themeKey, theme);
   }
 
   Future<ThemeData> resolveTheme({Brightness? overrideBrightness}) async {
@@ -112,12 +105,22 @@ class Preferences {
           WidgetsBinding.instance.platformDispatcher.platformBrightness;
     }
 
+    var custom = await ThemeConfig.getThemeByName(preferences.theme);
+    if (custom != null) {
+      var jsonString = await custom.readAsString();
+      var json = const JsonDecoder().convert(jsonString);
+      var themedata = ThemeJsonConverter.fromJson(json, custom);
+      if (themedata != null) {
+        return themedata;
+      }
+    }
+
     if (overrideBrightness == null && shouldFollowSystemColors) {
-      if (theme == AppTheme.dark) {
+      if (theme == "dark") {
         overrideBrightness = Brightness.dark;
       }
 
-      if (theme == AppTheme.light) {
+      if (theme == "light") {
         overrideBrightness = Brightness.light;
       }
     }
@@ -128,8 +131,8 @@ class Preferences {
 
     if (overrideBrightness == Brightness.dark) {
       return switch (theme) {
-        AppTheme.dark => ThemeDark.theme,
-        AppTheme.amoled => ThemeAmoled.theme,
+        "dark" => ThemeDark.theme,
+        "amoled" => ThemeAmoled.theme,
         _ => ThemeDark.theme,
       };
     }
@@ -139,13 +142,14 @@ class Preferences {
     }
 
     return switch (theme) {
-      AppTheme.light => ThemeLight.theme,
-      AppTheme.dark => ThemeDark.theme,
-      AppTheme.amoled => ThemeAmoled.theme,
+      "light" => ThemeLight.theme,
+      "dark" => ThemeDark.theme,
+      "amoled" => ThemeAmoled.theme,
+      _ => ThemeDark.theme,
     };
   }
 
-  AppTheme get theme => _getTheme();
+  String get theme => _preferences!.getString(themeKey) ?? "dark";
 
   double get appScale => _preferences!.getDouble(appScaleKey) ?? 1;
 

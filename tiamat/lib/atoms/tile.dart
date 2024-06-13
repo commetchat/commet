@@ -309,6 +309,7 @@ class Tile extends StatelessWidget {
 
     var settings = Theme.of(context).extension<ThemeSettings>()!;
     var glass = Theme.of(context).extension<GlassSettings>();
+    var shadows = Theme.of(context).extension<ShadowSettings>();
 
     if (glass != null) {
       glassSigma = switch (mode) {
@@ -381,8 +382,6 @@ class Tile extends StatelessWidget {
           width: settings.caulkStrokeThickness);
     }
 
-    bool doShadows = settings.shadowBlurRadius > 0;
-
     return Padding(
       padding: EdgeInsets.only(
           left: caulkPadLeft ? caulkOuterPadding : 0,
@@ -390,15 +389,8 @@ class Tile extends StatelessWidget {
           top: caulkPadTop ? caulkOuterPadding : 0,
           bottom: caulkPadBottom ? caulkOuterPadding : 0),
       child: Container(
-          decoration: BoxDecoration(
-              borderRadius: radius,
-              boxShadow: doShadows == false
-                  ? null
-                  : [
-                      BoxShadow(
-                          blurRadius: settings.shadowBlurRadius,
-                          color: Theme.of(context).colorScheme.shadow)
-                    ]),
+          decoration:
+              BoxDecoration(borderRadius: radius, boxShadow: shadows?.shadows),
           clipBehavior: Clip.antiAlias,
           child: BackdropFilter(
               filter: glass != null

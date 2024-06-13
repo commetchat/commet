@@ -537,16 +537,20 @@ class MessageInputState extends State<MessageInput> {
 
   Padding sendMessageButton() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 0, 0, 0),
-      child: SizedBox(
-          width: widget.size,
-          height: widget.size,
-          child: tiamat.IconButton(
-            icon: Icons.send,
-            onPressed: sendMessage,
-            size: widget.size * widget.iconScale,
-          )),
-    );
+        padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
+        child: SizedBox(
+            width: widget.size,
+            height: widget.size,
+            child: tiamat.CircleButton(
+              icon: Icons.send,
+              radius: widget.size * widget.iconScale,
+            ))
+        // child: tiamat.IconButton(
+        //   icon: Icons.send,
+        //   onPressed: sendMessage,
+        //   size: widget.size * widget.iconScale,
+        // )),
+        );
   }
 
   Widget toggleEmojiButton() {

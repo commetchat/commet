@@ -39,19 +39,19 @@ class _ThemeListWidgetState extends State<ThemeListWidget> {
 
   List<_ThemeEntry> get defaultThemes => [
         _ThemeEntry(labelThemeLight, (BuildContext context) async {
-          preferences.setTheme(AppTheme.light);
+          preferences.setTheme("light");
           var theme = await preferences.resolveTheme(
               overrideBrightness: Brightness.light);
           if (context.mounted) ThemeChanger.setTheme(context, theme);
         }),
         _ThemeEntry(labelThemeDark, (BuildContext context) async {
-          preferences.setTheme(AppTheme.dark);
+          preferences.setTheme("dark");
           var theme = await preferences.resolveTheme(
               overrideBrightness: Brightness.dark);
           if (context.mounted) ThemeChanger.setTheme(context, theme);
         }),
         _ThemeEntry(labelThemeAmoled, (BuildContext context) async {
-          preferences.setTheme(AppTheme.amoled);
+          preferences.setTheme("amoled");
           var theme = await preferences.resolveTheme(
               overrideBrightness: Brightness.dark);
 
@@ -87,7 +87,10 @@ class _ThemeListWidgetState extends State<ThemeListWidget> {
 
       return _ThemeEntry(name, (context) async {
         var file = await ThemeConfig.getFileFromThemeDir(e);
-        ThemeChanger.setThemeFromFile(context, file);
+        if (file != null) {
+          ThemeChanger.setThemeFromFile(context, file);
+          preferences.setTheme(name);
+        }
       });
     });
     var newEntries = List<_ThemeEntry>.from(defaultThemes);

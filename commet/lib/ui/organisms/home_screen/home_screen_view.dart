@@ -55,10 +55,25 @@ class HomeScreenView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        if (clientManager.alertManager.alerts.isNotEmpty) alerts(),
-        if (invitations?.isNotEmpty == true) invitationsList(),
-        if (recentActivity?.isNotEmpty == true) recentRooms(),
-        roomsList(context)
+        if (clientManager.alertManager.alerts.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 0, 0, 12),
+            child: alerts(),
+          ),
+        if (invitations?.isNotEmpty == true)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 0, 0, 12),
+            child: invitationsList(),
+          ),
+        if (recentActivity?.isNotEmpty == true)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 0, 0, 12),
+            child: recentRooms(),
+          ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(0, 0, 0, 12),
+          child: roomsList(context),
+        )
       ],
     );
   }

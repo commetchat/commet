@@ -19,10 +19,10 @@ class CircleButton extends StatelessWidget {
   final IconData? icon;
   @override
   Widget build(BuildContext context) {
+    var shadows = Theme.of(context).extension<ShadowSettings>();
     return Container(
-      decoration: const BoxDecoration(
-        shape: BoxShape.circle,
-      ),
+      decoration:
+          BoxDecoration(shape: BoxShape.circle, boxShadow: shadows?.shadows),
       clipBehavior: Clip.antiAlias,
       child: ClipOval(
         child: Material(

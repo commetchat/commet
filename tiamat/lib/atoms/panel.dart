@@ -67,9 +67,13 @@ class Panel extends StatelessWidget {
         break;
     }
 
+    var shadows = Theme.of(context).extension<ShadowSettings>();
+
     return Container(
-      decoration:
-          BoxDecoration(borderRadius: BorderRadius.circular(10), color: color),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: color,
+          boxShadow: shadows?.shadows),
       child: Column(
         mainAxisSize: mainAxisSize,
         crossAxisAlignment: CrossAxisAlignment.start,

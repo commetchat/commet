@@ -133,13 +133,56 @@ class ThemeJsonConverter {
     FoundationSettings foundation =
         loadFoundation(defaultTheme, colorScheme, json, file);
 
+    ShadowSettings? shadows = loadShadows(json);
+
     var data = defaultTheme.copyWith(colorScheme: colorScheme, extensions: [
       themeSettings,
       if (glass != null) glass,
       foundation,
+      if (shadows != null) shadows,
     ]);
 
     return data;
+  }
+
+  static ShadowSettings? loadShadows(Map<String, dynamic> json) {
+    var data = json.tryGet<List<dynamic>>("shadows");
+    if (data == null) {
+      return null;
+    }
+
+    List<BoxShadow> shadows = List.empty(growable: true);
+
+    for (var entry in data) {
+      if (entry is! Map<String, dynamic>) {
+        print("Entry was not a map, continuing");
+        continue;
+      }
+
+      var color = entry.tryGetColor("color");
+      var blurRadius = entry.tryGetDouble("blurRadius");
+      var spreadRadius = entry.tryGetDouble("spreadRadius");
+
+      var offsetValues = entry.tryGet<List<dynamic>>("offset");
+      Offset? offset;
+      if (offsetValues != null) {
+        var values = List<num>.from(offsetValues);
+        if (values.length >= 2) {
+          offset = Offset(values[0].toDouble(), values[1].toDouble());
+        }
+      }
+
+      shadows.add(BoxShadow(
+          color: color ?? Colors.black,
+          offset: offset ?? Offset.zero,
+          spreadRadius: spreadRadius ?? 0,
+          blurRadius: blurRadius ?? 0));
+    }
+    if (shadows.isNotEmpty) {
+      return ShadowSettings(shadows);
+    } else {
+      return null;
+    }
   }
 
   static FoundationSettings loadFoundation(ThemeData defaultTheme,
