@@ -635,5 +635,11 @@
     "description": "Label for the Profile settings page",
     "type": "text",
     "placeholders": {}
+  },
+  "promptGenerateMatrixRecoveryKey": "キーを生成",
+  "@promptGenerateMatrixRecoveryKey": {
+    "description": "Button text to generate a recovery key",
+    "type": "text",
+    "placeholders": {}
   }
 }
