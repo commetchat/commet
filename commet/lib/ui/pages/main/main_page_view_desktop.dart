@@ -15,7 +15,6 @@ import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tiamat/atoms/tile.dart';
-import 'package:tiamat/config/style/theme_extensions.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;
 
@@ -102,7 +101,7 @@ class MainPageViewDesktop extends StatelessWidget {
   SizedBox spaceRoomSelector(BuildContext context) {
     return SizedBox(
         width: 250,
-        child: Tile.low1(
+        child: Tile.surfaceContainer(
           caulkPadTop: true,
           caulkPadBottom: true,
           caulkClipTopLeft: true,
@@ -134,7 +133,7 @@ class MainPageViewDesktop extends StatelessWidget {
   Widget homeView() {
     return Row(
       children: [
-        Tile.low1(
+        Tile.surfaceContainer(
           caulkClipTopLeft: true,
           caulkClipTopRight: true,
           caulkClipBottomRight: true,
@@ -251,7 +250,7 @@ class MainPageViewDesktop extends StatelessWidget {
                     ),
                   ),
                 if (state.currentThreadId == null)
-                  Tile.low1(
+                  Tile.surfaceContainer(
                     caulkPadLeft: true,
                     caulkClipTopLeft: true,
                     caulkClipBottomLeft: true,

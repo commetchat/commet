@@ -10,7 +10,6 @@ import 'package:just_the_tooltip/just_the_tooltip.dart';
 import 'package:provider/provider.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:tiamat/tiamat.dart';
-import 'package:tiamat/config/config.dart';
 
 class AccountManagementSettingsTab extends StatefulWidget {
   const AccountManagementSettingsTab({super.key, required this.clientManager});

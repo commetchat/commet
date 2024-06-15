@@ -1,23 +1,14 @@
-import 'dart:io';
-import 'dart:math';
-
-import 'package:commet/config/preferences.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/settings/categories/app/general_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/app/theme_settings/theme_settings_widget.dart';
 import 'package:commet/utils/common_strings.dart';
 import 'package:commet/utils/scaled_app.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart' as m;
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:tiamat/atoms/seperator.dart';
 import 'package:tiamat/config/config.dart';
-import 'package:tiamat/config/style/theme_light.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:tiamat/tiamat.dart';
-import 'package:path/path.dart' as path;
 
 class AppearanceSettingsPage extends StatefulWidget {
   const AppearanceSettingsPage({super.key});
@@ -74,7 +65,7 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
                   });
 
                   var theme = await preferences.resolveTheme();
-                  ThemeChanger.setTheme(context, theme);
+                  if (context.mounted) ThemeChanger.setTheme(context, theme);
                 },
               ),
             ),
@@ -89,12 +80,12 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
                     preferences.setShouldFollowSystemColors(value);
                   });
                   var theme = await preferences.resolveTheme();
-                  ThemeChanger.setTheme(context, theme);
+                  if (context.mounted) ThemeChanger.setTheme(context, theme);
                 },
               ),
             ),
-            Seperator(),
-            ThemeListWidget(),
+            const Seperator(),
+            const ThemeListWidget(),
           ]),
         ),
         const SizedBox(

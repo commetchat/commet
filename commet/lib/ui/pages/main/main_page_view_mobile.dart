@@ -20,7 +20,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tiamat/atoms/foundation.dart';
 import 'package:tiamat/atoms/tile.dart';
-import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 import 'package:flutter/material.dart' as material;
@@ -256,7 +255,7 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
 
   Widget userList() {
     if (widget.state.currentRoom != null) {
-      return Tile.low1(
+      return Tile.surfaceContainer(
         caulkPadLeft: true,
         caulkClipTopLeft: true,
         caulkClipBottomLeft: true,
@@ -280,7 +279,7 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
 
   Widget directMessagesView() {
     return Flexible(
-      child: Tile.low1(
+      child: Tile.surfaceContainer(
         caulkClipTopLeft: true,
         caulkClipBottomLeft: true,
         caulkPadRight: true,
@@ -317,7 +316,7 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
 
   Widget spaceRoomSelector(BuildContext newContext) {
     return Flexible(
-      child: Tile.low1(
+      child: Tile.surfaceContainer(
         caulkClipTopLeft: true,
         caulkClipBottomLeft: true,
         caulkPadRight: true,

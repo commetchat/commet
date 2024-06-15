@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart' as m;
 import 'package:flutter/widgets.dart';
-import 'package:tiamat/tiamat.dart';
 
 import '../../client/client.dart';
 

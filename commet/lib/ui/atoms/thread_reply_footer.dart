@@ -1,7 +1,6 @@
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/molecules/message.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class ThreadReplyFooter extends StatelessWidget {

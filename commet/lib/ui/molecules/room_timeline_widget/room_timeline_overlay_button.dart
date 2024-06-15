@@ -1,6 +1,5 @@
 import 'package:commet/config/layout_config.dart';
 import 'package:flutter/material.dart';
-import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class RoomTimelineOverlayButton extends StatelessWidget {

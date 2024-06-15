@@ -34,11 +34,9 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:provider/provider.dart';
 import 'package:receive_intent/receive_intent.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-import 'package:tiamat/config/style/theme_amoled.dart';
 import 'package:tiamat/config/style/theme_changer.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:tiamat/config/style/theme_dark.dart';
-import 'package:tiamat/config/style/theme_light.dart';
 
 final GlobalKey<NavigatorState> navigator = GlobalKey();
 FileCache? fileCache;
@@ -75,7 +73,6 @@ void bubble() async {
 
   Log.prefix = "bubble-$initialRoomId";
 
-  var theme = preferences.theme;
   var initialTheme = await preferences.resolveTheme();
 
   runApp(MaterialApp(

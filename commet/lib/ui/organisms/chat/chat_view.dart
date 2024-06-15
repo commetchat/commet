@@ -7,7 +7,6 @@ import 'package:commet/ui/organisms/chat/chat.dart';
 import 'package:commet/utils/autofill_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:tiamat/tiamat.dart';
 
 class ChatView extends StatelessWidget {
   const ChatView(this.state, {super.key});

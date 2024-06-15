@@ -5,7 +5,6 @@ import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/organisms/user_profile/user_profile.dart';
 import 'package:flutter/material.dart' as material;
 import 'package:flutter/material.dart';
-import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 

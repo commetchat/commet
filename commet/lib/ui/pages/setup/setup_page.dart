@@ -31,7 +31,7 @@ class _SetupPageState extends State<SetupPage> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      child: Tile.low1(
+      child: Tile.surfaceContainer(
         child: Padding(
           padding: const EdgeInsets.all(BuildConfig.MOBILE ? 10 : 50.0),
           child: ScaledSafeArea(
@@ -44,7 +44,7 @@ class _SetupPageState extends State<SetupPage> {
                 Flexible(
                   child: ClipRRect(
                       borderRadius: BorderRadius.circular(10),
-                      child: Tile.low2(
+                      child: Tile.low(
                           child: Column(
                         mainAxisSize: MainAxisSize.max,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,

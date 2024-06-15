@@ -1,6 +1,5 @@
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:flutter/widgets.dart';
-import 'package:tiamat/config/style/theme_extensions.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:flutter/material.dart' as material;

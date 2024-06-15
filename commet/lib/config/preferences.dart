@@ -7,7 +7,6 @@ import 'package:commet/main.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tiamat/config/style/theme_amoled.dart';
-import 'package:tiamat/config/style/theme_changer.dart';
 import 'package:tiamat/config/style/theme_json_converter.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:tiamat/config/style/theme_dark.dart';

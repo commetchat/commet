@@ -68,7 +68,7 @@ class DesktopSettingsPageState extends State<DesktopSettingsPage> {
   }
 
   Widget tabSelector(BuildContext context) {
-    return Tile.low1(
+    return Tile.surfaceContainer(
       caulkPadRight: true,
       caulkPadTop: true,
       caulkPadBottom: true,

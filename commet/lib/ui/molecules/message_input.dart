@@ -19,8 +19,6 @@ import 'package:implicitly_animated_list/implicitly_animated_list.dart';
 import 'package:intl/intl.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
 import 'package:pasteboard/pasteboard.dart';
-import 'package:tiamat/config/config.dart';
-import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import '../../client/attachment.dart';
 import '../../client/components/emoticon/emoticon.dart';

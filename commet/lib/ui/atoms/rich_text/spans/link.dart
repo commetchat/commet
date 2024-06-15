@@ -1,7 +1,6 @@
 import 'package:commet/utils/link_utils.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:tiamat/config/style/theme_dark.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 
 class LinkSpan {

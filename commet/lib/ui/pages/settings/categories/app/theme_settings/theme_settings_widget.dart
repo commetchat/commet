@@ -2,12 +2,11 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:commet/config/layout_config.dart';
-import 'package:commet/config/preferences.dart';
 import 'package:commet/config/theme_config.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/utils/common_strings.dart';
-import 'package:commet/utils/file_utils.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -105,7 +104,7 @@ class _ThemeListWidgetState extends State<ThemeListWidget> {
         (context) async {
           var file = await ThemeConfig.getFileFromThemeDir(e);
           if (file != null) {
-            ThemeChanger.setThemeFromFile(context, file);
+            if (context.mounted) ThemeChanger.setThemeFromFile(context, file);
             preferences.setTheme(name);
           }
         },
@@ -153,7 +152,7 @@ class _ThemeListWidgetState extends State<ThemeListWidget> {
   }
 
   void onCustomThemesDirUpdated(FileSystemEvent event) {
-    print("Themes dir updated, reloading items!");
+    Log.i("Themes dir updated, reloading items!");
     loadCustomThemes();
   }
 

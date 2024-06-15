@@ -10,7 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:signal_sticker_api/signal_sticker_api.dart';
 import 'package:tiamat/atoms/panel.dart';
-import 'package:tiamat/config/style/theme_extensions.dart';
 
 import 'package:path/path.dart' as p;
 import 'package:tiamat/tiamat.dart' as tiamat;

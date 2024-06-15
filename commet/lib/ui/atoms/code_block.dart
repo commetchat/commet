@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_highlighter/flutter_highlighter.dart';
-import 'package:tiamat/config/style/theme_extensions.dart';
 
 const _darkTheme = {
   'root':

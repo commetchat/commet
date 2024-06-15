@@ -7,7 +7,6 @@ import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:url_launcher/url_launcher.dart';
 
