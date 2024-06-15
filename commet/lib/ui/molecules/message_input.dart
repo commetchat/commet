@@ -544,13 +544,8 @@ class MessageInputState extends State<MessageInput> {
             child: tiamat.CircleButton(
               icon: Icons.send,
               radius: widget.size * widget.iconScale,
-            ))
-        // child: tiamat.IconButton(
-        //   icon: Icons.send,
-        //   onPressed: sendMessage,
-        //   size: widget.size * widget.iconScale,
-        // )),
-        );
+              onPressed: sendMessage,
+            )));
   }
 
   Widget toggleEmojiButton() {
