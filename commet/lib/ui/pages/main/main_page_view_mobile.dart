@@ -150,6 +150,7 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
           caulkPadRight: true,
           caulkClipTopRight: true,
           caulkClipBottomRight: true,
+          caulkBorderRight: true,
           mode: TileType.surfaceDim,
           child: ScaledSafeArea(
             bottom: false,
@@ -219,15 +220,20 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
         child: keyboardAdaptor(
           Column(
             children: [
-              SizedBox(
-                height: 50,
-                child: RoomHeader(
-                  widget.state.currentRoom!,
-                  onTap:
-                      widget.state.currentRoom?.permissions.canEditAnything ==
-                              true
-                          ? () => widget.state.navigateRoomSettings()
-                          : null,
+              Tile(
+                caulkClipBottomRight: true,
+                caulkClipBottomLeft: true,
+                caulkBorderBottom: true,
+                child: SizedBox(
+                  height: 50,
+                  child: RoomHeader(
+                    widget.state.currentRoom!,
+                    onTap:
+                        widget.state.currentRoom?.permissions.canEditAnything ==
+                                true
+                            ? () => widget.state.navigateRoomSettings()
+                            : null,
+                  ),
                 ),
               ),
               Flexible(

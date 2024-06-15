@@ -12,6 +12,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart' as m;
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:tiamat/atoms/seperator.dart';
 import 'package:tiamat/config/config.dart';
 import 'package:tiamat/config/style/theme_light.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -61,7 +62,6 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
           header: labelSettingsAppTheme,
           mode: TileType.surfaceContainerLow,
           child: Column(children: [
-            ThemeListWidget(),
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
               child: GeneralSettingsPageState.settingToggle(
@@ -93,6 +93,8 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
                 },
               ),
             ),
+            Seperator(),
+            ThemeListWidget(),
           ]),
         ),
         const SizedBox(

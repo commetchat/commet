@@ -26,13 +26,13 @@ packages:
     source: hosted
     version: "0.11.3"
   archive:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: archive
-      sha256: "22600aa1e926be775fa5fe7e6894e7fb3df9efda8891c73f70fb3262399a432d"
+      sha256: cb6a278ef2dbb298455e1a713bda08524a175630ec643a242c399c932a0a1f7d
       url: "https://pub.dev"
     source: hosted
-    version: "3.4.10"
+    version: "3.6.1"
   args:
     dependency: transitive
     description:
@@ -364,10 +364,11 @@ packages:
   dynamic_color:
     dependency: transitive
     description:
-      name: dynamic_color
-      sha256: eae98052fa6e2826bdac3dd2e921c6ce2903be15c6b7f8b6d8a5d49b5086298d
-      url: "https://pub.dev"
-    source: hosted
+      path: "packages/dynamic_color"
+      ref: HEAD
+      resolved-ref: c23b9658c1ada18021bb1356b921f574217d0668
+      url: "https://github.com/Airyzz/material-flutter-packages.git"
+    source: git
     version: "1.7.0"
   encrypt:
     dependency: "direct main"

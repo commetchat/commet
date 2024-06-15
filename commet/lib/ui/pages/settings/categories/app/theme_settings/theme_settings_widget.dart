@@ -1,11 +1,17 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:commet/config/layout_config.dart';
 import 'package:commet/config/preferences.dart';
 import 'package:commet/config/theme_config.dart';
 import 'package:commet/main.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
+import 'package:commet/utils/common_strings.dart';
+import 'package:commet/utils/file_utils.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:tiamat/atoms/context_menu.dart';
 import 'package:tiamat/config/style/theme_changer.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:path/path.dart' as path;
@@ -21,7 +27,16 @@ class _ThemeEntry {
   String name;
   Function(BuildContext context) setter;
 
-  _ThemeEntry(this.name, this.setter);
+  late Widget Function(BuildContext context, Widget child) builder;
+
+  Widget defaultBuilder(BuildContext context, Widget child) {
+    return child;
+  }
+
+  _ThemeEntry(this.name, this.setter,
+      {Widget Function(BuildContext context, Widget child)? builder}) {
+    this.builder = builder ?? defaultBuilder;
+  }
 }
 
 class _ThemeListWidgetState extends State<ThemeListWidget> {
@@ -85,13 +100,49 @@ class _ThemeListWidgetState extends State<ThemeListWidget> {
     var customEntries = themes.map((e) {
       var name = path.basenameWithoutExtension(e.path);
 
-      return _ThemeEntry(name, (context) async {
-        var file = await ThemeConfig.getFileFromThemeDir(e);
-        if (file != null) {
-          ThemeChanger.setThemeFromFile(context, file);
-          preferences.setTheme(name);
-        }
-      });
+      return _ThemeEntry(
+        name,
+        (context) async {
+          var file = await ThemeConfig.getFileFromThemeDir(e);
+          if (file != null) {
+            ThemeChanger.setThemeFromFile(context, file);
+            preferences.setTheme(name);
+          }
+        },
+        builder: (context, child) {
+          if (Layout.mobile)
+            return GestureDetector(
+              onLongPress: () => AdaptiveDialog.show(
+                context,
+                title: name,
+                builder: (context) {
+                  return Column(
+                    children: [
+                      tiamat.TextButton(
+                        CommonStrings.promptDelete,
+                        icon: Icons.delete,
+                        onTap: () {
+                          ThemeConfig.removeTheme(e);
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  );
+                },
+              ),
+              child: child,
+            );
+
+          return tiamat.ContextMenu(
+            items: [
+              ContextMenuItem(
+                  text: CommonStrings.promptDelete,
+                  onPressed: () => ThemeConfig.removeTheme(e)),
+            ],
+            child: child,
+          );
+        },
+      );
     });
     var newEntries = List<_ThemeEntry>.from(defaultThemes);
     newEntries.addAll(customEntries);
@@ -109,9 +160,38 @@ class _ThemeListWidgetState extends State<ThemeListWidget> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         for (var entry in entries)
-          tiamat.TextButton(entry.name, onTap: () => entry.setter(context)),
+          entry.builder(
+              context,
+              tiamat.TextButton(entry.name,
+                  onTap: () => entry.setter(context))),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              tiamat.CircleButton(
+                icon: Icons.add,
+                onPressed: () async {
+                  var result = await FilePicker.platform.pickFiles(
+                      type: FileType.custom,
+                      allowedExtensions: ["zip"],
+                      dialogTitle: "Pick theme archive file");
+
+                  var file = result?.files.firstOrNull;
+                  if (file?.path == null) {
+                    return;
+                  }
+
+                  File f = File(file!.path!);
+                  await ThemeConfig.installThemeFromZip(f);
+                },
+              ),
+            ],
+          ),
+        )
       ],
     );
   }

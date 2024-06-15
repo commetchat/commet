@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:archive/archive_io.dart';
+import 'package:commet/debug/log.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 
@@ -38,5 +40,37 @@ class ThemeConfig {
     var themeDir = Directory(path.join(dir.path, name));
 
     return getFileFromThemeDir(themeDir);
+  }
+
+  static Future<void> removeTheme(Directory directory) async {
+    await directory.delete(recursive: true);
+  }
+
+  static Future<void> installThemeFromZip(File file) async {
+    final inputStream = InputFileStream(file.path);
+
+    var dir = await getCustomThemesDir();
+    var destination =
+        (path.join(dir.path, path.basenameWithoutExtension(file.path)));
+
+    final archive = ZipDecoder().decodeBuffer(inputStream);
+
+    if (!archive.files.any((file) => file.name == "theme.json")) {
+      await inputStream.close();
+      Log.w("Invalid theme archive: ${file.path}");
+      return;
+    }
+
+    for (var file in archive.files) {
+      if (file.isFile) {
+        final outputStream =
+            OutputFileStream(path.join(destination, file.name));
+
+        file.writeContent(outputStream);
+        outputStream.close();
+      }
+    }
+
+    await inputStream.close();
   }
 }
