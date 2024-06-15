@@ -13,7 +13,7 @@ class ThemeConfig {
     var directory = Directory(path.join(p, "theme", "custom"));
     var exists = await directory.exists();
     if (!exists) {
-      directory.create();
+      directory.create(recursive: true);
     }
 
     return directory;
