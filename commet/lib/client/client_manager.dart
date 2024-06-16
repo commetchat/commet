@@ -154,7 +154,7 @@ class ClientManager {
   void _addSpace(Client client, int index) {
     var space = client.spaces[index];
     space.onUpdate.listen((_) => spaceUpdated(space));
-    space.onChildUpdated.listen((_) => spaceChildUpdated(space));
+    space.onChildRoomUpdated.listen((_) => spaceChildUpdated(space));
     spaces.add(client.spaces[index]);
   }
 
