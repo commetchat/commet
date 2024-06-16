@@ -1,4 +1,5 @@
 import 'package:commet/client/alert.dart';
+import 'package:commet/client/client.dart';
 import 'package:commet/client/components/push_notification/android/android_notifier.dart';
 import 'package:commet/client/components/push_notification/android/firebase_push_notifier.dart';
 import 'package:commet/client/components/push_notification/android/unified_push_notifier.dart';
@@ -88,6 +89,10 @@ class NotificationManager {
 
   static void removeModifier(NotificationModifier modifier) {
     _modifiers.remove(modifier);
+  }
+
+  static Future<void> clearNotifications(Room room) async {
+    await notifier?.clearNotifications(room);
   }
 
   static Future<void> notify(NotificationContent notification,

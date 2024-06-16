@@ -6,6 +6,7 @@ import 'package:commet/client/components/push_notification/android/android_notif
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/components/push_notification/notifier.dart';
+import 'package:commet/client/room.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/service/background_service.dart';
@@ -113,5 +114,10 @@ class FirebasePushNotifier implements Notifier {
   @override
   Map<String, dynamic>? extraRegistrationData() {
     return {"type": "fcm"};
+  }
+
+  @override
+  Future<void> clearNotifications(Room room) {
+    return notifier.clearNotifications(room);
   }
 }

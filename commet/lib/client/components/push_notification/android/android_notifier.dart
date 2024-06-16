@@ -38,8 +38,6 @@ class AndroidNotifier implements Notifier {
         onDidReceiveBackgroundNotificationResponse: onBackgroundResponse,
         onDidReceiveNotificationResponse: onResponse);
 
-    EventBus.onSelectedRoomChanged.stream.listen(onRoomOpened);
-
     if (!isHeadless) {
       checkPermission();
     }
@@ -198,11 +196,8 @@ class AndroidNotifier implements Notifier {
     return null;
   }
 
-  void onRoomOpened(Room? room) async {
-    if (room == null) {
-      return;
-    }
-
+  @override
+  Future<void> clearNotifications(Room room) async {
     var notifications =
         await flutterLocalNotificationsPlugin?.getActiveNotifications();
 

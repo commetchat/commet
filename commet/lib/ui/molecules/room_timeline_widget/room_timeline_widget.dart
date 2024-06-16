@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/timeline.dart';
 import 'package:commet/ui/molecules/room_timeline_widget/room_timeline_widget_view.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +21,8 @@ class RoomTimelineWidget extends StatefulWidget {
   State<RoomTimelineWidget> createState() => _RoomTimelineWidgetState();
 }
 
-class _RoomTimelineWidgetState extends State<RoomTimelineWidget> {
+class _RoomTimelineWidgetState extends State<RoomTimelineWidget>
+    with WidgetsBindingObserver {
   Future? loadingHistory;
 
   GlobalKey timelineViewKey = GlobalKey();
@@ -30,13 +32,14 @@ class _RoomTimelineWidgetState extends State<RoomTimelineWidget> {
   @override
   void initState() {
     sub = widget.timeline.onEventAdded.stream.listen(onEventReceived);
-
+    WidgetsBinding.instance.addObserver(this);
     super.initState();
   }
 
   @override
   void dispose() {
     sub?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
@@ -44,9 +47,26 @@ class _RoomTimelineWidgetState extends State<RoomTimelineWidget> {
     if (index == 0) {
       var state = timelineViewKey.currentState as RoomTimelineWidgetViewState?;
       if (state?.attachedToBottom == true) {
-        widget.timeline.markAsRead(widget.timeline.events[index]);
+        markAsRead(widget.timeline.events[index]);
       }
     }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    if (state == AppLifecycleState.resumed) {
+      var state = timelineViewKey.currentState as RoomTimelineWidgetViewState?;
+      if (state?.attachedToBottom == true) {
+        markAsRead(widget.timeline.events.first);
+      }
+    }
+
+    super.didChangeAppLifecycleState(state);
+  }
+
+  Future<void> markAsRead(TimelineEvent event) async {
+    widget.timeline.markAsRead(event);
+    NotificationManager.clearNotifications(widget.timeline.room);
   }
 
   @override
@@ -59,6 +79,7 @@ class _RoomTimelineWidgetState extends State<RoomTimelineWidget> {
       isThreadTimeline: widget.isThreadTimeline,
       setReplyingEvent: widget.setReplyingEvent,
       setEditingEvent: widget.setEditingEvent,
+      markAsRead: markAsRead,
     );
   }
 
@@ -85,7 +106,7 @@ class _RoomTimelineWidgetState extends State<RoomTimelineWidget> {
 
   void onAttachedToBottom() {
     if (widget.timeline.events.isNotEmpty) {
-      widget.timeline.markAsRead(widget.timeline.events.first);
+      markAsRead(widget.timeline.events.first);
     }
   }
 

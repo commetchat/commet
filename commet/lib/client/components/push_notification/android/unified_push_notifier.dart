@@ -7,6 +7,7 @@ import 'package:commet/client/components/push_notification/notification_content.
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/components/push_notification/notifier.dart';
 import 'package:commet/client/components/push_notification/push_notification_component.dart';
+import 'package:commet/client/room.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/service/background_service.dart';
@@ -163,5 +164,10 @@ class UnifiedPushNotifier implements Notifier {
   @override
   Map<String, dynamic>? extraRegistrationData() {
     return null;
+  }
+
+  @override
+  Future<void> clearNotifications(Room room) {
+    return notifier.clearNotifications(room);
   }
 }

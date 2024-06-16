@@ -52,19 +52,11 @@ class ChatView extends StatelessWidget {
         : RoomTimelineWidget(
             key: ValueKey("${state.room.identifier}-timeline"),
             timeline: state.timeline!,
-            // markAsRead: handleMarkAsRead,
             setReplyingEvent: (event) => state.setInteractingEvent(event,
                 type: EventInteractionType.reply),
             setEditingEvent: (event) => state.setInteractingEvent(event,
                 type: EventInteractionType.edit),
             isThreadTimeline: state.isThread,
-            // onThreadOpened: (event) {
-            //   EventBus.openThread.add((
-            //     state.room.client.identifier,
-            //     state.room.identifier,
-            //     event.eventId
-            //   ));
-            // },
           );
   }
 
