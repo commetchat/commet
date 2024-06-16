@@ -29,6 +29,11 @@ class MatrixSpace extends Space {
   final NotifyingList<RoomPreview> _previews =
       NotifyingList.empty(growable: true);
 
+  @override
+  List<Space> get subspaces => List.from(_matrixRoom.spaceChildren
+      .map((child) => _client.getSpace(child.roomId!))
+      .where((e) => e != null));
+
   final StreamController<Room> _onChildUpdated = StreamController.broadcast();
 
   ImageProvider? _avatar;
@@ -128,6 +133,9 @@ class MatrixSpace extends Space {
 
   late List<StreamSubscription> _subscriptions;
 
+  @override
+  bool get isTopLevel => _matrixRoom.spaceParents.isEmpty;
+
   MatrixSpace(
       MatrixClient client, matrix.Room room, matrix.Client matrixClient) {
     _matrixRoom = room;
@@ -199,10 +207,12 @@ class MatrixSpace extends Space {
       var room = client.getRoom(child.roomId!);
       if (room != null) {
         _previews.removeWhere((element) => element.roomId == room.identifier);
-        if (!containsRoom(room.identifier)) {
+
+        if (!containsRoom(room.identifier) &&
+            !client.hasSpace(room.identifier)) {
           _rooms.add(room);
         }
-      } else {}
+      }
     }
   }
 
@@ -272,7 +282,9 @@ class MatrixSpace extends Space {
     // read child rooms
     response.rooms
         .where((element) => element.roomId != identifier)
-        .where((element) => !containsRoom(element.roomId))
+        .where((element) =>
+            _matrixClient.getRoomById(element.roomId)?.membership !=
+            matrix.Membership.join)
         .forEach((element) {
       _previews.add(MatrixSpaceRoomChunkPreview(element, _matrixClient));
     });

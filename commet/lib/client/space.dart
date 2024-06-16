@@ -21,6 +21,10 @@ abstract class Space {
 
   List<Room> get rooms;
 
+  List<Space> get subspaces;
+
+  bool get isTopLevel;
+
   String get topic;
 
   PushRule get pushRule;

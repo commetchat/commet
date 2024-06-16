@@ -12,6 +12,12 @@ class ThemeBase {
         fontFamilyFallback: ThemeCommon.fontFamilyFallback(),
         brightness: brightness,
         useMaterial3: true,
+        listTileTheme: ListTileThemeData(
+            contentPadding: EdgeInsets.all(0),
+            dense: true,
+            minTileHeight: 0,
+            minLeadingWidth: 0,
+            minVerticalPadding: 0),
         expansionTileTheme: ExpansionTileThemeData(
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),

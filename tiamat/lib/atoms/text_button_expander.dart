@@ -84,7 +84,9 @@ class TextButtonExpander extends StatelessWidget {
     this.initiallyExpanded = false,
     this.avatarPlaceholderColor,
     this.avatarPlaceholderText,
+    this.enabled = true,
     this.childrenPadding = const EdgeInsets.fromLTRB(8, 0, 0, 0),
+    this.textPadding = const EdgeInsets.fromLTRB(8, 0, 0, 0),
   });
 
   final List<Widget> children;
@@ -100,8 +102,10 @@ class TextButtonExpander extends StatelessWidget {
   final Color? iconColor;
   final String text;
   final bool initiallyExpanded;
+  final bool enabled;
 
   final EdgeInsetsGeometry childrenPadding;
+  final EdgeInsetsGeometry textPadding;
   bool get useAvatar => avatar != null || avatarPlaceholderText != null;
 
   @override
@@ -112,6 +116,7 @@ class TextButtonExpander extends StatelessWidget {
           initiallyExpanded: initiallyExpanded,
           visualDensity: material.VisualDensity.compact,
           dense: true,
+          enabled: enabled,
           children: children,
           childrenPadding: childrenPadding,
           title:
@@ -150,7 +155,7 @@ class TextButtonExpander extends StatelessWidget {
                     ),
                   ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+                  padding: textPadding,
                   child: Align(
                       alignment: Alignment.centerLeft,
                       child: tiamat.Text.labelEmphasised(

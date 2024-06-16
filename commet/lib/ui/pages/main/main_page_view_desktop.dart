@@ -46,8 +46,8 @@ class MainPageViewDesktop extends StatelessWidget {
                   padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
                   child: SideNavigationBar(
                     currentUser: state.currentUser,
-                    onSpaceSelected: (index) {
-                      state.selectSpace(state.clientManager.spaces[index]);
+                    onSpaceSelected: (space) {
+                      state.selectSpace(space);
                     },
                     onHomeSelected: () {
                       state.selectHome();
@@ -77,10 +77,12 @@ class MainPageViewDesktop extends StatelessWidget {
                     caulkClipBottomLeft: true,
                     child: ListView(children: [
                       SpaceSummary(
-                          key: ValueKey(
-                              "space-summary-key-${state.currentSpace!.localId}"),
-                          space: state.currentSpace!,
-                          onRoomTap: (room) => state.selectRoom(room)),
+                        key: ValueKey(
+                            "space-summary-key-${state.currentSpace!.localId}"),
+                        space: state.currentSpace!,
+                        onRoomTap: (room) => state.selectRoom(room),
+                        onSpaceTap: (space) => state.selectSpace(space),
+                      ),
                     ]),
                   ),
                 ),
@@ -121,8 +123,8 @@ class MainPageViewDesktop extends StatelessWidget {
                 state.currentSpace!,
                 key: ValueKey("space-view-key-${state.currentSpace!.localId}"),
                 onRoomInsert: state.currentSpace!.onRoomAdded,
-                onRoomSelected: (index) {
-                  state.selectRoom(state.currentSpace!.rooms[index]);
+                onRoomSelected: (room) {
+                  state.selectRoom(room);
                 },
               )),
             ],
