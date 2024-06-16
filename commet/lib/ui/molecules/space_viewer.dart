@@ -32,7 +32,7 @@ class _SpaceViewerState extends State<SpaceViewer>
           onInsertStream: widget.space.onRoomAdded,
           onUpdateStream: widget.space.onUpdate,
           onRemoveStream: widget.space.onRoomRemoved,
-          onChildUpdatedStream: widget.space.onChildUpdated,
+          onChildUpdatedStream: widget.space.onChildRoomUpdated,
           onRoomSelected: widget.onRoomSelected,
           onRoomSelectionChanged: widget.onRoomSelectionChanged,
           expandable: false,

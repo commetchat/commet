@@ -94,19 +94,19 @@ class MatrixSpace extends Space {
   String get identifier => _matrixRoom.id;
 
   @override
-  Stream<int> get onChildPreviewAdded => _previews.onAdd;
+  Stream<int> get onChildRoomPreviewAdded => _previews.onAdd;
 
   @override
-  Stream<int> get onChildPreviewRemoved => _previews.onRemove;
+  Stream<int> get onChildRoomPreviewRemoved => _previews.onRemove;
 
   @override
-  Stream<void> get onChildPreviewsUpdated => _previews.onListUpdated;
+  Stream<void> get onChildRoomPreviewsUpdated => _previews.onListUpdated;
 
   @override
-  Stream<Room> get onChildUpdated => _onChildUpdated.stream;
+  Stream<Room> get onChildRoomUpdated => _onChildUpdated.stream;
 
   @override
-  Stream<void> get onChildrenUpdated => _rooms.onListUpdated;
+  Stream<void> get onChildRoomsUpdated => _rooms.onListUpdated;
 
   @override
   Stream<int> get onRoomAdded => _rooms.onAdd;
