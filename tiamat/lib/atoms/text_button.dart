@@ -194,7 +194,7 @@ class TextButton extends StatelessWidget {
         child: material
             .Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (icon != null || useAvatar)
