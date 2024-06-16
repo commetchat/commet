@@ -240,10 +240,6 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
           displayName: room.displayName,
           avatar: room.avatar,
           color: room.defaultColor,
-          showSettingsButton: room.permissions.canEditAnything,
-          onRoomSettingsButtonPressed: () {
-            widget.onRoomSettingsButtonTap?.call(room);
-          },
           onTap: widget.onRoomTap != null
               ? () {
                   widget.onRoomTap?.call(room);

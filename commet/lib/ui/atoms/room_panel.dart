@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
-import '../../config/build_config.dart';
-
 class RoomPanel extends StatefulWidget {
   const RoomPanel(
       {required this.displayName,
@@ -14,8 +12,6 @@ class RoomPanel extends StatefulWidget {
       this.onSecondaryButtonPressed,
       this.secondaryButtonLabel,
       this.secondaryButtonLoading = false,
-      this.onRoomSettingsButtonPressed,
-      this.showSettingsButton = false,
       this.userColor,
       this.onTap,
       this.color,
@@ -31,7 +27,6 @@ class RoomPanel extends StatefulWidget {
   final Color? userColor;
   final String? userDisplayName;
   final String displayName;
-  final bool showSettingsButton;
   final Color? color;
   final String? body;
   final String? recentEventSender;
@@ -39,7 +34,6 @@ class RoomPanel extends StatefulWidget {
   final String? primaryButtonLabel;
   final bool primaryButtonLoading;
   final Function()? onPrimaryButtonPressed;
-  final Function()? onRoomSettingsButtonPressed;
   final Function()? onTap;
   final String? secondaryButtonLabel;
   final bool secondaryButtonLoading;
@@ -58,13 +52,9 @@ class _RoomPanelState extends State<RoomPanel> {
       widget.secondaryButtonLabel != null &&
       widget.onSecondaryButtonPressed != null;
 
-  bool get showOnlyPrimaryButton =>
-      showPrimaryButton &&
-      !showSecondaryButton &&
-      widget.showSettingsButton != true;
+  bool get showOnlyPrimaryButton => showPrimaryButton && !showSecondaryButton;
 
-  bool get showAnyButton =>
-      showPrimaryButton || showSecondaryButton || widget.showSettingsButton;
+  bool get showAnyButton => showPrimaryButton || showSecondaryButton;
 
   @override
   Widget build(BuildContext context) {
@@ -128,8 +118,7 @@ class _RoomPanelState extends State<RoomPanel> {
                           ],
                         ),
                       ),
-                      if (showAnyButton)
-                        actionButtons(widget.showSettingsButton),
+                      if (showAnyButton) actionButtons(),
                     ],
                   ),
                 ],
@@ -165,7 +154,7 @@ class _RoomPanelState extends State<RoomPanel> {
     );
   }
 
-  Widget actionButtons(bool includeSettings) {
+  Widget actionButtons() {
     return Row(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.end,
@@ -192,20 +181,7 @@ class _RoomPanelState extends State<RoomPanel> {
               },
             ),
           ),
-        if (includeSettings)
-          Padding(
-            padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
-            child: settingsButton(),
-          ),
       ],
-    );
-  }
-
-  Widget settingsButton() {
-    return tiamat.CircleButton(
-      icon: Icons.settings,
-      radius: BuildConfig.MOBILE ? 24 : 16,
-      onPressed: widget.onRoomSettingsButtonPressed,
     );
   }
 }
