@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notifier.dart';
+import 'package:commet/client/room.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/shortcuts_manager.dart';
@@ -155,4 +156,7 @@ class WindowsNotifier implements Notifier {
   Future<String?> getToken() async {
     return null;
   }
+
+  @override
+  Future<void> clearNotifications(Room room) async {}
 }
