@@ -219,7 +219,7 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
         child: keyboardAdaptor(
           Column(
             children: [
-              Tile(
+              Tile.low(
                 caulkClipBottomRight: true,
                 caulkClipBottomLeft: true,
                 caulkBorderBottom: true,
