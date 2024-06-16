@@ -157,9 +157,8 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
               padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
               child: SideNavigationBar(
                 currentUser: widget.state.getCurrentUser(),
-                onSpaceSelected: (index) {
-                  widget.state
-                      .selectSpace(widget.state.clientManager.spaces[index]);
+                onSpaceSelected: (space) {
+                  widget.state.selectSpace(space);
                 },
                 clearSpaceSelection: () {
                   widget.state.clearSpaceSelection();
@@ -208,6 +207,7 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
               onRoomTap: (room) {
                 widget.state.selectRoom(room);
               },
+              onSpaceTap: (space) => widget.state.selectSpace(space),
             ),
           ]),
         ),
@@ -343,8 +343,8 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
                 key: ValueKey(
                     "space-view-key-${widget.state.currentSpace!.localId}"),
                 onRoomInsert: widget.state.currentSpace!.onRoomAdded,
-                onRoomSelected: (index) async {
-                  selectRoom(widget.state.currentSpace!.rooms[index]);
+                onRoomSelected: (room) async {
+                  selectRoom(room);
                 },
               ),
             )),

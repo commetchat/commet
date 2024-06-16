@@ -20,6 +20,7 @@ class SpaceSummaryView extends StatefulWidget {
       this.topic,
       this.joinRoom,
       this.rooms,
+      this.spaces,
       this.avatar,
       this.childPreviews,
       this.onChildPreviewAdded,
@@ -35,6 +36,7 @@ class SpaceSummaryView extends StatefulWidget {
       this.onAddRoomButtonTap,
       this.onRoomTap,
       this.canAddRoom = false,
+      this.onSpaceTap,
       this.onRoomSettingsButtonTap});
   final String displayName;
   final String? topic;
@@ -50,9 +52,11 @@ class SpaceSummaryView extends StatefulWidget {
   final ImageProvider? avatar;
   final Color? spaceColor;
   final List<Room>? rooms;
+  final List<Space>? spaces;
   final Function? openSpaceSettings;
   final Function(Room room)? onRoomSettingsButtonTap;
   final Function(Room room)? onRoomTap;
+  final Function(Space space)? onSpaceTap;
   final Function()? onAddRoomButtonTap;
   final bool showSpaceSettingsButton;
   final bool canAddRoom;
@@ -139,6 +143,8 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
 
   @override
   Widget build(BuildContext context) {
+    var pad = const EdgeInsets.fromLTRB(0, 4, 0, 4);
+
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -161,12 +167,20 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
               if (widget.showSpaceSettingsButton) buildSettingsButton()
             ],
           ),
-          if (childPreviewCount > 0) buildPreviewList(),
           if (childPreviewCount > 0)
-            const SizedBox(
-              height: 10,
+            Padding(
+              padding: pad,
+              child: buildPreviewList(),
             ),
-          buildRoomList(),
+          if (widget.spaces?.isNotEmpty == true)
+            Padding(
+              padding: pad,
+              child: buildSpaceList(),
+            ),
+          Padding(
+            padding: pad,
+            child: buildRoomList(),
+          ),
         ],
       ),
     );
@@ -227,6 +241,32 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
                 onPressed: () => widget.onAddRoomButtonTap?.call(),
               ),
             ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget buildSpaceList() {
+    return Panel(
+      header: "Spaces",
+      mode: TileType.surfaceContainer,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          ListView.builder(
+            shrinkWrap: true,
+            itemCount: widget.spaces!.length,
+            itemBuilder: (context, index) {
+              var space = widget.spaces![index];
+              return RoomPanel(
+                displayName: space.displayName,
+                color: space.color,
+                body: space.topic,
+                avatar: space.avatar,
+                onTap: () => widget.onSpaceTap?.call(space),
+              );
+            },
           )
         ],
       ),

@@ -31,7 +31,7 @@ class SideNavigationBar extends StatefulWidget {
       const ValueKey("SIDE_NAVIGATION_SETTINGS_BUTTON");
 
   final Profile currentUser;
-  final void Function(int index)? onSpaceSelected;
+  final void Function(Space space)? onSpaceSelected;
   final void Function()? clearSpaceSelection;
   final void Function(Room room)? onDirectMessageSelected;
   final void Function()? onHomeSelected;
@@ -67,6 +67,8 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
   String get promptAddSpace => Intl.message("Add Space",
       name: "promptAddSpace", desc: "Prompt to add a new space");
 
+  late List<Space> topLevelSpaces;
+
   @override
   void initState() {
     _clientManager = Provider.of<ClientManager>(context, listen: false);
@@ -76,14 +78,24 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
     onSpaceUpdated =
         _clientManager.onSpaceUpdated.stream.listen((_) => onSpaceUpdate());
 
+    getSpaces();
+
     onDirectMessageUpdatedSubscription = _clientManager
         .onDirectMessageRoomUpdated.stream
         .listen(onDirectMessageUpdated);
     super.initState();
   }
 
+  void getSpaces() {
+    _clientManager = Provider.of<ClientManager>(context, listen: false);
+
+    topLevelSpaces = _clientManager.spaces.where((e) => e.isTopLevel).toList();
+  }
+
   void onSpaceUpdate() {
-    setState(() {});
+    setState(() {
+      getSpaces();
+    });
   }
 
   void onDirectMessageUpdated(Room room) {
@@ -126,7 +138,7 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
             ),
             Expanded(
               child: SpaceSelector(
-                _clientManager.spaces,
+                topLevelSpaces,
                 width: 70,
                 onSpaceInsert: _clientManager.onSpaceAdded,
                 onSpaceRemoved: _clientManager.onSpaceRemoved,
@@ -184,7 +196,7 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                   ],
                 ),
                 onSelected: (index) {
-                  widget.onSpaceSelected?.call(index);
+                  widget.onSpaceSelected?.call(topLevelSpaces[index]);
                 },
               ),
             ),
