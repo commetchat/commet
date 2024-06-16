@@ -31,7 +31,7 @@ class _MobileSettingsPageState extends State<MobileSettingsPage> {
   @override
   Widget build(BuildContext context) {
     return m.Material(
-      child: Tile.low1(
+      child: Tile.surfaceContainer(
         child: ScaledSafeArea(
           child: Padding(
             padding: const EdgeInsets.all(8.0),

@@ -10,7 +10,6 @@ import 'package:just_the_tooltip/just_the_tooltip.dart';
 import 'package:provider/provider.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:tiamat/tiamat.dart';
-import 'package:tiamat/config/config.dart';
 
 class AccountManagementSettingsTab extends StatefulWidget {
   const AccountManagementSettingsTab({super.key, required this.clientManager});
@@ -92,7 +91,7 @@ class _AccountManagementSettingsTabState
           children: [
             Panel(
               header: labelCurrentAccountsHeader,
-              mode: TileType.surfaceLow2,
+              mode: TileType.surfaceContainerLow,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -170,7 +169,7 @@ class _AccountManagementSettingsTabState
             tailLength: 5,
             tailBaseWidth: 5,
             backgroundColor:
-                Theme.of(context).extension<ExtraColors>()!.surfaceLow4,
+                Theme.of(context).colorScheme.surfaceContainerLowest,
             child: tiamat.CircleButton(
               key: AccountManagementSettingsTab.addAccountKey,
               icon: Icons.add,

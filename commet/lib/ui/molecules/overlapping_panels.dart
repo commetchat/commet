@@ -5,6 +5,8 @@ import 'package:commet/main.dart';
 import 'package:flutter/material.dart';
 import 'dart:core';
 
+import 'package:tiamat/config/config.dart';
+
 const double bleedWidth = 20;
 
 /// Display sections
@@ -217,14 +219,19 @@ class OverlappingPanelsState extends State<OverlappingPanels>
         ),
         Transform.translate(
           offset: Offset(translate, 0),
-          child: DecoratedBox(
-              decoration: BoxDecoration(boxShadow: [
-                BoxShadow(color: Colors.black.withAlpha(30), blurRadius: 20)
-              ]),
-              child: ClipRRect(
+          child: Container(
+              clipBehavior: Clip.antiAlias,
+              decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(
                       (translate.abs() * 0.1).clamp(0, 20)),
-                  child: widget.main)),
+                  boxShadow:
+                      Theme.of(context).extension<ShadowSettings>()?.shadows ??
+                          [
+                            BoxShadow(
+                                color: Colors.black.withAlpha(30),
+                                blurRadius: 20)
+                          ]),
+              child: widget.main),
         ),
         GestureDetector(
           behavior: HitTestBehavior.translucent,

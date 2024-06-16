@@ -112,6 +112,7 @@ class _TimelineEventViewGenericState extends State<TimelineEventViewGeneric>
                     child: Icon(
                       icon,
                       size: 20,
+                      color: Theme.of(context).colorScheme.secondary,
                     ),
                   ),
                 if (senderAvatar != null)

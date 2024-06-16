@@ -34,11 +34,9 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:provider/provider.dart';
 import 'package:receive_intent/receive_intent.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-import 'package:tiamat/config/style/theme_amoled.dart';
 import 'package:tiamat/config/style/theme_changer.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:tiamat/config/style/theme_dark.dart';
-import 'package:tiamat/config/style/theme_light.dart';
 
 final GlobalKey<NavigatorState> navigator = GlobalKey();
 FileCache? fileCache;
@@ -75,12 +73,7 @@ void bubble() async {
 
   Log.prefix = "bubble-$initialRoomId";
 
-  var theme = preferences.theme;
-  var initialTheme = {
-    AppTheme.dark: ThemeDark.theme,
-    AppTheme.light: ThemeLight.theme,
-    AppTheme.amoled: ThemeAmoled.theme,
-  }[theme];
+  var initialTheme = await preferences.resolveTheme();
 
   runApp(MaterialApp(
       title: 'Commet',
@@ -217,37 +210,38 @@ Future<void> startGui() async {
     return scale;
   };
 
+  var initialTheme = await preferences.resolveTheme();
+
   runApp(App(
     clientManager: clientManager!,
-    initialTheme: preferences.theme,
+    initialTheme: initialTheme,
     initialClientId: initialClientId,
     initialRoom: initialRoomId,
   ));
 }
 
-void enableEdgeToEdge() {
+void enableEdgeToEdge() async {
+  var theme = await preferences.resolveTheme();
   SystemChrome.setEnabledSystemUIMode(
       SystemUiMode.edgeToEdge); // Enable Edge-to-Edge on Android 10+
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-    systemNavigationBarColor:
-        Colors.transparent, // Setting a transparent navigation bar color
-    systemNavigationBarContrastEnforced: true, // Default
-    systemNavigationBarIconBrightness:
-        [AppTheme.amoled, AppTheme.dark].contains(preferences.theme)
-            ? Brightness.light
-            : Brightness.dark, // This defines the color of the scrim
-  ));
+      systemNavigationBarColor:
+          Colors.transparent, // Setting a transparent navigation bar color
+      systemNavigationBarContrastEnforced: true, // Default
+      systemNavigationBarIconBrightness: theme.brightness == Brightness.dark
+          ? Brightness.light
+          : Brightness.dark));
 }
 
 class App extends StatelessWidget {
   const App(
       {Key? key,
       required this.clientManager,
-      this.initialTheme = AppTheme.dark,
+      this.initialTheme,
       this.initialRoom,
       this.initialClientId})
       : super(key: key);
-  final AppTheme initialTheme;
+  final ThemeData? initialTheme;
   final ClientManager clientManager;
 
   final String? initialRoom;
@@ -258,18 +252,12 @@ class App extends StatelessWidget {
     return ThemeChanger(
         shouldFollowSystemTheme: () => preferences.shouldFollowSystemTheme,
         getDarkTheme: () {
-          if (preferences.theme == AppTheme.amoled) {
-            return ThemeAmoled.theme;
-          } else {
-            return ThemeDark.theme;
-          }
+          return preferences.resolveTheme(overrideBrightness: Brightness.dark);
         },
-        getLightTheme: () => ThemeLight.theme,
-        initialTheme: {
-          AppTheme.dark: ThemeDark.theme,
-          AppTheme.light: ThemeLight.theme,
-          AppTheme.amoled: ThemeAmoled.theme,
-        }[initialTheme]!,
+        getLightTheme: () {
+          return preferences.resolveTheme(overrideBrightness: Brightness.light);
+        },
+        initialTheme: initialTheme ?? ThemeDark.theme,
         materialAppBuilder: (context, theme) {
           return MaterialApp(
             title: 'Commet',

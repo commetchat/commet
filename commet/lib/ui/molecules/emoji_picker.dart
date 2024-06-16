@@ -44,7 +44,7 @@ class EmojiPicker extends StatelessWidget {
       mainAxisSize: MainAxisSize.max,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        tiamat.Tile.low3(
+        tiamat.Tile.low(
           child: Padding(
             padding: const EdgeInsets.all(4.0),
             child: SizedBox(
@@ -78,7 +78,7 @@ class EmojiPicker extends StatelessWidget {
   Widget buildWithHorizontalList(BuildContext context) {
     return Column(
       children: [
-        tiamat.Tile.low3(
+        tiamat.Tile.low(
           child: Padding(
             padding: const EdgeInsets.all(4.0),
             child: ConstrainedBox(

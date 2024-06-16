@@ -82,11 +82,12 @@ class _TimelineEventViewUrlPreviewsState
               }
             }
 
-            setState(() {
-              loading = false;
-              data = value;
-              key = GlobalKey();
-            });
+            if (mounted)
+              setState(() {
+                loading = false;
+                data = value;
+                key = GlobalKey();
+              });
           }
         },
       );

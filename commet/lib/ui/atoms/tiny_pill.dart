@@ -16,7 +16,10 @@ class TinyPill extends StatelessWidget {
             color: Theme.of(context).colorScheme.primary),
         child: Padding(
           padding: const EdgeInsets.all(2.0),
-          child: tiamat.Text.tiny(text),
+          child: tiamat.Text.tiny(
+            text,
+            color: Theme.of(context).colorScheme.onPrimary,
+          ),
         ),
       ),
     );

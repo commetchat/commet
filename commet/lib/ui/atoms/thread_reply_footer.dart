@@ -1,7 +1,6 @@
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/molecules/message.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class ThreadReplyFooter extends StatelessWidget {
@@ -41,12 +40,13 @@ class ThreadReplyFooter extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const Padding(
-                    padding: EdgeInsets.all(8),
+                  Padding(
+                    padding: const EdgeInsets.all(8),
                     child: Padding(
-                      padding: EdgeInsets.fromLTRB(4, 0, 4, 0),
+                      padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
                       child: Icon(
                         Icons.message_rounded,
+                        color: Theme.of(context).colorScheme.secondary,
                         size: 15,
                       ),
                     ),

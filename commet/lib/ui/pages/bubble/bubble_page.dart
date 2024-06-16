@@ -49,17 +49,22 @@ class BubblePageState extends State<BubblePage> {
   Widget build(BuildContext context) {
     return currentRoom == null
         ? const Placeholder()
-        : Tile(
-            child: material.Scaffold(
-              backgroundColor: material.Theme.of(context).colorScheme.surface,
-              body: ScaledSafeArea(
-                child: Placeholder(
+        : Foundation(
+            child: Tile(
+              child: material.Scaffold(
+                backgroundColor: Colors.transparent,
+                body: ScaledSafeArea(
                   child: Column(
                     children: [
-                      SizedBox(
-                        height: 50,
-                        child: RoomHeader(
-                          currentRoom!,
+                      Tile.low(
+                        caulkClipBottomRight: true,
+                        caulkClipBottomLeft: true,
+                        caulkBorderBottom: true,
+                        child: SizedBox(
+                          height: 50,
+                          child: RoomHeader(
+                            currentRoom!,
+                          ),
                         ),
                       ),
                       Flexible(

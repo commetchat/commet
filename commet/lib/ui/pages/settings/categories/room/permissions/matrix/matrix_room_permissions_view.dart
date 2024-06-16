@@ -150,7 +150,7 @@ class _MatrixRoomPermissionsViewState extends State<MatrixRoomPermissionsView> {
       padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(5),
-        child: Tile.low1(
+        child: Tile.surfaceContainer(
           child: MouseRegion(
             cursor: widget.canEdit
                 ? WidgetStateMouseCursor.clickable
@@ -168,7 +168,10 @@ class _MatrixRoomPermissionsViewState extends State<MatrixRoomPermissionsView> {
                           if (item.icon != null)
                             Padding(
                               padding: const EdgeInsets.fromLTRB(0, 0, 12, 0),
-                              child: Icon(item.icon),
+                              child: Icon(
+                                item.icon,
+                                color: Theme.of(context).colorScheme.tertiary,
+                              ),
                             ),
                           Flexible(
                             child: Column(

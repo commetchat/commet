@@ -202,7 +202,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
   Widget buildRoomList() {
     return Panel(
       header: labelSpaceRoomsList,
-      mode: TileType.surfaceLow1,
+      mode: TileType.surfaceContainer,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
@@ -219,10 +219,13 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
           tiamat.Tooltip(
             text: tooltipAddRoom,
             preferredDirection: AxisDirection.left,
-            child: tiamat.CircleButton(
-              radius: BuildConfig.MOBILE ? 24 : 16,
-              icon: Icons.add,
-              onPressed: () => widget.onAddRoomButtonTap?.call(),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
+              child: tiamat.CircleButton(
+                radius: BuildConfig.MOBILE ? 24 : 16,
+                icon: Icons.add,
+                onPressed: () => widget.onAddRoomButtonTap?.call(),
+              ),
             ),
           )
         ],
@@ -237,10 +240,6 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
           displayName: room.displayName,
           avatar: room.avatar,
           color: room.defaultColor,
-          showSettingsButton: room.permissions.canEditAnything,
-          onRoomSettingsButtonPressed: () {
-            widget.onRoomSettingsButtonTap?.call(room);
-          },
           onTap: widget.onRoomTap != null
               ? () {
                   widget.onRoomTap?.call(room);
@@ -259,7 +258,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
   Widget buildPreviewList() {
     return Panel(
       header: labelSpaceAvailableRoomsList,
-      mode: TileType.surfaceLow1,
+      mode: TileType.surfaceContainer,
       child: AnimatedList(
         initialItemCount: childPreviewCount,
         key: _previewListKey,

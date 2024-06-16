@@ -19,7 +19,7 @@ class _AccountEmojiViewState extends State<AccountEmojiView> {
       children: [
         tiamat.Panel(
           header: "Global Packs",
-          mode: tiamat.TileType.surfaceLow2,
+          mode: tiamat.TileType.surfaceContainerLow,
           child: Column(
               children: widget.globalPacks.map((e) => packSummary(e)).toList()),
         ),

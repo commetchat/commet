@@ -12,7 +12,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
 import 'package:provider/provider.dart';
-import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import '../molecules/space_selector.dart';
@@ -53,8 +52,7 @@ class SideNavigationBar extends StatefulWidget {
           offset: 5,
           tailLength: 5,
           tailBaseWidth: 5,
-          backgroundColor:
-              Theme.of(context).extension<ExtraColors>()!.surfaceLow4,
+          backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
           child: child),
     );
   }

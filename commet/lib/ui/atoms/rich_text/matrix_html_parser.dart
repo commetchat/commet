@@ -262,13 +262,14 @@ class CodeBlockHtmlExtension extends HtmlExtension {
 class CodeHtmlExtension extends HtmlExtension {
   @override
   InlineSpan build(ExtensionContext context) {
+    var color = Theme.of(context.buildContext!)
+            .extension<ExtraColors>()
+            ?.codeHighlight ??
+        Theme.of(context.buildContext!).primaryColor;
+
     return TextSpan(
         text: context.node.text,
-        style: TextStyle(
-            fontFamily: "Code",
-            color: Theme.of(context.buildContext!)
-                .extension<ExtraColors>()!
-                .codeHighlight));
+        style: TextStyle(fontFamily: "Code", color: color));
   }
 
   static const Set<String> tags = {"code"};
@@ -282,10 +283,13 @@ class LinkifyHtmlExtension extends HtmlExtension {
   InlineSpan build(ExtensionContext context) {
     if (context.node.attributes.containsKey("href")) {
       return LinkSpan.create(context.node.text!,
+          context: context.buildContext!,
           destination: Uri.parse(context.node.attributes["href"]!));
     }
 
-    return TextSpan(children: TextUtils.linkifyString(context.node.text!));
+    return TextSpan(
+        children: TextUtils.linkifyString(context.node.text!,
+            context: context.buildContext!));
   }
 
   @override
@@ -349,7 +353,8 @@ class MatrixImageExtension extends HtmlExtension {
     }
 
     if (mxcUrl.scheme != 'mxc') {
-      return LinkSpan.create(mxcUrl.toString(), destination: mxcUrl);
+      return LinkSpan.create(mxcUrl.toString(),
+          destination: mxcUrl, context: context.buildContext!);
     }
 
     final width = double.tryParse(context.attributes['width'] ?? '');

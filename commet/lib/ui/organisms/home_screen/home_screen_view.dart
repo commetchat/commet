@@ -55,17 +55,32 @@ class HomeScreenView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        if (clientManager.alertManager.alerts.isNotEmpty) alerts(),
-        if (invitations?.isNotEmpty == true) invitationsList(),
-        if (recentActivity?.isNotEmpty == true) recentRooms(),
-        roomsList(context)
+        if (clientManager.alertManager.alerts.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 0, 0, 12),
+            child: alerts(),
+          ),
+        if (invitations?.isNotEmpty == true)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 0, 0, 12),
+            child: invitationsList(),
+          ),
+        if (recentActivity?.isNotEmpty == true)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 0, 0, 12),
+            child: recentRooms(),
+          ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(0, 0, 0, 12),
+          child: roomsList(context),
+        )
       ],
     );
   }
 
   Widget alerts() {
     return Panel(
-        mode: TileType.surfaceLow2,
+        mode: TileType.surfaceContainerLow,
         header: labelHomeAlerts,
         child: ImplicitlyAnimatedList(
           shrinkWrap: true,
@@ -163,7 +178,7 @@ class HomeScreenView extends StatelessWidget {
 
   Widget invitationsList() {
     return Panel(
-        mode: TileType.surfaceLow1,
+        mode: TileType.surfaceContainer,
         header: labelHomeInvitations,
         child: ImplicitlyAnimatedList(
           physics: const NeverScrollableScrollPhysics(),

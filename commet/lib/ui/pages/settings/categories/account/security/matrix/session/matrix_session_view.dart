@@ -1,7 +1,6 @@
 import 'package:commet/config/layout_config.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class MatrixSessionView extends StatelessWidget {
@@ -33,7 +32,7 @@ class MatrixSessionView extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-          color: Theme.of(context).extension<ExtraColors>()!.surfaceLow1,
+          color: Theme.of(context).colorScheme.surfaceContainerLow,
           borderRadius: BorderRadius.circular(5)),
       child: Padding(
         padding: const EdgeInsets.all(8.0),

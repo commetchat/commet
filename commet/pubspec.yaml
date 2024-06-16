@@ -85,6 +85,7 @@ dependencies:
   pointycastle: ^3.7.4
   flutter_web_auth_2: ^3.1.1
   drift: ^2.18.0
+  archive: ^3.6.1
 
   ## ---- Putting some extra lines in here to help git with the diff
   ## ---- Probably good to keep this stuff at the bottom of the list

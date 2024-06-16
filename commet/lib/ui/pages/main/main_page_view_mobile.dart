@@ -18,8 +18,8 @@ import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/scaled_app.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:tiamat/atoms/foundation.dart';
 import 'package:tiamat/atoms/tile.dart';
-import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 import 'package:flutter/material.dart' as material;
@@ -84,17 +84,15 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
               break;
           }
         },
-        child: Tile.low4(
+        child: Foundation(
             child: OverlappingPanels(
           key: panelsKey,
           left: navigation(context),
-          main: Container(
-            child: shouldMainIgnoreInput
-                ? IgnorePointer(
-                    child: Container(key: mainPanelKey, child: mainPanel()),
-                  )
-                : Container(key: mainPanelKey, child: mainPanel()),
-          ),
+          main: Foundation(
+              child: IgnorePointer(
+            ignoring: shouldMainIgnoreInput,
+            child: Container(key: mainPanelKey, child: mainPanel()),
+          )),
           onDragStart: () {},
           onSideChange: (side) {
             setState(() {
@@ -145,13 +143,18 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
   }
 
   Widget navigation(BuildContext newContext) {
-    return Tile.low4(
-      child: Row(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
-            child: ScaledSafeArea(
-              bottom: false,
+    return Row(
+      children: [
+        Tile(
+          caulkPadRight: true,
+          caulkClipTopRight: true,
+          caulkClipBottomRight: true,
+          caulkBorderRight: true,
+          mode: TileType.surfaceDim,
+          child: ScaledSafeArea(
+            bottom: false,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
               child: SideNavigationBar(
                 currentUser: widget.state.getCurrentUser(),
                 onSpaceSelected: (index) {
@@ -167,14 +170,14 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
               ),
             ),
           ),
-          if (widget.state.currentView == MainPageSubView.home)
-            directMessagesView(),
-          if (widget.state.currentView == MainPageSubView.space &&
-              widget.state.currentSpace != null)
-            spaceRoomSelector(newContext),
-          const BackgroundTaskViewContainer()
-        ],
-      ),
+        ),
+        if (widget.state.currentView == MainPageSubView.home)
+          directMessagesView(),
+        if (widget.state.currentView == MainPageSubView.space &&
+            widget.state.currentSpace != null)
+          spaceRoomSelector(newContext),
+        const BackgroundTaskViewContainer()
+      ],
     );
   }
 
@@ -216,15 +219,20 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
         child: keyboardAdaptor(
           Column(
             children: [
-              SizedBox(
-                height: 50,
-                child: RoomHeader(
-                  widget.state.currentRoom!,
-                  onTap:
-                      widget.state.currentRoom?.permissions.canEditAnything ==
-                              true
-                          ? () => widget.state.navigateRoomSettings()
-                          : null,
+              Tile.low(
+                caulkClipBottomRight: true,
+                caulkClipBottomLeft: true,
+                caulkBorderBottom: true,
+                child: SizedBox(
+                  height: 50,
+                  child: RoomHeader(
+                    widget.state.currentRoom!,
+                    onTap:
+                        widget.state.currentRoom?.permissions.canEditAnything ==
+                                true
+                            ? () => widget.state.navigateRoomSettings()
+                            : null,
+                  ),
                 ),
               ),
               Flexible(
@@ -247,7 +255,13 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
 
   Widget userList() {
     if (widget.state.currentRoom != null) {
-      return Tile.low1(
+      return Tile.surfaceContainer(
+        caulkPadLeft: true,
+        caulkClipTopLeft: true,
+        caulkClipBottomLeft: true,
+        caulkBorderLeft: true,
+        caulkBorderTop: true,
+        caulkBorderBottom: true,
         child: ScaledSafeArea(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
@@ -265,7 +279,12 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
 
   Widget directMessagesView() {
     return Flexible(
-      child: Tile.low1(
+      child: Tile.surfaceContainer(
+        caulkClipTopLeft: true,
+        caulkClipBottomLeft: true,
+        caulkPadRight: true,
+        caulkClipTopRight: true,
+        caulkClipBottomRight: true,
         child: ScaledSafeArea(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
@@ -297,14 +316,18 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
 
   Widget spaceRoomSelector(BuildContext newContext) {
     return Flexible(
-      child: Tile.low1(
+      child: Tile.surfaceContainer(
+        caulkClipTopLeft: true,
+        caulkClipBottomLeft: true,
+        caulkPadRight: true,
+        caulkClipTopRight: true,
+        caulkClipBottomRight: true,
         child: Column(
           children: [
             SpaceHeader(
               widget.state.currentSpace!,
-              backgroundColor: material.Theme.of(context)
-                  .extension<ExtraColors>()!
-                  .surfaceLow1,
+              backgroundColor:
+                  material.Theme.of(context).colorScheme.surfaceContainerLow,
               onTap: clearSelectedRoom,
             ),
             Expanded(

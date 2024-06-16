@@ -5,7 +5,6 @@ import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/molecules/video_player/video_player_implementation.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import '../../atoms/gradient_background.dart';
 import 'video_player_controller.dart';
@@ -162,8 +161,8 @@ class VideoPlayerState extends State<VideoPlayer> {
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       backgroundColor: Theme.of(context)
-                          .extension<ExtraColors>()!
-                          .surfaceLow4
+                          .colorScheme
+                          .surfaceContainerLowest
                           .withAlpha(200),
                       child: Row(
                         mainAxisSize: MainAxisSize.max,

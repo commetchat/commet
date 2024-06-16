@@ -7,7 +7,6 @@ import 'package:commet/utils/download_utils.dart';
 import 'package:commet/utils/mime.dart';
 import 'package:commet/utils/text_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
@@ -88,7 +87,7 @@ class _MessageAttachmentState extends State<MessageAttachment> {
         child: Panel(
             mainAxisSize: MainAxisSize.min,
             header: attachment.name,
-            mode: TileType.surfaceLow2,
+            mode: TileType.surfaceContainerLow,
             padding: 0,
             child: SizedBox(
                 height: 200,
@@ -130,9 +129,8 @@ class _MessageAttachmentState extends State<MessageAttachment> {
     return Container(
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          color: Theme.of(context).extension<ExtraColors>()!.surfaceLow1,
-          border: Border.all(
-              color: Theme.of(context).extension<ExtraColors>()!.outline)),
+          color: Theme.of(context).colorScheme.surfaceContainer,
+          border: Border.all(color: Theme.of(context).colorScheme.outline)),
       child: Padding(
         padding: const EdgeInsets.all(2.0),
         child: Row(

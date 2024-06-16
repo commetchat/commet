@@ -4,7 +4,6 @@ import 'package:commet/client/components/url_preview/url_preview_component.dart'
 import 'package:commet/ui/atoms/shimmer_loading.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/atoms/tile.dart';
-import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class UrlPreviewWidget extends StatefulWidget {
@@ -41,7 +40,7 @@ class _UrlPreviewWidgetState extends State<UrlPreviewWidget> {
   Widget build(BuildContext context) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),
-      child: Tile.low1(
+      child: Tile.surfaceContainer(
         child: Material(
           color: Colors.transparent,
           child: InkWell(
@@ -78,7 +77,7 @@ class _UrlPreviewWidgetState extends State<UrlPreviewWidget> {
   }
 
   Widget buildLoadingDisplay() {
-    var color = Theme.of(context).extension<ExtraColors>()!.surfaceLow4;
+    var color = Theme.of(context).colorScheme.surfaceContainerLowest;
     return Shimmer(
       child: ShimmerLoading(
         isLoading: true,

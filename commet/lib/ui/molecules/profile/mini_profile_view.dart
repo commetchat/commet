@@ -4,7 +4,6 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/profile.dart';
 import 'package:commet/ui/atoms/shimmer_loading.dart';
 import 'package:flutter/material.dart';
-import 'package:tiamat/config/style/theme_extensions.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;
 
@@ -42,7 +41,7 @@ class _MiniProfileViewState extends State<MiniProfileView> {
 
   @override
   Widget build(BuildContext context) {
-    var shimmerColor = Theme.of(context).extension<ExtraColors>()!.highlight;
+    var shimmerColor = Theme.of(context).colorScheme.surfaceContainerHighest;
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),

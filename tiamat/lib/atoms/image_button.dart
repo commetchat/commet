@@ -326,13 +326,11 @@ class _ImageButtonState extends State<ImageButton> {
                       color: Theme.of(context).colorScheme.shadow,
                       blurRadius: 10)
                 ])
-              : widget.image == null
+              : widget.icon != null && widget.image == null
                   ? BoxDecoration(
                       borderRadius: value.add(BorderRadius.circular(2)),
                       border: Border.all(
-                          color: Theme.of(context)
-                              .extension<ExtraColors>()!
-                              .outline,
+                          color: Theme.of(context).colorScheme.outline,
                           width: 1.5),
                     )
                   : null,
@@ -363,9 +361,13 @@ class _ImageButtonState extends State<ImageButton> {
                 ),
               )
             : widget.icon != null
-                ? Icon(
-                    widget.icon,
-                    size: widget.iconSize ?? widget.size / 2.5,
+                ? Container(
+                    color: Theme.of(context).colorScheme.surfaceContainerLow,
+                    child: Icon(
+                      color: Theme.of(context).colorScheme.secondary,
+                      widget.icon,
+                      size: widget.iconSize ?? widget.size / 2.5,
+                    ),
                   )
                 : widget.placeholderText != null
                     ? Container(

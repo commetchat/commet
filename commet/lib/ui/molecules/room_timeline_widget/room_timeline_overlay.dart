@@ -6,7 +6,6 @@ import 'package:intl/intl.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
 import 'package:tiamat/atoms/context_menu.dart';
 import 'package:tiamat/atoms/tile.dart';
-import 'package:tiamat/config/style/theme_extensions.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;
 
@@ -98,7 +97,7 @@ class TimelineOverlayState extends State<TimelineOverlay> {
               padding: const EdgeInsets.all(8.0),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: Tile.low1(
+                child: Tile.surfaceContainer(
                   child: SizedBox(
                       width: tooltipHeight,
                       height: tooltipHeight,
@@ -120,10 +119,10 @@ class TimelineOverlayState extends State<TimelineOverlay> {
           key: menuKey,
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
-              color: m.Theme.of(context).colorScheme.surface,
+              color: m.Theme.of(context).colorScheme.surfaceDim,
               border: Border.all(
                   color:
-                      m.Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+                      m.Theme.of(context).colorScheme.surfaceContainerHighest,
                   width: 1)),
           child: currentMenu != null
               ? Padding(
@@ -223,6 +222,7 @@ class TimelineOverlayState extends State<TimelineOverlay> {
                       child: Padding(
                           padding: pad,
                           child: Icon(
+                            color: Theme.of(context).colorScheme.secondary,
                             icon,
                             size: size / 1.5,
                           )),

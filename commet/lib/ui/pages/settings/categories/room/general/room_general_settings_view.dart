@@ -37,7 +37,7 @@ class RoomGeneralSettingsView extends StatelessWidget {
 
   Widget notificationSettings() {
     return tiamat.Panel(
-        mode: tiamat.TileType.surfaceLow2,
+        mode: tiamat.TileType.surfaceContainerLow,
         header: labelRoomSettingsNotifications,
         child: material.Material(
           color: material.Colors.transparent,

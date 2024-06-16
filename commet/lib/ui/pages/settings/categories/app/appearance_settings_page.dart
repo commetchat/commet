@@ -1,6 +1,6 @@
-import 'package:commet/config/preferences.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/settings/categories/app/general_settings_page.dart';
+import 'package:commet/ui/pages/settings/categories/app/theme_settings/theme_settings_widget.dart';
 import 'package:commet/utils/common_strings.dart';
 import 'package:commet/utils/scaled_app.dart';
 import 'package:flutter/widgets.dart';
@@ -18,20 +18,9 @@ class AppearanceSettingsPage extends StatefulWidget {
 }
 
 class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
-  late bool shouldFollowSystemTheme;
-
   String get labelSettingsAppTheme => Intl.message("Theme",
       name: "labelSettingsAppTheme",
       desc: "Label for theme section of app appearance");
-
-  String get labelThemeDark => Intl.message("Dark Theme",
-      name: "labelThemeDark", desc: "Label for the dark theme");
-
-  String get labelThemeLight => Intl.message("Light Theme",
-      name: "labelThemeLight", desc: "Label for the light theme");
-
-  String get labelThemeAmoled => Intl.message("Amoled",
-      name: "labelThemeAmoled", desc: "Label for the light theme");
 
   String get labelAppScale => Intl.message("App Scale",
       name: 'labelAppScale',
@@ -40,7 +29,6 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
 
   @override
   void initState() {
-    shouldFollowSystemTheme = preferences.shouldFollowSystemTheme;
     super.initState();
   }
 
@@ -51,7 +39,7 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
         themeSettings(context),
         Panel(
           header: labelAppScale,
-          mode: TileType.surfaceLow2,
+          mode: TileType.surfaceContainerLow,
           child: const UIScaleSelector(),
         )
       ],
@@ -63,44 +51,41 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
       children: [
         Panel(
           header: labelSettingsAppTheme,
-          mode: TileType.surfaceLow2,
+          mode: TileType.surfaceContainerLow,
           child: Column(children: [
-            TextButton(labelThemeLight, onTap: () {
-              preferences.setTheme(AppTheme.light);
-              ThemeChanger.setTheme(context, ThemeLight.theme);
-            }),
-            TextButton(labelThemeDark, onTap: () {
-              preferences.setTheme(AppTheme.dark);
-              ThemeChanger.setTheme(context, ThemeDark.theme);
-            }),
-            TextButton(labelThemeAmoled, onTap: () {
-              preferences.setTheme(AppTheme.amoled);
-              ThemeChanger.setTheme(context, ThemeAmoled.theme);
-            }),
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
               child: GeneralSettingsPageState.settingToggle(
-                shouldFollowSystemTheme,
-                title: "Follow System Theme",
-                description: "Automatically follow System Theme",
-                onChanged: (value) {
+                preferences.shouldFollowSystemTheme,
+                title: "Follow System Brightness",
+                description: "Automatically follow system Light / Dark mode",
+                onChanged: (value) async {
                   setState(() {
-                    shouldFollowSystemTheme = value;
-                    preferences.setShouldFollowSystemTheme(value);
+                    preferences.setShouldFollowSystemBrightness(value);
                   });
-                  if (value) {
-                    ThemeChanger.updateSystemTheme(context);
-                  } else {
-                    var theme = {
-                      AppTheme.dark: ThemeDark.theme,
-                      AppTheme.light: ThemeLight.theme,
-                      AppTheme.amoled: ThemeAmoled.theme,
-                    }[preferences.theme];
-                    ThemeChanger.setTheme(context, theme!);
-                  }
+
+                  var theme = await preferences.resolveTheme();
+                  if (context.mounted) ThemeChanger.setTheme(context, theme);
                 },
               ),
             ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
+              child: GeneralSettingsPageState.settingToggle(
+                preferences.shouldFollowSystemColors,
+                title: "Follow System Colors",
+                description: "Automatically follow system color scheme",
+                onChanged: (value) async {
+                  setState(() {
+                    preferences.setShouldFollowSystemColors(value);
+                  });
+                  var theme = await preferences.resolveTheme();
+                  if (context.mounted) ThemeChanger.setTheme(context, theme);
+                },
+              ),
+            ),
+            const Seperator(),
+            const ThemeListWidget(),
           ]),
         ),
         const SizedBox(

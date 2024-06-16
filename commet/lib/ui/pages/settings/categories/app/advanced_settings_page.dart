@@ -46,7 +46,7 @@ class _AdvancedSettingsPageState extends State<AdvancedSettingsPage> {
       children: [
         Panel(
           header: labelSettingsDeveloperMode,
-          mode: TileType.surfaceLow2,
+          mode: TileType.surfaceContainerLow,
           child: Column(children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -79,7 +79,7 @@ class _AdvancedSettingsPageState extends State<AdvancedSettingsPage> {
         ),
         Panel(
           header: labelStickerCompatibility,
-          mode: TileType.surfaceLow2,
+          mode: TileType.surfaceContainerLow,
           child: Column(children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

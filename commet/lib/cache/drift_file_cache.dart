@@ -42,7 +42,7 @@ class DriftFileCache implements FileCache {
   bool isInit = false;
   late DriftFileCacheDatabase db;
 
-  static final String isolateName = "chat.commet.commetapp.isolate.file_cache";
+  static const String isolateName = "chat.commet.commetapp.isolate.file_cache";
 
   @override
   Future<void> clean() async {

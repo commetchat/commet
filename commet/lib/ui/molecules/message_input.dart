@@ -19,8 +19,6 @@ import 'package:implicitly_animated_list/implicitly_animated_list.dart';
 import 'package:intl/intl.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
 import 'package:pasteboard/pasteboard.dart';
-import 'package:tiamat/config/config.dart';
-import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import '../../client/attachment.dart';
 import '../../client/components/emoticon/emoticon.dart';
@@ -371,78 +369,76 @@ class MessageInputState extends State<MessageInput> {
 
   @override
   Widget build(BuildContext context) {
-    var padding = const EdgeInsets.fromLTRB(5, 0, 5, 0);
+    var padding = const EdgeInsets.fromLTRB(0, 0, 0, 0);
+
     return Material(
       color: Colors.transparent,
       child: TextFieldTapRegion(
         child: Opacity(
           opacity: widget.isProcessing ? 0.5 : 1,
-          child: Tile(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                typingUsersWidget(),
-                if (widget.interactionType != null) interactionText(),
-                if (widget.attachments != null &&
-                    widget.attachments!.isNotEmpty)
-                  displayAttachments(),
-                ConstrainedBox(
-                  constraints: const BoxConstraints(maxHeight: 200),
-                  child: Padding(
-                    padding: padding,
-                    child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (widget.enabled) addAttachmentButton(),
-                          Flexible(
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(5),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                    color: Theme.of(context)
-                                        .extension<ExtraColors>()!
-                                        .surfaceLow2),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    textInput(context),
-                                    if (widget.enabled) toggleEmojiButton(),
-                                  ],
-                                ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              typingUsersWidget(),
+              if (widget.interactionType != null) interactionText(),
+              if (widget.attachments != null && widget.attachments!.isNotEmpty)
+                displayAttachments(),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 200),
+                child: Padding(
+                  padding: padding,
+                  child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (widget.enabled) addAttachmentButton(),
+                        Flexible(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(5),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .surfaceContainerLow),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  textInput(context),
+                                  if (widget.enabled) toggleEmojiButton(),
+                                ],
                               ),
                             ),
                           ),
-                          if (widget.enabled) sendMessageButton()
-                        ]),
-                  ),
-                ),
-                SizedBox(
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const SizedBox(height: 30),
-                        if (autoFillResults != null) autofillResultsList(),
-                        if (autoFillResults == null)
-                          const Expanded(child: SizedBox()),
-                        if (widget.readIndicator != null &&
-                            autoFillResults?.isEmpty != false)
-                          readReceipts()
+                        ),
+                        if (widget.enabled) sendMessageButton()
                       ]),
                 ),
-                if (widget.availibleEmoticons != null &&
-                    widget.availibleStickers != null)
-                  AnimatedContainer(
-                    curve: Curves.easeOutExpo,
-                    duration: const Duration(milliseconds: 500),
-                    height: showEmotePicker ? emotePickerHeight : 0,
-                    child: ClipRect(child: buildEmojiPicker()),
-                  )
-              ],
-            ),
+              ),
+              SizedBox(
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const SizedBox(height: 30),
+                      if (autoFillResults != null) autofillResultsList(),
+                      if (autoFillResults == null)
+                        const Expanded(child: SizedBox()),
+                      if (widget.readIndicator != null &&
+                          autoFillResults?.isEmpty != false)
+                        readReceipts()
+                    ]),
+              ),
+              if (widget.availibleEmoticons != null &&
+                  widget.availibleStickers != null)
+                AnimatedContainer(
+                  curve: Curves.easeOutExpo,
+                  duration: const Duration(milliseconds: 500),
+                  height: showEmotePicker ? emotePickerHeight : 0,
+                  child: ClipRect(child: buildEmojiPicker()),
+                )
+            ],
           ),
         ),
       ),
@@ -507,7 +503,7 @@ class MessageInputState extends State<MessageInput> {
                   borderRadius: BorderRadius.circular(3),
                   child: Material(
                     color: selected
-                        ? Theme.of(context).extension<ExtraColors>()!.highlight
+                        ? Theme.of(context).colorScheme.tertiaryContainer
                         : Colors.transparent,
                     child: InkWell(
                       onTap: () => applyAutoFill(data),
@@ -520,8 +516,8 @@ class MessageInputState extends State<MessageInput> {
                             tiamat.Text.labelLow(
                               data.result,
                               color: selected
-                                  ? Theme.of(context).colorScheme.onPrimary
-                                  : null,
+                                  ? Theme.of(context).colorScheme.tertiary
+                                  : Theme.of(context).colorScheme.secondary,
                             ),
                           ],
                         ),
@@ -537,18 +533,17 @@ class MessageInputState extends State<MessageInput> {
     );
   }
 
-  Padding sendMessageButton() {
+  Widget sendMessageButton() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 0, 0, 0),
-      child: SizedBox(
-          width: widget.size,
-          height: widget.size,
-          child: tiamat.IconButton(
-            icon: Icons.send,
-            onPressed: sendMessage,
-            size: widget.size * widget.iconScale,
-          )),
-    );
+        padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+        child: SizedBox(
+            width: widget.size,
+            height: widget.size,
+            child: tiamat.CircleButton(
+              icon: Icons.send,
+              radius: widget.size * widget.iconScale,
+              onPressed: sendMessage,
+            )));
   }
 
   Widget toggleEmojiButton() {
@@ -595,7 +590,7 @@ class MessageInputState extends State<MessageInput> {
 
   Padding addAttachmentButton() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
+      padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
       child: SizedBox(
         width: widget.size,
         height: widget.size,

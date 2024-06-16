@@ -10,7 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:signal_sticker_api/signal_sticker_api.dart';
 import 'package:tiamat/atoms/panel.dart';
-import 'package:tiamat/config/style/theme_extensions.dart';
 
 import 'package:path/path.dart' as p;
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -249,7 +248,7 @@ class _EmoticonBulkImportDialogState extends State<EmoticonBulkImportDialog> {
 
   Widget packEdit() {
     return Panel(
-      mode: tiamat.TileType.surfaceLow2,
+      mode: tiamat.TileType.surfaceContainerLow,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(4, 8, 4, 4),
         child: Row(
@@ -363,8 +362,8 @@ class _EmoticonBulkImportDialogState extends State<EmoticonBulkImportDialog> {
 
   Widget entryBuilder(BuildContext context, int index) {
     var background = index % 2 == 0
-        ? Theme.of(context).extension<ExtraColors>()!.surfaceLow2
-        : Theme.of(context).extension<ExtraColors>()!.surfaceLow3;
+        ? Theme.of(context).colorScheme.surfaceContainerLow
+        : Theme.of(context).colorScheme.surfaceContainerHigh;
 
     var loading = images?[index] != null;
 

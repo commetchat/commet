@@ -13,7 +13,6 @@ import 'package:commet/utils/common_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tiamat/atoms/circle_button.dart';
-import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:path/path.dart' as path;
 
@@ -321,10 +320,9 @@ class _EmojiPackEditorState extends State<EmojiPackEditor> {
         borderRadius: BorderRadius.circular(10),
         child: ExpansionTile(
             initiallyExpanded: widget.initiallyExpanded,
-            backgroundColor:
-                Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+            backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
             collapsedBackgroundColor:
-                Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+                Theme.of(context).colorScheme.surfaceContainerLow,
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

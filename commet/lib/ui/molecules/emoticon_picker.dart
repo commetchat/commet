@@ -95,7 +95,7 @@ class _EmoticonPickerState extends State<EmoticonPicker>
                 )
             ]),
           ),
-          tiamat.Tile.low3(
+          tiamat.Tile.low(
             child: SizedBox(
               height: 40,
               child: TabBar(controller: controller, tabs: [

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:tiamat/config/config.dart';
 import 'package:tiamat/config/style/theme_dark.dart';
 import 'package:tiamat/config/style/theme_light.dart';
+import 'package:tiamat/config/style/theme_you.dart';
 import 'package:widgetbook/widgetbook.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import 'dart:io' show Platform;
@@ -17,7 +19,15 @@ class WidgetbookApp extends StatelessWidget {
 
   final ThemeAddon themes = MaterialThemeAddon(themes: [
     WidgetbookTheme(name: "Dark", data: ThemeDark.theme),
-    WidgetbookTheme(name: "Light", data: ThemeLight.theme)
+    WidgetbookTheme(
+        name: "Dark (Glass)",
+        data: ThemeDark.theme
+            .copyWith(extensions: [GlassSettings(), ThemeSettings()])),
+    WidgetbookTheme(name: "Light", data: ThemeLight.theme),
+    WidgetbookTheme(
+        name: "Light (Glass)",
+        data: ThemeLight.theme
+            .copyWith(extensions: [GlassSettings(), ThemeSettings()])),
   ]);
 
   @override
