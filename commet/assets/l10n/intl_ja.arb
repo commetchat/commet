@@ -641,5 +641,71 @@
     "description": "Button text to generate a recovery key",
     "type": "text",
     "placeholders": {}
+  },
+  "labelExistingMatrixKeysFound": "既存の署名キーが見つかりました!",
+  "@labelExistingMatrixKeysFound": {
+    "description": "Text that is shown when the user is setting up cross signing, but has existing keys",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptEnableMatrixBackup": "バックアップを有効化",
+  "@promptEnableMatrixBackup": {
+    "description": "Button text to enable to encrypted message backup",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixRecoveryKeyExplanation": "これは回復キーです。他のすべてのセッションにアクセスできなくなった場合に、このキーを使用してセッションを検証できます。安全な場所に保管してください!",
+  "@labelMatrixRecoveryKeyExplanation": {
+    "description": "Gives a brief description about the function on the recovery key",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelAskUseExistingMatrixKeys": "既存のキーを使用しますか?",
+  "@labelAskUseExistingMatrixKeys": {
+    "description": "Text that is shown when the user is setting up cross signing, but has existing keys and asks the user if they would like to use those keys",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixRecoveryKeyCreateExplanation": "メッセージ履歴にアクセスするために使用できるセキュリティキーを設定する必要があります。キーを生成することも、独自のセキュリティフレーズを選択することもできます。",
+  "@labelMatrixRecoveryKeyCreateExplanation": {
+    "description": "Explains what the matrix recovery key does, and that it can be generated or user input",
+    "type": "text",
+    "placeholders": {}
+  },
+  "fileDragDropPrompt": "アップロードするファイルをここにドロップ...",
+  "@fileDragDropPrompt": {
+    "description": "Text that is shown when a user is dragging a file",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageFailedToDecrypt": "イベントの復号化に失敗しました",
+  "@messageFailedToDecrypt": {
+    "description": "Placeholde text for when a message fails to decrypt",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptSetMatrixPassphrase": "フレーズの設定",
+  "@promptSetMatrixPassphrase": {
+    "description": "Button text to set a passphrase",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptUseExistingMatrixKeys": "既存のキーを使用",
+  "@promptUseExistingMatrixKeys": {
+    "description": "Button text to opt to use existing keys",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptCreateNewMatrixKeys": "いいえ、新しいキーを作成",
+  "@promptCreateNewMatrixKeys": {
+    "description": "Button text to opt to create new keys",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptWipeMatrixBackup": "バックアップを削除",
+  "@promptWipeMatrixBackup": {
+    "description": "Button text to wipe the matrix message backup",
+    "type": "text",
+    "placeholders": {}
   }
 }
