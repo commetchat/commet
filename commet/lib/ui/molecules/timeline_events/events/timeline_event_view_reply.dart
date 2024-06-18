@@ -72,26 +72,43 @@ class _TimelineEventViewReplyState extends State<TimelineEventViewReply> {
             ),
           ),
         ),
-        Column(
-          children: [
-            tiamat.Text(
-              senderName ?? "Loading",
-              color: senderColor,
-              autoAdjustBrightness: true,
-            ),
-          ],
-        ),
         Flexible(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-            child: tiamat.Text(
-              body ?? "Unknown",
-              maxLines: 2,
+          child: RichText(
               overflow: TextOverflow.ellipsis,
-              color: material.Theme.of(context).colorScheme.secondary,
-            ),
-          ),
-        ),
+              maxLines: 2,
+              text: TextSpan(children: [
+                TextSpan(
+                    text: "${senderName ?? "Loading"} ",
+                    style: TextStyle(
+                        color: tiamat.Text.adjustColor(
+                            context, senderColor ?? Colors.white))),
+                TextSpan(
+                    text: body ?? "Unknown",
+                    style: TextStyle(
+                        color:
+                            material.Theme.of(context).colorScheme.secondary)),
+              ])),
+        )
+        // Column(
+        //   children: [
+        //     tiamat.Text(
+        //       senderName ?? "Loading",
+        //       color: senderColor,
+        //       autoAdjustBrightness: true,
+        //     ),
+        //   ],
+        // ),
+        // Flexible(
+        //   child: Padding(
+        //     padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+        //     child: tiamat.Text(
+        //       body ?? "Unknown",
+        //       maxLines: 2,
+        //       overflow: TextOverflow.ellipsis,
+        //       color: material.Theme.of(context).colorScheme.secondary,
+        //     ),
+        //   ),
+        // ),
       ]),
     );
   }
@@ -122,7 +139,7 @@ class ReplyLinePainter2 extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     Path path = Path();
     path.moveTo(avatarSize / 2, size.height - padding);
-    path.relativeLineTo(0, (-size.height + 11 + padding) + radius);
+    path.relativeLineTo(0, (-size.height + 9 + padding) + radius);
     path.relativeArcToPoint(Offset(radius, -radius),
         radius: Radius.circular(radius));
     path.relativeLineTo(size.width - (avatarSize / 2) - radius - padding, 0);
