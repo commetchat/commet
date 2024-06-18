@@ -122,7 +122,9 @@ class MainPageViewDesktop extends StatelessWidget {
                   child: SpaceViewer(
                 state.currentSpace!,
                 key: ValueKey("space-view-key-${state.currentSpace!.localId}"),
-                onRoomInsert: state.currentSpace!.onRoomAdded,
+                onChildAdded: state.clientManager.onSpaceAdded,
+                onChildRemoved: state.clientManager.onSpaceRemoved,
+                onChildUpdated: state.clientManager.onSpaceUpdated.stream,
                 onRoomSelected: (room) {
                   state.selectRoom(room);
                 },

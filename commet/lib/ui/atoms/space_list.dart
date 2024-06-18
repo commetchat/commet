@@ -8,8 +8,17 @@ import 'package:implicitly_animated_list/implicitly_animated_list.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class SpaceList extends StatefulWidget {
-  const SpaceList(this.space, {this.onRoomSelected, super.key});
+  const SpaceList(this.space,
+      {this.onRoomSelected,
+      this.onChildAdded,
+      this.onChildRemoved,
+      this.onChildUpdated,
+      super.key});
   final Function(Room room)? onRoomSelected;
+
+  final Stream<void>? onChildAdded;
+  final Stream<void>? onChildRemoved;
+  final Stream<void>? onChildUpdated;
 
   final Space space;
 
@@ -33,6 +42,12 @@ class _SpaceListState extends State<SpaceList> {
 
     subs = [
       widget.space.onUpdate.listen(onSpaceUpdated),
+      if (widget.onChildAdded != null)
+        widget.onChildAdded!.listen(onSpaceUpdated),
+      if (widget.onChildRemoved != null)
+        widget.onChildRemoved!.listen(onSpaceUpdated),
+      if (widget.onChildUpdated != null)
+        widget.onChildUpdated!.listen(onSpaceUpdated),
       for (var room in widget.space.rooms) room.onUpdate.listen(onRoomUpdated),
     ];
 
