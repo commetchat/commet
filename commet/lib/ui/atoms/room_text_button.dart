@@ -1,10 +1,12 @@
+import 'dart:async';
+
 import 'package:commet/client/room.dart';
 import 'package:commet/ui/atoms/dot_indicator.dart';
 import 'package:commet/ui/atoms/notification_badge.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
-class RoomTextButton extends StatelessWidget {
+class RoomTextButton extends StatefulWidget {
   const RoomTextButton(this.room,
       {this.highlight = false, this.onTap, super.key});
   final bool highlight;
@@ -12,27 +14,52 @@ class RoomTextButton extends StatelessWidget {
   final Function(Room room)? onTap;
 
   @override
+  State<RoomTextButton> createState() => _RoomTextButtonState();
+}
+
+class _RoomTextButtonState extends State<RoomTextButton> {
+  StreamSubscription? sub;
+
+  @override
+  void initState() {
+    sub = widget.room.onUpdate.listen(onRoomUpdate);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    sub?.cancel();
+    super.dispose();
+  }
+
+  void onRoomUpdate(void event) {
+    setState(() {});
+  }
+
+  @override
   Widget build(BuildContext context) {
-    IconData icon = room.isDirectMessage ? Icons.alternate_email : Icons.tag;
+    IconData icon =
+        widget.room.isDirectMessage ? Icons.alternate_email : Icons.tag;
 
     var color = Theme.of(context).colorScheme.secondary;
 
-    if (room.notificationCount > 0 ||
-        room.highlightedNotificationCount > 0 ||
-        highlight) color = Theme.of(context).colorScheme.onSurface;
+    if (widget.room.notificationCount > 0 ||
+        widget.room.highlightedNotificationCount > 0 ||
+        widget.highlight) color = Theme.of(context).colorScheme.onSurface;
 
     return SizedBox(
         height: 30,
         child: tiamat.TextButton(
-          highlighted: highlight,
-          room.displayName,
+          highlighted: widget.highlight,
+          widget.room.displayName,
           icon: icon,
           iconColor: color,
           textColor: color,
-          onTap: () => onTap?.call(room),
-          footer: room.displayHighlightedNotificationCount > 0
-              ? NotificationBadge(room.displayHighlightedNotificationCount)
-              : room.displayNotificationCount > 0
+          onTap: () => widget.onTap?.call(widget.room),
+          footer: widget.room.displayHighlightedNotificationCount > 0
+              ? NotificationBadge(
+                  widget.room.displayHighlightedNotificationCount)
+              : widget.room.displayNotificationCount > 0
                   ? const Padding(
                       padding: EdgeInsets.all(2.0),
                       child: DotIndicator(),

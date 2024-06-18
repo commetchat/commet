@@ -4,6 +4,7 @@ import 'package:commet/client/client.dart';
 import 'package:commet/ui/atoms/room_text_button.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
+import 'package:implicitly_animated_list/implicitly_animated_list.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class SpaceList extends StatefulWidget {
@@ -38,6 +39,16 @@ class _SpaceListState extends State<SpaceList> {
     super.initState();
   }
 
+  void onSpaceUpdated(void event) {
+    setState(() {
+      subSpaces = widget.space.subspaces;
+    });
+  }
+
+  void onRoomUpdated(void event) {
+    setState(() {});
+  }
+
   @override
   void dispose() {
     for (var sub in subs) {
@@ -58,29 +69,28 @@ class _SpaceListState extends State<SpaceList> {
       children: [
         if (subSpaces.isNotEmpty)
           Padding(
-            padding: const EdgeInsets.fromLTRB(0, 12, 0, 0),
-            child: ListView.builder(
-              itemCount: subSpaces.length,
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                var data = subSpaces[index];
-                return tiamat.TextButtonExpander(data.displayName,
-                    initiallyExpanded: true,
-                    iconColor: Theme.of(context).colorScheme.secondary,
-                    textColor: Theme.of(context).colorScheme.secondary,
-                    icon: Icons.format_list_bulleted,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
-                        child: SpaceList(
-                          data,
-                          onRoomSelected: widget.onRoomSelected,
-                        ),
-                      )
-                    ]);
-              },
-            ),
-          ),
+              padding: const EdgeInsets.fromLTRB(0, 12, 0, 0),
+              child: ImplicitlyAnimatedList(
+                itemData: subSpaces,
+                shrinkWrap: true,
+                initialAnimation: false,
+                itemBuilder: (context, data) {
+                  return tiamat.TextButtonExpander(data.displayName,
+                      initiallyExpanded: true,
+                      iconColor: Theme.of(context).colorScheme.secondary,
+                      textColor: Theme.of(context).colorScheme.secondary,
+                      icon: Icons.format_list_bulleted,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
+                          child: SpaceList(
+                            data,
+                            onRoomSelected: widget.onRoomSelected,
+                          ),
+                        )
+                      ]);
+                },
+              )),
         if (widget.space.rooms.isNotEmpty) roomsList()
       ],
     );
@@ -104,11 +114,11 @@ class _SpaceListState extends State<SpaceList> {
   }
 
   Widget buildRoomsList() {
-    return ListView.builder(
-      itemCount: widget.space.rooms.length,
+    return ImplicitlyAnimatedList(
+      itemData: widget.space.rooms,
       shrinkWrap: true,
-      itemBuilder: (context, index) {
-        var data = widget.space.rooms[index];
+      initialAnimation: false,
+      itemBuilder: (context, data) {
         return SizedBox(
             height: 30,
             child: RoomTextButton(
@@ -118,13 +128,5 @@ class _SpaceListState extends State<SpaceList> {
             ));
       },
     );
-  }
-
-  void onSpaceUpdated(void event) {
-    setState(() {});
-  }
-
-  void onRoomUpdated(void event) {
-    setState(() {});
   }
 }

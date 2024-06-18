@@ -134,7 +134,30 @@ class MatrixSpace extends Space {
   late List<StreamSubscription> _subscriptions;
 
   @override
-  bool get isTopLevel => _matrixRoom.spaceParents.isEmpty;
+  bool get isTopLevel {
+    var parents = _matrixRoom.spaceParents;
+
+    bool anyParentContainsRoom = false;
+    for (var parent in parents) {
+      if (parent.roomId == null) {
+        continue;
+      }
+
+      var room = _matrixClient.getRoomById(parent.roomId!);
+      if (room == null) {
+        continue;
+      }
+
+      var contains =
+          room.spaceChildren.any((child) => child.roomId == _matrixRoom.id);
+      if (contains) {
+        anyParentContainsRoom = true;
+        break;
+      }
+    }
+
+    return !anyParentContainsRoom;
+  }
 
   MatrixSpace(
       MatrixClient client, matrix.Room room, matrix.Client matrixClient) {
