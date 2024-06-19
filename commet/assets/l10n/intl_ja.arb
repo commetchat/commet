@@ -707,5 +707,101 @@
     "description": "Button text to wipe the matrix message backup",
     "type": "text",
     "placeholders": {}
+  },
+  "labelMatrixPromptPassphrase": "セキュリティフレーズ:",
+  "@labelMatrixPromptPassphrase": {
+    "description": "Prompt the user to enter passphrase",
+    "type": "text",
+    "placeholders": {}
+  },
+  "placeholderMatrixEnterSecutiyPhrase": "セキュリティフレーズ",
+  "@placeholderMatrixEnterSecutiyPhrase": {
+    "description": "Placeholder text for the passphrase text box",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixAskWipeBackupToContinue": "クロス署名キーを変更する場合は、既存のバックアップを消去する必要があります... 続行しますか?",
+  "@labelMatrixAskWipeBackupToContinue": {
+    "description": "Asks the user if they want to wipe their existing backup to continue changing their cross signing keys",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixRecoveryKeyPromptExplanation": "古いメッセージのロックを解除するには、以前のセッションで生成された回復キーを入力してください。回復キーはパスワードではありません。",
+  "@labelMatrixRecoveryKeyPromptExplanation": {
+    "description": "Shown when a user is attempting to recover their old messages, explains that they need the recovery key",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptMatrixRecoveryKeyInput": "リカバリーキー",
+  "@promptMatrixRecoveryKeyInput": {
+    "description": "Placeholder text for the recovery key input box",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmWipingCrossSigningKeys": "クロス署名キーを消去してもよろしいですか?",
+  "@promptConfirmWipingCrossSigningKeys": {
+    "description": "Asks the user if they are sure they want to wipe the keys",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixSecurityPhraseShouldNotBePassword": "セキュリティフレーズはアカウントのパスワードとは異なる必要があります",
+  "@labelMatrixSecurityPhraseShouldNotBePassword": {
+    "description": "Tells the user to not use their password as their security phrase",
+    "type": "text",
+    "placeholders": {}
+  },
+  "errorMatrixPassphraseMustContainUpperAndLowercase": "パスフレーズには少なくとも1つの大文字と1つの小文字を含める必要があります",
+  "@errorMatrixPassphraseMustContainUpperAndLowercase": {
+    "description": "Explains constraints of recovery passphrase",
+    "type": "text",
+    "placeholders": {}
+  },
+  "errorMatrixPassphraseMustContainNumber": "パスフレーズには少なくとも 1 つの数字を含める必要があります",
+  "@errorMatrixPassphraseMustContainNumber": {
+    "description": "Explains constraints of recovery passphrase",
+    "type": "text",
+    "placeholders": {}
+  },
+  "errorMatrixPassphraseMustContainSymbol": "パスフレーズには少なくとも 1つの記号を含める必要があります",
+  "@errorMatrixPassphraseMustContainSymbol": {
+    "description": "Explains constraints of recovery passphrase",
+    "type": "text",
+    "placeholders": {}
+  },
+  "erroMatrixPassphraseMustBeLonger": "パスフレーズは10文字以上である必要があります",
+  "@erroMatrixPassphraseMustBeLonger": {
+    "description": "Explains constraints of recovery passphrase",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixConfirmSecurityPhrase": "セキュリティフレーズを確認してください:",
+  "@labelMatrixConfirmSecurityPhrase": {
+    "description": "Prompts the user to input their passphrase again",
+    "type": "text",
+    "placeholders": {}
+  },
+  "placeholderMatrixConfirmSecurityPhrase": "セキュリティフレーズを確認してください",
+  "@placeholderMatrixConfirmSecurityPhrase": {
+    "description": "Placeholder text for the confirm passphrase text input",
+    "type": "text",
+    "placeholders": {}
+  },
+  "errorMatrixPassphrasesDontMatch": "パスフレーズが一致しません",
+  "@errorMatrixPassphrasesDontMatch": {
+    "description": "Error when the user enters passphrase twice and the two dont match",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixExistingMessageBackupFound": "既存のバックアップが見つかりました!",
+  "@labelMatrixExistingMessageBackupFound": {
+    "description": "Message to explain that existing backup has been found",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixWarnResetKeysIsPermanent": "キーをリセットは永久的です、チャット履歴のバックアップが失われます。絶対にこの操作は行わないでください!",
+  "@labelMatrixWarnResetKeysIsPermanent": {
+    "description": "Explains that resetting keys is permanent, should emphasize that this isnt really a great idea",
+    "type": "text",
+    "placeholders": {}
   }
 }
