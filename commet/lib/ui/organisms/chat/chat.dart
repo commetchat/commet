@@ -174,8 +174,7 @@ class ChatState extends State<Chat> {
     if (component?.isExecutable(message) == true) {
       component?.executeCommand(message, room,
           interactingEvent: interactingEvent, type: interactionType);
-    }
-    if (isThread) {
+    } else if (isThread) {
       threadsComponent!.sendMessage(
           threadRootEventId: widget.threadId!,
           room: room,
