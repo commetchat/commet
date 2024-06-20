@@ -139,6 +139,11 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
   }
 
   void onEventRemoved(int index) {
+    if (index < recentItemsCount) {
+      recentItemsCount -= 1;
+    } else {
+      historyItemsCount = widget.timeline.events.length - recentItemsCount;
+    }
     var removed = eventKeys.removeAt(index);
     assert(widget.timeline.events[index].eventId == removed.$2);
   }

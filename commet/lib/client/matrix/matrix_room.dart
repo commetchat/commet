@@ -26,6 +26,7 @@ import 'package:commet/utils/image_utils.dart';
 import 'package:commet/utils/mime.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:html_unescape/html_unescape.dart';
 
 // ignore: implementation_imports
@@ -300,12 +301,22 @@ class MatrixRoom extends Room {
       attachment.mimeType = "image/png";
     }
 
-    if (Mime.imageTypes.contains(attachment.mimeType)) {
-      return await matrix.MatrixImageFile.create(
-          bytes: attachment.data!,
-          name: attachment.name ?? "unknown",
-          mimeType: attachment.mimeType,
-          nativeImplementations: (client as MatrixClient).nativeImplentations);
+    try {
+      if (Mime.imageTypes.contains(attachment.mimeType)) {
+        await decodeImageFromList(attachment.data!);
+
+        return await matrix.MatrixImageFile.create(
+            bytes: attachment.data!,
+            name: attachment.name ?? "unknown",
+            mimeType: attachment.mimeType,
+            nativeImplementations:
+                (client as MatrixClient).nativeImplentations);
+      }
+    } catch (error, stack) {
+      // This image is probably corrupt, since it has a mime type we should be able to display,
+      // But we can't decode the image. Just clear the mime type so clients dont try to display this bad file
+      attachment.mimeType = 'application/octet-stream';
+      Log.onError(error, stack);
     }
 
     return matrix.MatrixFile(
@@ -329,11 +340,12 @@ class MatrixRoom extends Room {
     }
 
     if (processedAttachments != null) {
-      Future.wait(processedAttachments
-          .whereType<MatrixProcessedAttachment>()
-          .map((e) => _matrixRoom.sendFileEvent(e.file,
-              threadLastEventId: threadLastEventId,
-              threadRootEventId: threadRootEventId)));
+      Future.wait(
+          processedAttachments.whereType<MatrixProcessedAttachment>().map((e) {
+        return _matrixRoom.sendFileEvent(e.file,
+            threadLastEventId: threadLastEventId,
+            threadRootEventId: threadRootEventId);
+      }));
     }
 
     if (message != null && message.trim().isNotEmpty) {

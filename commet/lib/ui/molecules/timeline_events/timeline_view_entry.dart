@@ -12,6 +12,8 @@ import 'package:commet/ui/molecules/timeline_events/timeline_event_menu.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_menu_dialog.dart';
 import 'package:flutter/material.dart';
 
+import 'package:tiamat/tiamat.dart' as tiamat;
+
 class TimelineViewEntry extends StatefulWidget {
   const TimelineViewEntry(
       {required this.timeline,
@@ -123,8 +125,9 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
   @override
   void update(int newIndex) {
     index = newIndex;
-    // setState(() {
-    loadState(newIndex);
+    setState(() {
+      loadState(newIndex);
+    });
 
     if (eventKey.currentState is TimelineEventViewWidget) {
       (eventKey.currentState as TimelineEventViewWidget).update(newIndex);
@@ -140,6 +143,22 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
     if (status == TimelineEventStatus.removed) return Container();
 
     var result = buildEvent();
+
+    if (status == TimelineEventStatus.sending && result != null) {
+      result = Opacity(
+        opacity: 0.5,
+        child: result,
+      );
+    }
+
+    if (status == TimelineEventStatus.error && result != null) {
+      result = Column(
+        children: [
+          result,
+          const tiamat.Text.error("Failed to send"),
+        ],
+      );
+    }
 
     if (Layout.desktop) {
       result = MouseRegion(
