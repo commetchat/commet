@@ -1,3 +1,5 @@
+import 'package:commet/client/components/push_notification/notification_manager.dart';
+import 'package:commet/client/room.dart';
 import 'package:commet/client/timeline.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/molecules/message_input.dart';
@@ -57,6 +59,7 @@ class ChatView extends StatelessWidget {
             setEditingEvent: (event) => state.setInteractingEvent(event,
                 type: EventInteractionType.edit),
             isThreadTimeline: state.isThread,
+            clearNotifications: clearNotifications,
           );
   }
 
@@ -67,6 +70,15 @@ class ChatView extends StatelessWidget {
     }
 
     state.room.timeline!.markAsRead(event);
+  }
+
+  clearNotifications(Room room) {
+    // if we clear notifications when opening bubble, the bubble disappears
+    if (state.isBubble) {
+      return;
+    }
+
+    NotificationManager.clearNotifications(room);
   }
 
   Widget input() {

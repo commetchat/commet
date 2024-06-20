@@ -23,9 +23,10 @@ import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class Chat extends StatefulWidget {
-  const Chat(this.room, {this.threadId, super.key});
+  const Chat(this.room, {this.threadId, this.isBubble = false, super.key});
   final Room room;
   final String? threadId;
+  final bool isBubble;
   @override
   State<Chat> createState() => ChatState();
 }
@@ -74,6 +75,8 @@ class ChatState extends State<Chat> {
   DateTime lastSetTyping = DateTime.fromMicrosecondsSinceEpoch(0);
 
   bool get isThread => widget.threadId != null;
+
+  bool get isBubble => widget.isBubble;
 
   @override
   void initState() {
