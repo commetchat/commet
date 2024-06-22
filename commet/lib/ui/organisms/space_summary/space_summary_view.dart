@@ -257,6 +257,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
           ListView.builder(
             shrinkWrap: true,
             itemCount: widget.spaces!.length,
+            physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
               var space = widget.spaces![index];
               return RoomPanel(

@@ -22,26 +22,29 @@ class ThemeAmoledColors {
 }
 
 class ThemeAmoled {
-  static ThemeData get theme => ThemeBase.theme(Brightness.dark).copyWith(
-        brightness: Brightness.dark,
-        extensions: const [
-          ThemeSettings(caulkBorders: true, caulkStrokeThickness: 1)
-        ],
-        colorScheme: const ColorScheme(
-            primary: Colors.white,
-            secondary: ThemeAmoledColors.secondary,
-            secondaryContainer: Color.fromARGB(255, 40, 40, 40),
-            surface: ThemeAmoledColors.surface,
-            error: Color.fromARGB(255, 255, 124, 124),
-            onPrimary: Colors.white,
-            onSecondary: ThemeAmoledColors.onSurface,
-            onSurface: Colors.white,
-            onError: Colors.white,
-            tertiaryContainer: Colors.black,
-            brightness: Brightness.dark,
-            outline: ThemeAmoledColors.surfaceHigh1),
-        listTileTheme: const ListTileThemeData(
-          tileColor: ThemeAmoledColors.surface,
-        ),
-      );
+  static ThemeData get theme {
+    var base = ThemeBase.theme(Brightness.dark);
+    return base.copyWith(
+      brightness: Brightness.dark,
+      extensions: const [
+        ThemeSettings(caulkBorders: true, caulkStrokeThickness: 1)
+      ],
+      colorScheme: const ColorScheme(
+          primary: Colors.white,
+          secondary: ThemeAmoledColors.secondary,
+          secondaryContainer: Color.fromARGB(255, 40, 40, 40),
+          surface: ThemeAmoledColors.surface,
+          error: Color.fromARGB(255, 255, 124, 124),
+          onPrimary: Colors.white,
+          onSecondary: ThemeAmoledColors.onSurface,
+          onSurface: Colors.white,
+          onError: Colors.white,
+          tertiaryContainer: Colors.black,
+          brightness: Brightness.dark,
+          outline: ThemeAmoledColors.surfaceHigh1),
+      listTileTheme: base.listTileTheme.copyWith(
+        tileColor: ThemeAmoledColors.surface,
+      ),
+    );
+  }
 }
