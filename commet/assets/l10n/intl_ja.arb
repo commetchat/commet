@@ -991,5 +991,141 @@
     "description": "Header for the settings to enable sticker compatibility mode",
     "type": "text",
     "placeholders": {}
+  },
+  "roomVisibilityPublicExplanation": "このルームはインターネット上の誰でもアクセス可能になります。",
+  "@roomVisibilityPublicExplanation": {
+    "description": "Explains what 'public' visibility means",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsStickerCompatibilityExplanation": "一部のmatrixスクライアントでは、ステッカーを「m.sticker」として送信すると、ステッカーが正しく読み込まれません。この設定を有効にすると、ステッカーは「m.image」として送信され、正しくレンダリングされるようになります。",
+  "@labelSettingsStickerCompatibilityExplanation": {
+    "description": "Explains what sticker compatibility mode does",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsWindowBehaviourTitle": "ウィンドウの動作",
+  "@labelSettingsWindowBehaviourTitle": {
+    "description": "Header for the window behaviour section of settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsMinimizeOnCloseToggle": "閉じるときに最小化",
+  "@labelSettingsMinimizeOnCloseToggle": {
+    "description": "Label for the toggle to turn on and off minimize on close",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsMinimizeOnCloseExplanation": "ウィンドウを閉じると、アプリは終了するのではなく最小化されます。",
+  "@labelSettingsMinimizeOnCloseExplanation": {
+    "description": "Explains what the 'minimize on close' setting does",
+    "type": "text",
+    "placeholders": {}
+  },
+  "notificationSettingsNotSupported": "このシステムではプッシュ通知はサポートされていません。",
+  "@notificationSettingsNotSupported": {
+    "description": "Message to display when push notifications are not supported",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptLeaveRoom": "ルームを退出",
+  "@promptLeaveRoom": {
+    "description": "Text on a button to leave a room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptLeaveRoomConfirmation": "{roomName}から退出してもよろしいですか?",
+  "@promptLeaveRoomConfirmation": {
+    "description": "Text for the popup dialog confirming the intent to leave",
+    "type": "text",
+    "placeholders": {
+      "roomName": {}
+    }
+  },
+  "promptLeaveSpace": "スペースを退出",
+  "@promptLeaveSpace": {
+    "description": "Text on a button to leave a space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptLeaveSpaceConfirmation": "{spaceName}から退出してもよろしいですか?",
+  "@promptLeaveSpaceConfirmation": {
+    "description": "Text for the popup dialog confirming the intent to leave a space",
+    "type": "text",
+    "placeholders": {
+      "spaceName": {}
+    }
+  },
+  "messageLoginFailed": "ログインに失敗しました...",
+  "@messageLoginFailed": {
+    "description": "Generic text to show that an attempted login has failed",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageLoginError": "エラーが発生",
+  "@messageLoginError": {
+    "description": "A generic error message to convey that an error occured when attempting to login",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageAlreadyLoggedIn": "このアカウントにはすでにログインしています。",
+  "@messageAlreadyLoggedIn": {
+    "description": "An error message displayed when the user attempts to add an account which has already been logged in to on this device",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptHomeserver": "ホームサーバー",
+  "@promptHomeserver": {
+    "description": "Placeholder text for homeserver field on login form",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptUsername": "ユーザー名",
+  "@promptUsername": {
+    "description": "Placeholder text for username field on login form",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptPassword": "パスワード",
+  "@promptPassword": {
+    "description": "Placeholder text for password field on login form",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptSubmitLogin": "ログイン",
+  "@promptSubmitLogin": {
+    "description": "Prompt to submit the username and password, and attempt to login",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptRoomName": "ルーム名",
+  "@promptRoomName": {
+    "description": "Prompt to enter a room name, placeholder text for text input",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptSpaceName": "スペース名",
+  "@promptSpaceName": {
+    "description": "Prompt to enter a space name, placeholder text for text input",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptTopic": "トピック(オプション)",
+  "@promptTopic": {
+    "description": "Prompt to enter a topic for room or space, specifying that doing so is optional",
+    "type": "text",
+    "placeholders": {}
+  },
+  "roomVisibilityPrivateExplanation": "このルームは招待された人のみ参加できます。",
+  "@roomVisibilityPrivateExplanation": {
+    "description": "Explains what 'private' room visibility means",
+    "type": "text",
+    "placeholders": {}
+  },
+  "spaceVisibilityPrivateExplanation": "このルームは招待された人のみ参加できます。",
+  "@spaceVisibilityPrivateExplanation": {
+    "description": "Explains what 'private' space visibility means",
+    "type": "text",
+    "placeholders": {}
   }
 }
