@@ -31,8 +31,6 @@ class MatrixTimeline extends Timeline {
   }
 
   Future<void> initTimeline() async {
-    await (client as MatrixClient).firstSync;
-
     _matrixTimeline = await _matrixRoom.getTimeline(
       onInsert: onEventInserted,
       onChange: onEventChanged,
