@@ -95,44 +95,6 @@ class MatrixTimeline extends Timeline {
   }
 
   @override
-  List<String>? get receipts => getReceipts();
-
-  List<String>? getReceipts() {
-    if (_matrixTimeline == null) return null;
-    var state = _matrixTimeline!.room.receiptState;
-    if (state.mainThread == null) return null;
-
-    const displayableTypes = [
-      matrix.EventTypes.Message,
-      matrix.EventTypes.Sticker,
-    ];
-
-    Set<String> ids = {};
-    matrix.Event? latestDisplayableEvent;
-    for (int i = 0; i < _matrixTimeline!.events.length; i++) {
-      var event = _matrixTimeline!.events[i];
-      ids.add(event.eventId);
-
-      if (displayableTypes.contains(event.type)) {
-        latestDisplayableEvent = event;
-        break;
-      }
-    }
-
-    var receipts = state.mainThread!.otherUsers.entries
-        .where((element) => ids.contains(element.value.eventId))
-        .map((entry) => entry.key)
-        .toList(growable: true);
-
-    if (latestDisplayableEvent != null &&
-        latestDisplayableEvent.senderId != client.self!.identifier &&
-        !receipts.contains(latestDisplayableEvent.senderId))
-      receipts.add(latestDisplayableEvent.senderId);
-
-    return receipts;
-  }
-
-  @override
   Future<TimelineEvent?> fetchEventByIdInternal(String eventId) async {
     var event = await _matrixRoom.getEventById(eventId);
     if (event == null) return null;

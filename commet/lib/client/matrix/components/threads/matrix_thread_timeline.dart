@@ -182,9 +182,6 @@ class MatrixThreadTimeline implements Timeline {
   void notifyChanged(int index) {}
 
   @override
-  List<String>? get receipts => null;
-
-  @override
   TimelineEvent? tryGetEvent(String eventId) {
     return mainRoomTimeline.tryGetEvent(eventId);
   }

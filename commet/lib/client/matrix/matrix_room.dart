@@ -49,6 +49,8 @@ class MatrixRoom extends Room {
 
   final StreamController<void> _onUpdate = StreamController.broadcast();
 
+  final StreamController<void> onTimelineLoaded = StreamController.broadcast();
+
   late final List<RoomComponent<MatrixClient, MatrixRoom>> _components;
 
   final NotifyingList<String> _memberIds = NotifyingList.empty(growable: true);
@@ -462,6 +464,11 @@ class MatrixRoom extends Room {
   }
 
   @override
+  List<T> getAllComponents<T extends RoomComponent<Client, Room>>() {
+    return List.from(_components);
+  }
+
+  @override
   Future<void> close() async {
     await _onUpdate.close();
     await _onUpdateSubscription?.cancel();
@@ -472,6 +479,7 @@ class MatrixRoom extends Room {
   Future<Timeline> loadTimeline() async {
     _timeline = MatrixTimeline(client, this, matrixRoom);
     await _timeline!.initTimeline();
+    onTimelineLoaded.add(null);
     return _timeline!;
   }
 

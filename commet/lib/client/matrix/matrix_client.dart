@@ -7,6 +7,7 @@ import 'package:commet/client/components/component_registry.dart';
 import 'package:commet/client/error_profile.dart';
 import 'package:commet/client/matrix/auth/matrix_sso_login_flow.dart';
 import 'package:commet/client/matrix/auth/matrix_username_password_login_flow.dart';
+import 'package:commet/client/matrix/components/matrix_sync_listener.dart';
 import 'package:commet/client/matrix/database/matrix_database.dart';
 import 'package:commet/client/matrix/extensions/matrix_client_extensions.dart';
 import 'package:commet/client/matrix/matrix_profile.dart';
@@ -233,9 +234,28 @@ class MatrixClient extends Client {
   }
 
   void onMatrixClientSync(matrix.SyncUpdate update) {
+    _handleComponentSync(update);
+
     _onSync.add(null);
     _updateRoomslist();
     _updateSpacesList();
+  }
+
+  void _handleComponentSync(matrix.SyncUpdate update) {
+    var roomUpdates = update.rooms?.join;
+    if (roomUpdates != null) {
+      for (var key in roomUpdates.keys) {
+        var room = getRoom(key);
+        if (room != null) {
+          var components = room.getAllComponents();
+          for (var comp in components) {
+            if (comp is MatrixRoomSyncListener) {
+              (comp as MatrixRoomSyncListener).onSync(roomUpdates[key]!);
+            }
+          }
+        }
+      }
+    }
   }
 
   @override

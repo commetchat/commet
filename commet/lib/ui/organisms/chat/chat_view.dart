@@ -119,11 +119,14 @@ class ChatView extends StatelessWidget {
         cancelReply: () {
           state.setInteractingEvent(null);
         },
-        readIndicator: ReadIndicator(
-          key: ValueKey("room_read_indicator_key_${state.room.identifier}"),
-          room: state.room,
-          initialList: state.room.timeline?.receipts,
-        ),
+        readIndicator: state.receipts != null
+            ? ReadIndicator(
+                key: ValueKey(
+                    "room_read_indicator_key_${state.room.identifier}"),
+                component: state.receipts!,
+                room: state.room,
+              )
+            : null,
         processAutofill: (text) => AutofillUtils.search(text, state.room),
       ),
     );
