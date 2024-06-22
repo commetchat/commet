@@ -96,13 +96,13 @@ class _TypingIndicatorsWidgetState extends State<TypingIndicatorsWidget> {
   }
 
   void startTimer() {
-    timer = Timer.periodic(const Duration(milliseconds: 300), onTimer);
+    timer = Timer.periodic(const Duration(milliseconds: 250), onTimer);
   }
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-        height: 30,
+        height: 23,
         child: ClipRect(
           child: AnimatedSlide(
               duration: Durations.medium3,
@@ -166,7 +166,7 @@ class __SingleTypingIndicatorBlobState extends State<_SingleTypingIndicatorBlob>
         animation: controller,
         builder: (context, child) {
           var alpha = 1.0;
-          alpha -= sin(controller.value * 3.1415926) * 0.2;
+          alpha -= sin(controller.value * 3.1415926) * 0.4;
 
           var translation = sin(controller.value * 3.1415926);
 
