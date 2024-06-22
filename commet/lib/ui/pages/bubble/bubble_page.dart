@@ -72,6 +72,7 @@ class BubblePageState extends State<BubblePage> {
                           currentRoom!,
                           key: ValueKey(
                               "room-timeline-key-${currentRoom!.localId}"),
+                          isBubble: true,
                         ),
                       ),
                     ],
