@@ -912,7 +912,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "03592725f0f4446787b2dc370a5d326e4c41d3a8"
+      resolved-ref: "6de337a57d191780be02079ba476024acdff0052"
       url: "https://github.com/commetchat/matrix-dart-sdk-drift-db.git"
     source: git
     version: "0.0.1"

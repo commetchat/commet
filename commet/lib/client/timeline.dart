@@ -125,8 +125,6 @@ abstract class Timeline {
   late Client client;
   late Room room;
 
-  List<String>? get receipts;
-
   void markAsRead(TimelineEvent event);
 
   Future<void> loadMoreHistory();

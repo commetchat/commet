@@ -7,6 +7,7 @@ import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/client/components/gif/gif_component.dart';
 import 'package:commet/client/components/gif/gif_search_result.dart';
+import 'package:commet/client/components/read_receipts/read_receipt_component.dart';
 import 'package:commet/client/components/threads/thread_component.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/client/timeline.dart';
@@ -69,6 +70,7 @@ class ChatState extends State<Chat> {
 
   GifComponent? gifs;
   RoomEmoticonComponent? emoticons;
+  ReadReceiptComponent? receipts;
 
   Debouncer typingStatusDebouncer =
       Debouncer(delay: const Duration(seconds: 5));
@@ -89,6 +91,7 @@ class ChatState extends State<Chat> {
     gifs = room.getComponent<GifComponent>();
     emoticons = room.getComponent<RoomEmoticonComponent>();
     threadsComponent = room.client.getComponent<ThreadsComponent>();
+    receipts = room.getComponent<ReadReceiptComponent>();
 
     if (widget.threadId != null && threadsComponent != null) {
       loadThreadTimeline();

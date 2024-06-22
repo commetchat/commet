@@ -138,6 +138,8 @@ abstract class Room {
 
   T? getComponent<T extends RoomComponent>();
 
+  List<T> getAllComponents<T extends RoomComponent<Client, Room>>();
+
   Future<ImageProvider?> getShortcutImage();
 
   Future<TimelineEvent?> getEvent(String eventId);
