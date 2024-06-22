@@ -61,7 +61,6 @@ class _TypingIndicatorsWidgetState extends State<TypingIndicatorsWidget> {
   int prevIndex = 0;
 
   void onTimer(Timer timer) {
-    print("Timer updated!");
     var r = Random().nextInt(3);
 
     if (r == prevIndex) {
