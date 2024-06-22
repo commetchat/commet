@@ -58,9 +58,6 @@ abstract class Room {
   /// Gets the time of the last known event
   DateTime get lastEventTimestamp;
 
-  /// Set of peers who are currently typing a message in this room
-  List<Member> get typingPeers;
-
   /// Debug info for developers
   String get developerInfo;
 
@@ -115,9 +112,6 @@ abstract class Room {
 
   /// Set a notification push rule
   Future<void> setPushRule(PushRule rule);
-
-  /// Set the typing status of the current user
-  Future<void> setTypingStatus(bool typing);
 
   /// Gets the color of a user based on their ID
   Color getColorOfUser(String userId);
