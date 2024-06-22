@@ -5,6 +5,7 @@ import 'package:commet/ui/atoms/room_text_button.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
 import 'package:implicitly_animated_list/implicitly_animated_list.dart';
+import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class SpaceList extends StatefulWidget {
@@ -33,6 +34,9 @@ class _SpaceListState extends State<SpaceList> {
 
   Room? selectedRoom;
   bool topLevel = false;
+
+  String get labelRoomsList => Intl.message("Rooms",
+      desc: "Header label for the list of rooms", name: "labelRoomsList");
 
   @override
   void initState() {
@@ -118,7 +122,7 @@ class _SpaceListState extends State<SpaceList> {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: tiamat.Text(
-            "Rooms",
+            labelRoomsList,
             color: Theme.of(context).colorScheme.secondary,
           ),
         ),
