@@ -80,36 +80,35 @@ class _SpaceListState extends State<SpaceList> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          if (subSpaces.isNotEmpty)
-            Padding(
-                padding: const EdgeInsets.fromLTRB(0, 12, 0, 0),
-                child: ImplicitlyAnimatedList(
-                  itemData: subSpaces,
-                  shrinkWrap: true,
-                  initialAnimation: false,
-                  itemBuilder: (context, data) {
-                    return tiamat.TextButtonExpander(data.displayName,
-                        initiallyExpanded: true,
-                        iconColor: Theme.of(context).colorScheme.secondary,
-                        textColor: Theme.of(context).colorScheme.secondary,
-                        icon: Icons.format_list_bulleted,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
-                            child: SpaceList(
-                              data,
-                              onRoomSelected: widget.onRoomSelected,
-                            ),
-                          )
-                        ]);
-                  },
-                )),
-          if (widget.space.rooms.isNotEmpty) roomsList()
-        ],
-      ),
+    return Column(
+      children: [
+        if (subSpaces.isNotEmpty)
+          Padding(
+              padding: const EdgeInsets.fromLTRB(0, 12, 0, 0),
+              child: ImplicitlyAnimatedList(
+                itemData: subSpaces,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                padding: const EdgeInsets.all(0),
+                initialAnimation: false,
+                itemBuilder: (context, data) {
+                  return tiamat.TextButtonExpander(data.displayName,
+                      initiallyExpanded: true,
+                      iconColor: Theme.of(context).colorScheme.secondary,
+                      textColor: Theme.of(context).colorScheme.secondary,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
+                          child: SpaceList(
+                            data,
+                            onRoomSelected: widget.onRoomSelected,
+                          ),
+                        )
+                      ]);
+                },
+              )),
+        if (widget.space.rooms.isNotEmpty) roomsList()
+      ],
     );
   }
 
@@ -133,11 +132,13 @@ class _SpaceListState extends State<SpaceList> {
   Widget buildRoomsList() {
     return ImplicitlyAnimatedList(
       itemData: widget.space.rooms,
+      physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
+      padding: const EdgeInsets.all(0),
       initialAnimation: false,
       itemBuilder: (context, data) {
         return SizedBox(
-            height: 30,
+            height: 37,
             child: RoomTextButton(
               data,
               onTap: widget.onRoomSelected,

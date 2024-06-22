@@ -336,20 +336,16 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
               onTap: clearSelectedRoom,
             ),
             Expanded(
-                child: Padding(
-              padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-              child: SpaceViewer(
-                widget.state.currentSpace!,
-                key: ValueKey(
-                    "space-view-key-${widget.state.currentSpace!.localId}"),
-                onChildAdded: widget.state.clientManager.onSpaceAdded,
-                onChildRemoved: widget.state.clientManager.onSpaceRemoved,
-                onChildUpdated:
-                    widget.state.clientManager.onSpaceUpdated.stream,
-                onRoomSelected: (room) async {
-                  selectRoom(room);
-                },
-              ),
+                child: SpaceViewer(
+              widget.state.currentSpace!,
+              key: ValueKey(
+                  "space-view-key-${widget.state.currentSpace!.localId}"),
+              onChildAdded: widget.state.clientManager.onSpaceAdded,
+              onChildRemoved: widget.state.clientManager.onSpaceRemoved,
+              onChildUpdated: widget.state.clientManager.onSpaceUpdated.stream,
+              onRoomSelected: (room) async {
+                selectRoom(room);
+              },
             )),
           ],
         ),
