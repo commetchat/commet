@@ -2,9 +2,11 @@ import 'dart:io';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/config/app_config.dart';
+import 'package:commet/diagnostic/diagnostics.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/navigation_utils.dart';
 import 'package:commet/ui/pages/developer/benchmarks/timeline_viewer_benchmark.dart';
+import 'package:commet/ui/pages/settings/categories/developer/cumulative_diagnostics_widget.dart';
 import 'package:commet/utils/background_tasks/background_task_manager.dart';
 import 'package:commet/utils/background_tasks/mock_tasks.dart';
 import 'package:file_picker/file_picker.dart';
@@ -50,18 +52,11 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
         backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
         collapsedBackgroundColor:
             Theme.of(context).colorScheme.surfaceContainerLow,
-        children: diagnostics.results
-            .map((e) => Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Flexible(child: tiamat.Text.labelEmphasised(e.name)),
-                      tiamat.Text.label("${e.time.inMilliseconds}ms")
-                    ],
-                  ),
-                ))
-            .toList());
+        children: [
+          Diagnostics.general,
+          Diagnostics.initialLoadDatabaseDiagnostics,
+          Diagnostics.postLoadDatabaseDiagnostics,
+        ].map((e) => CumulativeDiagnosticsWidget(diagnostics: e)).toList());
   }
 
   Widget rendering() {

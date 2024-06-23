@@ -3,6 +3,7 @@ import 'dart:isolate';
 import 'dart:ui';
 
 import 'package:commet/config/app_config.dart';
+import 'package:commet/diagnostic/diagnostics.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/isolate.dart';
 import 'package:flutter/services.dart';
@@ -19,7 +20,13 @@ Future<DatabaseApi> getMatrixDatabaseImplementation(String clientName) async {
   var isolate = DriftIsolate.fromConnectPort(
       port ?? (await _createIsolate(clientName)).connectPort);
 
-  return MatrixSdkDriftDatabase.init(await isolate.connect());
+  return MatrixSdkDriftDatabase.init(await isolate.connect(), clientName,
+      benchmark: benchmarkFunc);
+}
+
+Future<T> benchmarkFunc<T>(String name, Future<T> Function() func,
+    [int? itemCount]) {
+  return Diagnostics.databaseDiagnostics.timeAsync(name, func);
 }
 
 Future<DriftIsolate> _createIsolate(String clientName) async {

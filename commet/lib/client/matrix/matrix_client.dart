@@ -15,6 +15,7 @@ import 'package:commet/client/profile.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/debug/log.dart';
+import 'package:commet/diagnostic/diagnostics.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/pages/matrix/authentication/matrix_uia_request.dart';
@@ -142,7 +143,7 @@ class MatrixClient extends Client {
 
   static Future<void> loadFromDB(ClientManager manager,
       {bool isBackgroundService = false}) async {
-    await diagnostics.timeAsync("loadFromDB", () async {
+    await Diagnostics.general.timeAsync("loadFromDB", () async {
       var clients = preferences.getRegisteredMatrixClients();
 
       List<Future> futures = List.empty(growable: true);
@@ -153,8 +154,8 @@ class MatrixClient extends Client {
         for (var clientName in clients) {
           var client = MatrixClient(identifier: clientName);
           manager.addClient(client);
-          futures.add(diagnostics.timeAsync("Initializing client $clientName",
-              () async {
+          futures.add(Diagnostics.general
+              .timeAsync("Initializing client $clientName", () async {
             try {
               await client.init(true, isBackgroundService: isBackgroundService);
             } catch (error, trace) {
@@ -196,7 +197,7 @@ class MatrixClient extends Client {
   Future<void> init(bool loadingFromCache,
       {bool isBackgroundService = false}) async {
     if (!_matrixClient.isLogged()) {
-      await diagnostics.timeAsync("Matrix client init", () async {
+      await Diagnostics.general.timeAsync("Matrix client init", () async {
         await _matrixClient.init(
             waitForFirstSync: !loadingFromCache,
             waitUntilLoadCompletedLoaded: true,
