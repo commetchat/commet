@@ -80,7 +80,7 @@ class _AppInfoState extends State<_AppInfo> {
                 child: SvgPicture.asset(
                   "assets/images/app_icon/icon.svg",
                   theme: SvgTheme(
-                      currentColor: Theme.of(context).colorScheme.onPrimary),
+                      currentColor: Theme.of(context).colorScheme.onSurface),
                 ),
               ),
             ),
