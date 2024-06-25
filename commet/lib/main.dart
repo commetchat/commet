@@ -43,7 +43,6 @@ FileCache? fileCache;
 Preferences preferences = Preferences();
 ShortcutsManager shortcutsManager = ShortcutsManager();
 BackgroundTaskManager backgroundTaskManager = BackgroundTaskManager();
-Diagnostics diagnostics = Diagnostics();
 ClientManager? clientManager;
 
 bool isHeadless = false;
@@ -153,6 +152,7 @@ Future<void> initNecessary() async {
   ]);
 
   clientManager = await ClientManager.init();
+  Diagnostics.setPostInit();
 
   shortcutsManager.init();
   NotificationManager.init();

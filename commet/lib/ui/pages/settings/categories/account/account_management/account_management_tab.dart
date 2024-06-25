@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/stale_info.dart';
+import 'package:commet/main.dart';
 import 'package:commet/ui/molecules/user_panel.dart';
 import 'package:commet/ui/pages/login/login_page.dart';
 import 'package:flutter/material.dart';
@@ -121,6 +122,7 @@ class _AccountManagementSettingsTabState
               displayName: clients[index].self!.displayName,
               avatar: clients[index].self!.avatar,
               detail: clients[index].self!.identifier,
+              internalId: clients[index].identifier,
               onLogoutClicked: () =>
                   clientmanager.logoutClient(clients[index])),
         );
@@ -132,16 +134,27 @@ class _AccountManagementSettingsTabState
       {required String displayName,
       ImageProvider? avatar,
       String? detail,
+      String? internalId,
       Function? onLogoutClicked}) {
+    String detailString = detail ?? "";
+
+    if (preferences.developerMode && internalId != null) {
+      detailString = "$detail - ($internalId)";
+    }
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(8.0, 4, 12, 4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          UserPanelView(
-            displayName: displayName,
-            avatar: avatar,
-            detail: detail,
+          Column(
+            children: [
+              UserPanelView(
+                displayName: displayName,
+                avatar: avatar,
+                detail: detailString,
+              ),
+            ],
           ),
           tiamat.Button.danger(
             text: promptLogoutSingleAccount,
