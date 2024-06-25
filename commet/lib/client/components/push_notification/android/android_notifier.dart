@@ -129,8 +129,7 @@ class AndroidNotifier implements Notifier {
             groupConversation: !content.isDirectMessage,
             messages: [message]);
 
-    var details = AndroidNotificationDetails(
-        "messages", "Notifies when a message is received",
+    var details = AndroidNotificationDetails("messages", "Message Received",
         importance: Importance.high,
         priority: Priority.high,
         icon: "notification_icon",
