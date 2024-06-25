@@ -846,7 +846,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelSettingsDeveloperModeExplanation": "開発者にとって役立つ追加情報を表示します。",
+  "labelSettingsDeveloperModeExplanation": "開発者にとって役立つ追加情報を表示します",
   "@labelSettingsDeveloperModeExplanation": {
     "description": "Explains what developer mode does",
     "type": "text",
@@ -992,7 +992,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "roomVisibilityPublicExplanation": "このルームはインターネット上の誰でもアクセス可能になります。",
+  "roomVisibilityPublicExplanation": "このルームはインターネット上の誰でもアクセス可能になります",
   "@roomVisibilityPublicExplanation": {
     "description": "Explains what 'public' visibility means",
     "type": "text",
@@ -1022,7 +1022,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "notificationSettingsNotSupported": "このシステムではプッシュ通知はサポートされていません。",
+  "notificationSettingsNotSupported": "このシステムではプッシュ通知はサポートされていません",
   "@notificationSettingsNotSupported": {
     "description": "Message to display when push notifications are not supported",
     "type": "text",
@@ -1068,7 +1068,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "messageAlreadyLoggedIn": "このアカウントにはすでにログインしています。",
+  "messageAlreadyLoggedIn": "このアカウントにはすでにログインしています",
   "@messageAlreadyLoggedIn": {
     "description": "An error message displayed when the user attempts to add an account which has already been logged in to on this device",
     "type": "text",
@@ -1116,19 +1116,19 @@
     "type": "text",
     "placeholders": {}
   },
-  "roomVisibilityPrivateExplanation": "このルームは招待された人のみ参加できます。",
+  "roomVisibilityPrivateExplanation": "このルームは招待された人のみ参加できます",
   "@roomVisibilityPrivateExplanation": {
     "description": "Explains what 'private' room visibility means",
     "type": "text",
     "placeholders": {}
   },
-  "spaceVisibilityPrivateExplanation": "このルームは招待された人のみ参加できます。",
+  "spaceVisibilityPrivateExplanation": "このルームは招待された人のみ参加できます",
   "@spaceVisibilityPrivateExplanation": {
     "description": "Explains what 'private' space visibility means",
     "type": "text",
     "placeholders": {}
   },
-  "spaceVisibilityPublicExplanation": "この部屋はインターネット上の誰でもアクセス可能になります。",
+  "spaceVisibilityPublicExplanation": "このルームはインターネット上の誰でもアクセス可能になります",
   "@spaceVisibilityPublicExplanation": {
     "description": "Explains what 'public' space visibility means",
     "type": "text",
@@ -1164,7 +1164,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelCouldNotLoadRoomPreview": "ルームのプレビューを読み込めませんでした。",
+  "labelCouldNotLoadRoomPreview": "ルームのプレビューを読み込めませんでした",
   "@labelCouldNotLoadRoomPreview": {
     "description": "Error message for when a room preview was not able to be loaded",
     "type": "text",
@@ -1206,13 +1206,13 @@
     "type": "text",
     "placeholders": {}
   },
-  "messageWaitingOtherDeviceToAccept": "他のデバイスがリクエストを受け入れるのを待っています。",
+  "messageWaitingOtherDeviceToAccept": "他のデバイスがリクエストを受け入れるのを待っています",
   "@messageWaitingOtherDeviceToAccept": {
     "description": "Message to show while waiting for another device to accept a matrix session verification request",
     "type": "text",
     "placeholders": {}
   },
-  "messageMatrixSessionVerificationRequest": "**{username}**がセッションの確認をリクエストしました。",
+  "messageMatrixSessionVerificationRequest": "**{username}**がセッションの確認をリクエストしました",
   "@messageMatrixSessionVerificationRequest": {
     "description": "Message to show when another user has requested to verify your matrix session. Supports markdown to emphasise the user name",
     "type": "text",
@@ -1295,6 +1295,144 @@
   "placeholderSpaceAddress": "#awesome-space:matrix.org",
   "@placeholderSpaceAddress": {
     "description": "Placeholder / Example for a space address",
+    "type": "text",
+    "placeholders": {}
+  },
+  "matrixClientEncryptionWarningTitle": "暗号化の警告",
+  "@matrixClientEncryptionWarningTitle": {
+    "description": "Title of a warning about encryption",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptReply": "返信",
+  "@promptReply": {
+    "description": "Generic prompt to reply to a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptAddReaction": "リアクションを追加",
+  "@promptAddReaction": {
+    "description": "Generic prompt to add reaction to a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptEdit": "編集",
+  "@promptEdit": {
+    "description": "Generic prompt to edit something",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptOptions": "オプション",
+  "@promptOptions": {
+    "description": "Generic prompt for options, generally would be used to open a settings menu, extra details or similar",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptSettings": "設定",
+  "@promptSettings": {
+    "description": "Generic prompt for settings, usually will open a settings menu or similar",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptHome": "ホーム",
+  "@promptHome": {
+    "description": "Generic prompt to go home, usually will go back to a main menu, or similar",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptAccept": "受諾",
+  "@promptAccept": {
+    "description": "Generic prompt to accept something, probably a request of some kind",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptReject": "拒否",
+  "@promptReject": {
+    "description": "Generic prompt to reject something, probably a request of some kind",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptApply": "適用",
+  "@promptApply": {
+    "description": "Generic prompt to apply something, probably a setting",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptDelete": "削除",
+  "@promptDelete": {
+    "description": "Generic prompt to delete something",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptJoin": "参加",
+  "@promptJoin": {
+    "description": "Generic prompt to join a room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptContinue": "続ける",
+  "@promptContinue": {
+    "description": "Generic prompt to continue with some action",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirm": "確認",
+  "@promptConfirm": {
+    "description": "Generic prompt to confirm some action",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptDone": "完了",
+  "@promptDone": {
+    "description": "Generic prompt to confirm that you are done",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptReset": "リセット",
+  "@promptReset": {
+    "description": "Generic prompt to reset something",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptEnable": "有効化",
+  "@promptEnable": {
+    "description": "Generic prompt to enable something",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptRestore": "復元",
+  "@promptRestore": {
+    "description": "Generic prompt to restore something",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptPoliteNo": "いいえ、結構です",
+  "@promptPoliteNo": {
+    "description": "Generic message to decline something, using nice manners :)",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelOr": "または",
+  "@labelOr": {
+    "description": "Text that is placed between two or more options: [button1] or [button2]",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptBack": "戻る",
+  "@promptBack": {
+    "description": "Prompt text to go backwards, probably for navigation",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptCopy": "コピー",
+  "@promptCopy": {
+    "description": "Prompt to copy text",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptCopyComplete": "コピーしました!",
+  "@promptCopyComplete": {
+    "description": "Prompt text for after a copy has been completed",
     "type": "text",
     "placeholders": {}
   }
