@@ -103,12 +103,6 @@ class MatrixRoom extends Room {
   Iterable<String> get memberIds => _memberIds;
 
   @override
-  List<Member> get typingPeers => _matrixRoom.typingUsers
-      .where((element) => client.self?.identifier != element.id)
-      .map((e) => MatrixMember(_matrixRoom.client, e))
-      .toList();
-
-  @override
   String get developerInfo =>
       const JsonEncoder.withIndent('  ').convert(_matrixRoom.states);
 
@@ -423,11 +417,6 @@ class MatrixRoom extends Room {
     _displayName = newName;
     _onUpdate.add(null);
     await _matrixRoom.setName(newName);
-  }
-
-  @override
-  Future<void> setTypingStatus(bool typing) async {
-    await _matrixRoom.setTyping(typing, timeout: 2000);
   }
 
   @override

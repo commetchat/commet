@@ -5,6 +5,7 @@ import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/molecules/message_input.dart';
 import 'package:commet/ui/molecules/read_indicator.dart';
 import 'package:commet/ui/molecules/room_timeline_widget/room_timeline_widget.dart';
+import 'package:commet/ui/molecules/typing_indicators_widget.dart';
 import 'package:commet/ui/organisms/chat/chat.dart';
 import 'package:commet/utils/autofill_utils.dart';
 import 'package:flutter/material.dart';
@@ -100,8 +101,6 @@ class ChatView extends StatelessWidget {
         iconScale: Layout.mobile ? 0.6 : 0.5,
         isProcessing: state.processing,
         enabled: state.room.permissions.canSendMessage,
-        typingUsernames:
-            state.room.typingPeers.map((e) => e.displayName).toList(),
         relatedEventBody: state.interactingEvent?.body,
         relatedEventSenderName: relatedEventSenderName,
         relatedEventSenderColor: relatedEventSenderColor,
@@ -119,6 +118,13 @@ class ChatView extends StatelessWidget {
         cancelReply: () {
           state.setInteractingEvent(null);
         },
+        typingIndicatorWidget: state.typingIndicators != null
+            ? TypingIndicatorsWidget(
+                component: state.typingIndicators!,
+                key: ValueKey(
+                    "room_typing_indicators_key_${state.room.identifier}"),
+              )
+            : null,
         readIndicator: state.receipts != null
             ? ReadIndicator(
                 key: ValueKey(

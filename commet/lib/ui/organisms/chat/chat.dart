@@ -9,6 +9,7 @@ import 'package:commet/client/components/gif/gif_component.dart';
 import 'package:commet/client/components/gif/gif_search_result.dart';
 import 'package:commet/client/components/read_receipts/read_receipt_component.dart';
 import 'package:commet/client/components/threads/thread_component.dart';
+import 'package:commet/client/components/typing_indicators/typing_indicator_component.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/client/timeline.dart';
 import 'package:commet/debug/log.dart';
@@ -71,6 +72,7 @@ class ChatState extends State<Chat> {
   GifComponent? gifs;
   RoomEmoticonComponent? emoticons;
   ReadReceiptComponent? receipts;
+  TypingIndicatorComponent? typingIndicators;
 
   Debouncer typingStatusDebouncer =
       Debouncer(delay: const Duration(seconds: 5));
@@ -92,6 +94,7 @@ class ChatState extends State<Chat> {
     emoticons = room.getComponent<RoomEmoticonComponent>();
     threadsComponent = room.client.getComponent<ThreadsComponent>();
     receipts = room.getComponent<ReadReceiptComponent>();
+    typingIndicators = room.getComponent<TypingIndicatorComponent>();
 
     if (widget.threadId != null && threadsComponent != null) {
       loadThreadTimeline();
@@ -204,7 +207,7 @@ class ChatState extends State<Chat> {
           processedAttachments: processedAttachments);
     }
 
-    room.setTypingStatus(false);
+    typingIndicators?.setTypingStatus(false);
 
     setInteractingEvent(null);
     clearAttachments();
@@ -287,7 +290,7 @@ class ChatState extends State<Chat> {
       lastSetTyping = DateTime.fromMicrosecondsSinceEpoch(0);
     } else {
       if ((DateTime.now().difference(lastSetTyping)).inSeconds > 3) {
-        room.setTypingStatus(true);
+        typingIndicators?.setTypingStatus(true);
         lastSetTyping = DateTime.now();
       }
       typingStatusDebouncer.run(stopTyping);
@@ -295,7 +298,7 @@ class ChatState extends State<Chat> {
   }
 
   void stopTyping() {
-    room.setTypingStatus(false);
+    typingIndicators?.setTypingStatus(false);
   }
 
   void onFileDropped(DropDoneDetails event) async {

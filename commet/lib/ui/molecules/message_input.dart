@@ -16,7 +16,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:implicitly_animated_list/implicitly_animated_list.dart';
-import 'package:intl/intl.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
 import 'package:pasteboard/pasteboard.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -47,7 +46,7 @@ class MessageInput extends StatefulWidget {
       this.addAttachment,
       this.onTextUpdated,
       this.removeAttachment,
-      this.typingUsernames,
+      this.typingIndicatorWidget,
       this.availibleEmoticons,
       this.availibleStickers,
       this.gifComponent,
@@ -74,7 +73,7 @@ class MessageInput extends StatefulWidget {
   final Stream<String>? setInputText;
   final bool isProcessing;
   final bool enabled;
-  final List<String>? typingUsernames;
+  final Widget? typingIndicatorWidget;
   final List<EmoticonPack>? availibleEmoticons;
   final List<EmoticonPack>? availibleStickers;
   final GifComponent? gifComponent;
@@ -107,16 +106,6 @@ class MessageInputState extends State<MessageInput> {
   int? autoFillSelection;
   (int, int)? autoFillRange;
   ScrollController autofillScrollController = ScrollController();
-
-  String typingUsers(int howMany, String user1, String user2, String user3) =>
-      Intl.plural(howMany,
-          one: "$user1 is typing...",
-          two: "$user1 and $user2 are typing...",
-          few: "$user1, $user2, and $user3 are typing...",
-          other: "Several people are typing...",
-          desc: "Text to display which users are currently typing",
-          name: "typingUsers",
-          args: [howMany, user1, user2, user3]);
 
   void unfocus() {
     textFocus.unfocus();
@@ -379,7 +368,8 @@ class MessageInputState extends State<MessageInput> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              typingUsersWidget(),
+              if (widget.typingIndicatorWidget != null)
+                widget.typingIndicatorWidget!,
               if (widget.interactionType != null) interactionText(),
               if (widget.attachments != null && widget.attachments!.isNotEmpty)
                 displayAttachments(),
@@ -798,27 +788,5 @@ class MessageInputState extends State<MessageInput> {
       onLiveTextInput: null, onLookUp: null, onSearchWeb: null,
       onShare: null,
     );
-  }
-
-  Widget typingUsersWidget() {
-    String text = getTypingText();
-
-    return Align(
-        alignment: Alignment.centerLeft,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(0, 0, 0, 4),
-          child: tiamat.Text.labelLow(text),
-        ));
-  }
-
-  String getTypingText() {
-    if (widget.typingUsernames?.isEmpty == true) return "";
-
-    String user1 = widget.typingUsernames![0];
-    String user2 =
-        widget.typingUsernames!.length >= 2 ? widget.typingUsernames![1] : "";
-    String user3 =
-        widget.typingUsernames!.length >= 3 ? widget.typingUsernames![2] : "";
-    return typingUsers(widget.typingUsernames!.length, user1, user2, user3);
   }
 }
