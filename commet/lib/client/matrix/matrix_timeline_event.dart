@@ -95,7 +95,8 @@ class MatrixTimelineEvent implements TimelineEvent {
 
       switch (event.type) {
         case matrix.EventTypes.Message:
-          parseMessage(displayEvent ?? event, client, timeline: timeline);
+          parseMessage(displayEvent ?? event, client,
+              timeline: timeline, originalEvent: event);
           break;
         case matrix.EventTypes.Sticker:
           if (timeline != null) parseSticker(event, client, timeline: timeline);
@@ -231,18 +232,18 @@ class MatrixTimelineEvent implements TimelineEvent {
     return EventType.unknown;
   }
 
-  void parseMessage(matrix.Event matrixEvent, matrix.Client client,
-      {matrix.Timeline? timeline}) {
-    handleFormatting(matrixEvent, client);
+  void parseMessage(matrix.Event displayEvent, matrix.Client client,
+      {matrix.Timeline? timeline, required matrix.Event originalEvent}) {
+    handleFormatting(displayEvent, client);
 
-    parseAnyAttachments(matrixEvent, client);
+    parseAnyAttachments(displayEvent, client);
     if (timeline != null) {
-      handleReactions(matrixEvent, timeline);
+      handleReactions(originalEvent, timeline);
     }
 
     // if the message body is the same as a file name we dont want to display that
     if (attachments != null &&
-        attachments!.any((element) => matrixEvent.body == element.name)) {
+        attachments!.any((element) => displayEvent.body == element.name)) {
       body = null;
       formattedBody = null;
       formattedContent = null;
