@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:commet/main.dart';
+import 'package:commet/utils/mime.dart';
 import 'package:matrix/matrix.dart';
 
 import '../../utils/image/lod_image.dart';
@@ -48,7 +49,9 @@ class MatrixMxcImage extends LODImageProvider {
     if (matrixEvent != null) {
       var data =
           await matrixEvent.downloadAndDecryptAttachment(getThumbnail: true);
-      bytes = data.bytes;
+      if (Mime.imageTypes.contains(data.mimeType)) {
+        bytes = data.bytes;
+      }
     } else {
       var response = await client.httpClient
           .get(uri.getThumbnail(client, width: 90, height: 90));
@@ -80,9 +83,11 @@ class MatrixMxcImage extends LODImageProvider {
     Uint8List? bytes;
     if (matrixEvent != null) {
       var data = await matrixEvent.downloadAndDecryptAttachment();
+
       bytes = data.bytes;
     } else {
       var response = await client.httpClient.get(uri.getDownloadLink(client));
+
       if (response.statusCode == 200) {
         bytes = response.bodyBytes;
       }

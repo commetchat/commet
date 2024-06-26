@@ -1,4 +1,5 @@
 import 'package:matrix/matrix.dart';
+import 'package:tiamat/config/style/theme_json_converter.dart';
 
 extension MatrixExtensions on Event {
   String? get attachmentBlurhash => _getBlurhash();
@@ -27,9 +28,17 @@ extension MatrixExtensions on Event {
     if (info == null) return null;
 
     var path = info.tryGet("thumbnail_url") as String?;
-    if (path == null) return null;
+    if (path != null) {
+      return Uri.parse(path);
+    }
 
-    return Uri.parse(path);
+    var file = info.tryGetMap<String, dynamic>("thumbnail_file");
+    var url = file?.tryGet<String>("url");
+    if (url != null) {
+      return Uri.parse(url);
+    }
+
+    return null;
   }
 
   double? _attachmentWidth() {

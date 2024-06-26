@@ -333,6 +333,7 @@ class MatrixRoom extends Room {
           mimeType: attachment.mimeType,
           width: attachment.dimensions?.width.toInt(),
           height: attachment.dimensions?.height.toInt(),
+          duration: attachment.length?.inMilliseconds,
         ),
         thumbnailFile: thumbnailImageFile,
       );
