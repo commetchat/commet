@@ -41,6 +41,8 @@ class _AttachmentProcessorState extends State<AttachmentProcessor> {
   bool containsGpsData = false;
   bool sendOriginalFile = false;
 
+  bool processing = false;
+
   @override
   void initState() {
     icon = Mime.toIcon(widget.attachment.mimeType);
@@ -75,40 +77,53 @@ class _AttachmentProcessorState extends State<AttachmentProcessor> {
   @override
   Widget build(BuildContext context) {
     return ScaledSafeArea(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisSize: MainAxisSize.min,
+      child: Stack(
+        alignment: Alignment.center,
         children: [
-          if (widget.attachment.name != null)
-            Row(
-              children: [
-                Icon(icon),
-                tiamat.Text.labelLow(widget.attachment.name!),
-              ],
-            ),
-          Flexible(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ConstrainedBox(
-                constraints: BoxConstraints.loose(const Size(500, 500)),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: FilePreview(
-                    mimeType: widget.attachment.mimeType,
-                    path: widget.attachment.path,
-                    data: widget.attachment.data,
+          Opacity(
+            opacity: processing ? 0.5 : 1,
+            child: IgnorePointer(
+              ignoring: processing,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (widget.attachment.name != null)
+                    Row(
+                      children: [
+                        Icon(icon),
+                        tiamat.Text.labelLow(widget.attachment.name!),
+                      ],
+                    ),
+                  Flexible(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints.loose(const Size(500, 500)),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: FilePreview(
+                            mimeType: widget.attachment.mimeType,
+                            path: widget.attachment.path,
+                            data: widget.attachment.data,
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
-                ),
+                  if (canProcessData)
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: buildFileProcessingSwitch(),
+                    ),
+                  if (sendOriginalFile || !canProcessData)
+                    buildMetadataDisplay(),
+                  buildConfirmButton(),
+                ],
               ),
             ),
           ),
-          if (canProcessData)
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: buildFileProcessingSwitch(),
-            ),
-          if (sendOriginalFile || !canProcessData) buildMetadataDisplay(),
-          buildConfirmButton(),
+          if (processing) const CircularProgressIndicator()
         ],
       ),
     );
@@ -148,6 +163,9 @@ class _AttachmentProcessorState extends State<AttachmentProcessor> {
     if (canProcessData == false || sendOriginalFile) {
       Navigator.of(context).pop(widget.attachment);
     } else {
+      setState(() {
+        processing = true;
+      });
       var file = await processFile();
       if (mounted) {
         Navigator.of(context).pop(file);
@@ -166,33 +184,34 @@ class _AttachmentProcessorState extends State<AttachmentProcessor> {
   }
 
   Future<PendingFileAttachment> processImage() async {
-    var data = widget.attachment.data ??
-        await File(widget.attachment.path!).readAsBytes();
+    return await compute((PendingFileAttachment attachment) async {
+      var data = attachment.data ?? await File(attachment.path!).readAsBytes();
 
-    var decoder = img.findDecoderForData(data);
-    var image = decoder!.decode(data)!;
+      var decoder = img.findDecoderForData(data);
+      var image = decoder!.decode(data)!;
 
-    image.exif.clear();
+      image.exif.clear();
 
-    Uint8List? processedData;
-    String? name = widget.attachment.name;
-    String mime = widget.attachment.mimeType!;
-    if (widget.attachment.name != null) {
-      processedData = img.encodeNamedImage(widget.attachment.name!, image);
-    }
+      Uint8List? processedData;
+      String? name = attachment.name;
+      String mime = attachment.mimeType!;
+      if (attachment.name != null) {
+        processedData = img.encodeNamedImage(attachment.name!, image);
+      }
 
-    if (processedData == null) {
-      processedData = img.encodePng(image);
-      mime = "image/png";
-      var fileName = widget.attachment.name ?? "untitled.png";
-      var rawName = path.basenameWithoutExtension(fileName);
-      name = "$rawName.png";
-    }
+      if (processedData == null) {
+        processedData = img.encodePng(image);
+        mime = "image/png";
+        var fileName = attachment.name ?? "untitled.png";
+        var rawName = path.basenameWithoutExtension(fileName);
+        name = "$rawName.png";
+      }
 
-    return PendingFileAttachment(
-        name: name,
-        data: processedData,
-        size: processedData.lengthInBytes,
-        mimeType: mime);
+      return PendingFileAttachment(
+          name: name,
+          data: processedData,
+          size: processedData.lengthInBytes,
+          mimeType: mime);
+    }, widget.attachment);
   }
 }
