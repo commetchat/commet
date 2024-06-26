@@ -13,11 +13,13 @@ import 'package:commet/client/components/typing_indicators/typing_indicator_comp
 import 'package:commet/client/room.dart';
 import 'package:commet/client/timeline.dart';
 import 'package:commet/debug/log.dart';
+import 'package:commet/ui/organisms/attachment_processor/attachment_processor.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/organisms/chat/chat_view.dart';
 import 'package:commet/utils/debounce.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:desktop_drop/desktop_drop.dart';
+import 'package:exif/exif.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -172,6 +174,29 @@ class ChatState extends State<Chat> {
       processing = true;
     });
 
+    for (var file in attachments) {
+      await file.resolve();
+      var exif = await readExifFromBytes(file.data!);
+
+      if (exif.keys.any((e) => e.toLowerCase().contains("gps"))) {
+        // ignore: use_build_context_synchronously
+        var confirmation = await AdaptiveDialog.confirmation(context,
+            title: file.name ?? "File",
+            confirmationText: "Send File",
+            cancelText: "Don't send file",
+            dangerous: true,
+            prompt:
+                "Location data was detected in file '${file.name}', are you sure you want to send?");
+
+        if (confirmation != true) {
+          setState(() {
+            processing = false;
+          });
+          return;
+        }
+      }
+    }
+
     var processedAttachments = await room.processAttachments(attachments);
 
     setState(() {
@@ -308,10 +333,24 @@ class ChatState extends State<Chat> {
       if (size < 50000000) {
         data = await file.readAsBytes();
       }
-      setState(() {
-        attachments.add(PendingFileAttachment(
-            name: file.name, path: file.path, size: size, data: data));
-      });
+
+      if (mounted) {
+        var attachment = PendingFileAttachment(
+            name: file.name, path: file.path, size: size, data: data);
+
+        var processedAttachment =
+            await AdaptiveDialog.show<PendingFileAttachment>(context,
+                scrollable: false,
+                builder: (context) => AttachmentProcessor(
+                      attachment: attachment,
+                    ));
+
+        if (processedAttachment != null) {
+          setState(() {
+            attachments.add(processedAttachment);
+          });
+        }
+      }
     }
   }
 }

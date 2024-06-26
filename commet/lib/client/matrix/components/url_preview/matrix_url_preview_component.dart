@@ -173,7 +173,7 @@ pQIDAQAB
 
     var type = response["og:image:type"] as String?;
     if (type != null) {
-      if (Mime.displayableTypes.contains(type) == false) {
+      if (Mime.displayableImageTypes.contains(type) == false) {
         imageUrl = null;
       }
     }

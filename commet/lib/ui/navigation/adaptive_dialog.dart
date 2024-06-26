@@ -10,13 +10,16 @@ class AdaptiveDialog {
   static Future<T?> show<T extends Object?>(
     BuildContext context, {
     required Widget Function(BuildContext context) builder,
-    required String title,
+    String? title,
+    bool scrollable = true,
     bool dismissible = true,
     double initialHeightMobile = 0.5,
   }) async {
     if (Layout.desktop) {
       return PopupDialog.show<T>(context,
-          content: SingleChildScrollView(child: builder(context)),
+          content: scrollable
+              ? SingleChildScrollView(child: builder(context))
+              : builder(context),
           title: title,
           barrierDismissible: dismissible);
     }
@@ -39,10 +42,11 @@ class AdaptiveDialog {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: tiamat.Text.largeTitle(title),
-                  ),
+                  if (title != null)
+                    Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: tiamat.Text.largeTitle(title),
+                    ),
                   Center(child: builder(context)),
                 ],
               ),
