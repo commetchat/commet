@@ -8,7 +8,6 @@ import 'package:commet/utils/mime.dart';
 import 'package:exif/exif.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
 import 'package:image/image.dart' as img;

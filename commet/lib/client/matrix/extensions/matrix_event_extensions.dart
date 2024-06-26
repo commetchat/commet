@@ -1,5 +1,4 @@
 import 'package:matrix/matrix.dart';
-import 'package:tiamat/config/style/theme_json_converter.dart';
 
 extension MatrixExtensions on Event {
   String? get attachmentBlurhash => _getBlurhash();
