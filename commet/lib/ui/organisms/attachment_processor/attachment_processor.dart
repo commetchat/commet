@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:commet/client/attachment.dart';
+import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/molecules/file_preview.dart';
 import 'package:commet/utils/mime.dart';
 import 'package:exif/exif.dart';
@@ -73,41 +74,43 @@ class _AttachmentProcessorState extends State<AttachmentProcessor> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        if (widget.attachment.name != null)
-          Row(
-            children: [
-              Icon(icon),
-              tiamat.Text.labelLow(widget.attachment.name!),
-            ],
-          ),
-        Flexible(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ConstrainedBox(
-              constraints: BoxConstraints.loose(const Size(500, 500)),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: FilePreview(
-                  mimeType: widget.attachment.mimeType,
-                  path: widget.attachment.path,
-                  data: widget.attachment.data,
+    return ScaledSafeArea(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (widget.attachment.name != null)
+            Row(
+              children: [
+                Icon(icon),
+                tiamat.Text.labelLow(widget.attachment.name!),
+              ],
+            ),
+          Flexible(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ConstrainedBox(
+                constraints: BoxConstraints.loose(const Size(500, 500)),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: FilePreview(
+                    mimeType: widget.attachment.mimeType,
+                    path: widget.attachment.path,
+                    data: widget.attachment.data,
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-        if (canProcessData)
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: buildFileProcessingSwitch(),
-          ),
-        if (sendOriginalFile || !canProcessData) buildMetadataDisplay(),
-        buildConfirmButton(),
-      ],
+          if (canProcessData)
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: buildFileProcessingSwitch(),
+            ),
+          if (sendOriginalFile || !canProcessData) buildMetadataDisplay(),
+          buildConfirmButton(),
+        ],
+      ),
     );
   }
 
