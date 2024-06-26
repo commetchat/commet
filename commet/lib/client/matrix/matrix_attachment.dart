@@ -4,5 +4,7 @@ import 'package:matrix/matrix.dart';
 class MatrixProcessedAttachment extends ProcessedAttachment {
   MatrixFile file;
 
-  MatrixProcessedAttachment(this.file);
+  MatrixImageFile? thumbnailFile;
+
+  MatrixProcessedAttachment(this.file, {this.thumbnailFile});
 }

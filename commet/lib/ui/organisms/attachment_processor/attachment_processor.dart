@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:commet/client/attachment.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/molecules/file_preview.dart';
+import 'package:commet/ui/molecules/video_player/video_player_controller.dart';
 import 'package:commet/utils/mime.dart';
 import 'package:exif/exif.dart';
 import 'package:flutter/foundation.dart';
@@ -36,6 +37,7 @@ class _AttachmentProcessorState extends State<AttachmentProcessor> {
 
   Map<String, IfdTag>? exifData;
   late IconData icon;
+  VideoPlayerController? videoController;
 
   bool canProcessData = false;
   bool containsGpsData = false;
@@ -53,6 +55,9 @@ class _AttachmentProcessorState extends State<AttachmentProcessor> {
       if (widget.attachment.mimeType == "image/gif") {
         canProcessData = false;
       }
+    } else if (Mime.videoTypes.contains(widget.attachment.mimeType)) {
+      videoController = VideoPlayerController();
+      canProcessData = true;
     }
     super.initState();
   }
@@ -106,6 +111,7 @@ class _AttachmentProcessorState extends State<AttachmentProcessor> {
                             mimeType: widget.attachment.mimeType,
                             path: widget.attachment.path,
                             data: widget.attachment.data,
+                            videoController: videoController,
                           ),
                         ),
                       ),
@@ -178,6 +184,8 @@ class _AttachmentProcessorState extends State<AttachmentProcessor> {
 
     if (Mime.imageTypes.contains(widget.attachment.mimeType)) {
       processedFile = await processImage();
+    } else if (Mime.videoTypes.contains(widget.attachment.mimeType)) {
+      processedFile = await processVideo();
     }
 
     return processedFile;
@@ -213,5 +221,21 @@ class _AttachmentProcessorState extends State<AttachmentProcessor> {
           size: processedData.lengthInBytes,
           mimeType: mime);
     }, widget.attachment);
+  }
+
+  Future<PendingFileAttachment> processVideo() async {
+    var file = widget.attachment;
+
+    if (videoController != null) {
+      file.thumbnailFile = await videoController!.screenshot();
+      if (file.thumbnailFile != null) {
+        file.thumbnailMime = Mime.lookupType("", data: file.thumbnailFile);
+      }
+    }
+
+    file.length = await videoController!.getLength();
+    file.dimensions = await videoController!.getSize();
+
+    return file;
   }
 }

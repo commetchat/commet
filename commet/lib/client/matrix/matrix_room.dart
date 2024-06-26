@@ -279,12 +279,11 @@ class MatrixRoom extends Room {
   Future<List<ProcessedAttachment>> processAttachments(
       List<PendingFileAttachment> attachments) async {
     return await Future.wait(attachments.map((e) async {
-      var file = await processAttachment(e);
-      return MatrixProcessedAttachment(file!);
+      return (await processAttachment(e))!;
     }));
   }
 
-  Future<matrix.MatrixFile?> processAttachment(
+  Future<MatrixProcessedAttachment?> processAttachment(
       PendingFileAttachment attachment) async {
     await attachment.resolve();
     if (attachment.data == null) return null;
@@ -300,13 +299,12 @@ class MatrixRoom extends Room {
     try {
       if (Mime.imageTypes.contains(attachment.mimeType)) {
         await decodeImageFromList(attachment.data!);
-
-        return await matrix.MatrixImageFile.create(
+        return MatrixProcessedAttachment(await matrix.MatrixImageFile.create(
             bytes: attachment.data!,
             name: attachment.name ?? "unknown",
             mimeType: attachment.mimeType,
             nativeImplementations:
-                (client as MatrixClient).nativeImplentations);
+                (client as MatrixClient).nativeImplentations));
       }
     } catch (error, stack) {
       // This image is probably corrupt, since it has a mime type we should be able to display,
@@ -315,10 +313,37 @@ class MatrixRoom extends Room {
       Log.onError(error, stack);
     }
 
-    return matrix.MatrixFile(
-        bytes: attachment.data!,
-        name: attachment.name ?? "Unknown",
-        mimeType: attachment.mimeType);
+    matrix.MatrixImageFile? thumbnailImageFile;
+    if (attachment.thumbnailFile != null) {
+      var decodedImage = await decodeImageFromList(attachment.thumbnailFile!);
+
+      thumbnailImageFile = matrix.MatrixImageFile(
+          bytes: attachment.thumbnailFile!,
+          width: decodedImage.width,
+          height: decodedImage.height,
+          mimeType: attachment.thumbnailMime,
+          name: "thumbnail");
+    }
+
+    if (Mime.videoTypes.contains(attachment.mimeType)) {
+      return MatrixProcessedAttachment(
+        matrix.MatrixVideoFile(
+          bytes: attachment.data!,
+          name: attachment.name ?? "Unknown",
+          mimeType: attachment.mimeType,
+          width: attachment.dimensions?.width.toInt(),
+          height: attachment.dimensions?.height.toInt(),
+        ),
+        thumbnailFile: thumbnailImageFile,
+      );
+    }
+
+    return MatrixProcessedAttachment(
+        matrix.MatrixFile(
+            bytes: attachment.data!,
+            name: attachment.name ?? "Unknown",
+            mimeType: attachment.mimeType),
+        thumbnailFile: thumbnailImageFile);
   }
 
   @override
@@ -340,7 +365,8 @@ class MatrixRoom extends Room {
           processedAttachments.whereType<MatrixProcessedAttachment>().map((e) {
         return _matrixRoom.sendFileEvent(e.file,
             threadLastEventId: threadLastEventId,
-            threadRootEventId: threadRootEventId);
+            threadRootEventId: threadRootEventId,
+            thumbnail: e.thumbnailFile);
       }));
     }
 

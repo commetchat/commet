@@ -20,6 +20,11 @@ class PendingFileAttachment {
   String? mimeType;
   int? size;
 
+  Uint8List? thumbnailFile;
+  String? thumbnailMime;
+  Size? dimensions;
+  Duration? length;
+
   PendingFileAttachment(
       {this.name, this.path, this.data, this.mimeType, this.size}) {
     assert(path != null || data != null);
