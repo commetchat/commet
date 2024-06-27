@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:commet/config/build_config.dart';
+import 'package:commet/config/platform_utils.dart';
 import 'package:commet/config/theme_config.dart';
 import 'package:commet/main.dart';
 import 'package:flutter/material.dart';
@@ -104,13 +105,15 @@ class Preferences {
           WidgetsBinding.instance.platformDispatcher.platformBrightness;
     }
 
-    var custom = await ThemeConfig.getThemeByName(preferences.theme);
-    if (custom != null) {
-      var jsonString = await custom.readAsString();
-      var json = const JsonDecoder().convert(jsonString);
-      var themedata = await ThemeJsonConverter.fromJson(json, custom);
-      if (themedata != null) {
-        return themedata;
+    if (!PlatformUtils.isWeb) {
+      var custom = await ThemeConfig.getThemeByName(preferences.theme);
+      if (custom != null) {
+        var jsonString = await custom.readAsString();
+        var json = const JsonDecoder().convert(jsonString);
+        var themedata = await ThemeJsonConverter.fromJson(json, custom);
+        if (themedata != null) {
+          return themedata;
+        }
       }
     }
 

@@ -100,6 +100,7 @@ class _MessageAttachmentState extends State<MessageAttachment> {
                             attachment.videoFile,
                             thumbnail: attachment.thumbnail,
                             fileName: attachment.name,
+                            doThumbnail: true,
                             canGoFullscreen: true,
                             onFullscreen: fullscreenVideo,
                             key: videoPlayerKey,

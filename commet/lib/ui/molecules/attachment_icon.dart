@@ -16,19 +16,27 @@ class AttachmentIcon extends StatefulWidget {
 class _AttachmentIconState extends State<AttachmentIcon> {
   bool hovered = false;
 
-  @override
-  Widget build(BuildContext context) {
-    Image? image;
+  ImageProvider? image;
 
+  @override
+  void initState() {
     if (Mime.imageTypes.contains(widget.attachment.mimeType) &&
         widget.attachment.data != null) {
-      image = Image.memory(widget.attachment.data!,
-          filterQuality: FilterQuality.medium, fit: BoxFit.cover);
+      image = Image.memory(widget.attachment.data!).image;
     }
 
+    if (widget.attachment.thumbnailFile != null) {
+      image = Image.memory(widget.attachment.thumbnailFile!).image;
+    }
+
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return ImageButton(
       size: 20,
-      image: image?.image,
+      image: image,
       icon: Mime.toIcon(widget.attachment.mimeType),
       onTap: widget.removeAttachment,
       iconSize: 20,

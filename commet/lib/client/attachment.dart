@@ -20,11 +20,16 @@ class PendingFileAttachment {
   String? mimeType;
   int? size;
 
+  Uint8List? thumbnailFile;
+  String? thumbnailMime;
+  Size? dimensions;
+  Duration? length;
+
   PendingFileAttachment(
       {this.name, this.path, this.data, this.mimeType, this.size}) {
     assert(path != null || data != null);
 
-    mimeType ??= Mime.lookupType(path ?? "", data: data);
+    mimeType ??= Mime.lookupType(path ?? name ?? "", data: data);
   }
 
   Future<void> resolve() async {
@@ -37,6 +42,18 @@ class PendingFileAttachment {
         mimeType = mime.lookupMimeType(file.path, headerBytes: data);
       }
     }
+  }
+
+  ImageProvider? getAsImage() {
+    if (Mime.imageTypes.contains(mimeType)) {
+      if (data != null) {
+        return Image.memory(data!).image;
+      } else {
+        return Image.file(File(path!)).image;
+      }
+    }
+
+    return null;
   }
 }
 

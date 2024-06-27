@@ -18,24 +18,30 @@ class VideoPlayer extends StatefulWidget {
       super.key,
       this.canGoFullscreen = false,
       this.onFullscreen,
+      this.decodeFirstFrame = false,
+      this.controller,
+      this.doThumbnail = true,
       this.showProgressBar = true});
   final FileProvider videoFile;
   final ImageProvider? thumbnail;
   final bool showProgressBar;
   final bool canGoFullscreen;
+  final bool doThumbnail;
+  final bool decodeFirstFrame;
   final String? fileName;
   final Function? onFullscreen;
+  final VideoPlayerController? controller;
 
   @override
   State<VideoPlayer> createState() => VideoPlayerState();
 }
 
 class VideoPlayerState extends State<VideoPlayer> {
-  VideoPlayerController controller = VideoPlayerController();
+  late VideoPlayerController controller;
   bool playing = false;
   bool inited = false;
   bool buffering = false;
-  bool showThumbnail = true;
+  late bool showThumbnail;
   bool shouldShowControls = true;
   bool isCompleted = false;
   double videoProgress = 0;
@@ -48,6 +54,9 @@ class VideoPlayerState extends State<VideoPlayer> {
 
   @override
   void initState() {
+    showThumbnail = widget.doThumbnail;
+
+    controller = widget.controller ?? VideoPlayerController();
     bufferingListener = controller.isBuffering.listen((isBuffering) {
       setState(() {
         buffering = isBuffering;
@@ -94,7 +103,7 @@ class VideoPlayerState extends State<VideoPlayer> {
     return Stack(
       fit: StackFit.expand,
       children: [
-        if (inited) pickPlayer(),
+        if (widget.decodeFirstFrame || inited) pickPlayer(),
         if (showThumbnail) thumbnail(),
         controls()
       ],
@@ -263,6 +272,9 @@ class VideoPlayerState extends State<VideoPlayer> {
 
   Widget pickPlayer() {
     return VideoPlayerImplementation(
-        controller: controller, videoFile: widget.videoFile);
+      controller: controller,
+      videoFile: widget.videoFile,
+      decodeFirstFrame: widget.decodeFirstFrame,
+    );
   }
 }

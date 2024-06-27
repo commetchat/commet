@@ -301,6 +301,8 @@ class MatrixTimelineEvent implements TimelineEvent {
   }
 
   void parseAnyAttachments(matrix.Event matrixEvent, matrix.Client client) {
+    if (matrixEvent.status.isSending) return;
+
     if (matrixEvent.hasAttachment) {
       double? width = matrixEvent.attachmentWidth;
       double? height = matrixEvent.attachmentHeight;
@@ -319,20 +321,25 @@ class MatrixTimelineEvent implements TimelineEvent {
             name: matrixEvent.body,
             height: height);
       } else if (Mime.videoTypes.contains(matrixEvent.attachmentMimetype)) {
-        attachment = VideoAttachment(
-            MxcFileProvider(client, matrixEvent.attachmentMxcUrl!,
-                event: matrixEvent),
-            thumbnail: matrixEvent.videoThumbnailUrl != null
-                ? MatrixMxcImage(matrixEvent.videoThumbnailUrl!, client,
-                    blurhash: matrixEvent.attachmentBlurhash,
-                    doFullres: false,
-                    doThumbnail: true,
-                    matrixEvent: matrixEvent)
-                : null,
-            name: matrixEvent.body,
-            width: width,
-            fileSize: matrixEvent.infoMap['size'] as int?,
-            height: height);
+        // Only load videos if the event has finished sending, otherwise
+        // matrix dart sdk gives us the video file when we ask for thumbnail
+        if (matrixEvent.status.isSending == false) {
+          attachment = VideoAttachment(
+              MxcFileProvider(client, matrixEvent.attachmentMxcUrl!,
+                  event: matrixEvent),
+              thumbnail: matrixEvent.videoThumbnailUrl != null
+                  ? MatrixMxcImage(matrixEvent.videoThumbnailUrl!, client,
+                      blurhash: matrixEvent.attachmentBlurhash,
+                      doFullres: false,
+                      autoLoadFullRes: false,
+                      doThumbnail: true,
+                      matrixEvent: matrixEvent)
+                  : null,
+              name: matrixEvent.body,
+              width: width,
+              fileSize: matrixEvent.infoMap['size'] as int?,
+              height: height);
+        }
       } else {
         attachment = FileAttachment(
             MxcFileProvider(client, matrixEvent.attachmentMxcUrl!,

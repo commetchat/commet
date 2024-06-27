@@ -1,4 +1,7 @@
 import 'dart:async';
+import 'dart:typed_data';
+
+import 'package:flutter/material.dart';
 
 class VideoPlayerController {
   Future<void> Function()? _onPause;
@@ -8,6 +11,10 @@ class VideoPlayerController {
   Future<void> Function()? _onReplay;
 
   Future<void> Function(Duration percent)? _seekTo;
+
+  Future<Uint8List?> Function()? _screenshot;
+
+  Future<Size?> Function()? _getSize;
 
   Future<Duration> Function()? _getLength;
 
@@ -28,12 +35,16 @@ class VideoPlayerController {
       required Future<void> Function() play,
       required Future<void> Function() replay,
       required Future<Duration> Function() getLength,
+      required Future<Size?> Function() getSize,
+      Future<Uint8List?> Function()? screenshot,
       required Future<void> Function(Duration percent) seekTo}) {
     _onPause = pause;
     _onPlay = play;
     _onReplay = replay;
     _seekTo = seekTo;
     _getLength = getLength;
+    _screenshot = screenshot;
+    _getSize = getSize;
   }
 
   Future<void> pause() async {
@@ -52,6 +63,10 @@ class VideoPlayerController {
     await _seekTo!.call(duration);
   }
 
+  Future<Uint8List?> screenshot() async {
+    return _screenshot?.call();
+  }
+
   void setBuffering(bool isBuffering) {
     _isBuffering.add(isBuffering);
   }
@@ -66,5 +81,9 @@ class VideoPlayerController {
 
   Future<Duration> getLength() async {
     return await _getLength!.call();
+  }
+
+  Future<Size?> getSize() async {
+    return await _getSize!.call();
   }
 }

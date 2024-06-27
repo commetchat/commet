@@ -2,11 +2,14 @@ import 'dart:async';
 
 import 'package:commet/client/components/gif/gif_component.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/config/platform_utils.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/emoji_widget.dart';
 import 'package:commet/ui/atoms/rich_text_field.dart';
 import 'package:commet/ui/molecules/attachment_icon.dart';
+import 'package:commet/ui/organisms/attachment_processor/attachment_processor.dart';
 import 'package:commet/ui/molecules/emoticon_picker.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/organisms/chat/chat.dart';
 import 'package:commet/client/components/emoticon/emoji_pack.dart';
 import 'package:commet/client/components/gif/gif_search_result.dart';
@@ -634,10 +637,24 @@ class MessageInputState extends State<MessageInput> {
       for (var file in result.files) {
         var attachment = PendingFileAttachment(
             name: file.name,
-            path: file.path,
+            path: PlatformUtils.isWeb ? null : file.path,
             data: file.bytes,
             size: file.bytes?.length);
-        widget.addAttachment?.call(attachment);
+        if (mounted) {
+          var processedFile = await AdaptiveDialog.show<PendingFileAttachment>(
+            scrollable: false,
+            context,
+            builder: (context) {
+              return AttachmentProcessor(
+                attachment: attachment,
+              );
+            },
+          );
+
+          if (processedFile != null) {
+            widget.addAttachment?.call(processedFile);
+          }
+        }
       }
     }
   }

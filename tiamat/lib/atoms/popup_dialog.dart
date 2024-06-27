@@ -46,7 +46,7 @@ class PopupDialog extends StatelessWidget {
       required this.content,
       this.width = null,
       this.height = null});
-  final String title;
+  final String? title;
   final double? width;
   final double? height;
   final Widget content;
@@ -55,7 +55,7 @@ class PopupDialog extends StatelessWidget {
 
   static Future<T?> show<T extends Object?>(BuildContext context,
       {required Widget content,
-      required String title,
+      String? title,
       double? width,
       double? height,
       bool barrierDismissible = true}) {
@@ -89,11 +89,13 @@ class PopupDialog extends StatelessWidget {
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       contentPadding: const EdgeInsets.all(8),
-      title: Row(
-        children: [
-          Text(title),
-        ],
-      ),
+      title: title == null
+          ? null
+          : Row(
+              children: [
+                Text(title!),
+              ],
+            ),
       content: content,
     );
   }
