@@ -236,7 +236,7 @@ class MatrixRoom extends Room {
       return;
     }
 
-    var sender = getMemberOrFallback(event.senderId);
+    var sender = await fetchMember(event.senderId);
 
     var notification = MessageNotificationContent(
         senderName: sender.displayName,
@@ -556,6 +556,16 @@ class MatrixRoom extends Room {
   Member getMemberOrFallback(String id) {
     return MatrixMember(
         _matrixRoom.client, _matrixRoom.unsafeGetUserFromMemoryOrFallback(id));
+  }
+
+  @override
+  Future<Member> fetchMember(String id) async {
+    var member = await _matrixRoom.requestUser(id);
+    if (member != null) {
+      return MatrixMember(_matrixRoom.client, member);
+    } else {
+      return getMemberOrFallback(id);
+    }
   }
 
   @override

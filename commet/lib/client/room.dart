@@ -140,6 +140,8 @@ abstract class Room {
 
   Member getMemberOrFallback(String id);
 
+  Future<Member> fetchMember(String id);
+
   @override
   bool operator ==(Object other) {
     if (other is! Room) return false;

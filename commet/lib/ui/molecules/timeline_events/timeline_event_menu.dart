@@ -144,9 +144,9 @@ class TimelineEventMenu {
             icon: Icons.notification_add,
             action: (BuildContext context) async {
               var room = timeline.room;
-              var user = await room.client.getProfile(event.senderId);
+              var user = await room.fetchMember(event.senderId);
               var content = MessageNotificationContent(
-                senderName: user!.displayName,
+                senderName: user.displayName,
                 senderImage: user.avatar,
                 senderId: user.identifier,
                 roomName: room.displayName,
