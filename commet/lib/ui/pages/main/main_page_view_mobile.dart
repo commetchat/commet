@@ -87,18 +87,18 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
         child: Foundation(
             child: OverlappingPanels(
           key: panelsKey,
-          left: navigation(context),
-          main: Foundation(
-              child: IgnorePointer(
-            ignoring: shouldMainIgnoreInput,
-            child: Container(key: mainPanelKey, child: mainPanel()),
-          )),
           onDragStart: () {},
           onSideChange: (side) {
             setState(() {
               shouldMainIgnoreInput = side != RevealSide.main;
             });
           },
+          left: navigation(context),
+          main: Foundation(
+              child: IgnorePointer(
+            ignoring: shouldMainIgnoreInput,
+            child: Container(key: mainPanelKey, child: mainPanel()),
+          )),
           right: rightPanel(context),
         )));
   }
