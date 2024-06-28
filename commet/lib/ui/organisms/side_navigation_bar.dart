@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/profile.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/ui/atoms/dot_indicator.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/pages/add_space_or_room/add_space_or_room.dart';
@@ -31,7 +32,7 @@ class SideNavigationBar extends StatefulWidget {
       const ValueKey("SIDE_NAVIGATION_SETTINGS_BUTTON");
 
   final Profile currentUser;
-  final void Function(int index)? onSpaceSelected;
+  final void Function(Space space)? onSpaceSelected;
   final void Function()? clearSpaceSelection;
   final void Function()? onDirectMessagesSelected;
   final void Function()? onHomeSelected;
@@ -60,30 +61,43 @@ class SideNavigationBar extends StatefulWidget {
 
 class _SideNavigationBarState extends State<SideNavigationBar> {
   late ClientManager _clientManager;
-  StreamSubscription? onSpaceUpdated;
-  StreamSubscription? onSpaceChildUpdated;
-  StreamSubscription? onDirectMessageUpdatedSubscription;
+
+  late List<StreamSubscription> subs;
 
   String get promptAddSpace => Intl.message("Add Space",
       name: "promptAddSpace", desc: "Prompt to add a new space");
 
+  late List<Space> topLevelSpaces;
+
   @override
   void initState() {
     _clientManager = Provider.of<ClientManager>(context, listen: false);
-    onSpaceChildUpdated = _clientManager.onSpaceChildUpdated.stream
-        .listen((_) => onSpaceUpdate());
 
-    onSpaceUpdated =
-        _clientManager.onSpaceUpdated.stream.listen((_) => onSpaceUpdate());
+    subs = [
+      _clientManager.onSpaceChildUpdated.stream.listen((_) => onSpaceUpdate()),
+      _clientManager.onSpaceUpdated.stream.listen((_) => onSpaceUpdate()),
+      _clientManager.onSpaceRemoved.listen((_) => onSpaceUpdate()),
+      _clientManager.onSpaceAdded.listen((_) => onSpaceUpdate()),
+      _clientManager.onDirectMessageRoomUpdated.stream
+          .listen(onDirectMessageUpdated),
+    ];
 
-    onDirectMessageUpdatedSubscription = _clientManager
-        .onDirectMessageRoomUpdated.stream
-        .listen(onDirectMessageUpdated);
+    getSpaces();
+
     super.initState();
   }
 
+  void getSpaces() {
+    _clientManager = Provider.of<ClientManager>(context, listen: false);
+
+    topLevelSpaces = _clientManager.spaces.where((e) => e.isTopLevel).toList();
+    Log.d("Num top level spaces: ${topLevelSpaces.length}");
+  }
+
   void onSpaceUpdate() {
-    setState(() {});
+    setState(() {
+      getSpaces();
+    });
   }
 
   void onDirectMessageUpdated(Room room) {
@@ -92,9 +106,9 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
 
   @override
   void dispose() {
-    onSpaceUpdated?.cancel();
-    onSpaceChildUpdated?.cancel();
-    onDirectMessageUpdatedSubscription?.cancel();
+    for (var sub in subs) {
+      sub.cancel();
+    }
     super.dispose();
   }
 
@@ -126,10 +140,8 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
             ),
             Expanded(
               child: SpaceSelector(
-                _clientManager.spaces,
+                topLevelSpaces,
                 width: 70,
-                onSpaceInsert: _clientManager.onSpaceAdded,
-                onSpaceRemoved: _clientManager.onSpaceRemoved,
                 clearSelection: widget.clearSpaceSelection,
                 shouldShowAvatarForSpace: shouldShowAvatarForSpace,
                 header: Column(
@@ -182,8 +194,8 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                     ),
                   ],
                 ),
-                onSelected: (index) {
-                  widget.onSpaceSelected?.call(index);
+                onSelected: (space) {
+                  widget.onSpaceSelected?.call(space);
                 },
               ),
             ),

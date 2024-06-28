@@ -21,6 +21,10 @@ abstract class Space {
 
   List<Room> get rooms;
 
+  List<Space> get subspaces;
+
+  bool get isTopLevel;
+
   String get topic;
 
   PushRule get pushRule;
@@ -33,19 +37,19 @@ abstract class Space {
 
   Stream<void> get onUpdate;
 
-  Stream<Room> get onChildUpdated;
+  Stream<Room> get onChildRoomUpdated;
 
   Stream<int> get onRoomAdded;
 
   Stream<int> get onRoomRemoved;
 
-  Stream<void> get onChildrenUpdated;
+  Stream<void> get onChildRoomsUpdated;
 
-  Stream<int> get onChildPreviewAdded;
+  Stream<int> get onChildRoomPreviewAdded;
 
-  Stream<int> get onChildPreviewRemoved;
+  Stream<int> get onChildRoomPreviewRemoved;
 
-  Stream<void> get onChildPreviewsUpdated;
+  Stream<void> get onChildRoomPreviewsUpdated;
 
   List<RoomPreview> get childPreviews;
 
