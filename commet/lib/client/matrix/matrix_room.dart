@@ -24,7 +24,6 @@ import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/image_utils.dart';
 import 'package:commet/utils/mime.dart';
-import 'package:commet/utils/notifying_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:html_unescape/html_unescape.dart';
@@ -52,11 +51,6 @@ class MatrixRoom extends Room {
   final StreamController<void> onTimelineLoaded = StreamController.broadcast();
 
   late final List<RoomComponent<MatrixClient, MatrixRoom>> _components;
-
-  final NotifyingList<String> _memberIds = NotifyingList.empty(growable: true);
-
-  @override
-  Stream<void> get membersUpdated => _memberIds.onListUpdated;
 
   ImageProvider? _avatar;
 
@@ -100,7 +94,8 @@ class MatrixRoom extends Room {
   TimelineEvent? lastEvent;
 
   @override
-  Iterable<String> get memberIds => _memberIds;
+  Iterable<String> get memberIds =>
+      _matrixRoom.getParticipants([matrix.Membership.join]).map((e) => e.id);
 
   @override
   String get developerInfo =>
