@@ -192,7 +192,6 @@ class OverlappingPanelsState extends State<OverlappingPanels>
     double borderRadius = 20;
 
     return GestureDetector(
-        behavior: HitTestBehavior.deferToChild,
         onHorizontalDragStart: (details) {
           widget.onDragStart?.call();
         },
