@@ -210,6 +210,13 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
       return true;
     }
 
+    if (widget.isThreadTimeline == false &&
+        threadComponent?.isEventInResponseToThread(
+                widget.timeline.events[index + 1], widget.timeline) ==
+            true) {
+      return true;
+    }
+
     if (widget.timeline.events[index].originServerTs
             .difference(widget.timeline.events[index + 1].originServerTs)
             .inMinutes >
