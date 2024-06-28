@@ -1,4 +1,5 @@
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/components/invitation/invitation_component.dart';
 import 'package:commet/client/profile.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
@@ -37,11 +38,13 @@ class _SendInvitationWidgetState extends State<SendInvitationWidget> {
 
   @override
   Widget build(BuildContext context) {
-    var recommended = widget.room.client.directMessages;
+    var dmComponent =
+        widget.room.client.getComponent<DirectMessagesComponent>();
+    var recommended = dmComponent?.directMessageRooms ?? [];
 
     recommended.removeWhere(
-      (element) =>
-          widget.room.memberIds.contains(element.directMessagePartnerID),
+      (element) => widget.room.memberIds
+          .contains(dmComponent?.getDirectMessagePartnerId(element)),
     );
 
     return ScaledSafeArea(
@@ -82,7 +85,8 @@ class _SendInvitationWidgetState extends State<SendInvitationWidget> {
                       var room = recommended[index];
                       return MiniProfileView(
                           client: room.client,
-                          userId: room.directMessagePartnerID!);
+                          userId:
+                              dmComponent!.getDirectMessagePartnerId(room)!);
                     },
                   ),
                 ],

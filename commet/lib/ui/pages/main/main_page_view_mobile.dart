@@ -298,7 +298,7 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
                 ),
                 Flexible(
                   child: DirectMessageList(
-                    clientManager: widget.state.clientManager,
+                    directMessages: widget.state.clientManager.directMessages,
                     onSelected: (room) {
                       setState(() {
                         selectRoom(room);

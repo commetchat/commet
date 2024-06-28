@@ -206,8 +206,14 @@ class ChatState extends State<Chat> {
     var component = room.client.getComponent<CommandComponent>();
 
     if (component?.isExecutable(message) == true) {
-      component?.executeCommand(message, room,
-          interactingEvent: interactingEvent, type: interactionType);
+      try {
+        await component?.executeCommand(message, room,
+            interactingEvent: interactingEvent, type: interactionType);
+      } catch (error) {
+        if (mounted)
+          AdaptiveDialog.show(context,
+              builder: (context) => tiamat.Text.label("$error"));
+      }
     } else if (isThread) {
       threadsComponent!.sendMessage(
           threadRootEventId: widget.threadId!,

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/components/push_notification/android/android_notifier.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
@@ -102,6 +103,11 @@ class UnifiedPushNotifier implements Notifier {
 
     var user = room.getMemberOrFallback(event!.senderId);
 
+    bool isDirectMessage = client
+            .getComponent<DirectMessagesComponent>()
+            ?.isRoomDirectMessage(room) ??
+        false;
+
     NotificationManager.notify(MessageNotificationContent(
         senderName: user.displayName,
         senderId: user.identifier,
@@ -112,7 +118,7 @@ class UnifiedPushNotifier implements Notifier {
         clientId: client.identifier,
         senderImage: user.avatar,
         roomImage: await room.getShortcutImage(),
-        isDirectMessage: room.isDirectMessage));
+        isDirectMessage: isDirectMessage));
   }
 
   Future<void> onBackgroundMessage(Map<String, dynamic> message) async {

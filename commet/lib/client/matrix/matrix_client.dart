@@ -423,23 +423,6 @@ class MatrixClient extends Client {
   }
 
   @override
-  Future<Room?> createDirectMessage(String userId) async {
-    var roomId = await _matrixClient.startDirectChat(userId);
-    if (hasRoom(roomId)) return getRoom(roomId);
-
-    var matrixRoom = _matrixClient.getRoomById(roomId);
-    if (matrixRoom == null) return null;
-
-    MatrixRoom room = MatrixRoom(this, matrixRoom, _matrixClient);
-    rooms.add(room);
-    return room;
-  }
-
-  @override
-  List<Room> get directMessages =>
-      _rooms.where((element) => element.isDirectMessage).toList();
-
-  @override
   Future<Profile?> getProfile(String identifier) async {
     var profile = await _matrixClient.getProfileFromUserId(identifier);
     return MatrixProfile(_matrixClient, profile);

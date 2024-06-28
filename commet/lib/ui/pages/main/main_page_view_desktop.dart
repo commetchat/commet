@@ -155,7 +155,7 @@ class MainPageViewDesktop extends StatelessWidget {
                   ),
                   Flexible(
                     child: DirectMessageList(
-                        clientManager: state.clientManager,
+                        directMessages: state.clientManager.directMessages,
                         onSelected: (room) => state.selectRoom(room)),
                   ),
                 ],

@@ -3,6 +3,7 @@ import 'dart:collection';
 
 import 'package:commet/cache/file_cache.dart';
 import 'package:commet/client/client_manager.dart';
+import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/timeline.dart';
@@ -110,6 +111,11 @@ class BackgroundNotificationsManager {
 
     Log.i(event.type);
 
+    bool isDirectMessage = client
+            .getComponent<DirectMessagesComponent>()
+            ?.isRoomDirectMessage(room) ??
+        false;
+
     if (event.type == EventType.message || event.type == EventType.encrypted) {
       await NotificationManager.notify(MessageNotificationContent(
           senderName: user.displayName,
@@ -121,7 +127,7 @@ class BackgroundNotificationsManager {
           clientId: client.identifier,
           senderImage: user.avatar,
           roomImage: room.avatar,
-          isDirectMessage: room.isDirectMessage));
+          isDirectMessage: isDirectMessage));
     }
   }
 }
