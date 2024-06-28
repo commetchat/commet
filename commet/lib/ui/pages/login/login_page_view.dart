@@ -26,6 +26,7 @@ class LoginPageView extends StatefulWidget {
       this.loadingServerInfo = false,
       this.isServerValid = false,
       this.hasSsoSupport = false,
+      this.hasPasswordSupport = false,
       this.updateHomeserver});
   final bool canNavigateBack;
   final bool isLoggingIn;
@@ -35,6 +36,7 @@ class LoginPageView extends StatefulWidget {
   final bool loadingServerInfo;
   final bool isServerValid;
   final bool hasSsoSupport;
+  final bool hasPasswordSupport;
   final Future<void> Function(SsoLoginFlow flow)? doSsoLogin;
   final Future<void> Function(
           PasswordLoginFlow flow, String username, String password)?
@@ -76,7 +78,6 @@ class _LoginPageViewState extends State<LoginPageView> {
         _onHomeserverTextUpdated();
       });
     }
-
     super.initState();
   }
 
@@ -221,7 +222,7 @@ class _LoginPageViewState extends State<LoginPageView> {
       const SizedBox(height: 16),
       homeserverEntry(),
       const SizedBox(height: 16),
-      usenamePasswordLoginInputs(),
+      if (widget.hasPasswordSupport) usenamePasswordLoginInputs(),
       SizedBox(
         height: 15,
         child: Center(
@@ -238,23 +239,24 @@ class _LoginPageViewState extends State<LoginPageView> {
       if (widget.hasSsoSupport)
         Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const SizedBox(
-                  width: 100,
-                  height: 10,
-                  child: tiamat.Seperator(),
-                ),
-                tiamat.Text.labelLow(CommonStrings.labelOr),
-                const SizedBox(
-                  width: 100,
-                  height: 10,
-                  child: tiamat.Seperator(),
-                ),
-              ],
-            ),
+            if (widget.hasPasswordSupport)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const SizedBox(
+                    width: 100,
+                    height: 10,
+                    child: tiamat.Seperator(),
+                  ),
+                  tiamat.Text.labelLow(CommonStrings.labelOr),
+                  const SizedBox(
+                    width: 100,
+                    height: 10,
+                    child: tiamat.Seperator(),
+                  ),
+                ],
+              ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Wrap(
@@ -377,7 +379,7 @@ class _LoginPageViewState extends State<LoginPageView> {
       height: 50,
       child: SvgPicture.asset(
         "assets/images/app_icon/icon.svg",
-        theme: SvgTheme(currentColor: Theme.of(context).colorScheme.onPrimary),
+        theme: SvgTheme(currentColor: Theme.of(context).colorScheme.onSurface),
       ),
     );
   }
