@@ -29,6 +29,7 @@ class MatrixDirectMessagesComponent
   void postLoginInit() {
     updateRoomsList();
     client.onRoomAdded.listen(onRoomAdded);
+    client.onRoomRemoved.listen(onRoomRemoved);
   }
 
   @override
@@ -109,5 +110,11 @@ class MatrixDirectMessagesComponent
     if (event.accountData!.any((e) => e.type == "m.direct")) {
       updateRoomsList();
     }
+  }
+
+  void onRoomRemoved(int index) {
+    var room = client.rooms[index];
+    directMessageRooms.remove(room);
+    listUpdated.add(null);
   }
 }
