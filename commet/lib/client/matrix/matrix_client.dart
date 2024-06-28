@@ -274,7 +274,10 @@ class MatrixClient extends Client {
         "m.room.power_levels",
         "m.room.join_rules"
       },
-      supportedLoginTypes: {matrix.AuthenticationTypes.password},
+      supportedLoginTypes: {
+        matrix.AuthenticationTypes.password,
+        matrix.AuthenticationTypes.sso
+      },
       nativeImplementations: nativeImplementations,
       databaseBuilder: (client) => getMatrixDatabase(client.clientName),
       logLevel: BuildConfig.RELEASE ? matrix.Level.warning : matrix.Level.info,
@@ -574,7 +577,8 @@ class MatrixClient extends Client {
         true,
         resultFlows,
       );
-    } catch (_) {
+    } catch (error, trace) {
+      Log.onError(error, trace);
       return (false, null);
     }
   }

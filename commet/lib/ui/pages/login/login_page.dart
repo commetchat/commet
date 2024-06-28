@@ -78,6 +78,8 @@ class LoginPageState extends State<LoginPage> {
       isLoggingIn: isLoggingIn,
       loadingServerInfo: loadingServerInfo,
       hasSsoSupport: loginFlows?.whereType<SsoLoginFlow>().isNotEmpty == true,
+      hasPasswordSupport:
+          loginFlows?.whereType<PasswordLoginFlow>().isNotEmpty == true,
       isServerValid: isServerValid,
     );
   }
