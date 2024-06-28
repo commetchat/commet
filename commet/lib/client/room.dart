@@ -49,9 +49,6 @@ abstract class Room {
   /// Stream which is called when the room state updates
   Stream<void> get onUpdate;
 
-  /// Stream which gets called when the members list is updated
-  Stream<void> get membersUpdated;
-
   /// Rule for push notifications for this room
   PushRule get pushRule;
 
