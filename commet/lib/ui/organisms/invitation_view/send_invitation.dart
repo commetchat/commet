@@ -70,6 +70,8 @@ class _SendInvitationWidgetState extends State<SendInvitationWidget> {
                               client: widget.component.client,
                               userId: searchResults![index].identifier,
                               initialProfile: searchResults![index],
+                              onTap: () =>
+                                  invitePeer(searchResults![index].identifier),
                             );
                           },
                         )),
@@ -83,10 +85,12 @@ class _SendInvitationWidgetState extends State<SendInvitationWidget> {
                     itemCount: recommended.length,
                     itemBuilder: (context, index) {
                       var room = recommended[index];
+                      var userId =
+                          dmComponent!.getDirectMessagePartnerId(room)!;
                       return MiniProfileView(
                           client: room.client,
-                          userId:
-                              dmComponent!.getDirectMessagePartnerId(room)!);
+                          onTap: () => invitePeer(userId),
+                          userId: userId);
                     },
                   ),
                 ],
@@ -116,17 +120,17 @@ class _SendInvitationWidgetState extends State<SendInvitationWidget> {
     });
   }
 
-  void invitePeer(Peer peer) async {
+  void invitePeer(String userId) async {
     final confirm = await AdaptiveDialog.confirmation(context,
         prompt:
-            "Are you sure you want to Invite ${peer.identifier} to the room ${widget.room.displayName}?",
+            "Are you sure you want to Invite $userId to the room ${widget.room.displayName}?",
         title: "Invitation");
     if (confirm != true) {
       return;
     }
 
-    widget.component.inviteUserToRoom(
-        userId: peer.identifier, roomId: widget.room.identifier);
+    widget.component
+        .inviteUserToRoom(userId: userId, roomId: widget.room.identifier);
 
     if (mounted) Navigator.pop(context);
   }
