@@ -5,6 +5,7 @@ import 'package:commet/cache/file_cache.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
+import 'package:commet/client/member.dart';
 import 'package:commet/client/timeline.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
@@ -102,7 +103,7 @@ class BackgroundNotificationsManager {
     Log.i("Found room: ${room?.displayName}");
 
     var event = await room!.getEvent(eventId);
-    var user = room.getMemberOrFallback(event!.senderId);
+    Member? user = await room.fetchMember(event!.senderId);
 
     Log.i("Got user: $user  ($user)");
     Log.i("Got event: ${event.body}");
