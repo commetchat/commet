@@ -191,61 +191,60 @@ class OverlappingPanelsState extends State<OverlappingPanels>
   Widget build(BuildContext context) {
     double borderRadius = 20;
 
-    return Stack(
-      children: [
-        Padding(
-          padding: EdgeInsets.fromLTRB(0, 0, widget.restWidth + 3, 0),
-          child: ClipRRect(
-            borderRadius: BorderRadius.only(
-                topRight: Radius.circular(borderRadius),
-                bottomRight: Radius.circular(borderRadius)),
-            child: Offstage(
-              offstage: translate < 0,
-              child: widget.left,
+    return GestureDetector(
+        onHorizontalDragStart: (details) {
+          widget.onDragStart?.call();
+        },
+        onHorizontalDragUpdate: (details) {
+          onTranslate(details.delta.dx);
+        },
+        onHorizontalDragEnd: (details) {
+          _onApplyTranslation();
+        },
+        child: Stack(
+          children: [
+            Padding(
+              padding: EdgeInsets.fromLTRB(0, 0, widget.restWidth + 3, 0),
+              child: ClipRRect(
+                borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(borderRadius),
+                    bottomRight: Radius.circular(borderRadius)),
+                child: Offstage(
+                  offstage: translate < 0,
+                  child: widget.left,
+                ),
+              ),
             ),
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.fromLTRB(widget.restWidth + 3, 0, 0, 0),
-          child: ClipRRect(
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(borderRadius),
-                bottomLeft: Radius.circular(borderRadius)),
-            child: Offstage(
-              offstage: translate > 0,
-              child: widget.right,
+            Padding(
+              padding: EdgeInsets.fromLTRB(widget.restWidth + 3, 0, 0, 0),
+              child: ClipRRect(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(borderRadius),
+                    bottomLeft: Radius.circular(borderRadius)),
+                child: Offstage(
+                  offstage: translate > 0,
+                  child: widget.right,
+                ),
+              ),
             ),
-          ),
-        ),
-        Transform.translate(
-          offset: Offset(translate, 0),
-          child: Container(
-              clipBehavior: Clip.antiAlias,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(
-                      (translate.abs() * 0.1).clamp(0, 20)),
-                  boxShadow:
-                      Theme.of(context).extension<ShadowSettings>()?.shadows ??
+            Transform.translate(
+              offset: Offset(translate, 0),
+              child: Container(
+                  clipBehavior: Clip.antiAlias,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(
+                          (translate.abs() * 0.1).clamp(0, 20)),
+                      boxShadow: Theme.of(context)
+                              .extension<ShadowSettings>()
+                              ?.shadows ??
                           [
                             BoxShadow(
                                 color: Colors.black.withAlpha(30),
                                 blurRadius: 20)
                           ]),
-              child: widget.main),
-        ),
-        GestureDetector(
-          behavior: HitTestBehavior.translucent,
-          onHorizontalDragStart: (details) {
-            widget.onDragStart?.call();
-          },
-          onHorizontalDragUpdate: (details) {
-            onTranslate(details.delta.dx);
-          },
-          onHorizontalDragEnd: (details) {
-            _onApplyTranslation();
-          },
-        ),
-      ],
-    );
+                  child: widget.main),
+            )
+          ],
+        ));
   }
 }
