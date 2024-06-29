@@ -47,6 +47,7 @@ class _SideNavigationBarDirectMessagesState
       child: ImplicitlyAnimatedList(
         shrinkWrap: true,
         itemData: rooms,
+        padding: const EdgeInsets.all(0),
         itemBuilder: (context, data) {
           // return tiamat.Text.labelLow(data.displayName);
           return SpaceIcon(

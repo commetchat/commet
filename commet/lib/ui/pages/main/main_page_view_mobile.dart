@@ -170,6 +170,7 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
                 onDirectMessageSelected: (room) {
                   widget.state.selectHome();
                   widget.state.selectRoom(room);
+                  panelsKey.currentState?.reveal(RevealSide.main);
                 },
               ),
             ),
