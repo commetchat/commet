@@ -113,7 +113,22 @@ class MatrixRoom extends Room {
   }
 
   @override
-  ImageProvider<Object>? get avatar => _avatar;
+  ImageProvider<Object>? get avatar {
+    final comp = client.getComponent<DirectMessagesComponent>();
+
+    if (comp == null) {
+      return _avatar;
+    }
+
+    if (comp.isRoomDirectMessage(this)) {
+      final partner = comp.getDirectMessagePartnerId(this);
+      if (partner != null) {
+        return getMemberOrFallback(partner).avatar;
+      }
+    }
+
+    return _avatar;
+  }
 
   @override
   Client get client => _client;
