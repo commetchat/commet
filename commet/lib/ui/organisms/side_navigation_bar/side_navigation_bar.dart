@@ -145,10 +145,6 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                                 widget.onHomeSelected?.call();
                               },
                             ),
-                            // TODO: Reimplement dm notifications
-                            // if (_clientManager.directMessagesNotificationCount >
-                            //     0)
-                            //   const DotIndicator()
                           ],
                         ),
                         context),
