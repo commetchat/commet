@@ -6,8 +6,6 @@ import 'package:commet/ui/atoms/space_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:implicitly_animated_list/implicitly_animated_list.dart';
 
-import 'package:tiamat/tiamat.dart' as tiamat;
-
 class SideNavigationBarDirectMessages extends StatefulWidget {
   const SideNavigationBarDirectMessages(this.directMessages,
       {super.key, this.onRoomTapped});
