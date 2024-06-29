@@ -8,7 +8,7 @@ import 'package:commet/ui/organisms/background_task_view/background_task_view_co
 import 'package:commet/ui/organisms/home_screen/home_screen.dart';
 import 'package:commet/ui/organisms/chat/chat.dart';
 import 'package:commet/ui/organisms/room_members_list/room_members_list.dart';
-import 'package:commet/ui/organisms/side_navigation_bar.dart';
+import 'package:commet/ui/organisms/side_navigation_bar/side_navigation_bar.dart';
 import 'package:commet/ui/organisms/space_summary/space_summary.dart';
 import 'package:commet/ui/pages/main/main_page.dart';
 import 'package:commet/utils/event_bus.dart';
@@ -45,17 +45,20 @@ class MainPageViewDesktop extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
                   child: SideNavigationBar(
-                    currentUser: state.currentUser,
-                    onSpaceSelected: (index) {
-                      state.selectSpace(state.clientManager.spaces[index]);
-                    },
-                    onHomeSelected: () {
-                      state.selectHome();
-                    },
-                    clearSpaceSelection: () {
-                      state.clearSpaceSelection();
-                    },
-                  ),
+                      currentUser: state.currentUser,
+                      onSpaceSelected: (index) {
+                        state.selectSpace(state.clientManager.spaces[index]);
+                      },
+                      onHomeSelected: () {
+                        state.selectHome();
+                      },
+                      clearSpaceSelection: () {
+                        state.clearSpaceSelection();
+                      },
+                      onDirectMessageSelected: (room) {
+                        state.selectHome();
+                        state.selectRoom(room);
+                      }),
                 ),
               ),
               if (state.currentView == MainPageSubView.space &&

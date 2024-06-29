@@ -27,7 +27,7 @@ class _DirectMessageListState extends State<DirectMessageList> {
   @override
   void initState() {
     subscriptions = [
-      widget.directMessages.onDirectMessagesUpdated.listen(onListUpdated)
+      widget.directMessages.onRoomsListUpdated.listen(onListUpdated)
     ];
 
     updateRoomsList();

@@ -4,7 +4,11 @@ import 'package:commet/client/components/component.dart';
 abstract class DirectMessagesInterface {
   List<Room> get directMessageRooms;
 
-  Stream<void> get onDirectMessagesUpdated;
+  List<Room> get highlightedRoomsList;
+
+  Stream<void> get onRoomsListUpdated;
+
+  Stream<void> get onHighlightedRoomsListUpdated;
 }
 
 abstract class DirectMessagesComponent<T extends Client>

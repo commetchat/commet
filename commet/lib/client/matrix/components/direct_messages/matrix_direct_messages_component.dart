@@ -5,6 +5,7 @@ import 'package:commet/client/components/direct_messages/direct_message_componen
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/room.dart';
+import 'package:commet/utils/event_bus.dart';
 import 'package:matrix/matrix_api_lite/model/sync_update.dart';
 
 class MatrixDirectMessagesComponent
@@ -13,21 +14,35 @@ class MatrixDirectMessagesComponent
   @override
   MatrixClient client;
 
-  MatrixDirectMessagesComponent(this.client) {
-    client.getMatrixClient().onSync.stream.listen(onMatrixSync);
-  }
-
   @override
   List<Room> directMessageRooms = [];
 
-  StreamController<void> listUpdated = StreamController.broadcast();
+  @override
+  List<Room> highlightedRoomsList = [];
 
   @override
-  Stream<void> get onDirectMessagesUpdated => listUpdated.stream;
+  Stream<void> get onRoomsListUpdated => listUpdated.stream;
+
+  @override
+  Stream<void> get onHighlightedRoomsListUpdated =>
+      highlightedListUpdated.stream;
+
+  StreamController<void> listUpdated = StreamController.broadcast();
+
+  StreamController<void> highlightedListUpdated = StreamController.broadcast();
+
+  String currentRoomId = "";
+
+  MatrixDirectMessagesComponent(this.client) {
+    client.getMatrixClient().onSync.stream.listen(onMatrixSync);
+    EventBus.onSelectedRoomChanged.stream
+        .listen((value) => currentRoomId = value?.identifier ?? "");
+  }
 
   @override
   void postLoginInit() {
     updateRoomsList();
+    updateNotificationsList();
     client.onRoomAdded.listen(onRoomAdded);
     client.onRoomRemoved.listen(onRoomRemoved);
   }
@@ -103,12 +118,14 @@ class MatrixDirectMessagesComponent
   }
 
   void onMatrixSync(SyncUpdate event) {
-    if (event.accountData == null) {
-      return;
+    if (event.accountData?.any((e) => e.type == "m.direct") == true) {
+      updateRoomsList();
     }
 
-    if (event.accountData!.any((e) => e.type == "m.direct")) {
-      updateRoomsList();
+    if (event.rooms?.join?.entries
+            .any((e) => e.value.unreadNotifications != null) ==
+        true) {
+      updateNotificationsList();
     }
   }
 
@@ -116,5 +133,14 @@ class MatrixDirectMessagesComponent
     var room = client.rooms[index];
     directMessageRooms.remove(room);
     listUpdated.add(null);
+  }
+
+  void updateNotificationsList() {
+    highlightedRoomsList = directMessageRooms
+        .where((e) =>
+            e.displayNotificationCount > 0 && e.identifier != currentRoomId)
+        .toList();
+
+    highlightedListUpdated.add(null);
   }
 }
