@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:tiamat/config/style/theme_base.dart';
 import 'package:tiamat/config/style/theme_common.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 import 'dart:io' show Platform;
@@ -21,67 +22,29 @@ class ThemeDarkColors {
 }
 
 class ThemeDark {
-  static ThemeData get theme => ThemeData(
-      brightness: Brightness.dark,
-      fontFamily: "RobotoCustom",
-      fontFamilyFallback: ThemeCommon.fontFamilyFallback(),
-      useMaterial3: true,
-      extensions: const [
+  static ThemeData get theme => ThemeBase.theme(ColorScheme.fromSeed(
+              seedColor: const Color.fromARGB(255, 106, 141, 255),
+              secondary: ThemeDarkColors.secondary,
+              surface: ThemeDarkColors.surface,
+              surfaceContainer: ThemeDarkColors.surfaceContainer,
+              surfaceContainerLow: ThemeDarkColors.surfaceContainerLow,
+              surfaceContainerLowest: ThemeDarkColors.surfaceContainerLowest,
+              surfaceContainerHigh: ThemeDarkColors.surfaceContainerHigh,
+              surfaceContainerHighest: ThemeDarkColors.surfaceContainerHigh,
+              primaryContainer: ThemeDarkColors.primary,
+              onPrimaryContainer: Colors.white,
+              onPrimary: Colors.white,
+              onSecondary: ThemeDarkColors.onSurface,
+              onSurface: Colors.white,
+              brightness: Brightness.dark,
+              tertiaryContainer: ThemeDarkColors.surface,
+              onTertiaryContainer: Colors.white,
+              tertiary: Colors.white,
+              outline: ThemeDarkColors.surfaceContainerHigh))
+          .copyWith(extensions: const [
         ThemeSettings(caulkBorders: true, caulkBorderRadius: 1),
         ExtraColors(
             codeHighlight: Color(0xffc678dd),
             linkColor: Color.fromARGB(255, 120, 120, 255))
-      ],
-      colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color.fromARGB(255, 106, 141, 255),
-          secondary: ThemeDarkColors.secondary,
-          surface: ThemeDarkColors.surface,
-          surfaceContainer: ThemeDarkColors.surfaceContainer,
-          surfaceContainerLow: ThemeDarkColors.surfaceContainerLow,
-          surfaceContainerLowest: ThemeDarkColors.surfaceContainerLowest,
-          surfaceContainerHigh: ThemeDarkColors.surfaceContainerHigh,
-          surfaceContainerHighest: ThemeDarkColors.surfaceContainerHigh,
-          primaryContainer: ThemeDarkColors.primary,
-          onPrimaryContainer: Colors.white,
-          onPrimary: Colors.white,
-          onSecondary: ThemeDarkColors.onSurface,
-          onSurface: Colors.white,
-          brightness: Brightness.dark,
-          tertiaryContainer: ThemeDarkColors.surface,
-          onTertiaryContainer: Colors.white,
-          tertiary: Colors.white,
-          outline: ThemeDarkColors.surfaceContainerHigh),
-      listTileTheme: const ListTileThemeData(
-        tileColor: ThemeDarkColors.surface,
-      ),
-      canvasColor: ThemeDarkColors.surface,
-      iconTheme: const IconThemeData(color: ThemeDarkColors.secondary),
-      shadowColor: Colors.black.withAlpha(100),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ButtonStyle(
-              shape: WidgetStatePropertyAll(
-        RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ))),
-      dividerTheme:
-          const DividerThemeData(color: ThemeDarkColors.surfaceContainerHigh),
-      sliderTheme: SliderThemeData(
-        inactiveTrackColor: ThemeDarkColors.primary.withAlpha(100),
-      ),
-      dialogTheme: const DialogTheme(
-          backgroundColor: ThemeDarkColors.surface, shadowColor: Colors.black),
-      switchTheme: const SwitchThemeData(
-          thumbColor: WidgetStatePropertyAll(ThemeDarkColors.secondary)),
-      dividerColor: ThemeDarkColors.outlineColor,
-      textButtonTheme: TextButtonThemeData(
-          style: ButtonStyle(
-        overlayColor: const WidgetStatePropertyAll<Color>(Colors.white10),
-        foregroundColor: WidgetStatePropertyAll<Color>(Colors.grey.shade300),
-        shape: WidgetStatePropertyAll<OutlinedBorder>(
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-        textStyle: const WidgetStatePropertyAll<TextStyle>(
-          TextStyle(
-            color: Colors.white,
-          ),
-        ),
-      )));
+      ]);
 }

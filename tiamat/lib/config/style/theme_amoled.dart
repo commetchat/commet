@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:tiamat/config/style/theme_base.dart';
 import 'package:tiamat/config/style/theme_common.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 import 'dart:io' show Platform;
@@ -21,62 +22,23 @@ class ThemeAmoledColors {
 }
 
 class ThemeAmoled {
-  static ThemeData get theme => ThemeData(
-      brightness: Brightness.dark,
-      fontFamily: "RobotoCustom",
-      fontFamilyFallback: ThemeCommon.fontFamilyFallback(),
-      useMaterial3: true,
-      extensions: const [
-        ThemeSettings(caulkBorders: true, caulkStrokeThickness: 1)
-      ],
-      colorScheme: const ColorScheme(
-          primary: Colors.white,
-          secondary: ThemeAmoledColors.secondary,
-          secondaryContainer: Color.fromARGB(255, 40, 40, 40),
-          surface: ThemeAmoledColors.surface,
-          error: Color.fromARGB(255, 255, 124, 124),
-          onPrimary: Colors.white,
-          onSecondary: ThemeAmoledColors.onSurface,
-          onSurface: Colors.white,
-          onError: Colors.white,
-          tertiaryContainer: Colors.black,
-          brightness: Brightness.dark,
-          outline: ThemeAmoledColors.surfaceHigh1),
-      listTileTheme: const ListTileThemeData(
-        tileColor: ThemeAmoledColors.surface,
-      ),
-      canvasColor: ThemeAmoledColors.surface,
-      iconTheme: const IconThemeData(color: ThemeAmoledColors.secondary),
-      shadowColor: Colors.black.withAlpha(100),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ButtonStyle(
-              backgroundColor:
-                  WidgetStatePropertyAll(ThemeAmoledColors.primary),
-              shape: WidgetStatePropertyAll(
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-              ))),
-      dividerTheme:
-          const DividerThemeData(color: ThemeAmoledColors.surfaceHigh1),
-      sliderTheme: SliderThemeData(
-        inactiveTrackColor: ThemeAmoledColors.primary.withAlpha(100),
-      ),
-      dialogTheme: const DialogTheme(
-          backgroundColor: ThemeAmoledColors.surface,
-          shadowColor: Colors.black),
-      dialogBackgroundColor: ThemeAmoledColors.highlightColor,
-      switchTheme: const SwitchThemeData(
-          thumbColor: WidgetStatePropertyAll(ThemeAmoledColors.secondary)),
-      dividerColor: ThemeAmoledColors.outlineColor,
-      textButtonTheme: TextButtonThemeData(
-          style: ButtonStyle(
-        overlayColor: const WidgetStatePropertyAll<Color>(Colors.white10),
-        foregroundColor: WidgetStatePropertyAll<Color>(Colors.grey.shade300),
-        shape: WidgetStatePropertyAll<OutlinedBorder>(
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-        textStyle: const WidgetStatePropertyAll<TextStyle>(
-          TextStyle(
-            color: Colors.white,
-          ),
-        ),
-      )));
+  static ThemeData get theme => ThemeBase.theme(const ColorScheme(
+              primary: Colors.white,
+              secondary: ThemeAmoledColors.secondary,
+              secondaryContainer: Color.fromARGB(255, 40, 40, 40),
+              surface: ThemeAmoledColors.surface,
+              error: Color.fromARGB(255, 255, 124, 124),
+              onPrimary: Colors.white,
+              onSecondary: ThemeAmoledColors.onSurface,
+              onSurface: Colors.white,
+              onError: Colors.white,
+              tertiaryContainer: Colors.black,
+              brightness: Brightness.dark,
+              outline: ThemeAmoledColors.surfaceHigh1))
+          .copyWith(extensions: [
+        const ExtraColors(
+            codeHighlight: Color(0xffc678dd),
+            linkColor: Color.fromARGB(255, 120, 120, 255)),
+        const ThemeSettings(caulkBorders: true, caulkStrokeThickness: 1)
+      ]);
 }

@@ -206,7 +206,7 @@ packages:
     description:
       path: "packages/dynamic_color"
       ref: HEAD
-      resolved-ref: c23b9658c1ada18021bb1356b921f574217d0668
+      resolved-ref: f8a2817197fb68bac47bd1067152c46a4ab56cab
       url: "https://github.com/Airyzz/material-flutter-packages.git"
     source: git
     version: "1.7.0"

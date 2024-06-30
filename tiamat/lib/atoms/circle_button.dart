@@ -26,7 +26,7 @@ class CircleButton extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: ClipOval(
         child: Material(
-          color: Theme.of(context).colorScheme.tertiaryContainer,
+          color: Theme.of(context).colorScheme.secondaryContainer,
           borderRadius: BorderRadius.circular(radius),
           child: InkWell(
             splashColor: Theme.of(context).highlightColor, // Splash color
@@ -40,7 +40,7 @@ class CircleButton extends StatelessWidget {
                     ? Align(
                         alignment: Alignment.center,
                         child: Icon(
-                          color: Theme.of(context).colorScheme.tertiary,
+                          color: Theme.of(context).colorScheme.secondary,
                           icon,
                           size: radius,
                         ))
