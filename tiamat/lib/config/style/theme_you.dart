@@ -18,7 +18,10 @@ class ThemeYou {
       }
     }
 
-    return ThemeBase.theme(scheme!).copyWith(
-        extensions: [const ThemeSettings(), ExtraColors.fromScheme(scheme)]);
+    return ThemeBase.theme(scheme!).copyWith(extensions: [
+      const ThemeSettings(),
+      ExtraColors.fromScheme(scheme),
+      FoundationSettings(color: scheme.surfaceDim)
+    ]);
   }
 }

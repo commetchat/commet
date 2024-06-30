@@ -22,29 +22,33 @@ class ThemeDarkColors {
 }
 
 class ThemeDark {
-  static ThemeData get theme => ThemeBase.theme(ColorScheme.fromSeed(
-              seedColor: const Color.fromARGB(255, 106, 141, 255),
-              secondary: ThemeDarkColors.secondary,
-              surface: ThemeDarkColors.surface,
-              surfaceContainer: ThemeDarkColors.surfaceContainer,
-              surfaceContainerLow: ThemeDarkColors.surfaceContainerLow,
-              surfaceContainerLowest: ThemeDarkColors.surfaceContainerLowest,
-              surfaceContainerHigh: ThemeDarkColors.surfaceContainerHigh,
-              surfaceContainerHighest: ThemeDarkColors.surfaceContainerHigh,
-              primaryContainer: ThemeDarkColors.primary,
-              onPrimaryContainer: Colors.white,
-              onPrimary: Colors.white,
-              onSecondary: ThemeDarkColors.onSurface,
-              onSurface: Colors.white,
-              brightness: Brightness.dark,
-              tertiaryContainer: ThemeDarkColors.surface,
-              onTertiaryContainer: Colors.white,
-              tertiary: Colors.white,
-              outline: ThemeDarkColors.surfaceContainerHigh))
-          .copyWith(extensions: const [
-        ThemeSettings(caulkBorders: true, caulkBorderRadius: 1),
-        ExtraColors(
-            codeHighlight: Color(0xffc678dd),
-            linkColor: Color.fromARGB(255, 120, 120, 255))
-      ]);
+  static ThemeData get theme {
+    var scheme = ColorScheme.fromSeed(
+        seedColor: const Color.fromARGB(255, 106, 141, 255),
+        secondary: ThemeDarkColors.secondary,
+        surface: ThemeDarkColors.surface,
+        surfaceContainer: ThemeDarkColors.surfaceContainer,
+        surfaceContainerLow: ThemeDarkColors.surfaceContainerLow,
+        surfaceContainerLowest: ThemeDarkColors.surfaceContainerLowest,
+        surfaceContainerHigh: ThemeDarkColors.surfaceContainerHigh,
+        surfaceContainerHighest: ThemeDarkColors.surfaceContainerHigh,
+        primaryContainer: ThemeDarkColors.primary,
+        onPrimaryContainer: Colors.white,
+        onPrimary: Colors.white,
+        onSecondary: ThemeDarkColors.onSurface,
+        onSurface: Colors.white,
+        brightness: Brightness.dark,
+        tertiaryContainer: ThemeDarkColors.surface,
+        onTertiaryContainer: Colors.white,
+        tertiary: Colors.white,
+        outline: ThemeDarkColors.surfaceContainerHigh);
+
+    return ThemeBase.theme(scheme).copyWith(extensions: [
+      const ThemeSettings(caulkBorders: true, caulkBorderRadius: 1),
+      FoundationSettings(color: scheme.surfaceDim),
+      const ExtraColors(
+          codeHighlight: Color(0xffc678dd),
+          linkColor: Color.fromARGB(255, 120, 120, 255))
+    ]);
+  }
 }

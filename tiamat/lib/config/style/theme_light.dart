@@ -26,17 +26,21 @@ class ThemeLightColors {
 }
 
 class ThemeLight {
-  static ThemeData get theme => ThemeBase.theme(ColorScheme.fromSeed(
-              seedColor: Colors.white,
-              brightness: Brightness.light,
-              primaryContainer: ThemeLightColors.primary,
-              onPrimaryContainer: Colors.white,
-              outline: Colors.white,
-              primary: ThemeLightColors.primary))
-          .copyWith(extensions: const [
-        ThemeSettings(),
-        ExtraColors(
-            codeHighlight: Color(0xffc678dd),
-            linkColor: Color.fromARGB(255, 80, 80, 255))
-      ]);
+  static ThemeData get theme {
+    var scheme = ColorScheme.fromSeed(
+        seedColor: Colors.white,
+        brightness: Brightness.light,
+        primaryContainer: ThemeLightColors.primary,
+        onPrimaryContainer: Colors.white,
+        outline: Colors.white,
+        primary: ThemeLightColors.primary);
+
+    return ThemeBase.theme(scheme).copyWith(extensions: [
+      const ThemeSettings(),
+      FoundationSettings(color: scheme.surfaceDim),
+      const ExtraColors(
+          codeHighlight: Color(0xffc678dd),
+          linkColor: Color.fromARGB(255, 80, 80, 255))
+    ]);
+  }
 }
