@@ -59,6 +59,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
   GlobalKey columnCenterEventKey = GlobalKey();
   GlobalKey stackKey = GlobalKey();
   ScrollController columnScrollController = ScrollController();
+  double minKnownExtent = 0;
 
   LayerLink selectedEventLayerLink = LayerLink();
   SelectableEventViewWidget? selectedEventView;
@@ -186,6 +187,10 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
         offset: controller.offset,
         maxScrollExtent: controller.position.maxScrollExtent);
 
+    if (controller.position.minScrollExtent < minKnownExtent) {
+      minKnownExtent = controller.position.minScrollExtent;
+    }
+
     Log.d("Scroll: ${controller.offset}");
 
     var overlayState = overlayKey.currentState as TimelineOverlayState?;
@@ -193,6 +198,10 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
 
     if (wasLastScrollAttachedToBottom == false && attachedToBottom) {
       widget.onAttachedToBottom?.call();
+    }
+
+    if (controller.position.minScrollExtent < minKnownExtent) {
+      minKnownExtent = controller.position.minScrollExtent;
     }
 
     wasLastScrollAttachedToBottom = attachedToBottom;
@@ -403,7 +412,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
                           TimelineViewEntry(
                               key: highlightedEventIndex == i
                                   ? highlightedEventColumnKey
-                                  : (recentItemsCount + 1) == i
+                                  : shouldColumnIndexHaveCenterKey(i)
                                       ? columnCenterEventKey
                                       : null,
                               timeline: widget.timeline,
@@ -418,6 +427,10 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
         ),
       ),
     );
+  }
+
+  bool shouldColumnIndexHaveCenterKey(int index) {
+    return index == recentItemsCount - 1;
   }
 
   double inverseLerp(double a, double b, double v) {
@@ -457,40 +470,19 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
       var eventWidgetAlpha =
           inverseLerp(columnBox!.top, columnBox.bottom, box.top);
 
-      Log.d("Box alpha: $eventWidgetAlpha");
-
-      Log.d("Event box: $box");
-
       var extraAmount =
           columnBox.height - columnScrollController.position.maxScrollExtent;
 
-      var estimatedMinExtent = -1 *
-          (columnBox.height - columnCenterEventKey.globalPaintBounds!.bottom);
-
-      //controller.position.minScrollExtent;
+      // This isnt perfectly accurate, if it was estimated max extent would also be perfectly accurate
+      // if someone in the future wants to make the jump more accruate, this might be a good place to start
+      var estimatedMinExtent = minKnownExtent;
+      // -1 * (columnBox.height - columnCenterEventKey.globalPaintBounds!.top);
 
       var estimatedMaxExtent =
           (columnBox.height + estimatedMinExtent) - extraAmount;
 
       var targetPos = lerpDouble(
           estimatedMinExtent, estimatedMaxExtent, 1 - eventWidgetAlpha)!;
-
-      Log.d("Lost scroll amount = $extraAmount");
-
-      Log.d(
-          "Column scroll min extend: ${columnScrollController.position.minScrollExtent}");
-
-      Log.d(
-          "Column scroll max extend: ${columnScrollController.position.maxScrollExtent}");
-
-      Log.d("Controller max extent: ${controller.position.maxScrollExtent}");
-      Log.d("Controller min extent: ${controller.position.minScrollExtent}");
-      Log.d("Target offset: $targetPos");
-
-      Log.d("Estimated scroll bound: $estimatedMaxExtent");
-      Log.d("Estimated min extent: $estimatedMinExtent");
-
-      Log.d("Center key box: ${columnCenterEventKey.globalPaintBounds}");
 
       setState(() {
         buildColumnView = false;

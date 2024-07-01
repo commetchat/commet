@@ -214,7 +214,10 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
                 left: BorderSide(
                     color: Theme.of(context).colorScheme.primary, width: 3)),
             color: Theme.of(context).colorScheme.surfaceContainer),
-        child: result,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(-3, 0, 0, 0),
+          child: result,
+        ),
       );
     }
 
