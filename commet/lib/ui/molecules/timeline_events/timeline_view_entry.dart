@@ -21,6 +21,7 @@ class TimelineViewEntry extends StatefulWidget {
       this.onEventHovered,
       this.setEditingEvent,
       this.setReplyingEvent,
+      this.jumpToEvent,
       this.showDetailed = false,
       this.singleEvent = false,
       this.isThreadTimeline = false,
@@ -30,6 +31,7 @@ class TimelineViewEntry extends StatefulWidget {
   final Function(String eventId)? onEventHovered;
   final Function(TimelineEvent? event)? setReplyingEvent;
   final Function(TimelineEvent? event)? setEditingEvent;
+  final Function(String eventId)? jumpToEvent;
   final bool showDetailed;
   final bool isThreadTimeline;
 
@@ -54,6 +56,7 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
 
   bool selected = false;
   bool isThreadReply = false;
+  bool highlighted = false;
   LayerLink? timelineLayerLink;
 
   late DateTime time;
@@ -204,6 +207,17 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
       );
     }
 
+    if (highlighted) {
+      result = Container(
+        decoration: BoxDecoration(
+            border: Border(
+                left: BorderSide(
+                    color: Theme.of(context).colorScheme.primary, width: 3)),
+            color: Theme.of(context).colorScheme.surfaceContainer),
+        child: result,
+      );
+    }
+
     if (timelineLayerLink != null) {
       result = Stack(
         alignment: Alignment.topRight,
@@ -241,6 +255,7 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
               isThreadTimeline: widget.isThreadTimeline,
               detailed: widget.showDetailed || selected,
               overrideShowSender: widget.singleEvent,
+              jumpToEvent: widget.jumpToEvent,
               initialIndex: widget.initialIndex);
       case EventType.roomCreated:
       case EventType.memberJoined:
@@ -271,17 +286,25 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
 
   @override
   void deselect() {
-    setState(() {
-      selected = false;
-      timelineLayerLink = null;
-    });
+    if (mounted)
+      setState(() {
+        selected = false;
+        timelineLayerLink = null;
+      });
   }
 
   @override
   void select(LayerLink link) {
+    if (mounted)
+      setState(() {
+        selected = true;
+        timelineLayerLink = link;
+      });
+  }
+
+  void setHighlighted(bool value) {
     setState(() {
-      selected = true;
-      timelineLayerLink = link;
+      highlighted = value;
     });
   }
 }

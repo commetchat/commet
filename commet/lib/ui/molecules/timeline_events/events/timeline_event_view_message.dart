@@ -23,8 +23,11 @@ class TimelineEventViewMessage extends StatefulWidget {
       required this.timeline,
       this.isThreadTimeline = false,
       this.overrideShowSender = false,
+      this.jumpToEvent,
       this.detailed = false,
       required this.initialIndex});
+
+  final Function(String eventId)? jumpToEvent;
 
   final Timeline timeline;
   final int initialIndex;
@@ -55,6 +58,7 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
   bool hasReactions = false;
   bool isInResponse = false;
   bool showSender = false;
+  late String eventId;
   late String currentUserIdentifier;
   late DateTime sentTime;
 
@@ -100,6 +104,7 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
           ? TimelineEventViewReply(
               timeline: widget.timeline,
               index: index,
+              jumpToEvent: widget.jumpToEvent,
             )
           : null,
       reactions: hasReactions
@@ -140,6 +145,7 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
     index = eventIndex;
     var event = widget.timeline.events[eventIndex];
     var sender = widget.timeline.room.getMemberOrFallback(event.senderId);
+    eventId = event.eventId;
 
     senderName = sender.displayName;
     senderAvatar = sender.avatar;

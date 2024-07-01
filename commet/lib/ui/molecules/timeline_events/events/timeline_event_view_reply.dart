@@ -9,8 +9,10 @@ class TimelineEventViewReply extends StatefulWidget {
       {super.key,
       required this.timeline,
       required this.index,
+      this.jumpToEvent,
       this.avatarSize = 32});
   final Timeline timeline;
+  final Function(String eventId)? jumpToEvent;
   final int index;
   final double avatarSize;
 
@@ -24,6 +26,7 @@ class _TimelineEventViewReplyState extends State<TimelineEventViewReply> {
   Color? senderColor;
 
   bool loading = false;
+  String? replyEventId;
 
   @override
   void initState() {
@@ -49,10 +52,11 @@ class _TimelineEventViewReplyState extends State<TimelineEventViewReply> {
 
   void setStateFromEvent(TimelineEvent event) {
     setState(() {
+      replyEventId = event.eventId;
       var sender = widget.timeline.room.getMemberOrFallback(event.senderId);
       senderName = sender.displayName;
       senderColor = sender.defaultColor;
-      body = event.body ?? "";
+      body = event.body ?? event.attachments?.firstOrNull?.name ?? "";
       loading = false;
     });
   }
@@ -60,56 +64,67 @@ class _TimelineEventViewReplyState extends State<TimelineEventViewReply> {
   @override
   Widget build(BuildContext context) {
     BenchmarkValues.numTimelineReplyBodyBuilt += 1;
-    return IntrinsicHeight(
-      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        SizedBox(
-          width: 45,
-          child: SizedBox.expand(
-            child: CustomPaint(
-              painter: ReplyLinePainter2(
-                  pathColor: material.Theme.of(context).colorScheme.secondary,
-                  avatarSize: widget.avatarSize),
-            ),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(4),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => widget.jumpToEvent?.call(replyEventId!),
+          child: IntrinsicHeight(
+            child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              SizedBox(
+                width: 45,
+                child: SizedBox.expand(
+                  child: CustomPaint(
+                    painter: ReplyLinePainter2(
+                        pathColor:
+                            material.Theme.of(context).colorScheme.secondary,
+                        avatarSize: widget.avatarSize),
+                  ),
+                ),
+              ),
+              Flexible(
+                child: RichText(
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
+                    text: TextSpan(children: [
+                      TextSpan(
+                          text: "${senderName ?? "Loading"} ",
+                          style: TextStyle(
+                              color: tiamat.Text.adjustColor(
+                                  context, senderColor ?? Colors.white))),
+                      TextSpan(
+                          text: body ?? "Unknown",
+                          style: TextStyle(
+                              color: material.Theme.of(context)
+                                  .colorScheme
+                                  .secondary)),
+                    ])),
+              )
+              // Column(
+              //   children: [
+              //     tiamat.Text(
+              //       senderName ?? "Loading",
+              //       color: senderColor,
+              //       autoAdjustBrightness: true,
+              //     ),
+              //   ],
+              // ),
+              // Flexible(
+              //   child: Padding(
+              //     padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+              //     child: tiamat.Text(
+              //       body ?? "Unknown",
+              //       maxLines: 2,
+              //       overflow: TextOverflow.ellipsis,
+              //       color: material.Theme.of(context).colorScheme.secondary,
+              //     ),
+              //   ),
+              // ),
+            ]),
           ),
         ),
-        Flexible(
-          child: RichText(
-              overflow: TextOverflow.ellipsis,
-              maxLines: 2,
-              text: TextSpan(children: [
-                TextSpan(
-                    text: "${senderName ?? "Loading"} ",
-                    style: TextStyle(
-                        color: tiamat.Text.adjustColor(
-                            context, senderColor ?? Colors.white))),
-                TextSpan(
-                    text: body ?? "Unknown",
-                    style: TextStyle(
-                        color:
-                            material.Theme.of(context).colorScheme.secondary)),
-              ])),
-        )
-        // Column(
-        //   children: [
-        //     tiamat.Text(
-        //       senderName ?? "Loading",
-        //       color: senderColor,
-        //       autoAdjustBrightness: true,
-        //     ),
-        //   ],
-        // ),
-        // Flexible(
-        //   child: Padding(
-        //     padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-        //     child: tiamat.Text(
-        //       body ?? "Unknown",
-        //       maxLines: 2,
-        //       overflow: TextOverflow.ellipsis,
-        //       color: material.Theme.of(context).colorScheme.secondary,
-        //     ),
-        //   ),
-        // ),
-      ]),
+      ),
     );
   }
 }

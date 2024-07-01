@@ -44,7 +44,6 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
 
   late ScrollController controller;
   late List<(GlobalKey, String)> eventKeys;
-  bool animatingToBottom = false;
 
   GlobalKey firstFrameScrollViewKey = GlobalKey();
   GlobalKey scrollViewKey = GlobalKey();
@@ -52,17 +51,28 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
   GlobalKey recentItemsKey = GlobalKey();
   GlobalKey overlayKey = GlobalKey();
 
+  int highlightedEventIndex = -1;
+  GlobalKey highlightedEventColumnKey = GlobalKey();
+  GlobalKey centerEventColumnKey = GlobalKey();
+  GlobalKey columnKey = GlobalKey();
+  GlobalKey stackKey = GlobalKey();
+
   LayerLink selectedEventLayerLink = LayerLink();
   SelectableEventViewWidget? selectedEventView;
+
+  TimelineViewEntryState? highlightedEventState;
 
   late List<StreamSubscription> subscriptions;
 
   bool wasLastScrollAttachedToBottom = false;
 
   bool get attachedToBottom => controller.hasClients
-      ? controller.offset - controller.positions.first.minScrollExtent < 50 ||
-          animatingToBottom
+      ? controller.offset - controller.positions.first.minScrollExtent < 50
       : true;
+
+  bool shrinkwrapOverride = false;
+
+  bool buildColumnView = false;
 
   @override
   void initState() {
@@ -81,6 +91,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
         widget.timeline.events
             .map((e) => (GlobalKey(debugLabel: e.eventId), e.eventId)),
         growable: true);
+
     super.initState();
   }
 
@@ -106,7 +117,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
     }
 
     if (index == 0) {
-      if (attachedToBottom || animatingToBottom) {
+      if (attachedToBottom) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           animateAndSnapToBottom();
         });
@@ -169,6 +180,8 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
         offset: controller.offset,
         maxScrollExtent: controller.position.maxScrollExtent);
 
+    Log.d("Scroll: ${controller.offset}");
+
     var overlayState = overlayKey.currentState as TimelineOverlayState?;
     overlayState?.setAttachedToBottom(attachedToBottom);
 
@@ -183,23 +196,26 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
     controller.position.hold(() {});
 
     var overlayState = overlayKey.currentState as TimelineOverlayState?;
-    overlayState?.setAttachedToBottom(attachedToBottom);
+
     widget.onAttachedToBottom?.call();
 
-    animatingToBottom = true;
+    WidgetsBinding.instance.addPostFrameCallback((d) {
+      var columnBox = columnKey.globalPaintBounds;
+      var fullHeight = columnBox!.height;
 
-    int lastEvent = recentItemsCount;
+      controller.jumpTo(
+        -fullHeight,
+      );
 
-    controller
-        .animateTo(controller.position.minScrollExtent,
-            duration: const Duration(milliseconds: 500),
-            curve: Curves.easeOutExpo)
-        .then((value) {
-      if (recentItemsCount == lastEvent) {
-        controller.jumpTo(controller.position.minScrollExtent);
+      setState(() {
+        buildColumnView = false;
+        overlayState?.setAttachedToBottom(attachedToBottom);
+      });
+    });
 
-        animatingToBottom = false;
-      }
+    columnKey = GlobalKey();
+    setState(() {
+      buildColumnView = true;
     });
   }
 
@@ -252,6 +268,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
         // onExit: (_) => deselectEvent(),
         child: ClipRect(
           child: Stack(
+            key: stackKey,
             children: [
               Offstage(
                 offstage: firstFrame,
@@ -290,6 +307,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
                                 setEditingEvent: widget.setEditingEvent,
                                 setReplyingEvent: widget.setReplyingEvent,
                                 isThreadTimeline: widget.isThreadTimeline,
+                                jumpToEvent: jumpToEvent,
                                 initialIndex: timelineIndex),
                           );
                         },
@@ -335,6 +353,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
                                 setEditingEvent: widget.setEditingEvent,
                                 setReplyingEvent: widget.setReplyingEvent,
                                 isThreadTimeline: widget.isThreadTimeline,
+                                jumpToEvent: jumpToEvent,
                                 initialIndex: timelineIndex),
                           );
                         },
@@ -358,11 +377,106 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
                   key: overlayKey,
                   showMessageMenu: Layout.desktop,
                   jumpToLatest: animateAndSnapToBottom,
-                  link: selectedEventLayerLink)
+                  link: selectedEventLayerLink),
+              // Second timeline renderer that is used to measure the offset of items in the actual renderer
+              if (buildColumnView)
+                Offstage(
+                  offstage: true,
+                  child: SingleChildScrollView(
+                    controller: ScrollController(initialScrollOffset: 999999),
+                    child: Container(
+                      color: Colors.red,
+                      child: Column(
+                        key: columnKey,
+                        verticalDirection: VerticalDirection.up,
+                        children: [
+                          for (int i = 0;
+                              i < widget.timeline.events.length;
+                              i++)
+                            TimelineViewEntry(
+                                key: highlightedEventIndex == i
+                                    ? highlightedEventColumnKey
+                                    : null,
+                                timeline: widget.timeline,
+                                initialIndex: i)
+                        ],
+                      ),
+                    ),
+                  ),
+                )
             ],
           ),
         ),
       ),
     );
+  }
+
+  jumpToEvent(String eventId) {
+    if (highlightedEventState?.mounted == true) {
+      highlightedEventState?.setHighlighted(false);
+    }
+
+    int index =
+        widget.timeline.events.indexWhere((event) => event.eventId == eventId);
+    if (index == -1) {
+      return;
+    }
+
+    selectedEventView?.deselect();
+    columnKey = GlobalKey();
+    highlightedEventColumnKey = GlobalKey();
+
+    setState(() {
+      highlightedEventIndex = index;
+      buildColumnView = true;
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((d) {
+      var box = highlightedEventColumnKey.globalPaintBounds;
+      if (box == null) {
+        return;
+      }
+
+      var columnBox = columnKey.globalPaintBounds;
+
+      var fullHeight = columnBox!.height;
+
+      var offset = -fullHeight - box.bottom;
+
+      var boundsBox = stackKey.globalPaintBounds!;
+      var height = boundsBox.height;
+      offset += height / 2;
+      offset += box.height / 2;
+
+      controller.jumpTo(
+        offset,
+      );
+
+      setState(() {
+        buildColumnView = false;
+      });
+
+      WidgetsBinding.instance.addPostFrameCallback((d) {
+        var key = eventKeys[index].$1;
+        if (key.currentState != null) {
+          var state = (key.currentState as TimelineViewEntryState);
+          state.setHighlighted(true);
+          highlightedEventState = state;
+        }
+      });
+    });
+  }
+}
+
+extension GlobalKeyExtension on GlobalKey {
+  Rect? get globalPaintBounds {
+    final renderObject = currentContext?.findRenderObject();
+    final translation = renderObject?.getTransformTo(null).getTranslation();
+    if (translation != null && renderObject?.paintBounds != null) {
+      final offset = Offset(translation.x, translation.y);
+      return renderObject!.paintBounds.shift(offset);
+    } else {
+      return null;
+    }
   }
 }
