@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:commet/client/timeline.dart';
 import 'package:commet/config/build_config.dart';
@@ -10,6 +11,7 @@ import 'package:commet/ui/molecules/timeline_events/timeline_event_layout.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_menu.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_view_entry.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class RoomTimelineWidgetView extends StatefulWidget {
   const RoomTimelineWidgetView(
@@ -53,9 +55,10 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
 
   int highlightedEventIndex = -1;
   GlobalKey highlightedEventColumnKey = GlobalKey();
-  GlobalKey centerEventColumnKey = GlobalKey();
   GlobalKey columnKey = GlobalKey();
+  GlobalKey columnCenterEventKey = GlobalKey();
   GlobalKey stackKey = GlobalKey();
+  ScrollController columnScrollController = ScrollController();
 
   LayerLink selectedEventLayerLink = LayerLink();
   SelectableEventViewWidget? selectedEventView;
@@ -119,7 +122,9 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
     if (index == 0) {
       if (attachedToBottom) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          animateAndSnapToBottom();
+          controller.animateTo(controller.position.minScrollExtent,
+              duration: const Duration(milliseconds: 500),
+              curve: Curves.easeOutExpo);
         });
 
         widget.markAsRead?.call(widget.timeline.events[0]);
@@ -167,6 +172,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
     if (controller.hasClients) {
       double extent = controller.position.minScrollExtent;
       controller = ScrollController(initialScrollOffset: extent);
+      scrollViewKey = GlobalKey();
       controller.addListener(onScroll);
       widget.onAttachedToBottom?.call();
       setState(() {
@@ -192,7 +198,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
     wasLastScrollAttachedToBottom = attachedToBottom;
   }
 
-  void animateAndSnapToBottom() {
+  void snapToBottom() {
     controller.position.hold(() {});
 
     var overlayState = overlayKey.currentState as TimelineOverlayState?;
@@ -203,20 +209,23 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
       var columnBox = columnKey.globalPaintBounds;
       var fullHeight = columnBox!.height;
 
-      controller.jumpTo(
-        -fullHeight,
-      );
-
       setState(() {
+        resetScrollView(-fullHeight);
         buildColumnView = false;
         overlayState?.setAttachedToBottom(attachedToBottom);
       });
     });
 
-    columnKey = GlobalKey();
     setState(() {
+      columnKey = GlobalKey();
       buildColumnView = true;
     });
+  }
+
+  void resetScrollView(double initialOffset) {
+    controller = ScrollController(initialScrollOffset: initialOffset);
+    scrollViewKey = GlobalKey();
+    controller.addListener(onScroll);
   }
 
   void eventHovered(String eventId) {
@@ -376,39 +385,43 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
               TimelineOverlay(
                   key: overlayKey,
                   showMessageMenu: Layout.desktop,
-                  jumpToLatest: animateAndSnapToBottom,
+                  jumpToLatest: snapToBottom,
                   link: selectedEventLayerLink),
               // Second timeline renderer that is used to measure the offset of items in the actual renderer
-              if (buildColumnView)
-                Offstage(
-                  offstage: true,
-                  child: SingleChildScrollView(
-                    controller: ScrollController(initialScrollOffset: 999999),
-                    child: Container(
-                      color: Colors.red,
-                      child: Column(
-                        key: columnKey,
-                        verticalDirection: VerticalDirection.up,
-                        children: [
-                          for (int i = 0;
-                              i < widget.timeline.events.length;
-                              i++)
-                            TimelineViewEntry(
-                                key: highlightedEventIndex == i
-                                    ? highlightedEventColumnKey
-                                    : null,
-                                timeline: widget.timeline,
-                                initialIndex: i)
-                        ],
-                      ),
+              //if (buildColumnView)
+              Offstage(
+                offstage: true,
+                child: SingleChildScrollView(
+                  controller: columnScrollController,
+                  child: Container(
+                    color: Colors.red,
+                    child: Column(
+                      key: columnKey,
+                      verticalDirection: VerticalDirection.up,
+                      children: [
+                        for (int i = 0; i < widget.timeline.events.length; i++)
+                          TimelineViewEntry(
+                              key: highlightedEventIndex == i
+                                  ? highlightedEventColumnKey
+                                  : (recentItemsCount + 1) == i
+                                      ? columnCenterEventKey
+                                      : null,
+                              timeline: widget.timeline,
+                              initialIndex: i)
+                      ],
                     ),
                   ),
-                )
+                ),
+              )
             ],
           ),
         ),
       ),
     );
+  }
+
+  double inverseLerp(double a, double b, double v) {
+    return (v - a) / (b - a);
   }
 
   jumpToEvent(String eventId) {
@@ -425,6 +438,9 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
     selectedEventView?.deselect();
     columnKey = GlobalKey();
     highlightedEventColumnKey = GlobalKey();
+    columnCenterEventKey = GlobalKey();
+
+    columnScrollController = ScrollController(initialScrollOffset: 99999);
 
     setState(() {
       highlightedEventIndex = index;
@@ -438,22 +454,47 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
       }
 
       var columnBox = columnKey.globalPaintBounds;
+      var eventWidgetAlpha =
+          inverseLerp(columnBox!.top, columnBox.bottom, box.top);
 
-      var fullHeight = columnBox!.height;
+      Log.d("Box alpha: $eventWidgetAlpha");
 
-      var offset = -fullHeight - box.bottom;
+      Log.d("Event box: $box");
 
-      var boundsBox = stackKey.globalPaintBounds!;
-      var height = boundsBox.height;
-      offset += height / 2;
-      offset += box.height / 2;
+      var extraAmount =
+          columnBox.height - columnScrollController.position.maxScrollExtent;
 
-      controller.jumpTo(
-        offset,
-      );
+      var estimatedMinExtent = -1 *
+          (columnBox.height - columnCenterEventKey.globalPaintBounds!.bottom);
+
+      //controller.position.minScrollExtent;
+
+      var estimatedMaxExtent =
+          (columnBox.height + estimatedMinExtent) - extraAmount;
+
+      var targetPos = lerpDouble(
+          estimatedMinExtent, estimatedMaxExtent, 1 - eventWidgetAlpha)!;
+
+      Log.d("Lost scroll amount = $extraAmount");
+
+      Log.d(
+          "Column scroll min extend: ${columnScrollController.position.minScrollExtent}");
+
+      Log.d(
+          "Column scroll max extend: ${columnScrollController.position.maxScrollExtent}");
+
+      Log.d("Controller max extent: ${controller.position.maxScrollExtent}");
+      Log.d("Controller min extent: ${controller.position.minScrollExtent}");
+      Log.d("Target offset: $targetPos");
+
+      Log.d("Estimated scroll bound: $estimatedMaxExtent");
+      Log.d("Estimated min extent: $estimatedMinExtent");
+
+      Log.d("Center key box: ${columnCenterEventKey.globalPaintBounds}");
 
       setState(() {
         buildColumnView = false;
+        resetScrollView(targetPos);
       });
 
       WidgetsBinding.instance.addPostFrameCallback((d) {
@@ -462,6 +503,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
           var state = (key.currentState as TimelineViewEntryState);
           state.setHighlighted(true);
           highlightedEventState = state;
+          onScroll();
         }
       });
     });
