@@ -96,10 +96,10 @@ class Button extends StatelessWidget {
     switch (type) {
       case ButtonType.primary:
         style = Theme.of(context).elevatedButtonTheme.style!.copyWith(
-            foregroundColor: WidgetStatePropertyAll(
-                Theme.of(context).colorScheme.onPrimaryContainer),
-            backgroundColor: WidgetStatePropertyAll(
-                Theme.of(context).colorScheme.primaryContainer));
+            foregroundColor:
+                WidgetStatePropertyAll(Theme.of(context).colorScheme.onPrimary),
+            backgroundColor:
+                WidgetStatePropertyAll(Theme.of(context).colorScheme.primary));
         break;
       case ButtonType.secondary:
         style = Theme.of(context).elevatedButtonTheme.style!.copyWith(

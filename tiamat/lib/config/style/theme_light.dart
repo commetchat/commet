@@ -1,3 +1,4 @@
+import 'package:tiamat/config/style/theme_base.dart';
 import 'package:tiamat/config/style/theme_common.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:flutter/material.dart';
@@ -25,51 +26,21 @@ class ThemeLightColors {
 }
 
 class ThemeLight {
-  static ThemeData get theme => ThemeData(
-      brightness: Brightness.light,
-      useMaterial3: true,
-      fontFamily: "RobotoCustom",
-      extensions: const [
-        ThemeSettings(),
-        ExtraColors(
-            codeHighlight: Color(0xffc678dd),
-            linkColor: Color.fromARGB(255, 80, 80, 255))
-      ],
-      fontFamilyFallback: ThemeCommon.fontFamilyFallback(),
-      colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.white,
-          brightness: Brightness.light,
-          primaryContainer: ThemeLightColors.primary,
-          onPrimaryContainer: Colors.white,
-          outline: Colors.white,
-          primary: ThemeLightColors.primary),
-      shadowColor: Colors.black.withAlpha(100),
-      sliderTheme: SliderThemeData(
-          inactiveTrackColor: ThemeLightColors.primary.withAlpha(100)),
-      listTileTheme: const ListTileThemeData(
-        tileColor: ThemeLightColors.surface,
-      ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ButtonStyle(
-              shape: WidgetStatePropertyAll(
-        RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ))),
-      iconTheme: const IconThemeData(color: ThemeLightColors.secondary),
-      dividerColor: ThemeLightColors.outlineColor,
-      dialogBackgroundColor: ThemeLightColors.surface,
-      dividerTheme:
-          const DividerThemeData(color: ThemeLightColors.outlineColor),
-      dialogTheme: const DialogTheme(
-          backgroundColor: ThemeLightColors.surface, shadowColor: Colors.black),
-      textButtonTheme: TextButtonThemeData(
-          style: ButtonStyle(
-        overlayColor: const WidgetStatePropertyAll<Color>(Colors.black12),
-        foregroundColor:
-            const WidgetStatePropertyAll<Color>(ThemeLightColors.secondary),
-        shape: WidgetStatePropertyAll<OutlinedBorder>(
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-        textStyle: const WidgetStatePropertyAll<TextStyle>(
-          TextStyle(color: Colors.white),
-        ),
-      )));
+  static ThemeData get theme {
+    var scheme = ColorScheme.fromSeed(
+        seedColor: Colors.white,
+        brightness: Brightness.light,
+        primaryContainer: ThemeLightColors.primary,
+        onPrimaryContainer: Colors.white,
+        outline: Colors.white,
+        primary: ThemeLightColors.primary);
+
+    return ThemeBase.theme(scheme).copyWith(extensions: [
+      const ThemeSettings(),
+      FoundationSettings(color: scheme.surfaceDim),
+      const ExtraColors(
+          codeHighlight: Color(0xffc678dd),
+          linkColor: Color.fromARGB(255, 80, 80, 255))
+    ]);
+  }
 }
