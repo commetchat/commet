@@ -1,4 +1,5 @@
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/profile.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:commet/ui/organisms/user_profile/user_profile_view.dart';
@@ -43,14 +44,19 @@ class _UserProfileState extends State<UserProfile> {
   }
 
   Future<void> openDirectMessage() async {
-    var existingRooms = widget.client.directMessages.where(
-        (element) => profile!.identifier == element.directMessagePartnerID);
+    final component = widget.client.getComponent<DirectMessagesComponent>();
+    if (component == null) {
+      return;
+    }
 
-    if (existingRooms.isNotEmpty) {
+    var existingRooms = component.directMessageRooms.where((element) =>
+        profile!.identifier == component.getDirectMessagePartnerId(element));
+
+    if (existingRooms.isNotEmpty == true) {
       EventBus.openRoom
           .add((existingRooms.first.identifier, widget.client.identifier));
     } else {
-      var room = await widget.client.createDirectMessage(profile!.identifier);
+      var room = await component.createDirectMessage(profile!.identifier);
       if (room != null) {
         EventBus.openRoom.add((room.identifier, widget.client.identifier));
       }

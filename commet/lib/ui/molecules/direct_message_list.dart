@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:commet/client/client.dart';
-import 'package:commet/client/client_manager.dart';
+import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:implicitly_animated_list/implicitly_animated_list.dart';
@@ -11,8 +11,8 @@ import '../atoms/dot_indicator.dart';
 
 class DirectMessageList extends StatefulWidget {
   const DirectMessageList(
-      {required this.clientManager, this.onSelected, super.key});
-  final ClientManager clientManager;
+      {required this.directMessages, this.onSelected, super.key});
+  final DirectMessagesInterface directMessages;
   @override
   State<DirectMessageList> createState() => _DirectMessageListState();
   final Function(Room room)? onSelected;
@@ -27,10 +27,7 @@ class _DirectMessageListState extends State<DirectMessageList> {
   @override
   void initState() {
     subscriptions = [
-      widget.clientManager.onDirectMessageRoomUpdated.stream
-          .listen(onRoomUpdated),
-      widget.clientManager.onDirectMessageAdded.listen(onRoomAdded),
-      widget.clientManager.onDirectMessageRemoved.listen(onRoomRemoved),
+      widget.directMessages.onRoomsListUpdated.listen(onListUpdated)
     ];
 
     updateRoomsList();
@@ -46,25 +43,10 @@ class _DirectMessageListState extends State<DirectMessageList> {
     super.dispose();
   }
 
-  void onRoomAdded(int index) {
+  void onListUpdated(void event) {
     setState(() {
       updateRoomsList();
     });
-  }
-
-  void onRoomRemoved(int index) {
-    var room = widget.clientManager.directMessages[index];
-    setState(() {
-      rooms.remove(room);
-      sortRooms();
-    });
-  }
-
-  void onRoomUpdated(Room room) {
-    if (mounted)
-      setState(() {
-        sortRooms();
-      });
   }
 
   void sortRooms() {
@@ -74,7 +56,7 @@ class _DirectMessageListState extends State<DirectMessageList> {
   }
 
   void updateRoomsList() {
-    rooms = List.from(widget.clientManager.directMessages);
+    rooms = List.from(widget.directMessages.directMessageRooms);
     sortRooms();
   }
 

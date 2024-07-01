@@ -1,4 +1,5 @@
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/components/invitation/invitation_component.dart';
 import 'package:commet/client/profile.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
@@ -37,11 +38,13 @@ class _SendInvitationWidgetState extends State<SendInvitationWidget> {
 
   @override
   Widget build(BuildContext context) {
-    var recommended = widget.room.client.directMessages;
+    var dmComponent =
+        widget.room.client.getComponent<DirectMessagesComponent>();
+    var recommended = dmComponent?.directMessageRooms ?? [];
 
     recommended.removeWhere(
-      (element) =>
-          widget.room.memberIds.contains(element.directMessagePartnerID),
+      (element) => widget.room.memberIds
+          .contains(dmComponent?.getDirectMessagePartnerId(element)),
     );
 
     return ScaledSafeArea(
@@ -67,6 +70,8 @@ class _SendInvitationWidgetState extends State<SendInvitationWidget> {
                               client: widget.component.client,
                               userId: searchResults![index].identifier,
                               initialProfile: searchResults![index],
+                              onTap: () =>
+                                  invitePeer(searchResults![index].identifier),
                             );
                           },
                         )),
@@ -80,9 +85,12 @@ class _SendInvitationWidgetState extends State<SendInvitationWidget> {
                     itemCount: recommended.length,
                     itemBuilder: (context, index) {
                       var room = recommended[index];
+                      var userId =
+                          dmComponent!.getDirectMessagePartnerId(room)!;
                       return MiniProfileView(
                           client: room.client,
-                          userId: room.directMessagePartnerID!);
+                          onTap: () => invitePeer(userId),
+                          userId: userId);
                     },
                   ),
                 ],
@@ -112,17 +120,17 @@ class _SendInvitationWidgetState extends State<SendInvitationWidget> {
     });
   }
 
-  void invitePeer(Peer peer) async {
+  void invitePeer(String userId) async {
     final confirm = await AdaptiveDialog.confirmation(context,
         prompt:
-            "Are you sure you want to Invite ${peer.identifier} to the room ${widget.room.displayName}?",
+            "Are you sure you want to Invite $userId to the room ${widget.room.displayName}?",
         title: "Invitation");
     if (confirm != true) {
       return;
     }
 
-    widget.component.inviteUserToRoom(
-        userId: peer.identifier, roomId: widget.room.identifier);
+    widget.component
+        .inviteUserToRoom(userId: userId, roomId: widget.room.identifier);
 
     if (mounted) Navigator.pop(context);
   }

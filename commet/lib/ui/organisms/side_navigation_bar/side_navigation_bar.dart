@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/profile.dart';
-import 'package:commet/ui/atoms/dot_indicator.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
+import 'package:commet/ui/organisms/side_navigation_bar/side_navigation_bar_direct_messages.dart';
 import 'package:commet/ui/pages/add_space_or_room/add_space_or_room.dart';
 import 'package:commet/ui/pages/settings/app_settings_page.dart';
 import 'package:commet/utils/common_strings.dart';
@@ -14,15 +14,15 @@ import 'package:just_the_tooltip/just_the_tooltip.dart';
 import 'package:provider/provider.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
-import '../molecules/space_selector.dart';
-import '../navigation/navigation_utils.dart';
+import '../../molecules/space_selector.dart';
+import '../../navigation/navigation_utils.dart';
 
 class SideNavigationBar extends StatefulWidget {
   const SideNavigationBar(
       {super.key,
       required this.currentUser,
       this.onSpaceSelected,
-      this.onDirectMessagesSelected,
+      this.onDirectMessageSelected,
       this.onSettingsSelected,
       this.onHomeSelected,
       this.clearSpaceSelection});
@@ -33,7 +33,7 @@ class SideNavigationBar extends StatefulWidget {
   final Profile currentUser;
   final void Function(int index)? onSpaceSelected;
   final void Function()? clearSpaceSelection;
-  final void Function()? onDirectMessagesSelected;
+  final void Function(Room room)? onDirectMessageSelected;
   final void Function()? onHomeSelected;
   final void Function()? onSettingsSelected;
 
@@ -145,12 +145,13 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                                 widget.onHomeSelected?.call();
                               },
                             ),
-                            if (_clientManager.directMessagesNotificationCount >
-                                0)
-                              const DotIndicator()
                           ],
                         ),
                         context),
+                    SideNavigationBarDirectMessages(
+                      _clientManager.directMessages,
+                      onRoomTapped: widget.onDirectMessageSelected,
+                    ),
                   ],
                 ),
                 footer: Column(

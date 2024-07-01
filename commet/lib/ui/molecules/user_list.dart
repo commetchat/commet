@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/member.dart';
 import 'package:commet/client/role.dart';
 import 'package:commet/debug/log.dart';
@@ -24,12 +25,18 @@ class _RoomMemberListState extends State<RoomMemberList> {
   late List<Member> roomMembers;
   List<(Member, Role)>? importantMembers;
   bool loadingMoreMembers = false;
+  bool isDirectMessageRoom = false;
+  DirectMessagesComponent? directMessages;
 
   int limit = 100;
 
   @override
   void initState() {
     getInitialUsers();
+    isDirectMessageRoom = widget.room.client
+            .getComponent<DirectMessagesComponent>()
+            ?.isRoomDirectMessage(widget.room) ??
+        false;
 
     if (!widget.room.isMembersListComplete) {
       loadAllUsers();
@@ -105,7 +112,7 @@ class _RoomMemberListState extends State<RoomMemberList> {
   }
 
   Role? getDisplayRole(int index) {
-    if (widget.room.isDirectMessage) {
+    if (isDirectMessageRoom) {
       return null;
     }
 

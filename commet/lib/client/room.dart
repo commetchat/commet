@@ -31,12 +31,6 @@ abstract class Room {
   /// Returns the localized display name
   String get displayName;
 
-  /// Returns true if the room is a direct message between another user
-  bool get isDirectMessage;
-
-  /// If the room is a direct message, this is the ID of the other participant
-  String? get directMessagePartnerID;
-
   /// The permissions of the room
   Permissions get permissions;
 

@@ -1,3 +1,4 @@
+import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:flutter/material.dart' as m;
 import 'package:flutter/widgets.dart';
 
@@ -10,6 +11,11 @@ class RoomHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isDirectMessage = room.client
+            .getComponent<DirectMessagesComponent>()
+            ?.isRoomDirectMessage(room) ??
+        false;
+
     return m.Material(
       color: m.Colors.transparent,
       child: m.InkWell(
@@ -22,7 +28,7 @@ class RoomHeader extends StatelessWidget {
                   width: 40,
                   height: 40,
                   child: Icon(
-                    room.isDirectMessage
+                    isDirectMessage
                         ? m.Icons.alternate_email_rounded
                         : m.Icons.tag,
                   )),

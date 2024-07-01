@@ -12,10 +12,12 @@ class MiniProfileView extends StatefulWidget {
       {required this.client,
       required this.userId,
       this.initialProfile,
+      this.onTap,
       super.key});
   final Client client;
   final String userId;
   final Profile? initialProfile;
+  final void Function()? onTap;
 
   @override
   State<MiniProfileView> createState() => _MiniProfileViewState();
@@ -48,7 +50,7 @@ class _MiniProfileViewState extends State<MiniProfileView> {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () {},
+          onTap: widget.onTap,
           child: Shimmer(
             linearGradient: Shimmer.harshGradient,
             child: ShimmerLoading(

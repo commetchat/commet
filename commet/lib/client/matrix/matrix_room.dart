@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:ui';
 import 'package:commet/client/components/component_registry.dart';
+import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
@@ -40,10 +41,6 @@ class MatrixRoom extends Room {
 
   late String _displayName;
 
-  late bool _isDirectMessage;
-
-  late String? _directPartnerId;
-
   late MatrixRoomPermissions _permissions;
 
   final StreamController<void> _onUpdate = StreamController.broadcast();
@@ -61,13 +58,7 @@ class MatrixRoom extends Room {
   matrix.Room get matrixRoom => _matrixRoom;
 
   @override
-  String? get directMessagePartnerID => _directPartnerId;
-
-  @override
   String get displayName => _displayName;
-
-  @override
-  bool get isDirectMessage => _isDirectMessage;
 
   @override
   Stream<void> get onUpdate => _onUpdate.stream;
@@ -102,9 +93,7 @@ class MatrixRoom extends Room {
       const JsonEncoder.withIndent('  ').convert(_matrixRoom.states);
 
   @override
-  Color get defaultColor => isDirectMessage
-      ? getColorOfUser(directMessagePartnerID!)
-      : getColorOfUser(identifier);
+  Color get defaultColor => getColorOfUser(identifier);
 
   @override
   PushRule get pushRule {
@@ -119,7 +108,22 @@ class MatrixRoom extends Room {
   }
 
   @override
-  ImageProvider<Object>? get avatar => _avatar;
+  ImageProvider<Object>? get avatar {
+    final comp = client.getComponent<DirectMessagesComponent>();
+
+    if (comp == null) {
+      return _avatar;
+    }
+
+    if (comp.isRoomDirectMessage(this)) {
+      final partner = comp.getDirectMessagePartnerId(this);
+      if (partner != null) {
+        return getMemberOrFallback(partner).avatar;
+      }
+    }
+
+    return _avatar;
+  }
 
   @override
   Client get client => _client;
@@ -152,24 +156,7 @@ class MatrixRoom extends Room {
       lastEvent = MatrixTimelineEvent(latest, _matrixRoom.client);
     }
 
-    _isDirectMessage = _matrixRoom.isDirectChat;
-
-    if (isDirectMessage) {
-      _directPartnerId = _matrixRoom.directChatMatrixID!;
-      updateAvatar();
-    }
-
-    var memberStates = _matrixRoom.states["m.room.member"];
-    if (memberStates?.length == 2 && !isDirectMessage) {
-      //this might be a direct message room that hasnt been added to account data properly
-      for (var key in memberStates!.keys) {
-        var state = memberStates[key];
-        if (state?.prevContent?["is_direct"] == true) {
-          _isDirectMessage = true;
-          _directPartnerId = key;
-        }
-      }
-    }
+    updateAvatar();
 
     _onUpdateSubscription = _matrixRoom.client.onRoomState.stream
         .where((event) => event.roomId == _matrixRoom.id)
@@ -233,6 +220,10 @@ class MatrixRoom extends Room {
 
     var sender = await fetchMember(event.senderId);
 
+    bool isDirectMessage = client
+            .getComponent<DirectMessagesComponent>()
+            ?.isRoomDirectMessage(this) ??
+        false;
     var notification = MessageNotificationContent(
         senderName: sender.displayName,
         senderId: sender.identifier,
@@ -498,8 +489,11 @@ class MatrixRoom extends Room {
   Future<ImageProvider?> getShortcutImage() async {
     if (avatar != null) return avatar;
 
-    if (isDirectMessage) {
-      var user = await client.getProfile(directMessagePartnerID!);
+    final comp = client.getComponent<DirectMessagesComponent>();
+
+    if (comp?.isRoomDirectMessage(this) == true) {
+      var user =
+          await client.getProfile(comp!.getDirectMessagePartnerId(this)!);
 
       if (user?.avatar != null) {
         return user!.avatar;

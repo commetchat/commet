@@ -1,3 +1,4 @@
+import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
@@ -155,7 +156,10 @@ class TimelineEventMenu {
                 content: event.body ?? "Sent a message",
                 clientId: room.client.identifier,
                 eventId: event.eventId,
-                isDirectMessage: room.isDirectMessage,
+                isDirectMessage: room.client
+                        .getComponent<DirectMessagesComponent>()
+                        ?.isRoomDirectMessage(room) ??
+                    false,
               );
 
               NotificationManager.notify(content, bypassModifiers: true);

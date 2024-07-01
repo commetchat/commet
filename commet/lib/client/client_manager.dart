@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:commet/client/alert.dart';
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/direct_messages/direct_message_aggregator.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/stale_info.dart';
 import 'package:commet/client/tasks/client_connection_status_task.dart';
@@ -12,21 +13,22 @@ class ClientManager {
   final Map<String, Client> _clients = {};
 
   final NotifyingList<Room> _rooms = NotifyingList.empty(growable: true);
-  final NotifyingList<Room> _directMessages =
-      NotifyingList.empty(growable: true);
 
   final NotifyingList<Space> _spaces = NotifyingList.empty(growable: true);
 
   final AlertManager alertManager = AlertManager();
 
+  late final DirectMessagesAggregator directMessages;
+
+  ClientManager() {
+    directMessages = DirectMessagesAggregator(this);
+  }
+
   List<Room> get rooms => _rooms;
 
-  List<Room> get directMessages => _directMessages;
-
   List<Room> get singleRooms => rooms
-      .where((room) =>
-          !room.isDirectMessage &&
-          !spaces.any((space) => space.containsRoom(room.identifier)))
+      .where(
+          (room) => !spaces.any((space) => space.containsRoom(room.identifier)))
       .toList();
 
   List<Space> get spaces => _spaces;
@@ -46,10 +48,6 @@ class ClientManager {
 
   Stream<int> get onSpaceRemoved => _spaces.onRemove;
 
-  Stream<int> get onDirectMessageAdded => _directMessages.onAdd;
-
-  Stream<int> get onDirectMessageRemoved => _directMessages.onRemove;
-
   late StreamController<int> onClientAdded = StreamController.broadcast();
 
   late StreamController<StalePeerInfo> onClientRemoved =
@@ -62,12 +60,10 @@ class ClientManager {
   late StreamController<Room> onDirectMessageRoomUpdated =
       StreamController.broadcast();
 
-  Stream<int> get onDirectMessageRoomAdded => _directMessages.onAdd;
-
-  int get directMessagesNotificationCount => directMessages.fold(
-      0,
-      (previousValue, element) =>
-          previousValue + element.displayNotificationCount);
+  // int get directMessagesNotificationCount => directMessages.fold(
+  //     0,
+  //     (previousValue, element) =>
+  //         previousValue + element.displayNotificationCount);
 
   static Future<ClientManager> init({bool isBackgroundService = false}) async {
     final newClientManager = ClientManager();
@@ -84,7 +80,6 @@ class ClientManager {
     _clients[client.identifier] = client;
 
     _clientsList.add(client);
-    onClientAdded.add(_clients.length - 1);
 
     for (int i = 0; i < client.rooms.length; i++) {
       _onClientAddedRoom(client, i);
@@ -105,6 +100,8 @@ class ClientManager {
       client.connectionStatusChanged.stream
           .listen((event) => _onClientConnectionStatusChanged(client, event)),
     ];
+
+    onClientAdded.add(_clients.length - 1);
   }
 
   void _onClientConnectionStatusChanged(
@@ -123,18 +120,11 @@ class ClientManager {
 
   void _onClientAddedRoom(Client client, int index) {
     rooms.add(client.rooms[index]);
-
-    if (client.rooms[index].isDirectMessage) {
-      _directMessages.add(client.rooms[index]);
-      client.rooms[index].onUpdate
-          .listen((_) => directMessageRoomUpdated(client.rooms[index]));
-    }
   }
 
   void _onClientRemovedRoom(Client client, int index) {
     var room = client.rooms[index];
     _rooms.remove(room);
-    _directMessages.remove(room);
   }
 
   void _onClientRemovedSpace(Client client, int index) {
@@ -187,12 +177,6 @@ class ClientManager {
     for (int i = spaces.length - 1; i >= 0; i--) {
       if (spaces[i].client == client) {
         spaces.removeAt(i);
-      }
-    }
-
-    for (int i = directMessages.length - 1; i >= 0; i--) {
-      if (directMessages[i].client == client) {
-        directMessages.removeAt(i);
       }
     }
 

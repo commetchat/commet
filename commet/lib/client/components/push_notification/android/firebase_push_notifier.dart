@@ -2,6 +2,7 @@
 
 import 'dart:async';
 
+import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/components/push_notification/android/android_notifier.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
@@ -37,6 +38,11 @@ Future<void> onForegroundMessage(dynamic message) async {
 
   Log.i("Dispatching notification");
 
+  bool isDirectMessage = client
+          .getComponent<DirectMessagesComponent>()
+          ?.isRoomDirectMessage(room) ??
+      false;
+
   NotificationManager.notify(MessageNotificationContent(
       senderName: user.displayName,
       senderId: user.identifier,
@@ -47,7 +53,7 @@ Future<void> onForegroundMessage(dynamic message) async {
       clientId: client.identifier,
       senderImage: user.avatar,
       roomImage: await room.getShortcutImage(),
-      isDirectMessage: room.isDirectMessage));
+      isDirectMessage: isDirectMessage));
 }
 
 @pragma('vm:entry-point')

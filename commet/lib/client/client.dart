@@ -53,9 +53,6 @@ abstract class Client {
   /// Max size in bytes for uploaded files
   int? get maxFileSize;
 
-  /// Gets a list of rooms which are direct messages between two users
-  List<Room> get directMessages;
-
   /// Gets a list of rooms which do not belong to any spaces
   List<Room> get singleRooms;
 
@@ -162,9 +159,6 @@ abstract class Client {
 
   /// Build a widget for display in the developer options debug menu
   Widget buildDebugInfo();
-
-  /// Open a new direct message with another user
-  Future<Room?> createDirectMessage(String userId);
 
   T? getComponent<T extends Component>();
 

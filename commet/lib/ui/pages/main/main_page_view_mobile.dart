@@ -11,7 +11,7 @@ import 'package:commet/ui/organisms/background_task_view/background_task_view_co
 import 'package:commet/ui/organisms/chat/chat.dart';
 import 'package:commet/ui/organisms/home_screen/home_screen.dart';
 import 'package:commet/ui/organisms/room_members_list/room_members_list.dart';
-import 'package:commet/ui/organisms/side_navigation_bar.dart';
+import 'package:commet/ui/organisms/side_navigation_bar/side_navigation_bar.dart';
 import 'package:commet/ui/organisms/space_summary/space_summary.dart';
 import 'package:commet/ui/pages/main/main_page.dart';
 import 'package:commet/utils/event_bus.dart';
@@ -167,6 +167,11 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
                 onHomeSelected: () {
                   widget.state.selectHome();
                 },
+                onDirectMessageSelected: (room) {
+                  widget.state.selectHome();
+                  widget.state.selectRoom(room);
+                  panelsKey.currentState?.reveal(RevealSide.main);
+                },
               ),
             ),
           ),
@@ -298,7 +303,7 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
                 ),
                 Flexible(
                   child: DirectMessageList(
-                    clientManager: widget.state.clientManager,
+                    directMessages: widget.state.clientManager.directMessages,
                     onSelected: (room) {
                       setState(() {
                         selectRoom(room);

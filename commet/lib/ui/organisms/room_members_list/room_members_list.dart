@@ -1,3 +1,4 @@
+import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/components/invitation/invitation_component.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/config/layout_config.dart';
@@ -16,6 +17,16 @@ class RoomMembersListWidget extends StatefulWidget {
 }
 
 class _RoomMembersListWidgetState extends State<RoomMembersListWidget> {
+  late bool isDirectMessage;
+  @override
+  void initState() {
+    isDirectMessage = widget.room.client
+            .getComponent<DirectMessagesComponent>()
+            ?.isRoomDirectMessage(widget.room) ??
+        false;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     var iconSize = Layout.mobile ? 40.0 : 35.0;
@@ -27,7 +38,7 @@ class _RoomMembersListWidgetState extends State<RoomMembersListWidget> {
           children: [
             const tiamat.Text.labelLow("Room Members"),
             if (invitation != null &&
-                !widget.room.isDirectMessage &&
+                !isDirectMessage &&
                 widget.room.permissions.canInviteUser)
               SizedBox(
                 width: iconSize,

@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:commet/ui/atoms/notification_badge.dart';
-import 'package:commet/ui/organisms/side_navigation_bar.dart';
+import 'package:commet/ui/organisms/side_navigation_bar/side_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart';
 

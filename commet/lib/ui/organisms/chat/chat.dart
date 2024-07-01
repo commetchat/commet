@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:commet/client/attachment.dart';
+import 'package:commet/client/client.dart';
 import 'package:commet/client/components/command/command_component.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/components/emoticon/emoticon_component.dart';
@@ -10,8 +11,7 @@ import 'package:commet/client/components/gif/gif_search_result.dart';
 import 'package:commet/client/components/read_receipts/read_receipt_component.dart';
 import 'package:commet/client/components/threads/thread_component.dart';
 import 'package:commet/client/components/typing_indicators/typing_indicator_component.dart';
-import 'package:commet/client/room.dart';
-import 'package:commet/client/timeline.dart';
+
 import 'package:commet/debug/log.dart';
 import 'package:commet/ui/organisms/attachment_processor/attachment_processor.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
@@ -206,8 +206,7 @@ class ChatState extends State<Chat> {
     var component = room.client.getComponent<CommandComponent>();
 
     if (component?.isExecutable(message) == true) {
-      component?.executeCommand(message, room,
-          interactingEvent: interactingEvent, type: interactionType);
+      doCommand(component, message);
     } else if (isThread) {
       threadsComponent!.sendMessage(
           threadRootEventId: widget.threadId!,
@@ -233,10 +232,21 @@ class ChatState extends State<Chat> {
     }
 
     typingIndicators?.setTypingStatus(false);
-
     setInteractingEvent(null);
     clearAttachments();
     setMessageInputText.add("");
+  }
+
+  Future<void> doCommand(
+      CommandComponent<Client>? component, String message) async {
+    try {
+      await component?.executeCommand(message, room,
+          interactingEvent: interactingEvent, type: interactionType);
+    } catch (error) {
+      if (mounted)
+        AdaptiveDialog.show(context,
+            builder: (context) => tiamat.Text.label("$error"));
+    }
   }
 
   void setInteractingEvent(TimelineEvent? event, {EventInteractionType? type}) {

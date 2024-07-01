@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/ui/atoms/dot_indicator.dart';
 import 'package:commet/ui/atoms/notification_badge.dart';
 import 'package:flutter/widgets.dart';
@@ -172,6 +173,10 @@ class _RoomListState extends State<RoomList>
       padding: const EdgeInsets.all(0),
       itemBuilder: (context, i, animation) {
         var room = widget.rooms[i];
+        bool isDm = room.client
+                .getComponent<DirectMessagesComponent>()
+                ?.isRoomDirectMessage(room) ??
+            false;
         return buildRoomButton(
           animation,
           room,
@@ -179,7 +184,7 @@ class _RoomListState extends State<RoomList>
           iconColor: getIconColor(context, i),
           textColor: getTextColor(context, i),
           highlighted: _selectedIndex == i,
-          isDm: room.isDirectMessage,
+          isDm: isDm,
           onTap: () {
             widget.onRoomSelected?.call(i);
             setState(() {
