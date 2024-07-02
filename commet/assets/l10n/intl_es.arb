@@ -1294,5 +1294,208 @@
     "description": "Text that is placed between two or more options: [button1] or [button2]",
     "type": "text",
     "placeholders": {}
+  },
+  "messageUserEmote": "*{user} {emote}",
+  "@messageUserEmote": {
+    "description": "Message to display when a user does a custom emote (/me)",
+    "type": "text",
+    "placeholders": {
+      "user": {},
+      "emote": {}
+    }
+  },
+  "labelThemeAmoled": "Amoled",
+  "@labelThemeAmoled": {
+    "description": "Label for the light theme",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelEncryptedPreview": "Vista previa de la URL en chats cifrados (experimental)",
+  "@labelEncryptedPreview": {
+    "description": "Label for the toggle for enabling and disabling gif search",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelEncryptedPreviewDescription": "Habilitar el uso de un servidor proxy ({proxyUrl}) para obtener una vista previa de url en un chat cifrado. El contenido de estas peticiones será ocultado de su servidor personal usando la 'vista previa de url cifrada' de Commet\nMás información: https://github.com/commetchat/encrypted_url_preview",
+  "@labelEncryptedPreviewDescription": {
+    "description": "Explains that gifs will be fetched via proxy",
+    "type": "text",
+    "placeholders": {
+      "proxyUrl": {}
+    }
+  },
+  "labelSettingsStickerCompatibilityExplanation": "En algunos clientes de matrix, enviar una etiqueta como 'm.sticker' hará que la etiqueta no se cargue correctamente. Al habilitar esta configuración, se enviarán pegatinas como 'm.image', lo que permitirá que se representen correctamente",
+  "@labelSettingsStickerCompatibilityExplanation": {
+    "description": "Explains what sticker compatibility mode does",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelStickerCompatibility": "Compatibilidad con Sticker",
+  "@labelStickerCompatibility": {
+    "description": "Header for the settings to enable sticker compatibility mode",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpacePermissionSettings": "Permisos",
+  "@labelSpacePermissionSettings": {
+    "description": "Label for space permission settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsPermissions": "Permisos",
+  "@labelRoomSettingsPermissions": {
+    "description": "Label for room permission settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoleAdmin": "Admin",
+  "@labelMatrixPermissionsRoleAdmin": {
+    "description": "Label for the room administrator role",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoleModerator": "Moderador",
+  "@labelMatrixPermissionsRoleModerator": {
+    "description": "Label for the room moderator role",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoleMember": "Miembro",
+  "@labelMatrixPermissionsRoleMember": {
+    "description": "Label for the room member role",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsSpaceManageChildrenTitle": "Administrar niños",
+  "@labelMatrixPermissionsSpaceManageChildrenTitle": {
+    "description": "Title for permission to manage children",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomDeleteMessagesDescription": "Permite al usuario eliminar mensajes enviados por otros",
+  "@labelMatrixPermissionsRoomDeleteMessagesDescription": {
+    "description": "Describes the permission to delete messages",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsSpaceManageChildrenDescription": "Permite al usuario gestionar qué salas forman parte de este espacio",
+  "@labelMatrixPermissionsSpaceManageChildrenDescription": {
+    "description": "Describes the permission to manage child rooms",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomDeleteMessagesTitle": "Eliminar mensajes",
+  "@labelMatrixPermissionsRoomDeleteMessagesTitle": {
+    "description": "Title for permission to delete messages",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomSendMessagesTitle": "Enviar mensajes",
+  "@labelMatrixPermissionsRoomSendMessagesTitle": {
+    "description": "Title for the permission to send messages",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomAddReactionsDescription": "Añadir reacciones a los mensajes",
+  "@labelMatrixPermissionsRoomAddReactionsDescription": {
+    "description": "describes the permission to add an emoji reaction to a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomSendMessagesDescription": "Permitir a un usuario enviar mensajes en esta sala",
+  "@labelMatrixPermissionsRoomSendMessagesDescription": {
+    "description": "Describes the permission to send messages",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomAddReactionsTitle": "Añadir reacciones",
+  "@labelMatrixPermissionsRoomAddReactionsTitle": {
+    "description": "Title for the permission to add an emoji reaction to a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomHistoryVisibilityTitle": "Visualizar el historial",
+  "@labelMatrixPermissionsRoomHistoryVisibilityTitle": {
+    "description": "Title for the permission to add change room history settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomHistoryVisibilityDescription": "Permite al usuario cambiar la visibilidad del historial del chat en esta sala",
+  "@labelMatrixPermissionsRoomHistoryVisibilityDescription": {
+    "description": "describes the permission to change room history settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomAvatarTitle": "Establecer avatar de la sala",
+  "@labelMatrixPermissionsRoomAvatarTitle": {
+    "description": "Title for the permission to add change the rooms avatar image",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomAvatarDescription": "Cambiar el avatar de la sala",
+  "@labelMatrixPermissionsRoomAvatarDescription": {
+    "description": "Title for the permission to add change the rooms avatar image",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsChangeRoomPermissionsDescription": "Permitir al usuario cambiar la configuración de permisos",
+  "@labelMatrixPermissionsChangeRoomPermissionsDescription": {
+    "description": "Description for the permission to change permissions of the room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsChangeRoomNameTitle": "Cambiar nombre de sala",
+  "@labelMatrixPermissionsChangeRoomNameTitle": {
+    "description": "Title for the permission to add change the rooms name",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsChangeRoomNameDescription": "Permite al usuario cambiar el nombre de esta sala",
+  "@labelMatrixPermissionsChangeRoomNameDescription": {
+    "description": "Description for the permission to add change the rooms name",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsChangeRoomTopicTitle": "Cambiar tema de sala",
+  "@labelMatrixPermissionsChangeRoomTopicTitle": {
+    "description": "Title for the permission to add change the rooms topic",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsChangeRoomTopicDescription": "Permitir al usuario cambiar el tema de esta sala",
+  "@labelMatrixPermissionsChangeRoomTopicDescription": {
+    "description": "Description for the permission to add change the rooms topic",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsChangeRoomPermissionsTitle": "Cambiar permisos",
+  "@labelMatrixPermissionsChangeRoomPermissionsTitle": {
+    "description": "Title for the permission to change permissions of the room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsKickUserDescription": "Expulsar a otros usuarios de la sala",
+  "@labelMatrixPermissionsKickUserDescription": {
+    "description": "Description for the permission to kick other users out of the room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsBanUserTitle": "Banear usuarios",
+  "@labelMatrixPermissionsBanUserTitle": {
+    "description": "Title for the permission to ban other users from the room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsBanUserDescription": "Banear a otros usuarios de la sala",
+  "@labelMatrixPermissionsBanUserDescription": {
+    "description": "Description for the permission to ban other users from the room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsKickUserTitle": "Expulsar a los usuarios",
+  "@labelMatrixPermissionsKickUserTitle": {
+    "description": "Title for the permission to kick other users out of the room",
+    "type": "text",
+    "placeholders": {}
   }
 }

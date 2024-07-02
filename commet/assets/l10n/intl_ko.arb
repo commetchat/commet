@@ -1,0 +1,1495 @@
+{
+  "labelRoomsList": "방",
+  "@labelRoomsList": {
+    "description": "Header label for the list of rooms",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messagePlaceholderUserCreatedRoom": "{user} 님이 방을 생성했습니다!",
+  "@messagePlaceholderUserCreatedRoom": {
+    "description": "Message body for when a user created the room",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messagePlaceholderUserUpdatedName": "{user}님이 이름을 업데이트했습니다",
+  "@messagePlaceholderUserUpdatedName": {
+    "description": "Message body for when a user updates their display name",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "fileDragDropPrompt": "업로드할 파일을 가져오세요...",
+  "@fileDragDropPrompt": {
+    "description": "Text that is shown when a user is dragging a file",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messagePlaceholderSticker": "{user} 님이 스티커를 전송했습니다",
+  "@messagePlaceholderSticker": {
+    "description": "Message body for when a user sends a sticker",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messagePlaceholderUserLeftRoom": "{user} 님이 방을 떠났습니다",
+  "@messagePlaceholderUserLeftRoom": {
+    "description": "Message body for when a user leaves the room",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messagePlaceholderUserUpdatedAvatar": "{user} 님이 아바타를 업데이트했습니다",
+  "@messagePlaceholderUserUpdatedAvatar": {
+    "description": "Message body for when a user updates their avatar",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messagePlaceholderUserInvited": "{sender} 님이 {invitedUser} 님을 초대했습니다",
+  "@messagePlaceholderUserInvited": {
+    "description": "Message body for when a user invites another user to the room",
+    "type": "text",
+    "placeholders": {
+      "sender": {},
+      "invitedUser": {}
+    }
+  },
+  "messagePlaceholderUserRejectedInvite": "{user} 님이 초대를 거절했습니다",
+  "@messagePlaceholderUserRejectedInvite": {
+    "description": "Message body for when a user rejected an invitation to a room",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messagePlaceholderUserJoinedRoom": "{user} 님이 방에 참여했습니다!",
+  "@messagePlaceholderUserJoinedRoom": {
+    "description": "Message body for when a user joins the room",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messageFailedToDecrypt": "이벤트 해독에 실패했습니다",
+  "@messageFailedToDecrypt": {
+    "description": "Placeholde text for when a message fails to decrypt",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageUserEmote": "*{user} {emote}",
+  "@messageUserEmote": {
+    "description": "Message to display when a user does a custom emote (/me)",
+    "type": "text",
+    "placeholders": {
+      "user": {},
+      "emote": {}
+    }
+  },
+  "errorMessageFailedToSend": "전송에 실패했습니다",
+  "@errorMessageFailedToSend": {
+    "description": "Text that is placed below a message when the message fails to send",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelHomeInvitationBody": "당신을 방에 초대했습니다",
+  "@labelHomeInvitationBody": {
+    "description": "Displays a short description explaining that an invitation to a room was received. Does not need to contain the name of the room or inviter",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelJumpToLatest": "최근 메시지로 이동",
+  "@labelJumpToLatest": {
+    "description": "Label for the button which jumps the room timeline view to the latest message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageEditedMarker": "(수정됨)",
+  "@messageEditedMarker": {
+    "description": "Short text to mark that a message has been edited",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelEmojiPickerStickerTab": "스티커",
+  "@labelEmojiPickerStickerTab": {
+    "description": "Label for the sticker tab in the emoji picker",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelEmojiPickerGifTab": "Gif",
+  "@labelEmojiPickerGifTab": {
+    "description": "Label for the gif search tab in the emoji picker",
+    "type": "text",
+    "placeholders": {}
+  },
+  "sendEncryptedMessagePrompt": "암호화된 메시지 전송",
+  "@sendEncryptedMessagePrompt": {
+    "description": "Placeholder text for message input in an encrypted room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "sendUnencryptedMessagePrompt": "메시지 전송",
+  "@sendUnencryptedMessagePrompt": {
+    "description": "Placeholder text for message input in an unencrypted room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "cantSentMessagePrompt": "이 방에서 메시지를 전송할 권한이 없습니다",
+  "@cantSentMessagePrompt": {
+    "description": "Text that explains the user cannot send a message in this room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelChatPageFileTooLarge": "파일이 너무 커서 업로드할 수 없습니다!",
+  "@labelChatPageFileTooLarge": {
+    "description": "Text that is shown when the user attempts to upload a file that is greater than the allowed size",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelChatPageFileTooLargeTitle": "최대 파일 크기 초과",
+  "@labelChatPageFileTooLargeTitle": {
+    "description": "Title for the dialog that is shown when the user attempts to upload a file that is greater than the allowed size",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelHomeRecentActivity": "최근 활동",
+  "@labelHomeRecentActivity": {
+    "description": "Short label for header of recent room activity",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelHomeRoomsList": "방 목록",
+  "@labelHomeRoomsList": {
+    "description": "Short label for header of rooms list",
+    "type": "text",
+    "placeholders": {}
+  },
+  "tooltipSpaceSettings": "공간 설정",
+  "@tooltipSpaceSettings": {
+    "description": "Tooltip for the button that opens space settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceVisibilityPublic": "공개 공간",
+  "@labelSpaceVisibilityPublic": {
+    "description": "Label to display that the space is publically available",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelEnableUnifiedPushEndpoint": "종료 지점",
+  "@labelEnableUnifiedPushEndpoint": {
+    "description": "Label for the Unified Push endpoint",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelEmojiPickerEmojiTab": "이모지",
+  "@labelEmojiPickerEmojiTab": {
+    "description": "Label for the emoji tab in emoji picker",
+    "type": "text",
+    "placeholders": {}
+  },
+  "typingUsers": "{howMany,plural, =1{{user1} 입력중...}=2{{user1}, {user2} 입력중...}few{{user1}, {user2}, {user3} 입력중...}other{여러 명 입력중...}}",
+  "@typingUsers": {
+    "description": "Text to display which users are currently typing",
+    "type": "text",
+    "placeholders": {
+      "howMany": {},
+      "user1": {},
+      "user2": {},
+      "user3": {}
+    }
+  },
+  "labelHomeAlerts": "알림",
+  "@labelHomeAlerts": {
+    "description": "Short label for header of alerts",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelHomeInvitations": "초대 목록",
+  "@labelHomeInvitations": {
+    "description": "Short label for header of invitations list",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptAddSpace": "공간 추가",
+  "@promptAddSpace": {
+    "description": "Prompt to add a new space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "tooltipAddRoom": "방 추가",
+  "@tooltipAddRoom": {
+    "description": "Tooltip for the button that adds a new room to a space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceRoomsList": "방 목록",
+  "@labelSpaceRoomsList": {
+    "description": "Header label for the list of rooms in a space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceAvailableRoomsList": "이용 가능한 방",
+  "@labelSpaceAvailableRoomsList": {
+    "description": "Header label for the list of rooms in a space, which the user has not yet joined but are available",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceVisibilityPrivate": "개인 공간",
+  "@labelSpaceVisibilityPrivate": {
+    "description": "Label to display that the space is private",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceGettingText": "# {spaceName} \n\n 에 오신 것을 환영합니다",
+  "@labelSpaceGettingText": {
+    "description": "Greeting to the space, supports markdown formatting",
+    "type": "text",
+    "placeholders": {
+      "spaceName": {}
+    }
+  },
+  "promptOpenDirectMessage": "메시지",
+  "@promptOpenDirectMessage": {
+    "description": "Prompt on the button to open a direct message with another user",
+    "type": "text",
+    "placeholders": {}
+  },
+  "directMessagesListHeaderMobile": "메시지",
+  "@directMessagesListHeaderMobile": {
+    "description": "The header for the direct messages list on desktop",
+    "type": "text",
+    "placeholders": {}
+  },
+  "directMessagesListHeaderDesktop": "메시지",
+  "@directMessagesListHeaderDesktop": {
+    "description": "The header for the direct messages list on desktop",
+    "type": "text",
+    "placeholders": {}
+  },
+  "unifiedPushExplainer": "# Unified Push\n이 버전의 Commet은 Google Play 서비스 없이 빌드 되었습니다. 푸시 알림을 받으려면 [Unified Push](https://unifiedpush.org/)를 사용해야 합니다 . \n\nUnified Push compatible distributor 앱이 이미 설치되어 있는 경우 아래에서 구성할 수 있습니다\n",
+  "@unifiedPushExplainer": {
+    "description": "Explains the need for unified push. Supports markdown",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelEnableUnifiedPush": "Unified Push 활성화",
+  "@labelEnableUnifiedPush": {
+    "description": "Label for the toggle to enable Unified Push",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelUnifiedPushNoEndpointFound": "종료 지점을 찾을 수 없음, 문제가 발생했습니다 :(",
+  "@labelUnifiedPushNoEndpointFound": {
+    "description": "Message for when a unified push endpoint could not be registered",
+    "type": "text",
+    "placeholders": {}
+  },
+  "setupPageBeforeYouBegin": "시작하기 전에 ...",
+  "@setupPageBeforeYouBegin": {
+    "description": "Title for first time setup page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceSettingsGeneral": "일반",
+  "@labelSpaceSettingsGeneral": {
+    "description": "Label for general space settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceAppearanceSettings": "외관",
+  "@labelSpaceAppearanceSettings": {
+    "description": "Label for space appearance settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceEmoticonSettings": "이모티콘",
+  "@labelSpaceEmoticonSettings": {
+    "description": "Label for space emoticon settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpacePermissionSettings": "권한",
+  "@labelSpacePermissionSettings": {
+    "description": "Label for space permission settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelPushRuleMentionsAndKeywords": "언급 & 키워드",
+  "@labelPushRuleMentionsAndKeywords": {
+    "description": "Label for the push rule which notifies only for keywords and mentions",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelPushRuleNone": "음소거",
+  "@labelPushRuleNone": {
+    "description": "Label for the push rule which sends no notifications",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsNotifications": "알림",
+  "@labelRoomSettingsNotifications": {
+    "description": "Label for the notifications section in room settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "encryptionCannotBeDisabledExplanationRoomSettings": "활성화된 경우 나중에 암호화를 비활성화 할 수 없습니다",
+  "@encryptionCannotBeDisabledExplanationRoomSettings": {
+    "description": "Explains that encryption cannot be disabled once enabled",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptCreateEmoticonPack": "팩 생성",
+  "@promptCreateEmoticonPack": {
+    "description": "Prompt to create a new emoticon pack, for emoji or stickers",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptEmoticonPackName": "팩 이름",
+  "@promptEmoticonPackName": {
+    "description": "Prompt for the input of the name of an emoticon pack",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsAppearance": "외관",
+  "@labelRoomSettingsAppearance": {
+    "description": "Label for room appearance settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsDeveloper": "개발자",
+  "@labelRoomSettingsDeveloper": {
+    "description": "Label for room developer settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoleModerator": "관리자",
+  "@labelMatrixPermissionsRoleModerator": {
+    "description": "Label for the room moderator role",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoleMember": "방 맴버",
+  "@labelMatrixPermissionsRoleMember": {
+    "description": "Label for the room member role",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsSpaceManageChildrenDescription": "사용자가 이 공간에 속하는 방을 관리할 수 있도록 허용합니다",
+  "@labelMatrixPermissionsSpaceManageChildrenDescription": {
+    "description": "Describes the permission to manage child rooms",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomSendMessagesTitle": "메시지 전송",
+  "@labelMatrixPermissionsRoomSendMessagesTitle": {
+    "description": "Title for the permission to send messages",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomSendMessagesDescription": "이 방에서 사용자가 메시지를 보낼 수 있도록 허용합니다",
+  "@labelMatrixPermissionsRoomSendMessagesDescription": {
+    "description": "Describes the permission to send messages",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomAddReactionsTitle": "반응 추가",
+  "@labelMatrixPermissionsRoomAddReactionsTitle": {
+    "description": "Title for the permission to add an emoji reaction to a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomHistoryVisibilityTitle": "기록 설정 변경 권한",
+  "@labelMatrixPermissionsRoomHistoryVisibilityTitle": {
+    "description": "Title for the permission to add change room history settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomAvatarTitle": "아바타 설정",
+  "@labelMatrixPermissionsRoomAvatarTitle": {
+    "description": "Title for the permission to add change the rooms avatar image",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomAvatarDescription": "아바타 이미지 변경",
+  "@labelMatrixPermissionsRoomAvatarDescription": {
+    "description": "Title for the permission to add change the rooms avatar image",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsChangeRoomNameTitle": "방 이름 변경",
+  "@labelMatrixPermissionsChangeRoomNameTitle": {
+    "description": "Title for the permission to add change the rooms name",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsChangeRoomNameDescription": "사용자에게 방 이름 변경을 허용합니다",
+  "@labelMatrixPermissionsChangeRoomNameDescription": {
+    "description": "Description for the permission to add change the rooms name",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsChangeRoomPermissionsDescription": "사용자에게 권한 설정 변경을 허용합니다",
+  "@labelMatrixPermissionsChangeRoomPermissionsDescription": {
+    "description": "Description for the permission to change permissions of the room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsBanUserTitle": "차단",
+  "@labelMatrixPermissionsBanUserTitle": {
+    "description": "Title for the permission to ban other users from the room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsBanUserDescription": "사용자를 방에서 차단합니다",
+  "@labelMatrixPermissionsBanUserDescription": {
+    "description": "Description for the permission to ban other users from the room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsTabManageAccounts": "계정 관리",
+  "@labelSettingsTabManageAccounts": {
+    "description": "Label for the Manage Accounts settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsTabProfile": "프로필",
+  "@labelSettingsTabProfile": {
+    "description": "Label for the Profile settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsTabEmoticons": "이모티콘",
+  "@labelSettingsTabEmoticons": {
+    "description": "Label for the Emoticons settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsTabDeveloper": "개발자",
+  "@labelSettingsTabDeveloper": {
+    "description": "Label for the Developer settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsCategoryAccount": "계정",
+  "@labelSettingsCategoryAccount": {
+    "description": "Label for the settings category Account",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptAddAccount": "계정 추가",
+  "@promptAddAccount": {
+    "description": "Label for button in settings to add another account",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelCurrentAccountsHeader": "현재 계정",
+  "@labelCurrentAccountsHeader": {
+    "description": "Label for header of accounts list",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptWipeMatrixKeys": "키 삭제",
+  "@promptWipeMatrixKeys": {
+    "description": "Text on the button to wipe matrix encryption keys",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptCreateNewMatrixKeys": "새로운 키 생성",
+  "@promptCreateNewMatrixKeys": {
+    "description": "Button text to opt to create new keys",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptMatrixRecoveryKeyInput": "복구 키",
+  "@promptMatrixRecoveryKeyInput": {
+    "description": "Placeholder text for the recovery key input box",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmWipingCrossSigningKeys": "크로스 서명 키를 삭제하시겠습니까?",
+  "@promptConfirmWipingCrossSigningKeys": {
+    "description": "Asks the user if they are sure they want to wipe the keys",
+    "type": "text",
+    "placeholders": {}
+  },
+  "errorMatrixPassphraseMustContainSymbol": "암호 문구에는 최소 1개의 특수 문자가 포함되어야 합니다",
+  "@errorMatrixPassphraseMustContainSymbol": {
+    "description": "Explains constraints of recovery passphrase",
+    "type": "text",
+    "placeholders": {}
+  },
+  "erroMatrixPassphraseMustBeLonger": "암호 문구는 최소 10자 이상이어야 합니다",
+  "@erroMatrixPassphraseMustBeLonger": {
+    "description": "Explains constraints of recovery passphrase",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPromptPassphrase": "보안 문구:",
+  "@labelMatrixPromptPassphrase": {
+    "description": "Prompt the user to enter passphrase",
+    "type": "text",
+    "placeholders": {}
+  },
+  "placeholderMatrixEnterSecutiyPhrase": "보안 문구",
+  "@placeholderMatrixEnterSecutiyPhrase": {
+    "description": "Placeholder text for the passphrase text box",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixExistingMessageBackupFound": "기존 백업을 찾았습니다!",
+  "@labelMatrixExistingMessageBackupFound": {
+    "description": "Message to explain that existing backup has been found",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixAskWipeBackupToContinue": "크로스 서명 키를 변경하려면, 기존 백업을 삭제해야 합니다...계속 하시겠습니까?",
+  "@labelMatrixAskWipeBackupToContinue": {
+    "description": "Asks the user if they want to wipe their existing backup to continue changing their cross signing keys",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixAskEnableMessageBackup": "온라인 키 백업을 활성화 하시겠습니까?",
+  "@labelMatrixAskEnableMessageBackup": {
+    "description": "Asks the user if they want to enable online backup",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixExplainOnlineKeyBackup": "온라인 키 백업을 사용하면 모든 세션에 대한 액세스 권한을 잃은 경우에도 메시지 기록을 되찾을 수 있습니다",
+  "@labelMatrixExplainOnlineKeyBackup": {
+    "description": "Explains what the message backup does",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixMessageBackup": "메시지 백업",
+  "@labelMatrixMessageBackup": {
+    "description": "TItle label for matrix message backup settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixMessageBackupExplanation": "모든 세션을 잃을 경우를 대비해 메시지 기록을 백업합니다. 메시지는 업로드하기 전에 암호화됩니다",
+  "@labelMatrixMessageBackupExplanation": {
+    "description": "Explains what matrix message backup does",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptSetupMatrixMessageBackup": "백업 설정",
+  "@promptSetupMatrixMessageBackup": {
+    "description": "Text on the button to begin the setup process for message backup",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsAppGeneral": "일반",
+  "@labelSettingsAppGeneral": {
+    "description": "Label for the App General settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsAppAppearance": "외관",
+  "@labelSettingsAppAppearance": {
+    "description": "Label for the App Appearance settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsAppAdvanced": "고급",
+  "@labelSettingsAppAdvanced": {
+    "description": "Label for the App Advanced settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsAppDeveloperUtils": "개발자 도구",
+  "@labelSettingsAppDeveloperUtils": {
+    "description": "Label for the developer utils settings page, usually hidden unless developer mode is turned on",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsAppTheme": "테마",
+  "@labelSettingsAppTheme": {
+    "description": "Label for theme section of app appearance",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelAppScale": "앱 크기 조정",
+  "@labelAppScale": {
+    "description": "Label for the setting which controls the UI scale of the overall app",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelGifSearchToggle": "Gif 검색",
+  "@labelGifSearchToggle": {
+    "description": "Label for the toggle for enabling and disabling gif search",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelEncryptedPreview": "암호화된 채팅에서 URL 미리보기 (테스트 중)",
+  "@labelEncryptedPreview": {
+    "description": "Label for the toggle for enabling and disabling encrypted url preview",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsDeveloperMode": "개발자 모드",
+  "@labelSettingsDeveloperMode": {
+    "description": "Header for the settings to enable developer mode",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmDeleteEmoticonPack": "**{packName}** 팩을 삭제하시겠습니까?",
+  "@promptConfirmDeleteEmoticonPack": {
+    "description": "Prompt to confirm deletion of an emoticon pack, supports markdown to emphasise the pack name",
+    "type": "text",
+    "placeholders": {
+      "packName": {}
+    }
+  },
+  "createEmoticonDialogTitle": "이모티콘 생성",
+  "@createEmoticonDialogTitle": {
+    "description": "Title of a dialog that pops up when choosing to create a new emoticon",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceDeveloperSettings": "개발자",
+  "@labelSpaceDeveloperSettings": {
+    "description": "Label for space developer settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsCategorySpace": "공간 설정",
+  "@labelSettingsCategorySpace": {
+    "description": "Label for the overall space settings category",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsAppLogs": "로그",
+  "@labelSettingsAppLogs": {
+    "description": "Label for the logs settings page, usually hidden unless developer mode is turned on",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelPushRuleNotifyAll": "모든 메시지",
+  "@labelPushRuleNotifyAll": {
+    "description": "Label for the push rule which notifies for all received messages",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptRenameEmoticon": "이모티콘 이름 변경",
+  "@promptRenameEmoticon": {
+    "description": "Tooltip for button to rename emoticon",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptEmojiName": "이모지 이름",
+  "@promptEmojiName": {
+    "description": "Prompt for the input of the name of an emoji",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptStickerName": "스티커 이름",
+  "@promptStickerName": {
+    "description": "Prompt for the input of a sticker",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsEmoticons": "이모티콘",
+  "@labelRoomSettingsEmoticons": {
+    "description": "Label for room Emoticon settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmCreateEmoticon": "생성되었습니다!",
+  "@promptConfirmCreateEmoticon": {
+    "description": "Prompt to confirm the creation of an Emoticon Pack, Emoji, or Sticker",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsSecurity": "보안",
+  "@labelRoomSettingsSecurity": {
+    "description": "Label for room security settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptEnableEncryptionRoomSettings": "암호화 활성화",
+  "@promptEnableEncryptionRoomSettings": {
+    "description": "Short prompt to enable encryption for a room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsGeneral": "일반",
+  "@labelRoomSettingsGeneral": {
+    "description": "Label for general room settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoleAdmin": "어드민",
+  "@labelMatrixPermissionsRoleAdmin": {
+    "description": "Label for the room administrator role",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsCategory": "방 설정",
+  "@labelRoomSettingsCategory": {
+    "description": "Label for the overall settings category of a room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsPermissions": "권한",
+  "@labelRoomSettingsPermissions": {
+    "description": "Label for room permission settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomDeleteMessagesTitle": "메시지 삭제",
+  "@labelMatrixPermissionsRoomDeleteMessagesTitle": {
+    "description": "Title for permission to delete messages",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsSpaceManageChildrenTitle": "자녀 관리",
+  "@labelMatrixPermissionsSpaceManageChildrenTitle": {
+    "description": "Title for permission to manage children",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomDeleteMessagesDescription": "다른 사람이 보낸 메시지를 사용자가 삭제할 수 있도록 허용합니다",
+  "@labelMatrixPermissionsRoomDeleteMessagesDescription": {
+    "description": "Describes the permission to delete messages",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixWarnResetKeysIsPermanent": "키를 재설정하는 것은 영구적으로 저장되며 채팅 기록 백업이 사라집니다. 이런 일은 절대 하고 싶지 않을 겁니다!",
+  "@labelMatrixWarnResetKeysIsPermanent": {
+    "description": "Explains that resetting keys is permanent, should emphasize that this isnt really a great idea",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomAddReactionsDescription": "메시지에 반응 추가",
+  "@labelMatrixPermissionsRoomAddReactionsDescription": {
+    "description": "describes the permission to add an emoji reaction to a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomHistoryVisibilityDescription": "사용자에게 이 방의 기록 설정 권한 변경을 허용합니다",
+  "@labelMatrixPermissionsRoomHistoryVisibilityDescription": {
+    "description": "describes the permission to change room history settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsChangeRoomTopicDescription": "사용자에게 방 주제 변경을 허용합니다",
+  "@labelMatrixPermissionsChangeRoomTopicDescription": {
+    "description": "Description for the permission to add change the rooms topic",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsChangeRoomTopicTitle": "방 주제 변경",
+  "@labelMatrixPermissionsChangeRoomTopicTitle": {
+    "description": "Title for the permission to add change the rooms topic",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsChangeRoomPermissionsTitle": "방 권한 변경",
+  "@labelMatrixPermissionsChangeRoomPermissionsTitle": {
+    "description": "Title for the permission to change permissions of the room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsKickUserTitle": "강퇴",
+  "@labelMatrixPermissionsKickUserTitle": {
+    "description": "Title for the permission to kick other users out of the room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptLogoutSingleAccount": "로그아웃",
+  "@promptLogoutSingleAccount": {
+    "description": "Label for button in settings to log out of an account",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsKickUserDescription": "사용자를 방에서 내보냅니다",
+  "@labelMatrixPermissionsKickUserDescription": {
+    "description": "Description for the permission to kick other users out of the room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsTabSecurity": "보안",
+  "@labelSettingsTabSecurity": {
+    "description": "Label for the Security settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptAbortWipingMatrixKeys": "삭제 중단!",
+  "@promptAbortWipingMatrixKeys": {
+    "description": "Text on the button which aborts wiping matrix encryption keys",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptGenerateMatrixRecoveryKey": "키 생성",
+  "@promptGenerateMatrixRecoveryKey": {
+    "description": "Button text to generate a recovery key",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptSetMatrixPassphrase": "문구 설정",
+  "@promptSetMatrixPassphrase": {
+    "description": "Button text to set a passphrase",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptWipeMatrixBackup": "백업 삭제",
+  "@promptWipeMatrixBackup": {
+    "description": "Button text to wipe the matrix message backup",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelExistingMatrixKeysFound": "기존 서명 키가 발견되었습니다!",
+  "@labelExistingMatrixKeysFound": {
+    "description": "Text that is shown when the user is setting up cross signing, but has existing keys",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixRecoveryKeyCreateExplanation": "메시지 기록에 액세스하는 데 사용할 수 있는 보안 키를 설정해야 합니다. 귀하를 위해 키를 생성하거나 귀하가 직접 보안 문구를 선택할 수 있습니다",
+  "@labelMatrixRecoveryKeyCreateExplanation": {
+    "description": "Explains what the matrix recovery key does, and that it can be generated or user input",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptUseExistingMatrixKeys": "기존 키 사용",
+  "@promptUseExistingMatrixKeys": {
+    "description": "Button text to opt to use existing keys",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptEnableMatrixBackup": "백업 활성화",
+  "@promptEnableMatrixBackup": {
+    "description": "Button text to enable to encrypted message backup",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelAskUseExistingMatrixKeys": "기존 키를 사용하시겠습니까?",
+  "@labelAskUseExistingMatrixKeys": {
+    "description": "Text that is shown when the user is setting up cross signing, but has existing keys and asks the user if they would like to use those keys",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixRecoveryKeyExplanation": "이것은 복구 키입니다. 다른 모든 세션에 대한 접근 권한을 잃었을 때 세션을 검증하는 데 사용할 수 있습니다. 안전한 곳에 보관하세요!",
+  "@labelMatrixRecoveryKeyExplanation": {
+    "description": "Gives a brief description about the function on the recovery key",
+    "type": "text",
+    "placeholders": {}
+  },
+  "errorMatrixPassphraseMustContainNumber": "암호 문구에는 숫자가 1개 이상이 포함되어야 합니다",
+  "@errorMatrixPassphraseMustContainNumber": {
+    "description": "Explains constraints of recovery passphrase",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixRecoveryKeyPromptExplanation": "이전 세션에서 생성된 복구 키를 입력하여 이전 메시지를 잠금 해제하세요. 복구키는 비밀번호가 아닙니다.",
+  "@labelMatrixRecoveryKeyPromptExplanation": {
+    "description": "Shown when a user is attempting to recover their old messages, explains that they need the recovery key",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixSecurityPhraseShouldNotBePassword": "보안 문구는 계정 비밀번호와 달라야 합니다",
+  "@labelMatrixSecurityPhraseShouldNotBePassword": {
+    "description": "Tells the user to not use their password as their security phrase",
+    "type": "text",
+    "placeholders": {}
+  },
+  "errorMatrixPassphraseMustContainUpperAndLowercase": "암호 문구에는 대문자 1개 이상, 소문자 1개 이상이 포함되어야 합니다",
+  "@errorMatrixPassphraseMustContainUpperAndLowercase": {
+    "description": "Explains constraints of recovery passphrase",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixConfirmSecurityPhrase": "보안 문구 확인:",
+  "@labelMatrixConfirmSecurityPhrase": {
+    "description": "Prompts the user to input their passphrase again",
+    "type": "text",
+    "placeholders": {}
+  },
+  "placeholderMatrixConfirmSecurityPhrase": "보안 문구 확인",
+  "@placeholderMatrixConfirmSecurityPhrase": {
+    "description": "Placeholder text for the confirm passphrase text input",
+    "type": "text",
+    "placeholders": {}
+  },
+  "errorMatrixPassphrasesDontMatch": "보안 문구가 일치하지 않습니다",
+  "@errorMatrixPassphrasesDontMatch": {
+    "description": "Error when the user enters passphrase twice and the two dont match",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixAccountSessions": "세션",
+  "@labelMatrixAccountSessions": {
+    "description": "Title label for account sessions",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixCrossSigning": "크로스 서명",
+  "@labelMatrixCrossSigning": {
+    "description": "Title label for matrix cross signing",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixCrossSigningAndBackup": "크로스 서명 & 백업",
+  "@labelMatrixCrossSigningAndBackup": {
+    "description": "Header label for matrix cross signing and message backup section",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptMatrixVerifySession": "검증",
+  "@promptMatrixVerifySession": {
+    "description": "Text on the button to verify a session",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixCrossSigningExplanation": "모든 세션을 검증하고 추적하기 위한 설정입니다",
+  "@labelMatrixCrossSigningExplanation": {
+    "description": "Explains what matrix cross signing does",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsWindowBehaviour": "창 동작",
+  "@labelSettingsWindowBehaviour": {
+    "description": "Label for the Window Behaviour settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsAppNotifications": "알림",
+  "@labelSettingsAppNotifications": {
+    "description": "Label for the App notifications settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixResetCrossSigningTitle": "크로스 서명 초기화",
+  "@labelMatrixResetCrossSigningTitle": {
+    "description": "Title for the popup dialog when resetting cross signing",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRestoreMatrixBackupTitle": "백업 복구",
+  "@labelRestoreMatrixBackupTitle": {
+    "description": "Title of the popup dialog for restoring message backup",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsCategoryApp": "앱 설정",
+  "@labelSettingsCategoryApp": {
+    "description": "Label for the settings category of the overall App settings/",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelThemeDark": "어두운 테마",
+  "@labelThemeDark": {
+    "description": "Label for the dark theme",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelThemeLight": "밝은 테마",
+  "@labelThemeLight": {
+    "description": "Label for the light theme",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelThemeAmoled": "아몰레드",
+  "@labelThemeAmoled": {
+    "description": "Label for the light theme",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelThirdPartyServicesTitle": "외부 서비스",
+  "@labelThirdPartyServicesTitle": {
+    "description": "Header for the third party services section in settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelGifSearchDescription": "Tenor GIF 검색 사용을 활성화합니다. 요청은 {proxyUrl}을(를) 통해 프록시됩니다",
+  "@labelGifSearchDescription": {
+    "description": "Explains that gifs will be fetched via proxy",
+    "type": "text",
+    "placeholders": {
+      "proxyUrl": {}
+    }
+  },
+  "promptConfirmDeleteEmoticon": "**{emoticon}**을(를) 삭제 하시겠습니까?",
+  "@promptConfirmDeleteEmoticon": {
+    "description": "Prompt to confirm deletion of an emoticon pack, supports markdown to emphasise the emote name",
+    "type": "text",
+    "placeholders": {
+      "emoticon": {}
+    }
+  },
+  "labelSettingsDeveloperModeExplanation": "개발자에게 유용한 추가 정보를 보여줍니다",
+  "@labelSettingsDeveloperModeExplanation": {
+    "description": "Explains what developer mode does",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelStickerCompatibility": "스티커 호환",
+  "@labelStickerCompatibility": {
+    "description": "Header for the settings to enable sticker compatibility mode",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsWindowBehaviourTitle": "창 동작",
+  "@labelSettingsWindowBehaviourTitle": {
+    "description": "Header for the window behaviour section of settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsMinimizeOnCloseToggle": "닫기 시 축소",
+  "@labelSettingsMinimizeOnCloseToggle": {
+    "description": "Label for the toggle to turn on and off minimize on close",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsMinimizeOnCloseExplanation": "창을 닫을 시 앱이 종료되지 않고 축소 됩니다",
+  "@labelSettingsMinimizeOnCloseExplanation": {
+    "description": "Explains what the 'minimize on close' setting does",
+    "type": "text",
+    "placeholders": {}
+  },
+  "notificationSettingsNotSupported": "푸시 알림은 이 시스템에서 지원되지 않습니다",
+  "@notificationSettingsNotSupported": {
+    "description": "Message to display when push notifications are not supported",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptLeaveRoom": "방 나가기",
+  "@promptLeaveRoom": {
+    "description": "Text on a button to leave a room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptLeaveRoomConfirmation": "{roomName}방을 나가시겠습니까?",
+  "@promptLeaveRoomConfirmation": {
+    "description": "Text for the popup dialog confirming the intent to leave",
+    "type": "text",
+    "placeholders": {
+      "roomName": {}
+    }
+  },
+  "messageLoginError": "오류 발생",
+  "@messageLoginError": {
+    "description": "A generic error message to convey that an error occured when attempting to login",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageAlreadyLoggedIn": "이 계정으로 이미 로그인하셨습니다",
+  "@messageAlreadyLoggedIn": {
+    "description": "An error message displayed when the user attempts to add an account which has already been logged in to on this device",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptHomeserver": "홈 서버",
+  "@promptHomeserver": {
+    "description": "Placeholder text for homeserver field on login form",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptPassword": "비밀번호",
+  "@promptPassword": {
+    "description": "Placeholder text for password field on login form",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptSubmitLogin": "로그인",
+  "@promptSubmitLogin": {
+    "description": "Prompt to submit the username and password, and attempt to login",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptUsername": "사용자명",
+  "@promptUsername": {
+    "description": "Placeholder text for username field on login form",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptRoomName": "방 이름",
+  "@promptRoomName": {
+    "description": "Prompt to enter a room name, placeholder text for text input",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptTopic": "주제 (선택)",
+  "@promptTopic": {
+    "description": "Prompt to enter a topic for room or space, specifying that doing so is optional",
+    "type": "text",
+    "placeholders": {}
+  },
+  "roomVisibilityPrivateExplanation": "이 방은 초대를 통해서만 입장할 수 있습니다",
+  "@roomVisibilityPrivateExplanation": {
+    "description": "Explains what 'private' room visibility means",
+    "type": "text",
+    "placeholders": {}
+  },
+  "roomVisibilityPublicExplanation": "이 방은 누구나 입장할 수 있는 공개 방입니다",
+  "@roomVisibilityPublicExplanation": {
+    "description": "Explains what 'public' visibility means",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelVisibilityPrivate": "비공개",
+  "@labelVisibilityPrivate": {
+    "description": "Short label for room visibility private",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelVisibilityPublic": "공개",
+  "@labelVisibilityPublic": {
+    "description": "Short label for room visibility public",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmSpaceCreation": "공간 생성!",
+  "@promptConfirmSpaceCreation": {
+    "description": "Label for a button which confirms the creation of a space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmRoomJoin": "방 입장!",
+  "@promptConfirmRoomJoin": {
+    "description": "Label for a button which confirms the joining of a room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmSpaceJoin": "공간 입장!",
+  "@promptConfirmSpaceJoin": {
+    "description": "Label for a button which confirms the joining of a space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptSpaceAddress": "공간 주소:",
+  "@promptSpaceAddress": {
+    "description": "Short label to prompt for the input of a space address",
+    "type": "text",
+    "placeholders": {}
+  },
+  "placeholderRoomAddress": "#awesome-room:matrix.org",
+  "@placeholderRoomAddress": {
+    "description": "Placeholder / Example for a room address",
+    "type": "text",
+    "placeholders": {}
+  },
+  "placeholderSpaceAddress": "#awesome-space:matrix.org",
+  "@placeholderSpaceAddress": {
+    "description": "Placeholder / Example for a space address",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelCouldNotLoadRoomPreview": "방의 미리보기를 로드 할 수 없습니다",
+  "@labelCouldNotLoadRoomPreview": {
+    "description": "Error message for when a room preview was not able to be loaded",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptAddSelectedRooms": "선택한 방 추가",
+  "@promptAddSelectedRooms": {
+    "description": "Prompt to add the selected rooms to a space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptCreateNewSpace": "새로운 공간 생성",
+  "@promptCreateNewSpace": {
+    "description": "Prompt to create a new space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptJoinExistingSpace": "기존 공간 입장",
+  "@promptJoinExistingSpace": {
+    "description": "Prompt to join a space which already exists",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptUseExistingRoom": "기존 방 사용",
+  "@promptUseExistingRoom": {
+    "description": "Button text to choose to use an existing room when adding a room to a space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "notificationModifiersPrivacyEnhanced": "메시지를 전송했습니다",
+  "@notificationModifiersPrivacyEnhanced": {
+    "description": "Placeholder text to put in a notification when the user has privacy enhanced notifications enabled.",
+    "type": "text",
+    "placeholders": {}
+  },
+  "matrixClientEncryptionWarningTitle": "암호화 경고",
+  "@matrixClientEncryptionWarningTitle": {
+    "description": "Title of a warning about encryption",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptReply": "응답",
+  "@promptReply": {
+    "description": "Generic prompt to reply to a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptSettings": "설정",
+  "@promptSettings": {
+    "description": "Generic prompt for settings, usually will open a settings menu or similar",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptHome": "홈",
+  "@promptHome": {
+    "description": "Generic prompt to go home, usually will go back to a main menu, or similar",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptAccept": "승인",
+  "@promptAccept": {
+    "description": "Generic prompt to accept something, probably a request of some kind",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptReject": "거절",
+  "@promptReject": {
+    "description": "Generic prompt to reject something, probably a request of some kind",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptApply": "적용",
+  "@promptApply": {
+    "description": "Generic prompt to apply something, probably a setting",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptJoin": "입장",
+  "@promptJoin": {
+    "description": "Generic prompt to join a room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptSubmit": "제출",
+  "@promptSubmit": {
+    "description": "Generic prompt to submit something",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptContinue": "계속",
+  "@promptContinue": {
+    "description": "Generic prompt to continue with some action",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptPoliteNo": "아니요, 괜찮습니다",
+  "@promptPoliteNo": {
+    "description": "Generic message to decline something, using nice manners :)",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptBack": "뒤로",
+  "@promptBack": {
+    "description": "Prompt text to go backwards, probably for navigation",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptCopy": "복사",
+  "@promptCopy": {
+    "description": "Prompt to copy text",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptCopyComplete": "복사 완료!",
+  "@promptCopyComplete": {
+    "description": "Prompt text for after a copy has been completed",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelOr": "혹은",
+  "@labelOr": {
+    "description": "Text that is placed between two or more options: [button1] or [button2]",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelEncryptedPreviewDescription": "프록시 서버({proxyUrl})을(를) 사용하여 암호화된 채팅에서 URL 미리보기를 활성화 합니다. 이러한 요청의 내용은 Commet의 '암호화된 URL 미리보기'를 사용하여 홈 서버에서 보이지 않습니다\n자세히 알아보기: https://github.com/commetchat/encrypted_url_preview",
+  "@labelEncryptedPreviewDescription": {
+    "description": "Explains briefly how encrypted url preview works",
+    "type": "text",
+    "placeholders": {
+      "proxyUrl": {}
+    }
+  },
+  "labelSettingsStickerCompatibilityExplanation": "일부 Matrix 클라이언트에서는 스티커를 'm.sticker'로 보내면 스티커가 제대로 로드되지 않을 수 있습니다. 이 설정을 활성화하면 스티커를 'm.image'로 보내게 되어 올바르게 렌더링 될 것 입니다",
+  "@labelSettingsStickerCompatibilityExplanation": {
+    "description": "Explains what sticker compatibility mode does",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptLeaveSpace": "공간 나가기",
+  "@promptLeaveSpace": {
+    "description": "Text on a button to leave a space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptSpaceName": "공간 이름",
+  "@promptSpaceName": {
+    "description": "Prompt to enter a space name, placeholder text for text input",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptLeaveSpaceConfirmation": "{spaceName}공간을 나가시겠습니까?",
+  "@promptLeaveSpaceConfirmation": {
+    "description": "Text for the popup dialog confirming the intent to leave a space",
+    "type": "text",
+    "placeholders": {
+      "spaceName": {}
+    }
+  },
+  "messageLoginFailed": "로그인 실패...",
+  "@messageLoginFailed": {
+    "description": "Generic text to show that an attempted login has failed",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmRoomCreation": "방 생성!",
+  "@promptConfirmRoomCreation": {
+    "description": "Label for a button which confirms the creation of a room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageMatrixSessionVerificationRequest": "**{username}**님이 세션 검증을 요청하였습니다",
+  "@messageMatrixSessionVerificationRequest": {
+    "description": "Message to show when another user has requested to verify your matrix session. Supports markdown to emphasise the user name",
+    "type": "text",
+    "placeholders": {
+      "username": {}
+    }
+  },
+  "spaceVisibilityPublicExplanation": "이 공간은 누구나 입장할 수 있는 공개 공간입니다",
+  "@spaceVisibilityPublicExplanation": {
+    "description": "Explains what 'public' space visibility means",
+    "type": "text",
+    "placeholders": {}
+  },
+  "spaceVisibilityPrivateExplanation": "이 공간은 초대를 통해서만 입장할 수 있습니다",
+  "@spaceVisibilityPrivateExplanation": {
+    "description": "Explains what 'private' space visibility means",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptEnableEncryption": "암호화 활성화",
+  "@promptEnableEncryption": {
+    "description": "Short prompt to enable encryption for a room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptCreateNewRoom": "새로운 방 생성",
+  "@promptCreateNewRoom": {
+    "description": "Prompt to create a new room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "encryptionCannotBeDisabledExplanation": "암호화는 활성화 시 비활성화 할 수 없습니다",
+  "@encryptionCannotBeDisabledExplanation": {
+    "description": "Explains that encryption cannot be disabled once enabled",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptEdit": "편집",
+  "@promptEdit": {
+    "description": "Generic prompt to edit something",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptRoomAddress": "방 주소:",
+  "@promptRoomAddress": {
+    "description": "Short label to prompt for the input of a room address",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptJoinExistingRoom": "기존 방 입장",
+  "@promptJoinExistingRoom": {
+    "description": "Prompt to join a room which already exists",
+    "type": "text",
+    "placeholders": {}
+  },
+  "matrixClientOlmMissingMessage": "libolm이 설치되지 않았거나 찾을 수 없습니다. 이 문제를 해결할 때까지 End-to-End 암호화 기능을 사용할 수 없습니다",
+  "@matrixClientOlmMissingMessage": {
+    "description": "Text that explains to the user that libolm dependency is not found",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptAddReaction": "반응 추가",
+  "@promptAddReaction": {
+    "description": "Generic prompt to add reaction to a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageWaitingOtherDeviceToAccept": "다른 장치에서 요청을 수락할 때까지 기다리는 중",
+  "@messageWaitingOtherDeviceToAccept": {
+    "description": "Message to show while waiting for another device to accept a matrix session verification request",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageSasEmojiVerificationPrompt": "이모지가 다른 장치와 동일한지, 동일한 순서로 있는지 확인하세요",
+  "@messageSasEmojiVerificationPrompt": {
+    "description": "Explains what to look for when verifying using emoji. Needs to portray that the emoji MUST be the same AND in the same order",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptOptions": "옵션",
+  "@promptOptions": {
+    "description": "Generic prompt for options, generally would be used to open a settings menu, extra details or similar",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirm": "확인",
+  "@promptConfirm": {
+    "description": "Generic prompt to confirm some action",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageVerificationComplete": "검증 완료!",
+  "@messageVerificationComplete": {
+    "description": "Message to show when verification was completed successfully, and the session has been verified",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptEmojiDoNotMatch": "불일치",
+  "@promptEmojiDoNotMatch": {
+    "description": "Button text to confirm that the emoji do NOT match",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmEmojiMatches": "일치!",
+  "@promptConfirmEmojiMatches": {
+    "description": "Button text to confirm that the emoji matches",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptDelete": "삭제",
+  "@promptDelete": {
+    "description": "Generic prompt to delete something",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptDone": "완료",
+  "@promptDone": {
+    "description": "Generic prompt to confirm that you are done",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptReset": "초기화",
+  "@promptReset": {
+    "description": "Generic prompt to reset something",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptEnable": "활성화",
+  "@promptEnable": {
+    "description": "Generic prompt to enable something",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptRestore": "복원",
+  "@promptRestore": {
+    "description": "Generic prompt to restore something",
+    "type": "text",
+    "placeholders": {}
+  }
+}
