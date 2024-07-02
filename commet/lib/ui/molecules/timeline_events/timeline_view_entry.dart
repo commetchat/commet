@@ -21,17 +21,21 @@ class TimelineViewEntry extends StatefulWidget {
       this.onEventHovered,
       this.setEditingEvent,
       this.setReplyingEvent,
+      this.jumpToEvent,
       this.showDetailed = false,
       this.singleEvent = false,
       this.isThreadTimeline = false,
+      this.highlightedEventId,
       super.key});
   final Timeline timeline;
   final int initialIndex;
   final Function(String eventId)? onEventHovered;
   final Function(TimelineEvent? event)? setReplyingEvent;
   final Function(TimelineEvent? event)? setEditingEvent;
+  final Function(String eventId)? jumpToEvent;
   final bool showDetailed;
   final bool isThreadTimeline;
+  final String? highlightedEventId;
 
   // Should be true if we are showing this event on its own, and not as part of a timeline
   final bool singleEvent;
@@ -54,6 +58,7 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
 
   bool selected = false;
   bool isThreadReply = false;
+  bool highlighted = false;
   LayerLink? timelineLayerLink;
 
   late DateTime time;
@@ -80,6 +85,7 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
     index = eventIndex;
     time = event.originServerTs;
     showDate = shouldEventShowDate(eventIndex);
+    highlighted = event.eventId == widget.highlightedEventId;
   }
 
   bool shouldEventShowDate(int index) {
@@ -204,6 +210,20 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
       );
     }
 
+    if (highlighted) {
+      result = Container(
+        decoration: BoxDecoration(
+            border: Border(
+                left: BorderSide(
+                    color: Theme.of(context).colorScheme.primary, width: 3)),
+            color: Theme.of(context).colorScheme.surfaceContainer),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+          child: result,
+        ),
+      );
+    }
+
     if (timelineLayerLink != null) {
       result = Stack(
         alignment: Alignment.topRight,
@@ -241,6 +261,7 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
               isThreadTimeline: widget.isThreadTimeline,
               detailed: widget.showDetailed || selected,
               overrideShowSender: widget.singleEvent,
+              jumpToEvent: widget.jumpToEvent,
               initialIndex: widget.initialIndex);
       case EventType.roomCreated:
       case EventType.memberJoined:
@@ -271,17 +292,26 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
 
   @override
   void deselect() {
-    setState(() {
-      selected = false;
-      timelineLayerLink = null;
-    });
+    if (mounted)
+      setState(() {
+        selected = false;
+        timelineLayerLink = null;
+      });
   }
 
   @override
   void select(LayerLink link) {
-    setState(() {
-      selected = true;
-      timelineLayerLink = link;
-    });
+    if (mounted)
+      setState(() {
+        selected = true;
+        timelineLayerLink = link;
+      });
+  }
+
+  void setHighlighted(bool value) {
+    if (mounted)
+      setState(() {
+        highlighted = value;
+      });
   }
 }

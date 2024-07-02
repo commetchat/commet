@@ -41,20 +41,25 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
   int recentItemsCount = 0;
   int historyItemsCount = 0;
   bool firstFrame = true;
+  bool animatingToBottom = false;
 
   late ScrollController controller;
   late List<(GlobalKey, String)> eventKeys;
-  bool animatingToBottom = false;
 
   GlobalKey firstFrameScrollViewKey = GlobalKey();
   GlobalKey scrollViewKey = GlobalKey();
   GlobalKey centerKey = GlobalKey();
   GlobalKey recentItemsKey = GlobalKey();
   GlobalKey overlayKey = GlobalKey();
+  GlobalKey stackKey = GlobalKey();
 
   LayerLink selectedEventLayerLink = LayerLink();
   SelectableEventViewWidget? selectedEventView;
 
+  String? highlightedEventId;
+  TimelineViewEntryState? highlightedEventState;
+  GlobalKey? highlightedEventOffstageKey;
+  int? highlightedEventOffstageIndex;
   late List<StreamSubscription> subscriptions;
 
   bool wasLastScrollAttachedToBottom = false;
@@ -81,6 +86,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
         widget.timeline.events
             .map((e) => (GlobalKey(debugLabel: e.eventId), e.eventId)),
         growable: true);
+
     super.initState();
   }
 
@@ -106,9 +112,11 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
     }
 
     if (index == 0) {
-      if (attachedToBottom || animatingToBottom) {
+      if (attachedToBottom) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          animateAndSnapToBottom();
+          controller.animateTo(controller.position.minScrollExtent,
+              duration: const Duration(milliseconds: 500),
+              curve: Curves.easeOutExpo);
         });
 
         widget.markAsRead?.call(widget.timeline.events[0]);
@@ -156,6 +164,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
     if (controller.hasClients) {
       double extent = controller.position.minScrollExtent;
       controller = ScrollController(initialScrollOffset: extent);
+      scrollViewKey = GlobalKey();
       controller.addListener(onScroll);
       widget.onAttachedToBottom?.call();
       setState(() {
@@ -252,6 +261,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
         // onExit: (_) => deselectEvent(),
         child: ClipRect(
           child: Stack(
+            key: stackKey,
             children: [
               Offstage(
                 offstage: firstFrame,
@@ -290,6 +300,8 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
                                 setEditingEvent: widget.setEditingEvent,
                                 setReplyingEvent: widget.setReplyingEvent,
                                 isThreadTimeline: widget.isThreadTimeline,
+                                highlightedEventId: highlightedEventId,
+                                jumpToEvent: jumpToEvent,
                                 initialIndex: timelineIndex),
                           );
                         },
@@ -335,6 +347,8 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
                                 setEditingEvent: widget.setEditingEvent,
                                 setReplyingEvent: widget.setReplyingEvent,
                                 isThreadTimeline: widget.isThreadTimeline,
+                                highlightedEventId: highlightedEventId,
+                                jumpToEvent: jumpToEvent,
                                 initialIndex: timelineIndex),
                           );
                         },
@@ -358,11 +372,96 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
                   key: overlayKey,
                   showMessageMenu: Layout.desktop,
                   jumpToLatest: animateAndSnapToBottom,
-                  link: selectedEventLayerLink)
+                  link: selectedEventLayerLink),
+              if (highlightedEventOffstageIndex != null &&
+                  highlightedEventOffstageKey != null)
+                Offstage(
+                  offstage: true,
+                  child: Column(
+                    children: [
+                      Container(
+                        color: Colors.red,
+                        child: TimelineViewEntry(
+                          key: highlightedEventOffstageKey,
+                          timeline: widget.timeline,
+                          isThreadTimeline: widget.isThreadTimeline,
+                          initialIndex: highlightedEventOffstageIndex!,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
             ],
           ),
         ),
       ),
     );
+  }
+
+  void jumpToEvent(String eventId) {
+    int index =
+        widget.timeline.events.indexWhere((event) => event.eventId == eventId);
+    if (index == -1) {
+      return;
+    }
+
+    if (highlightedEventState?.mounted == true) {
+      highlightedEventState!.setHighlighted(false);
+      highlightedEventState = null;
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      var key = eventKeys[index].$1;
+      final state = key.currentState;
+
+      if (state is TimelineViewEntryState) {
+        state.setHighlighted(true);
+        highlightedEventState = state;
+      }
+
+      var boundsSize = stackKey.globalPaintBounds?.height;
+      var offset = 0.0;
+      if (boundsSize != null) {
+        offset = -(boundsSize / 2);
+      }
+
+      final eventHeight =
+          highlightedEventOffstageKey?.globalPaintBounds?.height;
+      if (eventHeight != null) {
+        Log.d("Measured height of widget: $eventHeight");
+        offset += eventHeight / 2;
+      }
+
+      controller.animateTo(offset,
+          duration: const Duration(milliseconds: 300),
+          curve: Easing.emphasizedDecelerate);
+
+      if (mounted) {
+        setState(() {
+          highlightedEventOffstageIndex = null;
+          highlightedEventOffstageKey = null;
+        });
+      }
+    });
+
+    setState(() {
+      recentItemsCount = index;
+      historyItemsCount = widget.timeline.events.length - recentItemsCount;
+      highlightedEventId = widget.timeline.events[index].eventId;
+      highlightedEventOffstageIndex = index;
+      highlightedEventOffstageKey = GlobalKey();
+    });
+  }
+}
+
+extension GlobalKeyExtension on GlobalKey {
+  Rect? get globalPaintBounds {
+    final renderObject = currentContext?.findRenderObject();
+    final translation = renderObject?.getTransformTo(null).getTranslation();
+    if (translation != null && renderObject?.paintBounds != null) {
+      final offset = Offset(translation.x, translation.y);
+      return renderObject!.paintBounds.shift(offset);
+    } else {
+      return null;
+    }
   }
 }
