@@ -10,6 +10,7 @@ import 'package:commet/ui/molecules/timeline_events/timeline_event_layout.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_menu.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_view_entry.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class RoomTimelineWidgetView extends StatefulWidget {
   const RoomTimelineWidgetView(
@@ -57,7 +58,9 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
   SelectableEventViewWidget? selectedEventView;
 
   String? highlightedEventId;
-
+  TimelineViewEntryState? highlightedEventState;
+  GlobalKey? highlightedEventOffstageKey;
+  int? highlightedEventOffstageIndex;
   late List<StreamSubscription> subscriptions;
 
   bool wasLastScrollAttachedToBottom = false;
@@ -371,6 +374,24 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
                   showMessageMenu: Layout.desktop,
                   jumpToLatest: animateAndSnapToBottom,
                   link: selectedEventLayerLink),
+              if (highlightedEventOffstageIndex != null &&
+                  highlightedEventOffstageKey != null)
+                Offstage(
+                  offstage: true,
+                  child: Column(
+                    children: [
+                      Container(
+                        color: Colors.red,
+                        child: TimelineViewEntry(
+                          key: highlightedEventOffstageKey,
+                          timeline: widget.timeline,
+                          isThreadTimeline: widget.isThreadTimeline,
+                          initialIndex: highlightedEventOffstageIndex!,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
             ],
           ),
         ),
@@ -385,21 +406,51 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
       return;
     }
 
+    if (highlightedEventState?.mounted == true) {
+      highlightedEventState!.setHighlighted(false);
+      highlightedEventState = null;
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      var key = eventKeys[index].$1;
+      final state = key.currentState;
+
+      if (state is TimelineViewEntryState) {
+        state.setHighlighted(true);
+        highlightedEventState = state;
+      }
+
+      var boundsSize = stackKey.globalPaintBounds?.height;
+      var offset = 0.0;
+      if (boundsSize != null) {
+        offset = -(boundsSize / 2);
+      }
+
+      final eventHeight =
+          highlightedEventOffstageKey?.globalPaintBounds?.height;
+      if (eventHeight != null) {
+        Log.d("Measured height of widget: $eventHeight");
+        offset += eventHeight / 2;
+      }
+
+      controller.animateTo(offset,
+          duration: const Duration(milliseconds: 300),
+          curve: Easing.emphasizedDecelerate);
+
+      if (mounted) {
+        setState(() {
+          highlightedEventOffstageIndex = null;
+          highlightedEventOffstageKey = null;
+        });
+      }
+    });
+
     setState(() {
       recentItemsCount = index;
       historyItemsCount = widget.timeline.events.length - recentItemsCount;
       highlightedEventId = widget.timeline.events[index].eventId;
+      highlightedEventOffstageIndex = index;
+      highlightedEventOffstageKey = GlobalKey();
     });
-
-    var boundsSize = stackKey.globalPaintBounds?.height;
-    var offset = 0.0;
-    if (boundsSize != null) {
-      offset = -(boundsSize / 2);
-    }
-
-    controller.animateTo(offset,
-        duration: const Duration(milliseconds: 300),
-        curve: Easing.emphasizedDecelerate);
   }
 }
 

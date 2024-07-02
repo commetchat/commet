@@ -307,4 +307,11 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
         timelineLayerLink = link;
       });
   }
+
+  void setHighlighted(bool value) {
+    if (mounted)
+      setState(() {
+        highlighted = value;
+      });
+  }
 }
