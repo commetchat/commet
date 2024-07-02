@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:commet/client/alert.dart';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/direct_messages/direct_message_aggregator.dart';
+import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/stale_info.dart';
 import 'package:commet/client/tasks/client_connection_status_task.dart';
@@ -26,10 +27,28 @@ class ClientManager {
 
   List<Room> get rooms => _rooms;
 
-  List<Room> get singleRooms => rooms
-      .where(
-          (room) => !spaces.any((space) => space.containsRoom(room.identifier)))
-      .toList();
+  List<Room> get singleRooms {
+    var result = List<Room>.empty(growable: true);
+    for (var client in clients) {
+      var dmComp = client.getComponent<DirectMessagesComponent>();
+
+      for (var room in client.rooms) {
+        if (dmComp != null) {
+          if (dmComp.isRoomDirectMessage(room)) {
+            continue;
+          }
+        }
+
+        if (client.spaces.any((space) => space.containsRoom(room.identifier))) {
+          continue;
+        }
+
+        result.add(room);
+      }
+    }
+
+    return result;
+  }
 
   List<Space> get spaces => _spaces;
 
