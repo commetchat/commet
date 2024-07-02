@@ -25,6 +25,7 @@ class TimelineViewEntry extends StatefulWidget {
       this.showDetailed = false,
       this.singleEvent = false,
       this.isThreadTimeline = false,
+      this.highlightedEventId,
       super.key});
   final Timeline timeline;
   final int initialIndex;
@@ -34,6 +35,7 @@ class TimelineViewEntry extends StatefulWidget {
   final Function(String eventId)? jumpToEvent;
   final bool showDetailed;
   final bool isThreadTimeline;
+  final String? highlightedEventId;
 
   // Should be true if we are showing this event on its own, and not as part of a timeline
   final bool singleEvent;
@@ -83,6 +85,7 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
     index = eventIndex;
     time = event.originServerTs;
     showDate = shouldEventShowDate(eventIndex);
+    highlighted = event.eventId == widget.highlightedEventId;
   }
 
   bool shouldEventShowDate(int index) {
@@ -215,7 +218,7 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
                     color: Theme.of(context).colorScheme.primary, width: 3)),
             color: Theme.of(context).colorScheme.surfaceContainer),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(-3, 0, 0, 0),
+          padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
           child: result,
         ),
       );
@@ -303,11 +306,5 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
         selected = true;
         timelineLayerLink = link;
       });
-  }
-
-  void setHighlighted(bool value) {
-    setState(() {
-      highlighted = value;
-    });
   }
 }
