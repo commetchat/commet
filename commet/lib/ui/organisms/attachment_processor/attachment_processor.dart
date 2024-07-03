@@ -61,6 +61,12 @@ class _AttachmentProcessorState extends State<AttachmentProcessor> {
     super.initState();
   }
 
+  @override
+  void dispose() {
+    videoController?.pause();
+    super.dispose();
+  }
+
   void loadExif() async {
     late Map<String, IfdTag> data;
     if (widget.attachment.data != null) {

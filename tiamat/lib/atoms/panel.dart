@@ -83,7 +83,11 @@ class Panel extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(8, 8, 0, 0),
               child: Align(
                   alignment: Alignment.centerLeft,
-                  child: tiamat.Text.labelLow(header!)),
+                  child: tiamat.Text.labelLow(
+                    header!,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  )),
             ),
           if (header != null)
             Padding(

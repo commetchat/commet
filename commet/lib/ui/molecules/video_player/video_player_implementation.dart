@@ -111,6 +111,6 @@ class _VideoPlayerImplementationState extends State<VideoPlayerImplementation> {
     }
 
     return Size(
-        player.state.height!.toDouble(), player.state.width!.toDouble());
+        player.state.width!.toDouble(), player.state.height!.toDouble());
   }
 }
