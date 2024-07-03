@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/ui/atoms/dot_indicator.dart';
 import 'package:commet/ui/atoms/notification_badge.dart';
@@ -38,8 +39,12 @@ class _RoomTextButtonState extends State<RoomTextButton> {
 
   @override
   Widget build(BuildContext context) {
-    IconData icon =
-        widget.room.isDirectMessage ? Icons.alternate_email : Icons.tag;
+    var isDm = widget.room.client
+            .getComponent<DirectMessagesComponent>()
+            ?.isRoomDirectMessage(widget.room) ??
+        false;
+
+    IconData icon = isDm ? Icons.alternate_email : Icons.tag;
 
     var color = Theme.of(context).colorScheme.secondary;
 

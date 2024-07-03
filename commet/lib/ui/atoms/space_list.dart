@@ -14,12 +14,14 @@ class SpaceList extends StatefulWidget {
       this.onChildAdded,
       this.onChildRemoved,
       this.onChildUpdated,
+      this.isTopLevel = true,
       super.key});
   final Function(Room room)? onRoomSelected;
 
   final Stream<void>? onChildAdded;
   final Stream<void>? onChildRemoved;
   final Stream<void>? onChildUpdated;
+  final bool isTopLevel;
 
   final Space space;
 
@@ -33,15 +35,12 @@ class _SpaceListState extends State<SpaceList> {
   late List<StreamSubscription> subs;
 
   Room? selectedRoom;
-  bool topLevel = false;
-
   String get labelRoomsList => Intl.message("Rooms",
       desc: "Header label for the list of rooms", name: "labelRoomsList");
 
   @override
   void initState() {
     subSpaces = widget.space.subspaces;
-    topLevel = widget.space.isTopLevel;
     EventBus.onSelectedRoomChanged.stream.listen(onRoomSelected);
 
     subs = [
@@ -88,7 +87,7 @@ class _SpaceListState extends State<SpaceList> {
       children: [
         if (subSpaces.isNotEmpty)
           Padding(
-              padding: const EdgeInsets.fromLTRB(0, 12, 0, 0),
+              padding: EdgeInsets.fromLTRB(0, widget.isTopLevel ? 12 : 0, 0, 0),
               child: ImplicitlyAnimatedList(
                 itemData: subSpaces,
                 shrinkWrap: true,
@@ -105,6 +104,7 @@ class _SpaceListState extends State<SpaceList> {
                           padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
                           child: SpaceList(
                             data,
+                            isTopLevel: false,
                             onRoomSelected: widget.onRoomSelected,
                           ),
                         )
@@ -117,7 +117,7 @@ class _SpaceListState extends State<SpaceList> {
   }
 
   Widget roomsList() {
-    if (topLevel) {
+    if (widget.isTopLevel) {
       return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Padding(
           padding: const EdgeInsets.all(8.0),
