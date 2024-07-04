@@ -18,12 +18,21 @@ class MatrixSpaceRoomChunkPreview implements RoomPreview {
   @override
   String? get topic => chunk.topic;
 
+  @override
+  late RoomPreviewType type;
+
   MatrixSpaceRoomChunkPreview(this.chunk, this.matrixClient) {
     avatar = chunk.avatarUrl != null
         ? NetworkImage(chunk.avatarUrl!
             .getThumbnail(matrixClient, width: 60, height: 60)
             .toString())
         : null;
+
+    if (chunk.roomType == "m.space") {
+      type = RoomPreviewType.space;
+    } else {
+      type = RoomPreviewType.room;
+    }
   }
 
   @override
