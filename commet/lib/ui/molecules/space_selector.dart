@@ -69,6 +69,8 @@ class _SpaceSelectorState extends State<SpaceSelector> {
                     ImplicitlyAnimatedList(
                       itemData: widget.spaces,
                       shrinkWrap: true,
+                      initialAnimation: false,
+                      padding: const EdgeInsets.all(0),
                       physics: const NeverScrollableScrollPhysics(),
                       itemBuilder: (context, data) {
                         return buildSpaceIcon(

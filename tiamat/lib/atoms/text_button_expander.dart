@@ -86,7 +86,7 @@ class TextButtonExpander extends StatelessWidget {
     this.avatarPlaceholderText,
     this.enabled = true,
     this.childrenPadding = const EdgeInsets.fromLTRB(8, 0, 0, 0),
-    this.textPadding = const EdgeInsets.fromLTRB(8, 0, 0, 0),
+    this.textPadding = const EdgeInsets.fromLTRB(0, 0, 0, 0),
   });
 
   final List<Widget> children;
