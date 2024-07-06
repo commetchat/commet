@@ -128,7 +128,9 @@ class MatrixTimeline extends Timeline {
   @override
   Future<void> deleteEvent(TimelineEvent event) async {
     var matrixEvent = await _matrixTimeline!.getEventById(event.eventId);
-    if (await matrixEvent?.remove() == false) {
+    if (event.status == TimelineEventStatus.error) {
+      await matrixEvent?.cancelSend();
+    } else {
       await _matrixRoom.redactEvent(event.eventId);
     }
   }

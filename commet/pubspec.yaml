@@ -30,8 +30,8 @@ dependencies:
   just_the_tooltip: ^0.0.12
   matrix:
     git: 
-      url: https://github.com/Airyzz/matrix-dart-sdk.git
-      ref: krille/background-client
+      url: https://github.com/commetchat/matrix-dart-sdk.git
+      ref: main
   media_kit: ^1.1.7
   media_kit_libs_video: ^1.0.1
   media_kit_video: ^1.1.8
@@ -74,7 +74,9 @@ dependencies:
   tiamat: 
     path: ../tiamat/
   matrix_dart_sdk_drift_db:
-    git: https://github.com/commetchat/matrix-dart-sdk-drift-db.git
+    git:
+      url: https://github.com/commetchat/matrix-dart-sdk-drift-db.git
+      ref: update-matrix-sdk
   encrypted_url_preview: 
     git: https://github.com/commetchat/encrypted_url_preview.git
   signal_sticker_api: 

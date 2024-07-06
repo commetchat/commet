@@ -33,9 +33,9 @@ class MatrixEmoticonPersonalStateManager implements MatrixEmoticonStateManager {
       onStateChangedController.add(null);
     });
 
-    mx.onAccountData.stream.listen((event) {
-      onStateChangedController.add(null);
-    });
+    mx.onSync.stream
+        .where((e) => e.accountData != null)
+        .listen((_) => onStateChangedController.add(null));
   }
 
   @override
@@ -76,7 +76,7 @@ class MatrixEmoticonRoomStateManager implements MatrixEmoticonStateManager {
     mx.onRoomState.stream
         .where((event) =>
             event.roomId == room.id &&
-            event.type == MatrixEmoticonComponent.roomEmotesStateKey)
+            event.state.type == MatrixEmoticonComponent.roomEmotesStateKey)
         .listen((event) {
       onStateChangedController.add(null);
     });
@@ -90,7 +90,7 @@ class MatrixEmoticonRoomStateManager implements MatrixEmoticonStateManager {
       return {};
 
     var state = (room.states[MatrixEmoticonComponent.roomEmotesStateKey]
-        as Map<String, matrix.Event>);
+        as Map<String, matrix.StrippedStateEvent>);
 
     var result = <String, dynamic>{};
 
