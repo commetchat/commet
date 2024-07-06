@@ -74,7 +74,7 @@ class _VoipDebugMatrixClientState extends State<VoipDebugMatrixClient> {
                   "Your homeserver (${widget.client.getMatrixClient().homeserver}) does not have a TURN server configured",
               titleGetter: () => "TURN Error")),
         tiamat.Panel(
-          mode: tiamat.TileType.surfaceLow1,
+          mode: tiamat.TileType.surfaceContainerLow,
           header: "TURN Server (Homeserver Configuration)",
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -121,7 +121,7 @@ class _VoipDebugMatrixClientState extends State<VoipDebugMatrixClient> {
     return Column(
       children: [
         tiamat.Panel(
-          mode: tiamat.TileType.surfaceLow2,
+          mode: tiamat.TileType.surfaceContainerLow,
           header: "Connection Test",
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -130,7 +130,7 @@ class _VoipDebugMatrixClientState extends State<VoipDebugMatrixClient> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
                   child: tiamat.Panel(
-                    mode: tiamat.TileType.surfaceLow3,
+                    mode: tiamat.TileType.surfaceContainerLow,
                     header: "Connecting with config:",
                     child: tiamat.Text.tiny(const JsonEncoder.withIndent('  ')
                         .convert(connectionConfiguration!)
@@ -141,7 +141,7 @@ class _VoipDebugMatrixClientState extends State<VoipDebugMatrixClient> {
               if (foundCandidates.isNotEmpty)
                 tiamat.Panel(
                   header: "Candidates",
-                  mode: tiamat.TileType.surfaceLow3,
+                  mode: tiamat.TileType.surfaceContainerLowest,
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -164,7 +164,7 @@ class _VoipDebugMatrixClientState extends State<VoipDebugMatrixClient> {
                   padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
                   child: tiamat.Panel(
                       header: "Offer",
-                      mode: tiamat.TileType.surfaceLow3,
+                      mode: tiamat.TileType.surfaceContainerLowest,
                       child: tiamat.Text.tiny(description!.sdp ?? "")),
                 )
             ],

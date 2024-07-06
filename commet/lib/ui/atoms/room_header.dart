@@ -31,25 +31,27 @@ class RoomHeader extends StatelessWidget {
           padding: const EdgeInsets.all(10.0),
           child: Row(
             children: [
-              Row(
-                children: [
-                  SizedBox(
-                      width: 40,
-                      height: 40,
-                      child: Icon(
-                        isDirectMessage
-                            ? m.Icons.alternate_email_rounded
-                            : m.Icons.tag,
-                      )),
-                  Flexible(
-                    child: m.Text(
-                      room.displayName,
-                      style: m.Theme.of(context).textTheme.titleMedium,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+              Flexible(
+                child: Row(
+                  children: [
+                    SizedBox(
+                        width: 40,
+                        height: 40,
+                        child: Icon(
+                          isDirectMessage
+                              ? m.Icons.alternate_email_rounded
+                              : m.Icons.tag,
+                        )),
+                    Flexible(
+                      child: m.Text(
+                        room.displayName,
+                        style: m.Theme.of(context).textTheme.titleMedium,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               if (showCallButton)
                 Padding(

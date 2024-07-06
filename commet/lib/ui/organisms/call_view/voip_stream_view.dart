@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
+import 'package:commet/client/member.dart';
 import 'package:commet/client/peer.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -26,15 +27,15 @@ class VoipStreamView extends StatefulWidget {
 
 class _VoipStreamViewState extends State<VoipStreamView>
     with TickerProviderStateMixin {
-  late Peer user;
+  late Member user;
 
   late AnimationController audioLevel;
 
   @override
   void initState() {
     Timer.periodic(const Duration(milliseconds: 200), timer);
-
-    user = widget.session.client.getPeer(widget.stream.streamUserId);
+    var room = widget.session.client.getRoom(widget.session.roomId)!;
+    user = room.getMemberOrFallback(widget.stream.streamUserId);
     audioLevel = AnimationController(vsync: this);
     super.initState();
   }

@@ -34,7 +34,7 @@ class _VoipSettingsPage extends State<VoipSettingsPage> {
     return Column(
       children: [
         tiamat.Panel(
-          mode: tiamat.TileType.surfaceLow2,
+          mode: tiamat.TileType.surfaceContainerLow,
           header: "Call Connection",
           child: SettingsEntryBool(
             preferences.useFallbackTurnServer,
@@ -49,7 +49,7 @@ class _VoipSettingsPage extends State<VoipSettingsPage> {
             padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
             child: tiamat.Panel(
               header: "WebRTC Debug Menu",
-              mode: tiamat.TileType.surfaceLow1,
+              mode: tiamat.TileType.surfaceContainerLow,
               child: VoipDebugSettings(),
             ),
           ),

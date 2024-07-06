@@ -33,10 +33,11 @@ class SidebarCallIconView extends StatelessWidget {
             placeholderText: roomName,
             onTap: onTap,
             image: avatar,
-            boxBorder: Border.all(
-                color: getBorderColor(context),
-                width: 3,
-                strokeAlign: BorderSide.strokeAlignCenter),
+            // TODO: REIMPLEMENT BORDER
+            // boxBorder: Border.all(
+            // color: getBorderColor(context),
+            // width: 3,
+            // strokeAlign: BorderSide.strokeAlignCenter),
           ),
         ),
       ),

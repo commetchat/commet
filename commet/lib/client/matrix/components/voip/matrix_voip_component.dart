@@ -11,7 +11,6 @@ import 'package:commet/client/matrix/matrix_timeline_event.dart';
 import 'package:commet/client/timeline.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/main.dart';
-import 'package:commet/ui/atoms/generic_room_event.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/pages/settings/categories/app/voip_settings/voip_turn_fallback_dialog.dart';
 import 'package:flutter/material.dart';
@@ -89,28 +88,28 @@ class MatrixVoipComponent
       return null;
     }
 
-    switch (event.event.type) {
-      case mx.EventTypes.CallHangup:
-        return GenericRoomEvent(
-          "$senderName left the call",
-          icon: Icons.call_end,
-        );
-      case mx.EventTypes.CallReject:
-        return GenericRoomEvent(
-          "$senderName rejected the call",
-          icon: Icons.call_end,
-        );
-      case mx.EventTypes.CallInvite:
-        return GenericRoomEvent(
-          "$senderName started a call",
-          icon: Icons.call_end,
-        );
-      case mx.EventTypes.CallAnswer:
-        return GenericRoomEvent(
-          "$senderName answered the call",
-          icon: Icons.call,
-        );
-    }
+    // switch (event.event.type) {
+    //   case mx.EventTypes.CallHangup:
+    //     return  GenericRoomEvent(
+    //       "$senderName left the call",
+    //       icon: Icons.call_end,
+    //     );
+    //   case mx.EventTypes.CallReject:
+    //     return GenericRoomEvent(
+    //       "$senderName rejected the call",
+    //       icon: Icons.call_end,
+    //     );
+    //   case mx.EventTypes.CallInvite:
+    //     return GenericRoomEvent(
+    //       "$senderName started a call",
+    //       icon: Icons.call_end,
+    //     );
+    //   case mx.EventTypes.CallAnswer:
+    //     return GenericRoomEvent(
+    //       "$senderName answered the call",
+    //       icon: Icons.call,
+    //     );
+    // }
 
     return Text(event.event.type);
   }
