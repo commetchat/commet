@@ -19,7 +19,7 @@ class ShortcutsManager {
     if (PlatformUtils.isAndroid) {
       shortcuts = FlutterShortcuts();
       loading = shortcuts!.initialize(debug: true);
-      EventBus.onRoomOpened.stream.listen(onRoomOpenedInUI);
+      EventBus.onSelectedRoomChanged.stream.listen(onRoomOpenedInUI);
     }
   }
 
@@ -38,21 +38,26 @@ class ShortcutsManager {
                 roomId: room.identifier, clientId: room.client.identifier)
             .toString(),
         shortLabel: room.displayName,
-        icon: cachedAvatar.toFilePath(),
+        icon: cachedAvatar?.toFilePath(),
         shortcutIconAsset: ShortcutIconAsset.fileAsset,
         conversationShortcut: true);
-    shortcuts?.pushShortcutItem(shortcut: item);
+
+    await shortcuts?.pushShortcutItem(shortcut: item);
   }
 
   Future<void> clearAllShortcuts() async {
     await shortcuts?.clearShortcutItems();
   }
 
-  void onRoomOpenedInUI(Room event) async {
+  void onRoomOpenedInUI(Room? event) async {
+    if (event == null) {
+      return;
+    }
+
     await createShortcutForRoom(event);
   }
 
-  static Future<Uri> getCachedAvatarImage(
+  static Future<Uri?> getCachedAvatarImage(
       {required Color placeholderColor,
       required String placeholderText,
       required String identifier,
@@ -93,7 +98,7 @@ class ShortcutsManager {
         .buffer
         .asUint8List();
 
-    cachedAvatar = await fileCache!.putFile(avatarId, bytes);
+    cachedAvatar = await fileCache?.putFile(avatarId, bytes);
 
     return cachedAvatar;
   }

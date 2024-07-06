@@ -1,3 +1,4 @@
+import 'package:tiamat/config/style/theme_base.dart';
 import 'package:tiamat/config/style/theme_common.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:flutter/material.dart';
@@ -5,7 +6,15 @@ import 'package:flutter/material.dart';
 class ThemeLightColors {
   static const Color surfaceHigh1 = Color.fromARGB(255, 245, 245, 245);
   static const Color primary = Color.fromARGB(255, 106, 141, 255);
-  static const Color surface = Color.fromARGB(255, 255, 255, 255);
+  static const Color surface = Color.fromARGB(255, 245, 250, 251);
+  static const Color surfaceContainer = Color.fromARGB(255, 233, 239, 240);
+  static const Color surfaceContainerLow = Color.fromARGB(255, 239, 245, 246);
+  static const Color surfaceContainerLowest =
+      Color.fromARGB(255, 255, 255, 255);
+  static const Color surfaceContainerHigh = Color.fromARGB(255, 227, 233, 234);
+  static const Color surfaceContainerHighest =
+      Color.fromARGB(255, 222, 227, 229);
+
   static const Color secondary = Color.fromARGB(255, 90, 90, 90);
   static const Color surfaceLow1 = Color.fromARGB(255, 245, 245, 245);
   static const Color surfaceLow2 = Color.fromARGB(255, 240, 240, 240);
@@ -17,64 +26,21 @@ class ThemeLightColors {
 }
 
 class ThemeLight {
-  static ThemeData get theme => ThemeData(
-      brightness: Brightness.light,
-      useMaterial3: true,
-      fontFamily: "RobotoCustom",
-      fontFamilyFallback: ThemeCommon.fontFamilyFallback(),
-      extensions: const <ThemeExtension<dynamic>>[
-        ExtraColors(
-            surfaceHigh1: ThemeLightColors.surfaceHigh1,
-            surfaceLow1: ThemeLightColors.surfaceLow1,
-            surfaceLow2: ThemeLightColors.surfaceLow2,
-            surfaceLow3: ThemeLightColors.surfaceLow3,
-            surfaceLow4: ThemeLightColors.surfaceLow4,
-            highlight: ThemeLightColors.highlightColor,
-            outline: ThemeLightColors.outlineColor,
-            codeHighlight: Color(0xffa626a4)),
-        ThemeSettings(frosted: false)
-      ],
-      colorScheme: ColorScheme(
-        primary: const Color.fromARGB(255, 106, 141, 255),
-        secondary: ThemeLightColors.secondary,
-        surface: ThemeLightColors.surface,
-        background: ThemeLightColors.surfaceLow4,
-        error: const Color.fromARGB(255, 255, 91, 91),
-        onPrimary: ThemeLightColors.onSurface,
-        onSecondary: ThemeLightColors.onSurface,
-        onSurface: ThemeLightColors.onSurface,
-        onBackground: ThemeLightColors.onSurface,
-        onError: Colors.white,
+  static ThemeData get theme {
+    var scheme = ColorScheme.fromSeed(
+        seedColor: Colors.white,
         brightness: Brightness.light,
-      ),
-      shadowColor: Colors.black.withAlpha(100),
-      sliderTheme: SliderThemeData(
-          inactiveTrackColor: ThemeLightColors.primary.withAlpha(100)),
-      listTileTheme: const ListTileThemeData(
-        tileColor: ThemeLightColors.surface,
-      ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ButtonStyle(
-              backgroundColor:
-                  MaterialStatePropertyAll(ThemeLightColors.primary),
-              shape: MaterialStatePropertyAll(
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-              ))),
-      iconTheme: const IconThemeData(color: ThemeLightColors.secondary),
-      dividerColor: ThemeLightColors.outlineColor,
-      dividerTheme:
-          const DividerThemeData(color: ThemeLightColors.outlineColor),
-      dialogTheme: const DialogTheme(
-          backgroundColor: ThemeLightColors.surface, shadowColor: Colors.black),
-      textButtonTheme: TextButtonThemeData(
-          style: ButtonStyle(
-        overlayColor: const MaterialStatePropertyAll<Color>(Colors.black12),
-        foregroundColor:
-            const MaterialStatePropertyAll<Color>(ThemeLightColors.secondary),
-        shape: MaterialStatePropertyAll<OutlinedBorder>(
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-        textStyle: const MaterialStatePropertyAll<TextStyle>(
-          TextStyle(color: Colors.white),
-        ),
-      )));
+        primaryContainer: ThemeLightColors.primary,
+        onPrimaryContainer: Colors.white,
+        outline: Colors.white,
+        primary: ThemeLightColors.primary);
+
+    return ThemeBase.theme(scheme).copyWith(extensions: [
+      const ThemeSettings(),
+      FoundationSettings(color: scheme.surfaceDim),
+      const ExtraColors(
+          codeHighlight: Color(0xffc678dd),
+          linkColor: Color.fromARGB(255, 80, 80, 255))
+    ]);
+  }
 }

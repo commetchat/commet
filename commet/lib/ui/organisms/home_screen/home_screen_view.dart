@@ -1,6 +1,6 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
-import 'package:commet/client/invitation.dart';
+import 'package:commet/client/components/invitation/invitation.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/atoms/room_panel.dart';
 import 'package:commet/ui/molecules/alert_view.dart';
@@ -53,24 +53,34 @@ class HomeScreenView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
+    return Column(
       children: [
-        if (clientManager.alertManager.alerts.isNotEmpty) alerts(),
-        if (invitations?.isNotEmpty == true) invitationsList(),
-        recentRooms(),
-        roomsList(context)
-      ]
-          .map((e) => Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                child: e,
-              ))
-          .toList(),
+        if (clientManager.alertManager.alerts.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 0, 0, 12),
+            child: alerts(),
+          ),
+        if (invitations?.isNotEmpty == true)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 0, 0, 12),
+            child: invitationsList(),
+          ),
+        if (recentActivity?.isNotEmpty == true)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 0, 0, 12),
+            child: recentRooms(),
+          ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(0, 0, 0, 12),
+          child: roomsList(context),
+        )
+      ],
     );
   }
 
   Widget alerts() {
     return Panel(
-        mode: TileType.surfaceLow2,
+        mode: TileType.surfaceContainerLow,
         header: labelHomeAlerts,
         child: ImplicitlyAnimatedList(
           shrinkWrap: true,
@@ -99,7 +109,9 @@ class HomeScreenView extends StatelessWidget {
               color: room.defaultColor,
               body: room.lastEvent?.body,
               recentEventSender: room.lastEvent != null
-                  ? room.client.getPeer(room.lastEvent!.senderId).displayName
+                  ? room
+                      .getMemberOrFallback(room.lastEvent!.senderId)
+                      .displayName
                   : null,
               recentEventSenderColor: room.lastEvent != null
                   ? room.getColorOfUser(room.lastEvent!.senderId)
@@ -136,8 +148,8 @@ class HomeScreenView extends StatelessWidget {
                   color: room.defaultColor,
                   body: room.lastEvent?.body,
                   recentEventSender: room.lastEvent != null
-                      ? room.client
-                          .getPeer(room.lastEvent!.senderId)
+                      ? room
+                          .getMemberOrFallback(room.lastEvent!.senderId)
                           .displayName
                       : null,
                   recentEventSenderColor: room.lastEvent != null
@@ -166,7 +178,7 @@ class HomeScreenView extends StatelessWidget {
 
   Widget invitationsList() {
     return Panel(
-        mode: TileType.surfaceLow1,
+        mode: TileType.surfaceContainer,
         header: labelHomeInvitations,
         child: ImplicitlyAnimatedList(
           physics: const NeverScrollableScrollPhysics(),

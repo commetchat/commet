@@ -54,8 +54,13 @@ class AddSpaceOrRoom extends StatefulWidget {
 }
 
 class AddSpaceOrRoomState extends State<AddSpaceOrRoom> {
+  bool loading = false;
+
   Future<void> create(Client client, String name, RoomVisibility visibility,
       bool enableE2EE) async {
+    setState(() {
+      loading = true;
+    });
     switch (widget.mode) {
       case AddSpaceOrRoomMode.createOrJoinSpace:
         await widget.createSpace?.call(client, name, visibility, enableE2EE);
@@ -72,6 +77,9 @@ class AddSpaceOrRoomState extends State<AddSpaceOrRoom> {
   }
 
   Future<void> join(Client client, String address) async {
+    setState(() {
+      loading = true;
+    });
     switch (widget.mode) {
       case AddSpaceOrRoomMode.createOrJoinSpace:
         await widget.joinSpace?.call(client, address);
@@ -97,10 +105,16 @@ class AddSpaceOrRoomState extends State<AddSpaceOrRoom> {
       roomMode: widget.mode == AddSpaceOrRoomMode.createOrJoinRoom ||
           widget.mode == AddSpaceOrRoomMode.createOrExistingRoom,
       rooms: widget.eligibleRooms,
+      loading: loading,
       initialPhase: widget.mode == AddSpaceOrRoomMode.createOrExistingRoom
           ? AddSpaceOrRoomPhase.askCreateOrExisting
           : null,
-      onRoomsSelected: widget.onRoomsSelected,
+      onRoomsSelected: (rooms) {
+        setState(() {
+          loading = true;
+        });
+        widget.onRoomsSelected?.call(rooms);
+      },
     );
   }
 }

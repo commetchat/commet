@@ -1,44 +1,27 @@
 import 'package:commet/client/client.dart';
-import 'package:commet/client/matrix/matrix_client.dart';
-import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
+
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
-class MatrixPeer extends Peer {
-  late matrix.Client _matrixClient;
+class MatrixPeer implements Peer {
+  late matrix.User matrixUser;
 
-  MatrixPeer(MatrixClient client, matrix.Client matrixClient, String userId) {
-    _matrixClient = matrixClient;
-    identifier = userId;
-    displayName = userId.split(":").first.substring(1);
-    this.client = client;
-    loading = init();
-  }
+  @override
+  ImageProvider<Object>? avatar;
 
-  Future<void> init() async {
-    String? name;
+  @override
+  String? detail;
 
-    try {
-      name = await _matrixClient.getDisplayName(identifier);
-    } catch (_) {}
-    if (name != null) displayName = name;
+  @override
+  String get displayName => matrixUser.calcDisplayname();
 
-    userName = identifier.split('@').last.split(':').first;
-    detail = identifier.split(':').last;
+  @override
+  String get identifier => matrixUser.id;
 
-    await refreshAvatar();
-  }
+  @override
+  String get userName => matrixUser.id;
 
-  Future<void> refreshAvatar() async {
-    Uri? avatarUrl;
-    try {
-      avatarUrl = await _matrixClient.getAvatarUrl(identifier);
-    } catch (_) {}
-
-    if (avatarUrl != null) {
-      avatar = MatrixMxcImage(avatarUrl, _matrixClient, autoLoadFullRes: false);
-    }
-  }
+  MatrixPeer(this.matrixUser);
 
   // Matching color calculation that other clients use. Element, Cinny, Etc.
   // https://github.com/cinnyapp/cinny/blob/dev/src/util/colorMXID.js

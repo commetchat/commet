@@ -31,7 +31,7 @@ class MatrixGifComponent implements GifComponent<MatrixClient, MatrixRoom> {
     if (!preferences.tenorGifSearchEnabled) return [];
 
     var uri = Uri.https(
-        preferences.gifProxyUrl, "/proxy/tenor/api/v2/search", {"q": query});
+        preferences.proxyUrl, "/proxy/tenor/api/v2/search", {"q": query});
 
     var result = await http.get(uri);
     if (result.statusCode == 200) {
@@ -121,7 +121,7 @@ class MatrixGifComponent implements GifComponent<MatrixClient, MatrixRoom> {
     var uri = Uri.parse(url);
 
     var proxyUri =
-        Uri.https(preferences.gifProxyUrl, "/proxy/tenor/media${uri.path}");
+        Uri.https(preferences.proxyUrl, "/proxy/tenor/media${uri.path}");
 
     return proxyUri;
   }

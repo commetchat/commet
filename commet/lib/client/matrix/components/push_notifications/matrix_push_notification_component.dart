@@ -2,6 +2,7 @@ import 'package:commet/client/components/push_notification/notification_manager.
 import 'package:commet/client/components/push_notification/push_notification_component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:matrix/matrix.dart';
 
@@ -17,6 +18,8 @@ class MatrixPushNotificationComponent
       String pushKey, Uri pushServer, String deviceName,
       {Map<String, dynamic>? extraData}) async {
     var matrixClient = client.getMatrixClient();
+
+    Log.i("Current push key: $pushKey");
 
     var pushers = await matrixClient.getPushers();
 

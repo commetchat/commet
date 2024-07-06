@@ -117,23 +117,27 @@ class DropdownSelector<T> extends StatefulWidget {
       this.itemHeight = 50,
       this.onItemSelected,
       this.defaultIndex = 0,
+      this.hint,
       super.key});
   final List<T> items;
   final Widget Function(T item) itemBuilder;
   final void Function(T item)? onItemSelected;
-  final int defaultIndex;
+  final int? defaultIndex;
   final double itemHeight;
+  final Widget? hint;
 
   @override
-  State<DropdownSelector<T>> createState() => _DropdownSelectorState<T>();
+  State<DropdownSelector<T>> createState() => DropdownSelectorState<T>();
 }
 
-class _DropdownSelectorState<T> extends State<DropdownSelector<T>> {
-  late T value;
+class DropdownSelectorState<T> extends State<DropdownSelector<T>> {
+  T? value;
 
   @override
   void initState() {
-    value = widget.items[widget.defaultIndex];
+    if (widget.defaultIndex != null) {
+      value = widget.items[widget.defaultIndex!];
+    }
     super.initState();
   }
 
@@ -145,8 +149,7 @@ class _DropdownSelectorState<T> extends State<DropdownSelector<T>> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
           side: BorderSide(
-              color: Theme.of(context).extension<ExtraColors>()!.outline,
-              width: 1.4),
+              color: Theme.of(context).colorScheme.outline, width: 1.4),
         ),
         color: Colors.transparent,
         child: LayoutBuilder(
@@ -155,14 +158,13 @@ class _DropdownSelectorState<T> extends State<DropdownSelector<T>> {
               child: DropdownButton2(
             menuItemStyleData: MenuItemStyleData(height: widget.itemHeight),
             value: value,
+            hint: widget.hint,
             dropdownStyleData: DropdownStyleData(
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.only(
                         bottomRight: Radius.circular(10),
                         bottomLeft: Radius.circular(10)),
-                    color: Theme.of(context)
-                        .extension<ExtraColors>()!
-                        .surfaceHigh1)),
+                    color: Theme.of(context).colorScheme.surfaceContainerHigh)),
             items: widget.items.map((value) {
               return DropdownMenuItem(
                 alignment: Alignment.centerLeft,

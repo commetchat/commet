@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:commet/utils/background_tasks/background_task_manager.dart';
 import 'package:flutter/material.dart';
-import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class BackgroundTaskView extends StatefulWidget {
@@ -14,10 +13,18 @@ class BackgroundTaskView extends StatefulWidget {
 }
 
 class _BackgroundTaskViewState extends State<BackgroundTaskView> {
+  StreamSubscription? sub;
+
   @override
   void initState() {
     super.initState();
-    widget.manager.onListUpdate.listen(onTaskListUpdated);
+    sub = widget.manager.onListUpdate.listen(onTaskListUpdated);
+  }
+
+  @override
+  void dispose() {
+    sub?.cancel();
+    super.dispose();
   }
 
   @override
@@ -33,7 +40,7 @@ class _BackgroundTaskViewState extends State<BackgroundTaskView> {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(8),
           child: Container(
-            color: Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+            color: Theme.of(context).colorScheme.surfaceContainerHigh,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.start,
@@ -74,14 +81,20 @@ class __SingleBackgroundTaskViewState extends State<_SingleBackgroundTaskView> {
   @override
   void initState() {
     status = widget.task.status;
-    completeSubscription = widget.task.completed.listen((event) {
+    completeSubscription = widget.task.statusChanged.listen((event) {
       onTaskComplete();
     });
-    if (widget.task is BackgroundTaskWithProgress) {
-      var progressTask = (widget.task as BackgroundTaskWithProgress);
+    if (widget.task is BackgroundTaskWithIntegerProgress) {
+      var progressTask = (widget.task as BackgroundTaskWithIntegerProgress);
       progressSubscription = progressTask.onProgress.listen(onTaskProgressed);
 
       progress = progressTask.current / progressTask.total;
+    }
+
+    if (widget.task is BackgroundTaskWithOptionalProgress) {
+      var task = (widget.task as BackgroundTaskWithOptionalProgress);
+      progress = task.progress;
+      progressSubscription = task.statusChanged.listen(onOptionalProgress);
     }
     super.initState();
   }
@@ -144,7 +157,14 @@ class __SingleBackgroundTaskViewState extends State<_SingleBackgroundTaskView> {
 
   void onTaskProgressed(int event) {
     setState(() {
-      progress = event / (widget.task as BackgroundTaskWithProgress).total;
+      progress =
+          event / (widget.task as BackgroundTaskWithIntegerProgress).total;
+    });
+  }
+
+  void onOptionalProgress(void event) {
+    setState(() {
+      progress = (widget.task as BackgroundTaskWithOptionalProgress).progress;
     });
   }
 }

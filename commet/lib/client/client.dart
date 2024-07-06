@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:commet/client/auth.dart';
 import 'package:commet/client/components/component.dart';
-import 'package:commet/client/invitation.dart';
+import 'package:commet/client/profile.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/client/space.dart';
+import 'package:commet/utils/stored_stream_controller.dart';
 import 'package:flutter/material.dart';
 
 import 'peer.dart';
@@ -20,18 +22,28 @@ enum LoginType {
   token,
 }
 
-enum LoginResult { success, failed, error, alreadyLoggedIn }
+class ClientConnectionStatusUpdate {
+  ClientConnectionStatus status;
+  double? progress;
+
+  ClientConnectionStatusUpdate(this.status);
+}
+
+enum ClientConnectionStatus {
+  unknown,
+  connected,
+  connecting,
+  disconnected,
+}
+
+enum LoginResult { success, failed, error, alreadyLoggedIn, cancelled }
 
 abstract class Client {
-  Future<LoginResult> login(
-      LoginType type, String userIdentifier, String server,
-      {String? password, String? token});
-
   /// Local identifier for this client instance
   String get identifier;
 
   /// The Peer owned by the current user session
-  Peer? self;
+  Profile? self;
 
   ValueKey get key => ValueKey(identifier);
 
@@ -40,9 +52,6 @@ abstract class Client {
 
   /// Max size in bytes for uploaded files
   int? get maxFileSize;
-
-  /// Gets a list of rooms which are direct messages between two users
-  List<Room> get directMessages;
 
   /// Gets a list of rooms which do not belong to any spaces
   List<Room> get singleRooms;
@@ -55,9 +64,6 @@ abstract class Client {
 
   /// Gets list of all currently known users
   List<Peer> get peers;
-
-  /// Gets a list of invitations to join other rooms or spaces
-  List<Invitation> get invitations;
 
   /// When a room is added, this will be called with the index of the new room
   Stream<int> get onRoomAdded;
@@ -77,7 +83,18 @@ abstract class Client {
   /// When the client receives an update from the server, this will be called
   Stream<void> get onSync;
 
-  Future<void> init(bool loadingFromCache);
+  StoredStreamController<ClientConnectionStatusUpdate>
+      get connectionStatusChanged;
+
+  Future<void> init(bool loadingFromCache, {bool isBackgroundService = false});
+
+  Future<
+      (
+        bool,
+        List<LoginFlow>?,
+      )> setHomeserver(Uri uri);
+
+  Future<LoginResult> executeLoginFlow(LoginFlow flow);
 
   /// Logout and invalidate the current session
   Future<void> logout();
@@ -101,7 +118,7 @@ abstract class Client {
 
   /// Gets a peer by ID. will return a peer object for any given ID and then load the data from the server.
   /// This is so that you can display any given peer without having to load the data for it
-  Peer getPeer(String identifier);
+  Future<Profile?> getProfile(String identifier);
 
   /// Create a new room
   Future<Room> createRoom(String name, RoomVisibility visibility,
@@ -142,15 +159,6 @@ abstract class Client {
 
   /// Build a widget for display in the developer options debug menu
   Widget buildDebugInfo();
-
-  /// Open a new direct message with another user
-  Future<Room?> createDirectMessage(String userId);
-
-  /// Accept an invitation to join a room or space which this client is not yet a member of
-  Future<void> acceptInvitation(Invitation invitation);
-
-  /// Reject an invitation to join a room or space which this client is not yet a member of
-  Future<void> rejectInvitation(Invitation invitation);
 
   T? getComponent<T extends Component>();
 

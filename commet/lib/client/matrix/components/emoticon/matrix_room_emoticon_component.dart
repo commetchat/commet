@@ -4,9 +4,11 @@ import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_emoticon.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_emoticon_component.dart';
+import 'package:commet/client/matrix/components/emoticon/matrix_emoticon_state_manager.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_space_emoticon_component.dart';
 import 'package:commet/client/matrix/extensions/matrix_client_extensions.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
+import 'package:commet/client/matrix/matrix_mxc_file_provider.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
@@ -15,6 +17,7 @@ import 'package:commet/client/timeline.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:commet/utils/image_utils.dart';
+import 'package:commet/utils/mime.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
 class MatrixRoomEmoticonComponent extends MatrixEmoticonComponent
@@ -22,18 +25,29 @@ class MatrixRoomEmoticonComponent extends MatrixEmoticonComponent
   @override
   MatrixRoom room;
 
-  MatrixRoomEmoticonComponent(MatrixClient client, this.room) : super(client);
+  MatrixRoomEmoticonComponent(MatrixClient client, this.room)
+      : super(client, MatrixEmoticonRoomStateManager(room.matrixRoom));
 
   @override
   List<EmoticonPack> get availableEmoji =>
-      _getAvailablePacks(includeUnicode: true);
+      _getAvailablePacks(includeUnicode: true)
+          .where((element) => element.emoji.isNotEmpty)
+          .toList();
 
   @override
   List<EmoticonPack> get availableStickers =>
-      _getAvailablePacks(includeUnicode: false);
+      _getAvailablePacks(includeUnicode: false)
+          .where((element) => element.stickers.isNotEmpty)
+          .toList();
 
   @override
   bool get canCreatePack => room.permissions.canEditRoomEmoticons;
+
+  @override
+  String get ownerId => room.identifier;
+
+  @override
+  String get ownerDisplayName => room.displayName;
 
   @override
   List<EmoticonPack> get availablePacks {
@@ -74,6 +88,14 @@ class MatrixRoomEmoticonComponent extends MatrixEmoticonComponent
     String? mimeType;
     if (sticker.image is MatrixMxcImage) {
       mimeType = (sticker.image as MatrixMxcImage).mimeType;
+    }
+
+    // Sometimes MatrixMxcImage doesnt have mimetype loaded, so we need to look it up manually
+    if (mimeType == null) {
+      var provider =
+          MxcFileProvider(client.getMatrixClient(), sticker.emojiUrl);
+      var data = await provider.getFileData();
+      mimeType = Mime.lookupType("", data: data);
     }
 
     var content = {
@@ -131,45 +153,6 @@ class MatrixRoomEmoticonComponent extends MatrixEmoticonComponent
     if (includeUnicode) result.addAll(UnicodeEmojis.packs!);
 
     return result;
-  }
-
-  @override
-  Map<String, dynamic> getState(String packKey) {
-    var states = getAllStates();
-    var data = states[packKey];
-
-    return data;
-  }
-
-  @override
-  Map<String, dynamic> getAllStates() {
-    if (!room.matrixRoom.states
-        .containsKey(MatrixEmoticonComponent.roomEmotesStateKey)) return {};
-
-    var state =
-        (room.matrixRoom.states[MatrixEmoticonComponent.roomEmotesStateKey]
-            as Map<String, matrix.Event>);
-
-    var result = <String, dynamic>{};
-
-    for (var key in state.keys) {
-      result[key] = state[key]!.content;
-    }
-
-    return result;
-  }
-
-  @override
-  Future<void> setState(String packKey, Map<String, dynamic> content) async {
-    var event = await room.matrixRoom.client.setRoomStateWithKey(
-        room.matrixRoom.id,
-        MatrixEmoticonComponent.roomEmotesStateKey,
-        packKey,
-        content);
-
-    var result = await room.matrixRoom.getEventById(event);
-    room.matrixRoom
-        .states[MatrixEmoticonComponent.roomEmotesStateKey]![packKey] = result!;
   }
 
   @override

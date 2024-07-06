@@ -26,7 +26,8 @@ class MatrixCommandComponent extends CommandComponent<MatrixClient> {
     if (interactingEvent != null) {
       event = (interactingEvent as MatrixTimelineEvent).event;
     }
-    client.getMatrixClient().parseAndRunCommand(
+
+    await client.getMatrixClient().parseAndRunCommand(
           mxRoom,
           string,
           inReplyTo: type == EventInteractionType.reply ? event : null,

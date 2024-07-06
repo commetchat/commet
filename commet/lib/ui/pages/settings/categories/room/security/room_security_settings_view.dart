@@ -48,7 +48,7 @@ class _RoomSecuritySettingsViewState extends State<RoomSecuritySettingsView> {
 
   Widget buildE2EEToggle() {
     return tiamat.Panel(
-      mode: tiamat.TileType.surfaceLow2,
+      mode: tiamat.TileType.surfaceContainerLow,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

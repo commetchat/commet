@@ -16,16 +16,16 @@ class BackgroundTaskManager {
 
   void addTask(BackgroundTask task) {
     tasks.add(task);
-    subscriptions[task] = task.completed.listen((_) => onTaskCompleted(task));
+    subscriptions[task] =
+        task.statusChanged.listen((_) => onStatusChanged(task));
   }
 
-  void onTaskCompleted(BackgroundTask task) {
-    Log.i("Background Task was completed!: $task");
-
-    Timer(const Duration(seconds: 5), () {
-      tasks.remove(task);
+  void onStatusChanged(BackgroundTask task) {
+    if (task.shouldRemoveTask) {
       subscriptions[task]?.cancel();
-    });
+      tasks.remove(task);
+      task.dispose();
+    }
   }
 }
 
@@ -34,14 +34,21 @@ enum BackgroundTaskStatus { running, failed, completed }
 abstract class BackgroundTask {
   BackgroundTaskStatus get status;
   String get label;
-  Stream<void> get completed;
+  Stream<void> get statusChanged;
+
+  // Should the task be automatically removed from task manager when either completed or errored
+  bool get shouldRemoveTask;
 
   bool get canCallAction;
   void Function()? action;
   void dispose();
 }
 
-abstract class BackgroundTaskWithProgress extends BackgroundTask {
+abstract class BackgroundTaskWithOptionalProgress extends BackgroundTask {
+  double? get progress;
+}
+
+abstract class BackgroundTaskWithIntegerProgress extends BackgroundTask {
   int get total;
   int get current;
 
@@ -52,7 +59,7 @@ class AsyncTask implements BackgroundTask {
   StreamController stream = StreamController.broadcast();
 
   @override
-  Stream<void> get completed => stream.stream;
+  Stream<void> get statusChanged => stream.stream;
 
   @override
   String label;
@@ -78,6 +85,10 @@ class AsyncTask implements BackgroundTask {
   void onFutureComplete(BackgroundTaskStatus result) {
     status = result;
     stream.add(null);
+    Timer(const Duration(seconds: 5), () {
+      shouldRemoveTask = true;
+      stream.add(null);
+    });
   }
 
   @override
@@ -92,4 +103,7 @@ class AsyncTask implements BackgroundTask {
   void dispose() {
     stream.close();
   }
+
+  @override
+  bool shouldRemoveTask = false;
 }

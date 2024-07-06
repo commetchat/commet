@@ -45,7 +45,8 @@ class TextUtils {
     return _urlRegex.hasMatch(text);
   }
 
-  static List<InlineSpan> linkifyString(String text, {TextStyle? style}) {
+  static List<InlineSpan> linkifyString(String text,
+      {TextStyle? style, required BuildContext context}) {
     var matches = _urlRegex.allMatches(text);
     return formatMatches(
       matches,
@@ -53,9 +54,20 @@ class TextUtils {
       style: style,
       builder: (matchedText, theme) {
         return LinkSpan.create(matchedText,
-            destination: Uri.parse(matchedText), style: style);
+            context: context,
+            destination: Uri.parse(matchedText),
+            style: style);
       },
     );
+  }
+
+  static List<Uri>? findUrls(String text) {
+    var matches = _urlRegex.allMatches(text);
+    if (matches.isEmpty) return null;
+
+    return matches
+        .map((e) => Uri.parse(text.substring(e.start, e.end)))
+        .toList();
   }
 
   static List<InlineSpan> formatMatches(
@@ -123,12 +135,14 @@ class TextUtils {
     return NewPasswordResult.valid;
   }
 
-  static String timestampToLocalizedTime(DateTime time) {
+  static String timestampToLocalizedTime(DateTime time, bool hour24Format) {
     var difference = DateTime.now().difference(time);
 
     if (difference.inDays == 0) {
-      return intl.DateFormat(intl.DateFormat.HOUR_MINUTE)
-          .format(time.toLocal());
+      return hour24Format
+          ? intl.DateFormat(intl.DateFormat.HOUR24_MINUTE)
+              .format(time.toLocal())
+          : intl.DateFormat(intl.DateFormat.HOUR_MINUTE).format(time.toLocal());
     }
 
     if (difference.inDays < 365) {
@@ -140,12 +154,15 @@ class TextUtils {
         .format(time.toLocal());
   }
 
-  static String timestampToLocalizedTimeSpecific(DateTime time) {
+  static String timestampToLocalizedTimeSpecific(
+      DateTime time, bool hour24Format) {
     var difference = DateTime.now().difference(time);
 
     if (difference.inDays < 7) {
-      return intl.DateFormat(intl.DateFormat.HOUR_MINUTE)
-          .format(time.toLocal());
+      return hour24Format
+          ? intl.DateFormat(intl.DateFormat.HOUR24_MINUTE)
+              .format(time.toLocal())
+          : intl.DateFormat(intl.DateFormat.HOUR_MINUTE).format(time.toLocal());
     }
     return intl.DateFormat().format(time.toLocal());
   }

@@ -6,7 +6,7 @@ import 'package:matrix/matrix.dart';
 import 'package:mime/mime.dart' as mime;
 
 class Mime {
-  static const displayableTypes = {
+  static const displayableImageTypes = {
     "image/jpeg",
     "image/png",
     "image/gif",
@@ -21,6 +21,8 @@ class Mime {
     "image/webp",
     "image/bmp",
   };
+
+  static bool isText(String mime) => mime.startsWith("text/");
 
   static const videoTypes = {"video/mp4", "video/mpeg"};
 
@@ -54,6 +56,7 @@ class Mime {
   static String? lookupType(String filepath, {Uint8List? data}) {
     var resolver = mime.MimeTypeResolver();
     resolver.addMagicNumber([0x42, 0x4d], "image/bmp");
+    resolver.addMagicNumber([0x3c, 0x73, 0x76, 0x67], "image/svg+xml"); // '<svg
 
     return resolver.lookup(filepath, headerBytes: data);
   }

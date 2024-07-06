@@ -13,10 +13,11 @@ class RandomUtils {
         length, (_) => _chars.codeUnitAt(rnd.nextInt(_chars.length))));
   }
 
-  static String getRandomSentence(int length) {
+  static String getRandomSentence(int length, {int? seed}) {
+    var r = Random(seed);
     String msg = "";
     for (int i = 0; i < length; i++) {
-      msg += "${_words[Random().nextInt(_words.length)]} ";
+      msg += "${_words[r.nextInt(_words.length)]} ";
     }
     return msg;
   }

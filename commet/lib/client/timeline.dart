@@ -98,13 +98,15 @@ abstract class TimelineEvent {
   List<Attachment>? get attachments;
   String? get bodyFormat;
   String? get formattedBody;
+  String get rawContent;
+  List<Uri>? get links;
 
   /// This has a global key, and as such should only be displayed on screen in one place at a time.
   /// We cache it here so we dont have to parse formatting again on every rebuild
   /// If you want to display the same message twice, use `buildFormattedContent()` to create a new widget
   Widget? get formattedContent;
 
-  Widget buildFormattedContent();
+  Widget? buildFormattedContent();
 
   String? get relatedEventId;
   String? get stateKey;
@@ -122,8 +124,6 @@ abstract class Timeline {
   late StreamController<int> onRemove = StreamController.broadcast();
   late Client client;
   late Room room;
-
-  List<String>? get receipts;
 
   void markAsRead(TimelineEvent event);
 

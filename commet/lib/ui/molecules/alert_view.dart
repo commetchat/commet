@@ -8,25 +8,31 @@ class AlertView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(children: [
-      Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Icon(
-          getIcon(),
-          color: getColor(context),
-        ),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: alert.action,
+        child: Row(children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Icon(
+              getIcon(),
+              color: getColor(context),
+            ),
+          ),
+          Flexible(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                tiamat.Text.labelEmphasised(alert.title),
+                tiamat.Text.labelLow(alert.message),
+              ],
+            ),
+          )
+        ]),
       ),
-      Flexible(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            tiamat.Text.labelEmphasised(alert.title),
-            tiamat.Text.labelLow(alert.message),
-          ],
-        ),
-      )
-    ]);
+    );
   }
 
   IconData getIcon() {

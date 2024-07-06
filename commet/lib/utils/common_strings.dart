@@ -48,6 +48,9 @@ class CommonStrings {
   static String get promptDelete => Intl.message("Delete",
       name: "promptDelete", desc: "Generic prompt to delete something");
 
+  static String get promptDownload => Intl.message("Download",
+      name: "promptDownload", desc: "Generic prompt to download something");
+
   static String get promptJoin => Intl.message("Join",
       name: "promptJoin", desc: "Generic prompt to join a room");
 

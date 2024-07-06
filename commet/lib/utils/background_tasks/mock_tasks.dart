@@ -6,7 +6,7 @@ import 'package:commet/utils/background_tasks/background_task_manager.dart';
 class FakeBackgroundTask implements BackgroundTask {
   StreamController stream = StreamController.broadcast();
   @override
-  Stream<void> get completed => stream.stream;
+  Stream<void> get statusChanged => stream.stream;
 
   @override
   String get label => "Fake background task";
@@ -22,6 +22,12 @@ class FakeBackgroundTask implements BackgroundTask {
         status = BackgroundTaskStatus.completed;
       }
       stream.add(null);
+
+      Timer(const Duration(seconds: 5), () {
+        shouldRemoveTask = true;
+        stream.add(null);
+      });
+
       return;
     });
   }
@@ -36,14 +42,18 @@ class FakeBackgroundTask implements BackgroundTask {
 
   @override
   bool get canCallAction => status == BackgroundTaskStatus.running;
+
+  @override
+  bool shouldRemoveTask = false;
 }
 
-class FakeBackgroundTaskWithProgress implements BackgroundTaskWithProgress {
+class FakeBackgroundTaskWithProgress
+    implements BackgroundTaskWithIntegerProgress {
   StreamController stream = StreamController.broadcast();
   StreamController<int> progressStream = StreamController.broadcast();
 
   @override
-  Stream<void> get completed => stream.stream;
+  Stream<void> get statusChanged => stream.stream;
 
   @override
   String get label => "Fake background task with progress ($current/$total)";
@@ -78,6 +88,11 @@ class FakeBackgroundTaskWithProgress implements BackgroundTaskWithProgress {
       doProgress();
       if (status == BackgroundTaskStatus.running) {
         progress();
+      } else {
+        Timer(const Duration(seconds: 5), () {
+          shouldRemoveTask = true;
+          stream.add(null);
+        });
       }
     });
   }
@@ -105,4 +120,7 @@ class FakeBackgroundTaskWithProgress implements BackgroundTaskWithProgress {
   void doAction() {
     doProgress();
   }
+
+  @override
+  bool shouldRemoveTask = false;
 }

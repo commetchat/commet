@@ -1,6 +1,9 @@
 
 name: build
-on: push
+
+on:
+  pull_request:
+  merge_group:
 
 env:
   PROJECT_PATH: commet
@@ -17,7 +20,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2.8.0
         with:
-          flutter-version: '3.19.5'
+          flutter-version: '3.22.2'
           channel: 'stable'
 
       - name: Configure Flutter
@@ -45,7 +48,7 @@ jobs:
       - name: Setup Flutter 
         uses: subosito/flutter-action@v2.8.0
         with:
-          flutter-version: '3.19.5'
+          flutter-version: '3.22.2'
           channel: 'stable'
 
       - name: Setup Java
@@ -79,7 +82,7 @@ jobs:
       - name: Setup Flutter 
         uses: subosito/flutter-action@v2.8.0
         with:
-          flutter-version: '3.19.5'
+          flutter-version: '3.22.2'
           channel: 'stable'
 
       - name: Setup Java
@@ -114,7 +117,7 @@ jobs:
       - name: Setup Flutter 
         uses: subosito/flutter-action@v2.8.0
         with:
-          flutter-version: '3.19.5'
+          flutter-version: '3.22.2'
           channel: 'stable'
 
       - name: Setup Tools
@@ -147,7 +150,7 @@ jobs:
       - name: Setup Flutter 
         uses: subosito/flutter-action@v2.8.0
         with:
-          flutter-version: '3.19.5'
+          flutter-version: '3.22.2'
           channel: 'stable'
 
       - name: Setup Tools

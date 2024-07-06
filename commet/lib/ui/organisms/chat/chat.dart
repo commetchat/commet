@@ -2,19 +2,24 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:commet/client/attachment.dart';
+import 'package:commet/client/client.dart';
 import 'package:commet/client/components/command/command_component.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/client/components/gif/gif_component.dart';
 import 'package:commet/client/components/gif/gif_search_result.dart';
-import 'package:commet/client/room.dart';
-import 'package:commet/client/timeline.dart';
+import 'package:commet/client/components/read_receipts/read_receipt_component.dart';
+import 'package:commet/client/components/threads/thread_component.dart';
+import 'package:commet/client/components/typing_indicators/typing_indicator_component.dart';
+
 import 'package:commet/debug/log.dart';
+import 'package:commet/ui/organisms/attachment_processor/attachment_processor.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/organisms/chat/chat_view.dart';
 import 'package:commet/utils/debounce.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:desktop_drop/desktop_drop.dart';
+import 'package:exif/exif.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -22,8 +27,10 @@ import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class Chat extends StatefulWidget {
-  const Chat(this.room, {super.key});
+  const Chat(this.room, {this.threadId, this.isBubble = false, super.key});
   final Room room;
+  final String? threadId;
+  final bool isBubble;
   @override
   State<Chat> createState() => ChatState();
 }
@@ -38,6 +45,8 @@ class ChatState extends State<Chat> {
   Timeline? _timeline;
 
   Timeline? get timeline => _timeline;
+
+  ThreadsComponent? threadsComponent;
 
   String get labelChatPageFileTooLarge => Intl.message(
       "This file is too large to upload!",
@@ -64,26 +73,40 @@ class ChatState extends State<Chat> {
 
   GifComponent? gifs;
   RoomEmoticonComponent? emoticons;
+  ReadReceiptComponent? receipts;
+  TypingIndicatorComponent? typingIndicators;
 
   Debouncer typingStatusDebouncer =
       Debouncer(delay: const Duration(seconds: 5));
   DateTime lastSetTyping = DateTime.fromMicrosecondsSinceEpoch(0);
 
+  bool get isThread => widget.threadId != null;
+
+  bool get isBubble => widget.isBubble;
+
   @override
   void initState() {
-    Log.i("Initializing room timeline for: ${widget.room.displayName}");
+    Log.i(
+        "Initializing room timeline for: ${widget.room.displayName} ${widget.threadId ?? ""}");
 
     onFileDroppedSubscription =
         EventBus.onFileDropped.stream.listen(onFileDropped);
 
-    if (room.timeline != null) {
-      _timeline = room.timeline;
-    } else {
-      loadTimeline();
-    }
-
     gifs = room.getComponent<GifComponent>();
     emoticons = room.getComponent<RoomEmoticonComponent>();
+    threadsComponent = room.client.getComponent<ThreadsComponent>();
+    receipts = room.getComponent<ReadReceiptComponent>();
+    typingIndicators = room.getComponent<TypingIndicatorComponent>();
+
+    if (widget.threadId != null && threadsComponent != null) {
+      loadThreadTimeline();
+    } else {
+      if (room.timeline != null) {
+        _timeline = room.timeline;
+      } else {
+        loadTimeline();
+      }
+    }
 
     super.initState();
   }
@@ -95,9 +118,21 @@ class ChatState extends State<Chat> {
     });
   }
 
+  Future<void> loadThreadTimeline() async {
+    Timeline? timeline = room.timeline;
+    timeline ??= await room.loadTimeline();
+
+    var threadTimeline = await threadsComponent!.getThreadTimeline(
+        roomTimeline: timeline, threadRootEventId: widget.threadId!);
+    setState(() {
+      _timeline = threadTimeline;
+    });
+  }
+
   @override
   void dispose() {
-    Log.i("Disposing room timeline for: ${widget.room.displayName}");
+    Log.i(
+        "Disposing room timeline for: ${widget.room.displayName} ${widget.threadId ?? ""}");
 
     onFileDroppedSubscription?.cancel();
     super.dispose();
@@ -139,6 +174,29 @@ class ChatState extends State<Chat> {
       processing = true;
     });
 
+    for (var file in attachments) {
+      await file.resolve();
+      var exif = await readExifFromBytes(file.data!);
+
+      if (exif.keys.any((e) => e.toLowerCase().contains("gps"))) {
+        // ignore: use_build_context_synchronously
+        var confirmation = await AdaptiveDialog.confirmation(context,
+            title: file.name ?? "File",
+            confirmationText: "Send File",
+            cancelText: "Don't send file",
+            dangerous: true,
+            prompt:
+                "Location data was detected in file '${file.name}', are you sure you want to send?");
+
+        if (confirmation != true) {
+          setState(() {
+            processing = false;
+          });
+          return;
+        }
+      }
+    }
+
     var processedAttachments = await room.processAttachments(attachments);
 
     setState(() {
@@ -148,8 +206,19 @@ class ChatState extends State<Chat> {
     var component = room.client.getComponent<CommandComponent>();
 
     if (component?.isExecutable(message) == true) {
-      component?.executeCommand(message, room,
-          interactingEvent: interactingEvent, type: interactionType);
+      doCommand(component, message);
+    } else if (isThread) {
+      threadsComponent!.sendMessage(
+          threadRootEventId: widget.threadId!,
+          room: room,
+          message: message,
+          inReplyTo: interactionType == EventInteractionType.reply
+              ? interactingEvent
+              : null,
+          replaceEvent: interactionType == EventInteractionType.edit
+              ? interactingEvent
+              : null,
+          processedAttachments: processedAttachments);
     } else {
       room.sendMessage(
           message: message,
@@ -162,11 +231,22 @@ class ChatState extends State<Chat> {
           processedAttachments: processedAttachments);
     }
 
-    room.setTypingStatus(false);
-
+    typingIndicators?.setTypingStatus(false);
     setInteractingEvent(null);
     clearAttachments();
     setMessageInputText.add("");
+  }
+
+  Future<void> doCommand(
+      CommandComponent<Client>? component, String message) async {
+    try {
+      await component?.executeCommand(message, room,
+          interactingEvent: interactingEvent, type: interactionType);
+    } catch (error) {
+      if (mounted)
+        AdaptiveDialog.show(context,
+            builder: (context) => tiamat.Text.label("$error"));
+    }
   }
 
   void setInteractingEvent(TimelineEvent? event, {EventInteractionType? type}) {
@@ -235,13 +315,17 @@ class ChatState extends State<Chat> {
   }
 
   void onInputTextUpdated(String currentText) {
+    if (isThread) {
+      return;
+    }
+
     if (currentText.isEmpty) {
       stopTyping();
       typingStatusDebouncer.cancel();
       lastSetTyping = DateTime.fromMicrosecondsSinceEpoch(0);
     } else {
       if ((DateTime.now().difference(lastSetTyping)).inSeconds > 3) {
-        room.setTypingStatus(true);
+        typingIndicators?.setTypingStatus(true);
         lastSetTyping = DateTime.now();
       }
       typingStatusDebouncer.run(stopTyping);
@@ -249,7 +333,7 @@ class ChatState extends State<Chat> {
   }
 
   void stopTyping() {
-    room.setTypingStatus(false);
+    typingIndicators?.setTypingStatus(false);
   }
 
   void onFileDropped(DropDoneDetails event) async {
@@ -259,10 +343,24 @@ class ChatState extends State<Chat> {
       if (size < 50000000) {
         data = await file.readAsBytes();
       }
-      setState(() {
-        attachments.add(PendingFileAttachment(
-            name: file.name, path: file.path, size: size, data: data));
-      });
+
+      if (mounted) {
+        var attachment = PendingFileAttachment(
+            name: file.name, path: file.path, size: size, data: data);
+
+        var processedAttachment =
+            await AdaptiveDialog.show<PendingFileAttachment>(context,
+                scrollable: false,
+                builder: (context) => AttachmentProcessor(
+                      attachment: attachment,
+                    ));
+
+        if (processedAttachment != null) {
+          setState(() {
+            attachments.add(processedAttachment);
+          });
+        }
+      }
     }
   }
 }

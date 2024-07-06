@@ -1,5 +1,6 @@
 import 'package:commet/ui/pages/settings/categories/room/permissions/matrix/matrix_room_permissions_view.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
 class MatrixRoomPermissionEntry {
@@ -48,15 +49,146 @@ class _MatrixRoomPermissionsPageState extends State<MatrixRoomPermissionsPage> {
   late List<MatrixRoomPermissionEntry> permissions;
   bool loading = false;
 
+  String get labelMatrixPermissionsRoleAdmin => Intl.message("Admin",
+      name: "labelMatrixPermissionsRoleAdmin",
+      desc: "Label for the room administrator role");
+
+  String get labelMatrixPermissionsRoleModerator => Intl.message("Moderator",
+      name: "labelMatrixPermissionsRoleModerator",
+      desc: "Label for the room moderator role");
+
+  String get labelMatrixPermissionsRoleMember => Intl.message("Room Member",
+      name: "labelMatrixPermissionsRoleMember",
+      desc: "Label for the room member role");
+
+  String get labelMatrixPermissionsSpaceManageChildrenTitle =>
+      Intl.message("Manage Children",
+          name: "labelMatrixPermissionsSpaceManageChildrenTitle",
+          desc: "Title for permission to manage children");
+
+  String get labelMatrixPermissionsSpaceManageChildrenDescription =>
+      Intl.message(
+          "Allows the user to manage which rooms are part of this space",
+          name: "labelMatrixPermissionsSpaceManageChildrenDescription",
+          desc: "Describes the permission to manage child rooms");
+
+  String get labelMatrixPermissionsRoomDeleteMessagesTitle =>
+      Intl.message("Delete Messages",
+          name: "labelMatrixPermissionsRoomDeleteMessagesTitle",
+          desc: "Title for permission to delete messages");
+
+  String get labelMatrixPermissionsRoomDeleteMessagesDescription =>
+      Intl.message("Allows the user to delete messages sent by others",
+          name: "labelMatrixPermissionsRoomDeleteMessagesDescription",
+          desc: "Describes the permission to delete messages");
+
+  String get labelMatrixPermissionsRoomSendMessagesTitle =>
+      Intl.message("Send Messages",
+          name: "labelMatrixPermissionsRoomSendMessagesTitle",
+          desc: "Title for the permission to send messages");
+
+  String get labelMatrixPermissionsRoomSendMessagesDescription =>
+      Intl.message("Allows a user to send messages in this room",
+          name: "labelMatrixPermissionsRoomSendMessagesDescription",
+          desc: "Describes the permission to send messages");
+
+  String get labelMatrixPermissionsRoomAddReactionsTitle => Intl.message(
+      "Add Reactions",
+      name: "labelMatrixPermissionsRoomAddReactionsTitle",
+      desc: "Title for the permission to add an emoji reaction to a message");
+
+  String get labelMatrixPermissionsRoomAddReactionsDescription => Intl.message(
+      "Add reactions to messages",
+      name: "labelMatrixPermissionsRoomAddReactionsDescription",
+      desc: "describes the permission to add an emoji reaction to a message");
+
+  String get labelMatrixPermissionsRoomHistoryVisibilityTitle =>
+      Intl.message("History Visibility",
+          name: "labelMatrixPermissionsRoomHistoryVisibilityTitle",
+          desc: "Title for the permission to add change room history settings");
+
+  String get labelMatrixPermissionsRoomHistoryVisibilityDescription =>
+      Intl.message(
+          "Allows the user to change the visibility of chat history in this room",
+          name: "labelMatrixPermissionsRoomHistoryVisibilityDescription",
+          desc: "describes the permission to change room history settings");
+
+  String get labelMatrixPermissionsRoomAvatarTitle => Intl.message(
+      "Set Room Avatar",
+      name: "labelMatrixPermissionsRoomAvatarTitle",
+      desc: "Title for the permission to add change the rooms avatar image");
+
+  String get labelMatrixPermissionsRoomAvatarDescription => Intl.message(
+      "Change the room's avatar image",
+      name: "labelMatrixPermissionsRoomAvatarDescription",
+      desc: "Title for the permission to add change the rooms avatar image");
+
+  String get labelMatrixPermissionsChangeRoomNameTitle =>
+      Intl.message("Change room name",
+          name: "labelMatrixPermissionsChangeRoomNameTitle",
+          desc: "Title for the permission to add change the rooms name");
+
+  String get labelMatrixPermissionsChangeRoomNameDescription =>
+      Intl.message("Allows the user to change the name of this room",
+          name: "labelMatrixPermissionsChangeRoomNameDescription",
+          desc: "Description for the permission to add change the rooms name");
+
+  String get labelMatrixPermissionsChangeRoomTopicTitle =>
+      Intl.message("Change room topic",
+          name: "labelMatrixPermissionsChangeRoomTopicTitle",
+          desc: "Title for the permission to add change the rooms topic");
+
+  String get labelMatrixPermissionsChangeRoomTopicDescription =>
+      Intl.message("Allows the user to change the topic of this room",
+          name: "labelMatrixPermissionsChangeRoomTopicDescription",
+          desc: "Description for the permission to add change the rooms topic");
+
+  String get labelMatrixPermissionsChangeRoomPermissionsTitle =>
+      Intl.message("Change permissions",
+          name: "labelMatrixPermissionsChangeRoomPermissionsTitle",
+          desc: "Title for the permission to change permissions of the room");
+
+  String get labelMatrixPermissionsChangeRoomPermissionsDescription =>
+      Intl.message("Allows the user to change permission settings",
+          name: "labelMatrixPermissionsChangeRoomPermissionsDescription",
+          desc:
+              "Description for the permission to change permissions of the room");
+
+  String get labelMatrixPermissionsKickUserTitle => Intl.message("Kick users",
+      name: "labelMatrixPermissionsKickUserTitle",
+      desc: "Title for the permission to kick other users out of the room");
+
+  String get labelMatrixPermissionsKickUserDescription => Intl.message(
+      "Kick other users out of the room",
+      name: "labelMatrixPermissionsKickUserDescription",
+      desc:
+          "Description for the permission to kick other users out of the room");
+
+  String get labelMatrixPermissionsBanUserTitle => Intl.message("Ban users",
+      name: "labelMatrixPermissionsBanUserTitle",
+      desc: "Title for the permission to ban other users from the room");
+
+  String get labelMatrixPermissionsBanUserDescription => Intl.message(
+      "Ban other users from the room",
+      name: "labelMatrixPermissionsBanUserDescription",
+      desc: "Description for the permission to ban other users from the room");
+
   void initPermissions() {
     roles = [
       // MatrixRoomRoleEntry(
       //     name: "Founder", powerlevel: 101, icon: Icons.star_rounded),
-      MatrixRoomRoleEntry(name: "Admin", powerlevel: 100, icon: Icons.security),
       MatrixRoomRoleEntry(
-          name: "Moderator", powerlevel: 50, icon: Icons.shield_rounded),
+          name: labelMatrixPermissionsRoleAdmin,
+          powerlevel: 100,
+          icon: Icons.security),
       MatrixRoomRoleEntry(
-          name: "Room Member", powerlevel: 0, icon: Icons.groups)
+          name: labelMatrixPermissionsRoleModerator,
+          powerlevel: 50,
+          icon: Icons.shield_rounded),
+      MatrixRoomRoleEntry(
+          name: labelMatrixPermissionsRoleMember,
+          powerlevel: 0,
+          icon: Icons.groups)
     ];
 
     permissions = List.empty(growable: true);
@@ -66,9 +198,8 @@ class _MatrixRoomPermissionsPageState extends State<MatrixRoomPermissionsPage> {
         MatrixRoomPermissionEntry(
             key: "m.space.child",
             keyParent: "events",
-            title: "Manage Children",
-            description:
-                "Allows the user to manage which rooms are part of this space",
+            title: labelMatrixPermissionsSpaceManageChildrenTitle,
+            description: labelMatrixPermissionsSpaceManageChildrenDescription,
             powerLevel: 50,
             icon: Icons.list)
       ]);
@@ -76,29 +207,28 @@ class _MatrixRoomPermissionsPageState extends State<MatrixRoomPermissionsPage> {
       permissions.addAll([
         MatrixRoomPermissionEntry(
             key: "redact",
-            title: "Delete Messages",
-            description: "Allows the user to delete messages sent by others",
+            title: labelMatrixPermissionsRoomDeleteMessagesTitle,
+            description: labelMatrixPermissionsRoomDeleteMessagesDescription,
             powerLevel: 50,
             icon: Icons.delete),
         MatrixRoomPermissionEntry(
             key: "events_default",
-            title: "Send Messages",
-            description: "Allows a user to send messages in this room",
+            title: labelMatrixPermissionsRoomSendMessagesTitle,
+            description: labelMatrixPermissionsRoomSendMessagesDescription,
             powerLevel: 0,
             icon: Icons.message),
         MatrixRoomPermissionEntry(
             key: "m.reaction",
             keyParent: "events",
-            title: "Add Reactions",
-            description: "Add reactions to messages",
+            title: labelMatrixPermissionsRoomAddReactionsTitle,
+            description: labelMatrixPermissionsRoomAddReactionsDescription,
             icon: Icons.favorite,
             powerLevel: 0),
         MatrixRoomPermissionEntry(
             key: "m.room.history_visibility",
             keyParent: "events",
-            title: "History Visibility",
-            description:
-                "Allows the user to change the visibility of chat history in this room",
+            title: labelMatrixPermissionsRoomHistoryVisibilityTitle,
+            description: labelMatrixPermissionsRoomHistoryVisibilityDescription,
             powerLevel: 50,
             icon: Icons.history),
       ]);
@@ -108,41 +238,41 @@ class _MatrixRoomPermissionsPageState extends State<MatrixRoomPermissionsPage> {
       MatrixRoomPermissionEntry(
           key: "m.room.avatar",
           keyParent: "events",
-          title: "Set Room Avatar",
-          description: "Change the room avatar",
+          title: labelMatrixPermissionsRoomAvatarTitle,
+          description: labelMatrixPermissionsRoomAvatarDescription,
           icon: Icons.image,
           powerLevel: 50),
       MatrixRoomPermissionEntry(
           key: "m.room.power_levels",
           keyParent: "events",
-          title: "Change permissions",
-          description: "Allows the user to change permission settings",
+          title: labelMatrixPermissionsChangeRoomPermissionsTitle,
+          description: labelMatrixPermissionsChangeRoomPermissionsDescription,
           powerLevel: 50,
           icon: Icons.admin_panel_settings),
       MatrixRoomPermissionEntry(
           key: "m.room.name",
           keyParent: "events",
-          title: "Change room name",
-          description: "Allows the user to change the name of this room",
+          title: labelMatrixPermissionsChangeRoomNameTitle,
+          description: labelMatrixPermissionsChangeRoomNameDescription,
           powerLevel: 50,
           icon: Icons.edit),
       MatrixRoomPermissionEntry(
           key: "m.room.topic",
           keyParent: "events",
-          title: "Change topic",
-          description: "Allows the user to change the topic of this room",
+          title: labelMatrixPermissionsChangeRoomTopicTitle,
+          description: labelMatrixPermissionsChangeRoomTopicDescription,
           icon: Icons.edit_note_rounded,
           powerLevel: 50),
       MatrixRoomPermissionEntry(
           key: "kick",
-          title: "Kick Users",
-          description: "Kick other users out of the room",
+          title: labelMatrixPermissionsKickUserTitle,
+          description: labelMatrixPermissionsKickUserDescription,
           powerLevel: 50,
           icon: Icons.gavel),
       MatrixRoomPermissionEntry(
           key: "ban",
-          title: "Ban",
-          description: "Ban other users from the room",
+          title: labelMatrixPermissionsBanUserTitle,
+          description: labelMatrixPermissionsBanUserDescription,
           powerLevel: 100,
           icon: Icons.gavel),
     ]);

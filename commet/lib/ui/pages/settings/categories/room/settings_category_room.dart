@@ -41,6 +41,10 @@ class SettingsCategoryRoom implements SettingsCategory {
       name: "labelRoomSettingsCategory",
       desc: "Label for the overall settings category of a room");
 
+  String get labelRoomSettingsPermissions => Intl.message("Permissions",
+      name: "labelRoomSettingsPermissions",
+      desc: "Label for room permission settings");
+
   @override
   String get title => labelRoomSettingsCategory;
 
@@ -89,7 +93,7 @@ class SettingsCategoryRoom implements SettingsCategory {
             }),
       if (room is MatrixRoom)
         SettingsTab(
-            label: "Permissions",
+            label: labelRoomSettingsPermissions,
             icon: Icons.admin_panel_settings,
             makeScrollable: false,
             pageBuilder: (context) {

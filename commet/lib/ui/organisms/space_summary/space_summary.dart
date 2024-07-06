@@ -12,9 +12,11 @@ import 'package:flutter/widgets.dart';
 import '../../navigation/navigation_utils.dart';
 
 class SpaceSummary extends StatefulWidget {
-  const SpaceSummary({super.key, required this.space, this.onRoomTap});
+  const SpaceSummary(
+      {super.key, required this.space, this.onRoomTap, this.onSpaceTap});
   final Space space;
   final Function(Room room)? onRoomTap;
+  final Function(Space space)? onSpaceTap;
   @override
   State<SpaceSummary> createState() => _SpaceSummaryState();
 }
@@ -46,12 +48,14 @@ class _SpaceSummaryState extends State<SpaceSummary> {
     return SpaceSummaryView(
       displayName: widget.space.displayName,
       childPreviews: widget.space.childPreviews,
-      onChildPreviewAdded: widget.space.onChildPreviewAdded,
-      onChildPreviewRemoved: widget.space.onChildPreviewRemoved,
+      onChildPreviewAdded: widget.space.onChildRoomPreviewAdded,
+      onChildPreviewRemoved: widget.space.onChildRoomPreviewRemoved,
       onRoomRemoved: widget.space.onRoomRemoved,
       onRoomAdded: widget.space.onRoomAdded,
       avatar: widget.space.avatar,
       rooms: widget.space.rooms,
+      spaces: widget.space.subspaces,
+      visibility: widget.space.visibility,
       joinRoom: joinRoom,
       openSpaceSettings: openSpaceSettings,
       onRoomSettingsButtonTap: openRoomSettings,
@@ -59,6 +63,8 @@ class _SpaceSummaryState extends State<SpaceSummary> {
       onRoomTap: widget.onRoomTap,
       showSpaceSettingsButton: widget.space.permissions.canEditAnything,
       onAddRoomButtonTap: onAddRoomButtonTap,
+      canAddRoom: widget.space.permissions.canEditChildren,
+      onSpaceTap: widget.onSpaceTap,
     );
   }
 

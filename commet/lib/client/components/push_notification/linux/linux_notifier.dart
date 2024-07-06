@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notifier.dart';
+import 'package:commet/client/room.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/image/lod_image.dart';
@@ -79,10 +80,8 @@ class LinuxNotifier implements Notifier {
         shouldZoomOut: false,
         imageProvider: content.senderImage);
 
-    LinuxNotificationIcon icon = FilePathLinuxIcon(avatar.toFilePath());
-
     var details = LinuxNotificationDetails(
-      icon: icon,
+      icon: avatar == null ? null : FilePathLinuxIcon(avatar.toFilePath()),
       defaultActionName: "NAVIGATE_ROOM",
       category: LinuxNotificationCategory.imReceived,
     );
@@ -119,4 +118,7 @@ class LinuxNotifier implements Notifier {
 
   @override
   bool get needsToken => false;
+
+  @override
+  Future<void> clearNotifications(Room room) async {}
 }

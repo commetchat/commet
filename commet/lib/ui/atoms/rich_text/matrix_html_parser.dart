@@ -16,7 +16,11 @@ import 'package:tiamat/config/style/theme_extensions.dart';
 
 class MatrixHtmlParser {
   static Widget parse(String text, matrix.Client client) {
-    return MatrixHtmlState(text, client);
+    return MatrixHtmlState(
+      text,
+      client,
+      key: GlobalKey(),
+    );
   }
 }
 
@@ -114,8 +118,24 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
             top: Margin.zero(),
             right: Margin.zero(),
           ),
+          whiteSpace: WhiteSpace.pre, // handled whitespace for #237
         ),
-        "code": Style(backgroundColor: Colors.black.withAlpha(40))
+        "code": Style(backgroundColor: Colors.black.withAlpha(40)),
+        "blockquote": Style(
+          border: Border(
+              left: BorderSide(
+            color: Theme.of(context).colorScheme.primary,
+            width: 2,
+          )),
+          padding: HtmlPaddings(left: HtmlPadding(4)),
+          margin: Margins(
+            bottom: Margin.zero(),
+            left: Margin(4),
+            top: Margin.zero(),
+            right: Margin.zero(),
+          ),
+          whiteSpace: WhiteSpace.pre,
+        )
       },
       onLinkTap: (url, attributes, element) {
         LinkUtils.open(Uri.parse(url!));
@@ -221,9 +241,11 @@ class MatrixEmoticonHtmlExtension extends HtmlExtension {
 class CodeBlockHtmlExtension extends HtmlExtension {
   @override
   InlineSpan build(ExtensionContext context) {
-    var element = context.element!.children.first;
-    var langauge = element.className.replaceAll('language-', '');
-    var code = element.text;
+    var element = context.element!.children.firstOrNull;
+    element ??= context.element;
+
+    var langauge = element?.className.replaceAll('language-', '');
+    var code = element!.text;
     return WidgetSpan(
         child: Codeblock(
       text: code,
@@ -240,13 +262,14 @@ class CodeBlockHtmlExtension extends HtmlExtension {
 class CodeHtmlExtension extends HtmlExtension {
   @override
   InlineSpan build(ExtensionContext context) {
+    var color = Theme.of(context.buildContext!)
+            .extension<ExtraColors>()
+            ?.codeHighlight ??
+        Theme.of(context.buildContext!).primaryColor;
+
     return TextSpan(
         text: context.node.text,
-        style: TextStyle(
-            fontFamily: "Code",
-            color: Theme.of(context.buildContext!)
-                .extension<ExtraColors>()!
-                .codeHighlight));
+        style: TextStyle(fontFamily: "Code", color: color));
   }
 
   static const Set<String> tags = {"code"};
@@ -260,10 +283,13 @@ class LinkifyHtmlExtension extends HtmlExtension {
   InlineSpan build(ExtensionContext context) {
     if (context.node.attributes.containsKey("href")) {
       return LinkSpan.create(context.node.text!,
+          context: context.buildContext!,
           destination: Uri.parse(context.node.attributes["href"]!));
     }
 
-    return TextSpan(children: TextUtils.linkifyString(context.node.text!));
+    return TextSpan(
+        children: TextUtils.linkifyString(context.node.text!,
+            context: context.buildContext!));
   }
 
   @override
@@ -327,7 +353,8 @@ class MatrixImageExtension extends HtmlExtension {
     }
 
     if (mxcUrl.scheme != 'mxc') {
-      return LinkSpan.create(mxcUrl.toString(), destination: mxcUrl);
+      return LinkSpan.create(mxcUrl.toString(),
+          destination: mxcUrl, context: context.buildContext!);
     }
 
     final width = double.tryParse(context.attributes['width'] ?? '');

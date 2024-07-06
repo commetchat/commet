@@ -81,6 +81,8 @@ main(List<String> args) async {
       "ENABLE_GOOGLE_SERVICES=$enableGoogleServices",
       if (buildDetail != null) "--dart-define",
       if (buildDetail != null) "BUILD_DETAIL=$buildDetail",
+      if (platform == "web") "--web-renderer",
+      if (platform == "web") "html"
     ],
     runInShell: true,
   );

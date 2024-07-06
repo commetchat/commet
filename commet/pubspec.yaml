@@ -12,8 +12,8 @@ dependencies:
   desktop_drop: ^0.4.1
   desktop_notifications: ^0.6.3
   device_info_plus: ^9.0.3
-  #fcm_shared_isolate: ^0.1.0
   file_picker: ^5.2.10
+  flutter_background_service: ^5.0.5
   flutter_blurhash: ^0.8.2
   flutter_markdown: ^0.6.9+1
   flutter_olm: ^1.2.0
@@ -22,15 +22,16 @@ dependencies:
   flutter_svg: ^2.0.7
   html: ^0.15.2
   html_unescape: ^2.0.0
-  http: ^0.13.6
+  http: ^1.1.0
   implicitly_animated_list: ^2.2.0
   intl: any
-  intl_translation: ^0.18.2
+  intl_translation: ^0.20.0
   intl_utils: any
-  isar: ^3.1.0+1
-  isar_flutter_libs: ^3.1.0+1
-  isar_generator: ^3.1.0+1
   just_the_tooltip: ^0.0.12
+  matrix:
+    git: 
+      url: https://github.com/Airyzz/matrix-dart-sdk.git
+      ref: krille/background-client
   media_kit: ^1.1.7
   media_kit_libs_video: ^1.0.1
   media_kit_video: ^1.1.8
@@ -50,8 +51,6 @@ dependencies:
   unifiedpush: ^5.0.1
   universal_html: ^2.2.4
   url_launcher: ^6.1.11
-  widgetbook: ^3.2.0
-  widgetbook_annotation: ^3.0.0
   win_toast: ^0.3.0
   window_manager: ^0.3.4
   flutter: 
@@ -69,27 +68,48 @@ dependencies:
   flutter_localizations: 
     sdk: flutter
   flutter_shortcuts: 
-    git: https://github.com/commetchat/flutter_shortcuts.git
+    git: 
+      url: https://github.com/commetchat/flutter_shortcuts.git
+      ref: fix
   tiamat: 
     path: ../tiamat/
-  matrix: 
-    git: https://github.com/commetchat/matrix-dart-sdk.git
-  flutter_webrtc: 
-    git: https://github.com/commetchat/flutter-webrtc.git
-  sqlite3_flutter_libs: ^0.5.18
+  matrix_dart_sdk_drift_db:
+    git: https://github.com/commetchat/matrix-dart-sdk-drift-db.git
+  encrypted_url_preview: 
+    git: https://github.com/commetchat/encrypted_url_preview.git
+  signal_sticker_api: 
+    git: https://github.com/commetchat/signal-sticker-api.git
+  sqlite3_flutter_libs: ^0.5.23
   fuzzy: ^0.5.1
+  encrypt: ^5.0.3
+  pointycastle: ^3.7.4
+  flutter_web_auth_2: ^3.1.1
+  drift: ^2.18.0
+  archive: ^3.6.1
+  exif: ^3.3.0
+  image: ^4.2.0
+
+  ## ---- Putting some extra lines in here to help git with the diff
+  ## ---- Probably good to keep this stuff at the bottom of the list
+  ## Begin Google Services Dependencies
+  #firebase_core: ^2.30.0
+  #firebase_messaging: ^14.8.2
+  ## End Google Services Dependencies
+  ## ----
+  ## ----
+
 
 dev_dependencies: 
-  build_runner: any
+  build_runner: ^2.4.11
   flutter_launcher_icons: ^0.13.1
   flutter_lints: ^2.0.0
   msix: ^3.7.0
   pubspec_dependency_sorter: ^1.0.4
-  widgetbook_generator: ^3.1.0
   flutter_test: 
     sdk: flutter
   integration_test: 
     sdk: flutter
+  drift_dev: ^2.18.0
 
 flutter_intl: 
   class_name: T
@@ -114,7 +134,7 @@ flutter_launcher_icons:
   ios: null
   remove_alpha_ios: true
   android: true
-  min_sdk_android: 21
+  min_sdk_android: 16
 
 flutter: 
   assets: 
@@ -125,6 +145,7 @@ flutter:
     - assets/js/package/
   shaders: 
     - assets/shader/texture_coordinate.frag
+    - assets/shader/star_trails.frag
   fonts: 
     - 
       family: Jellee

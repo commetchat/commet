@@ -16,12 +16,18 @@ class MatrixTimeline extends Timeline {
   MatrixTimeline(
     Client client,
     Room room,
-    matrix.Room matrixRoom,
-  ) {
+    matrix.Room matrixRoom, {
+    matrix.Timeline? initialTimeline,
+  }) {
     events = List.empty(growable: true);
     _matrixRoom = matrixRoom;
     this.client = client;
     this.room = room;
+    _matrixTimeline = initialTimeline;
+
+    if (_matrixTimeline != null) {
+      convertAllTimelineEvents();
+    }
   }
 
   Future<void> initTimeline() async {
@@ -35,6 +41,10 @@ class MatrixTimeline extends Timeline {
 
     // This could maybe make load times realllly slow if we have a ton of stuff in the cache?
     // Might be better to only convert as many as we would need to display immediately and then convert the rest on demand
+    convertAllTimelineEvents();
+  }
+
+  void convertAllTimelineEvents() {
     for (int i = 0; i < _matrixTimeline!.events.length; i++) {
       var converted = MatrixTimelineEvent(
           _matrixTimeline!.events[i], _matrixTimeline!.room.client,
@@ -78,50 +88,10 @@ class MatrixTimeline extends Timeline {
 
   @override
   void markAsRead(TimelineEvent event) async {
-    if (event.senderId == client.self!.identifier) return;
-
     if (event.type == EventType.edit ||
         event.status == TimelineEventStatus.synced) {
       _matrixTimeline?.setReadMarker();
     }
-  }
-
-  @override
-  List<String>? get receipts => getReceipts();
-
-  List<String>? getReceipts() {
-    if (_matrixTimeline == null) return null;
-    var state = _matrixTimeline!.room.receiptState;
-    if (state.mainThread == null) return null;
-
-    const displayableTypes = [
-      matrix.EventTypes.Message,
-      matrix.EventTypes.Sticker,
-    ];
-
-    Set<String> ids = {};
-    matrix.Event? latestDisplayableEvent;
-    for (int i = 0; i < _matrixTimeline!.events.length; i++) {
-      var event = _matrixTimeline!.events[i];
-      ids.add(event.eventId);
-
-      if (displayableTypes.contains(event.type)) {
-        latestDisplayableEvent = event;
-        break;
-      }
-    }
-
-    var receipts = state.mainThread!.otherUsers.entries
-        .where((element) => ids.contains(element.value.eventId))
-        .map((entry) => entry.key)
-        .toList(growable: true);
-
-    if (latestDisplayableEvent != null &&
-        latestDisplayableEvent.senderId != client.self!.identifier &&
-        !receipts.contains(latestDisplayableEvent.senderId))
-      receipts.add(latestDisplayableEvent.senderId);
-
-    return receipts;
   }
 
   @override

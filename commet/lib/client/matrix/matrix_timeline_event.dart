@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:commet/client/attachment.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_emoticon.dart';
@@ -8,6 +10,7 @@ import 'package:commet/client/timeline.dart';
 import 'package:commet/ui/atoms/rich_text/matrix_html_parser.dart';
 import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:commet/utils/mime.dart';
+import 'package:commet/utils/text_utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:matrix/matrix.dart' as matrix;
@@ -48,7 +51,7 @@ class MatrixTimelineEvent implements TimelineEvent {
   Map<Emoticon, Set<String>>? reactions;
 
   @override
-  String? get relatedEventId => event.relationshipEventId;
+  String? get relatedEventId => getRelatedEventId();
 
   @override
   EventRelationshipType? relationshipType;
@@ -68,6 +71,9 @@ class MatrixTimelineEvent implements TimelineEvent {
   @override
   late EventType type;
 
+  @override
+  List<Uri>? links;
+
   MatrixTimelineEvent(matrix.Event event, matrix.Client client,
       {matrix.Timeline? timeline}) {
     convertEvent(event, client, timeline: timeline);
@@ -80,11 +86,7 @@ class MatrixTimelineEvent implements TimelineEvent {
 
     try {
       if (event.relationshipType != null) {
-        switch (event.relationshipType) {
-          case "m.in_reply_to":
-            relationshipType = EventRelationshipType.reply;
-            break;
-        }
+        handleRelationshipType();
       }
 
       displayEvent = timeline != null ? event.getDisplayEvent(timeline) : null;
@@ -93,7 +95,8 @@ class MatrixTimelineEvent implements TimelineEvent {
 
       switch (event.type) {
         case matrix.EventTypes.Message:
-          parseMessage(displayEvent ?? event, client, timeline: timeline);
+          parseMessage(displayEvent ?? event, client,
+              timeline: timeline, originalEvent: event);
           break;
         case matrix.EventTypes.Sticker:
           if (timeline != null) parseSticker(event, client, timeline: timeline);
@@ -112,6 +115,45 @@ class MatrixTimelineEvent implements TimelineEvent {
         rethrow;
       }
     }
+  }
+
+  void handleRelationshipType() {
+    switch (event.relationshipType) {
+      case "m.in_reply_to":
+        relationshipType = EventRelationshipType.reply;
+        break;
+      case "m.thread":
+        if (getThreadRichResponseId() != null) {
+          relationshipType = EventRelationshipType.reply;
+        }
+    }
+  }
+
+  String? getThreadRichResponseId() {
+    var rel = event.content["m.relates_to"] as Map<String, dynamic>?;
+    if (rel == null) {
+      return null;
+    }
+
+    var reponse = rel["m.in_reply_to"] as Map<String, dynamic>?;
+
+    if (reponse == null) {
+      return null;
+    }
+
+    if (rel["is_falling_back"] == true) {
+      return null;
+    }
+
+    return reponse["event_id"];
+  }
+
+  String? getRelatedEventId() {
+    if (event.relationshipType == "m.thread") {
+      return getThreadRichResponseId();
+    }
+
+    return event.relationshipEventId;
   }
 
   EventType? convertType(matrix.Event event) {
@@ -190,18 +232,18 @@ class MatrixTimelineEvent implements TimelineEvent {
     return EventType.unknown;
   }
 
-  void parseMessage(matrix.Event matrixEvent, matrix.Client client,
-      {matrix.Timeline? timeline}) {
-    handleFormatting(matrixEvent, client);
+  void parseMessage(matrix.Event displayEvent, matrix.Client client,
+      {matrix.Timeline? timeline, required matrix.Event originalEvent}) {
+    handleFormatting(displayEvent, client);
 
-    parseAnyAttachments(matrixEvent, client);
+    parseAnyAttachments(displayEvent, client);
     if (timeline != null) {
-      handleReactions(matrixEvent, timeline);
+      handleReactions(originalEvent, timeline);
     }
 
     // if the message body is the same as a file name we dont want to display that
     if (attachments != null &&
-        attachments!.any((element) => matrixEvent.body == element.name)) {
+        attachments!.any((element) => displayEvent.body == element.name)) {
       body = null;
       formattedBody = null;
       formattedContent = null;
@@ -230,16 +272,37 @@ class MatrixTimelineEvent implements TimelineEvent {
       formattedBody = body!;
     }
 
+    var text = formattedBody!;
+    var start = text.indexOf("<mx-reply>");
+    var end = text.indexOf("</mx-reply>");
+
+    if (start != -1 && end != -1 && start < end) {
+      text = text.replaceRange(start, end, "");
+    }
+
+    links = TextUtils.findUrls(text);
+
+    links?.removeWhere((element) => element.authority == "matrix.to");
+    if (links?.isEmpty == true) {
+      links = null;
+    }
+
     formattedContent =
         Container(key: GlobalKey(), child: buildFormattedContent());
   }
 
   @override
-  Widget buildFormattedContent() {
+  Widget? buildFormattedContent() {
+    if (formattedBody == null) {
+      return null;
+    }
+
     return MatrixHtmlParser.parse(formattedBody!, event.room.client);
   }
 
   void parseAnyAttachments(matrix.Event matrixEvent, matrix.Client client) {
+    if (matrixEvent.status.isSending) return;
+
     if (matrixEvent.hasAttachment) {
       double? width = matrixEvent.attachmentWidth;
       double? height = matrixEvent.attachmentHeight;
@@ -258,20 +321,25 @@ class MatrixTimelineEvent implements TimelineEvent {
             name: matrixEvent.body,
             height: height);
       } else if (Mime.videoTypes.contains(matrixEvent.attachmentMimetype)) {
-        attachment = VideoAttachment(
-            MxcFileProvider(client, matrixEvent.attachmentMxcUrl!,
-                event: matrixEvent),
-            thumbnail: matrixEvent.videoThumbnailUrl != null
-                ? MatrixMxcImage(matrixEvent.videoThumbnailUrl!, client,
-                    blurhash: matrixEvent.attachmentBlurhash,
-                    doFullres: false,
-                    doThumbnail: true,
-                    matrixEvent: matrixEvent)
-                : null,
-            name: matrixEvent.body,
-            width: width,
-            fileSize: matrixEvent.infoMap['size'] as int?,
-            height: height);
+        // Only load videos if the event has finished sending, otherwise
+        // matrix dart sdk gives us the video file when we ask for thumbnail
+        if (matrixEvent.status.isSending == false) {
+          attachment = VideoAttachment(
+              MxcFileProvider(client, matrixEvent.attachmentMxcUrl!,
+                  event: matrixEvent),
+              thumbnail: matrixEvent.videoThumbnailUrl != null
+                  ? MatrixMxcImage(matrixEvent.videoThumbnailUrl!, client,
+                      blurhash: matrixEvent.attachmentBlurhash,
+                      doFullres: false,
+                      autoLoadFullRes: false,
+                      doThumbnail: true,
+                      matrixEvent: matrixEvent)
+                  : null,
+              name: matrixEvent.body,
+              width: width,
+              fileSize: matrixEvent.infoMap['size'] as int?,
+              height: height);
+        }
       } else {
         attachment = FileAttachment(
             MxcFileProvider(client, matrixEvent.attachmentMxcUrl!,
@@ -323,4 +391,18 @@ class MatrixTimelineEvent implements TimelineEvent {
 
   @override
   bool get highlight => false;
+
+  @override
+  String get rawContent => const JsonEncoder.withIndent("  ")
+      .convert(const JsonDecoder().convert(jsonEncode(event.toJson())));
+
+  @override
+  bool operator ==(Object other) {
+    if (other is! MatrixTimelineEvent) return false;
+
+    return eventId == other.eventId;
+  }
+
+  @override
+  int get hashCode => eventId.hashCode;
 }

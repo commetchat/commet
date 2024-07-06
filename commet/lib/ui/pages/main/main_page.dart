@@ -3,8 +3,8 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/voip/voip_component.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
+import 'package:commet/client/profile.dart';
 import 'package:commet/config/layout_config.dart';
-import 'package:commet/main.dart';
 import 'package:commet/ui/pages/setup/setup_page.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:commet/ui/navigation/navigation_utils.dart';
@@ -37,6 +37,7 @@ class MainPageState extends State<MainPage> {
   Room? _previousRoom;
   Space? _previousSpace;
 
+  String? _currentThreadId;
   MainPageSubView _currentView = MainPageSubView.home;
 
   StreamSubscription? onSpaceUpdateSubscription;
@@ -47,9 +48,10 @@ class MainPageState extends State<MainPage> {
 
   ClientManager get clientManager => widget.clientManager;
 
-  Peer get currentUser => getCurrentUser();
+  Profile get currentUser => getCurrentUser();
   Space? get currentSpace => _currentSpace;
   Room? get currentRoom => _currentRoom;
+  String? get currentThreadId => _currentThreadId;
 
   VoipSession? get currentCall => currentRoom == null
       ? null
@@ -77,9 +79,10 @@ class MainPageState extends State<MainPage> {
         selectRoom(room);
       }
     }
-    backgroundTaskManager.onListUpdate.listen((event) {
-      setState(() {});
-    });
+
+    // backgroundTaskManager.onListUpdate.listen((event) {
+    //   setState(() {});
+    // });
 
     onCallStartedSubscription =
         clientManager.callManager.currentSessions.onListUpdated.listen((event) {
@@ -87,6 +90,8 @@ class MainPageState extends State<MainPage> {
     });
 
     EventBus.openRoom.stream.listen(onOpenRoomSignal);
+    EventBus.openThread.stream.listen(onOpenThreadSignal);
+    EventBus.closeThread.stream.listen(onCloseThreadSignal);
     SchedulerBinding.instance.scheduleFrameCallback(onFirstFrame);
   }
 
@@ -104,7 +109,7 @@ class MainPageState extends State<MainPage> {
     super.dispose();
   }
 
-  Peer getCurrentUser() {
+  Profile getCurrentUser() {
     if (currentRoom != null) return currentRoom!.client.self!;
 
     if (currentSpace != null) return currentSpace!.client.self!;
@@ -132,7 +137,6 @@ class MainPageState extends State<MainPage> {
     clearRoomSelection();
 
     onSpaceUpdateSubscription?.cancel();
-    onSpaceUpdateSubscription = space?.onUpdate.listen(onSpaceUpdated);
     setState(() {
       _previousSpace = _currentSpace;
       _currentSpace = space;
@@ -144,14 +148,14 @@ class MainPageState extends State<MainPage> {
     if (room == currentRoom) return;
 
     onRoomUpdateSubscription?.cancel();
-    onRoomUpdateSubscription = room.onUpdate.listen(onRoomUpdated);
 
     setState(() {
       _previousRoom = currentRoom;
       _currentRoom = room;
+      _currentThreadId = null;
     });
 
-    EventBus.onRoomOpened.add(room);
+    EventBus.onSelectedRoomChanged.add(room);
   }
 
   void clearRoomSelection() {
@@ -162,6 +166,8 @@ class MainPageState extends State<MainPage> {
       }
       _currentRoom = null;
     });
+
+    EventBus.onSelectedRoomChanged.add(null);
   }
 
   void clearSpaceSelection() {
@@ -191,14 +197,6 @@ class MainPageState extends State<MainPage> {
       _currentView = MainPageSubView.home;
       clearSpaceSelection();
     });
-  }
-
-  void onSpaceUpdated(void _) {
-    setState(() {});
-  }
-
-  void onRoomUpdated(void _) {
-    setState(() {});
   }
 
   void onOpenRoomSignal((String, String?) strings) {
@@ -237,5 +235,33 @@ class MainPageState extends State<MainPage> {
             room: currentRoom!,
           ));
     }
+  }
+
+  void onOpenThreadSignal((String, String, String) event) {
+    var clientId = event.$1;
+    var roomId = event.$2;
+    var threadEventRootId = event.$3;
+
+    var client = clientManager.getClient(clientId);
+    if (client == null) {
+      return;
+    }
+
+    var room = client.getRoom(roomId);
+    if (room == null) {
+      return;
+    }
+
+    selectRoom(room);
+
+    setState(() {
+      _currentThreadId = threadEventRootId;
+    });
+  }
+
+  void onCloseThreadSignal(void event) {
+    setState(() {
+      _currentThreadId = null;
+    });
   }
 }

@@ -187,53 +187,60 @@ class TextButton extends StatelessWidget {
     return material.TextButton(
         clipBehavior: Clip.antiAlias,
         style: ButtonStyle(
-          backgroundColor: MaterialStatePropertyAll(
-              highlighted ? Theme.of(context).highlightColor : null),
+          backgroundColor: MaterialStatePropertyAll(highlighted
+              ? Theme.of(context).colorScheme.secondaryContainer
+              : null),
         ),
-        child: material.Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: material
+            .Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (icon != null || useAvatar)
-                    Padding(
-                      padding: const EdgeInsets.all(1.0),
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: SizedBox(
-                          width: avatarRadius * 2,
-                          height: avatarRadius * 2,
-                          child: useAvatar
-                              ? Avatar(
-                                  radius: avatarRadius,
-                                  image: avatar,
-                                  placeholderColor: avatarPlaceholderColor,
-                                  placeholderText: avatarPlaceholderText,
-                                )
-                              : Icon(
-                                  size: iconSize,
-                                  icon!,
-                                  weight: 0.5,
-                                  color: iconColor,
-                                ),
-                        ),
-                      ),
+              if (icon != null || useAvatar)
+                Padding(
+                  padding: const EdgeInsets.all(1.0),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: SizedBox(
+                      width: avatarRadius * 2,
+                      height: avatarRadius * 2,
+                      child: useAvatar
+                          ? Avatar(
+                              radius: avatarRadius,
+                              image: avatar,
+                              placeholderColor: avatarPlaceholderColor,
+                              placeholderText: avatarPlaceholderText,
+                            )
+                          : Icon(
+                              size: iconSize,
+                              icon!,
+                              weight: 0.5,
+                              color: highlighted
+                                  ? Theme.of(context)
+                                      .colorScheme
+                                      .onSecondaryContainer
+                                  : iconColor ??
+                                      Theme.of(context).colorScheme.onSurface,
+                            ),
                     ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
-                    child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: tiamat.Text.labelEmphasised(
-                          text,
-                          color: textColor,
-                        )),
                   ),
-                ],
+                ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+                child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: tiamat.Text.labelEmphasised(
+                      text,
+                      color: highlighted
+                          ? Theme.of(context).colorScheme.onSecondaryContainer
+                          : textColor,
+                    )),
               ),
-              if (footer != null) footer!,
-            ]),
+            ],
+          ),
+          if (footer != null) footer!,
+        ]),
         onPressed: () => onTap?.call());
   }
 }

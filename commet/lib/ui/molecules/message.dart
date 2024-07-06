@@ -1,6 +1,10 @@
 import 'package:commet/client/components/emoticon/emoticon.dart';
+import 'package:commet/client/components/url_preview/url_preview_component.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/diagnostic/benchmark_values.dart';
 import 'package:commet/ui/atoms/emoji_reaction.dart';
+import 'package:commet/ui/molecules/url_preview_widget.dart';
+import 'package:commet/utils/link_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart';
@@ -27,6 +31,8 @@ class Message extends StatefulWidget {
       this.reactions,
       this.onReactionTapped,
       this.onLongPress,
+      this.links,
+      this.loadingUrlPreviews = false,
       this.isInReply = false,
       this.child,
       this.showSender = true});
@@ -52,6 +58,9 @@ class Message extends StatefulWidget {
   final Widget body;
 
   final Widget? child;
+
+  final UrlPreviewData? links;
+  final bool loadingUrlPreviews;
 
   final Map<Emoticon, Set<String>>? reactions;
 
@@ -121,6 +130,8 @@ class _MessageState extends State<Message> {
                       body(),
                       if (widget.edited) edited(),
                       if (widget.child != null) widget.child!,
+                      if (widget.links != null || widget.loadingUrlPreviews)
+                        urlPreviews(),
                       if (widget.reactions != null) reactions(),
                     ],
                   ),
@@ -129,6 +140,19 @@ class _MessageState extends State<Message> {
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  Widget urlPreviews() {
+    BenchmarkValues.numTimelineUrlPreviewBuilt += 1;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0, 0, 40, 0),
+      child: UrlPreviewWidget(
+        widget.links,
+        onTap: () {
+          LinkUtils.open(widget.links!.uri);
+        },
       ),
     );
   }
@@ -161,6 +185,7 @@ class _MessageState extends State<Message> {
   }
 
   Widget replyText() {
+    BenchmarkValues.numTimelineReplyBodyBuilt += 1;
     return SizedBox(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.baseline,
@@ -202,11 +227,19 @@ class _MessageState extends State<Message> {
     return Padding(
         padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
         child: SizedBox(
-          child: tiamat.Text.labelLow(widget.showDetailed
-              ? intl.DateFormat().format(widget.sentTimeStamp.toLocal())
-              : intl.DateFormat(DateFormat.HOUR_MINUTE)
-                  .format(widget.sentTimeStamp.toLocal())),
-        ));
+            child: tiamat.Text.labelLow(widget.showDetailed
+                ? MediaQuery.of(context).alwaysUse24HourFormat
+                    ? intl.DateFormat.yMMMMd()
+                        .add_Hms()
+                        .format(widget.sentTimeStamp.toLocal())
+                    : intl.DateFormat.yMMMMd()
+                        .add_jms()
+                        .format(widget.sentTimeStamp.toLocal())
+                : MediaQuery.of(context).alwaysUse24HourFormat
+                    ? intl.DateFormat.Hm()
+                        .format(widget.sentTimeStamp.toLocal())
+                    : intl.DateFormat.jm()
+                        .format(widget.sentTimeStamp.toLocal()))));
   }
 
   Widget body() {
@@ -260,6 +293,45 @@ class ReplyLinePainter extends CustomPainter {
     path.relativeArcToPoint(Offset(radius, -radius),
         radius: Radius.circular(radius));
     path.lineTo(size.width - 5, size.height / 2);
+    canvas.drawPath(path, _paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return true;
+  }
+}
+
+class ThreadLinePainter extends CustomPainter {
+  Color pathColor;
+  double strokeWidth;
+  double radius;
+  double padding;
+  ThreadLinePainter(
+      {this.pathColor = Colors.white,
+      this.strokeWidth = 1.5,
+      this.radius = 3,
+      this.padding = 2}) {
+    _paint = Paint()
+      ..color = pathColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = strokeWidth
+      ..strokeCap = StrokeCap.round;
+  }
+
+  late Paint _paint;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Path path = Path();
+    path.moveTo(strokeWidth / 2, 0);
+    path.relativeLineTo(0, (size.height / 2) - radius);
+    path.relativeArcToPoint(
+      Offset(radius, radius),
+      clockwise: false,
+      radius: Radius.circular(radius),
+    );
+    path.relativeLineTo(size.width - radius - strokeWidth, 0);
     canvas.drawPath(path, _paint);
   }
 

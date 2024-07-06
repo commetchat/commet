@@ -5,6 +5,8 @@ import 'package:commet/main.dart';
 import 'package:flutter/material.dart';
 import 'dart:core';
 
+import 'package:tiamat/config/config.dart';
+
 const double bleedWidth = 20;
 
 /// Display sections
@@ -156,7 +158,7 @@ class OverlappingPanelsState extends State<OverlappingPanels>
   }
 
   void reveal(RevealSide direction) {
-    final mediaWidth = MediaQuery.of(context).size.width;
+    final mediaWidth = MediaQuery.of(context).size.width / preferences.appScale;
     final animationController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 300));
 
@@ -187,25 +189,9 @@ class OverlappingPanelsState extends State<OverlappingPanels>
 
   @override
   Widget build(BuildContext context) {
-    return Stack(children: [
-      Offstage(
-        offstage: translate < 0,
-        child: widget.left,
-      ),
-      Offstage(
-        offstage: translate > 0,
-        child: widget.right,
-      ),
-      Transform.translate(
-        offset: Offset(translate, 0),
-        child: DecoratedBox(
-            decoration: BoxDecoration(boxShadow: [
-              BoxShadow(color: Colors.black.withAlpha(30), blurRadius: 20)
-            ]),
-            child: widget.main),
-      ),
-      GestureDetector(
-        behavior: HitTestBehavior.translucent,
+    double borderRadius = 20;
+
+    return GestureDetector(
         onHorizontalDragStart: (details) {
           widget.onDragStart?.call();
         },
@@ -215,7 +201,50 @@ class OverlappingPanelsState extends State<OverlappingPanels>
         onHorizontalDragEnd: (details) {
           _onApplyTranslation();
         },
-      ),
-    ]);
+        child: Stack(
+          children: [
+            Padding(
+              padding: EdgeInsets.fromLTRB(0, 0, widget.restWidth + 3, 0),
+              child: ClipRRect(
+                borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(borderRadius),
+                    bottomRight: Radius.circular(borderRadius)),
+                child: Offstage(
+                  offstage: translate < 0,
+                  child: widget.left,
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.fromLTRB(widget.restWidth + 3, 0, 0, 0),
+              child: ClipRRect(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(borderRadius),
+                    bottomLeft: Radius.circular(borderRadius)),
+                child: Offstage(
+                  offstage: translate > 0,
+                  child: widget.right,
+                ),
+              ),
+            ),
+            Transform.translate(
+              offset: Offset(translate, 0),
+              child: Container(
+                  clipBehavior: Clip.antiAlias,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(
+                          (translate.abs() * 0.1).clamp(0, 20)),
+                      boxShadow: Theme.of(context)
+                              .extension<ShadowSettings>()
+                              ?.shadows ??
+                          [
+                            BoxShadow(
+                                color: Colors.black.withAlpha(30),
+                                blurRadius: 20)
+                          ]),
+                  child: widget.main),
+            )
+          ],
+        ));
   }
 }

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:commet/cache/file_provider.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/molecules/video_player/video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/atoms/popup_dialog.dart';
@@ -117,7 +118,7 @@ class _LightboxState extends State<Lightbox> {
         color: Colors.transparent,
         child: Padding(
           padding: const EdgeInsets.all(BuildConfig.MOBILE ? 10 : 100.0),
-          child: SafeArea(
+          child: ScaledSafeArea(
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: InteractiveViewer(

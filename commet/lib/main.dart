@@ -5,6 +5,7 @@ import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/component.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/config/layout_config.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/config/preferences.dart';
 import 'package:commet/debug/log.dart';
@@ -22,27 +23,26 @@ import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/scaled_app.dart';
 import 'package:commet/utils/shortcuts_manager.dart';
 import 'package:commet/utils/window_management.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:provider/provider.dart';
 import 'package:receive_intent/receive_intent.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-import 'package:tiamat/config/style/theme_amoled.dart';
 import 'package:tiamat/config/style/theme_changer.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:tiamat/config/style/theme_dark.dart';
-import 'package:tiamat/config/style/theme_light.dart';
 
 final GlobalKey<NavigatorState> navigator = GlobalKey();
 FileCache? fileCache;
 Preferences preferences = Preferences();
 ShortcutsManager shortcutsManager = ShortcutsManager();
 BackgroundTaskManager backgroundTaskManager = BackgroundTaskManager();
-Diagnostics diagnostics = Diagnostics();
 ClientManager? clientManager;
 
 bool isHeadless = false;
@@ -51,6 +51,7 @@ Future<void>? loading;
 
 @pragma('vm:entry-point')
 void bubble() async {
+  Log.prefix = "bubble";
   ensureBindingInit();
   await initNecessary();
   await initGuiRequirements();
@@ -69,12 +70,9 @@ void bubble() async {
     }
   }
 
-  var theme = preferences.theme;
-  var initialTheme = {
-    AppTheme.dark: ThemeDark.theme,
-    AppTheme.light: ThemeLight.theme,
-    AppTheme.amoled: ThemeAmoled.theme,
-  }[theme];
+  Log.prefix = "bubble-$initialRoomId";
+
+  var initialTheme = await preferences.resolveTheme();
 
   runApp(MaterialApp(
       title: 'Commet',
@@ -106,7 +104,15 @@ void main() async {
 }
 
 void appMain() async {
+  Log.prefix = "main";
   try {
+    if (BuildConfig.WEB) {
+      var info = await DeviceInfoPlugin().deviceInfo;
+      if (info is WebBrowserInfo) {
+        Layout.browserInfo = info;
+      }
+    }
+
     ensureBindingInit();
 
     FlutterError.onError = Log.getFlutterErrorReporter(FlutterError.onError);
@@ -148,8 +154,10 @@ Future<void> initNecessary() async {
 
   await Future.wait([
     if (fileCache != null) fileCache!.init(),
-    ClientManager.init(),
   ]);
+
+  clientManager = await ClientManager.init();
+  Diagnostics.setPostInit();
 
   shortcutsManager.init();
   NotificationManager.init();
@@ -169,6 +177,7 @@ Future<void> initGuiRequirements() async {
     WindowManagement.init(),
     UnicodeEmojis.load(),
     initializeMessages(locale.languageCode)
+    // initializeMessagesDebug()
   ]);
 
   Intl.defaultLocale = locale.languageCode;
@@ -182,8 +191,9 @@ Future<void> startGui() async {
   initGuiRequirements();
 
   if (PlatformUtils.isAndroid) {
-    var initialIntent = await ReceiveIntent.getInitialIntent();
+    enableEdgeToEdge();
 
+    var initialIntent = await ReceiveIntent.getInitialIntent();
     ReceiveIntent.receivedIntentStream.listen((event) {
       var uri = AndroidIntentHelper.getUriFromIntent(event);
       if (uri is OpenRoomURI) {
@@ -205,23 +215,38 @@ Future<void> startGui() async {
     return scale;
   };
 
+  var initialTheme = await preferences.resolveTheme();
+
   runApp(App(
     clientManager: clientManager!,
-    initialTheme: preferences.theme,
+    initialTheme: initialTheme,
     initialClientId: initialClientId,
     initialRoom: initialRoomId,
   ));
+}
+
+void enableEdgeToEdge() async {
+  var theme = await preferences.resolveTheme();
+  SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.edgeToEdge); // Enable Edge-to-Edge on Android 10+
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      systemNavigationBarColor:
+          Colors.transparent, // Setting a transparent navigation bar color
+      systemNavigationBarContrastEnforced: true, // Default
+      systemNavigationBarIconBrightness: theme.brightness == Brightness.dark
+          ? Brightness.light
+          : Brightness.dark));
 }
 
 class App extends StatelessWidget {
   const App(
       {Key? key,
       required this.clientManager,
-      this.initialTheme = AppTheme.dark,
+      this.initialTheme,
       this.initialRoom,
       this.initialClientId})
       : super(key: key);
-  final AppTheme initialTheme;
+  final ThemeData? initialTheme;
   final ClientManager clientManager;
 
   final String? initialRoom;
@@ -230,11 +255,14 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ThemeChanger(
-        initialTheme: {
-          AppTheme.dark: ThemeDark.theme,
-          AppTheme.light: ThemeLight.theme,
-          AppTheme.amoled: ThemeAmoled.theme,
-        }[initialTheme]!,
+        shouldFollowSystemTheme: () => preferences.shouldFollowSystemTheme,
+        getDarkTheme: () {
+          return preferences.resolveTheme(overrideBrightness: Brightness.dark);
+        },
+        getLightTheme: () {
+          return preferences.resolveTheme(overrideBrightness: Brightness.light);
+        },
+        initialTheme: initialTheme ?? ThemeDark.theme,
         materialAppBuilder: (context, theme) {
           return MaterialApp(
             title: 'Commet',

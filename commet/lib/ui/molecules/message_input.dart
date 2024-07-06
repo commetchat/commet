@@ -2,11 +2,14 @@ import 'dart:async';
 
 import 'package:commet/client/components/gif/gif_component.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/config/platform_utils.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/emoji_widget.dart';
 import 'package:commet/ui/atoms/rich_text_field.dart';
 import 'package:commet/ui/molecules/attachment_icon.dart';
+import 'package:commet/ui/organisms/attachment_processor/attachment_processor.dart';
 import 'package:commet/ui/molecules/emoticon_picker.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/organisms/chat/chat.dart';
 import 'package:commet/client/components/emoticon/emoji_pack.dart';
 import 'package:commet/client/components/gif/gif_search_result.dart';
@@ -16,11 +19,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:implicitly_animated_list/implicitly_animated_list.dart';
-import 'package:intl/intl.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
 import 'package:pasteboard/pasteboard.dart';
-import 'package:tiamat/config/config.dart';
-import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import '../../client/attachment.dart';
 import '../../client/components/emoticon/emoticon.dart';
@@ -49,7 +49,7 @@ class MessageInput extends StatefulWidget {
       this.addAttachment,
       this.onTextUpdated,
       this.removeAttachment,
-      this.typingUsernames,
+      this.typingIndicatorWidget,
       this.availibleEmoticons,
       this.availibleStickers,
       this.gifComponent,
@@ -76,7 +76,7 @@ class MessageInput extends StatefulWidget {
   final Stream<String>? setInputText;
   final bool isProcessing;
   final bool enabled;
-  final List<String>? typingUsernames;
+  final Widget? typingIndicatorWidget;
   final List<EmoticonPack>? availibleEmoticons;
   final List<EmoticonPack>? availibleStickers;
   final GifComponent? gifComponent;
@@ -110,16 +110,6 @@ class MessageInputState extends State<MessageInput> {
   (int, int)? autoFillRange;
   ScrollController autofillScrollController = ScrollController();
 
-  String typingUsers(int howMany, String user1, String user2, String user3) =>
-      Intl.plural(howMany,
-          one: "$user1 is typing...",
-          two: "$user1 and $user2 are typing...",
-          few: "$user1, $user2, and $user3 are typing...",
-          other: "Several people are typing...",
-          desc: "Text to display which users are currently typing",
-          name: "typingUsers",
-          args: [howMany, user1, user2, user3]);
-
   void unfocus() {
     textFocus.unfocus();
   }
@@ -149,15 +139,13 @@ class MessageInputState extends State<MessageInput> {
 
     setInputTextSubscription = widget.setInputText?.listen(onSetInputText);
 
-    controller.addListener(onTextfieldUpdated);
-
     textFocus = FocusNode(onKeyEvent: onKey);
 
     super.initState();
   }
 
   String? lastSearchText;
-  void onTextfieldUpdated() {
+  void onTextfieldUpdated(String value) {
     widget.onTextUpdated?.call(controller.text);
     var range = getAutofillTextRange();
 
@@ -165,7 +153,7 @@ class MessageInputState extends State<MessageInput> {
       return;
     }
 
-    var text = controller.text.substring(range.$1, range.$2);
+    var text = value.substring(range.$1, range.$2);
 
     if (text == "") {
       setState(() {
@@ -373,78 +361,77 @@ class MessageInputState extends State<MessageInput> {
 
   @override
   Widget build(BuildContext context) {
-    var padding = const EdgeInsets.fromLTRB(5, 0, 5, 0);
+    var padding = const EdgeInsets.fromLTRB(0, 0, 0, 0);
+
     return Material(
       color: Colors.transparent,
       child: TextFieldTapRegion(
         child: Opacity(
           opacity: widget.isProcessing ? 0.5 : 1,
-          child: Tile(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                typingUsersWidget(),
-                if (widget.interactionType != null) interactionText(),
-                if (widget.attachments != null &&
-                    widget.attachments!.isNotEmpty)
-                  displayAttachments(),
-                ConstrainedBox(
-                  constraints: const BoxConstraints(maxHeight: 200),
-                  child: Padding(
-                    padding: padding,
-                    child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (widget.enabled) addAttachmentButton(),
-                          Flexible(
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(5),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                    color: Theme.of(context)
-                                        .extension<ExtraColors>()!
-                                        .surfaceLow2),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    textInput(context),
-                                    if (widget.enabled) toggleEmojiButton(),
-                                  ],
-                                ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (widget.typingIndicatorWidget != null)
+                widget.typingIndicatorWidget!,
+              if (widget.interactionType != null) interactionText(),
+              if (widget.attachments != null && widget.attachments!.isNotEmpty)
+                displayAttachments(),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 200),
+                child: Padding(
+                  padding: padding,
+                  child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (widget.enabled) addAttachmentButton(),
+                        Flexible(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(5),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .surfaceContainerLow),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  textInput(context),
+                                  if (widget.enabled) toggleEmojiButton(),
+                                ],
                               ),
                             ),
                           ),
-                          if (widget.enabled) sendMessageButton()
-                        ]),
-                  ),
-                ),
-                SizedBox(
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const SizedBox(height: 30),
-                        if (autoFillResults != null) autofillResultsList(),
-                        if (autoFillResults == null)
-                          const Expanded(child: SizedBox()),
-                        if (widget.readIndicator != null &&
-                            autoFillResults?.isEmpty != false)
-                          readReceipts()
+                        ),
+                        if (widget.enabled) sendMessageButton()
                       ]),
                 ),
-                if (widget.availibleEmoticons != null &&
-                    widget.availibleStickers != null)
-                  AnimatedContainer(
-                    curve: Curves.easeOutExpo,
-                    duration: const Duration(milliseconds: 500),
-                    height: showEmotePicker ? emotePickerHeight : 0,
-                    child: buildEmojiPicker(),
-                  )
-              ],
-            ),
+              ),
+              SizedBox(
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const SizedBox(height: 30),
+                      if (autoFillResults != null) autofillResultsList(),
+                      if (autoFillResults == null)
+                        const Expanded(child: SizedBox()),
+                      if (widget.readIndicator != null &&
+                          autoFillResults?.isEmpty != false)
+                        readReceipts()
+                    ]),
+              ),
+              if (widget.availibleEmoticons != null &&
+                  widget.availibleStickers != null)
+                AnimatedContainer(
+                  curve: Curves.easeOutExpo,
+                  duration: const Duration(milliseconds: 500),
+                  height: showEmotePicker ? emotePickerHeight : 0,
+                  child: ClipRect(child: buildEmojiPicker()),
+                )
+            ],
           ),
         ),
       ),
@@ -509,7 +496,7 @@ class MessageInputState extends State<MessageInput> {
                   borderRadius: BorderRadius.circular(3),
                   child: Material(
                     color: selected
-                        ? Theme.of(context).extension<ExtraColors>()!.highlight
+                        ? Theme.of(context).colorScheme.tertiaryContainer
                         : Colors.transparent,
                     child: InkWell(
                       onTap: () => applyAutoFill(data),
@@ -522,8 +509,8 @@ class MessageInputState extends State<MessageInput> {
                             tiamat.Text.labelLow(
                               data.result,
                               color: selected
-                                  ? Theme.of(context).colorScheme.onPrimary
-                                  : null,
+                                  ? Theme.of(context).colorScheme.tertiary
+                                  : Theme.of(context).colorScheme.secondary,
                             ),
                           ],
                         ),
@@ -539,18 +526,17 @@ class MessageInputState extends State<MessageInput> {
     );
   }
 
-  Padding sendMessageButton() {
+  Widget sendMessageButton() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 0, 0, 0),
-      child: SizedBox(
-          width: widget.size,
-          height: widget.size,
-          child: tiamat.IconButton(
-            icon: Icons.send,
-            onPressed: sendMessage,
-            size: widget.size * widget.iconScale,
-          )),
-    );
+        padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+        child: SizedBox(
+            width: widget.size,
+            height: widget.size,
+            child: tiamat.CircleButton(
+              icon: Icons.send,
+              radius: widget.size * widget.iconScale,
+              onPressed: sendMessage,
+            )));
   }
 
   Widget toggleEmojiButton() {
@@ -575,6 +561,7 @@ class MessageInputState extends State<MessageInput> {
       child: Stack(
         children: [
           TextField(
+            onChanged: onTextfieldUpdated,
             controller: controller,
             focusNode: textFocus,
             readOnly: !widget.enabled,
@@ -596,7 +583,7 @@ class MessageInputState extends State<MessageInput> {
 
   Padding addAttachmentButton() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
+      padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
       child: SizedBox(
         width: widget.size,
         height: widget.size,
@@ -650,10 +637,24 @@ class MessageInputState extends State<MessageInput> {
       for (var file in result.files) {
         var attachment = PendingFileAttachment(
             name: file.name,
-            path: file.path,
+            path: PlatformUtils.isWeb ? null : file.path,
             data: file.bytes,
             size: file.bytes?.length);
-        widget.addAttachment?.call(attachment);
+        if (mounted) {
+          var processedFile = await AdaptiveDialog.show<PendingFileAttachment>(
+            scrollable: false,
+            context,
+            builder: (context) {
+              return AttachmentProcessor(
+                attachment: attachment,
+              );
+            },
+          );
+
+          if (processedFile != null) {
+            widget.addAttachment?.call(processedFile);
+          }
+        }
       }
     }
   }
@@ -801,30 +802,8 @@ class MessageInputState extends State<MessageInput> {
       // to apply the normal behavior when click on select all
       onSelectAll: () =>
           editableTextState.selectAll(SelectionChangedCause.toolbar),
-      onLiveTextInput: null, onLookUp: () {}, onSearchWeb: () {},
-      onShare: () {},
+      onLiveTextInput: null, onLookUp: null, onSearchWeb: null,
+      onShare: null,
     );
-  }
-
-  Widget typingUsersWidget() {
-    String text = getTypingText();
-
-    return Align(
-        alignment: Alignment.centerLeft,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(0, 0, 0, 4),
-          child: tiamat.Text.labelLow(text),
-        ));
-  }
-
-  String getTypingText() {
-    if (widget.typingUsernames?.isEmpty == true) return "";
-
-    String user1 = widget.typingUsernames![0];
-    String user2 =
-        widget.typingUsernames!.length >= 2 ? widget.typingUsernames![1] : "";
-    String user3 =
-        widget.typingUsernames!.length >= 3 ? widget.typingUsernames![2] : "";
-    return typingUsers(widget.typingUsernames!.length, user1, user2, user3);
   }
 }

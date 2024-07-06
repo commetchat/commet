@@ -1,3 +1,4 @@
+import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/pages/settings/settings_button.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
 import 'package:flutter/material.dart' as m;
@@ -30,8 +31,8 @@ class _MobileSettingsPageState extends State<MobileSettingsPage> {
   @override
   Widget build(BuildContext context) {
     return m.Material(
-      child: Tile.low1(
-        child: SafeArea(
+      child: Tile.surfaceContainer(
+        child: ScaledSafeArea(
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
@@ -149,7 +150,7 @@ class SettingsSubPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return m.Material(
       child: Tile(
-        child: SafeArea(
+        child: ScaledSafeArea(
           child: m.Padding(
             padding: const EdgeInsets.all(8.0),
             child: Stack(

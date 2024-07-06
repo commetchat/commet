@@ -29,6 +29,11 @@ class MatrixSpace extends Space {
   final NotifyingList<RoomPreview> _previews =
       NotifyingList.empty(growable: true);
 
+  @override
+  List<Space> get subspaces => List.from(_matrixRoom.spaceChildren
+      .map((child) => _client.getSpace(child.roomId!))
+      .where((e) => e != null));
+
   final StreamController<Room> _onChildUpdated = StreamController.broadcast();
 
   ImageProvider? _avatar;
@@ -94,19 +99,19 @@ class MatrixSpace extends Space {
   String get identifier => _matrixRoom.id;
 
   @override
-  Stream<int> get onChildPreviewAdded => _previews.onAdd;
+  Stream<int> get onChildRoomPreviewAdded => _previews.onAdd;
 
   @override
-  Stream<int> get onChildPreviewRemoved => _previews.onRemove;
+  Stream<int> get onChildRoomPreviewRemoved => _previews.onRemove;
 
   @override
-  Stream<void> get onChildPreviewsUpdated => _previews.onListUpdated;
+  Stream<void> get onChildRoomPreviewsUpdated => _previews.onListUpdated;
 
   @override
-  Stream<Room> get onChildUpdated => _onChildUpdated.stream;
+  Stream<Room> get onChildRoomUpdated => _onChildUpdated.stream;
 
   @override
-  Stream<void> get onChildrenUpdated => _rooms.onListUpdated;
+  Stream<void> get onChildRoomsUpdated => _rooms.onListUpdated;
 
   @override
   Stream<int> get onRoomAdded => _rooms.onAdd;
@@ -127,6 +132,32 @@ class MatrixSpace extends Space {
   bool get fullyLoaded => _fullyLoaded;
 
   late List<StreamSubscription> _subscriptions;
+
+  @override
+  bool get isTopLevel {
+    var parents = _matrixRoom.spaceParents;
+
+    bool anyParentContainsRoom = false;
+    for (var parent in parents) {
+      if (parent.roomId == null) {
+        continue;
+      }
+
+      var room = _matrixClient.getRoomById(parent.roomId!);
+      if (room == null) {
+        continue;
+      }
+
+      var contains =
+          room.spaceChildren.any((child) => child.roomId == _matrixRoom.id);
+      if (contains) {
+        anyParentContainsRoom = true;
+        break;
+      }
+    }
+
+    return !anyParentContainsRoom;
+  }
 
   MatrixSpace(
       MatrixClient client, matrix.Room room, matrix.Client matrixClient) {
@@ -199,10 +230,12 @@ class MatrixSpace extends Space {
       var room = client.getRoom(child.roomId!);
       if (room != null) {
         _previews.removeWhere((element) => element.roomId == room.identifier);
-        if (!containsRoom(room.identifier)) {
+
+        if (!containsRoom(room.identifier) &&
+            !client.hasSpace(room.identifier)) {
           _rooms.add(room);
         }
-      } else {}
+      }
     }
   }
 
@@ -272,7 +305,9 @@ class MatrixSpace extends Space {
     // read child rooms
     response.rooms
         .where((element) => element.roomId != identifier)
-        .where((element) => !containsRoom(element.roomId))
+        .where((element) =>
+            _matrixClient.getRoomById(element.roomId)?.membership !=
+            matrix.Membership.join)
         .forEach((element) {
       _previews.add(MatrixSpaceRoomChunkPreview(element, _matrixClient));
     });

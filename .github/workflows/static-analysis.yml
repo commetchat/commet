@@ -1,5 +1,7 @@
-on: push
 name: static-analysis
+on:
+  pull_request:
+  merge_group:
 
 env:
   PROJECT_PATH: commet
@@ -17,7 +19,7 @@ jobs:
       - name: Setup Flutter  ╰(✿˙ᗜ˙)੭━☆ﾟ.*･｡ﾟ
         uses: subosito/flutter-action@v2.8.0
         with:
-          flutter-version: '3.19.5'
+          flutter-version: '3.22.2'
           channel: 'stable'
 
       - name: Setup Tools  ᕙ|” ◉ ◡ ◉ ”|ᕗ

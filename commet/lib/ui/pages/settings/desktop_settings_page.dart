@@ -32,25 +32,31 @@ class DesktopSettingsPageState extends State<DesktopSettingsPage> {
   Widget build(BuildContext context) {
     return m.Material(
       color: m.Theme.of(context).colorScheme.surface,
-      child: Row(
-        mainAxisSize: MainAxisSize.max,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          tabSelector(context),
-          Expanded(
-            child: categories[selectedCategoryIndex]
-                    .tabs[selectedTabIndex]
-                    .makeScrollable
-                ? SingleChildScrollView(child: buildContent())
-                : buildContent(),
-          )
-        ],
+      child: Foundation(
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            tabSelector(context),
+            Expanded(
+              child: categories[selectedCategoryIndex]
+                      .tabs[selectedTabIndex]
+                      .makeScrollable
+                  ? SingleChildScrollView(child: buildContent())
+                  : buildContent(),
+            )
+          ],
+        ),
       ),
     );
   }
 
   Widget buildContent() {
     return Tile(
+      caulkPadTop: true,
+      caulkPadBottom: true,
+      caulkClipTopLeft: true,
+      caulkClipBottomLeft: true,
       key: ValueKey(selectedTabIndex),
       child: selectedCategoryIndex < categories.length &&
               selectedTabIndex < categories[selectedCategoryIndex].tabs.length
@@ -62,7 +68,13 @@ class DesktopSettingsPageState extends State<DesktopSettingsPage> {
   }
 
   Widget tabSelector(BuildContext context) {
-    return Tile.low1(
+    return Tile.surfaceContainer(
+      caulkPadRight: true,
+      caulkPadTop: true,
+      caulkPadBottom: true,
+      caulkClipTopRight: true,
+      caulkClipBottomRight: true,
+      caulkBorderRight: true,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: SizedBox(

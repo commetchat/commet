@@ -145,9 +145,9 @@ class Text extends StatelessWidget {
         autoAdjustBrightness = false,
         super(key: key);
 
-  const Text.tiny(this.text, {Key? key, this.overflow, this.maxLines})
+  const Text.tiny(this.text,
+      {Key? key, this.overflow, this.maxLines, this.color})
       : type = TextType.tiny,
-        color = null,
         autoAdjustBrightness = false,
         super(key: key);
 
@@ -175,22 +175,26 @@ class Text extends StatelessWidget {
         autoAdjustBrightness = false,
         super(key: key);
 
+  static Color adjustColor(BuildContext context, Color color) {
+    var hsl = HSLColor.fromColor(color!);
+    double lightness = hsl.lightness;
+    double saturation = hsl.saturation;
+    if (Theme.of(context).brightness == Brightness.dark) {
+      lightness = clampDouble(hsl.lightness, 0.75, 1);
+    } else {
+      lightness = clampDouble(hsl.lightness, 0, 0.7);
+    }
+
+    return HSLColor.fromAHSL(hsl.alpha, hsl.hue, saturation, lightness)
+        .toColor();
+  }
+
   @override
   Widget build(BuildContext context) {
     TextStyle style;
     var newColor = color;
     if (autoAdjustBrightness == true && color != null) {
-      var hsl = HSLColor.fromColor(color!);
-      double lightness = hsl.lightness;
-      double saturation = hsl.saturation;
-      if (Theme.of(context).brightness == Brightness.dark) {
-        lightness = clampDouble(hsl.lightness, 0.75, 1);
-      } else {
-        lightness = clampDouble(hsl.lightness, 0, 0.7);
-      }
-
-      newColor = HSLColor.fromAHSL(hsl.alpha, hsl.hue, saturation, lightness)
-          .toColor();
+      newColor = adjustColor(context, color!);
     }
 
     switch (type) {

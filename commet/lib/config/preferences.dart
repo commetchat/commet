@@ -1,21 +1,31 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:commet/config/build_config.dart';
+import 'package:commet/config/platform_utils.dart';
+import 'package:commet/config/theme_config.dart';
+import 'package:commet/main.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tiamat/config/style/theme_amoled.dart';
+import 'package:tiamat/config/style/theme_json_converter.dart';
 import 'package:window_manager/window_manager.dart';
-
-enum AppTheme { light, dark, amoled }
+import 'package:tiamat/config/style/theme_dark.dart';
+import 'package:tiamat/config/style/theme_light.dart';
+import 'package:tiamat/config/style/theme_you.dart';
 
 class Preferences {
   SharedPreferences? _preferences;
 
   static const String registeredMatrixClients = "registered_matrix_clients";
+  static const String _shouldFollowSystemTheme = "should_follow_system_theme";
+  static const String _shouldFollowSystemColors = "should_follow_system_colors";
   static const String themeKey = "app_theme";
   static const String appScaleKey = "app_scale";
   static const String _minimizeOnCloseKey = "minimize_on_close";
   static const String _developerMode = "developer_mode";
   static const String _tenorGifSearch = "enable_tenor_gif_search";
-  static const String _gifSearchProxyUrl = "gif_search_proxy_url";
+  static const String _proxyUrl = "proxy_url";
   static const String _fcmKey = "fcm_key";
   static const String _unifiedPushEnabled = "unified_push_enabled";
   static const String _unifiedPushEndpoint = "unified_push_endpoint";
@@ -24,6 +34,10 @@ class Preferences {
   static const String _stickerCompatibilityMode = "sticker_compatibility_mode";
   static const String _useFallbackTurnServer = "use_fallback_turn_server";
   static const String _fallbackTurnServer = "fallback_turn_server";
+  static const String _urlPreviewInE2EEChat = "use_url_preview_in_e2ee_chat";
+  static const String _lastForegroundServiceSucceeded =
+      "did_last_foreground_service_run_succeed";
+
   final StreamController _onSettingChanged = StreamController.broadcast();
   Stream get onSettingChanged => _onSettingChanged.stream;
   bool isInit = false;
@@ -66,21 +80,80 @@ class Preferences {
     }
   }
 
-  AppTheme _getTheme() {
-    var name = _preferences!.getString(themeKey);
-    if (name == null) return AppTheme.dark;
-    try {
-      return AppTheme.values.byName(name);
-    } catch (e) {
-      return AppTheme.dark;
+  bool get shouldFollowSystemTheme =>
+      _preferences!.getBool(_shouldFollowSystemTheme) ?? false;
+
+  void setShouldFollowSystemBrightness(bool value) {
+    _preferences!.setBool(_shouldFollowSystemTheme, value);
+  }
+
+  bool get shouldFollowSystemColors =>
+      _preferences!.getBool(_shouldFollowSystemColors) ?? false;
+
+  void setShouldFollowSystemColors(bool value) {
+    _preferences!.setBool(_shouldFollowSystemColors, value);
+  }
+
+  void setTheme(String theme) {
+    if (theme == "amoled") {
+      setShouldFollowSystemColors(false);
     }
+    _preferences!.setString(themeKey, theme);
   }
 
-  void setTheme(AppTheme theme) {
-    _preferences!.setString(themeKey, theme.name);
+  Future<ThemeData> resolveTheme({Brightness? overrideBrightness}) async {
+    if (overrideBrightness == null && shouldFollowSystemTheme) {
+      overrideBrightness =
+          WidgetsBinding.instance.platformDispatcher.platformBrightness;
+    }
+
+    if (!PlatformUtils.isWeb) {
+      var custom = await ThemeConfig.getThemeByName(preferences.theme);
+      if (custom != null) {
+        var jsonString = await custom.readAsString();
+        var json = const JsonDecoder().convert(jsonString);
+        var themedata = await ThemeJsonConverter.fromJson(json, custom);
+        if (themedata != null) {
+          return themedata;
+        }
+      }
+    }
+
+    if (overrideBrightness == null && shouldFollowSystemColors) {
+      if (theme == "dark") {
+        overrideBrightness = Brightness.dark;
+      }
+
+      if (theme == "light") {
+        overrideBrightness = Brightness.light;
+      }
+    }
+
+    if (overrideBrightness != null && shouldFollowSystemColors) {
+      return ThemeYou.theme(overrideBrightness);
+    }
+
+    if (overrideBrightness == Brightness.dark) {
+      return switch (theme) {
+        "dark" => ThemeDark.theme,
+        "amoled" => ThemeAmoled.theme,
+        _ => ThemeDark.theme,
+      };
+    }
+
+    if (overrideBrightness == Brightness.light) {
+      return ThemeLight.theme;
+    }
+
+    return switch (theme) {
+      "light" => ThemeLight.theme,
+      "dark" => ThemeDark.theme,
+      "amoled" => ThemeAmoled.theme,
+      _ => ThemeDark.theme,
+    };
   }
 
-  AppTheme get theme => _getTheme();
+  String get theme => _preferences!.getString(themeKey) ?? "dark";
 
   double get appScale => _preferences!.getDouble(appScaleKey) ?? 1;
 
@@ -107,8 +180,8 @@ class Preferences {
 
   bool get developerMode => _preferences?.getBool(_developerMode) ?? false;
 
-  String get gifProxyUrl =>
-      _preferences?.getString(_gifSearchProxyUrl) ?? "proxy.commet.chat";
+  String get proxyUrl =>
+      _preferences?.getString(_proxyUrl) ?? "proxy.commet.chat";
 
   Future<void> setDeveloperMode(bool value) async {
     await _preferences!.setBool(_developerMode, value);
@@ -181,4 +254,21 @@ class Preferences {
 
   String get fallbackTurnServer =>
       _preferences!.getString(_fallbackTurnServer) ?? "stun:turn.matrix.org";
+  Future<void> setUseUrlPreviewInE2EEChat(bool value) async {
+    await _preferences!.setBool(_urlPreviewInE2EEChat, value);
+  }
+
+  bool get urlPreviewInE2EEChat =>
+      _preferences!.getBool(_urlPreviewInE2EEChat) ?? false;
+
+  bool? get didLastForegroundServiceRunSucceed =>
+      _preferences!.getBool(_lastForegroundServiceSucceeded);
+
+  Future<void> setLastForegroundServiceRunSucceeded(bool? value) async {
+    if (value == null) {
+      await _preferences!.remove(_lastForegroundServiceSucceeded);
+    } else {
+      await _preferences!.setBool(_lastForegroundServiceSucceeded, value);
+    }
+  }
 }

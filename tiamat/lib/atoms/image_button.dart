@@ -264,16 +264,16 @@ class ImageButton extends StatefulWidget {
       this.iconSize,
       this.placeholderColor,
       this.placeholderText,
-      this.boxBorder,
+      this.backgroundColor,
       required this.size,
       this.icon});
   final void Function()? onTap;
   final ImageProvider? image;
   final double size;
   final double? iconSize;
+  final Color? backgroundColor;
   final String? placeholderText;
   final Color? placeholderColor;
-  final BoxBorder? boxBorder;
   final IconData? icon;
   final bool doShadow;
 
@@ -320,36 +320,26 @@ class _ImageButtonState extends State<ImageButton> {
           end: BorderRadius.circular(_borderRadius)),
       builder: (context, value, child) {
         return Container(
-          clipBehavior: Clip.antiAlias,
-          foregroundDecoration: BoxDecoration(
-              border: widget.boxBorder ??
-                  (widget.image == null
-                      ? Border.all(
-                          color: Theme.of(context)
-                              .extension<ExtraColors>()!
-                              .outline,
-                          strokeAlign: BorderSide.strokeAlignCenter,
-                          width: 2)
-                      : null),
-              borderRadius: value),
           decoration: widget.doShadow
-              ? BoxDecoration(
-                  borderRadius: value,
-                  border: widget.boxBorder,
-                  boxShadow: [
-                      BoxShadow(
-                          color: Theme.of(context).colorScheme.shadow,
-                          blurRadius: 10)
-                    ])
-              : widget.image == null
+              ? BoxDecoration(borderRadius: value, boxShadow: [
+                  BoxShadow(
+                      color: Theme.of(context).colorScheme.shadow,
+                      blurRadius: 10)
+                ])
+              : widget.icon != null && widget.image == null
                   ? BoxDecoration(
-                      color: widget.placeholderColor,
-                      borderRadius: value,
+                      borderRadius: value.add(BorderRadius.circular(2)),
+                      border: Border.all(
+                          color: Theme.of(context).colorScheme.outline,
+                          width: 1.5),
                     )
-                  : BoxDecoration(borderRadius: value),
-          child: Material(
-            color: widget.image == null ? widget.placeholderColor : null,
-            child: child,
+                  : null,
+          child: ClipRRect(
+            borderRadius: value,
+            child: Material(
+              child: child,
+              color: widget.backgroundColor,
+            ),
           ),
         );
       },
@@ -371,12 +361,17 @@ class _ImageButtonState extends State<ImageButton> {
                 ),
               )
             : widget.icon != null
-                ? Icon(
-                    widget.icon,
-                    size: widget.iconSize ?? widget.size / 2.5,
+                ? Container(
+                    color: Theme.of(context).colorScheme.surfaceContainerLow,
+                    child: Icon(
+                      color: Theme.of(context).colorScheme.secondary,
+                      widget.icon,
+                      size: widget.iconSize ?? widget.size / 2.5,
+                    ),
                   )
                 : widget.placeholderText != null
                     ? Container(
+                        color: widget.placeholderColor,
                         child: Align(
                             alignment: Alignment.center,
                             child: widget.placeholderText != null

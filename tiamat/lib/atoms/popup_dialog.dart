@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tiamat/atoms/button.dart';
+import 'package:tiamat/config/config.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
@@ -45,7 +46,7 @@ class PopupDialog extends StatelessWidget {
       required this.content,
       this.width = null,
       this.height = null});
-  final String title;
+  final String? title;
   final double? width;
   final double? height;
   final Widget content;
@@ -54,7 +55,7 @@ class PopupDialog extends StatelessWidget {
 
   static Future<T?> show<T extends Object?>(BuildContext context,
       {required Widget content,
-      required String title,
+      String? title,
       double? width,
       double? height,
       bool barrierDismissible = true}) {
@@ -64,8 +65,11 @@ class PopupDialog extends StatelessWidget {
         barrierLabel: "POPUP_DIALOG",
         barrierColor: barrierColor,
         pageBuilder: (context, _, __) {
-          return PopupDialog(
-              title: title, content: content, width: width, height: height);
+          return Theme(
+            data: Theme.of(context),
+            child: PopupDialog(
+                title: title, content: content, width: width, height: height),
+          );
         },
         transitionDuration: const Duration(milliseconds: 300),
         transitionBuilder: (context, animation, secondaryAnimation, child) =>
@@ -81,13 +85,17 @@ class PopupDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
+      elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       contentPadding: const EdgeInsets.all(8),
-      title: Row(
-        children: [
-          Text(title),
-        ],
-      ),
+      title: title == null
+          ? null
+          : Row(
+              children: [
+                Text(title!),
+              ],
+            ),
       content: content,
     );
   }

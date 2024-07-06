@@ -3,6 +3,8 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
    <application
         android:label="Commet"
         android:name="${applicationName}"
@@ -49,13 +51,22 @@
               android:resource="@style/NormalTheme"
               />
         </activity>
-        <service android:name=".FcmPushService"
-            android:exported="false">
-            <intent-filter>
-	            <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+        
+        <activity
+            android:name="com.linusu.flutter_web_auth_2.CallbackActivity"
+            android:exported="true">
+            <intent-filter android:label="flutter_web_auth_2">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="chat.commet" android:host="login"/>
             </intent-filter>
-        </service>
+        </activity>
 
+        <service
+            android:name="id.flutter.flutter_background_service.BackgroundService"
+            android:foregroundServiceType="dataSync"
+        />
         <receiver android:exported="false"  android:enabled="true"  android:name=".UnifiedPushReceiver">
             <intent-filter>
                 <action android:name="org.unifiedpush.flutter.connector.MESSAGE"/>

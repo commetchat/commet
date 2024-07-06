@@ -74,9 +74,7 @@ class _IconButtonState extends State<IconButton> {
                       widget.icon,
                       size: widget.size,
                       color: widget.iconColor ??
-                          (hovered
-                              ? material.Theme.of(context).colorScheme.onPrimary
-                              : null),
+                          material.Theme.of(context).colorScheme.secondary,
                     )),
               ),
             ),

@@ -1,13 +1,11 @@
 import 'dart:io';
 
-import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/config/app_config.dart';
-import 'package:commet/ui/organisms/side_navigation_bar.dart';
+import 'package:commet/ui/organisms/side_navigation_bar/side_navigation_bar.dart';
 import 'package:commet/ui/pages/login/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:commet/main.dart';
-import 'package:matrix/encryption/utils/key_verification.dart';
 import 'package:matrix/matrix.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -112,29 +110,30 @@ extension CommonFlows on WidgetTester {
   }
 
   Future<Client> createTestClient() async {
-    var otherClient = Client(
-      "Commet Integration Tester",
-      verificationMethods: {
-        KeyVerificationMethod.emoji,
-        KeyVerificationMethod.numbers
-      },
-      nativeImplementations: MatrixClient.nativeImplementations,
-      logLevel: Level.verbose,
-      databaseBuilder: (client) async {
-        final db = HiveCollectionsDatabase(
-            client.clientName, await AppConfig.getDatabasePath());
-        await db.open();
-        return db;
-      },
-    );
+    throw UnimplementedError();
+    // var otherClient = Client(
+    //   "Commet Integration Tester",
+    //   verificationMethods: {
+    //     KeyVerificationMethod.emoji,
+    //     KeyVerificationMethod.numbers
+    //   },
+    //   nativeImplementations: MatrixClient.nativeImplementations,
+    //   logLevel: Level.verbose,
+    //   databaseBuilder: (client) async {
+    //     final db = HiveCollectionsDatabase(
+    //         client.clientName, await AppConfig.getDatabasePath());
+    //     await db.open();
+    //     return db;
+    //   },
+    // );
 
-    await otherClient.checkHomeserver(Uri.http(homeserver));
+    // await otherClient.checkHomeserver(Uri.http(homeserver));
 
-    await otherClient.login(LoginType.mLoginPassword,
-        identifier: AuthenticationUserIdentifier(user: username),
-        password: password);
+    // await otherClient.login(LoginType.mLoginPassword,
+    //     identifier: AuthenticationUserIdentifier(user: username),
+    //     password: password);
 
-    return otherClient;
+    // return otherClient;
   }
 
   Future<void> openSettings(App app) async {

@@ -1,4 +1,4 @@
-import 'package:commet/client/invitation.dart';
+import 'package:commet/client/components/invitation/invitation.dart';
 import 'package:commet/ui/atoms/room_panel.dart';
 import 'package:commet/utils/common_strings.dart';
 import 'package:flutter/material.dart';
@@ -16,10 +16,12 @@ class InvitationDisplay extends StatefulWidget {
 }
 
 class _InvitationDisplayState extends State<InvitationDisplay> {
-  String get labelHomeInvitationBody => Intl.message("Invited you to a room",
-      name: "labelHomeInvitationBody",
+  String labelInvitationBodyWithSender(String user) => Intl.message(
+      "$user invited you to a room",
       desc:
-          "Displays a short description explaining that an invitation to a room was received. Does not need to contain the name of the room or inviter");
+          "Message body for when an invitation was received, and we have a name for the sender",
+      args: [user],
+      name: "labelInvitationBodyWithSender");
 
   bool acceptLoading = false;
   bool rejectLoading = false;
@@ -29,9 +31,10 @@ class _InvitationDisplayState extends State<InvitationDisplay> {
     return RoomPanel(
       displayName: widget.invitation.displayName!,
       avatar: widget.invitation.avatar,
-      recentEventSender: widget.invitation.senderId,
       color: widget.invitation.color,
-      body: labelHomeInvitationBody,
+      body: widget.invitation.senderId != null
+          ? labelInvitationBodyWithSender(widget.invitation.senderId!)
+          : widget.invitation.roomId,
       primaryButtonLabel: CommonStrings.promptAccept,
       onPrimaryButtonPressed: acceptInvitation,
       secondaryButtonLabel: CommonStrings.promptReject,

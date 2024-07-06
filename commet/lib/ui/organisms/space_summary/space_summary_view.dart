@@ -11,7 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart';
-import '../../atoms/tooltip.dart' as t;
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class SpaceSummaryView extends StatefulWidget {
@@ -21,6 +20,7 @@ class SpaceSummaryView extends StatefulWidget {
       this.topic,
       this.joinRoom,
       this.rooms,
+      this.spaces,
       this.avatar,
       this.childPreviews,
       this.onChildPreviewAdded,
@@ -35,6 +35,8 @@ class SpaceSummaryView extends StatefulWidget {
       this.openSpaceSettings,
       this.onAddRoomButtonTap,
       this.onRoomTap,
+      this.canAddRoom = false,
+      this.onSpaceTap,
       this.onRoomSettingsButtonTap});
   final String displayName;
   final String? topic;
@@ -50,11 +52,14 @@ class SpaceSummaryView extends StatefulWidget {
   final ImageProvider? avatar;
   final Color? spaceColor;
   final List<Room>? rooms;
+  final List<Space>? spaces;
   final Function? openSpaceSettings;
   final Function(Room room)? onRoomSettingsButtonTap;
   final Function(Room room)? onRoomTap;
+  final Function(Space space)? onSpaceTap;
   final Function()? onAddRoomButtonTap;
   final bool showSpaceSettingsButton;
+  final bool canAddRoom;
   @override
   State<SpaceSummaryView> createState() => SpaceSummaryViewState();
 }
@@ -87,6 +92,10 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
   String get labelSpaceRoomsList => Intl.message("Rooms",
       desc: "Header label for the list of rooms in a space",
       name: "labelSpaceRoomsList");
+
+  String get labelSpaceSubspacesList => Intl.message("Spaces",
+      desc: "Header label for the list of child spaces in a space",
+      name: "labelSpaceSubspacesList");
 
   String get labelSpaceAvailableRoomsList => Intl.message("Available rooms",
       desc:
@@ -138,6 +147,8 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
 
   @override
   Widget build(BuildContext context) {
+    var pad = const EdgeInsets.fromLTRB(0, 4, 0, 4);
+
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -160,12 +171,20 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
               if (widget.showSpaceSettingsButton) buildSettingsButton()
             ],
           ),
-          if (childPreviewCount > 0) buildPreviewList(),
           if (childPreviewCount > 0)
-            const SizedBox(
-              height: 10,
+            Padding(
+              padding: pad,
+              child: buildPreviewList(),
             ),
-          buildRoomList(),
+          if (widget.spaces?.isNotEmpty == true)
+            Padding(
+              padding: pad,
+              child: buildSpaceList(),
+            ),
+          Padding(
+            padding: pad,
+            child: buildRoomList(),
+          ),
         ],
       ),
     );
@@ -174,7 +193,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
   Padding buildSettingsButton() {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: t.Tooltip(
+      child: tiamat.Tooltip(
         text: tooltipSpaceSettings,
         preferredDirection: AxisDirection.left,
         child: tiamat.CircleButton(
@@ -201,7 +220,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
   Widget buildRoomList() {
     return Panel(
       header: labelSpaceRoomsList,
-      mode: TileType.surfaceLow1,
+      mode: TileType.surfaceContainer,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
@@ -215,14 +234,44 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
               return buildRoomPanel(animation, room);
             },
           ),
-          t.Tooltip(
+          tiamat.Tooltip(
             text: tooltipAddRoom,
             preferredDirection: AxisDirection.left,
-            child: tiamat.CircleButton(
-              radius: BuildConfig.MOBILE ? 24 : 16,
-              icon: Icons.add,
-              onPressed: () => widget.onAddRoomButtonTap?.call(),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
+              child: tiamat.CircleButton(
+                radius: BuildConfig.MOBILE ? 24 : 16,
+                icon: Icons.add,
+                onPressed: () => widget.onAddRoomButtonTap?.call(),
+              ),
             ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget buildSpaceList() {
+    return Panel(
+      header: labelSpaceSubspacesList,
+      mode: TileType.surfaceContainer,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          ListView.builder(
+            shrinkWrap: true,
+            itemCount: widget.spaces!.length,
+            physics: const NeverScrollableScrollPhysics(),
+            itemBuilder: (context, index) {
+              var space = widget.spaces![index];
+              return RoomPanel(
+                displayName: space.displayName,
+                color: space.color,
+                body: space.topic,
+                avatar: space.avatar,
+                onTap: () => widget.onSpaceTap?.call(space),
+              );
+            },
           )
         ],
       ),
@@ -236,10 +285,6 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
           displayName: room.displayName,
           avatar: room.avatar,
           color: room.defaultColor,
-          showSettingsButton: room.permissions.canEditAnything,
-          onRoomSettingsButtonPressed: () {
-            widget.onRoomSettingsButtonTap?.call(room);
-          },
           onTap: widget.onRoomTap != null
               ? () {
                   widget.onRoomTap?.call(room);
@@ -247,7 +292,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
               : null,
           body: room.lastEvent?.body,
           recentEventSender: room.lastEvent != null
-              ? room.client.getPeer(room.lastEvent!.senderId).displayName
+              ? room.getMemberOrFallback(room.lastEvent!.senderId).displayName
               : null,
           recentEventSenderColor: room.lastEvent != null
               ? room.getColorOfUser(room.lastEvent!.senderId)
@@ -258,7 +303,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
   Widget buildPreviewList() {
     return Panel(
       header: labelSpaceAvailableRoomsList,
-      mode: TileType.surfaceLow1,
+      mode: TileType.surfaceContainer,
       child: AnimatedList(
         initialItemCount: childPreviewCount,
         key: _previewListKey,

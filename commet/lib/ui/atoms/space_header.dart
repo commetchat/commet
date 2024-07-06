@@ -11,43 +11,46 @@ class SpaceHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (space.avatar != null) {
-      return Stack(
-        fit: StackFit.expand,
-        children: [
-          Image(
-            image: space.avatar!,
-            fit: BoxFit.cover,
-            filterQuality: FilterQuality.medium,
-          ),
-          Material(color: Colors.transparent, child: layout(context))
-        ],
-      );
-    }
-    return Material(
-        color: Theme.of(context).colorScheme.surface, child: layout(context));
-  }
-
-  Widget layout(BuildContext context) {
-    return InkWell(
-      onTap: () => onTap?.call(),
-      child: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+    return ClipRRect(
+      borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.circular(8), bottomRight: Radius.circular(8)),
+      child: ConstrainedBox(
+        constraints: BoxConstraints.expand(
+            height: 100 + MediaQuery.of(context).padding.top),
+        child: Stack(
+          fit: StackFit.expand,
           children: [
-            Text(space.displayName,
-                style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                    color: space.avatar != null ? Colors.white : null,
-                    fontWeight: FontWeight.w500,
-                    shadows: space.avatar != null
-                        ? [
-                            BoxShadow(
-                                color: Theme.of(context).shadowColor,
-                                offset: const Offset(2, 2))
-                          ]
-                        : null)),
+            if (space.avatar != null)
+              Image(
+                image: space.avatar!,
+                fit: BoxFit.cover,
+                filterQuality: FilterQuality.medium,
+              ),
+            Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: onTap,
+                child: Align(
+                  alignment: Alignment.bottomLeft,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 2, 0, 2),
+                    child: Text(space.displayName,
+                        style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                            color: space.avatar != null ? Colors.white : null,
+                            fontWeight: FontWeight.w500,
+                            shadows: space.avatar != null
+                                ? [
+                                    const BoxShadow(
+                                        blurRadius: 2,
+                                        spreadRadius: 10,
+                                        color: Colors.black,
+                                        offset: Offset(2, 2))
+                                  ]
+                                : null)),
+                  ),
+                ),
+              ),
+            )
           ],
         ),
       ),

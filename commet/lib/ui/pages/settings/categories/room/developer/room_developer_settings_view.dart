@@ -2,7 +2,6 @@ import 'package:commet/client/room.dart';
 import 'package:commet/ui/atoms/code_block.dart';
 import 'package:flutter/material.dart';
 import 'package:commet/main.dart';
-import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class RoomDeveloperSettingsView extends StatelessWidget {
@@ -24,9 +23,9 @@ class RoomDeveloperSettingsView extends StatelessWidget {
   Widget jsonDump(BuildContext context) {
     return ExpansionTile(
       title: const tiamat.Text.labelEmphasised("Room State"),
-      backgroundColor: Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
       collapsedBackgroundColor:
-          Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+          Theme.of(context).colorScheme.surfaceContainerLow,
       children: [
         SelectionArea(
           child: Codeblock(
@@ -41,9 +40,9 @@ class RoomDeveloperSettingsView extends StatelessWidget {
   Widget notificationTests(BuildContext context) {
     return ExpansionTile(
       title: const tiamat.Text.labelEmphasised("Shortcuts"),
-      backgroundColor: Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
       collapsedBackgroundColor:
-          Theme.of(context).extension<ExtraColors>()!.surfaceLow2,
+          Theme.of(context).colorScheme.surfaceContainerLow,
       children: [
         Wrap(spacing: 8, runSpacing: 8, children: [
           tiamat.Button(

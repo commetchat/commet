@@ -1,13 +1,10 @@
-import 'package:commet/client/client.dart';
 import 'package:flutter/material.dart';
 
 abstract class Peer {
-  late String identifier;
-  late String userName;
-  late String displayName;
-  late Client client;
-  Future<void>? loading;
-  String? detail;
-  ImageProvider? avatar;
+  String get identifier;
+  String get userName;
+  String get displayName;
+  String? get detail;
+  ImageProvider? get avatar;
   Color get defaultColor;
 }

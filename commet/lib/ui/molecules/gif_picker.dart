@@ -107,7 +107,7 @@ class _GifPickerState extends State<GifPicker> {
   }
 
   Widget buildSearchBar() {
-    return tiamat.Tile.low2(
+    return tiamat.Tile.low(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: SizedBox(

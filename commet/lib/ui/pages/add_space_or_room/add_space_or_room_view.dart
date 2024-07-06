@@ -1,7 +1,5 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/client/room_preview.dart';
-import 'package:commet/client/simulated/simulated_client.dart';
-import 'package:commet/client/simulated/simulated_room.dart';
 import 'package:commet/ui/atoms/room_panel.dart';
 import 'package:commet/ui/atoms/room_preview.dart';
 import 'package:commet/utils/debounce.dart';
@@ -10,204 +8,8 @@ import 'package:intl/intl.dart';
 
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
-import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 
 import '../../molecules/account_selector.dart';
-
-@UseCase(name: 'Add Space Multiple Accounts', type: AddSpaceOrRoomView)
-@Deprecated("widgetbook")
-Widget wbAddSpacePageMultiAccount(BuildContext context) {
-  var clients = [SimulatedClient(), SimulatedClient(), SimulatedClient()];
-  int index = 0;
-  for (var client in clients) {
-    client.login(LoginType.loginPassword, "simulatedClient${index++}", "");
-  }
-  return Scaffold(
-      body: PopupDialog(
-          title: "Add Space",
-          content: AddSpaceOrRoomView(
-            clients: clients,
-            initialPhase: AddSpaceOrRoomPhase.create,
-          )));
-}
-
-@UseCase(name: 'Add Space Single Account', type: AddSpaceOrRoomView)
-@Deprecated("widgetbook")
-Widget wbAddSpacePageSingleAccount(BuildContext context) {
-  var client = SimulatedClient();
-  client.login(LoginType.loginPassword, "simulatedClient", "");
-
-  return Scaffold(
-      body: Tile(
-    child: PopupDialog(
-        title: "Add Space",
-        content: AddSpaceOrRoomView(
-          client: client,
-          initialPhase: AddSpaceOrRoomPhase.create,
-        )),
-  ));
-}
-
-@UseCase(name: 'Ask add space', type: AddSpaceOrRoomView)
-@Deprecated("widgetbook")
-Widget wbAddSpacePagePrompt(BuildContext context) {
-  var client = SimulatedClient();
-  client.login(LoginType.loginPassword, "simulatedClient", "");
-
-  return Scaffold(
-      body: Tile(
-    child: PopupDialog(
-        title: "Add Space",
-        content: AddSpaceOrRoomView(
-          client: client,
-          initialPhase: AddSpaceOrRoomPhase.askJoinOrCreate,
-        )),
-  ));
-}
-
-@UseCase(name: 'Ask add room', type: AddSpaceOrRoomView)
-@Deprecated("widgetbook")
-Widget wbAddRoomPagePrompt(BuildContext context) {
-  var clients = [SimulatedClient()];
-  int index = 0;
-  for (var client in clients) {
-    client.login(LoginType.loginPassword, "simulatedClient${index++}", "");
-  }
-  return Scaffold(
-      body: Tile(
-    child: PopupDialog(
-        title: "Add Room",
-        content: AddSpaceOrRoomView(
-          clients: clients,
-          roomMode: true,
-          initialPhase: AddSpaceOrRoomPhase.askJoinOrCreate,
-        )),
-  ));
-}
-
-@UseCase(name: 'Join Space', type: AddSpaceOrRoomView)
-@Deprecated("widgetbook")
-Widget wbAddRoomJoinSpace(BuildContext context) {
-  var client = SimulatedClient();
-
-  client.login(LoginType.loginPassword, "simulatedClient", "");
-
-  return Scaffold(
-      body: Tile(
-    child: PopupDialog(
-        title: "Add Space",
-        content: AddSpaceOrRoomView(
-          client: client,
-          initialPhase: AddSpaceOrRoomPhase.join,
-        )),
-  ));
-}
-
-@UseCase(name: 'Join Room', type: AddSpaceOrRoomView)
-@Deprecated("widgetbook")
-Widget wbAddRoomJoinRoom(BuildContext context) {
-  var client = SimulatedClient();
-
-  client.login(LoginType.loginPassword, "simulatedClient", "");
-
-  return Scaffold(
-      body: Tile(
-    child: PopupDialog(
-        title: "Add Room",
-        content: AddSpaceOrRoomView(
-          client: client,
-          roomMode: true,
-          initialPhase: AddSpaceOrRoomPhase.join,
-        )),
-  ));
-}
-
-@UseCase(name: 'Add Room Single Account', type: AddSpaceOrRoomView)
-@Deprecated("widgetbook")
-Widget wbAddRoomPageSingleAccount(BuildContext context) {
-  var client = SimulatedClient();
-  client.login(LoginType.loginPassword, "simulatedClient", "");
-
-  return Scaffold(
-      body: Tile(
-    child: PopupDialog(
-        title: "Add Room",
-        content: AddSpaceOrRoomView(
-          client: client,
-          initialPhase: AddSpaceOrRoomPhase.create,
-          roomMode: true,
-        )),
-  ));
-}
-
-@UseCase(name: 'Add Room Multi Account', type: AddSpaceOrRoomView)
-@Deprecated("widgetbook")
-Widget wbAddRoomPageMultiAccount(BuildContext context) {
-  var clients = [SimulatedClient(), SimulatedClient(), SimulatedClient()];
-  int index = 0;
-  for (var client in clients) {
-    client.login(LoginType.loginPassword, "simulatedClient${index++}", "");
-  }
-  return Scaffold(
-      body: Tile(
-    child: PopupDialog(
-        title: "Add Room",
-        content: AddSpaceOrRoomView(
-          clients: clients,
-          initialPhase: AddSpaceOrRoomPhase.create,
-          roomMode: true,
-        )),
-  ));
-}
-
-@UseCase(name: 'Ask create or use existing room', type: AddSpaceOrRoomView)
-@Deprecated("widgetbook")
-Widget wbAddRoomPromptUseOrCreateMultiAccount(BuildContext context) {
-  var client = SimulatedClient();
-  client.login(LoginType.loginPassword, "simulatedClient", "");
-  return Scaffold(
-      body: Tile(
-    child: PopupDialog(
-        title: "Add Room",
-        content: AddSpaceOrRoomView(
-          client: client,
-          initialPhase: AddSpaceOrRoomPhase.askCreateOrExisting,
-          roomMode: true,
-        )),
-  ));
-}
-
-@UseCase(name: 'Pick existing room', type: AddSpaceOrRoomView)
-@Deprecated("widgetbook")
-Widget wbAddRoomPickExistingRoom(BuildContext context) {
-  var client = SimulatedClient();
-  client.login(LoginType.loginPassword, "simulatedClient", "");
-
-  return Scaffold(
-      body: Tile(
-    child: PopupDialog(
-        title: "Add Room",
-        content: AddSpaceOrRoomView(
-          client: client,
-          initialPhase: AddSpaceOrRoomPhase.pickExisting,
-          roomMode: true,
-          rooms: [
-            SimulatedRoom("Room 1", client),
-            SimulatedRoom("Room 2", client),
-            SimulatedRoom("Room 3", client),
-            SimulatedRoom("Room 4", client),
-            SimulatedRoom("Room 5", client),
-            SimulatedRoom("Room 6", client),
-            SimulatedRoom("Room 7", client),
-            SimulatedRoom("Room 8", client),
-            SimulatedRoom("Room 9", client),
-            SimulatedRoom("Room 10", client),
-            SimulatedRoom("Room 11", client),
-            SimulatedRoom("Room 12", client),
-          ],
-        )),
-  ));
-}
 
 class AddSpaceOrRoomView extends StatefulWidget {
   const AddSpaceOrRoomView(
@@ -218,6 +20,7 @@ class AddSpaceOrRoomView extends StatefulWidget {
       this.onJoin,
       this.roomMode = false,
       this.rooms,
+      this.loading = false,
       this.onRoomsSelected,
       this.initialPhase});
   final List<Client>? clients;
@@ -228,6 +31,7 @@ class AddSpaceOrRoomView extends StatefulWidget {
   final Function(Iterable<Room> selectedRooms)? onRoomsSelected;
   final AddSpaceOrRoomPhase? initialPhase;
   final bool roomMode;
+  final bool loading;
 
   final List<Room>? rooms;
 
@@ -399,9 +203,16 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 400,
-      child: Container(child: buildPhase(context)),
+    return IgnorePointer(
+      ignoring: widget.loading,
+      child: AnimatedOpacity(
+        duration: Durations.short1,
+        opacity: widget.loading ? 0.5 : 1.0,
+        child: SizedBox(
+          width: 400,
+          child: Container(child: buildPhase(context)),
+        ),
+      ),
     );
   }
 
@@ -551,6 +362,7 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
               child: tiamat.Button.success(
+                isLoading: widget.loading,
                 text: widget.roomMode
                     ? promptConfirmRoomCreation
                     : promptConfirmSpaceCreation,
@@ -607,6 +419,7 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
                               tiamat.Text.label(labelCouldNotLoadRoomPreview)),
             ),
             tiamat.Button.success(
+              isLoading: widget.loading,
               text: widget.roomMode
                   ? promptConfirmRoomJoin
                   : promptConfirmSpaceJoin,
@@ -646,6 +459,7 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
           padding: const EdgeInsets.all(8.0),
           child: tiamat.Button(
             text: promptAddSelectedRooms,
+            isLoading: widget.loading,
             onTap: () {
               if (selectedRoomsState.currentState != null) {
                 widget.onRoomsSelected?.call(selectedRoomsState

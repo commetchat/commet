@@ -1,7 +1,6 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
-import 'package:commet/client/simulated/simulated_client.dart';
 import 'package:commet/ui/molecules/account_selector.dart';
 import 'package:flutter/material.dart';
 
@@ -48,10 +47,6 @@ class _SecuritySettingsTabState extends State<SecuritySettingsTab> {
         client,
         key: client.key,
       );
-    }
-
-    if (client is SimulatedClient) {
-      return Container(color: Colors.blue);
     }
 
     return const Placeholder();

@@ -1,66 +1,51 @@
 import 'package:commet/client/client.dart';
+import 'package:commet/client/member.dart';
+import 'package:commet/ui/atoms/shimmer_loading.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/organisms/user_profile/user_profile.dart';
 import 'package:flutter/material.dart' as material;
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
-import 'package:widgetbook_annotation/widgetbook_annotation.dart';
-
-@UseCase(name: 'No Avatar', type: UserPanelView)
-@Deprecated("widgetbook")
-Widget wbUserPanelDefault(BuildContext context) {
-  return const Center(child: UserPanelView(displayName: "User"));
-}
-
-@UseCase(name: 'With Avatar', type: UserPanelView)
-@Deprecated("widgetbook")
-Widget wbUserPanelWithAvatar(BuildContext context) {
-  return const Center(
-      child: UserPanelView(
-    displayName: "User",
-    avatar: AssetImage("assets/images/placeholder/generic/checker_purple.png"),
-  ));
-}
-
-class UserPanel extends material.StatefulWidget {
-  const UserPanel(this.peer, {super.key, this.userColor});
-  final Peer peer;
+class MemberPanel extends material.StatefulWidget {
+  const MemberPanel(
+      {super.key,
+      required this.member,
+      required this.client,
+      this.userColor,
+      this.showFullId = false,
+      this.onTap});
+  final Member member;
+  final Client client;
   final Color? userColor;
+  final bool showFullId;
+  final void Function()? onTap;
 
   @override
-  State<UserPanel> createState() => _UserPanelState();
+  State<MemberPanel> createState() => _MemberPanelState();
 }
 
-class _UserPanelState extends material.State<UserPanel> {
-  @override
-  void initState() {
-    widget.peer.loading?.then((value) {
-      if (mounted) setState(() {});
-    });
-
-    super.initState();
-  }
-
+class _MemberPanelState extends material.State<MemberPanel> {
   @override
   material.Widget build(material.BuildContext context) {
     return UserPanelView(
-      displayName: widget.peer.displayName,
-      avatar: widget.peer.avatar,
-      detail: widget.peer.detail,
+      displayName: widget.member.displayName,
+      avatar: widget.member.avatar,
+      detail:
+          widget.showFullId ? widget.member.identifier : widget.member.detail,
       color: widget.userColor,
       avatarColor: widget.userColor,
       nameColor: widget.userColor,
-      padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-      onClicked: onUserPanelClicked,
+      onClicked: widget.onTap ?? onUserPanelClicked,
     );
   }
 
   void onUserPanelClicked() {
     AdaptiveDialog.show(context,
         builder: (_) => UserProfile(
-              user: widget.peer,
+              userId: widget.member.identifier,
+              client: widget.client,
               dismiss: () => Navigator.pop(context),
             ),
         title: "User");
@@ -77,6 +62,8 @@ class UserPanelView extends material.StatelessWidget {
       this.nameColor,
       this.detail,
       this.padding,
+      this.shimmer = false,
+      this.random = 0,
       this.onClicked});
   final ImageProvider? avatar;
   final String displayName;
@@ -85,11 +72,15 @@ class UserPanelView extends material.StatelessWidget {
   final Color? nameColor;
   final String? detail;
   final EdgeInsets? padding;
+  final bool shimmer;
+  final double random;
   final void Function()? onClicked;
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
+    var shimmerColor = Theme.of(context).colorScheme.surfaceContainerHighest;
+
+    var widget = ClipRRect(
       borderRadius: BorderRadius.circular(5),
       child: material.Material(
         color: material.Colors.transparent,
@@ -102,9 +93,9 @@ class UserPanelView extends material.StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Avatar.small(
-                  image: avatar,
-                  placeholderText: displayName,
-                  placeholderColor: avatarColor,
+                  image: shimmer ? null : avatar,
+                  placeholderText: shimmer ? " " : displayName,
+                  placeholderColor: shimmer ? shimmerColor : avatarColor,
                 ),
                 Flexible(
                   child: Padding(
@@ -116,12 +107,32 @@ class UserPanelView extends material.StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          tiamat.Text.name(
-                            displayName,
-                            color: nameColor,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                          if (shimmer)
+                            Container(
+                              height: 10,
+                              width: (random * 50) + 50,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(4),
+                                  color: shimmerColor),
+                            ),
+                          if (shimmer)
+                            material.Padding(
+                              padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
+                              child: Container(
+                                height: 8,
+                                width: (random * 20) + 20,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(4),
+                                    color: shimmerColor),
+                              ),
+                            ),
+                          if (!shimmer)
+                            tiamat.Text.name(
+                              displayName,
+                              color: nameColor,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           if (detail != null) tiamat.Text.tiny(detail!),
                         ],
                       ),
@@ -134,5 +145,11 @@ class UserPanelView extends material.StatelessWidget {
         ),
       ),
     );
+
+    if (shimmer) {
+      return ShimmerLoading(isLoading: true, child: widget);
+    }
+
+    return widget;
   }
 }
