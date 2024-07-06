@@ -21,9 +21,9 @@ class ThemeBase {
           collapsedShape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
       listTileTheme: ListTileThemeData(
-          dense: true,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          contentPadding: EdgeInsets.all(0)),
+        dense: true,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
       canvasColor: scheme.surface,
       iconTheme: IconThemeData(color: scheme.secondary),
       shadowColor: Colors.black.withAlpha(100),
