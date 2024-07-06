@@ -1,14 +1,31 @@
 {
-  "@@last_modified": "2024-05-02T14:25:58.366145",
+  "@@last_modified": "2024-07-06T13:01:41.301375",
+  "labelRoomsList": "Rooms",
+  "@labelRoomsList": {
+    "description": "Header label for the list of rooms",
+    "type": "text",
+    "placeholders": {}
+  },
   "fileDragDropPrompt": "Drop a file to upload...",
   "@fileDragDropPrompt": {
     "description": "Text that is shown when a user is dragging a file",
     "type": "text",
     "placeholders": {}
   },
-  "labelRoomsList": "Rooms",
-  "@labelRoomsList": {
-    "description": "Header label for the list of rooms",
+  "typingUsers": "{howMany,plural, =1{{user1} is typing...}=2{{user1} and {user2} are typing...}few{{user1}, {user2}, and {user3} are typing...}other{Several people are typing...}}",
+  "@typingUsers": {
+    "description": "Text to display which users are currently typing",
+    "type": "text",
+    "placeholders": {
+      "howMany": {},
+      "user1": {},
+      "user2": {},
+      "user3": {}
+    }
+  },
+  "messageEditedMarker": "(Edited)",
+  "@messageEditedMarker": {
+    "description": "Short text to mark that a message has been edited",
     "type": "text",
     "placeholders": {}
   },
@@ -19,12 +36,6 @@
     "placeholders": {
       "user": {}
     }
-  },
-  "messageFailedToDecrypt": "Failed to decrypt event",
-  "@messageFailedToDecrypt": {
-    "description": "Placeholde text for when a message fails to decrypt",
-    "type": "text",
-    "placeholders": {}
   },
   "messagePlaceholderUserCreatedRoom": "{user} created the room!",
   "@messagePlaceholderUserCreatedRoom": {
@@ -98,9 +109,9 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelHomeInvitationBody": "Invited you to a room",
-  "@labelHomeInvitationBody": {
-    "description": "Displays a short description explaining that an invitation to a room was received. Does not need to contain the name of the room or inviter",
+  "messageFailedToDecrypt": "Failed to decrypt event",
+  "@messageFailedToDecrypt": {
+    "description": "Placeholde text for when a message fails to decrypt",
     "type": "text",
     "placeholders": {}
   },
@@ -110,11 +121,13 @@
     "type": "text",
     "placeholders": {}
   },
-  "messageEditedMarker": "(Edited)",
-  "@messageEditedMarker": {
-    "description": "Short text to mark that a message has been edited",
+  "labelInvitationBodyWithSender": "{user} invited you to a room",
+  "@labelInvitationBodyWithSender": {
+    "description": "Message body for when an invitation was received, and we have a name for the sender",
     "type": "text",
-    "placeholders": {}
+    "placeholders": {
+      "user": {}
+    }
   },
   "labelEmojiPickerEmojiTab": "Emoji",
   "@labelEmojiPickerEmojiTab": {
@@ -134,16 +147,19 @@
     "type": "text",
     "placeholders": {}
   },
-  "typingUsers": "{howMany,plural, =1{{user1} is typing...}=2{{user1} and {user2} are typing...}few{{user1}, {user2}, and {user3} are typing...}other{Several people are typing...}}",
-  "@typingUsers": {
-    "description": "Text to display which users are currently typing",
+  "labelInvitationsForUser": "Invitations for {user}",
+  "@labelInvitationsForUser": {
+    "description": "Label for the list of incoming invitations, specifying which user these invitations are intended for",
     "type": "text",
     "placeholders": {
-      "howMany": {},
-      "user1": {},
-      "user2": {},
-      "user3": {}
+      "user": {}
     }
+  },
+  "labelInvitations": "Invitations",
+  "@labelInvitations": {
+    "description": "Label for the list of incoming invitations",
+    "type": "text",
+    "placeholders": {}
   },
   "sendEncryptedMessagePrompt": "Send an encrypted message",
   "@sendEncryptedMessagePrompt": {
@@ -175,6 +191,18 @@
     "type": "text",
     "placeholders": {}
   },
+  "promptAttachmentProcessingSendOriginal": "Send Original",
+  "@promptAttachmentProcessingSendOriginal": {
+    "description": "Prompt text for the option to send a file in its original state, without any further processing such as removing metadata",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelImageContainsLocationInfo": "Warning: This image contains location metadata",
+  "@labelImageContainsLocationInfo": {
+    "description": "Prompt text for the option to send a file in its original state, without any further processing such as removing metadata",
+    "type": "text",
+    "placeholders": {}
+  },
   "labelHomeRecentActivity": "Recent Activity",
   "@labelHomeRecentActivity": {
     "description": "Short label for header of recent room activity",
@@ -199,12 +227,6 @@
     "type": "text",
     "placeholders": {}
   },
-  "promptAddSpace": "Add Space",
-  "@promptAddSpace": {
-    "description": "Prompt to add a new space",
-    "type": "text",
-    "placeholders": {}
-  },
   "tooltipSpaceSettings": "Space settings",
   "@tooltipSpaceSettings": {
     "description": "Tooltip for the button that opens space settings",
@@ -220,6 +242,12 @@
   "labelSpaceRoomsList": "Rooms",
   "@labelSpaceRoomsList": {
     "description": "Header label for the list of rooms in a space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceSubspacesList": "Spaces",
+  "@labelSpaceSubspacesList": {
+    "description": "Header label for the list of child spaces in a space",
     "type": "text",
     "placeholders": {}
   },
@@ -252,6 +280,12 @@
   "promptOpenDirectMessage": "Message",
   "@promptOpenDirectMessage": {
     "description": "Prompt on the button to open a direct message with another user",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptAddSpace": "Add Space",
+  "@promptAddSpace": {
+    "description": "Prompt to add a new space",
     "type": "text",
     "placeholders": {}
   },
@@ -378,6 +412,12 @@
   "promptCreateEmoticonPack": "Create pack",
   "@promptCreateEmoticonPack": {
     "description": "Prompt to create a new emoticon pack, for emoji or stickers",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptImportPack": "Import pack",
+  "@promptImportPack": {
+    "description": "Prompt to import a set of emoticons from an existing pack",
     "type": "text",
     "placeholders": {}
   },
@@ -955,36 +995,6 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelSettingsAppTheme": "Theme",
-  "@labelSettingsAppTheme": {
-    "description": "Label for theme section of app appearance",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelThemeDark": "Dark Theme",
-  "@labelThemeDark": {
-    "description": "Label for the dark theme",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelThemeLight": "Light Theme",
-  "@labelThemeLight": {
-    "description": "Label for the light theme",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelThemeAmoled": "Amoled",
-  "@labelThemeAmoled": {
-    "description": "Label for the light theme",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelAppScale": "App Scale",
-  "@labelAppScale": {
-    "description": "Label for the setting which controls the UI scale of the overall app",
-    "type": "text",
-    "placeholders": {}
-  },
   "labelSettingsCategoryApp": "App Settings",
   "@labelSettingsCategoryApp": {
     "description": "Label for the settings category of the overall App settings/",
@@ -1064,6 +1074,36 @@
   "labelSettingsMinimizeOnCloseExplanation": "When closing the window, the app will be minimized instead of exited",
   "@labelSettingsMinimizeOnCloseExplanation": {
     "description": "Explains what the 'minimize on close' setting does",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsAppTheme": "Theme",
+  "@labelSettingsAppTheme": {
+    "description": "Label for theme section of app appearance",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelAppScale": "App Scale",
+  "@labelAppScale": {
+    "description": "Label for the setting which controls the UI scale of the overall app",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelThemeDark": "Dark Theme",
+  "@labelThemeDark": {
+    "description": "Label for the dark theme",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelThemeLight": "Light Theme",
+  "@labelThemeLight": {
+    "description": "Label for the light theme",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelThemeAmoled": "Amoled",
+  "@labelThemeAmoled": {
+    "description": "Label for the light theme",
     "type": "text",
     "placeholders": {}
   },
@@ -1412,6 +1452,12 @@
   "promptDelete": "Delete",
   "@promptDelete": {
     "description": "Generic prompt to delete something",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptDownload": "Download",
+  "@promptDownload": {
+    "description": "Generic prompt to download something",
     "type": "text",
     "placeholders": {}
   },

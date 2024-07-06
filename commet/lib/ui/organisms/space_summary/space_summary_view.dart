@@ -93,6 +93,10 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
       desc: "Header label for the list of rooms in a space",
       name: "labelSpaceRoomsList");
 
+  String get labelSpaceSubspacesList => Intl.message("Spaces",
+      desc: "Header label for the list of child spaces in a space",
+      name: "labelSpaceSubspacesList");
+
   String get labelSpaceAvailableRoomsList => Intl.message("Available rooms",
       desc:
           "Header label for the list of rooms in a space, which the user has not yet joined but are available",
@@ -249,7 +253,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
 
   Widget buildSpaceList() {
     return Panel(
-      header: "Spaces",
+      header: labelSpaceSubspacesList,
       mode: TileType.surfaceContainer,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
