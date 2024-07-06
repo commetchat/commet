@@ -170,10 +170,6 @@ class MatrixSpace extends Space {
     _components = ComponentRegistry.getMatrixSpaceComponents(client, this);
 
     _subscriptions = List.from([
-      room.onUpdate.stream.listen((event) {
-        refresh();
-        _onUpdate.add(null);
-      }),
       client.onSync.listen((event) {
         refresh();
       }),

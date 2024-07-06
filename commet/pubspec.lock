@@ -926,17 +926,17 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "krille/background-client"
-      resolved-ref: b4b17ffce87a409a4946e7f2972349b9cc2c91c6
-      url: "https://github.com/Airyzz/matrix-dart-sdk.git"
+      ref: main
+      resolved-ref: a4e6e73f79138d2044e618697ae43ab81ec2b9c7
+      url: "https://github.com/commetchat/matrix-dart-sdk.git"
     source: git
-    version: "0.26.1"
+    version: "0.30.0"
   matrix_dart_sdk_drift_db:
     dependency: "direct main"
     description:
       path: "."
-      ref: HEAD
-      resolved-ref: "8b60e925966b6e0ca29baa3ebc9c560ce9f828b1"
+      ref: update-matrix-sdk
+      resolved-ref: "0d17db077ca2ce4fb39946779031d97d8a1c7a80"
       url: "https://github.com/commetchat/matrix-dart-sdk-drift-db.git"
     source: git
     version: "0.0.1"
