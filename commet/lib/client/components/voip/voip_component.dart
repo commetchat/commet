@@ -10,7 +10,7 @@ abstract class VoipComponent<T extends Client> implements Component<T> {
 
   List<VoipSession> getSessionsInRoom(String roomId);
 
-  Future<void> startCall(String roomId, CallType type);
+  Future<void> startCall(String roomId, CallType type, {String? userId});
 
   bool canCallRoom(String roomId);
 }

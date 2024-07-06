@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:commet/client/member.dart';
-import 'package:commet/client/peer.dart';
+import 'package:commet/debug/log.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -31,8 +31,11 @@ class _VoipStreamViewState extends State<VoipStreamView>
 
   late AnimationController audioLevel;
 
+  late GlobalKey rendererKey = GlobalKey();
+
   @override
   void initState() {
+    Log.d("Initializing stream view!");
     Timer.periodic(const Duration(milliseconds: 200), timer);
     var room = widget.session.client.getRoom(widget.session.roomId)!;
     user = room.getMemberOrFallback(widget.stream.streamUserId);
@@ -91,7 +94,7 @@ class _VoipStreamViewState extends State<VoipStreamView>
   Widget buildDefault() {
     switch (widget.stream.type) {
       case VoipStreamType.audio:
-        return tiamat.Tile.low2(
+        return tiamat.Tile.low(
           child: Center(
               child: tiamat.Avatar(
                   border: Border.all(
@@ -105,7 +108,7 @@ class _VoipStreamViewState extends State<VoipStreamView>
 
       case VoipStreamType.video:
       case VoipStreamType.screenshare:
-        return widget.stream.buildVideoRenderer(widget.fit) ??
+        return widget.stream.buildVideoRenderer(widget.fit, rendererKey) ??
             const Placeholder();
     }
   }

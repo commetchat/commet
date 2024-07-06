@@ -3,8 +3,6 @@ import 'package:flutter/material.dart' as m;
 import 'package:flutter/widgets.dart';
 import 'package:tiamat/tiamat.dart' as t;
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
-import 'package:flutter/material.dart' as m;
-import 'package:flutter/widgets.dart';
 
 import '../../client/client.dart';
 

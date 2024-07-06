@@ -74,14 +74,14 @@ class _CallViewState extends State<CallView> {
 
   @override
   Widget build(BuildContext context) {
-    return tiamat.Tile.low4(
+    return tiamat.Tile.lowest(
       child: switch (widget.currentSession.state) {
         VoipState.connected => callConnectedView(),
         VoipState.outgoing => callOutgoingView(),
         VoipState.connecting => callOutgoingView(),
         VoipState.ended => callEndedView(),
         VoipState.incoming => callIncomingView(),
-        _ => Container()
+        _ => Placeholder()
       },
     );
   }

@@ -5,7 +5,7 @@ enum VoipStreamType { audio, video, screenshare }
 abstract class VoipStream {
   VoipStreamType get type;
 
-  Widget? buildVideoRenderer(BoxFit fit);
+  Widget? buildVideoRenderer(BoxFit fit, Key key);
 
   String get streamUserId;
 

@@ -1,6 +1,7 @@
 // ignore_for_file: depend_on_referenced_packages, implementation_imports
 
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:commet/client/components/component.dart';
 import 'package:commet/client/components/voip/voip_component.dart';
@@ -10,6 +11,7 @@ import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_timeline_event.dart';
 import 'package:commet/client/timeline.dart';
 import 'package:commet/config/platform_utils.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/pages/settings/categories/app/voip_settings/voip_turn_fallback_dialog.dart';
@@ -17,14 +19,14 @@ import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart' as mx;
 import 'package:webrtc_interface/src/mediadevices.dart';
 import 'package:webrtc_interface/src/rtc_peerconnection.dart';
-import 'package:webrtc_interface/src/rtc_video_renderer.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart' as webrtc;
 
 class MatrixVoipComponent
     implements
         VoipComponent<MatrixClient>,
         EventHandlerComponent,
-        mx.WebRTCDelegate {
+        mx.WebRTCDelegate,
+        mx.EncryptionKeyProvider {
   late mx.VoIP voip;
 
   @override
@@ -178,17 +180,9 @@ class MatrixVoipComponent
   }
 
   @override
-  VideoRenderer createRenderer() {
-    return webrtc.RTCVideoRenderer();
-  }
-
-  @override
   Future<void> handleCallEnded(mx.CallSession session) async {
     _onSessionEnded.add(MatrixVoipSession(session, client));
   }
-
-  @override
-  Future<void> handleGroupCallEnded(mx.GroupCall groupCall) async {}
 
   @override
   Future<void> handleMissedCall(mx.CallSession session) async {}
@@ -199,22 +193,20 @@ class MatrixVoipComponent
   }
 
   @override
-  Future<void> handleNewGroupCall(mx.GroupCall groupCall) async {}
-
-  @override
   Future<void> playRingtone() async {}
 
   @override
   Future<void> stopRingtone() async {}
 
   @override
-  Future<void> startCall(String roomId, CallType type) {
+  Future<void> startCall(String roomId, CallType type, {String? userId}) {
     var callType = switch (type) {
       CallType.voice => mx.CallType.kVoice,
       CallType.video => mx.CallType.kVideo
     };
 
-    return voip.inviteToCall(roomId, callType);
+    var room = client.getMatrixClient().getRoomById(roomId);
+    return voip.inviteToCall(room!, callType, userId: userId);
   }
 
   @override
@@ -225,5 +217,37 @@ class MatrixVoipComponent
     }
 
     return mxRoom.getParticipants().length <= 2;
+  }
+
+  @override
+  Future<void> handleGroupCallEnded(mx.GroupCallSession groupCall) async {}
+
+  @override
+  Future<void> handleNewGroupCall(mx.GroupCallSession groupCall) async {}
+
+  @override
+  mx.EncryptionKeyProvider? get keyProvider => this;
+
+  @override
+  Future<Uint8List> onExportKey(mx.CallParticipant participant, int index) {
+    Log.d("onExportKey called for participant: ${participant.userId} [$index]");
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Uint8List> onRatchetKey(mx.CallParticipant participant, int index) {
+    Log.d(
+        "onRatchetKey called for participant: ${participant.userId} [$index]");
+    // TODO: implement onRatchetKey
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> onSetEncryptionKey(
+      mx.CallParticipant participant, Uint8List key, int index) {
+    Log.d(
+        "onSetEncryptionKey called for participant: ${participant.userId} [$index]");
+    // TODO: implement onSetEncryptionKey
+    throw UnimplementedError();
   }
 }

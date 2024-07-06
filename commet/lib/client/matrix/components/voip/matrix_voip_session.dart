@@ -22,6 +22,10 @@ class MatrixVoipSession implements VoipSession {
     session.onCallStateChanged.stream.listen((event) {
       _onStateChanged.add(null);
     });
+
+    initStreams();
+    session.onStreamAdd.stream.listen(onStreamAdded);
+    session.onStreamRemoved.stream.listen(onStreamRemoved);
   }
 
   @override
@@ -58,22 +62,7 @@ class MatrixVoipSession implements VoipSession {
       : null;
 
   @override
-  List<VoipStream> get streams {
-    List<MatrixVoipStream> result = List.empty(growable: true);
-    for (var stream in session.streams) {
-      if (stream.purpose == matrix.SDPStreamMetadataPurpose.Screenshare &&
-          stream.videoMuted) {
-        continue;
-      }
-
-      if (!result
-          .any((element) => element.stream.stream?.id == stream.stream?.id)) {
-        result.add(MatrixVoipStream(stream, this));
-      }
-    }
-
-    return result;
-  }
+  late List<VoipStream> streams;
 
   @override
   bool operator ==(Object other) {
@@ -109,12 +98,12 @@ class MatrixVoipSession implements VoipSession {
 
   @override
   Future<void> declineCall() {
-    return session.hangup();
+    return session.hangup(reason: matrix.CallErrorCode.userHangup);
   }
 
   @override
   Future<void> hangUpCall() {
-    return session.hangup();
+    return session.hangup(reason: matrix.CallErrorCode.userHangup);
   }
 
   @override
@@ -167,5 +156,44 @@ class MatrixVoipSession implements VoipSession {
   @override
   Future<void> stopCamera() async {
     await session.setLocalVideoMuted(true);
+  }
+
+  void initStreams() {
+    List<MatrixVoipStream> result = List.empty(growable: true);
+
+    var s = List.from(session.getLocalStreams, growable: true);
+    s.addAll(session.getRemoteStreams);
+
+    for (var stream in s) {
+      if (!shouldAddStream(stream)) {
+        continue;
+      }
+
+      if (!result
+          .any((element) => element.stream.stream?.id == stream.stream?.id)) {
+        result.add(MatrixVoipStream(stream, this));
+      }
+    }
+
+    streams = result;
+  }
+
+  bool shouldAddStream(stream) {
+    if (stream.purpose == matrix.SDPStreamMetadataPurpose.Screenshare &&
+        stream.videoMuted) {
+      return false;
+    }
+
+    return true;
+  }
+
+  void onStreamAdded(matrix.WrappedMediaStream event) {
+    if (shouldAddStream(event)) {
+      streams.add(MatrixVoipStream(event, this));
+    }
+  }
+
+  void onStreamRemoved(matrix.WrappedMediaStream event) {
+    streams.removeWhere((e) => e.streamId == event.stream?.id);
   }
 }

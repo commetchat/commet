@@ -113,7 +113,7 @@ class _SidebarCallsListState extends State<SidebarCallsList> {
                   padding: const EdgeInsets.fromLTRB(8, 0, 0, 4),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(5),
-                    child: Tile.low3(
+                    child: Tile.lowest(
                       child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: MiniCallMenu(selectedSession!)),

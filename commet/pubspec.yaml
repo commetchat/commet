@@ -90,7 +90,8 @@ dependencies:
   archive: ^3.6.1
   exif: ^3.3.0
   image: ^4.2.0
-  flutter_webrtc: ^0.11.1
+  flutter_webrtc:
+    git: https://github.com/commetchat/flutter-webrtc.git
 
   ## ---- Putting some extra lines in here to help git with the diff
   ## ---- Probably good to keep this stuff at the bottom of the list

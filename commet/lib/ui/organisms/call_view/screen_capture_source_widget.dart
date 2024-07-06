@@ -28,7 +28,7 @@ class _ScreenCaptureSourceWidgetState extends State<ScreenCaptureSourceWidget> {
   Widget build(BuildContext context) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),
-      child: tiamat.Tile.low2(
+      child: tiamat.Tile.low(
         child: Material(
           color: Colors.transparent,
           child: InkWell(

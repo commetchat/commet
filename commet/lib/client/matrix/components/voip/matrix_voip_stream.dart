@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:commet/client/matrix/components/voip/matrix_voip_session.dart';
 import 'package:commet/utils/list_extension.dart';
@@ -9,7 +11,30 @@ class MatrixVoipStream implements VoipStream {
   WrappedMediaStream stream;
   MatrixVoipSession session;
 
-  MatrixVoipStream(this.stream, this.session);
+  RTCVideoRenderer? renderer;
+
+  MatrixVoipStream(this.stream, this.session) {
+    initRenderer();
+    stream.onStreamChanged.stream.listen(onStreamChanged);
+  }
+
+  void onStreamChanged(MediaStream event) {
+    if (renderer != null) {
+      renderer!.srcObject = event;
+    } else {
+      initRenderer();
+    }
+  }
+
+  Future<void> initRenderer() async {
+    if (stream.stream?.getVideoTracks().isNotEmpty == true) {
+      var r = RTCVideoRenderer();
+      await r.initialize();
+      r.srcObject = stream.stream!;
+
+      renderer = r;
+    }
+  }
 
   @override
   VoipStreamType get type {
@@ -25,21 +50,25 @@ class MatrixVoipStream implements VoipStream {
   }
 
   @override
-  String get streamUserId => stream.userId;
+  String get streamUserId => stream.participant.userId;
 
   @override
   String get label => stream.stream?.getTracks().first.label ?? "";
 
   @override
   double get audiolevel {
+    var tracks = stream.stream?.getAudioTracks();
+    var track = tracks?.firstOrNull;
+
+    if (track == null) {
+      return 0;
+    }
+
     var stats = session.stats;
 
     if (stats == null) {
       return 0;
     }
-
-    var tracks = stream.stream?.getAudioTracks();
-    var track = tracks?.first;
 
     var stat = stats.tryFirstWhere((element) {
       if (element.values.containsKey("trackIdentifier") == false) {
@@ -60,9 +89,13 @@ class MatrixVoipStream implements VoipStream {
 
   @override
   double? get aspectRatio {
-    var ratio = stream.renderer.videoWidth / stream.renderer.videoHeight;
-    if (ratio > 0) {
-      return ratio;
+    if (renderer != null) {
+      final width = renderer!.videoWidth;
+      final height = renderer!.videoHeight;
+      if (width > 0 && height > 0) {
+        var ratio = renderer!.videoWidth / renderer!.videoHeight;
+        return ratio;
+      }
     }
 
     return 1;
@@ -81,15 +114,19 @@ class MatrixVoipStream implements VoipStream {
   int get hashCode => streamId.hashCode;
 
   @override
-  Widget? buildVideoRenderer(BoxFit fit) {
+  Widget? buildVideoRenderer(BoxFit fit, Key key) {
+    if (renderer == null) {
+      return const Placeholder();
+    }
+
     if (fit == BoxFit.contain) {
       return AspectRatio(
-          aspectRatio: aspectRatio ?? 1,
-          child: RTCVideoView(stream.renderer as RTCVideoRenderer));
+          aspectRatio: aspectRatio ?? 1, child: RTCVideoView(renderer!));
     } else {
-      if (stream.renderer.textureId != null) {
+      if (renderer!.textureId != null) {
         return RTCVideoView(
-          stream.renderer as RTCVideoRenderer,
+          key: key,
+          renderer!,
           objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
         );
       }
