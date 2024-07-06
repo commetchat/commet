@@ -57,17 +57,6 @@ class MatrixDirectMessagesComponent
       return true;
     }
 
-    var memberStates = room.matrixRoom.states["m.room.member"];
-    if (memberStates?.length == 2) {
-      //this might be a direct message room that hasnt been added to account data properly
-      for (var key in memberStates!.keys) {
-        var state = memberStates[key];
-        if (state?.prevContent?["is_direct"] == true) {
-          return true;
-        }
-      }
-    }
-
     return false;
   }
 
@@ -79,17 +68,6 @@ class MatrixDirectMessagesComponent
 
     if (room.matrixRoom.directChatMatrixID != null) {
       return room.matrixRoom.directChatMatrixID;
-    }
-
-    var memberStates = room.matrixRoom.states["m.room.member"];
-    if (memberStates?.length == 2) {
-      //this might be a direct message room that hasnt been added to account data properly
-      for (var key in memberStates!.keys) {
-        var state = memberStates[key];
-        if (state?.prevContent?["is_direct"] == true) {
-          return key;
-        }
-      }
     }
 
     return null;

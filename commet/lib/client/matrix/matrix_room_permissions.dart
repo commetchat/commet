@@ -33,7 +33,7 @@ class MatrixRoomPermissions extends Permissions {
 
   @override
   bool get canEditChildren =>
-      room.canChangeStateEvent(matrix.EventTypes.spaceChild);
+      room.canChangeStateEvent(matrix.EventTypes.SpaceChild);
 
   @override
   bool get canInviteUser => room.canInvite;

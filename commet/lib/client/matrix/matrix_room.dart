@@ -28,6 +28,7 @@ import 'package:commet/utils/mime.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:html_unescape/html_unescape.dart';
+import 'package:matrix/matrix_api_lite/model/stripped_state_event.dart';
 
 // ignore: implementation_imports
 import 'package:matrix/src/utils/markdown.dart' as mx_markdown;
@@ -398,13 +399,6 @@ class MatrixRoom extends Room {
     await _matrixRoom.enableEncryption();
   }
 
-  void onRoomStateUpdated(matrix.Event event) async {
-    _displayName = _matrixRoom.getLocalizedDisplayname();
-    if (event.type == "m.room.name") {
-      _onUpdate.add(null);
-    }
-  }
-
   @override
   Future<void> setPushRule(PushRule rule) async {
     var newRule = _matrixRoom.pushRuleState;
@@ -578,5 +572,12 @@ class MatrixRoom extends Room {
   @override
   Role getMemberRole(String identifier) {
     return MatrixRole(_matrixRoom.getPowerLevelByUserId(identifier));
+  }
+
+  void onRoomStateUpdated(({String roomId, StrippedStateEvent state}) event) {
+    _displayName = _matrixRoom.getLocalizedDisplayname();
+    if (event.state.type == "m.room.name") {
+      _onUpdate.add(null);
+    }
   }
 }

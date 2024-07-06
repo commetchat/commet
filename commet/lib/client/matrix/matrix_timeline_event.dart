@@ -191,7 +191,6 @@ class MatrixTimelineEvent implements TimelineEvent {
 
   TimelineEventStatus convertStatus(matrix.EventStatus status) {
     const dict = {
-      matrix.EventStatus.removed: TimelineEventStatus.removed,
       matrix.EventStatus.error: TimelineEventStatus.error,
       matrix.EventStatus.sending: TimelineEventStatus.sending,
       matrix.EventStatus.sent: TimelineEventStatus.sent,
