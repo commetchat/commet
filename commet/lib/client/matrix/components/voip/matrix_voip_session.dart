@@ -6,6 +6,7 @@ import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:commet/client/matrix/components/voip/matrix_voip_data_channel.dart';
 import 'package:commet/client/matrix/components/voip/matrix_voip_stream.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
+import 'package:commet/debug/log.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
@@ -29,6 +30,7 @@ class MatrixVoipSession implements VoipSession {
     initStreams();
     session.onStreamAdd.stream.listen(onStreamAdded);
     session.onStreamRemoved.stream.listen(onStreamRemoved);
+    session.pc?.onDataChannel = onDataChannelOpened;
   }
 
   @override
@@ -212,5 +214,13 @@ class MatrixVoipSession implements VoipSession {
 
   void onStreamRemoved(matrix.WrappedMediaStream event) {
     streams.removeWhere((e) => e.streamId == event.stream?.id);
+  }
+
+  onDataChannelOpened(RTCDataChannel channel) {
+    channel.onMessage = onDataChannelMessage;
+  }
+
+  onDataChannelMessage(RTCDataChannelMessage data) {
+    Log.i("Received message over data channel!: ${data.text}");
   }
 }
