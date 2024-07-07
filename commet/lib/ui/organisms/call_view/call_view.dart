@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
+import 'package:commet/client/matrix/components/voip/matrix_voip_session.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/ui/atoms/lightbox.dart';
 import 'package:commet/ui/layout/bento.dart';
@@ -133,6 +134,13 @@ class _CallViewState extends State<CallView> {
               child: Wrap(
                 spacing: 5,
                 children: [
+                  if (widget.currentSession is MatrixVoipSession)
+                    tiamat.CircleButton(
+                        icon: Icons.bug_report,
+                        onPressed: () {
+                          var sesh = widget.currentSession as MatrixVoipSession;
+                          sesh.testDataChannel();
+                        }),
                   if (canScreenshare)
                     tiamat.CircleButton(
                         icon: Icons.screen_share_outlined,

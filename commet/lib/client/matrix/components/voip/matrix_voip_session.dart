@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
+import 'package:commet/client/matrix/components/voip/matrix_voip_data_channel.dart';
 import 'package:commet/client/matrix/components/voip/matrix_voip_stream.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
@@ -17,6 +18,8 @@ class MatrixVoipSession implements VoipSession {
   final StreamController<void> _onStateChanged = StreamController.broadcast();
 
   List<StatsReport>? stats;
+
+  RTCDataChannel? channel;
 
   MatrixVoipSession(this.session, MatrixClient this.client) {
     session.onCallStateChanged.stream.listen((event) {
@@ -131,6 +134,20 @@ class MatrixVoipSession implements VoipSession {
 
     await stopScreenshare();
     session.addLocalStream(stream, matrix.SDPStreamMetadataPurpose.Screenshare);
+  }
+
+  void testDataChannel() async {
+    channel = await session.pc!
+        .createDataChannel("TEST DATACHANNEL", RTCDataChannelInit()..id = 1337);
+
+    session.addLocalStream(
+        RTCDataMediaStream(channel!), "chat.commet.screenshare_annotation");
+
+    Timer.periodic(Duration(seconds: 5), (_) {
+      if (channel != null) {
+        channel!.send(RTCDataChannelMessage("HELLLLOOOOOOOO!!!"));
+      }
+    });
   }
 
   @override
