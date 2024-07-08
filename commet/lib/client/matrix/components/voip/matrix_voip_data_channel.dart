@@ -6,7 +6,7 @@ class RTCDataMediaStream implements webrtc.MediaStream {
   RTCDataMediaStream(this.channel);
 
   @override
-  String get id => "${channel.id}_${channel.label}";
+  String get id => channel.label!;
 
   @override
   String get ownerTag => throw UnimplementedError();

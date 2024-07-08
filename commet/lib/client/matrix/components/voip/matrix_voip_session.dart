@@ -9,6 +9,7 @@ import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/debug/log.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:matrix/matrix.dart' as matrix;
+import 'package:uuid/uuid.dart';
 
 class MatrixVoipSession implements VoipSession {
   matrix.CallSession session;
@@ -139,8 +140,11 @@ class MatrixVoipSession implements VoipSession {
   }
 
   void testDataChannel() async {
+    var uuid = const Uuid();
+    var label = uuid.v4();
+
     channel = await session.pc!
-        .createDataChannel("TEST DATACHANNEL", RTCDataChannelInit()..id = 1337);
+        .createDataChannel(label, RTCDataChannelInit()..id = 1337);
 
     session.addLocalStream(
         RTCDataMediaStream(channel!), "chat.commet.screenshare_annotation");
