@@ -10,6 +10,7 @@ import 'package:commet/client/matrix/components/emoticon/matrix_space_emoticon_c
 import 'package:commet/client/matrix/components/gif/matrix_gif_component.dart';
 import 'package:commet/client/matrix/components/invitation/matrix_invitation_component.dart';
 import 'package:commet/client/matrix/components/push_notifications/matrix_push_notification_component.dart';
+import 'package:commet/client/matrix/components/rtc_data_channel/matrix_rtc_data_channel_component.dart';
 import 'package:commet/client/matrix/components/voip/matrix_voip_component.dart';
 import 'package:commet/client/matrix/components/read_receipts/matrix_read_receipt_component.dart';
 import 'package:commet/client/matrix/components/threads/matrix_threads_component.dart';
@@ -28,6 +29,7 @@ class ComponentRegistry {
       MatrixPushNotificationComponent(client),
       MatrixCommandComponent(client),
       MatrixVoipComponent(client),
+      MatrixRTCDataChannelComponent(client),
       MatrixUrlPreviewComponent(client),
       MatrixInvitationComponent(client),
       MatrixThreadsComponent(client),

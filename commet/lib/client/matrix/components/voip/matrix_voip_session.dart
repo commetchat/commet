@@ -3,7 +3,8 @@ import 'dart:async';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
-import 'package:commet/client/matrix/components/voip/matrix_voip_data_channel.dart';
+import 'package:commet/client/matrix/components/rtc_data_channel/matrix_rtc_data_channel_component.dart';
+import 'package:commet/client/matrix/components/rtc_data_channel/matrix_rtc_data_media_stream.dart';
 import 'package:commet/client/matrix/components/voip/matrix_voip_stream.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/debug/log.dart';
@@ -31,7 +32,11 @@ class MatrixVoipSession implements VoipSession {
     initStreams();
     session.onStreamAdd.stream.listen(onStreamAdded);
     session.onStreamRemoved.stream.listen(onStreamRemoved);
-    session.pc?.onDataChannel = onDataChannelOpened;
+
+    final dataComponent = client.getComponent<MatrixRTCDataChannelComponent>();
+    if (dataComponent != null) {
+      session.pc?.onDataChannel = dataComponent.dataChannelOpenedCallback;
+    }
   }
 
   @override
@@ -139,23 +144,6 @@ class MatrixVoipSession implements VoipSession {
     session.addLocalStream(stream, matrix.SDPStreamMetadataPurpose.Screenshare);
   }
 
-  void testDataChannel() async {
-    var uuid = const Uuid();
-    var label = uuid.v4();
-
-    channel = await session.pc!
-        .createDataChannel(label, RTCDataChannelInit()..id = 1337);
-
-    session.addLocalStream(
-        RTCDataMediaStream(channel!), "chat.commet.screenshare_annotation");
-
-    Timer.periodic(Duration(seconds: 5), (_) {
-      if (channel != null) {
-        channel!.send(RTCDataChannelMessage("HELLLLOOOOOOOO!!!"));
-      }
-    });
-  }
-
   @override
   Future<void> stopScreenshare() async {
     for (var element in session.getLocalStreams.where((element) =>
@@ -207,6 +195,13 @@ class MatrixVoipSession implements VoipSession {
       return false;
     }
 
+    if (![
+      matrix.SDPStreamMetadataPurpose.Screenshare,
+      matrix.SDPStreamMetadataPurpose.Usermedia
+    ].contains(stream.purpose)) {
+      return false;
+    }
+
     return true;
   }
 
@@ -218,13 +213,5 @@ class MatrixVoipSession implements VoipSession {
 
   void onStreamRemoved(matrix.WrappedMediaStream event) {
     streams.removeWhere((e) => e.streamId == event.stream?.id);
-  }
-
-  onDataChannelOpened(RTCDataChannel channel) {
-    channel.onMessage = onDataChannelMessage;
-  }
-
-  onDataChannelMessage(RTCDataChannelMessage data) {
-    Log.i("Received message over data channel!: ${data.text}");
   }
 }
