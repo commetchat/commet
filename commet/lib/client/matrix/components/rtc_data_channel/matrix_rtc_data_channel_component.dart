@@ -31,11 +31,11 @@ class MatrixRTCDataChannelComponent
 
     sesh.session.addLocalStream(RTCDataMediaStream(channel!), purpose);
 
-    return MatrixRtcDataChannel(channel);
+    return MatrixRtcDataChannel(sesh, channel, purpose: purpose);
   }
 
-  dataChannelOpenedCallback(RTCDataChannel channel) {
-    var newChannel = MatrixRtcDataChannel(channel);
+  dataChannelOpenedCallback(MatrixVoipSession session, RTCDataChannel channel) {
+    var newChannel = MatrixRtcDataChannel(session, channel);
     _onDataChannelOpened.add(newChannel);
   }
 

@@ -35,7 +35,8 @@ class MatrixVoipSession implements VoipSession {
 
     final dataComponent = client.getComponent<MatrixRTCDataChannelComponent>();
     if (dataComponent != null) {
-      session.pc?.onDataChannel = dataComponent.dataChannelOpenedCallback;
+      session.pc?.onDataChannel =
+          (channel) => dataComponent.dataChannelOpenedCallback(this, channel);
     }
   }
 

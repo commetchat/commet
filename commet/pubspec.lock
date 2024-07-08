@@ -928,7 +928,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: a4e6e73f79138d2044e618697ae43ab81ec2b9c7
+      resolved-ref: c4b0616d603c0de21328051b8775ac0e4bb23c8c
       url: "https://github.com/commetchat/matrix-dart-sdk.git"
     source: git
     version: "0.30.0"
