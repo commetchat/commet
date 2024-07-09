@@ -12,4 +12,6 @@ abstract class RTCDataChannelComponent<T extends Client>
 
 abstract class DataChannel {
   void sendMessage(String data);
+
+  Stream<String> get onMessageReceived;
 }

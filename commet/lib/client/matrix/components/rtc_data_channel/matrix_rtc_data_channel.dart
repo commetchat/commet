@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:commet/client/components/rtc_data_channel/rtc_data_channel_component.dart';
 import 'package:commet/client/matrix/components/voip/matrix_voip_session.dart';
 import 'package:commet/debug/log.dart';
@@ -8,8 +10,14 @@ class MatrixRtcDataChannel implements DataChannel {
   MatrixVoipSession session;
   String? purpose;
 
+  final StreamController<String> _onMessageReceived =
+      StreamController.broadcast();
+
+  @override
+  Stream<String> get onMessageReceived => _onMessageReceived.stream;
+
   MatrixRtcDataChannel(this.session, this.channel, {this.purpose}) {
-    channel.onMessage = onMessageReceived;
+    channel.onMessage = receivedMessageCallback;
 
     if (purpose == null) {
       var metadata = session
@@ -22,8 +30,8 @@ class MatrixRtcDataChannel implements DataChannel {
     }
   }
 
-  onMessageReceived(RTCDataChannelMessage data) {
-    Log.d("[$purpose] > ${data.text}");
+  void receivedMessageCallback(RTCDataChannelMessage data) {
+    _onMessageReceived.add(data.text);
   }
 
   @override

@@ -8,6 +8,7 @@ import 'package:commet/client/room.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/ui/atoms/lightbox.dart';
 import 'package:commet/ui/layout/bento.dart';
+import 'package:commet/ui/organisms/call_view/voip_fullscreen_stream_view.dart';
 import 'package:commet/ui/organisms/call_view/voip_stream_view.dart';
 import 'package:commet/utils/animation/ring_shaker.dart';
 import 'package:commet/utils/animation/ripple.dart';
@@ -243,8 +244,10 @@ class _CallViewState extends State<CallView> {
                   onFullscreen: () {
                     Lightbox.show(context,
                         aspectRatio: mainStream!.aspectRatio,
-                        customWidget:
-                            VoipStreamView(mainStream!, widget.currentSession));
+                        customWidget: VoipFullscreenStreamView(
+                          session: widget.currentSession,
+                          stream: mainStream!,
+                        ));
                   },
                   fit: BoxFit.contain,
                   key: ValueKey(
@@ -273,8 +276,10 @@ class _CallViewState extends State<CallView> {
                     onFullscreen: () {
                       Lightbox.show(context,
                           aspectRatio: e.aspectRatio,
-                          customWidget:
-                              VoipStreamView(e, widget.currentSession));
+                          customWidget: VoipFullscreenStreamView(
+                            session: widget.currentSession,
+                            stream: e,
+                          ));
                     },
                   )))
               .toList()),
