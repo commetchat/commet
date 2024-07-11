@@ -5,6 +5,11 @@ import 'package:commet/client/components/voip/voip_session.dart';
 abstract class RTCScreenShareAnnotationComponent<T extends Client>
     implements Component<T> {
   Future<RTCScreenShareAnnotationSession> createSession(VoipSession session);
+
+  Future<RTCScreenShareAnnotationSession> getOrCreateSession(
+      VoipSession session);
+
+  RTCScreenShareAnnotationSession? getExistingSession(VoipSession session);
 }
 
 abstract class RTCScreenShareAnnotationSession {
