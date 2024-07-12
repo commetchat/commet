@@ -2,6 +2,7 @@ import 'package:commet/client/components/push_notification/android/unified_push_
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/components/push_notification/notifier.dart';
 import 'package:commet/client/components/push_notification/push_notification_component.dart';
+import 'package:commet/config/build_config.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/settings/categories/app/notification_settings/notifier_debug_view.dart';
 import 'package:commet/ui/pages/setup/menus/unified_push_setup.dart';
@@ -36,26 +37,34 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
     notifier = NotificationManager.notifier;
   }
 
+  bool get canConfigureNotifications =>
+      BuildConfig.ENABLE_GOOGLE_SERVICES == false;
+
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Panel(
-          mode: tiamat.TileType.surfaceContainerLow,
-          header: "Push Notifications",
-          child: buildNotificationSettings(),
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        Panel(
-          mode: tiamat.TileType.surfaceContainerLow,
-          header: "Push Gateway",
-          child: pushGatewaySelector(),
-        ),
-        const SizedBox(
-          height: 10,
-        ),
+        if (canConfigureNotifications)
+          Column(
+            children: [
+              Panel(
+                mode: tiamat.TileType.surfaceContainerLow,
+                header: "Push Notifications",
+                child: buildNotificationSettings(),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Panel(
+                mode: tiamat.TileType.surfaceContainerLow,
+                header: "Push Gateway",
+                child: pushGatewaySelector(),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+            ],
+          ),
         if (preferences.developerMode)
           const Panel(
             mode: tiamat.TileType.surfaceContainerLow,
