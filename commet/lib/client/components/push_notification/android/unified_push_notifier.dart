@@ -71,6 +71,10 @@ class UnifiedPushNotifier implements Notifier {
 
   @override
   Future<String?> getToken() async {
+    if (preferences.unifiedPushEnabled != true) {
+      return null;
+    }
+
     return preferences.unifiedPushEndpoint;
   }
 
