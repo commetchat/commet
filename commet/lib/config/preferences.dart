@@ -222,8 +222,9 @@ class Preferences {
     await _preferences!.setString(_pushGateway, value);
   }
 
-  String get pushGateway =>
-      _preferences!.getString(_pushGateway) ?? "push.commet.chat";
+  String get pushGateway => BuildConfig.ENABLE_GOOGLE_SERVICES
+      ? "push.commet.chat"
+      : _preferences!.getString(_pushGateway) ?? "push.commet.chat";
 
   String? get lastDownloadLocation =>
       _preferences!.getString(_lastDownloadLocation);
