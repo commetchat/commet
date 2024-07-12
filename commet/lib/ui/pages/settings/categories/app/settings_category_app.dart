@@ -3,7 +3,7 @@ import 'package:commet/main.dart';
 import 'package:commet/ui/pages/settings/categories/app/advanced_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/app/appearance_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/app/general_settings_page.dart';
-import 'package:commet/ui/pages/settings/categories/app/notification_settings_page.dart';
+import 'package:commet/ui/pages/settings/categories/app/notification_settings/notification_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/app/window_settings.dart';
 import 'package:commet/ui/pages/settings/categories/developer/developer_settings_page.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
@@ -66,7 +66,8 @@ class SettingsCategoryApp implements SettingsCategory {
                 return const WindowSettingsPage();
               }),
         // We really only need to configure on unified push
-        if (BuildConfig.ANDROID && !BuildConfig.ENABLE_GOOGLE_SERVICES)
+        if (BuildConfig.ANDROID &&
+            (!BuildConfig.ENABLE_GOOGLE_SERVICES || preferences.developerMode))
           SettingsTab(
               label: labelSettingsAppNotifications,
               icon: m.Icons.notifications,

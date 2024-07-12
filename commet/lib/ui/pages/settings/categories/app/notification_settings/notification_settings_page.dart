@@ -3,6 +3,7 @@ import 'package:commet/client/components/push_notification/notification_manager.
 import 'package:commet/client/components/push_notification/notifier.dart';
 import 'package:commet/client/components/push_notification/push_notification_component.dart';
 import 'package:commet/main.dart';
+import 'package:commet/ui/pages/settings/categories/app/notification_settings/notifier_debug_view.dart';
 import 'package:commet/ui/pages/setup/menus/unified_push_setup.dart';
 import 'package:commet/utils/common_strings.dart';
 import 'package:flutter/widgets.dart';
@@ -40,6 +41,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
     return Column(
       children: [
         Panel(
+          mode: tiamat.TileType.surfaceContainerLow,
           header: "Push Notifications",
           child: buildNotificationSettings(),
         ),
@@ -47,9 +49,19 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
           height: 10,
         ),
         Panel(
+          mode: tiamat.TileType.surfaceContainerLow,
           header: "Push Gateway",
           child: pushGatewaySelector(),
         ),
+        const SizedBox(
+          height: 10,
+        ),
+        if (preferences.developerMode)
+          const Panel(
+            mode: tiamat.TileType.surfaceContainerLow,
+            header: "Registered Pushers",
+            child: NotifierDebugView(),
+          ),
       ],
     );
   }
