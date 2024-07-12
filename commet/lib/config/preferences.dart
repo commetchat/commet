@@ -32,6 +32,8 @@ class Preferences {
   static const String _pushGateway = "push_gateway";
   static const String _lastDownloadLocation = "last_download_location";
   static const String _stickerCompatibilityMode = "sticker_compatibility_mode";
+  static const String _useFallbackTurnServer = "use_fallback_turn_server";
+  static const String _fallbackTurnServer = "fallback_turn_server";
   static const String _urlPreviewInE2EEChat = "use_url_preview_in_e2ee_chat";
   static const String _lastForegroundServiceSucceeded =
       "did_last_foreground_service_run_succeed";
@@ -242,6 +244,16 @@ class Preferences {
     _onSettingChanged.add(null);
   }
 
+  bool get useFallbackTurnServer =>
+      _preferences!.getBool(_useFallbackTurnServer) ?? false;
+
+  Future<void> setUseFallbackTurnServer(bool value) async {
+    await _preferences!.setBool(_useFallbackTurnServer, value);
+    _onSettingChanged.add(null);
+  }
+
+  String get fallbackTurnServer =>
+      _preferences!.getString(_fallbackTurnServer) ?? "stun:turn.matrix.org";
   Future<void> setUseUrlPreviewInE2EEChat(bool value) async {
     await _preferences!.setBool(_urlPreviewInE2EEChat, value);
   }

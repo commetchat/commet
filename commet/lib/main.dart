@@ -78,6 +78,7 @@ void bubble() async {
       title: 'Commet',
       theme: initialTheme,
       navigatorKey: navigator,
+      debugShowCheckedModeBanner: false,
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
@@ -95,7 +96,11 @@ void bubble() async {
 }
 
 void main() async {
-  runZonedGuarded(appMain, Log.onError, zoneSpecification: Log.spec);
+  if (BuildConfig.RELEASE) {
+    runZonedGuarded(appMain, Log.onError, zoneSpecification: Log.spec);
+  } else {
+    appMain();
+  }
 }
 
 void appMain() async {
