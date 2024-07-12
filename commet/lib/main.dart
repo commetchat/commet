@@ -262,7 +262,6 @@ class App extends StatelessWidget {
           return MaterialApp(
             title: 'Commet',
             theme: theme,
-            debugShowCheckedModeBanner: false,
             navigatorKey: navigator,
             localizationsDelegates: T.localizationsDelegates,
             builder: (context, child) => Provider<ClientManager>(
