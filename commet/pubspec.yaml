@@ -81,6 +81,8 @@ dependencies:
     git: https://github.com/commetchat/encrypted_url_preview.git
   signal_sticker_api: 
     git: https://github.com/commetchat/signal-sticker-api.git
+  constellation_dart:
+    path: ../../constellation_dart
   sqlite3_flutter_libs: ^0.5.23
   fuzzy: ^0.5.1
   encrypt: ^5.0.3

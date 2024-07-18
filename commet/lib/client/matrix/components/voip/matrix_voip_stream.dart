@@ -134,4 +134,9 @@ class MatrixVoipStream implements VoipStream {
 
     return null;
   }
+
+  @override
+  VoipStreamDirection get direction => stream.isLocal()
+      ? VoipStreamDirection.outgoing
+      : VoipStreamDirection.incoming;
 }

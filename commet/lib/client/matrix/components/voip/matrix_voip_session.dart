@@ -24,6 +24,8 @@ class MatrixVoipSession implements VoipSession {
 
   RTCDataChannel? channel;
 
+  DesktopCapturerSource? currentScreenshare;
+
   MatrixVoipSession(this.session, MatrixClient this.client) {
     session.onCallStateChanged.stream.listen((event) {
       _onStateChanged.add(null);
@@ -41,7 +43,7 @@ class MatrixVoipSession implements VoipSession {
   }
 
   @override
-  String? get remoteUserId => session.remotePartyId;
+  String? get remoteUserId => session.remoteUserId;
 
   @override
   String get roomId => session.room.id;
@@ -140,6 +142,8 @@ class MatrixVoipSession implements VoipSession {
         'mandatory': {'frameRate': 30.0}
       }
     });
+
+    currentScreenshare = source;
 
     await stopScreenshare();
     session.addLocalStream(stream, matrix.SDPStreamMetadataPurpose.Screenshare);
