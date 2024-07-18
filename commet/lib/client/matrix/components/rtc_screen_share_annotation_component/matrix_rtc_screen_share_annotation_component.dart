@@ -21,6 +21,8 @@ class MatrixRtcScreenShareAnnotationComponent
 
   MatrixRtcScreenShareAnnotationComponent(this.client);
 
+  final Map<String, RTCScreenShareAnnotationSession> _sessions = {};
+
   static const String rtcChannelPurpose = "chat.commet.screenshare_annotation";
 
   @override
@@ -30,7 +32,24 @@ class MatrixRtcScreenShareAnnotationComponent
         MatrixRTCScreenShareAnnotationSession(session as MatrixVoipSession);
 
     await annotationSession.create();
+    _sessions[session.sessionId] = annotationSession;
     return annotationSession;
+  }
+
+  @override
+  Future<RTCScreenShareAnnotationSession> getOrCreateSession(
+      VoipSession session) async {
+    var existing = _sessions[session.sessionId];
+    if (existing != null) {
+      return existing;
+    }
+
+    return createSession(session);
+  }
+
+  @override
+  RTCScreenShareAnnotationSession? getExistingSession(VoipSession session) {
+    return _sessions[session.sessionId];
   }
 }
 

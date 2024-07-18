@@ -21,6 +21,15 @@ class _VoipFullscreenStreamViewState extends State<VoipFullscreenStreamView> {
   RTCScreenShareAnnotationSession? annotationSession;
 
   @override
+  void initState() {
+    var component =
+        widget.session.client.getComponent<RTCScreenShareAnnotationComponent>();
+
+    annotationSession = component?.getExistingSession(widget.session);
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Stack(
       alignment: Alignment.bottomCenter,
@@ -55,7 +64,8 @@ class _VoipFullscreenStreamViewState extends State<VoipFullscreenStreamView> {
               onPressed: () async {
                 var component = widget.session.client
                     .getComponent<RTCScreenShareAnnotationComponent>();
-                var session = await component?.createSession(widget.session);
+                var session =
+                    await component?.getOrCreateSession(widget.session);
                 setState(() {
                   annotationSession = session;
                 });
