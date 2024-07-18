@@ -122,7 +122,7 @@ class MatrixRTCScreenShareAnnotationSession
 
       if (session.currentScreenshare != null) {
         final share = session.currentScreenshare as DesktopCapturerSourceNative;
-        final id = share.type == SourceType.Window ? share.id : share.name;
+        final id = share.id;
         if (id != lastSetTargetId) {
           lastSetTargetId = session.currentScreenshare?.id;
           switch (share.type) {
