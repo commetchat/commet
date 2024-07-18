@@ -60,6 +60,7 @@ class MatrixRTCScreenShareAnnotationSession
 
   bool createdCursor = false;
   String? lastSetTargetId;
+  DateTime lastSetCursorTime = DateTime.fromMicrosecondsSinceEpoch(0);
 
   MatrixRTCScreenShareAnnotationSession(this.session);
 
@@ -80,6 +81,15 @@ class MatrixRTCScreenShareAnnotationSession
   @override
   void setCursorPosition(
       {required String streamId, required double x, required double y}) {
+    var now = DateTime.now();
+    var diff = now.difference(lastSetCursorTime);
+
+    if (diff.inMilliseconds < 25) {
+      return;
+    }
+
+    lastSetCursorTime = now;
+
     var msg = const JsonEncoder().convert({
       "stream": streamId,
       "x": x,
@@ -125,6 +135,7 @@ class MatrixRTCScreenShareAnnotationSession
         final id = share.id;
         if (id != lastSetTargetId) {
           lastSetTargetId = session.currentScreenshare?.id;
+
           switch (share.type) {
             case SourceType.Screen:
               constellation_dart.setDisplay(id);
