@@ -1,4 +1,4 @@
-import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_base.dart';
+import 'package:commet/client/matrix/timeline_events/matrix_timeline_event.dart';
 import 'package:commet/client/timeline.dart';
 import 'package:commet/client/timeline_events/timeline_event_generic.dart';
 import 'package:flutter/material.dart';

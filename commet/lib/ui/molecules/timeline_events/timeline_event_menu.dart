@@ -3,7 +3,7 @@ import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/timeline.dart';
-import 'package:commet/client/timeline_events/timeline_event_base.dart';
+import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/client/timeline_events/timeline_event_emote.dart';
 import 'package:commet/client/timeline_events/timeline_event_message.dart';
 import 'package:commet/client/timeline_events/timeline_event_sticker.dart';

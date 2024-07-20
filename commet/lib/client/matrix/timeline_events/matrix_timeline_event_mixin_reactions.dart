@@ -2,7 +2,7 @@ import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_emoticon.dart';
 import 'package:commet/client/matrix/components/threads/matrix_thread_timeline.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
-import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_base.dart';
+import 'package:commet/client/matrix/timeline_events/matrix_timeline_event.dart';
 import 'package:commet/client/timeline.dart';
 import 'package:commet/client/timeline_events/timeline_event_feature_reactions.dart';
 import 'package:commet/utils/emoji/unicode_emoji.dart';

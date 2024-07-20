@@ -5,7 +5,7 @@ import 'package:commet/client/components/gif/gif_search_result.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
-import 'package:commet/client/timeline_events/timeline_event_base.dart';
+import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/main.dart';
 import 'package:http/http.dart' as http;
 

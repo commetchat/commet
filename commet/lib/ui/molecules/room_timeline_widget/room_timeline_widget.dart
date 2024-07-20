@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:commet/client/client.dart';
-import 'package:commet/client/timeline_events/timeline_event_base.dart';
+import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/ui/molecules/room_timeline_widget/room_timeline_widget_view.dart';
 import 'package:flutter/material.dart';
 

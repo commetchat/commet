@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:commet/client/timeline.dart';
-import 'package:commet/client/timeline_events/timeline_event_base.dart';
+import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/debug/log.dart';

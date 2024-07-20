@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/timeline.dart';
-import 'package:commet/client/timeline_events/timeline_event_base.dart';
+import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
 abstract class MatrixTimelineEvent implements TimelineEvent {

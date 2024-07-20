@@ -17,7 +17,7 @@ import 'package:commet/client/matrix/matrix_role.dart';
 import 'package:commet/client/matrix/matrix_room_permissions.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_add_reaction.dart';
-import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_base.dart';
+import 'package:commet/client/matrix/timeline_events/matrix_timeline_event.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_edit.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_emote.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_encrypted.dart';
@@ -29,7 +29,7 @@ import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_unkno
 import 'package:commet/client/member.dart';
 import 'package:commet/client/permissions.dart';
 import 'package:commet/client/role.dart';
-import 'package:commet/client/timeline_events/timeline_event_base.dart';
+import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/client/timeline_events/timeline_event_message.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/debug/log.dart';

@@ -11,7 +11,7 @@ import 'package:commet/client/components/gif/gif_search_result.dart';
 import 'package:commet/client/components/read_receipts/read_receipt_component.dart';
 import 'package:commet/client/components/threads/thread_component.dart';
 import 'package:commet/client/components/typing_indicators/typing_indicator_component.dart';
-import 'package:commet/client/timeline_events/timeline_event_base.dart';
+import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/client/timeline_events/timeline_event_message.dart';
 
 import 'package:commet/debug/log.dart';

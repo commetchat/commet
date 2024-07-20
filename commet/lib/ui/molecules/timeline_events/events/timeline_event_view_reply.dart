@@ -1,5 +1,5 @@
 import 'package:commet/client/timeline.dart';
-import 'package:commet/client/timeline_events/timeline_event_base.dart';
+import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/client/timeline_events/timeline_event_feature_related.dart';
 import 'package:commet/diagnostic/benchmark_values.dart';
 import 'package:flutter/material.dart';

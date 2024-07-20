@@ -11,7 +11,7 @@ import 'package:commet/client/matrix/matrix_mxc_file_provider.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
-import 'package:commet/client/timeline_events/timeline_event_base.dart';
+import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:commet/utils/image_utils.dart';

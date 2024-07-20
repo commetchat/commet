@@ -1,3 +1,3 @@
-import 'package:commet/client/timeline_events/timeline_event_base.dart';
+import 'package:commet/client/timeline_events/timeline_event.dart';
 
 abstract class TimelineEventEmote extends TimelineEvent {}

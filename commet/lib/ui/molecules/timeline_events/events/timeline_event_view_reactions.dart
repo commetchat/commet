@@ -1,6 +1,6 @@
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/timeline.dart';
-import 'package:commet/client/timeline_events/timeline_event_base.dart';
+import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/client/timeline_events/timeline_event_feature_reactions.dart';
 import 'package:commet/ui/atoms/emoji_reaction.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_layout.dart';

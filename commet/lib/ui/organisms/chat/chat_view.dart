@@ -1,6 +1,6 @@
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/room.dart';
-import 'package:commet/client/timeline_events/timeline_event_base.dart';
+import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/molecules/message_input.dart';
 import 'package:commet/ui/molecules/read_indicator.dart';
