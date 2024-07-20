@@ -306,9 +306,6 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
       return null;
     }
 
-    // TODO: REIMPLEMENT ALL THESE
-    //   case EventType.encrypted:
-
     return preferences.developerMode
         ? TimelineEventViewGeneric(
             timeline: widget.timeline,

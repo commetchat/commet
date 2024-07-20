@@ -182,10 +182,6 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
     }
 
     edited = event.isEdited(widget.timeline);
-    // TODO: REIMPLEMENT
-    // if (event.type == EventType.encrypted) {
-    //   formattedContent = tiamat.Text.error(messageFailedToDecrypt);
-    // }
 
     var content = event.buildFormattedContent(timeline: widget.timeline);
     if (content == null) {
@@ -242,7 +238,6 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
 
     final prevEvent = widget.timeline.events[index + 1];
 
-    // TODO: HANDLE IF PREV EVENT IS ENCRYPTED
     if (prevEvent is! TimelineEventMessage) {
       return true;
     }
