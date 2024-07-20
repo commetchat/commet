@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:commet/client/timeline.dart';
+import 'package:commet/client/timeline_events/timeline_event_base.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/debug/log.dart';
@@ -22,9 +23,9 @@ class RoomTimelineWidgetView extends StatefulWidget {
       this.isThreadTimeline = false,
       super.key});
   final Timeline timeline;
-  final Function(TimelineEvent event)? markAsRead;
-  final Function(TimelineEvent? event)? setReplyingEvent;
-  final Function(TimelineEvent? event)? setEditingEvent;
+  final Function(TimelineEventBase event)? markAsRead;
+  final Function(TimelineEventBase? event)? setReplyingEvent;
+  final Function(TimelineEventBase? event)? setEditingEvent;
   final Function()? onAttachedToBottom;
   final bool isThreadTimeline;
 

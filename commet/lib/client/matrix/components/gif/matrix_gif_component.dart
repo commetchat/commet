@@ -5,8 +5,7 @@ import 'package:commet/client/components/gif/gif_search_result.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
-import 'package:commet/client/matrix/matrix_timeline_event.dart';
-import 'package:commet/client/timeline.dart';
+import 'package:commet/client/timeline_events/timeline_event_base.dart';
 import 'package:commet/main.dart';
 import 'package:http/http.dart' as http;
 
@@ -47,8 +46,8 @@ class MatrixGifComponent implements GifComponent<MatrixClient, MatrixRoom> {
   }
 
   @override
-  Future<TimelineEvent?> sendGif(
-      GifSearchResult gif, TimelineEvent? inReplyTo) async {
+  Future<TimelineEventBase?> sendGif(
+      GifSearchResult gif, TimelineEventBase? inReplyTo) async {
     var matrixRoom = room.matrixRoom;
     var response = await matrixRoom.client.httpClient.get(gif.fullResUrl);
     if (response.statusCode == 200) {
@@ -83,7 +82,7 @@ class MatrixGifComponent implements GifComponent<MatrixClient, MatrixRoom> {
 
       if (id != null) {
         var event = await matrixRoom.getEventById(id);
-        return MatrixTimelineEvent(event!, room.matrixRoom.client,
+        return room.convertEvent(event!,
             timeline: (room.timeline as MatrixTimeline).matrixTimeline);
       }
     }

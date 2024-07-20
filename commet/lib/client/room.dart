@@ -4,6 +4,7 @@ import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/components/room_component.dart';
 import 'package:commet/client/member.dart';
 import 'package:commet/client/role.dart';
+import 'package:commet/client/timeline_events/timeline_event_base.dart';
 import 'package:flutter/material.dart';
 import 'attachment.dart';
 import 'permissions.dart';
@@ -67,19 +68,19 @@ abstract class Room {
       pushRule != PushRule.dontNotify ? highlightedNotificationCount : 0;
 
   /// Send a message in this room
-  Future<TimelineEvent?> sendMessage({
+  Future<TimelineEventBase?> sendMessage({
     String? message,
-    TimelineEvent? inReplyTo,
-    TimelineEvent? replaceEvent,
+    TimelineEventBase? inReplyTo,
+    TimelineEventBase? replaceEvent,
     List<ProcessedAttachment> processedAttachments,
   });
 
   /// Add an emoticon reaction to a message
-  Future<TimelineEvent?> addReaction(
-      TimelineEvent reactingTo, Emoticon reaction);
+  Future<TimelineEventBase?> addReaction(
+      TimelineEventBase reactingTo, Emoticon reaction);
 
   /// Remove an emoticon reaction to a message
-  Future<void> removeReaction(TimelineEvent reactingTo, Emoticon reaction);
+  Future<void> removeReaction(TimelineEventBase reactingTo, Emoticon reaction);
 
   /// Processes files before sending as attachment
   Future<List<ProcessedAttachment>> processAttachments(
@@ -116,10 +117,10 @@ abstract class Room {
   Future<void> close();
 
   // Returns true if a notification should be sent for a given event
-  bool shouldNotify(TimelineEvent event);
+  bool shouldNotify(TimelineEventBase event);
 
   /// The last known event in the room timeline
-  TimelineEvent? get lastEvent;
+  TimelineEventBase? get lastEvent;
 
   T? getComponent<T extends RoomComponent>();
 
@@ -127,7 +128,7 @@ abstract class Room {
 
   Future<ImageProvider?> getShortcutImage();
 
-  Future<TimelineEvent?> getEvent(String eventId);
+  Future<TimelineEventBase?> getEvent(String eventId);
 
   Member getMemberOrFallback(String id);
 

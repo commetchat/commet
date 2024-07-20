@@ -11,6 +11,8 @@ import 'package:commet/client/components/gif/gif_search_result.dart';
 import 'package:commet/client/components/read_receipts/read_receipt_component.dart';
 import 'package:commet/client/components/threads/thread_component.dart';
 import 'package:commet/client/components/typing_indicators/typing_indicator_component.dart';
+import 'package:commet/client/timeline_events/timeline_event_base.dart';
+import 'package:commet/client/timeline_events/timeline_event_message.dart';
 
 import 'package:commet/debug/log.dart';
 import 'package:commet/ui/organisms/attachment_processor/attachment_processor.dart';
@@ -64,7 +66,7 @@ class ChatState extends State<Chat> {
   List<PendingFileAttachment> attachments = List.empty(growable: true);
 
   EventInteractionType? interactionType;
-  TimelineEvent? interactingEvent;
+  TimelineEventBase? interactingEvent;
 
   StreamController<void> onFocusMessageInput = StreamController();
   StreamController<String> setMessageInputText = StreamController();
@@ -249,13 +251,21 @@ class ChatState extends State<Chat> {
     }
   }
 
-  void setInteractingEvent(TimelineEvent? event, {EventInteractionType? type}) {
-    setState(() {
-      if (event == null) {
+  void setInteractingEvent(TimelineEventBase? event,
+      {EventInteractionType? type}) {
+    if (event == null) {
+      setState(() {
         interactingEvent = null;
         interactionType = null;
-        return;
-      }
+      });
+      return;
+    }
+
+    if (event is! TimelineEventMessage) {
+      return;
+    }
+
+    setState(() {
       interactingEvent = event;
       interactionType = type;
 
@@ -278,7 +288,7 @@ class ChatState extends State<Chat> {
     });
   }
 
-  void addReaction(TimelineEvent event, Emoticon emote) {
+  void addReaction(TimelineEventBase event, Emoticon emote) {
     room.addReaction(event, emote);
   }
 
@@ -307,7 +317,7 @@ class ChatState extends State<Chat> {
 
       if (event.senderId != room.client.self!.identifier) continue;
 
-      if (event.type != EventType.message) continue;
+      if (event is TimelineEventMessage) continue;
 
       setInteractingEvent(event, type: EventInteractionType.edit);
       break;

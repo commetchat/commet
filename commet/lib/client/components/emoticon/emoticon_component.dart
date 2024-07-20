@@ -6,6 +6,7 @@ import 'package:commet/client/components/component.dart';
 import 'package:commet/client/components/room_component.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/components/space_component.dart';
+import 'package:commet/client/timeline_events/timeline_event_base.dart';
 
 import 'emoji_pack.dart';
 
@@ -23,8 +24,8 @@ abstract class EmoticonComponent<T extends Client> implements Component<T> {
 
 abstract class RoomEmoticonComponent<R extends Client, T extends Room>
     extends EmoticonComponent<R> implements RoomComponent<R, T> {
-  Future<TimelineEvent?> sendSticker(
-      Emoticon sticker, TimelineEvent? inReplyTo);
+  Future<TimelineEventBase?> sendSticker(
+      Emoticon sticker, TimelineEventBase? inReplyTo);
 
   List<EmoticonPack> get availablePacks;
   List<EmoticonPack> get availableEmoji;

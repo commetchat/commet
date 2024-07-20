@@ -107,7 +107,7 @@ class HomeScreenView extends StatelessWidget {
               displayName: room.displayName,
               avatar: room.avatar,
               color: room.defaultColor,
-              body: room.lastEvent?.body,
+              body: room.lastEvent?.plainTextBody,
               recentEventSender: room.lastEvent != null
                   ? room
                       .getMemberOrFallback(room.lastEvent!.senderId)
@@ -146,7 +146,7 @@ class HomeScreenView extends StatelessWidget {
                   displayName: room.displayName,
                   avatar: room.avatar,
                   color: room.defaultColor,
-                  body: room.lastEvent?.body,
+                  body: room.lastEvent?.plainTextBody,
                   recentEventSender: room.lastEvent != null
                       ? room
                           .getMemberOrFallback(room.lastEvent!.senderId)

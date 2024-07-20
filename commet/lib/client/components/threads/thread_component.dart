@@ -1,23 +1,25 @@
 import 'package:commet/client/attachment.dart';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/component.dart';
+import 'package:commet/client/timeline_events/timeline_event_base.dart';
 
 abstract class ThreadsComponent<T extends Client> implements Component<T> {
-  bool isEventInResponseToThread(TimelineEvent event, Timeline timeline);
+  bool isEventInResponseToThread(TimelineEventBase event, Timeline timeline);
 
-  bool isHeadOfThread(TimelineEvent event, Timeline timeline);
+  bool isHeadOfThread(TimelineEventBase event, Timeline timeline);
 
   Future<Timeline?> getThreadTimeline(
       {required Timeline roomTimeline, required String threadRootEventId});
 
-  Future<TimelineEvent?> sendMessage({
+  Future<TimelineEventBase?> sendMessage({
     required String threadRootEventId,
     required Room room,
     String? message,
-    TimelineEvent? inReplyTo,
-    TimelineEvent? replaceEvent,
+    TimelineEventBase? inReplyTo,
+    TimelineEventBase? replaceEvent,
     List<ProcessedAttachment>? processedAttachments,
   });
 
-  TimelineEvent? getFirstReplyToThread(TimelineEvent event, Timeline timeline);
+  TimelineEventBase? getFirstReplyToThread(
+      TimelineEventBase event, Timeline timeline);
 }

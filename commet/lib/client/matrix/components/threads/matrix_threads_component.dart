@@ -4,9 +4,10 @@ import 'package:commet/client/matrix/components/threads/matrix_thread_timeline.d
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
-import 'package:commet/client/matrix/matrix_timeline_event.dart';
+import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_base.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/client/timeline.dart';
+import 'package:commet/client/timeline_events/timeline_event_base.dart';
 
 import 'package:matrix/matrix.dart' as matrix;
 
@@ -17,8 +18,8 @@ class MatrixThreadsComponent implements ThreadsComponent<MatrixClient> {
   MatrixThreadsComponent(this.client);
 
   @override
-  bool isEventInResponseToThread(TimelineEvent event, Timeline timeline) {
-    if (event is! MatrixTimelineEvent) {
+  bool isEventInResponseToThread(TimelineEventBase event, Timeline timeline) {
+    if (event is! MatrixTimelineEventBase) {
       return false;
     }
 
@@ -48,7 +49,7 @@ class MatrixThreadsComponent implements ThreadsComponent<MatrixClient> {
   }
 
   @override
-  bool isHeadOfThread(TimelineEvent event, Timeline timeline) {
+  bool isHeadOfThread(TimelineEventBase event, Timeline timeline) {
     matrix.Timeline? tl;
 
     if (timeline is MatrixTimeline) {
@@ -66,7 +67,7 @@ class MatrixThreadsComponent implements ThreadsComponent<MatrixClient> {
       return false;
     }
 
-    if (event is! MatrixTimelineEvent) {
+    if (event is! MatrixTimelineEventBase) {
       return false;
     }
 
@@ -82,7 +83,8 @@ class MatrixThreadsComponent implements ThreadsComponent<MatrixClient> {
   }
 
   @override
-  TimelineEvent? getFirstReplyToThread(TimelineEvent event, Timeline timeline) {
+  TimelineEventBase? getFirstReplyToThread(
+      TimelineEventBase event, Timeline timeline) {
     matrix.Timeline? tl;
 
     if (timeline is MatrixTimeline) {
@@ -97,7 +99,7 @@ class MatrixThreadsComponent implements ThreadsComponent<MatrixClient> {
       return null;
     }
 
-    if (event is! MatrixTimelineEvent) {
+    if (event is! MatrixTimelineEventBase) {
       return null;
     }
 
@@ -112,7 +114,7 @@ class MatrixThreadsComponent implements ThreadsComponent<MatrixClient> {
 
           tl.addAggregatedEvent(matrixEvent);
 
-          return MatrixTimelineEvent(matrixEvent, tl.room.client, timeline: tl);
+          return (timeline.room as MatrixRoom).convertEvent(matrixEvent);
         }
       }
     }
@@ -124,8 +126,7 @@ class MatrixThreadsComponent implements ThreadsComponent<MatrixClient> {
     if (firstEvent == null) {
       return null;
     }
-
-    return MatrixTimelineEvent(firstEvent, client.getMatrixClient());
+    return (timeline.room as MatrixRoom).convertEvent(firstEvent);
   }
 
   @override
@@ -152,12 +153,12 @@ class MatrixThreadsComponent implements ThreadsComponent<MatrixClient> {
   }
 
   @override
-  Future<TimelineEvent?> sendMessage(
+  Future<TimelineEventBase?> sendMessage(
       {required String threadRootEventId,
       required Room room,
       String? message,
-      TimelineEvent? inReplyTo,
-      TimelineEvent? replaceEvent,
+      TimelineEventBase? inReplyTo,
+      TimelineEventBase? replaceEvent,
       List<ProcessedAttachment>? processedAttachments}) async {
     if (room is! MatrixRoom) {
       return null;
@@ -168,7 +169,7 @@ class MatrixThreadsComponent implements ThreadsComponent<MatrixClient> {
         inReplyTo: inReplyTo,
         replaceEvent: replaceEvent,
         processedAttachments: processedAttachments,
-        threadRootEventId: threadRootEventId) as MatrixTimelineEvent?;
+        threadRootEventId: threadRootEventId) as MatrixTimelineEventBase?;
 
     if (room.timeline != null) {
       var index = room.timeline!.events

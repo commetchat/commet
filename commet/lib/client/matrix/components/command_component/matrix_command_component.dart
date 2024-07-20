@@ -1,9 +1,12 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:commet/client/components/command/command_component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
-import 'package:commet/client/matrix/matrix_timeline_event.dart';
+import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_base.dart';
 import 'package:commet/client/room.dart';
-import 'package:commet/client/timeline.dart';
+import 'package:commet/client/timeline_events/timeline_event_base.dart';
 import 'package:commet/ui/organisms/chat/chat.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
@@ -11,7 +14,9 @@ class MatrixCommandComponent extends CommandComponent<MatrixClient> {
   @override
   MatrixClient client;
 
-  MatrixCommandComponent(this.client);
+  MatrixCommandComponent(this.client) {
+    client.getMatrixClient().addCommand("sendjson", sendJson);
+  }
 
   @override
   List<String> getCommands() {
@@ -20,11 +25,11 @@ class MatrixCommandComponent extends CommandComponent<MatrixClient> {
 
   @override
   Future<void> executeCommand(String string, Room room,
-      {TimelineEvent? interactingEvent, EventInteractionType? type}) async {
+      {TimelineEventBase? interactingEvent, EventInteractionType? type}) async {
     var mxRoom = (room as MatrixRoom).matrixRoom;
     matrix.Event? event;
     if (interactingEvent != null) {
-      event = (interactingEvent as MatrixTimelineEvent).event;
+      event = (interactingEvent as MatrixTimelineEventBase).event;
     }
 
     await client.getMatrixClient().parseAndRunCommand(
@@ -44,5 +49,16 @@ class MatrixCommandComponent extends CommandComponent<MatrixClient> {
     }
 
     return false;
+  }
+
+  FutureOr<String?> sendJson(matrix.CommandArgs args) {
+    var json = const JsonDecoder().convert(args.msg) as Map<String, dynamic>;
+
+    var tx = client.getMatrixClient().generateUniqueTransactionId();
+    client
+        .getMatrixClient()
+        .sendMessage(args.room.id, json["type"], tx, json['content']);
+
+    return null;
   }
 }

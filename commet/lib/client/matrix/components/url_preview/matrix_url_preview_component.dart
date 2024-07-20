@@ -3,7 +3,8 @@ import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/room.dart';
-import 'package:commet/client/timeline.dart';
+import 'package:commet/client/timeline_events/timeline_event_base.dart';
+import 'package:commet/client/timeline_events/timeline_event_message.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/mime.dart';
@@ -39,7 +40,11 @@ pQIDAQAB
   }
 
   @override
-  Future<UrlPreviewData?> getPreview(Room room, TimelineEvent event) async {
+  Future<UrlPreviewData?> getPreview(Room room, TimelineEventBase event) async {
+    if (event is! TimelineEventMessage) {
+      return null;
+    }
+
     if (room.isE2EE && preferences.urlPreviewInE2EEChat == false) {
       Log.i(
           "Not getting url preview because chat is encrypted and its not enabled");
@@ -74,7 +79,11 @@ pQIDAQAB
   }
 
   @override
-  UrlPreviewData? getCachedPreview(Room room, TimelineEvent event) {
+  UrlPreviewData? getCachedPreview(Room room, TimelineEventBase event) {
+    if (event is! TimelineEventMessage) {
+      return null;
+    }
+
     var uri = event.links!.first;
     if (cache.containsKey(uri.toString())) {
       return cache[uri.toString()];
@@ -84,7 +93,11 @@ pQIDAQAB
   }
 
   @override
-  bool shouldGetPreviewData(Room room, TimelineEvent event) {
+  bool shouldGetPreviewData(Room room, TimelineEventBase event) {
+    if (event is! TimelineEventMessage) {
+      return false;
+    }
+
     if (room.isE2EE && preferences.urlPreviewInE2EEChat == false) {
       return false;
     }

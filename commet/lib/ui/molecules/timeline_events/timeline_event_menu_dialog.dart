@@ -1,4 +1,5 @@
 import 'package:commet/client/timeline.dart';
+import 'package:commet/client/timeline_events/timeline_event_base.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_menu.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_view_entry.dart';
@@ -13,7 +14,7 @@ class TimelineEventMenuDialog extends StatelessWidget {
       required this.menu,
       super.key});
 
-  final TimelineEvent event;
+  final TimelineEventBase event;
   final Timeline timeline;
 
   final TimelineEventMenu menu;
@@ -23,7 +24,7 @@ class TimelineEventMenuDialog extends StatelessWidget {
     return buildMessageMenu(context, event);
   }
 
-  Widget buildMessageMenu(BuildContext context, TimelineEvent event) {
+  Widget buildMessageMenu(BuildContext context, TimelineEventBase event) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
       child: ScaledSafeArea(

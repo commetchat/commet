@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:commet/client/client.dart';
+import 'package:commet/client/timeline_events/timeline_event_base.dart';
 import 'package:commet/ui/molecules/room_timeline_widget/room_timeline_widget_view.dart';
 import 'package:flutter/material.dart';
 
@@ -13,8 +14,8 @@ class RoomTimelineWidget extends StatefulWidget {
       this.clearNotifications,
       super.key});
   final Timeline timeline;
-  final Function(TimelineEvent? event)? setReplyingEvent;
-  final Function(TimelineEvent? event)? setEditingEvent;
+  final Function(TimelineEventBase? event)? setReplyingEvent;
+  final Function(TimelineEventBase? event)? setEditingEvent;
   final Function(Room room)? clearNotifications;
   final bool isThreadTimeline;
 
@@ -66,7 +67,7 @@ class _RoomTimelineWidgetState extends State<RoomTimelineWidget>
     super.didChangeAppLifecycleState(state);
   }
 
-  Future<void> markAsRead(TimelineEvent event) async {
+  Future<void> markAsRead(TimelineEventBase event) async {
     if (WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed) {
       return;
     }

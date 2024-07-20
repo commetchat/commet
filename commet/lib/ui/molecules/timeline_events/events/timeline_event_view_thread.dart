@@ -1,5 +1,7 @@
 import 'package:commet/client/components/threads/thread_component.dart';
 import 'package:commet/client/timeline.dart';
+import 'package:commet/client/timeline_events/timeline_event_message.dart';
+import 'package:commet/client/timeline_events/timeline_event_sticker.dart';
 import 'package:commet/ui/atoms/thread_reply_footer.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
@@ -45,8 +47,13 @@ class _TimelineEventViewThreadState extends State<TimelineEventViewThread> {
 
     var sender = widget.timeline.room.getMemberOrFallback(threadEvent.senderId);
 
+    if (threadEvent is TimelineEventMessage) {
+      body = threadEvent.body;
+    } else if (threadEvent is TimelineEventSticker) {
+      body = threadEvent.stickerName;
+    }
+
     senderName = sender.displayName;
-    body = threadEvent.body ?? "Unknown";
     senderAvatar = sender.avatar;
     senderColor = sender.defaultColor;
   }
