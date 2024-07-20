@@ -60,31 +60,31 @@ extension EventStatusExtension on TimelineEventStatus {
 enum EventRelationshipType { reply }
 
 abstract class Timeline {
-  late List<TimelineEventBase> events = List.empty(growable: true);
-  final Map<String, TimelineEventBase> _eventsDict = {};
+  late List<TimelineEvent> events = List.empty(growable: true);
+  final Map<String, TimelineEvent> _eventsDict = {};
   late StreamController<int> onEventAdded = StreamController.broadcast();
   late StreamController<int> onChange = StreamController.broadcast();
   late StreamController<int> onRemove = StreamController.broadcast();
   late Client client;
   late Room room;
 
-  void markAsRead(TimelineEventBase event);
+  void markAsRead(TimelineEvent event);
 
   Future<void> loadMoreHistory();
 
   Future<void> close();
 
   @protected
-  Future<TimelineEventBase?> fetchEventByIdInternal(String eventId);
+  Future<TimelineEvent?> fetchEventByIdInternal(String eventId);
 
-  Future<TimelineEventBase?> fetchEventById(String eventId) async {
+  Future<TimelineEvent?> fetchEventById(String eventId) async {
     var event = await fetchEventByIdInternal(eventId);
     if (event == null) return null;
     _eventsDict[event.eventId] = event;
     return event;
   }
 
-  void insertEvent(int index, TimelineEventBase event) {
+  void insertEvent(int index, TimelineEvent event) {
     events.insert(index, event);
     _eventsDict[event.eventId] = event;
     onEventAdded.add(index);
@@ -94,7 +94,7 @@ abstract class Timeline {
     return _eventsDict.containsKey(eventId);
   }
 
-  TimelineEventBase? tryGetEvent(String eventId) {
+  TimelineEvent? tryGetEvent(String eventId) {
     return _eventsDict[eventId];
   }
 
@@ -103,9 +103,9 @@ abstract class Timeline {
     _eventsDict[events[index].eventId] = events[index];
   }
 
-  bool canDeleteEvent(TimelineEventBase event);
+  bool canDeleteEvent(TimelineEvent event);
 
-  void deleteEvent(TimelineEventBase event);
+  void deleteEvent(TimelineEvent event);
 
-  bool isEventRedacted(TimelineEventBase event);
+  bool isEventRedacted(TimelineEvent event);
 }

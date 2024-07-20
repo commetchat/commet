@@ -40,7 +40,7 @@ pQIDAQAB
   }
 
   @override
-  Future<UrlPreviewData?> getPreview(Room room, TimelineEventBase event) async {
+  Future<UrlPreviewData?> getPreview(Room room, TimelineEvent event) async {
     if (event is! TimelineEventMessage) {
       return null;
     }
@@ -79,7 +79,7 @@ pQIDAQAB
   }
 
   @override
-  UrlPreviewData? getCachedPreview(Room room, TimelineEventBase event) {
+  UrlPreviewData? getCachedPreview(Room room, TimelineEvent event) {
     if (event is! TimelineEventMessage) {
       return null;
     }
@@ -93,7 +93,7 @@ pQIDAQAB
   }
 
   @override
-  bool shouldGetPreviewData(Room room, TimelineEventBase event) {
+  bool shouldGetPreviewData(Room room, TimelineEvent event) {
     if (event is! TimelineEventMessage) {
       return false;
     }

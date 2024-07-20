@@ -2,7 +2,7 @@ import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_base.
 import 'package:commet/client/timeline.dart';
 import 'package:commet/client/timeline_events/timeline_event_feature_related.dart';
 
-mixin MatrixTimelineEventRelated on MatrixTimelineEventBase
+mixin MatrixTimelineEventRelated on MatrixTimelineEvent
     implements TimelineEventFeatureRelated {
   @override
   String? get relatedEventId => _getRelatedEventId();

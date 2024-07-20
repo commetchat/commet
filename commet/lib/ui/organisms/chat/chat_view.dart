@@ -64,7 +64,7 @@ class ChatView extends StatelessWidget {
           );
   }
 
-  void handleMarkAsRead(TimelineEventBase event) async {
+  void handleMarkAsRead(TimelineEvent event) async {
     // Dont update read receipts if in background
     if (WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed) {
       return;

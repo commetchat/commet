@@ -9,5 +9,5 @@ abstract class CommandComponent<T extends Client> implements Component<T> {
   bool isExecutable(String string);
 
   Future<void> executeCommand(String string, Room room,
-      {TimelineEventBase? interactingEvent, EventInteractionType? type});
+      {TimelineEvent? interactingEvent, EventInteractionType? type});
 }

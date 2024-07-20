@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
-class MatrixTimelineEventEmote extends MatrixTimelineEventBase
+class MatrixTimelineEventEmote extends MatrixTimelineEvent
     implements TimelineEventEmote, TimelineEventGeneric {
   MatrixTimelineEventEmote(super.event, {required super.client});
 

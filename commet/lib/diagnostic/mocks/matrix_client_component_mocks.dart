@@ -21,8 +21,7 @@ class MockMatrixUrlPreviewComponent
   var imageIndex = 0;
 
   @override
-  Future<UrlPreviewData?> getPreview(
-      Room room, TimelineEventBase? event) async {
+  Future<UrlPreviewData?> getPreview(Room room, TimelineEvent? event) async {
     await Future.delayed(const Duration(seconds: 1));
 
     var image = [
@@ -41,12 +40,12 @@ class MockMatrixUrlPreviewComponent
   }
 
   @override
-  bool shouldGetPreviewData(Room room, TimelineEventBase event) {
+  bool shouldGetPreviewData(Room room, TimelineEvent event) {
     return true;
   }
 
   @override
-  UrlPreviewData? getCachedPreview(Room room, TimelineEventBase event) {
+  UrlPreviewData? getCachedPreview(Room room, TimelineEvent event) {
     return null;
   }
 }

@@ -7,8 +7,7 @@ abstract class GifComponent<R extends Client, T extends Room>
     implements RoomComponent<R, T> {
   Future<List<GifSearchResult>> search(String query);
 
-  Future<TimelineEventBase?> sendGif(
-      GifSearchResult gif, TimelineEventBase? inReplyTo);
+  Future<TimelineEvent?> sendGif(GifSearchResult gif, TimelineEvent? inReplyTo);
 
   String get searchPlaceholder;
 }

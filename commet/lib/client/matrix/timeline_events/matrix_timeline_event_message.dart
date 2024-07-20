@@ -15,7 +15,7 @@ import 'package:commet/utils/text_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
-class MatrixTimelineEventMessage extends MatrixTimelineEventBase
+class MatrixTimelineEventMessage extends MatrixTimelineEvent
     with MatrixTimelineEventRelated, MatrixTimelineEventReactions
     implements TimelineEventMessage {
   MatrixTimelineEventMessage(super.event, {required super.client}) {

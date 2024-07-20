@@ -66,7 +66,7 @@ class ChatState extends State<Chat> {
   List<PendingFileAttachment> attachments = List.empty(growable: true);
 
   EventInteractionType? interactionType;
-  TimelineEventBase? interactingEvent;
+  TimelineEvent? interactingEvent;
 
   StreamController<void> onFocusMessageInput = StreamController();
   StreamController<String> setMessageInputText = StreamController();
@@ -251,8 +251,7 @@ class ChatState extends State<Chat> {
     }
   }
 
-  void setInteractingEvent(TimelineEventBase? event,
-      {EventInteractionType? type}) {
+  void setInteractingEvent(TimelineEvent? event, {EventInteractionType? type}) {
     if (event == null) {
       setState(() {
         interactingEvent = null;
@@ -288,7 +287,7 @@ class ChatState extends State<Chat> {
     });
   }
 
-  void addReaction(TimelineEventBase event, Emoticon emote) {
+  void addReaction(TimelineEvent event, Emoticon emote) {
     room.addReaction(event, emote);
   }
 

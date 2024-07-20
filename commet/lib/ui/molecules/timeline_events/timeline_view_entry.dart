@@ -36,8 +36,8 @@ class TimelineViewEntry extends StatefulWidget {
   final Timeline timeline;
   final int initialIndex;
   final Function(String eventId)? onEventHovered;
-  final Function(TimelineEventBase? event)? setReplyingEvent;
-  final Function(TimelineEventBase? event)? setEditingEvent;
+  final Function(TimelineEvent? event)? setReplyingEvent;
+  final Function(TimelineEvent? event)? setEditingEvent;
   final Function(String eventId)? jumpToEvent;
   final bool showDetailed;
   final bool isThreadTimeline;

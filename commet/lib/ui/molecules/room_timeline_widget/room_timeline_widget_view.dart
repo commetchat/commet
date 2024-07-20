@@ -23,9 +23,9 @@ class RoomTimelineWidgetView extends StatefulWidget {
       this.isThreadTimeline = false,
       super.key});
   final Timeline timeline;
-  final Function(TimelineEventBase event)? markAsRead;
-  final Function(TimelineEventBase? event)? setReplyingEvent;
-  final Function(TimelineEventBase? event)? setEditingEvent;
+  final Function(TimelineEvent event)? markAsRead;
+  final Function(TimelineEvent? event)? setReplyingEvent;
+  final Function(TimelineEvent? event)? setEditingEvent;
   final Function()? onAttachedToBottom;
   final bool isThreadTimeline;
 

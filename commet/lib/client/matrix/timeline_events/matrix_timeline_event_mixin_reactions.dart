@@ -9,7 +9,7 @@ import 'package:commet/utils/emoji/unicode_emoji.dart';
 
 import 'package:matrix/matrix.dart' as matrix;
 
-mixin MatrixTimelineEventReactions on MatrixTimelineEventBase
+mixin MatrixTimelineEventReactions on MatrixTimelineEvent
     implements TimelineEventFeatureReactions {
   @override
   bool hasReactions(Timeline timeline) {

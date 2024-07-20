@@ -15,7 +15,7 @@ class MatrixThreadTimeline implements Timeline {
   Client client;
 
   @override
-  late List<TimelineEventBase> events;
+  late List<TimelineEvent> events;
 
   @override
   Room room;
@@ -59,7 +59,7 @@ class MatrixThreadTimeline implements Timeline {
     events = List.empty(growable: true);
   }
 
-  Future<List<TimelineEventBase>> getThreadEvents(
+  Future<List<TimelineEvent>> getThreadEvents(
       {int limit = 20, String? nextBatch}) async {
     var client = this.client as MatrixClient;
     var room = this.room as MatrixRoom;
@@ -121,7 +121,7 @@ class MatrixThreadTimeline implements Timeline {
   }
 
   @override
-  bool canDeleteEvent(TimelineEventBase event) {
+  bool canDeleteEvent(TimelineEvent event) {
     return mainRoomTimeline.canDeleteEvent(event);
   }
 
@@ -133,17 +133,17 @@ class MatrixThreadTimeline implements Timeline {
   }
 
   @override
-  void deleteEvent(TimelineEventBase event) {
+  void deleteEvent(TimelineEvent event) {
     mainRoomTimeline.deleteEvent(event);
   }
 
   @override
-  Future<TimelineEventBase?> fetchEventById(String eventId) {
+  Future<TimelineEvent?> fetchEventById(String eventId) {
     return mainRoomTimeline.fetchEventById(eventId);
   }
 
   @override
-  Future<TimelineEventBase?> fetchEventByIdInternal(String eventId) {
+  Future<TimelineEvent?> fetchEventByIdInternal(String eventId) {
     return mainRoomTimeline.fetchEventByIdInternal(eventId);
   }
 
@@ -153,7 +153,7 @@ class MatrixThreadTimeline implements Timeline {
   }
 
   @override
-  void insertEvent(int index, TimelineEventBase event) {}
+  void insertEvent(int index, TimelineEvent event) {}
 
   @override
   Future<void> loadMoreHistory() async {
@@ -177,18 +177,18 @@ class MatrixThreadTimeline implements Timeline {
   }
 
   @override
-  void markAsRead(TimelineEventBase event) {}
+  void markAsRead(TimelineEvent event) {}
 
   @override
   void notifyChanged(int index) {}
 
   @override
-  TimelineEventBase? tryGetEvent(String eventId) {
+  TimelineEvent? tryGetEvent(String eventId) {
     return mainRoomTimeline.tryGetEvent(eventId);
   }
 
-  bool isEventInThisThread(TimelineEventBase event) {
-    if (event is! MatrixTimelineEventBase) {
+  bool isEventInThisThread(TimelineEvent event) {
+    if (event is! MatrixTimelineEvent) {
       return false;
     }
 
@@ -228,7 +228,7 @@ class MatrixThreadTimeline implements Timeline {
 
     var replyingEvent = mainRoomTimeline.tryGetEvent(replyingEventID);
     if (replyingEvent != null) {
-      return isEventInThisThread(replyingEvent as MatrixTimelineEventBase);
+      return isEventInThisThread(replyingEvent as MatrixTimelineEvent);
     }
 
     return false;
@@ -246,7 +246,7 @@ class MatrixThreadTimeline implements Timeline {
       onEventAdded.add(0);
     } else {
       // Theres gotta be a smarter way of doing this but whatever
-      var copy = List<TimelineEventBase>.from(mainRoomTimeline.events);
+      var copy = List<TimelineEvent>.from(mainRoomTimeline.events);
       copy.removeWhere((element) => !isEventInThisThread(element));
 
       var newIndex = copy.indexOf(event);
@@ -283,8 +283,8 @@ class MatrixThreadTimeline implements Timeline {
   }
 
   @override
-  bool isEventRedacted(TimelineEventBase<Client> event) {
-    var e = event as MatrixTimelineEventBase;
+  bool isEventRedacted(TimelineEvent<Client> event) {
+    var e = event as MatrixTimelineEvent;
     return e.event.getDisplayEvent(mainRoomTimeline.matrixTimeline!).redacted;
   }
 }

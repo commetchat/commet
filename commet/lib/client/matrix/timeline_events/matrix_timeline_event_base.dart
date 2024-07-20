@@ -5,12 +5,12 @@ import 'package:commet/client/timeline.dart';
 import 'package:commet/client/timeline_events/timeline_event_base.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
-abstract class MatrixTimelineEventBase implements TimelineEventBase {
+abstract class MatrixTimelineEvent implements TimelineEvent {
   final MatrixClient client;
 
   matrix.Event event;
 
-  MatrixTimelineEventBase(this.event, {required this.client});
+  MatrixTimelineEvent(this.event, {required this.client});
 
   @override
   bool get editable => false;

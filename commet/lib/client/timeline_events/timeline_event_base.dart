@@ -1,6 +1,6 @@
 import 'package:commet/client/client.dart';
 
-abstract class TimelineEventBase<T extends Client> {
+abstract class TimelineEvent<T extends Client> {
   TimelineEventStatus get status;
 
   String get plainTextBody;

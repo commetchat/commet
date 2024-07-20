@@ -24,8 +24,8 @@ abstract class EmoticonComponent<T extends Client> implements Component<T> {
 
 abstract class RoomEmoticonComponent<R extends Client, T extends Room>
     extends EmoticonComponent<R> implements RoomComponent<R, T> {
-  Future<TimelineEventBase?> sendSticker(
-      Emoticon sticker, TimelineEventBase? inReplyTo);
+  Future<TimelineEvent?> sendSticker(
+      Emoticon sticker, TimelineEvent? inReplyTo);
 
   List<EmoticonPack> get availablePacks;
   List<EmoticonPack> get availableEmoji;

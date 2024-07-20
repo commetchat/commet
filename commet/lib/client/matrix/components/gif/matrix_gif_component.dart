@@ -46,8 +46,8 @@ class MatrixGifComponent implements GifComponent<MatrixClient, MatrixRoom> {
   }
 
   @override
-  Future<TimelineEventBase?> sendGif(
-      GifSearchResult gif, TimelineEventBase? inReplyTo) async {
+  Future<TimelineEvent?> sendGif(
+      GifSearchResult gif, TimelineEvent? inReplyTo) async {
     var matrixRoom = room.matrixRoom;
     var response = await matrixRoom.client.httpClient.get(gif.fullResUrl);
     if (response.statusCode == 200) {

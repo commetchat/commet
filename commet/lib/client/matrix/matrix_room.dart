@@ -94,7 +94,7 @@ class MatrixRoom extends Room {
       : lastEvent?.originServerTs ?? DateTime.fromMillisecondsSinceEpoch(0);
 
   @override
-  TimelineEventBase? lastEvent;
+  TimelineEvent? lastEvent;
 
   @override
   Iterable<String> get memberIds =>
@@ -220,7 +220,7 @@ class MatrixRoom extends Room {
     }
   }
 
-  Future<void> handleNotification(TimelineEventBase event) async {
+  Future<void> handleNotification(TimelineEvent event) async {
     if (!shouldNotify(event)) {
       return;
     }
@@ -255,7 +255,7 @@ class MatrixRoom extends Room {
   }
 
   @override
-  bool shouldNotify(TimelineEventBase event) {
+  bool shouldNotify(TimelineEvent event) {
     // never notify for a message that came from an account we are logged in to!
     if (clientManager?.clients
             .any((element) => element.self?.identifier == event.senderId) ==
@@ -271,7 +271,7 @@ class MatrixRoom extends Room {
     }
 
     var evaluator = _matrixRoom.client.pushruleEvaluator;
-    var match = evaluator.match((event as MatrixTimelineEventBase).event);
+    var match = evaluator.match((event as MatrixTimelineEvent).event);
 
     return match.notify;
   }
@@ -349,10 +349,10 @@ class MatrixRoom extends Room {
   }
 
   @override
-  Future<TimelineEventBase?> sendMessage(
+  Future<TimelineEvent?> sendMessage(
       {String? message,
-      TimelineEventBase? inReplyTo,
-      TimelineEventBase? replaceEvent,
+      TimelineEvent? inReplyTo,
+      TimelineEvent? replaceEvent,
       String? threadRootEventId,
       String? threadLastEventId,
       List<ProcessedAttachment>? processedAttachments}) async {
@@ -407,8 +407,7 @@ class MatrixRoom extends Room {
     return null;
   }
 
-  TimelineEventBase convertEvent(matrix.Event event,
-      {matrix.Timeline? timeline}) {
+  TimelineEvent convertEvent(matrix.Event event, {matrix.Timeline? timeline}) {
     var c = client as MatrixClient;
 
     if (event.type == matrix.EventTypes.Message) {
@@ -475,8 +474,8 @@ class MatrixRoom extends Room {
   }
 
   @override
-  Future<TimelineEventBase?> addReaction(
-      TimelineEventBase reactingTo, Emoticon reaction) async {
+  Future<TimelineEvent?> addReaction(
+      TimelineEvent reactingTo, Emoticon reaction) async {
     var id = await _matrixRoom.sendReaction(reactingTo.eventId, reaction.key);
     if (id != null) {
       var event = await _matrixRoom.getEventById(id);
@@ -488,7 +487,7 @@ class MatrixRoom extends Room {
 
   @override
   Future<void> removeReaction(
-      TimelineEventBase reactingTo, Emoticon reaction) async {
+      TimelineEvent reactingTo, Emoticon reaction) async {
     return (timeline! as MatrixTimeline).removeReaction(reactingTo, reaction);
   }
 
@@ -543,7 +542,7 @@ class MatrixRoom extends Room {
   }
 
   @override
-  Future<TimelineEventBase?> getEvent(String eventId) async {
+  Future<TimelineEvent?> getEvent(String eventId) async {
     var event = await _matrixRoom.getEventById(eventId);
     if (event == null) {
       return null;

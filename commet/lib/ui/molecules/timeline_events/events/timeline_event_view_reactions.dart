@@ -25,7 +25,7 @@ class _TimelineEventViewReactionsState extends State<TimelineEventViewReactions>
   late Map<Emoticon, Set<String>> reactions;
 
   late final String? currentUserIdentifier;
-  late final TimelineEventBase event;
+  late final TimelineEvent event;
 
   @override
   void initState() {

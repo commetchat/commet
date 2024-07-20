@@ -4,11 +4,11 @@ import 'package:commet/client/timeline_events/timeline_event_base.dart';
 import 'package:flutter/widgets.dart';
 
 abstract class UrlPreviewComponent<T extends Client> implements Component<T> {
-  bool shouldGetPreviewData(Room room, TimelineEventBase event);
+  bool shouldGetPreviewData(Room room, TimelineEvent event);
 
-  Future<UrlPreviewData?> getPreview(Room room, TimelineEventBase event);
+  Future<UrlPreviewData?> getPreview(Room room, TimelineEvent event);
 
-  UrlPreviewData? getCachedPreview(Room room, TimelineEventBase event);
+  UrlPreviewData? getCachedPreview(Room room, TimelineEvent event);
 }
 
 class UrlPreviewData {

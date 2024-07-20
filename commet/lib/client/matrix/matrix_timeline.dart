@@ -91,21 +91,21 @@ class MatrixTimeline extends Timeline {
   }
 
   @override
-  void markAsRead(TimelineEventBase event) async {
+  void markAsRead(TimelineEvent event) async {
     if (event.status == TimelineEventStatus.synced) {
       _matrixTimeline?.setReadMarker();
     }
   }
 
   @override
-  Future<TimelineEventBase?> fetchEventByIdInternal(String eventId) async {
+  Future<TimelineEvent?> fetchEventByIdInternal(String eventId) async {
     var event = await _matrixRoom.getEventById(eventId);
     if (event == null) return null;
     return _room.convertEvent(event);
   }
 
   Future<void> removeReaction(
-      TimelineEventBase reactingTo, Emoticon reaction) async {
+      TimelineEvent reactingTo, Emoticon reaction) async {
     var event = await _matrixRoom.getEventById(reactingTo.eventId);
     if (event == null) return;
 
@@ -128,7 +128,7 @@ class MatrixTimeline extends Timeline {
   }
 
   @override
-  Future<void> deleteEvent(TimelineEventBase event) async {
+  Future<void> deleteEvent(TimelineEvent event) async {
     var matrixEvent = await _matrixTimeline!.getEventById(event.eventId);
     if (event.status == TimelineEventStatus.error) {
       await matrixEvent?.cancelSend();
@@ -138,7 +138,7 @@ class MatrixTimeline extends Timeline {
   }
 
   @override
-  bool canDeleteEvent(TimelineEventBase event) {
+  bool canDeleteEvent(TimelineEvent event) {
     if (event.senderId != room.client.self!.identifier &&
         room.permissions.canDeleteOtherUserMessages != true) return false;
 
@@ -162,8 +162,8 @@ class MatrixTimeline extends Timeline {
   }
 
   @override
-  bool isEventRedacted(TimelineEventBase<Client> event) {
-    var e = event as MatrixTimelineEventBase;
+  bool isEventRedacted(TimelineEvent<Client> event) {
+    var e = event as MatrixTimelineEvent;
     return e.event.getDisplayEvent(_matrixTimeline!).redacted;
   }
 }

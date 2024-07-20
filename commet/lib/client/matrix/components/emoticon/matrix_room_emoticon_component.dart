@@ -72,8 +72,8 @@ class MatrixRoomEmoticonComponent extends MatrixEmoticonComponent
   }
 
   @override
-  Future<TimelineEventBase?> sendSticker(
-      Emoticon sticker, TimelineEventBase? inReplyTo) async {
+  Future<TimelineEvent?> sendSticker(
+      Emoticon sticker, TimelineEvent? inReplyTo) async {
     if (sticker is! MatrixEmoticon) return null;
 
     var image = await ImageUtils.imageProviderToImage(sticker.image);

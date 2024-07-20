@@ -18,13 +18,13 @@ import 'package:flutter/material.dart';
 
 class TimelineEventMenu {
   final Timeline timeline;
-  final TimelineEventBase event;
+  final TimelineEvent event;
 
   late final List<TimelineEventMenuEntry> primaryActions;
   late final List<TimelineEventMenuEntry> secondaryActions;
 
-  final Function(TimelineEventBase event)? setEditingEvent;
-  final Function(TimelineEventBase event)? setReplyingEvent;
+  final Function(TimelineEvent event)? setEditingEvent;
+  final Function(TimelineEvent event)? setReplyingEvent;
   final Function()? onActionFinished;
 
   final bool isThreadTimeline;

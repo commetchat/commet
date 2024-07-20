@@ -68,19 +68,19 @@ abstract class Room {
       pushRule != PushRule.dontNotify ? highlightedNotificationCount : 0;
 
   /// Send a message in this room
-  Future<TimelineEventBase?> sendMessage({
+  Future<TimelineEvent?> sendMessage({
     String? message,
-    TimelineEventBase? inReplyTo,
-    TimelineEventBase? replaceEvent,
+    TimelineEvent? inReplyTo,
+    TimelineEvent? replaceEvent,
     List<ProcessedAttachment> processedAttachments,
   });
 
   /// Add an emoticon reaction to a message
-  Future<TimelineEventBase?> addReaction(
-      TimelineEventBase reactingTo, Emoticon reaction);
+  Future<TimelineEvent?> addReaction(
+      TimelineEvent reactingTo, Emoticon reaction);
 
   /// Remove an emoticon reaction to a message
-  Future<void> removeReaction(TimelineEventBase reactingTo, Emoticon reaction);
+  Future<void> removeReaction(TimelineEvent reactingTo, Emoticon reaction);
 
   /// Processes files before sending as attachment
   Future<List<ProcessedAttachment>> processAttachments(
@@ -117,10 +117,10 @@ abstract class Room {
   Future<void> close();
 
   // Returns true if a notification should be sent for a given event
-  bool shouldNotify(TimelineEventBase event);
+  bool shouldNotify(TimelineEvent event);
 
   /// The last known event in the room timeline
-  TimelineEventBase? get lastEvent;
+  TimelineEvent? get lastEvent;
 
   T? getComponent<T extends RoomComponent>();
 
@@ -128,7 +128,7 @@ abstract class Room {
 
   Future<ImageProvider?> getShortcutImage();
 
-  Future<TimelineEventBase?> getEvent(String eventId);
+  Future<TimelineEvent?> getEvent(String eventId);
 
   Member getMemberOrFallback(String id);
 

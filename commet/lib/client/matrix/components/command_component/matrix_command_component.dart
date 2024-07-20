@@ -25,11 +25,11 @@ class MatrixCommandComponent extends CommandComponent<MatrixClient> {
 
   @override
   Future<void> executeCommand(String string, Room room,
-      {TimelineEventBase? interactingEvent, EventInteractionType? type}) async {
+      {TimelineEvent? interactingEvent, EventInteractionType? type}) async {
     var mxRoom = (room as MatrixRoom).matrixRoom;
     matrix.Event? event;
     if (interactingEvent != null) {
-      event = (interactingEvent as MatrixTimelineEventBase).event;
+      event = (interactingEvent as MatrixTimelineEvent).event;
     }
 
     await client.getMatrixClient().parseAndRunCommand(

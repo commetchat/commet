@@ -61,7 +61,7 @@ class _TimelineEventViewReplyState extends State<TimelineEventViewReply> {
     }
   }
 
-  void setStateFromEvent(TimelineEventBase event) {
+  void setStateFromEvent(TimelineEvent event) {
     setState(() {
       replyEventId = event.eventId;
       var sender = widget.timeline.room.getMemberOrFallback(event.senderId);

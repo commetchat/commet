@@ -18,8 +18,8 @@ class MatrixThreadsComponent implements ThreadsComponent<MatrixClient> {
   MatrixThreadsComponent(this.client);
 
   @override
-  bool isEventInResponseToThread(TimelineEventBase event, Timeline timeline) {
-    if (event is! MatrixTimelineEventBase) {
+  bool isEventInResponseToThread(TimelineEvent event, Timeline timeline) {
+    if (event is! MatrixTimelineEvent) {
       return false;
     }
 
@@ -49,7 +49,7 @@ class MatrixThreadsComponent implements ThreadsComponent<MatrixClient> {
   }
 
   @override
-  bool isHeadOfThread(TimelineEventBase event, Timeline timeline) {
+  bool isHeadOfThread(TimelineEvent event, Timeline timeline) {
     matrix.Timeline? tl;
 
     if (timeline is MatrixTimeline) {
@@ -67,7 +67,7 @@ class MatrixThreadsComponent implements ThreadsComponent<MatrixClient> {
       return false;
     }
 
-    if (event is! MatrixTimelineEventBase) {
+    if (event is! MatrixTimelineEvent) {
       return false;
     }
 
@@ -83,8 +83,7 @@ class MatrixThreadsComponent implements ThreadsComponent<MatrixClient> {
   }
 
   @override
-  TimelineEventBase? getFirstReplyToThread(
-      TimelineEventBase event, Timeline timeline) {
+  TimelineEvent? getFirstReplyToThread(TimelineEvent event, Timeline timeline) {
     matrix.Timeline? tl;
 
     if (timeline is MatrixTimeline) {
@@ -99,7 +98,7 @@ class MatrixThreadsComponent implements ThreadsComponent<MatrixClient> {
       return null;
     }
 
-    if (event is! MatrixTimelineEventBase) {
+    if (event is! MatrixTimelineEvent) {
       return null;
     }
 
@@ -153,12 +152,12 @@ class MatrixThreadsComponent implements ThreadsComponent<MatrixClient> {
   }
 
   @override
-  Future<TimelineEventBase?> sendMessage(
+  Future<TimelineEvent?> sendMessage(
       {required String threadRootEventId,
       required Room room,
       String? message,
-      TimelineEventBase? inReplyTo,
-      TimelineEventBase? replaceEvent,
+      TimelineEvent? inReplyTo,
+      TimelineEvent? replaceEvent,
       List<ProcessedAttachment>? processedAttachments}) async {
     if (room is! MatrixRoom) {
       return null;
@@ -169,7 +168,7 @@ class MatrixThreadsComponent implements ThreadsComponent<MatrixClient> {
         inReplyTo: inReplyTo,
         replaceEvent: replaceEvent,
         processedAttachments: processedAttachments,
-        threadRootEventId: threadRootEventId) as MatrixTimelineEventBase?;
+        threadRootEventId: threadRootEventId) as MatrixTimelineEvent?;
 
     if (room.timeline != null) {
       var index = room.timeline!.events

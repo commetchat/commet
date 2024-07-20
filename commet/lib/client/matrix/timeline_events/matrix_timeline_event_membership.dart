@@ -14,7 +14,7 @@ enum _MembershipType {
   unknown,
 }
 
-class MatrixTimelineEventMembership extends MatrixTimelineEventBase
+class MatrixTimelineEventMembership extends MatrixTimelineEvent
     implements TimelineEventGeneric {
   MatrixTimelineEventMembership(super.event, {required super.client});
 

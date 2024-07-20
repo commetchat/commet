@@ -14,7 +14,7 @@ class TimelineEventMenuDialog extends StatelessWidget {
       required this.menu,
       super.key});
 
-  final TimelineEventBase event;
+  final TimelineEvent event;
   final Timeline timeline;
 
   final TimelineEventMenu menu;
@@ -24,7 +24,7 @@ class TimelineEventMenuDialog extends StatelessWidget {
     return buildMessageMenu(context, event);
   }
 
-  Widget buildMessageMenu(BuildContext context, TimelineEventBase event) {
+  Widget buildMessageMenu(BuildContext context, TimelineEvent event) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
       child: ScaledSafeArea(
