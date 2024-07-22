@@ -44,7 +44,11 @@ class MatrixTimelineEventMessage extends MatrixTimelineEvent
     var e = getDisplayEvent(timeline);
 
     if (["m.file", "m.image", "m.video"].contains(e.messageType)) {
-      if (e.content.containsKey("url") == false) {
+      var file = e.content["file"] is Map<String, dynamic>
+          ? e.content['file'] as Map<String, dynamic>
+          : null;
+      if (e.content.containsKey("url") == false &&
+          (file?.containsKey("url") != true)) {
         return e.plaintextBody;
       }
 
