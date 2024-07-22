@@ -246,7 +246,8 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
     final prevEvent = widget.timeline.events[index + 1];
 
     if (prevEvent is! TimelineEventMessage &&
-        prevEvent is! TimelineEventEncrypted) {
+        prevEvent is! TimelineEventEncrypted &&
+        prevEvent is! TimelineEventSticker) {
       return true;
     }
 
