@@ -2,6 +2,7 @@ import 'package:commet/client/attachment.dart';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/threads/thread_component.dart';
 import 'package:commet/client/components/url_preview/url_preview_component.dart';
+import 'package:commet/client/timeline_events/timeline_event_encrypted.dart';
 import 'package:commet/client/timeline_events/timeline_event_feature_reactions.dart';
 import 'package:commet/client/timeline_events/timeline_event_message.dart';
 import 'package:commet/client/timeline_events/timeline_event_feature_related.dart';
@@ -20,6 +21,7 @@ import 'package:flutter/widgets.dart';
 
 import 'package:intl/intl.dart' as intl;
 import 'package:intl/intl.dart';
+import 'package:tiamat/tiamat.dart' as tiamat;
 
 class TimelineEventViewMessage extends StatefulWidget {
   const TimelineEventViewMessage(
@@ -177,6 +179,10 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
     isHeadOfThread =
         threadComponent?.isHeadOfThread(event, widget.timeline) ?? false;
 
+    if (event is TimelineEventEncrypted) {
+      formattedContent = tiamat.Text.error(messageFailedToDecrypt);
+    }
+
     if (event is! TimelineEventMessage) {
       return;
     }
@@ -225,7 +231,8 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
 
     final thisEvent = widget.timeline.events[index];
     if (thisEvent is! TimelineEventMessage &&
-        thisEvent is! TimelineEventSticker) {
+        thisEvent is! TimelineEventSticker &&
+        thisEvent is! TimelineEventEncrypted) {
       return false;
     }
 
@@ -238,7 +245,8 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
 
     final prevEvent = widget.timeline.events[index + 1];
 
-    if (prevEvent is! TimelineEventMessage) {
+    if (prevEvent is! TimelineEventMessage &&
+        prevEvent is! TimelineEventEncrypted) {
       return true;
     }
 

@@ -2,6 +2,7 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/components/threads/thread_component.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/client/timeline_events/timeline_event_emote.dart';
+import 'package:commet/client/timeline_events/timeline_event_encrypted.dart';
 import 'package:commet/client/timeline_events/timeline_event_generic.dart';
 import 'package:commet/client/timeline_events/timeline_event_message.dart';
 import 'package:commet/client/timeline_events/timeline_event_sticker.dart';
@@ -103,7 +104,9 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
     index = eventIndex;
     time = event.originServerTs;
 
-    if (event is TimelineEventMessage || event is TimelineEventSticker) {
+    if (event is TimelineEventMessage ||
+        event is TimelineEventSticker ||
+        event is TimelineEventEncrypted) {
       _widgetType = _TimelineEventWidgetDisplayType.message;
     } else if (event is TimelineEventGeneric) {
       _widgetType = _TimelineEventWidgetDisplayType.generic;
