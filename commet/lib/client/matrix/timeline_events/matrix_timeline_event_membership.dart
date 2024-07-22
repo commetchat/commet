@@ -44,7 +44,7 @@ class MatrixTimelineEventMembership extends MatrixTimelineEvent
 
   String messagePlaceholderUserUpdatedNameDetailed(
           String user, String newName) =>
-      Intl.message("$user updated their display name to $newName",
+      Intl.message("$user changed their display name to $newName",
           desc: "Message body for when a user updates their display name",
           args: [user, newName],
           name: "messagePlaceholderUserUpdatedNameDetailed");
