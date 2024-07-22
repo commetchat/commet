@@ -891,7 +891,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "promptHome": "Галвная",
+  "promptHome": "Главная",
   "@promptHome": {
     "description": "Generic prompt to go home, usually will go back to a main menu, or similar",
     "type": "text",
@@ -1208,6 +1208,333 @@
   "unifiedPushExplainer": "# Unified Push\nЭта версия Commet собрана без поддержки служб Google Play. Получение пуш-уведомлений возможно посредством [Unified Push](https://unifiedpush.org/).\n\nЕсли у вас уже установлено приложение распределения уведомлений, совместимое с Unified Push, выполнить настройку можно ниже\n",
   "@unifiedPushExplainer": {
     "description": "Explains the need for unified push. Supports markdown",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixRecoveryKeyCreateExplanation": "Для возможности доступа к истории сообщений понадобится ключ безопасности. Вы можете указать собственный пароль, либо позволить приложению создать для вас ключ",
+  "@labelMatrixRecoveryKeyCreateExplanation": {
+    "description": "Explains what the matrix recovery key does, and that it can be generated or user input",
+    "type": "text",
+    "placeholders": {}
+  },
+  "typingUsers": "{howMany,plural, =1{{user1} печатает...}=2{{user1} и {user2} печатают...}few{{user1}, {user2} и {user3} печатают...}other{Несколько пользователей печатают...}}",
+  "@typingUsers": {
+    "description": "Text to display which users are currently typing",
+    "type": "text",
+    "placeholders": {
+      "howMany": {},
+      "user1": {},
+      "user2": {},
+      "user3": {}
+    }
+  },
+  "promptCreateNewMatrixKeys": "Нет, нужны новые ключи",
+  "@promptCreateNewMatrixKeys": {
+    "description": "Button text to opt to create new keys",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelExistingMatrixKeysFound": "Найдены имеющиеся ключи подписи!",
+  "@labelExistingMatrixKeysFound": {
+    "description": "Text that is shown when the user is setting up cross signing, but has existing keys",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelAskUseExistingMatrixKeys": "Использовать имеющиеся ключи?",
+  "@labelAskUseExistingMatrixKeys": {
+    "description": "Text that is shown when the user is setting up cross signing, but has existing keys and asks the user if they would like to use those keys",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixRecoveryKeyExplanation": "Это ключ восстановления. Он может быть использован для подтверждения сеансов при утере доступа к остальным сеансам. Сохраните его в безопасном месте!",
+  "@labelMatrixRecoveryKeyExplanation": {
+    "description": "Gives a brief description about the function on the recovery key",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixRecoveryKeyPromptExplanation": "Для получения доступа к старым сообщениям, введите ключ восстановления, созданный предыдущим сеансом. Ключ восстановления это НЕ пароль.",
+  "@labelMatrixRecoveryKeyPromptExplanation": {
+    "description": "Shown when a user is attempting to recover their old messages, explains that they need the recovery key",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmWipingCrossSigningKeys": "Вы точно хотите уничтожить свои ключи кросс-подписи?",
+  "@promptConfirmWipingCrossSigningKeys": {
+    "description": "Asks the user if they are sure they want to wipe the keys",
+    "type": "text",
+    "placeholders": {}
+  },
+  "errorMatrixPassphraseMustContainUpperAndLowercase": "Пароль должен содержать хотя бы по одной букве из нижнего и верхнего регистров",
+  "@errorMatrixPassphraseMustContainUpperAndLowercase": {
+    "description": "Explains constraints of recovery passphrase",
+    "type": "text",
+    "placeholders": {}
+  },
+  "errorMatrixPassphraseMustContainNumber": "Пароль должен содержать хотя бы одну цифру",
+  "@errorMatrixPassphraseMustContainNumber": {
+    "description": "Explains constraints of recovery passphrase",
+    "type": "text",
+    "placeholders": {}
+  },
+  "errorMatrixPassphraseMustContainSymbol": "Пароль должен содержать хотя бы 1 спец. символ",
+  "@errorMatrixPassphraseMustContainSymbol": {
+    "description": "Explains constraints of recovery passphrase",
+    "type": "text",
+    "placeholders": {}
+  },
+  "erroMatrixPassphraseMustBeLonger": "Пароль должен состоять из как минимум 10 символов",
+  "@erroMatrixPassphraseMustBeLonger": {
+    "description": "Explains constraints of recovery passphrase",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixSecurityPhraseShouldNotBePassword": "Пароль доступа к истории должен отличатся от пароля учётной записи",
+  "@labelMatrixSecurityPhraseShouldNotBePassword": {
+    "description": "Tells the user to not use their password as their security phrase",
+    "type": "text",
+    "placeholders": {}
+  },
+  "errorMatrixPassphrasesDontMatch": "Введённые пароли не совпадают",
+  "@errorMatrixPassphrasesDontMatch": {
+    "description": "Error when the user enters passphrase twice and the two dont match",
+    "type": "text",
+    "placeholders": {}
+  },
+  "placeholderMatrixConfirmSecurityPhrase": "Подтвердить пароль истории",
+  "@placeholderMatrixConfirmSecurityPhrase": {
+    "description": "Placeholder text for the confirm passphrase text input",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPromptPassphrase": "Пароль от истории:",
+  "@labelMatrixPromptPassphrase": {
+    "description": "Prompt the user to enter passphrase",
+    "type": "text",
+    "placeholders": {}
+  },
+  "placeholderMatrixEnterSecutiyPhrase": "Пароль от истории",
+  "@placeholderMatrixEnterSecutiyPhrase": {
+    "description": "Placeholder text for the passphrase text box",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixCrossSigningExplanation": "Выполните настройку, чтобы подтверждать и вести учёт всех ваших сеансов",
+  "@labelMatrixCrossSigningExplanation": {
+    "description": "Explains what matrix cross signing does",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixMessageBackupExplanation": "Резервная копия ваших сообщений на случай утери доступа ко всем сеансам. Ваши сообщения будут зашифрованы перед добавлением в рез. копию",
+  "@labelMatrixMessageBackupExplanation": {
+    "description": "Explains what matrix message backup does",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelEncryptedPreviewDescription": "Использовать прокси-сервер ({proxyUrl}) для предпросмотра ссылок в зашифрованных комнатах. Содержимое запросов будет скрыто от сервера Matrix с использованием «Шифрованного предпросмотра ссылок Commet»\nПодробности на английском: https://github.com/commetchat/encrypted_url_preview",
+  "@labelEncryptedPreviewDescription": {
+    "description": "Explains briefly how encrypted url preview works",
+    "type": "text",
+    "placeholders": {
+      "proxyUrl": {}
+    }
+  },
+  "labelSettingsDeveloperModeExplanation": "Показывать доп. информацию, полезную для разработчиков",
+  "@labelSettingsDeveloperModeExplanation": {
+    "description": "Explains what developer mode does",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsStickerCompatibilityExplanation": "В некоторых приложениях Matrix стикеры, отправленные как «m.sticker», не будут загружаться. Эта настройка изменит отправляемые стикеры на «m.image» (картинка), благодаря чему они будут отображаться",
+  "@labelSettingsStickerCompatibilityExplanation": {
+    "description": "Explains what sticker compatibility mode does",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptCreateNewRoom": "Создать новую комнату",
+  "@promptCreateNewRoom": {
+    "description": "Prompt to create a new room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptJoinExistingRoom": "Присоединиться к комнате",
+  "@promptJoinExistingRoom": {
+    "description": "Prompt to join a room which already exists",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptUseExistingRoom": "Добавить существующую комнату",
+  "@promptUseExistingRoom": {
+    "description": "Button text to choose to use an existing room when adding a room to a space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageMatrixSessionVerificationRequest": "**{username}** запросил подтверждение вашего сеанса",
+  "@messageMatrixSessionVerificationRequest": {
+    "description": "Message to show when another user has requested to verify your matrix session. Supports markdown to emphasise the user name",
+    "type": "text",
+    "placeholders": {
+      "username": {}
+    }
+  },
+  "messageSasEmojiVerificationPrompt": "Убедитесь, что эмодзи одинаковы и отображаются в одном порядке на обоих устройствах",
+  "@messageSasEmojiVerificationPrompt": {
+    "description": "Explains what to look for when verifying using emoji. Needs to portray that the emoji MUST be the same AND in the same order",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmEmojiMatches": "Они совпадают!",
+  "@promptConfirmEmojiMatches": {
+    "description": "Button text to confirm that the emoji matches",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptEmojiDoNotMatch": "Они не совпадают",
+  "@promptEmojiDoNotMatch": {
+    "description": "Button text to confirm that the emoji do NOT match",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageVerificationComplete": "Подтверждение успешно!",
+  "@messageVerificationComplete": {
+    "description": "Message to show when verification was completed successfully, and the session has been verified",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageWaitingOtherDeviceToAccept": "Ожидание подтверждения на другом устройстве",
+  "@messageWaitingOtherDeviceToAccept": {
+    "description": "Message to show while waiting for another device to accept a matrix session verification request",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptReply": "Ответить",
+  "@promptReply": {
+    "description": "Generic prompt to reply to a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptAddReaction": "Доб. реакцию",
+  "@promptAddReaction": {
+    "description": "Generic prompt to add reaction to a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptEdit": "Изменить",
+  "@promptEdit": {
+    "description": "Generic prompt to edit something",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptSettings": "Настройки",
+  "@promptSettings": {
+    "description": "Generic prompt for settings, usually will open a settings menu or similar",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptAccept": "Принять",
+  "@promptAccept": {
+    "description": "Generic prompt to accept something, probably a request of some kind",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptReject": "Отклонить",
+  "@promptReject": {
+    "description": "Generic prompt to reject something, probably a request of some kind",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptDelete": "Удалить",
+  "@promptDelete": {
+    "description": "Generic prompt to delete something",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptDownload": "Скачать",
+  "@promptDownload": {
+    "description": "Generic prompt to download something",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptJoin": "Присоединиться",
+  "@promptJoin": {
+    "description": "Generic prompt to join a room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptSubmit": "Отправить",
+  "@promptSubmit": {
+    "description": "Generic prompt to submit something",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptContinue": "Продолжить",
+  "@promptContinue": {
+    "description": "Generic prompt to continue with some action",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirm": "Подтвердить",
+  "@promptConfirm": {
+    "description": "Generic prompt to confirm some action",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptDone": "Завершить",
+  "@promptDone": {
+    "description": "Generic prompt to confirm that you are done",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptReset": "Сбросить",
+  "@promptReset": {
+    "description": "Generic prompt to reset something",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptEnable": "Включить",
+  "@promptEnable": {
+    "description": "Generic prompt to enable something",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptRestore": "Восстановить",
+  "@promptRestore": {
+    "description": "Generic prompt to restore something",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptPoliteNo": "Спасибо, нет",
+  "@promptPoliteNo": {
+    "description": "Generic message to decline something, using nice manners :)",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptBack": "Назад",
+  "@promptBack": {
+    "description": "Prompt text to go backwards, probably for navigation",
+    "type": "text",
+    "placeholders": {}
+  },
+  "notificationModifiersPrivacyEnhanced": "Новое сообщение",
+  "@notificationModifiersPrivacyEnhanced": {
+    "description": "Placeholder text to put in a notification when the user has privacy enhanced notifications enabled.",
+    "type": "text",
+    "placeholders": {}
+  },
+  "matrixClientOlmMissingMessage": "libolm не найдена или не установлена. Сквозное шифрование не будет работать без этой библиотеки",
+  "@matrixClientOlmMissingMessage": {
+    "description": "Text that explains to the user that libolm dependency is not found",
+    "type": "text",
+    "placeholders": {}
+  },
+  "matrixClientEncryptionWarningTitle": "Предупреждение о шифровании",
+  "@matrixClientEncryptionWarningTitle": {
+    "description": "Title of a warning about encryption",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptOptions": "Опции",
+  "@promptOptions": {
+    "description": "Generic prompt for options, generally would be used to open a settings menu, extra details or similar",
     "type": "text",
     "placeholders": {}
   }
