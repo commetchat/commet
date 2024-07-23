@@ -38,7 +38,7 @@ class MatrixTimelineEventMessage extends MatrixTimelineEvent
   String? get body => event.plaintextBody;
 
   @override
-  String get plainTextBody => _getPlaintextBody();
+  String get plainTextBody => event.plaintextBody;
 
   String _getPlaintextBody({Timeline? timeline}) {
     var e = getDisplayEvent(timeline);

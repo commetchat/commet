@@ -13,6 +13,7 @@ import 'package:commet/client/components/threads/thread_component.dart';
 import 'package:commet/client/components/typing_indicators/typing_indicator_component.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/client/timeline_events/timeline_event_message.dart';
+import 'package:commet/client/timeline_events/timeline_event_sticker.dart';
 
 import 'package:commet/debug/log.dart';
 import 'package:commet/ui/organisms/attachment_processor/attachment_processor.dart';
@@ -260,7 +261,7 @@ class ChatState extends State<Chat> {
       return;
     }
 
-    if (event is! TimelineEventMessage) {
+    if (event is! TimelineEventMessage && event is! TimelineEventSticker) {
       return;
     }
 
@@ -273,7 +274,7 @@ class ChatState extends State<Chat> {
           onFocusMessageInput.add(null);
           break;
         case EventInteractionType.edit:
-          setMessageInputText.add(event.body!);
+          setMessageInputText.add(event.plainTextBody);
           onFocusMessageInput.add(null);
           break;
         default:
