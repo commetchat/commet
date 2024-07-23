@@ -21,7 +21,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2.8.0
         with:
-          flutter-version: '3.22.2'
+          flutter-version: '3.22.3'
           channel: 'stable'
 
       - name: Clone Olm
@@ -81,7 +81,7 @@ jobs:
       - name: Setup Flutter 
         uses: subosito/flutter-action@v2.8.0
         with:
-          flutter-version: '3.22.2'
+          flutter-version: '3.22.3'
           channel: 'stable'
 
       - name: Setup Java
@@ -131,7 +131,7 @@ jobs:
       - name: Setup Flutter 
         uses: subosito/flutter-action@v2.8.0
         with:
-          flutter-version: '3.22.2'
+          flutter-version: '3.22.3'
           channel: 'stable'
 
       - name: Setup Java
@@ -185,7 +185,7 @@ jobs:
       - name: Setup Flutter 
         uses: subosito/flutter-action@v2.8.0
         with:
-          flutter-version: '3.22.2'
+          flutter-version: '3.22.3'
           channel: 'stable'
 
       - name: Setup Tools
@@ -235,7 +235,7 @@ jobs:
       - name: Setup Flutter 
         uses: subosito/flutter-action@v2.8.0
         with:
-          flutter-version: '3.22.2'
+          flutter-version: '3.22.3'
           channel: 'stable'
 
       - name: Setup Tools
@@ -289,7 +289,7 @@ jobs:
       - name: Setup Flutter 
         uses: subosito/flutter-action@v2.8.0
         with:
-          flutter-version: '3.22.2'
+          flutter-version: '3.22.3'
           channel: 'stable'
 
       - name: Setup Tools
@@ -334,7 +334,7 @@ jobs:
       - name: Setup Flutter 
         uses: subosito/flutter-action@v2.8.0
         with:
-          flutter-version: '3.22.2'
+          flutter-version: '3.22.3'
           channel: 'stable'
 
       - name: Setup Tools
