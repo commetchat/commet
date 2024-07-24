@@ -2,9 +2,15 @@ import 'package:commet/client/attachment.dart';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/threads/thread_component.dart';
 import 'package:commet/client/components/url_preview/url_preview_component.dart';
+import 'package:commet/client/timeline_events/timeline_event_encrypted.dart';
+import 'package:commet/client/timeline_events/timeline_event_feature_reactions.dart';
+import 'package:commet/client/timeline_events/timeline_event_message.dart';
+import 'package:commet/client/timeline_events/timeline_event_feature_related.dart';
+import 'package:commet/client/timeline_events/timeline_event_sticker.dart';
 import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_attachments.dart';
 import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_reactions.dart';
 import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_reply.dart';
+import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_sticker.dart';
 import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_thread.dart';
 import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_url_previews.dart';
 import 'package:commet/ui/molecules/timeline_events/layouts/timeline_event_layout_message.dart';
@@ -13,9 +19,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:intl/intl.dart' as intl;
 import 'package:intl/intl.dart';
+import 'package:tiamat/tiamat.dart' as tiamat;
 
 class TimelineEventViewMessage extends StatefulWidget {
   const TimelineEventViewMessage(
@@ -55,6 +61,7 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
   Widget? formattedContent;
   ImageProvider? senderAvatar;
   List<Attachment>? attachments;
+  ImageProvider? sticker;
   bool hasReactions = false;
   bool isInResponse = false;
   bool showSender = false;
@@ -70,7 +77,7 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
 
   int index = 0;
 
-  late bool edited;
+  bool edited = false;
 
   @override
   void initState() {
@@ -100,6 +107,7 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
       attachments: attachments != null
           ? TimelineEventViewAttachments(attachments: attachments!)
           : null,
+      sticker: sticker != null ? TimelineEventViewSticker(sticker!) : null,
       inResponseTo: isInResponse
           ? TimelineEventViewReply(
               timeline: widget.timeline,
@@ -153,26 +161,42 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
 
     showSender = shouldShowSender(eventIndex);
 
-    edited = event.edited;
-    if (event.type == EventType.encrypted) {
-      formattedContent = tiamat.Text.error(messageFailedToDecrypt);
+    sentTime = event.originServerTs;
+
+    if (event is TimelineEventFeatureReactions) {
+      hasReactions = (event as TimelineEventFeatureReactions)
+          .hasReactions(widget.timeline);
     }
 
-    if (event.bodyFormat != null) {
-      formattedContent =
-          Container(key: GlobalKey(), child: event.buildFormattedContent()!);
+    if (event is TimelineEventSticker) {
+      sticker = event.stickerImage;
     }
 
-    hasReactions = event.reactions != null && event.reactions!.isNotEmpty;
-
-    attachments = event.attachments;
-    isInResponse = event.relatedEventId != null &&
-        event.relationshipType == EventRelationshipType.reply;
+    isInResponse = event is TimelineEventFeatureRelated &&
+        (event as TimelineEventFeatureRelated).relationshipType ==
+            EventRelationshipType.reply;
 
     isHeadOfThread =
         threadComponent?.isHeadOfThread(event, widget.timeline) ?? false;
 
-    sentTime = event.originServerTs;
+    if (event is TimelineEventEncrypted) {
+      formattedContent = tiamat.Text.error(messageFailedToDecrypt);
+    }
+
+    if (event is! TimelineEventMessage) {
+      return;
+    }
+
+    edited = event.isEdited(widget.timeline);
+
+    var content = event.buildFormattedContent(timeline: widget.timeline);
+    if (content == null) {
+      formattedContent = null;
+    } else {
+      formattedContent = Container(key: GlobalKey(), child: content);
+    }
+
+    attachments = event.attachments;
 
     doUrlPreview =
         previewComponent?.shouldGetPreviewData(widget.timeline.room, event) ==
@@ -205,14 +229,29 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
       return true;
     }
 
-    if (widget.timeline.events[index].relationshipType ==
-        EventRelationshipType.reply) return true;
+    final thisEvent = widget.timeline.events[index];
+    if (thisEvent is! TimelineEventMessage &&
+        thisEvent is! TimelineEventSticker &&
+        thisEvent is! TimelineEventEncrypted) {
+      return false;
+    }
 
-    if (![EventType.message, EventType.encrypted]
-        .contains(widget.timeline.events[index + 1].type)) return true;
+    if (thisEvent is TimelineEventFeatureRelated) {
+      if ((thisEvent as TimelineEventFeatureRelated).relationshipType ==
+          EventRelationshipType.reply) {
+        return true;
+      }
+    }
 
-    if (widget.timeline.events[index + 1].status ==
-        TimelineEventStatus.removed) {
+    final prevEvent = widget.timeline.events[index + 1];
+
+    if (prevEvent is! TimelineEventMessage &&
+        prevEvent is! TimelineEventEncrypted &&
+        prevEvent is! TimelineEventSticker) {
+      return true;
+    }
+
+    if (widget.timeline.isEventRedacted(prevEvent)) {
       return true;
     }
 

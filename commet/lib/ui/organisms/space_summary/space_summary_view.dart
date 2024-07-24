@@ -290,7 +290,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
                   widget.onRoomTap?.call(room);
                 }
               : null,
-          body: room.lastEvent?.body,
+          body: room.lastEvent?.plainTextBody,
           recentEventSender: room.lastEvent != null
               ? room.getMemberOrFallback(room.lastEvent!.senderId).displayName
               : null,

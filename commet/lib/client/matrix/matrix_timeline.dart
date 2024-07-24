@@ -1,6 +1,11 @@
 import 'dart:async';
 import 'package:commet/client/components/emoticon/emoticon.dart';
-import 'package:commet/client/matrix/matrix_timeline_event.dart';
+import 'package:commet/client/matrix/matrix_room.dart';
+import 'package:commet/client/matrix/timeline_events/matrix_timeline_event.dart';
+import 'package:commet/client/timeline_events/timeline_event.dart';
+import 'package:commet/client/timeline_events/timeline_event_message.dart';
+import 'package:commet/client/timeline_events/timeline_event_sticker.dart';
+import 'package:commet/debug/log.dart';
 
 import '../client.dart';
 import 'package:matrix/matrix.dart' as matrix;
@@ -11,11 +16,13 @@ class MatrixTimeline extends Timeline {
   matrix.Timeline? _matrixTimeline;
   late matrix.Room _matrixRoom;
 
+  late MatrixRoom _room;
+
   matrix.Timeline? get matrixTimeline => _matrixTimeline;
 
   MatrixTimeline(
-    Client client,
-    Room room,
+    MatrixClient client,
+    MatrixRoom room,
     matrix.Room matrixRoom, {
     matrix.Timeline? initialTimeline,
   }) {
@@ -23,6 +30,7 @@ class MatrixTimeline extends Timeline {
     _matrixRoom = matrixRoom;
     this.client = client;
     this.room = room;
+    _room = room;
     _matrixTimeline = initialTimeline;
 
     if (_matrixTimeline != null) {
@@ -46,28 +54,24 @@ class MatrixTimeline extends Timeline {
 
   void convertAllTimelineEvents() {
     for (int i = 0; i < _matrixTimeline!.events.length; i++) {
-      var converted = MatrixTimelineEvent(
-          _matrixTimeline!.events[i], _matrixTimeline!.room.client,
-          timeline: _matrixTimeline);
+      var converted = _room.convertEvent(_matrixTimeline!.events[i]);
       insertEvent(i, converted);
     }
   }
 
   void onEventInserted(index) {
     if (_matrixTimeline == null) return;
-    insertEvent(
-        index,
-        MatrixTimelineEvent(
-            _matrixTimeline!.events[index], _matrixTimeline!.room.client,
-            timeline: _matrixTimeline));
+    insertEvent(index, _room.convertEvent(_matrixTimeline!.events[index]));
   }
 
   void onEventChanged(index) {
     if (_matrixTimeline == null) return;
 
+    Log.d("Event updated!: $index");
+
     if (index < _matrixTimeline!.events.length) {
-      (events[index] as MatrixTimelineEvent).convertEvent(
-          _matrixTimeline!.events[index], _matrixTimeline!.room.client,
+      events[index] = (room as MatrixRoom).convertEvent(
+          _matrixTimeline!.events[index],
           timeline: _matrixTimeline);
 
       notifyChanged(index);
@@ -88,8 +92,7 @@ class MatrixTimeline extends Timeline {
 
   @override
   void markAsRead(TimelineEvent event) async {
-    if (event.type == EventType.edit ||
-        event.status == TimelineEventStatus.synced) {
+    if (event.status == TimelineEventStatus.synced) {
       _matrixTimeline?.setReadMarker();
     }
   }
@@ -98,8 +101,7 @@ class MatrixTimeline extends Timeline {
   Future<TimelineEvent?> fetchEventByIdInternal(String eventId) async {
     var event = await _matrixRoom.getEventById(eventId);
     if (event == null) return null;
-    return MatrixTimelineEvent(event, _matrixRoom.client,
-        timeline: _matrixTimeline);
+    return _room.convertEvent(event);
   }
 
   Future<void> removeReaction(
@@ -140,8 +142,13 @@ class MatrixTimeline extends Timeline {
     if (event.senderId != room.client.self!.identifier &&
         room.permissions.canDeleteOtherUserMessages != true) return false;
 
-    if (![EventType.message, EventType.sticker].contains(event.type))
-      return false;
+    if (event is TimelineEventMessage) {
+      return true;
+    }
+
+    if (event is TimelineEventSticker) {
+      return true;
+    }
 
     return true;
   }
@@ -152,5 +159,11 @@ class MatrixTimeline extends Timeline {
     await onEventAdded.close();
     await onChange.close();
     await onRemove.close();
+  }
+
+  @override
+  bool isEventRedacted(TimelineEvent<Client> event) {
+    var e = event as MatrixTimelineEvent;
+    return e.event.getDisplayEvent(_matrixTimeline!).redacted;
   }
 }

@@ -16,10 +16,21 @@ import 'package:commet/client/matrix/matrix_peer.dart';
 import 'package:commet/client/matrix/matrix_role.dart';
 import 'package:commet/client/matrix/matrix_room_permissions.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
-import 'package:commet/client/matrix/matrix_timeline_event.dart';
+import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_add_reaction.dart';
+import 'package:commet/client/matrix/timeline_events/matrix_timeline_event.dart';
+import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_edit.dart';
+import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_emote.dart';
+import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_encrypted.dart';
+import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_membership.dart';
+import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_message.dart';
+import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_redaction.dart';
+import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_sticker.dart';
+import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_unknown.dart';
 import 'package:commet/client/member.dart';
 import 'package:commet/client/permissions.dart';
 import 'package:commet/client/role.dart';
+import 'package:commet/client/timeline_events/timeline_event.dart';
+import 'package:commet/client/timeline_events/timeline_event_message.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
@@ -154,7 +165,7 @@ class MatrixRoom extends Room {
     matrix.Event? latest = room.lastEvent;
 
     if (latest != null) {
-      lastEvent = MatrixTimelineEvent(latest, _matrixRoom.client);
+      lastEvent = convertEvent(latest);
     }
 
     updateAvatar();
@@ -197,7 +208,7 @@ class MatrixRoom extends Room {
         return;
       }
 
-      var event = MatrixTimelineEvent(roomEvent, matrixRoom.client);
+      var event = convertEvent(roomEvent);
       if (lastEvent == null) {
         lastEvent = event;
         _onUpdate.add(null);
@@ -225,19 +236,22 @@ class MatrixRoom extends Room {
             .getComponent<DirectMessagesComponent>()
             ?.isRoomDirectMessage(this) ??
         false;
-    var notification = MessageNotificationContent(
-        senderName: sender.displayName,
-        senderId: sender.identifier,
-        roomName: displayName,
-        senderImage: sender.avatar,
-        roomImage: avatar,
-        content: event.body ?? "Received a message",
-        eventId: event.eventId,
-        roomId: identifier,
-        clientId: client.identifier,
-        isDirectMessage: isDirectMessage);
 
-    NotificationManager.notify(notification);
+    if (event is TimelineEventMessage) {
+      var notification = MessageNotificationContent(
+          senderName: sender.displayName,
+          senderId: sender.identifier,
+          roomName: displayName,
+          senderImage: sender.avatar,
+          roomImage: avatar,
+          content: event.body ?? "Received a message",
+          eventId: event.eventId,
+          roomId: identifier,
+          clientId: client.identifier,
+          isDirectMessage: isDirectMessage);
+
+      NotificationManager.notify(notification);
+    }
   }
 
   @override
@@ -386,12 +400,40 @@ class MatrixRoom extends Room {
 
       if (id != null) {
         var event = await _matrixRoom.getEventById(id);
-        return MatrixTimelineEvent(event!, _matrixRoom.client,
-            timeline: _timeline?.matrixTimeline);
+        return convertEvent(event!);
       }
     }
 
     return null;
+  }
+
+  TimelineEvent convertEvent(matrix.Event event, {matrix.Timeline? timeline}) {
+    var c = client as MatrixClient;
+
+    if (event.type == matrix.EventTypes.Message) {
+      if (event.relationshipType == "m.replace")
+        return MatrixTimelineEventEdit(event, client: c);
+      if (event.content["chat.commet.type"] == "chat.commet.sticker")
+        return MatrixTimelineEventSticker(event, client: c);
+
+      if (event.messageType == "m.emote")
+        return MatrixTimelineEventEmote(event, client: c);
+
+      return MatrixTimelineEventMessage(event, client: c);
+    }
+
+    return switch (event.type) {
+      matrix.EventTypes.Sticker => MatrixTimelineEventSticker(event, client: c),
+      matrix.EventTypes.Encrypted =>
+        MatrixTimelineEventEncrypted(event, client: c),
+      matrix.EventTypes.Reaction =>
+        MatrixTimelineEventAddReaction(event, client: c),
+      matrix.EventTypes.RoomMember =>
+        MatrixTimelineEventMembership(event, client: c),
+      matrix.EventTypes.Redaction =>
+        MatrixTimelineEventRedaction(event, client: c),
+      _ => MatrixTimelineEventUnknown(event, client: c)
+    };
   }
 
   @override
@@ -437,8 +479,7 @@ class MatrixRoom extends Room {
     var id = await _matrixRoom.sendReaction(reactingTo.eventId, reaction.key);
     if (id != null) {
       var event = await _matrixRoom.getEventById(id);
-      return MatrixTimelineEvent(event!, _matrixRoom.client,
-          timeline: _timeline?.matrixTimeline);
+      return convertEvent(event!);
     }
 
     return null;
@@ -473,7 +514,7 @@ class MatrixRoom extends Room {
 
   @override
   Future<Timeline> loadTimeline() async {
-    _timeline = MatrixTimeline(client, this, matrixRoom);
+    _timeline = MatrixTimeline(client as MatrixClient, this, matrixRoom);
     await _timeline!.initTimeline();
     onTimelineLoaded.add(null);
     return _timeline!;
@@ -515,7 +556,7 @@ class MatrixRoom extends Room {
       }
     }
 
-    return MatrixTimelineEvent(event, _matrixRoom.client);
+    return convertEvent(event);
   }
 
   @override

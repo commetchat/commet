@@ -47,7 +47,7 @@ Future<void> onForegroundMessage(dynamic message) async {
       senderName: user.displayName,
       senderId: user.identifier,
       roomName: room.displayName,
-      content: event.body!,
+      content: event.plainTextBody,
       eventId: eventId,
       roomId: room.identifier,
       clientId: client.identifier,

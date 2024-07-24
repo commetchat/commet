@@ -7,7 +7,7 @@ import 'package:commet/client/components/direct_messages/direct_message_componen
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/member.dart';
-import 'package:commet/client/timeline.dart';
+import 'package:commet/client/timeline_events/timeline_event_message.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/service/background_service_task.dart';
@@ -107,17 +107,13 @@ class BackgroundNotificationsManager {
     Member? user = await room.fetchMember(event!.senderId);
 
     Log.i("Got user: $user  ($user)");
-    Log.i("Got event: ${event.body}");
-    Log.i("Received background notification data: $event");
-
-    Log.i(event.type);
 
     bool isDirectMessage = client
             .getComponent<DirectMessagesComponent>()
             ?.isRoomDirectMessage(room) ??
         false;
 
-    if (event.type == EventType.message || event.type == EventType.encrypted) {
+    if (event is TimelineEventMessage) {
       await NotificationManager.notify(MessageNotificationContent(
           senderName: user.displayName,
           senderId: user.identifier,

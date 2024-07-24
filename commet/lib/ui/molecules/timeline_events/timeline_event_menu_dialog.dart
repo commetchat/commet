@@ -1,4 +1,5 @@
 import 'package:commet/client/timeline.dart';
+import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_menu.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_view_entry.dart';

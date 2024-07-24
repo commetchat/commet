@@ -1,7 +1,7 @@
 import 'package:commet/client/components/url_preview/url_preview_component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/room.dart';
-import 'package:commet/client/timeline.dart';
+import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:flutter/material.dart';
 
 extension MatrixClientComponentReplacement on MatrixClient {
@@ -21,7 +21,7 @@ class MockMatrixUrlPreviewComponent
   var imageIndex = 0;
 
   @override
-  Future<UrlPreviewData?> getPreview(Room room, TimelineEvent event) async {
+  Future<UrlPreviewData?> getPreview(Room room, TimelineEvent? event) async {
     await Future.delayed(const Duration(seconds: 1));
 
     var image = [

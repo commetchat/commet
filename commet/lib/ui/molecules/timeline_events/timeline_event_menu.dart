@@ -3,6 +3,10 @@ import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/timeline.dart';
+import 'package:commet/client/timeline_events/timeline_event.dart';
+import 'package:commet/client/timeline_events/timeline_event_emote.dart';
+import 'package:commet/client/timeline_events/timeline_event_message.dart';
+import 'package:commet/client/timeline_events/timeline_event_sticker.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/code_block.dart';
 import 'package:commet/ui/molecules/emoji_picker.dart';
@@ -33,26 +37,28 @@ class TimelineEventMenu {
     this.onActionFinished,
     this.isThreadTimeline = false,
   }) {
-    bool canEditEvent = event.type == EventType.message &&
+    bool canEditEvent = event is TimelineEventMessage &&
         timeline.room.permissions.canUserEditMessages &&
         event.senderId == timeline.room.client.self!.identifier &&
         setEditingEvent != null;
 
     bool canDeleteEvent = timeline.canDeleteEvent(event);
 
-    bool canReply = [EventType.message, EventType.emote, EventType.sticker]
-            .contains(event.type) &&
-        setReplyingEvent != null;
+    bool canReply = event is TimelineEventMessage ||
+        event is TimelineEventSticker ||
+        event is TimelineEventEmote;
 
-    bool canSaveAttachment = event.attachments?.isNotEmpty ?? false;
-
+    bool canSaveAttachment = false;
+    if (event is TimelineEventMessage) {
+      canSaveAttachment =
+          (event as TimelineEventMessage).attachments?.isNotEmpty == true;
+    }
     var emoticons = timeline.room.getComponent<RoomEmoticonComponent>();
     bool canAddReaction =
-        [EventType.message, EventType.sticker].contains(event.type) &&
+        (event is TimelineEventMessage || event is TimelineEventSticker) &&
             emoticons != null;
 
-    bool canReplyInThread =
-        !isThreadTimeline && event.type == EventType.message;
+    bool canReplyInThread = !isThreadTimeline && event is TimelineEventMessage;
 
     primaryActions = [
       if (canEditEvent)
@@ -76,7 +82,8 @@ class TimelineEventMenu {
             name: CommonStrings.promptDownload,
             icon: Icons.download,
             action: (BuildContext context) {
-              var attachment = event.attachments?.firstOrNull;
+              var attachment =
+                  (event as TimelineEventMessage).attachments?.firstOrNull;
               if (attachment != null) {
                 DownloadUtils.downloadAttachment(attachment);
               }
@@ -134,12 +141,12 @@ class TimelineEventMenu {
               title: "Source",
               builder: (context) {
                 return SelectionArea(
-                  child: Codeblock(text: event.rawContent, language: "json"),
+                  child: Codeblock(text: event.source, language: "json"),
                 );
               },
             );
           }),
-      if (preferences.developerMode && event.type == EventType.message)
+      if (preferences.developerMode && event is TimelineEventMessage)
         TimelineEventMenuEntry(
             name: "Show Notification",
             icon: Icons.notification_add,
@@ -153,7 +160,8 @@ class TimelineEventMenu {
                 roomName: room.displayName,
                 roomId: room.identifier,
                 roomImage: await room.getShortcutImage(),
-                content: event.body ?? "Sent a message",
+                content:
+                    (event as TimelineEventMessage).body ?? "Sent a message",
                 clientId: room.client.identifier,
                 eventId: event.eventId,
                 isDirectMessage: room.client

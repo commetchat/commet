@@ -1,38 +1,15 @@
 import 'dart:async';
 
-import 'package:commet/client/attachment.dart';
 import 'package:commet/client/client.dart';
-import 'package:commet/client/components/emoticon/emoticon.dart';
+import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:flutter/material.dart';
 
 enum TimelineEventStatus {
-  removed,
   error,
   sending,
   sent,
   synced,
   roomState,
-}
-
-enum EventType {
-  unknown,
-  message,
-  sticker,
-  emote,
-  redaction,
-  edit,
-  invalid,
-  encrypted,
-  setRoomName,
-  setRoomAvatar,
-  roomCreated,
-  memberJoined,
-  memberLeft,
-  memberAvatar,
-  memberDisplayName,
-  memberInvited,
-  memberInvitationRejected,
-  encryptionEnabled,
 }
 
 TimelineEventStatus eventStatusFromInt(int intValue) =>
@@ -54,9 +31,6 @@ extension EventStatusExtension on TimelineEventStatus {
   /// -  2 == synced;
   /// -  3 == roomState;
   int get intValue => (index - 2);
-
-  /// Return `true` if the `EventStatus` equals `removed`.
-  bool get isRemoved => this == TimelineEventStatus.removed;
 
   /// Return `true` if the `EventStatus` equals `error`.
   bool get isError => this == TimelineEventStatus.error;
@@ -84,37 +58,6 @@ extension EventStatusExtension on TimelineEventStatus {
 }
 
 enum EventRelationshipType { reply }
-
-abstract class TimelineEvent {
-  String get eventId;
-  EventType get type;
-  bool get edited;
-  bool get editable => type == EventType.message;
-  TimelineEventStatus get status;
-  String get senderId;
-  DateTime get originServerTs;
-  String? get body;
-  String? get source;
-  List<Attachment>? get attachments;
-  String? get bodyFormat;
-  String? get formattedBody;
-  String get rawContent;
-  List<Uri>? get links;
-
-  /// This has a global key, and as such should only be displayed on screen in one place at a time.
-  /// We cache it here so we dont have to parse formatting again on every rebuild
-  /// If you want to display the same message twice, use `buildFormattedContent()` to create a new widget
-  Widget? get formattedContent;
-
-  Widget? buildFormattedContent();
-
-  String? get relatedEventId;
-  String? get stateKey;
-  EventRelationshipType? get relationshipType;
-  bool get highlight;
-
-  Map<Emoticon, Set<String>>? get reactions;
-}
 
 abstract class Timeline {
   late List<TimelineEvent> events = List.empty(growable: true);
@@ -163,4 +106,6 @@ abstract class Timeline {
   bool canDeleteEvent(TimelineEvent event);
 
   void deleteEvent(TimelineEvent event);
+
+  bool isEventRedacted(TimelineEvent event);
 }
