@@ -1472,7 +1472,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "cantSentMessagePrompt": "Es fehlt die Berechtigung, um eine Nachricht in diesen Raum zu senden",
+  "cantSentMessagePrompt": "Du hast nicht die Berechtigung, eine Nachricht in diesem Raum zu senden",
   "@cantSentMessagePrompt": {
     "description": "Text that explains the user cannot send a message in this room",
     "type": "text",
