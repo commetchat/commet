@@ -135,28 +135,12 @@ class MatrixSpace extends Space {
 
   @override
   bool get isTopLevel {
-    var parents = _matrixRoom.spaceParents;
-
-    bool anyParentContainsRoom = false;
-    for (var parent in parents) {
-      if (parent.roomId == null) {
-        continue;
-      }
-
-      var room = _matrixClient.getRoomById(parent.roomId!);
-      if (room == null) {
-        continue;
-      }
-
-      var contains =
-          room.spaceChildren.any((child) => child.roomId == _matrixRoom.id);
-      if (contains) {
-        anyParentContainsRoom = true;
-        break;
+    for (var room in _matrixClient.rooms.where((r) => r.isSpace)) {
+      if (room.spaceChildren.any((child) => child.roomId == _matrixRoom.id)) {
+        return false;
       }
     }
-
-    return !anyParentContainsRoom;
+    return true;
   }
 
   MatrixSpace(
