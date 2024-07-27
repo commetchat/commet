@@ -1475,5 +1475,17 @@
     "description": "Prompt to import a set of emoticons from an existing pack",
     "type": "text",
     "placeholders": {}
+  },
+  "promptDownload": "ダウンロード",
+  "@promptDownload": {
+    "description": "Generic prompt to download something",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomAvatarDescription": "ルームのアバターを変更",
+  "@labelMatrixPermissionsRoomAvatarDescription": {
+    "description": "Title for the permission to add change the rooms avatar image",
+    "type": "text",
+    "placeholders": {}
   }
 }
