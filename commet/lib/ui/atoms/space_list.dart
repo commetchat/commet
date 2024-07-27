@@ -97,6 +97,7 @@ class _SpaceListState extends State<SpaceList> {
                 itemBuilder: (context, data) {
                   return tiamat.TextButtonExpander(data.displayName,
                       initiallyExpanded: true,
+                      childrenPadding: const EdgeInsets.fromLTRB(2, 0, 0, 0),
                       iconColor: Theme.of(context).colorScheme.secondary,
                       textColor: Theme.of(context).colorScheme.secondary,
                       children: [
@@ -118,16 +119,12 @@ class _SpaceListState extends State<SpaceList> {
 
   Widget roomsList() {
     if (widget.isTopLevel) {
-      return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: tiamat.Text(
-            labelRoomsList,
-            color: Theme.of(context).colorScheme.secondary,
-          ),
-        ),
-        buildRoomsList()
-      ]);
+      return tiamat.TextButtonExpander(labelRoomsList,
+          childrenPadding: const EdgeInsets.fromLTRB(2, 0, 0, 0),
+          initiallyExpanded: true,
+          iconColor: Theme.of(context).colorScheme.secondary,
+          textColor: Theme.of(context).colorScheme.secondary,
+          children: [buildRoomsList()]);
     } else {
       return buildRoomsList();
     }
