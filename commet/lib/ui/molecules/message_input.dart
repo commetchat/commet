@@ -496,7 +496,7 @@ class MessageInputState extends State<MessageInput> {
                   borderRadius: BorderRadius.circular(3),
                   child: Material(
                     color: selected
-                        ? Theme.of(context).colorScheme.tertiaryContainer
+                        ? Theme.of(context).colorScheme.secondary
                         : Colors.transparent,
                     child: InkWell(
                       onTap: () => applyAutoFill(data),
@@ -509,7 +509,7 @@ class MessageInputState extends State<MessageInput> {
                             tiamat.Text.labelLow(
                               data.result,
                               color: selected
-                                  ? Theme.of(context).colorScheme.tertiary
+                                  ? Theme.of(context).colorScheme.onSecondary
                                   : Theme.of(context).colorScheme.secondary,
                             ),
                           ],
