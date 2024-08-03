@@ -60,6 +60,7 @@ class _RoomTextButtonState extends State<RoomTextButton> {
           icon: icon,
           iconColor: color,
           textColor: color,
+          softwrap: false,
           onTap: () => widget.onTap?.call(widget.room),
           footer: widget.room.displayHighlightedNotificationCount > 0
               ? NotificationBadge(
