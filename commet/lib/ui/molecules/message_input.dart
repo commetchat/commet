@@ -529,14 +529,6 @@ class MessageInputState extends State<MessageInput> {
   Widget sendMessageButton() {
     bool canSend = controller.text.isNotEmpty;
 
-    Color col = canSend
-        ? Theme.of(context).colorScheme.primary
-        : Theme.of(context).colorScheme.secondaryContainer;
-
-    Color iconCol = canSend
-        ? Theme.of(context).colorScheme.onPrimary
-        : Theme.of(context).colorScheme.onSecondaryContainer;
-
     double targetValue = canSend ? 1 : 0;
     return Padding(
         padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
