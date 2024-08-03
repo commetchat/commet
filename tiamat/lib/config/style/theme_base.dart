@@ -41,8 +41,6 @@ class ThemeBase {
       ),
       dialogTheme: DialogTheme(
           backgroundColor: scheme.surface, shadowColor: Colors.black),
-      switchTheme:
-          SwitchThemeData(thumbColor: WidgetStatePropertyAll(scheme.secondary)),
       dividerColor: scheme.outline,
       textButtonTheme: TextButtonThemeData(
           style: ButtonStyle(

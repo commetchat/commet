@@ -32,8 +32,6 @@ class ThemeDark {
         surfaceContainer: ThemeDarkColors.surfaceContainer,
         surfaceContainerLow: ThemeDarkColors.surfaceContainerLow,
         surfaceContainerLowest: ThemeDarkColors.surfaceContainerLowest,
-        surfaceContainerHigh: ThemeDarkColors.surfaceContainerHigh,
-        surfaceContainerHighest: ThemeDarkColors.surfaceContainerHigh,
         primaryContainer: ThemeDarkColors.primary,
         brightness: Brightness.dark,
         outline: ThemeDarkColors.surfaceContainerHigh);
