@@ -13,10 +13,18 @@ Widget wbcircleButton(BuildContext context) {
 }
 
 class CircleButton extends StatelessWidget {
-  const CircleButton({super.key, this.radius = 15, this.icon, this.onPressed});
+  const CircleButton(
+      {super.key,
+      this.radius = 15,
+      this.icon,
+      this.onPressed,
+      this.color,
+      this.iconColor});
   final double radius;
   final Function? onPressed;
   final IconData? icon;
+  final Color? color;
+  final Color? iconColor;
   @override
   Widget build(BuildContext context) {
     var shadows = Theme.of(context).extension<ShadowSettings>();
@@ -26,7 +34,7 @@ class CircleButton extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: ClipOval(
         child: Material(
-          color: Theme.of(context).colorScheme.secondaryContainer,
+          color: color ?? Theme.of(context).colorScheme.secondaryContainer,
           borderRadius: BorderRadius.circular(radius),
           child: InkWell(
             splashColor: Theme.of(context).highlightColor, // Splash color
@@ -40,7 +48,8 @@ class CircleButton extends StatelessWidget {
                     ? Align(
                         alignment: Alignment.center,
                         child: Icon(
-                          color: Theme.of(context).colorScheme.secondary,
+                          color: iconColor ??
+                              Theme.of(context).colorScheme.secondary,
                           icon,
                           size: radius,
                         ))
