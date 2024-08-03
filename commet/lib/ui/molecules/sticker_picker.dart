@@ -1,3 +1,4 @@
+import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/molecules/emoji_picker.dart';
 import 'package:commet/client/components/emoticon/emoji_pack.dart';
 import 'package:commet/client/components/gif/gif_search_result.dart';
@@ -12,8 +13,8 @@ class StickerPicker extends StatefulWidget {
       this.canSearchGif = false,
       this.search,
       this.gifPicked,
-      this.size = 100,
-      this.packSize = 48,
+      this.size = BuildConfig.MOBILE ? 125 : 125,
+      this.packSize = BuildConfig.MOBILE ? 48 : 42,
       this.stickerPicked});
   final bool canSearchGif;
   final List<EmoticonPack>? packs;
