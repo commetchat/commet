@@ -1,4 +1,5 @@
 import 'package:commet/client/components/emoticon/emoticon.dart';
+import 'package:commet/config/build_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -10,9 +11,9 @@ import 'package:commet/ui/atoms/emoji_widget.dart';
 class EmojiPicker extends StatelessWidget {
   EmojiPicker(this.packs,
       {super.key,
-      this.size = 38,
+      this.size = BuildConfig.MOBILE ? 48 : 42,
       this.onEmoticonPressed,
-      this.packButtonSize = 32,
+      this.packButtonSize = BuildConfig.MOBILE ? 48 : 42,
       this.onlyEmoji = false,
       this.onlyStickers = false,
       this.staggered = false,
