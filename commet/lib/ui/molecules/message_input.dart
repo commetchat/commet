@@ -527,16 +527,39 @@ class MessageInputState extends State<MessageInput> {
   }
 
   Widget sendMessageButton() {
+    bool canSend = controller.text.isNotEmpty;
+
+    Color col = canSend
+        ? Theme.of(context).colorScheme.primary
+        : Theme.of(context).colorScheme.secondaryContainer;
+
+    Color iconCol = canSend
+        ? Theme.of(context).colorScheme.onPrimary
+        : Theme.of(context).colorScheme.onSecondaryContainer;
+
+    double targetValue = canSend ? 1 : 0;
     return Padding(
         padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-        child: SizedBox(
-            width: widget.size,
-            height: widget.size,
-            child: tiamat.CircleButton(
-              icon: Icons.send,
-              radius: widget.size * widget.iconScale,
-              onPressed: sendMessage,
-            )));
+        child: TweenAnimationBuilder(
+          tween: Tween<double>(begin: 0, end: targetValue),
+          duration: Durations.medium1,
+          builder: (context, value, child) {
+            return SizedBox(
+                width: widget.size,
+                height: widget.size,
+                child: tiamat.CircleButton(
+                  icon: Icons.send,
+                  radius: widget.size * widget.iconScale,
+                  onPressed: sendMessage,
+                  color: Color.lerp(
+                      Theme.of(context).colorScheme.primary.withAlpha(0),
+                      Theme.of(context).colorScheme.primary,
+                      value),
+                  iconColor: Color.lerp(Theme.of(context).colorScheme.secondary,
+                      Theme.of(context).colorScheme.onPrimary, value),
+                ));
+          },
+        ));
   }
 
   Widget toggleEmojiButton() {
