@@ -1,5 +1,4 @@
 import 'package:commet/client/components/gif/gif_component.dart';
-import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/molecules/emoji_picker.dart';
 import 'package:commet/ui/molecules/gif_picker.dart';
 import 'package:commet/ui/molecules/sticker_picker.dart';
