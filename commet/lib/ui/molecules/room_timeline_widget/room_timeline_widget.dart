@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
+import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/molecules/room_timeline_widget/room_timeline_widget_view.dart';
 import 'package:flutter/material.dart';
 
@@ -77,7 +78,7 @@ class _RoomTimelineWidgetState extends State<RoomTimelineWidget>
 
   @override
   Widget build(BuildContext context) {
-    return RoomTimelineWidgetView(
+    Widget result = RoomTimelineWidgetView(
       key: timelineViewKey,
       timeline: widget.timeline,
       onViewScrolled: onViewScrolled,
@@ -87,6 +88,12 @@ class _RoomTimelineWidgetState extends State<RoomTimelineWidget>
       setEditingEvent: widget.setEditingEvent,
       markAsRead: markAsRead,
     );
+
+    if (Layout.desktop) {
+      result = SelectionArea(child: result);
+    }
+
+    return result;
   }
 
   void onViewScrolled(
