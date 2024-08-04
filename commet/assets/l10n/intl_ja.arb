@@ -1152,7 +1152,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "promptConfirmRoomJoin": "ルームに参加しました!",
+  "promptConfirmRoomJoin": "ルームに参加する!",
   "@promptConfirmRoomJoin": {
     "description": "Label for a button which confirms the joining of a room",
     "type": "text",
