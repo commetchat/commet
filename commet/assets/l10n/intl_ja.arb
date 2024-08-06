@@ -1487,5 +1487,49 @@
     "description": "Title for the permission to add change the rooms avatar image",
     "type": "text",
     "placeholders": {}
+  },
+  "promptAttachmentProcessingSendOriginal": "ファイルをそのまま送信する",
+  "@promptAttachmentProcessingSendOriginal": {
+    "description": "Prompt text for the option to send a file in its original state, without any further processing such as removing metadata",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomHistoryVisibilityTitle": "ルームの履歴設定",
+  "@labelMatrixPermissionsRoomHistoryVisibilityTitle": {
+    "description": "Title for the permission to add change room history settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomHistoryVisibilityDescription": "ユーザーがこのルームのチャット履歴の表示/非表示を変更できるようにする",
+  "@labelMatrixPermissionsRoomHistoryVisibilityDescription": {
+    "description": "describes the permission to change room history settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomDeleteMessagesDescription": "ユーザーが他のユーザーから送信されたメッセージを削除できるようにする",
+  "@labelMatrixPermissionsRoomDeleteMessagesDescription": {
+    "description": "Describes the permission to delete messages",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomSendMessagesDescription": "ユーザーがこのルームでメッセージを送信できるようにする",
+  "@labelMatrixPermissionsRoomSendMessagesDescription": {
+    "description": "Describes the permission to send messages",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelEncryptedPreviewDescription": "プロキシサーバー({proxyUrl})を使用して、暗号化されたチャットでURLプレビューを取得します。これらのリクエストの内容は、Commetの「暗号化された URL プレビュー」を使用してホームサーバーから非表示になります。\n詳細:https://github.com/commetchat/encrypted_url_preview",
+  "@labelEncryptedPreviewDescription": {
+    "description": "Explains briefly how encrypted url preview works",
+    "type": "text",
+    "placeholders": {
+      "proxyUrl": {}
+    }
+  },
+  "promptSubmit": "送信",
+  "@promptSubmit": {
+    "description": "Generic prompt to submit something",
+    "type": "text",
+    "placeholders": {}
   }
 }
