@@ -28,10 +28,6 @@ dependencies:
   intl_translation: ^0.20.0
   intl_utils: any
   just_the_tooltip: ^0.0.12
-  matrix:
-    git: 
-      url: https://github.com/commetchat/matrix-dart-sdk.git
-      ref: main
   media_kit: ^1.1.7
   media_kit_libs_video: ^1.0.1
   media_kit_video: ^1.1.8
@@ -73,10 +69,13 @@ dependencies:
       ref: fix
   tiamat: 
     path: ../tiamat/
+  matrix:
+    git: 
+      url: https://github.com/commetchat/matrix-dart-sdk.git
+      ref: main
   matrix_dart_sdk_drift_db:
     git:
       url: https://github.com/commetchat/matrix-dart-sdk-drift-db.git
-      ref: update-matrix-sdk
   encrypted_url_preview: 
     git: https://github.com/commetchat/encrypted_url_preview.git
   signal_sticker_api: 
@@ -102,6 +101,12 @@ dependencies:
 
 dependency_overrides:
   # Force dependency overrides for all (direct or transitive) dependencies
+
+  matrix:
+    git: 
+      url: https://github.com/commetchat/matrix-dart-sdk.git
+      ref: main
+
   media_kit:
     git: 
       url: https://github.com/Airyzz/media-kit.git

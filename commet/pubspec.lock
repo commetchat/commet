@@ -911,16 +911,16 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: a4e6e73f79138d2044e618697ae43ab81ec2b9c7
+      resolved-ref: "9c7c17582080811d4ba88b65977da1a0b7f46350"
       url: "https://github.com/commetchat/matrix-dart-sdk.git"
     source: git
-    version: "0.30.0"
+    version: "0.32.0"
   matrix_dart_sdk_drift_db:
     dependency: "direct main"
     description:
       path: "."
-      ref: update-matrix-sdk
-      resolved-ref: "0d17db077ca2ce4fb39946779031d97d8a1c7a80"
+      ref: HEAD
+      resolved-ref: c2234b7c22847b31cc3bc196bac9759365198f67
       url: "https://github.com/commetchat/matrix-dart-sdk-drift-db.git"
     source: git
     version: "0.0.1"
