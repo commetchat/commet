@@ -546,7 +546,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelMatrixPermissionsBanUserTitle": "ユーザーBAN",
+  "labelMatrixPermissionsBanUserTitle": "ユーザーをBAN",
   "@labelMatrixPermissionsBanUserTitle": {
     "description": "Title for the permission to ban other users from the room",
     "type": "text",
