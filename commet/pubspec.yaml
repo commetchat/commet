@@ -212,7 +212,7 @@ flutter:
       family: Code
       fonts: 
         - 
-          asset: assets/font/code/RobotoMono.ttf
+          asset: assets/font/code/JetBrainsMono-Regular.ttf
   uses-material-design: true
   generate: true
 
