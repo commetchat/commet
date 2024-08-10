@@ -15,6 +15,7 @@ import 'package:commet/utils/common_strings.dart';
 import 'package:commet/utils/download_utils.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class TimelineEventMenu {
   final Timeline timeline;
@@ -59,6 +60,8 @@ class TimelineEventMenu {
             emoticons != null;
 
     bool canReplyInThread = !isThreadTimeline && event is TimelineEventMessage;
+
+    bool canCopy = event is TimelineEventMessage;
 
     primaryActions = [
       if (canEditEvent)
@@ -131,6 +134,18 @@ class TimelineEventMenu {
     ];
 
     secondaryActions = [
+      if (canCopy)
+        TimelineEventMenuEntry(
+            name: CommonStrings.promptCopy,
+            icon: Icons.copy,
+            action: (context) {
+              Clipboard.setData(
+                ClipboardData(
+                    text: (event as TimelineEventMessage).plainTextBody),
+              );
+
+              onActionFinished?.call();
+            }),
       TimelineEventMenuEntry(
           name: "Show Source",
           icon: Icons.code,
