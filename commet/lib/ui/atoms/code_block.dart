@@ -102,7 +102,9 @@ class Codeblock extends StatelessWidget {
                   text.trim(),
                   language: language,
                   theme: theme,
-                  textStyle: const TextStyle(fontFamily: "Code"),
+                  textStyle: const TextStyle(
+                      fontFamily: "Code",
+                      fontFeatures: [FontFeature.disable("calt")]),
                 )
               : Text(
                   text.trim(),

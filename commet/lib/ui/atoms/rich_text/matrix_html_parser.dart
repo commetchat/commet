@@ -269,7 +269,10 @@ class CodeHtmlExtension extends HtmlExtension {
 
     return TextSpan(
         text: context.node.text,
-        style: TextStyle(fontFamily: "Code", color: color));
+        style: TextStyle(
+            fontFamily: "Code",
+            color: color,
+            fontFeatures: const [FontFeature.disable("calt")]));
   }
 
   static const Set<String> tags = {"code"};
