@@ -24,23 +24,16 @@ class ThemeDarkColors {
 class ThemeDark {
   static ThemeData get theme {
     var scheme = ColorScheme.fromSeed(
-        seedColor: const Color.fromARGB(255, 106, 141, 255),
-        secondary: ThemeDarkColors.secondary,
+        seedColor: ThemeDarkColors.surface,
+        dynamicSchemeVariant: DynamicSchemeVariant.monochrome,
+        primary: ThemeDarkColors.primary,
+        onPrimary: Colors.white,
         surface: ThemeDarkColors.surface,
         surfaceContainer: ThemeDarkColors.surfaceContainer,
         surfaceContainerLow: ThemeDarkColors.surfaceContainerLow,
         surfaceContainerLowest: ThemeDarkColors.surfaceContainerLowest,
-        surfaceContainerHigh: ThemeDarkColors.surfaceContainerHigh,
-        surfaceContainerHighest: ThemeDarkColors.surfaceContainerHigh,
         primaryContainer: ThemeDarkColors.primary,
-        onPrimaryContainer: Colors.white,
-        onPrimary: Colors.white,
-        onSecondary: ThemeDarkColors.onSurface,
-        onSurface: Colors.white,
         brightness: Brightness.dark,
-        tertiaryContainer: ThemeDarkColors.surface,
-        onTertiaryContainer: Colors.white,
-        tertiary: Colors.white,
         outline: ThemeDarkColors.surfaceContainerHigh);
 
     return ThemeBase.theme(scheme).copyWith(extensions: [

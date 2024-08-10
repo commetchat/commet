@@ -28,7 +28,7 @@ class ThemeYou {
       }
     }
 
-    return ThemeBase.theme(scheme!).copyWith(extensions: [
+    return ThemeBase.theme(scheme).copyWith(extensions: [
       const ThemeSettings(),
       ExtraColors.fromScheme(scheme),
       FoundationSettings(color: scheme.surfaceDim)
