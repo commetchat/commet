@@ -82,7 +82,8 @@ main(List<String> args) async {
       if (buildDetail != null) "--dart-define",
       if (buildDetail != null) "BUILD_DETAIL=$buildDetail",
       if (platform == "web") "--web-renderer",
-      if (platform == "web") "html"
+      if (platform == "web") "html",
+      if (platform == "web") "--source-maps"
     ],
     runInShell: true,
   );
