@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/notifying_list.dart';
+import 'package:commet/utils/text_utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
@@ -11,10 +13,16 @@ class LogEntry {
   late DateTime _time;
   LogType type;
   DateTime get time => _time;
-  String content;
+  String rawContent;
+  int count = 1;
 
-  LogEntry(this.type, this.content) {
+  LogEntry(this.type, this.rawContent) {
     _time = DateTime.now();
+  }
+
+  // Log content with sensitive information
+  String get content {
+    return TextUtils.redactSensitiveInfo(rawContent);
   }
 }
 
@@ -31,6 +39,16 @@ class Log {
 
   static String prefix = "";
 
+  static void add(LogEntry entry) {
+    if (log.isNotEmpty &&
+        log.last.type == entry.type &&
+        log.last.rawContent == entry.rawContent) {
+      log.last.count += 1;
+    } else {
+      log.add(entry);
+    }
+  }
+
   static ZoneSpecification spec = ZoneSpecification(
     print: (self, parent, zone, line) {
       parent.print(zone, "($prefix) $line");
@@ -40,7 +58,7 @@ class Log {
       }
 
       if (!preferences.isInit || preferences.developerMode == true) {
-        log.add(LogEntry(LogType.info, line));
+        add(LogEntry(LogType.info, line));
       }
     },
     errorCallback: (self, parent, zone, error, stackTrace) {
@@ -49,7 +67,7 @@ class Log {
       parent.print(zone, stackTrace?.toString() ?? "");
       String? info =
           stackTrace != null ? getDetailFromStackTrace(stackTrace) : null;
-      log.add(LogEntryException(
+      add(LogEntryException(
           LogType.error,
           "${error.toString()}${info != null ? " ($info)" : ""}",
           error,
@@ -59,7 +77,7 @@ class Log {
     handleUncaughtError: (self, parent, zone, error, stackTrace) {
       parent.print(zone, "HandleUncaughtError");
       String? info = getDetailFromStackTrace(stackTrace);
-      log.add(LogEntryException(
+      add(LogEntryException(
           LogType.error, "${error.toString()} ($info)", error, stackTrace));
     },
   );
@@ -84,10 +102,10 @@ class Log {
   }
 
   static void _print(LogEntry entry) {
-    log.add(entry);
+    add(entry);
 
     // ignore: avoid_print
-    print(entry.content);
+    print(entry.rawContent);
   }
 
   static void i(Object o) {
@@ -127,7 +145,7 @@ class Log {
   static void _onFlutterError(FlutterErrorDetails details) {
     String? info =
         details.stack != null ? getDetailFromStackTrace(details.stack!) : null;
-    log.add(LogEntryException(
+    add(LogEntryException(
         LogType.error,
         "${details.exception.toString()}${info != null ? " ($info)" : ""}",
         details.exception,

@@ -9,16 +9,16 @@ class TinyPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+      padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
       child: Container(
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(5),
-            color: Theme.of(context).colorScheme.primary),
+            color: Theme.of(context).colorScheme.primaryContainer),
         child: Padding(
           padding: const EdgeInsets.all(2.0),
           child: tiamat.Text.tiny(
             text,
-            color: Theme.of(context).colorScheme.onPrimary,
+            color: Theme.of(context).colorScheme.onPrimaryContainer,
           ),
         ),
       ),

@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:commet/client/matrix/matrix_client.dart';
+import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/rich_text/spans/link.dart';
 import 'package:flutter/material.dart';
 import 'emoji/emoji_matcher.dart';
@@ -177,5 +179,21 @@ class TextUtils {
             .format(number / pow(base, digitGroups)) +
         " " +
         units[digitGroups];
+  }
+
+  static String redactSensitiveInfo(String text) {
+    if (clientManager != null) {
+      for (final client in clientManager!.clients) {
+        if (client is MatrixClient) {
+          var token = client.getMatrixClient().accessToken;
+
+          if (token != null) {
+            text = text.replaceAll(token, "[REDACTED ACCESS TOKEN]");
+          }
+        }
+      }
+    }
+
+    return text;
   }
 }
