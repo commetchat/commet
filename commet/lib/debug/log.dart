@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:commet/utils/text_utils.dart';
@@ -20,7 +19,7 @@ class LogEntry {
     _time = DateTime.now();
   }
 
-  // Log content with sensitive information
+  // Log content with sensitive information removed
   String get content {
     return TextUtils.redactSensitiveInfo(rawContent);
   }
