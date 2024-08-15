@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:commet/config/build_config.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:commet/utils/text_utils.dart';
@@ -118,8 +119,10 @@ class Log {
   }
 
   static void d(Object o) {
-    var str = _formatString(o.toString(), LogType.debug);
-    _print(LogEntry(LogType.debug, str));
+    if (BuildConfig.RELEASE) {
+      var str = _formatString(o.toString(), LogType.debug);
+      _print(LogEntry(LogType.debug, str));
+    }
   }
 
   static void w(Object o) {

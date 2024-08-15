@@ -5,7 +5,6 @@ import 'package:commet/client/matrix/timeline_events/matrix_timeline_event.dart'
 import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/client/timeline_events/timeline_event_message.dart';
 import 'package:commet/client/timeline_events/timeline_event_sticker.dart';
-import 'package:commet/debug/log.dart';
 
 import '../client.dart';
 import 'package:matrix/matrix.dart' as matrix;
@@ -66,8 +65,6 @@ class MatrixTimeline extends Timeline {
 
   void onEventChanged(index) {
     if (_matrixTimeline == null) return;
-
-    Log.d("Event updated!: $index");
 
     if (index < _matrixTimeline!.events.length) {
       events[index] = (room as MatrixRoom).convertEvent(
