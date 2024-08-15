@@ -119,7 +119,7 @@ class Log {
   }
 
   static void d(Object o) {
-    if (BuildConfig.RELEASE) {
+    if (BuildConfig.DEBUG || kDebugMode) {
       var str = _formatString(o.toString(), LogType.debug);
       _print(LogEntry(LogType.debug, str));
     }
