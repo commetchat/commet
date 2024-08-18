@@ -406,7 +406,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "promptConfirmCreateEmoticon": "作成しました!",
+  "promptConfirmCreateEmoticon": "作成する!",
   "@promptConfirmCreateEmoticon": {
     "description": "Prompt to confirm the creation of an Emoticon Pack, Emoji, or Sticker",
     "type": "text",
@@ -1140,13 +1140,13 @@
     "type": "text",
     "placeholders": {}
   },
-  "promptConfirmRoomCreation": "ルームを作成しました!",
+  "promptConfirmRoomCreation": "ルームを作成する!",
   "@promptConfirmRoomCreation": {
     "description": "Label for a button which confirms the creation of a room",
     "type": "text",
     "placeholders": {}
   },
-  "promptConfirmSpaceCreation": "スペースを作成しました!",
+  "promptConfirmSpaceCreation": "スペースを作成する!",
   "@promptConfirmSpaceCreation": {
     "description": "Label for a button which confirms the creation of a space",
     "type": "text",
@@ -1280,7 +1280,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "promptConfirmSpaceJoin": "スペースに参加しました!",
+  "promptConfirmSpaceJoin": "スペースに参加する!",
   "@promptConfirmSpaceJoin": {
     "description": "Label for a button which confirms the joining of a space",
     "type": "text",
