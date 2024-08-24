@@ -9,9 +9,19 @@ enum _MembershipType {
   leave,
   kick,
   invite,
+  inviteRejected,
+  uninvited,
+  acceptedInvite,
+  ban,
+  unban,
   updateDisplayName,
   updateAvatar,
   unknown,
+}
+
+enum _SenderType {
+  self,
+  other,
 }
 
 class MatrixTimelineEventMembership extends MatrixTimelineEvent
@@ -44,7 +54,7 @@ class MatrixTimelineEventMembership extends MatrixTimelineEvent
 
   String messagePlaceholderUserUpdatedNameDetailed(
           String user, String newName) =>
-      Intl.message("$user changed their display name to $newName",
+      Intl.message("$user changed their display name to '$newName'",
           desc: "Message body for when a user updates their display name",
           args: [user, newName],
           name: "messagePlaceholderUserUpdatedNameDetailed");
@@ -61,6 +71,30 @@ class MatrixTimelineEventMembership extends MatrixTimelineEvent
           args: [user],
           name: "messagePlaceholderUserRejectedInvite");
 
+  String messageUserRetractedInvite(String sender, String user) => Intl.message(
+      "$sender uninvited $user",
+      desc: "Message body for when a user's invitation to a room was withdrawn",
+      args: [sender, user],
+      name: "messageUserRetractedInvite");
+
+  String messageUserAcceptedInvite(String user) =>
+      Intl.message("$user accepted the invitiation",
+          desc: "Message body for when a user accepted an invitation to a room",
+          args: [user],
+          name: "messageUserAcceptedInvite");
+
+  String messageUserBanned(String sender, String user) =>
+      Intl.message("$sender banned $user",
+          desc: "Message body for when a user bans another user from the room",
+          args: [sender, user],
+          name: "messageUserBanned");
+
+  String messageUserUnbanned(String sender, String user) =>
+      Intl.message("$sender unbanned $user",
+          desc: "Message body for when a user reverts a ban of another user",
+          args: [sender, user],
+          name: "messageUserUnbanned");
+
   @override
   IconData get icon => switch (_getType()) {
         _MembershipType.join => Icons.waving_hand_rounded,
@@ -70,6 +104,11 @@ class MatrixTimelineEventMembership extends MatrixTimelineEvent
         _MembershipType.updateDisplayName => Icons.person,
         _MembershipType.updateAvatar => Icons.person,
         _MembershipType.unknown => Icons.person,
+        _MembershipType.inviteRejected => Icons.person_remove,
+        _MembershipType.uninvited => Icons.person_remove,
+        _MembershipType.acceptedInvite => Icons.waving_hand_rounded,
+        _MembershipType.ban => Icons.person_remove,
+        _MembershipType.unban => Icons.shield_outlined,
       };
 
   @override
@@ -81,26 +120,44 @@ class MatrixTimelineEventMembership extends MatrixTimelineEvent
   _MembershipType _getType() {
     bool wasSelf = event.stateKey == event.senderId;
 
-    if (event.prevContent?["membership"] != event.content["membership"]) {
-      switch (event.content["membership"]) {
-        case "join":
-          return _MembershipType.join;
-        case "leave":
-          return wasSelf ? _MembershipType.leave : _MembershipType.kick;
-        case "invite":
-          return _MembershipType.invite;
+    var prev = event.prevContent?["membership"];
+    var curr = event.content["membership"];
+    var sender = wasSelf ? _SenderType.self : _SenderType.other;
+
+    var type = switch ([prev, curr, sender]) {
+      ["join", "leave", _SenderType.other] => _MembershipType.kick,
+      ["join", "leave", _SenderType.self] => _MembershipType.leave,
+      ["leave", "join", _SenderType.self] => _MembershipType.join,
+      ["join", "ban", _SenderType.other] => _MembershipType.ban,
+      ["invite", "leave", _SenderType.other] => _MembershipType.uninvited,
+      ["invite", "leave", _SenderType.self] => _MembershipType.inviteRejected,
+      ["invite", "join", _SenderType.self] => _MembershipType.acceptedInvite,
+      ["ban", "leave", _SenderType.other] => _MembershipType.unban,
+      _ => _MembershipType.unknown,
+    };
+
+    if (type != _MembershipType.unknown) {
+      return type;
+    }
+
+    if (curr == prev) {
+      if (event.prevContent?["displayname"] != event.content["displayname"]) {
+        return _MembershipType.updateDisplayName;
+      }
+
+      if (event.prevContent?["avatar_url"] != event.content["avatar_url"]) {
+        return _MembershipType.updateAvatar;
       }
     }
 
-    if (event.prevContent?["displayname"] != event.content["displayname"]) {
-      return _MembershipType.updateDisplayName;
-    }
+    type = switch ([curr, sender]) {
+      ["invite", _SenderType.other] => _MembershipType.invite,
+      ["ban", _SenderType.other] => _MembershipType.ban,
+      ["join", _SenderType.self] => _MembershipType.join,
+      _ => _MembershipType.unknown,
+    };
 
-    if (event.prevContent?["avatar_url"] != event.content["avatar_url"]) {
-      return _MembershipType.updateAvatar;
-    }
-
-    return _MembershipType.unknown;
+    return type;
   }
 
   @override
@@ -110,7 +167,7 @@ class MatrixTimelineEventMembership extends MatrixTimelineEvent
     String? prevDisplayName = event.prevContent?["displayname"] as String?;
     String? newDisplayName = event.content["displayname"] as String?;
 
-    String memberName = newDisplayName ?? prevDisplayName ?? event.senderId;
+    String memberName = newDisplayName ?? prevDisplayName ?? event.stateKey!;
 
     var type = _getType();
 
@@ -122,14 +179,24 @@ class MatrixTimelineEventMembership extends MatrixTimelineEvent
       case _MembershipType.kick:
         return "$memberName was kicked from the room by $sender";
       case _MembershipType.invite:
-        return messagePlaceholderUserInvited(memberName, sender);
+        return messagePlaceholderUserInvited(sender, memberName);
       case _MembershipType.updateDisplayName:
         if (newDisplayName != null)
           return messagePlaceholderUserUpdatedNameDetailed(
-              prevDisplayName ?? event.senderId, newDisplayName);
+              event.stateKey!, newDisplayName);
         return messagePlaceholderUserUpdatedName(memberName);
       case _MembershipType.updateAvatar:
         return messagePlaceholderUserUpdatedAvatar(memberName);
+      case _MembershipType.inviteRejected:
+        return messagePlaceholderUserRejectedInvite(memberName);
+      case _MembershipType.uninvited:
+        return messageUserRetractedInvite(sender, memberName);
+      case _MembershipType.acceptedInvite:
+        return messageUserAcceptedInvite(memberName);
+      case _MembershipType.ban:
+        return messageUserBanned(sender, memberName);
+      case _MembershipType.unban:
+        return messageUserUnbanned(sender, memberName);
       case _MembershipType.unknown:
         return event.body;
     }
