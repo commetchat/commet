@@ -428,7 +428,6 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
       final eventHeight =
           highlightedEventOffstageKey?.globalPaintBounds?.height;
       if (eventHeight != null) {
-        Log.d("Measured height of widget: $eventHeight");
         offset += eventHeight / 2;
       }
 

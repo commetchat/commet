@@ -5,7 +5,6 @@ import 'package:commet/client/matrix/components/matrix_sync_listener.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
-import 'package:commet/debug/log.dart';
 import 'package:matrix/matrix_api_lite/model/sync_update.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
@@ -32,7 +31,6 @@ class MatrixReadReceiptComponent
 
   @override
   onSync(JoinedRoomUpdate update) {
-    Log.d("Read Receipt Component got sync for room: ${room.identifier}!");
     final ephemeral = update.ephemeral;
 
     if (update.timeline?.events?.isNotEmpty == true) {
@@ -44,7 +42,6 @@ class MatrixReadReceiptComponent
     }
 
     if (ephemeral.any((e) => e.type == "m.receipt")) {
-      Log.i("Received read receipt update");
       _controller.add(null);
     }
   }
