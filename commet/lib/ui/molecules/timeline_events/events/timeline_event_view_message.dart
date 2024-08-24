@@ -2,6 +2,7 @@ import 'package:commet/client/attachment.dart';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/threads/thread_component.dart';
 import 'package:commet/client/components/url_preview/url_preview_component.dart';
+import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/client/timeline_events/timeline_event_encrypted.dart';
 import 'package:commet/client/timeline_events/timeline_event_feature_reactions.dart';
 import 'package:commet/client/timeline_events/timeline_event_message.dart';
@@ -26,7 +27,9 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 class TimelineEventViewMessage extends StatefulWidget {
   const TimelineEventViewMessage(
       {super.key,
-      required this.timeline,
+      this.timeline,
+      this.room,
+      this.initialEvent,
       this.isThreadTimeline = false,
       this.overrideShowSender = false,
       this.jumpToEvent,
@@ -35,7 +38,9 @@ class TimelineEventViewMessage extends StatefulWidget {
 
   final Function(String eventId)? jumpToEvent;
 
-  final Timeline timeline;
+  final Timeline? timeline;
+  final TimelineEvent? initialEvent;
+  final Room? room;
   final int initialIndex;
   final bool overrideShowSender;
   final bool detailed;
@@ -81,16 +86,22 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
 
   @override
   void initState() {
-    currentUserIdentifier = widget.timeline.client.self!.identifier;
-    previewComponent =
-        widget.timeline.room.client.getComponent<UrlPreviewComponent>();
+    var room = widget.room ?? widget.timeline?.room;
+    var client = room!.client;
+    currentUserIdentifier = client.self!.identifier;
+    previewComponent = client.getComponent<UrlPreviewComponent>();
 
     if (!widget.isThreadTimeline) {
-      threadComponent =
-          widget.timeline.room.client.getComponent<ThreadsComponent>();
+      threadComponent = client.getComponent<ThreadsComponent>();
     }
 
-    loadEventState(widget.initialIndex);
+    if (widget.timeline != null) {
+      loadEventState(widget.initialIndex);
+    }
+
+    if (widget.initialEvent != null) {
+      loadStateFromEvent(widget.initialEvent!);
+    }
     super.initState();
   }
 
@@ -108,29 +119,32 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
           ? TimelineEventViewAttachments(attachments: attachments!)
           : null,
       sticker: sticker != null ? TimelineEventViewSticker(sticker!) : null,
-      inResponseTo: isInResponse
+      inResponseTo: isInResponse && widget.timeline != null
           ? TimelineEventViewReply(
-              timeline: widget.timeline,
+              timeline: widget.timeline!,
               index: index,
               jumpToEvent: widget.jumpToEvent,
             )
           : null,
-      reactions: hasReactions
+      reactions: hasReactions && widget.timeline != null
           ? TimelineEventViewReactions(
-              key: reactionsKey, timeline: widget.timeline, initialIndex: index)
+              key: reactionsKey,
+              timeline: widget.timeline!,
+              initialIndex: index)
           : null,
-      urlPreviews: previewComponent != null && doUrlPreview
-          ? TimelineEventViewUrlPreviews(
-              initialIndex: index,
-              timeline: widget.timeline,
-              component: previewComponent!,
-              key: urlPreviewsKey,
-            )
-          : null,
-      thread: isHeadOfThread
+      urlPreviews:
+          previewComponent != null && doUrlPreview && widget.timeline != null
+              ? TimelineEventViewUrlPreviews(
+                  initialIndex: index,
+                  timeline: widget.timeline!,
+                  component: previewComponent!,
+                  key: urlPreviewsKey,
+                )
+              : null,
+      thread: isHeadOfThread && widget.timeline != null
           ? TimelineEventViewThread(
               initialIndex: index,
-              timeline: widget.timeline,
+              timeline: widget.timeline!,
               component: threadComponent!)
           : null,
     );
@@ -151,21 +165,41 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
 
   void loadEventState(var eventIndex) {
     index = eventIndex;
-    var event = widget.timeline.events[eventIndex];
-    var sender = widget.timeline.room.getMemberOrFallback(event.senderId);
+    if (widget.timeline != null) {
+      var event = widget.timeline!.events[eventIndex];
+      loadStateFromEvent(event);
+    }
+  }
+
+  void loadStateFromEvent(TimelineEvent event) {
+    showSender = shouldShowSender(index);
+    var room = widget.room ?? widget.timeline?.room;
+
+    var sender = room!.getMemberOrFallback(event.senderId);
     eventId = event.eventId;
 
     senderName = sender.displayName;
     senderAvatar = sender.avatar;
     senderColor = sender.defaultColor;
 
-    showSender = shouldShowSender(eventIndex);
-
     sentTime = event.originServerTs;
 
-    if (event is TimelineEventFeatureReactions) {
-      hasReactions = (event as TimelineEventFeatureReactions)
-          .hasReactions(widget.timeline);
+    if (widget.timeline != null) {
+      if (event is TimelineEventFeatureReactions) {
+        hasReactions = (event as TimelineEventFeatureReactions)
+            .hasReactions(widget.timeline!);
+      }
+
+      isHeadOfThread =
+          threadComponent?.isHeadOfThread(event, widget.timeline!) ?? false;
+
+      if (event is TimelineEventMessage) {
+        edited = event.isEdited(widget.timeline!);
+      }
+    } else {
+      edited = false;
+      isHeadOfThread = false;
+      hasReactions = false;
     }
 
     if (event is TimelineEventSticker) {
@@ -176,9 +210,6 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
         (event as TimelineEventFeatureRelated).relationshipType ==
             EventRelationshipType.reply;
 
-    isHeadOfThread =
-        threadComponent?.isHeadOfThread(event, widget.timeline) ?? false;
-
     if (event is TimelineEventEncrypted) {
       formattedContent = tiamat.Text.error(messageFailedToDecrypt);
     }
@@ -186,8 +217,6 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
     if (event is! TimelineEventMessage) {
       return;
     }
-
-    edited = event.isEdited(widget.timeline);
 
     var content = event.buildFormattedContent(timeline: widget.timeline);
     if (content == null) {
@@ -199,8 +228,7 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
     attachments = event.attachments;
 
     doUrlPreview =
-        previewComponent?.shouldGetPreviewData(widget.timeline.room, event) ==
-                true &&
+        previewComponent?.shouldGetPreviewData(room, event) == true &&
             event.links?.isNotEmpty == true;
   }
 
@@ -224,12 +252,13 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
 
   bool shouldShowSender(int index) {
     if (widget.overrideShowSender) return true;
+    if (widget.timeline == null) return true;
 
-    if (widget.timeline.events.length <= index + 1) {
+    if (widget.timeline!.events.length <= index + 1) {
       return true;
     }
 
-    final thisEvent = widget.timeline.events[index];
+    final thisEvent = widget.timeline!.events[index];
     if (thisEvent is! TimelineEventMessage &&
         thisEvent is! TimelineEventSticker &&
         thisEvent is! TimelineEventEncrypted) {
@@ -243,7 +272,7 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
       }
     }
 
-    final prevEvent = widget.timeline.events[index + 1];
+    final prevEvent = widget.timeline!.events[index + 1];
 
     if (prevEvent is! TimelineEventMessage &&
         prevEvent is! TimelineEventEncrypted &&
@@ -251,23 +280,23 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
       return true;
     }
 
-    if (widget.timeline.isEventRedacted(prevEvent)) {
+    if (widget.timeline!.isEventRedacted(prevEvent)) {
       return true;
     }
 
     if (widget.isThreadTimeline == false &&
         threadComponent?.isEventInResponseToThread(
-                widget.timeline.events[index + 1], widget.timeline) ==
+                widget.timeline!.events[index + 1], widget.timeline!) ==
             true) {
       return true;
     }
 
-    if (widget.timeline.events[index].originServerTs
-            .difference(widget.timeline.events[index + 1].originServerTs)
+    if (widget.timeline!.events[index].originServerTs
+            .difference(widget.timeline!.events[index + 1].originServerTs)
             .inMinutes >
         1) return true;
 
-    return widget.timeline.events[index].senderId !=
-        widget.timeline.events[index + 1].senderId;
+    return widget.timeline!.events[index].senderId !=
+        widget.timeline!.events[index + 1].senderId;
   }
 }

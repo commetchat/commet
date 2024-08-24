@@ -115,7 +115,7 @@ class ChatState extends State<Chat> {
   }
 
   Future<void> loadTimeline() async {
-    var t = await room.loadTimeline();
+    var t = await room.getTimeline();
     setState(() {
       _timeline = t;
     });
@@ -123,7 +123,7 @@ class ChatState extends State<Chat> {
 
   Future<void> loadThreadTimeline() async {
     Timeline? timeline = room.timeline;
-    timeline ??= await room.loadTimeline();
+    timeline ??= await room.getTimeline();
 
     var threadTimeline = await threadsComponent!.getThreadTimeline(
         roomTimeline: timeline, threadRootEventId: widget.threadId!);

@@ -410,6 +410,10 @@ class MatrixRoom extends Room {
   TimelineEvent convertEvent(matrix.Event event, {matrix.Timeline? timeline}) {
     var c = client as MatrixClient;
 
+    if (event.redacted) {
+      return MatrixTimelineEventUnknown(event, client: c);
+    }
+
     if (event.type == matrix.EventTypes.Message) {
       if (event.relationshipType == "m.replace")
         return MatrixTimelineEventEdit(event, client: c);
@@ -513,9 +517,9 @@ class MatrixRoom extends Room {
   }
 
   @override
-  Future<Timeline> loadTimeline() async {
+  Future<Timeline> getTimeline({String? contextEventId}) async {
     _timeline = MatrixTimeline(client as MatrixClient, this, matrixRoom);
-    await _timeline!.initTimeline();
+    await _timeline!.initTimeline(contextEventId: contextEventId);
     onTimelineLoaded.add(null);
     return _timeline!;
   }

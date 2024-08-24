@@ -5,7 +5,6 @@ import 'package:commet/main.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:commet/utils/text_utils.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/widgets.dart';
 
 enum LogType { info, debug, error, warning }
 

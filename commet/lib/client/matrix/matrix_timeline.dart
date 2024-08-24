@@ -37,14 +37,14 @@ class MatrixTimeline extends Timeline {
     }
   }
 
-  Future<void> initTimeline() async {
+  Future<void> initTimeline({String? contextEventId}) async {
     await (client as MatrixClient).firstSync;
 
     _matrixTimeline = await _matrixRoom.getTimeline(
-      onInsert: onEventInserted,
-      onChange: onEventChanged,
-      onRemove: onEventRemoved,
-    );
+        onInsert: onEventInserted,
+        onChange: onEventChanged,
+        onRemove: onEventRemoved,
+        eventContextId: contextEventId);
 
     // This could maybe make load times realllly slow if we have a ton of stuff in the cache?
     // Might be better to only convert as many as we would need to display immediately and then convert the rest on demand

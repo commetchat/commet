@@ -1,4 +1,5 @@
-import 'package:commet/client/timeline.dart';
+import 'package:commet/client/client.dart';
+import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/client/timeline_events/timeline_event_generic.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_layout.dart';
 import 'package:flutter/material.dart';
@@ -12,9 +13,15 @@ import 'package:tiamat/atoms/avatar.dart';
 
 class TimelineEventViewGeneric extends StatefulWidget {
   const TimelineEventViewGeneric(
-      {required this.timeline, required this.initialIndex, super.key});
-  final Timeline timeline;
+      {this.timeline,
+      this.initialEvent,
+      required this.initialIndex,
+      this.room,
+      super.key});
+  final Timeline? timeline;
   final int initialIndex;
+  final Room? room;
+  final TimelineEvent? initialEvent;
   @override
   State<TimelineEventViewGeneric> createState() =>
       _TimelineEventViewGenericState();
@@ -45,7 +52,13 @@ class _TimelineEventViewGenericState extends State<TimelineEventViewGeneric>
 
   @override
   void initState() {
-    setStateFromindex(widget.initialIndex);
+    if (widget.timeline != null) {
+      setStateFromindex(widget.initialIndex);
+    }
+
+    if (widget.initialEvent != null) {
+      loadStateFromEvent(widget.initialEvent!);
+    }
     super.initState();
   }
 
@@ -103,8 +116,12 @@ class _TimelineEventViewGenericState extends State<TimelineEventViewGeneric>
   }
 
   void setStateFromindex(int index) {
-    var event = widget.timeline.events[index];
+    var event = widget.timeline!.events[index];
+    loadStateFromEvent(event);
+  }
 
+  void loadStateFromEvent(TimelineEvent event) {
+    var room = widget.room ?? widget.timeline?.room;
     if (event is! TimelineEventGeneric) {
       text = event.plainTextBody;
       icon = Icons.question_mark;
@@ -114,7 +131,7 @@ class _TimelineEventViewGenericState extends State<TimelineEventViewGeneric>
     text = event.getBody(timeline: widget.timeline);
     icon = event.icon;
 
-    var sender = widget.timeline.room.getMemberOrFallback(event.senderId);
+    var sender = room!.getMemberOrFallback(event.senderId);
     if (event.showSenderAvatar) {
       senderAvatar = sender.avatar;
     }

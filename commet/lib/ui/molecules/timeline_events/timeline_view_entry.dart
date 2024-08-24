@@ -55,7 +55,7 @@ class TimelineViewEntry extends StatefulWidget {
 // It causes extra widget rebuilds, so we check type only during the event update and store it with this enum
 // I thought maybe if we override hashcode of TimelineEventBase it would allow us to just check the type
 // But it didnt. I dont know if there is a way to fix that
-enum _TimelineEventWidgetDisplayType {
+enum TimelineEventWidgetDisplayType {
   message,
   generic,
   hidden,
@@ -76,8 +76,8 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
   bool isThreadReply = false;
   bool highlighted = false;
   bool redacted = false;
-  _TimelineEventWidgetDisplayType _widgetType =
-      _TimelineEventWidgetDisplayType.hidden;
+  TimelineEventWidgetDisplayType _widgetType =
+      TimelineEventWidgetDisplayType.hidden;
   LayerLink? timelineLayerLink;
 
   late DateTime time;
@@ -104,18 +104,23 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
     index = eventIndex;
     time = event.originServerTs;
 
-    if (event is TimelineEventMessage ||
-        event is TimelineEventSticker ||
-        event is TimelineEventEncrypted) {
-      _widgetType = _TimelineEventWidgetDisplayType.message;
-    } else if (event is TimelineEventGeneric) {
-      _widgetType = _TimelineEventWidgetDisplayType.generic;
-    } else {
-      _widgetType = _TimelineEventWidgetDisplayType.hidden;
-    }
+    _widgetType = eventToDisplayType(event);
 
     showDateSeperator = shouldEventShowDate(eventIndex);
     highlighted = event.eventId == widget.highlightedEventId;
+  }
+
+  static TimelineEventWidgetDisplayType eventToDisplayType(
+      TimelineEvent event) {
+    if (event is TimelineEventMessage ||
+        event is TimelineEventSticker ||
+        event is TimelineEventEncrypted) {
+      return TimelineEventWidgetDisplayType.message;
+    } else if (event is TimelineEventGeneric) {
+      return TimelineEventWidgetDisplayType.generic;
+    } else {
+      return TimelineEventWidgetDisplayType.hidden;
+    }
   }
 
   bool shouldEventShowDate(int index) {
@@ -287,7 +292,7 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
       return null;
     }
 
-    if (_widgetType == _TimelineEventWidgetDisplayType.message)
+    if (_widgetType == TimelineEventWidgetDisplayType.message)
       return TimelineEventViewMessage(
           key: eventKey,
           timeline: widget.timeline,
@@ -296,7 +301,7 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
           overrideShowSender: widget.singleEvent,
           jumpToEvent: widget.jumpToEvent,
           initialIndex: widget.initialIndex);
-    if (_widgetType == _TimelineEventWidgetDisplayType.generic)
+    if (_widgetType == TimelineEventWidgetDisplayType.generic)
       return TimelineEventViewGeneric(
         timeline: widget.timeline,
         initialIndex: widget.initialIndex,
@@ -304,7 +309,7 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
       );
 
     if (preferences.developerMode == false &&
-        _widgetType == _TimelineEventWidgetDisplayType.hidden) {
+        _widgetType == TimelineEventWidgetDisplayType.hidden) {
       return null;
     }
 
