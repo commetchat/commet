@@ -23,6 +23,7 @@ class MatrixEventSearchSession extends EventSearchSession {
   bool _requireVideo = false;
   bool _requireAttachment = false;
   String? _requiredType;
+  String? _requiredSender;
 
   static const String hasLinkString = 'has:link';
   static const String hasImageString = 'has:image';
@@ -41,7 +42,12 @@ class MatrixEventSearchSession extends EventSearchSession {
     var typeMatch = _words!.where((w) => w.startsWith("type:")).firstOrNull;
 
     if (typeMatch != null) {
-      _requiredType = typeMatch.split(':').last;
+      _requiredType = typeMatch.split('type:').last;
+    }
+
+    var userMatch = _words!.where((w) => w.startsWith("from:")).firstOrNull;
+    if (userMatch != null) {
+      _requiredSender = userMatch.split('from:').last;
     }
 
     if (_words!.contains(hasLinkString)) _requireUrl = true;
@@ -123,6 +129,12 @@ class MatrixEventSearchSession extends EventSearchSession {
 
     if (_requiredType != null) {
       if (event.type != _requiredType && event.messageType != _requiredType) {
+        return false;
+      }
+    }
+
+    if (_requiredSender != null) {
+      if (event.senderId != _requiredSender) {
         return false;
       }
     }
