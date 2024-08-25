@@ -5,6 +5,8 @@ import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_view_entry.dart';
+import 'package:commet/utils/mime.dart';
+import 'package:matrix/src/event.dart';
 
 class MatrixEventSearchSession extends EventSearchSession {
   MatrixTimeline timeline;
@@ -16,11 +18,51 @@ class MatrixEventSearchSession extends EventSearchSession {
   @override
   bool currentlySearching = false;
 
+  bool _requireUrl = false;
+  bool _requireImage = false;
+  bool _requireVideo = false;
+  bool _requireAttachment = false;
+  String? _requiredType;
+
+  static const String hasLinkString = 'has:link';
+  static const String hasImageString = 'has:image';
+  static const String hasVideoString = 'has:video';
+  static const String hasFileString = 'has:file';
+
+  List<String>? _words;
+
   @override
   Stream<List<TimelineEvent<Client>>> startSearch(String searchTerm) async* {
-    currentSearchTerm = searchTerm;
+    currentSearchTerm = searchTerm.toLowerCase();
+
     currentlySearching = true;
-    var search = timeline.matrixTimeline!.startSearch(searchTerm: searchTerm);
+    _words = currentSearchTerm!.split(' ');
+
+    var typeMatch = _words!.where((w) => w.startsWith("type:")).firstOrNull;
+
+    if (typeMatch != null) {
+      _requiredType = typeMatch.split(':').last;
+    }
+
+    if (_words!.contains(hasLinkString)) _requireUrl = true;
+    if (_words!.contains(hasImageString)) _requireImage = true;
+    if (_words!.contains(hasVideoString)) _requireVideo = true;
+    if (_words!.contains(hasFileString)) _requireAttachment = true;
+
+    _words = _words!
+        .where((w) =>
+            [
+              typeMatch,
+              hasLinkString,
+              hasImageString,
+              hasVideoString,
+              hasFileString
+            ].contains(w) ==
+            false)
+        .toList();
+
+    var search = timeline.matrixTimeline!
+        .startSearch(searchTerm: searchTerm, searchFunc: searchFunc);
     List<TimelineEvent<Client>> result = List.empty();
     await for (final chunk in search) {
       result = chunk.$1
@@ -48,6 +90,48 @@ class MatrixEventSearchSession extends EventSearchSession {
 
     currentlySearching = false;
     yield result;
+  }
+
+  bool searchFunc(Event event) {
+    final numMatchingWords =
+        _words!.where((w) => event.plaintextBody.contains(w)).length;
+
+    if (_requireAttachment) {
+      if (event.hasAttachment == false) {
+        return false;
+      }
+    }
+
+    if (_requireImage) {
+      if (!Mime.imageTypes.contains(event.attachmentMimetype)) {
+        return false;
+      }
+    }
+
+    if (_requireVideo) {
+      if (!Mime.videoTypes.contains(event.attachmentMimetype)) {
+        return false;
+      }
+    }
+
+    if (_requireUrl) {
+      if (!(event.plaintextBody.contains("https://") ||
+          event.plaintextBody.contains("http://"))) {
+        return false;
+      }
+    }
+
+    if (_requiredType != null) {
+      if (event.type != _requiredType && event.messageType != _requiredType) {
+        return false;
+      }
+    }
+
+    if (numMatchingWords < (_words!.length.toDouble() / 2.0)) {
+      return false;
+    }
+
+    return true;
   }
 }
 
