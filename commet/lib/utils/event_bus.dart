@@ -29,4 +29,6 @@ class EventBus {
   static StreamController<void> startSearch = StreamController.broadcast();
 
   static StreamController<String> jumpToEvent = StreamController.broadcast();
+
+  static StreamController<void> focusTimeline = StreamController.broadcast();
 }

@@ -54,6 +54,10 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
       panelsKey.currentState?.reveal(RevealSide.main);
     });
 
+    EventBus.focusTimeline.stream.listen((event) {
+      panelsKey.currentState?.reveal(RevealSide.main);
+    });
+
     super.initState();
   }
 

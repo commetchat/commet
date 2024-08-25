@@ -429,8 +429,14 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
       });
       var newTimeline =
           await timeline.room.getTimeline(contextEventId: eventId);
+
       index =
           newTimeline.events.indexWhere((event) => event.eventId == eventId);
+
+      if (index == -1) {
+        return;
+      }
+
       setState(() {
         initFromTimeline(newTimeline);
       });

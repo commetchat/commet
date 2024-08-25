@@ -182,7 +182,10 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
         child: tiamat.Tile.surfaceContainer(
             child: RoomEventSearchWidget(
           room: widget.state.currentRoom!,
-          onEventClicked: (eventId) => EventBus.jumpToEvent.add(eventId),
+          onEventClicked: (eventId) {
+            EventBus.jumpToEvent.add(eventId);
+            EventBus.focusTimeline.add(null);
+          },
           close: () => setState(() {
             state = _SidePanelState.defaultView;
           }),
