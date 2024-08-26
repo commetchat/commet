@@ -1,5 +1,4 @@
 import 'package:commet/client/room.dart';
-import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/organisms/room_quick_access_menu/room_quick_access_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
