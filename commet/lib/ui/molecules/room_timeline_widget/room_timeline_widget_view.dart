@@ -30,8 +30,10 @@ class RoomTimelineWidgetView extends StatefulWidget {
   final Function()? onAttachedToBottom;
   final bool isThreadTimeline;
 
-  final Function({required double offset, required double maxScrollExtent})?
-      onViewScrolled;
+  final Function(
+      {required double offset,
+      required double maxScrollExtent,
+      required double minScrollExtent})? onViewScrolled;
 
   @override
   State<RoomTimelineWidgetView> createState() => RoomTimelineWidgetViewState();
@@ -73,9 +75,13 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
           animatingToBottom
       : true;
 
+  bool isLoadingFuture = false;
+  bool isLoadingHistory = false;
+
   @override
   void initState() {
     initFromTimeline(widget.timeline);
+
     controller = ScrollController(initialScrollOffset: -999999);
     EventBus.jumpToEvent.stream.listen(jumpToEvent);
     WidgetsBinding.instance.addPostFrameCallback(onAfterFirstFrame);
@@ -89,13 +95,18 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
       }
     }
 
+    isLoadingFuture = false;
+    isLoadingHistory = false;
+
     this.timeline = timeline;
     recentItemsCount = timeline.events.length;
+    historyItemsCount = timeline.events.length - recentItemsCount;
 
     subscriptions = [
       timeline.onEventAdded.stream.listen(onEventAdded),
       timeline.onChange.stream.listen(onEventChanged),
       timeline.onRemove.stream.listen(onEventRemoved),
+      timeline.onLoadingStatusChanged.listen(onLoadingStatusChanged)
     ];
 
     eventKeys = List.from(
@@ -190,7 +201,8 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
   void onScroll() {
     widget.onViewScrolled?.call(
         offset: controller.offset,
-        maxScrollExtent: controller.position.maxScrollExtent);
+        maxScrollExtent: controller.position.maxScrollExtent,
+        minScrollExtent: controller.position.minScrollExtent);
 
     var overlayState = overlayKey.currentState as TimelineOverlayState?;
     overlayState?.setAttachedToBottom(attachedToBottom);
@@ -200,10 +212,38 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
     }
 
     wasLastScrollAttachedToBottom = attachedToBottom;
+
+    double loadingThreshold = 500;
+
+    // When the history items are empty, the sliver takes up exactly the height of the viewport, so we should use that height instead
+    if (historyItemsCount == 0) {
+      var renderBox = stackKey.currentContext?.findRenderObject() as RenderBox?;
+      if (renderBox != null) {
+        loadingThreshold = renderBox.size.height;
+      }
+    }
+
+    if (controller.offset >
+            controller.position.maxScrollExtent - loadingThreshold &&
+        !timeline.isLoadingHistory &&
+        timeline.canLoadHistory) {
+      timeline.loadMoreHistory();
+    }
+
+    if (controller.offset <
+            (controller.position.minScrollExtent + loadingThreshold) &&
+        !timeline.isLoadingFuture &&
+        timeline.canLoadFuture) {
+      timeline.loadMoreFuture();
+    }
   }
 
   void animateAndSnapToBottom() {
     controller.position.hold(() {});
+
+    setState(() {
+      initFromTimeline(widget.timeline);
+    });
 
     var overlayState = overlayKey.currentState as TimelineOverlayState?;
     overlayState?.setAttachedToBottom(attachedToBottom);
@@ -285,6 +325,17 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
                   reverse: true,
                   center: centerKey,
                   slivers: <Widget>[
+                    if (isLoadingFuture)
+                      SliverList(
+                          delegate: SliverChildBuilderDelegate(childCount: 1,
+                              (BuildContext context, int index) {
+                        return const SizedBox(
+                          height: 200,
+                          child: Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        );
+                      })),
                     SliverList(
                       key: recentItemsKey,
                       // Recent Items
@@ -379,6 +430,17 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
                         },
                       ),
                     ),
+                    if (isLoadingHistory)
+                      SliverList(
+                          delegate: SliverChildBuilderDelegate(childCount: 1,
+                              (BuildContext context, int index) {
+                        return const SizedBox(
+                          height: 200,
+                          child: Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        );
+                      })),
                   ],
                 ),
               ),
@@ -422,7 +484,8 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
       highlightedEventState = null;
     }
 
-    int index = timeline.events.indexWhere((event) => event.eventId == eventId);
+    int index =
+        -1; // timeline.events.indexWhere((event) => event.eventId == eventId);
     if (index == -1) {
       setState(() {
         loading = true;
@@ -482,6 +545,13 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
       highlightedEventOffstageIndex = index;
       highlightedEventOffstageKey = GlobalKey();
       loading = false;
+    });
+  }
+
+  void onLoadingStatusChanged(void event) {
+    setState(() {
+      isLoadingFuture = timeline.isLoadingFuture;
+      isLoadingHistory = timeline.isLoadingHistory;
     });
   }
 }

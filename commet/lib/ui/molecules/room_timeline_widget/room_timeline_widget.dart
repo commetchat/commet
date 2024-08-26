@@ -26,8 +26,6 @@ class RoomTimelineWidget extends StatefulWidget {
 
 class _RoomTimelineWidgetState extends State<RoomTimelineWidget>
     with WidgetsBindingObserver {
-  Future? loadingHistory;
-
   GlobalKey timelineViewKey = GlobalKey();
 
   StreamSubscription? sub;
@@ -81,7 +79,6 @@ class _RoomTimelineWidgetState extends State<RoomTimelineWidget>
     Widget result = RoomTimelineWidgetView(
       key: timelineViewKey,
       timeline: widget.timeline,
-      onViewScrolled: onViewScrolled,
       onAttachedToBottom: onAttachedToBottom,
       isThreadTimeline: widget.isThreadTimeline,
       setReplyingEvent: widget.setReplyingEvent,
@@ -96,37 +93,10 @@ class _RoomTimelineWidgetState extends State<RoomTimelineWidget>
     return result;
   }
 
-  void onViewScrolled(
-      {required double offset, required double maxScrollExtent}) {
-    double loadingThreshold = 500;
-    var state = timelineViewKey.currentState as RoomTimelineWidgetViewState?;
-
-    // When the history items are empty, the sliver takes up exactly the height of the viewport, so we should use that height instead
-    if (state?.historyItemsCount == 0) {
-      var renderBox =
-          timelineViewKey.currentContext?.findRenderObject() as RenderBox?;
-      if (renderBox != null) {
-        loadingThreshold = renderBox.size.height;
-      }
-    }
-
-    if (offset > maxScrollExtent - loadingThreshold && loadingHistory == null) {
-      loadMoreHistory();
-    }
-
-    if (state?.attachedToBottom == true) {}
-  }
-
   void onAttachedToBottom() {
     if (widget.timeline.events.isNotEmpty) {
       markAsRead(widget.timeline.events.first);
       widget.clearNotifications?.call(widget.timeline.room);
     }
-  }
-
-  void loadMoreHistory() async {
-    loadingHistory = widget.timeline.loadMoreHistory();
-    await loadingHistory;
-    loadingHistory = null;
   }
 }

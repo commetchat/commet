@@ -6,6 +6,7 @@ import 'package:commet/client/matrix/matrix_timeline.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_view_entry.dart';
 import 'package:commet/utils/mime.dart';
+// ignore: implementation_imports
 import 'package:matrix/src/event.dart';
 
 class MatrixEventSearchSession extends EventSearchSession {

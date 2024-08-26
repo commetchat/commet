@@ -17,6 +17,13 @@ class MatrixTimeline extends Timeline {
 
   late MatrixRoom _room;
 
+  final StreamController<void> _loadingStatusChangedController =
+      StreamController.broadcast();
+
+  @override
+  Stream<void> get onLoadingStatusChanged =>
+      _loadingStatusChangedController.stream;
+
   matrix.Timeline? get matrixTimeline => _matrixTimeline;
 
   MatrixTimeline(
@@ -83,7 +90,32 @@ class MatrixTimeline extends Timeline {
   @override
   Future<void> loadMoreHistory() async {
     if (_matrixTimeline?.canRequestHistory == true) {
-      return await _matrixTimeline!.requestHistory();
+      var f = _matrixTimeline!.requestHistory();
+      _loadingStatusChangedController.add(null);
+
+      await f;
+    }
+  }
+
+  @override
+  bool get canLoadFuture => _matrixTimeline?.canRequestFuture ?? false;
+
+  @override
+  bool get canLoadHistory => _matrixTimeline?.canRequestHistory ?? false;
+
+  @override
+  bool get isLoadingFuture => _matrixTimeline?.isRequestingFuture ?? false;
+
+  @override
+  bool get isLoadingHistory => _matrixTimeline?.isRequestingHistory ?? false;
+
+  @override
+  Future<void> loadMoreFuture() async {
+    if (canLoadFuture) {
+      var f = _matrixTimeline?.requestFuture();
+
+      _loadingStatusChangedController.add(null);
+      await f;
     }
   }
 
