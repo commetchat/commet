@@ -63,18 +63,16 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
       children: [
         tiamat.Tile(child: buildPanelContent(context)),
         if (showBackButton)
-          ScaledSafeArea(
-            child: Align(
-              alignment: Alignment.topRight,
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: tiamat.CircleButton(
-                    icon: Icons.close,
-                    radius: 24,
-                    onPressed: () => setState(() {
-                          state = _SidePanelState.defaultView;
-                        })),
-              ),
+          Align(
+            alignment: Alignment.topRight,
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: tiamat.CircleButton(
+                  icon: Icons.close,
+                  radius: 24,
+                  onPressed: () => setState(() {
+                        state = _SidePanelState.defaultView;
+                      })),
             ),
           ),
       ],

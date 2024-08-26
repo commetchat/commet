@@ -29,8 +29,7 @@ class _RoomQuickAccessMenuViewMobileState
       color: Theme.of(context).colorScheme.surfaceContainerLow,
       child: SizedBox(
         height: 50,
-        child: ScaledSafeArea(
-            child: Row(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: menu.actions
               .map((e) => AspectRatio(
@@ -42,7 +41,7 @@ class _RoomQuickAccessMenuViewMobileState
                     )),
                   ))
               .toList(),
-        )),
+        ),
       ),
     );
   }
