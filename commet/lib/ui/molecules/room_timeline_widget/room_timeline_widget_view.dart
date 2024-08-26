@@ -484,8 +484,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
       highlightedEventState = null;
     }
 
-    int index =
-        -1; // timeline.events.indexWhere((event) => event.eventId == eventId);
+    int index = timeline.events.indexWhere((event) => event.eventId == eventId);
     if (index == -1) {
       setState(() {
         loading = true;
