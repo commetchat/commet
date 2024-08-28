@@ -119,10 +119,25 @@ class _RoomEventSearchWidgetState extends State<RoomEventSearchWidget> {
   }
 
   void onTextChanged(String value) {
-    debouncer.run(() => startSearch(value));
     setState(() {
-      loading = debouncer.running;
+      currentResults = null;
+      currentSubscription?.cancel();
+      searchSession = null;
+      currentStream = null;
+      currentResults = null;
     });
+
+    if (value.trim().isEmpty) {
+      setState(() {
+        debouncer.cancel();
+        loading = false;
+      });
+    } else {
+      debouncer.run(() => startSearch(value));
+      setState(() {
+        loading = debouncer.running;
+      });
+    }
   }
 
   void startSearch(String value) async {
@@ -130,7 +145,7 @@ class _RoomEventSearchWidgetState extends State<RoomEventSearchWidget> {
 
     searchSession = await search.createSearchSession(widget.room);
     var stream = searchSession!.startSearch(value);
-    stream.listen(onResultsChanged);
+    currentSubscription = stream.listen(onResultsChanged);
   }
 
   void onResultsChanged(List<TimelineEvent<Client>> results) {
