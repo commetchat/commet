@@ -100,8 +100,9 @@ class MatrixEventSearchSession extends EventSearchSession {
   }
 
   bool searchFunc(Event event) {
-    final numMatchingWords =
-        _words!.where((w) => event.plaintextBody.contains(w)).length;
+    final numMatchingWords = _words!
+        .where((w) => event.plaintextBody.toLowerCase().contains(w))
+        .length;
 
     if (_requireAttachment) {
       if (event.hasAttachment == false) {
