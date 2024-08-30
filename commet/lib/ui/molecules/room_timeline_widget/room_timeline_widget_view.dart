@@ -10,6 +10,7 @@ import 'package:commet/ui/molecules/room_timeline_widget/room_timeline_overlay.d
 import 'package:commet/ui/molecules/timeline_events/timeline_event_layout.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_menu.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_view_entry.dart';
+import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
 
 class RoomTimelineWidgetView extends StatefulWidget {
@@ -29,8 +30,10 @@ class RoomTimelineWidgetView extends StatefulWidget {
   final Function()? onAttachedToBottom;
   final bool isThreadTimeline;
 
-  final Function({required double offset, required double maxScrollExtent})?
-      onViewScrolled;
+  final Function(
+      {required double offset,
+      required double maxScrollExtent,
+      required double minScrollExtent})? onViewScrolled;
 
   @override
   State<RoomTimelineWidgetView> createState() => RoomTimelineWidgetViewState();
@@ -46,6 +49,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
 
   late ScrollController controller;
   late List<(GlobalKey, String)> eventKeys;
+  late Timeline timeline;
 
   GlobalKey firstFrameScrollViewKey = GlobalKey();
   GlobalKey scrollViewKey = GlobalKey();
@@ -61,39 +65,59 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
   TimelineViewEntryState? highlightedEventState;
   GlobalKey? highlightedEventOffstageKey;
   int? highlightedEventOffstageIndex;
-  late List<StreamSubscription> subscriptions;
+  List<StreamSubscription>? subscriptions;
 
   bool wasLastScrollAttachedToBottom = false;
+  bool loading = false;
 
   bool get attachedToBottom => controller.hasClients
       ? controller.offset - controller.positions.first.minScrollExtent < 50 ||
           animatingToBottom
       : true;
 
+  bool isLoadingFuture = false;
+  bool isLoadingHistory = false;
+
   @override
   void initState() {
-    recentItemsCount = widget.timeline.events.length;
-
-    subscriptions = [
-      widget.timeline.onEventAdded.stream.listen(onEventAdded),
-      widget.timeline.onChange.stream.listen(onEventChanged),
-      widget.timeline.onRemove.stream.listen(onEventRemoved),
-    ];
+    initFromTimeline(widget.timeline);
 
     controller = ScrollController(initialScrollOffset: -999999);
+    EventBus.jumpToEvent.stream.listen(jumpToEvent);
     WidgetsBinding.instance.addPostFrameCallback(onAfterFirstFrame);
+    super.initState();
+  }
+
+  void initFromTimeline(Timeline timeline) {
+    if (subscriptions != null) {
+      for (var sub in subscriptions!) {
+        sub.cancel();
+      }
+    }
+
+    isLoadingFuture = false;
+    isLoadingHistory = false;
+
+    this.timeline = timeline;
+    recentItemsCount = timeline.events.length;
+    historyItemsCount = timeline.events.length - recentItemsCount;
+
+    subscriptions = [
+      timeline.onEventAdded.stream.listen(onEventAdded),
+      timeline.onChange.stream.listen(onEventChanged),
+      timeline.onRemove.stream.listen(onEventRemoved),
+      timeline.onLoadingStatusChanged.listen(onLoadingStatusChanged)
+    ];
 
     eventKeys = List.from(
-        widget.timeline.events
+        timeline.events
             .map((e) => (GlobalKey(debugLabel: e.eventId), e.eventId)),
         growable: true);
-
-    super.initState();
   }
 
   @override
   void dispose() {
-    for (var element in subscriptions) {
+    for (var element in subscriptions!) {
       element.cancel();
     }
 
@@ -102,14 +126,14 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
 
   void onEventAdded(int index) {
     eventKeys.insert(index, (
-      GlobalKey(debugLabel: widget.timeline.events[index].eventId),
-      widget.timeline.events[index].eventId
+      GlobalKey(debugLabel: timeline.events[index].eventId),
+      timeline.events[index].eventId
     ));
 
     if (index == 0 || index < recentItemsCount) {
       recentItemsCount += 1;
     } else {
-      historyItemsCount = widget.timeline.events.length - recentItemsCount;
+      historyItemsCount = timeline.events.length - recentItemsCount;
     }
 
     if (index == 0) {
@@ -120,7 +144,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
               curve: Curves.easeOutExpo);
         });
 
-        widget.markAsRead?.call(widget.timeline.events[0]);
+        widget.markAsRead?.call(timeline.events[0]);
       }
     }
 
@@ -128,7 +152,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
   }
 
   void onEventChanged(int index) {
-    var event = widget.timeline.events[index];
+    var event = timeline.events[index];
     var existing = eventKeys[index];
     eventKeys[index] = (existing.$1, event.eventId);
 
@@ -151,15 +175,15 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
     if (index < recentItemsCount) {
       recentItemsCount -= 1;
     } else {
-      historyItemsCount = widget.timeline.events.length - recentItemsCount;
+      historyItemsCount = timeline.events.length - recentItemsCount;
     }
     var removed = eventKeys.removeAt(index);
-    assert(widget.timeline.events[index].eventId == removed.$2);
+    assert(timeline.events[index].eventId == removed.$2);
   }
 
   void onAfterFirstFrame(_) {
-    if (widget.timeline.events.isNotEmpty) {
-      widget.markAsRead?.call(widget.timeline.events.first);
+    if (timeline.events.isNotEmpty) {
+      widget.markAsRead?.call(timeline.events.first);
     }
 
     if (controller.hasClients) {
@@ -177,7 +201,8 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
   void onScroll() {
     widget.onViewScrolled?.call(
         offset: controller.offset,
-        maxScrollExtent: controller.position.maxScrollExtent);
+        maxScrollExtent: controller.position.maxScrollExtent,
+        minScrollExtent: controller.position.minScrollExtent);
 
     var overlayState = overlayKey.currentState as TimelineOverlayState?;
     overlayState?.setAttachedToBottom(attachedToBottom);
@@ -187,10 +212,38 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
     }
 
     wasLastScrollAttachedToBottom = attachedToBottom;
+
+    double loadingThreshold = 500;
+
+    // When the history items are empty, the sliver takes up exactly the height of the viewport, so we should use that height instead
+    if (historyItemsCount == 0) {
+      var renderBox = stackKey.currentContext?.findRenderObject() as RenderBox?;
+      if (renderBox != null) {
+        loadingThreshold = renderBox.size.height;
+      }
+    }
+
+    if (controller.offset >
+            controller.position.maxScrollExtent - loadingThreshold &&
+        !timeline.isLoadingHistory &&
+        timeline.canLoadHistory) {
+      timeline.loadMoreHistory();
+    }
+
+    if (controller.offset <
+            (controller.position.minScrollExtent + loadingThreshold) &&
+        !timeline.isLoadingFuture &&
+        timeline.canLoadFuture) {
+      timeline.loadMoreFuture();
+    }
   }
 
   void animateAndSnapToBottom() {
     controller.position.hold(() {});
+
+    setState(() {
+      initFromTimeline(widget.timeline);
+    });
 
     var overlayState = overlayKey.currentState as TimelineOverlayState?;
     overlayState?.setAttachedToBottom(attachedToBottom);
@@ -232,9 +285,9 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
         selectedEventView = selectable;
 
         var overlayState = overlayKey.currentState as TimelineOverlayState?;
-        var event = widget.timeline.tryGetEvent(eventId)!;
+        var event = timeline.tryGetEvent(eventId)!;
         overlayState?.setMenu(TimelineEventMenu(
-          timeline: widget.timeline,
+          timeline: timeline,
           isThreadTimeline: widget.isThreadTimeline,
           event: event,
           setEditingEvent: (event) => widget.setEditingEvent?.call(event),
@@ -272,6 +325,17 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
                   reverse: true,
                   center: centerKey,
                   slivers: <Widget>[
+                    if (isLoadingFuture)
+                      SliverList(
+                          delegate: SliverChildBuilderDelegate(childCount: 1,
+                              (BuildContext context, int index) {
+                        return const SizedBox(
+                          height: 200,
+                          child: Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        );
+                      })),
                     SliverList(
                       key: recentItemsKey,
                       // Recent Items
@@ -284,8 +348,8 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
                           numBuilds += 1;
 
                           var key = eventKeys[timelineIndex];
-                          assert(key.$2 ==
-                              widget.timeline.events[timelineIndex].eventId);
+                          assert(
+                              key.$2 == timeline.events[timelineIndex].eventId);
 
                           return Container(
                             alignment: Alignment.center,
@@ -296,7 +360,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
                                     : null,
                             child: TimelineViewEntry(
                                 key: key.$1,
-                                timeline: widget.timeline,
+                                timeline: timeline,
                                 onEventHovered: eventHovered,
                                 setEditingEvent: widget.setEditingEvent,
                                 setReplyingEvent: widget.setReplyingEvent,
@@ -331,8 +395,8 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
                           var timelineIndex = recentItemsCount + sliverIndex;
 
                           var key = eventKeys[timelineIndex];
-                          assert(key.$2 ==
-                              widget.timeline.events[timelineIndex].eventId);
+                          assert(
+                              key.$2 == timeline.events[timelineIndex].eventId);
 
                           return Container(
                             alignment: Alignment.center,
@@ -344,7 +408,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
                             child: TimelineViewEntry(
                                 key: key.$1,
                                 onEventHovered: eventHovered,
-                                timeline: widget.timeline,
+                                timeline: timeline,
                                 setEditingEvent: widget.setEditingEvent,
                                 setReplyingEvent: widget.setReplyingEvent,
                                 isThreadTimeline: widget.isThreadTimeline,
@@ -366,6 +430,17 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
                         },
                       ),
                     ),
+                    if (isLoadingHistory)
+                      SliverList(
+                          delegate: SliverChildBuilderDelegate(childCount: 1,
+                              (BuildContext context, int index) {
+                        return const SizedBox(
+                          height: 200,
+                          child: Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        );
+                      })),
                   ],
                 ),
               ),
@@ -384,14 +459,18 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
                         color: Colors.red,
                         child: TimelineViewEntry(
                           key: highlightedEventOffstageKey,
-                          timeline: widget.timeline,
+                          timeline: timeline,
                           isThreadTimeline: widget.isThreadTimeline,
                           initialIndex: highlightedEventOffstageIndex!,
                         ),
                       ),
                     ],
                   ),
-                )
+                ),
+              if (loading)
+                Container(
+                    color: Colors.black.withAlpha(50),
+                    child: const Center(child: CircularProgressIndicator()))
             ],
           ),
         ),
@@ -399,17 +478,32 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
     );
   }
 
-  void jumpToEvent(String eventId) {
-    int index =
-        widget.timeline.events.indexWhere((event) => event.eventId == eventId);
-    if (index == -1) {
-      return;
-    }
-
+  void jumpToEvent(String eventId) async {
     if (highlightedEventState?.mounted == true) {
       highlightedEventState!.setHighlighted(false);
       highlightedEventState = null;
     }
+
+    int index = timeline.events.indexWhere((event) => event.eventId == eventId);
+    if (index == -1) {
+      setState(() {
+        loading = true;
+      });
+      var newTimeline =
+          await timeline.room.getTimeline(contextEventId: eventId);
+
+      index =
+          newTimeline.events.indexWhere((event) => event.eventId == eventId);
+
+      if (index == -1) {
+        return;
+      }
+
+      setState(() {
+        initFromTimeline(newTimeline);
+      });
+    }
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       var key = eventKeys[index].$1;
       final state = key.currentState;
@@ -445,10 +539,18 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
 
     setState(() {
       recentItemsCount = index;
-      historyItemsCount = widget.timeline.events.length - recentItemsCount;
-      highlightedEventId = widget.timeline.events[index].eventId;
+      historyItemsCount = timeline.events.length - recentItemsCount;
+      highlightedEventId = timeline.events[index].eventId;
       highlightedEventOffstageIndex = index;
       highlightedEventOffstageKey = GlobalKey();
+      loading = false;
+    });
+  }
+
+  void onLoadingStatusChanged(void event) {
+    setState(() {
+      isLoadingFuture = timeline.isLoadingFuture;
+      isLoadingHistory = timeline.isLoadingHistory;
     });
   }
 }

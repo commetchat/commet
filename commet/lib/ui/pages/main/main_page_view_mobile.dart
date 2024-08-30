@@ -11,6 +11,7 @@ import 'package:commet/ui/organisms/background_task_view/background_task_view_co
 import 'package:commet/ui/organisms/chat/chat.dart';
 import 'package:commet/ui/organisms/home_screen/home_screen.dart';
 import 'package:commet/ui/organisms/room_members_list/room_members_list.dart';
+import 'package:commet/ui/organisms/room_side_panel/room_side_panel.dart';
 import 'package:commet/ui/organisms/side_navigation_bar/side_navigation_bar.dart';
 import 'package:commet/ui/organisms/space_summary/space_summary.dart';
 import 'package:commet/ui/pages/main/main_page.dart';
@@ -50,6 +51,10 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
       panelsKey.currentState?.reveal(RevealSide.right);
     });
     EventBus.closeThread.stream.listen((event) {
+      panelsKey.currentState?.reveal(RevealSide.main);
+    });
+
+    EventBus.focusTimeline.stream.listen((event) {
       panelsKey.currentState?.reveal(RevealSide.main);
     });
 
@@ -104,39 +109,10 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
   }
 
   Widget? rightPanel(BuildContext context) {
-    if (widget.state.currentThreadId != null &&
-        widget.state.currentRoom != null) {
-      return Tile(
-        child: keyboardAdaptor(
-          Stack(
-            children: [
-              Chat(
-                widget.state.currentRoom!,
-                threadId: widget.state.currentThreadId,
-                key: ValueKey(
-                    "room-timeline-key-${widget.state.currentRoom!.localId}_thread_${widget.state.currentThreadId!}"),
-              ),
-              ScaledSafeArea(
-                child: Align(
-                  alignment: Alignment.topRight,
-                  child: Padding(
-                    padding: const EdgeInsets.all(24.0),
-                    child: tiamat.CircleButton(
-                      icon: Icons.close,
-                      radius: 24,
-                      onPressed: () => EventBus.closeThread.add(null),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
     if (widget.state.currentRoom != null) {
-      return userList();
+      return Tile(
+          child: ScaledSafeArea(
+              bottom: false, child: RoomSidePanel(state: widget.state)));
     }
 
     return null;

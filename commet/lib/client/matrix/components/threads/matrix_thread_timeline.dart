@@ -35,12 +35,31 @@ class MatrixThreadTimeline implements Timeline {
   @override
   StreamController<int> onRemove = StreamController.broadcast();
 
+  final StreamController<void> _loadingStatusChangedController =
+      StreamController.broadcast();
+
+  @override
+  Stream<void> get onLoadingStatusChanged =>
+      _loadingStatusChangedController.stream;
+
   late List<StreamSubscription> subs;
 
   String? nextBatch;
   bool finished = false;
 
   Future? nextChunkRequest;
+
+  @override
+  bool get canLoadFuture => false;
+
+  @override
+  bool get canLoadHistory => nextBatch != null && nextChunkRequest != null;
+
+  @override
+  bool get isLoadingFuture => false;
+
+  @override
+  bool isLoadingHistory = false;
 
   MatrixThreadTimeline({
     required this.client,
@@ -165,6 +184,8 @@ class MatrixThreadTimeline implements Timeline {
       return;
     }
 
+    isLoadingHistory = true;
+
     nextChunkRequest = getThreadEvents(nextBatch: nextBatch);
     var nextEvents = await nextChunkRequest;
 
@@ -174,6 +195,13 @@ class MatrixThreadTimeline implements Timeline {
       events.add(event);
       onEventAdded.add(events.length - 1);
     }
+
+    isLoadingHistory = false;
+  }
+
+  @override
+  Future<void> loadMoreFuture() {
+    throw UnimplementedError();
   }
 
   @override

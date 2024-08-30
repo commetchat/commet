@@ -72,6 +72,18 @@ abstract class Timeline {
 
   Future<void> loadMoreHistory();
 
+  Future<void> loadMoreFuture();
+
+  bool get isLoadingHistory;
+
+  bool get isLoadingFuture;
+
+  bool get canLoadFuture;
+
+  bool get canLoadHistory;
+
+  Stream<void> get onLoadingStatusChanged;
+
   Future<void> close();
 
   @protected
