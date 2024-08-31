@@ -409,35 +409,49 @@ class MatrixRoom extends Room {
 
   TimelineEvent convertEvent(matrix.Event event, {matrix.Timeline? timeline}) {
     var c = client as MatrixClient;
+    try {
+      if (event.redacted) {
+        return MatrixTimelineEventUnknown(event, client: c);
+      }
 
-    if (event.redacted) {
+      if (event.type == matrix.EventTypes.Message) {
+        if (event.relationshipType == "m.replace")
+          return MatrixTimelineEventEdit(event, client: c);
+        if (event.content["chat.commet.type"] == "chat.commet.sticker" &&
+            event.content['url'] is String)
+          return MatrixTimelineEventSticker(event, client: c);
+
+        if (event.messageType == "m.emote")
+          return MatrixTimelineEventEmote(event, client: c);
+
+        return MatrixTimelineEventMessage(event, client: c);
+      }
+
+      final result = switch (event.type) {
+        matrix.EventTypes.Sticker => event.content['url'] is String
+            ? MatrixTimelineEventSticker(event, client: c)
+            : null,
+        matrix.EventTypes.Encrypted =>
+          MatrixTimelineEventEncrypted(event, client: c),
+        matrix.EventTypes.Reaction =>
+          MatrixTimelineEventAddReaction(event, client: c),
+        matrix.EventTypes.RoomMember =>
+          MatrixTimelineEventMembership(event, client: c),
+        matrix.EventTypes.Redaction =>
+          MatrixTimelineEventRedaction(event, client: c),
+        _ => null
+      };
+
+      if (result != null) {
+        return result;
+      } else {
+        return MatrixTimelineEventUnknown(event, client: c);
+      }
+    } catch (err, trace) {
+      Log.e("Failed to parse event ${event.eventId} in room ${event.roomId}");
+      Log.onError(err, trace, content: "Failed to parse event: ${event.type}");
       return MatrixTimelineEventUnknown(event, client: c);
     }
-
-    if (event.type == matrix.EventTypes.Message) {
-      if (event.relationshipType == "m.replace")
-        return MatrixTimelineEventEdit(event, client: c);
-      if (event.content["chat.commet.type"] == "chat.commet.sticker")
-        return MatrixTimelineEventSticker(event, client: c);
-
-      if (event.messageType == "m.emote")
-        return MatrixTimelineEventEmote(event, client: c);
-
-      return MatrixTimelineEventMessage(event, client: c);
-    }
-
-    return switch (event.type) {
-      matrix.EventTypes.Sticker => MatrixTimelineEventSticker(event, client: c),
-      matrix.EventTypes.Encrypted =>
-        MatrixTimelineEventEncrypted(event, client: c),
-      matrix.EventTypes.Reaction =>
-        MatrixTimelineEventAddReaction(event, client: c),
-      matrix.EventTypes.RoomMember =>
-        MatrixTimelineEventMembership(event, client: c),
-      matrix.EventTypes.Redaction =>
-        MatrixTimelineEventRedaction(event, client: c),
-      _ => MatrixTimelineEventUnknown(event, client: c)
-    };
   }
 
   @override

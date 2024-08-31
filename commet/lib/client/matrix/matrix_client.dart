@@ -159,8 +159,8 @@ class MatrixClient extends Client {
             try {
               await client.init(true, isBackgroundService: isBackgroundService);
             } catch (error, trace) {
-              Log.e("Unable to load client $clientName from database");
-              Log.onError(error, trace);
+              Log.onError(error, trace,
+                  content: "Unable to load client $clientName from database");
 
               client.self = ErrorProfile();
               manager.alertManager.addAlert(Alert(AlertType.warning,
