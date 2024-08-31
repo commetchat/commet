@@ -129,10 +129,10 @@ class Log {
     _print(LogEntry(LogType.warning, str));
   }
 
-  static void onError(Object object, StackTrace trace) {
+  static void onError(Object object, StackTrace trace, {String? content}) {
     String? info = getDetailFromStackTrace(trace);
-    var entry = LogEntryException(
-        LogType.error, "${object.toString()} ($info)", object, trace);
+    var entry = LogEntryException(LogType.error,
+        content ?? "${object.toString()} ($info)", object, trace);
     _print(entry);
   }
 
