@@ -25,7 +25,10 @@ jobs:
           channel: 'stable'
 
       - name: Clone Olm
-        run: git clone https://gitlab.matrix.org/matrix-org/olm.git
+        run: |
+          git clone https://gitlab.matrix.org/matrix-org/olm.git
+          cd ./olm
+          git checkout 7e0c8277032e40308987257b711b38af8d77cc69
 
       - name: Build Olm
         run: |
