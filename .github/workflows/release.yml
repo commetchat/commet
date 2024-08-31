@@ -352,7 +352,8 @@ jobs:
           cd $PROJECT_PATH
           cd assets/js
           rm -r package
-          curl -L 'https://gitlab.com/famedly/company/frontend/libraries/olm/-/jobs/artifacts/master/download?job=build:js' > olm.zip
+          curl -L 'https://github.com/famedly/olm/releases/download/v2.0.0/olm.zip' > olm.zip
+          sha256sum -c <<< '644bbc7cdcf5931fb64c1b556a3672830ca2af6615caa814458785043895c6df olm.zip'
           unzip olm.zip
           rm olm.zip
           mv javascript package
