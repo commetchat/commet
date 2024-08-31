@@ -61,7 +61,7 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
     Widget result = Stack(
       alignment: Alignment.topRight,
       children: [
-        tiamat.Tile(child: buildPanelContent(context)),
+        buildPanelContent(context),
         if (showBackButton)
           Align(
             alignment: Alignment.topRight,
@@ -83,6 +83,7 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
     }
 
     return Material(
+      color: Colors.transparent,
       child: result,
     );
   }
@@ -126,14 +127,11 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
             room: widget.state.currentRoom!,
           ),
         Flexible(
-          child: Container(
-            color: Theme.of(context).colorScheme.surfaceContainer,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
-              child: SizedBox(
-                  width: Layout.desktop ? 200 : null,
-                  child: RoomMembersListWidget(widget.state.currentRoom!)),
-            ),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+            child: SizedBox(
+                width: Layout.desktop ? 200 : null,
+                child: RoomMembersListWidget(widget.state.currentRoom!)),
           ),
         ),
       ],
@@ -177,8 +175,7 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
   Widget buildSearch() {
     return SizedBox(
         width: Layout.desktop ? 300 : null,
-        child: tiamat.Tile.surfaceContainer(
-            child: RoomEventSearchWidget(
+        child: RoomEventSearchWidget(
           room: widget.state.currentRoom!,
           onEventClicked: (eventId) {
             EventBus.jumpToEvent.add(eventId);
@@ -187,7 +184,7 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
           close: () => setState(() {
             state = _SidePanelState.defaultView;
           }),
-        )));
+        ));
   }
 
   void onStartSearch(void event) {

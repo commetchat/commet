@@ -231,10 +231,16 @@ class MainPageViewDesktop extends StatelessWidget {
                     ),
                   ),
                 ),
-                RoomSidePanel(
-                  key: ValueKey(
-                      "room-sidepanel-key-${state.currentRoom!.localId}"),
-                  state: state,
+                Tile.surfaceContainer(
+                  caulkPadLeft: true,
+                  caulkPadBottom: true,
+                  caulkClipBottomLeft: true,
+                  caulkClipTopLeft: true,
+                  child: RoomSidePanel(
+                    key: ValueKey(
+                        "room-sidepanel-key-${state.currentRoom!.localId}"),
+                    state: state,
+                  ),
                 )
               ],
             ),

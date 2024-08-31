@@ -110,7 +110,10 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
 
   Widget? rightPanel(BuildContext context) {
     if (widget.state.currentRoom != null) {
-      return Tile(
+      return Tile.surfaceContainer(
+          caulkPadLeft: true,
+          caulkClipTopLeft: true,
+          caulkClipBottomLeft: true,
           child: ScaledSafeArea(
               bottom: false, child: RoomSidePanel(state: widget.state)));
     }
