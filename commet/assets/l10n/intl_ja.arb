@@ -1531,5 +1531,17 @@
     "description": "Generic prompt to submit something",
     "type": "text",
     "placeholders": {}
+  },
+  "labelMatrixPermissionsSpaceManageChildrenDescription": "このスペースに属するルームの変更を許可する",
+  "@labelMatrixPermissionsSpaceManageChildrenDescription": {
+    "description": "Describes the permission to manage child rooms",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsSpaceManageChildrenTitle": "スペースに属するルームの設定",
+  "@labelMatrixPermissionsSpaceManageChildrenTitle": {
+    "description": "Title for permission to manage children",
+    "type": "text",
+    "placeholders": {}
   }
 }
