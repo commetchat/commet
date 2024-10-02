@@ -125,6 +125,8 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
         if (Layout.mobile)
           RoomQuickAccessMenuViewMobile(
             room: widget.state.currentRoom!,
+            key: ValueKey(
+                "quick_access_menu_${widget.state.currentRoom!.localId}"),
           ),
         Flexible(
           child: Padding(

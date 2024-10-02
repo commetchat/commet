@@ -189,6 +189,7 @@ class MainPageViewDesktop extends StatelessWidget {
 
   Widget roomChatView() {
     return Expanded(
+      key: ValueKey("room-chat-view-${state.currentRoom!.localId}"),
       child: Column(
         children: [
           Tile.low(

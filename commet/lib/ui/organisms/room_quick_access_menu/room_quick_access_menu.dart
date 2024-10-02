@@ -1,5 +1,8 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/event_search/event_search_component.dart';
+import 'package:commet/client/components/invitation/invitation_component.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
+import 'package:commet/ui/organisms/invitation_view/send_invitation.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
 
@@ -11,7 +14,16 @@ class RoomQuickAccessMenu {
     final bool canSearch =
         room.client.getComponent<EventSearchComponent>() != null;
 
+    final invitation = room.client.getComponent<InvitationComponent>();
+
     actions = [
+      if (invitation != null)
+        RoomQuickAccessMenuEntry(
+            name: "Invite",
+            action: (context) => AdaptiveDialog.show(context,
+                builder: (context) => SendInvitationWidget(room, invitation),
+                title: "Invite"),
+            icon: Icons.person_add),
       if (canSearch)
         RoomQuickAccessMenuEntry(
             name: "Search",

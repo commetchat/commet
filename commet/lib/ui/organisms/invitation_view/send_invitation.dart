@@ -40,7 +40,7 @@ class _SendInvitationWidgetState extends State<SendInvitationWidget> {
   Widget build(BuildContext context) {
     var dmComponent =
         widget.room.client.getComponent<DirectMessagesComponent>();
-    var recommended = dmComponent?.directMessageRooms ?? [];
+    var recommended = List.from(dmComponent?.directMessageRooms ?? []);
 
     recommended.removeWhere(
       (element) => widget.room.memberIds

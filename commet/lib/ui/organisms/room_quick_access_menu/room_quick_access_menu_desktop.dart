@@ -3,26 +3,14 @@ import 'package:commet/ui/organisms/room_quick_access_menu/room_quick_access_men
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
-class RoomQuickAccessMenuViewDesktop extends StatefulWidget {
+class RoomQuickAccessMenuViewDesktop extends StatelessWidget {
   const RoomQuickAccessMenuViewDesktop({required this.room, super.key});
   final Room room;
-  @override
-  State<RoomQuickAccessMenuViewDesktop> createState() =>
-      _RoomQuickAccessMenuViewDesktopState();
-}
-
-class _RoomQuickAccessMenuViewDesktopState
-    extends State<RoomQuickAccessMenuViewDesktop> {
-  late RoomQuickAccessMenu menu;
-
-  @override
-  void initState() {
-    menu = RoomQuickAccessMenu(room: widget.room);
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
+    final menu = RoomQuickAccessMenu(room: room);
+
     return Row(
       children: menu.actions
           .map((e) => SizedBox(
