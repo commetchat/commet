@@ -3,27 +3,14 @@ import 'package:commet/ui/organisms/room_quick_access_menu/room_quick_access_men
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
-class RoomQuickAccessMenuViewMobile extends StatefulWidget {
+class RoomQuickAccessMenuViewMobile extends StatelessWidget {
   const RoomQuickAccessMenuViewMobile({required this.room, super.key});
   final Room room;
 
   @override
-  State<RoomQuickAccessMenuViewMobile> createState() =>
-      _RoomQuickAccessMenuViewMobileState();
-}
-
-class _RoomQuickAccessMenuViewMobileState
-    extends State<RoomQuickAccessMenuViewMobile> {
-  late RoomQuickAccessMenu menu;
-
-  @override
-  void initState() {
-    menu = RoomQuickAccessMenu(room: widget.room);
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final menu = RoomQuickAccessMenu(room: room);
+
     return Container(
       color: Theme.of(context).colorScheme.surfaceContainerLow,
       child: SizedBox(
@@ -36,6 +23,7 @@ class _RoomQuickAccessMenuViewMobileState
                     child: SizedBox(
                         child: tiamat.IconButton(
                       icon: e.icon,
+                      size: 20,
                       onPressed: () => e.action?.call(context),
                     )),
                   ))

@@ -115,7 +115,11 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
           caulkClipTopLeft: true,
           caulkClipBottomLeft: true,
           child: ScaledSafeArea(
-              bottom: false, child: RoomSidePanel(state: widget.state)));
+              bottom: false,
+              child: RoomSidePanel(
+                  key: ValueKey(
+                      "room-side-panel-${widget.state.currentRoom!.localId}"),
+                  state: widget.state)));
     }
 
     return null;
