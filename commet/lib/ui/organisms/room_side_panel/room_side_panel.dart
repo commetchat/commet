@@ -12,16 +12,18 @@ import 'package:flutter/material.dart';
 import 'package:tiamat/atoms/tile.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
-enum _SidePanelState {
+enum SidePanelState {
   defaultView,
   thread,
   search,
 }
 
 class RoomSidePanel extends StatefulWidget {
-  const RoomSidePanel({required this.state, super.key});
+  const RoomSidePanel({required this.state, this.builder, super.key});
 
   final MainPageState state;
+
+  final Widget Function(SidePanelState state, Widget child)? builder;
 
   @override
   State<RoomSidePanel> createState() => _RoomSidePanelState();
@@ -31,7 +33,7 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
   String? _currentThreadId;
   String? get currentThreadId => _currentThreadId;
 
-  _SidePanelState state = _SidePanelState.defaultView;
+  SidePanelState state = SidePanelState.defaultView;
 
   late List<StreamSubscription> subs;
 
@@ -56,7 +58,7 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
 
   @override
   Widget build(BuildContext context) {
-    bool showBackButton = state == _SidePanelState.thread;
+    bool showBackButton = state == SidePanelState.thread;
 
     Widget result = Stack(
       alignment: Alignment.topRight,
@@ -71,30 +73,36 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
                   icon: Icons.close,
                   radius: 24,
                   onPressed: () => setState(() {
-                        state = _SidePanelState.defaultView;
+                        state = SidePanelState.defaultView;
                       })),
             ),
           ),
       ],
     );
 
-    if (state == _SidePanelState.thread) {
-      result = Flexible(child: result);
-    }
-
-    return Material(
+    result = Material(
       color: Colors.transparent,
       child: result,
     );
+
+    if (widget.builder != null) {
+      result = widget.builder!.call(state, result);
+    }
+
+    // if (state == _SidePanelState.thread) {
+    //   result = Flexible(child: result);
+    // }
+
+    return result;
   }
 
   Widget buildPanelContent(BuildContext context) {
     switch (state) {
-      case _SidePanelState.defaultView:
+      case SidePanelState.defaultView:
         return buildDefaultView();
-      case _SidePanelState.thread:
+      case SidePanelState.thread:
         return buildThread();
-      case _SidePanelState.search:
+      case SidePanelState.search:
         return buildSearch();
     }
   }
@@ -108,14 +116,14 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
 
     setState(() {
       _currentThreadId = threadId;
-      state = _SidePanelState.thread;
+      state = SidePanelState.thread;
     });
   }
 
   void onCloseThreadSignal(void event) {
     setState(() {
       _currentThreadId = null;
-      state = _SidePanelState.defaultView;
+      state = SidePanelState.defaultView;
     });
   }
 
@@ -141,35 +149,33 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
   }
 
   Widget buildThread() {
-    return Flexible(
-      child: Tile(
-        caulkPadLeft: true,
-        caulkClipTopLeft: true,
-        caulkClipBottomLeft: true,
-        caulkPadBottom: true,
-        child: Stack(
-          children: [
-            Chat(
-              widget.state.currentRoom!,
-              threadId: currentThreadId,
-              key: ValueKey(
-                  "room-timeline-key-${widget.state.currentRoom!.localId}_thread_$currentThreadId"),
-            ),
-            ScaledSafeArea(
-              child: Align(
-                alignment: Alignment.topRight,
-                child: Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: tiamat.CircleButton(
-                    icon: Icons.close,
-                    radius: 24,
-                    onPressed: () => EventBus.closeThread.add(null),
-                  ),
+    return Tile(
+      caulkPadLeft: true,
+      caulkClipTopLeft: true,
+      caulkClipBottomLeft: true,
+      caulkPadBottom: true,
+      child: Stack(
+        children: [
+          Chat(
+            widget.state.currentRoom!,
+            threadId: currentThreadId,
+            key: ValueKey(
+                "room-timeline-key-${widget.state.currentRoom!.localId}_thread_$currentThreadId"),
+          ),
+          ScaledSafeArea(
+            child: Align(
+              alignment: Alignment.topRight,
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: tiamat.CircleButton(
+                  icon: Icons.close,
+                  radius: 24,
+                  onPressed: () => EventBus.closeThread.add(null),
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -184,14 +190,14 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
             EventBus.focusTimeline.add(null);
           },
           close: () => setState(() {
-            state = _SidePanelState.defaultView;
+            state = SidePanelState.defaultView;
           }),
         ));
   }
 
   void onStartSearch(void event) {
     setState(() {
-      state = _SidePanelState.search;
+      state = SidePanelState.search;
     });
   }
 }

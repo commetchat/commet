@@ -212,10 +212,11 @@ class MainPageViewDesktop extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: Row(
+            child: Flex(
+              direction: Axis.horizontal,
               mainAxisSize: MainAxisSize.max,
               children: [
-                Flexible(
+                Expanded(
                   child: Tile(
                     caulkPadLeft: true,
                     caulkClipTopLeft: true,
@@ -232,17 +233,25 @@ class MainPageViewDesktop extends StatelessWidget {
                     ),
                   ),
                 ),
-                Tile.surfaceContainer(
-                  caulkPadLeft: true,
-                  caulkPadBottom: true,
-                  caulkClipBottomLeft: true,
-                  caulkClipTopLeft: true,
-                  child: RoomSidePanel(
+                RoomSidePanel(
                     key: ValueKey(
                         "room-sidepanel-key-${state.currentRoom!.localId}"),
                     state: state,
-                  ),
-                )
+                    builder: (state, child) {
+                      Widget result = Tile.surfaceContainer(
+                        caulkPadLeft: true,
+                        caulkPadBottom: true,
+                        caulkClipBottomLeft: true,
+                        caulkClipTopLeft: true,
+                        child: child,
+                      );
+
+                      if (state == SidePanelState.thread) {
+                        result = Flexible(child: result);
+                      }
+
+                      return result;
+                    })
               ],
             ),
           ),
