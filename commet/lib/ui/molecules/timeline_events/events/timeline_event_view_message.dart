@@ -8,6 +8,8 @@ import 'package:commet/client/timeline_events/timeline_event_feature_reactions.d
 import 'package:commet/client/timeline_events/timeline_event_message.dart';
 import 'package:commet/client/timeline_events/timeline_event_feature_related.dart';
 import 'package:commet/client/timeline_events/timeline_event_sticker.dart';
+import 'package:commet/client/timeline_events/timeline_event_unknown.dart';
+import 'package:commet/main.dart';
 import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_attachments.dart';
 import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_reactions.dart';
 import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_reply.dart';
@@ -254,7 +256,26 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
     if (widget.overrideShowSender) return true;
     if (widget.timeline == null) return true;
 
-    if (widget.timeline!.events.length <= index + 1) {
+    TimelineEvent? prevEvent;
+    for (int i = 1; i < 5; i++) {
+      int testIndex = index + i;
+      if (widget.timeline!.events.length <= testIndex) {
+        return true;
+      }
+      var event = widget.timeline!.events[testIndex];
+
+      if (preferences.developerMode) {
+        prevEvent = event;
+        break;
+      }
+
+      if (event is! TimelineEventUnknown) {
+        prevEvent = event;
+        break;
+      }
+    }
+
+    if (prevEvent == null) {
       return true;
     }
 
@@ -272,8 +293,6 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
       }
     }
 
-    final prevEvent = widget.timeline!.events[index + 1];
-
     if (prevEvent is! TimelineEventMessage &&
         prevEvent is! TimelineEventEncrypted &&
         prevEvent is! TimelineEventSticker) {
@@ -286,17 +305,16 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
 
     if (widget.isThreadTimeline == false &&
         threadComponent?.isEventInResponseToThread(
-                widget.timeline!.events[index + 1], widget.timeline!) ==
+                prevEvent, widget.timeline!) ==
             true) {
       return true;
     }
 
-    if (widget.timeline!.events[index].originServerTs
-            .difference(widget.timeline!.events[index + 1].originServerTs)
+    if (thisEvent.originServerTs
+            .difference(prevEvent.originServerTs)
             .inMinutes >
         1) return true;
 
-    return widget.timeline!.events[index].senderId !=
-        widget.timeline!.events[index + 1].senderId;
+    return thisEvent.senderId != prevEvent.senderId;
   }
 }
