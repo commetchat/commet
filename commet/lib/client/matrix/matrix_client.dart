@@ -342,7 +342,8 @@ class MatrixClient extends Client {
   }
 
   void _updateSpacesList() {
-    var allSpaces = _matrixClient.rooms.where((element) => element.isSpace);
+    var allSpaces = _matrixClient.rooms.where((element) =>
+        element.isSpace && element.membership == matrix.Membership.join);
 
     for (var space in allSpaces) {
       if (hasSpace(space.id)) continue;
