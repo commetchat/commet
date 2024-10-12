@@ -208,6 +208,7 @@ jobs:
 
       - name: Create Package
         run: | 
+          mv $PROJECT_PATH/linux/debian/DEBIAN/control-${{ matrix.os }} $PROJECT_PATH/linux/debian/DEBIAN/control
           cp -r $PROJECT_PATH/linux/debian ./commet-pkg
           cp -r $PROJECT_PATH/build/linux/x64/release/bundle ./commet-pkg/usr/lib/chat.commet.commetapp
           version=$(echo ${{ github.event.release.tag_name || 'v0.0.0' }} | grep -oP '[0-9]+([.][0-9]+)+')
