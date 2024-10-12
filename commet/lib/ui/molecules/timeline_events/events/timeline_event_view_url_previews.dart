@@ -63,34 +63,37 @@ class _TimelineEventViewUrlPreviewsState
     var cachedData =
         widget.component.getCachedPreview(widget.timeline.room, event);
 
-    setState(() {
-      data = cachedData;
-      key = GlobalKey();
-    });
-
-    if (cachedData == null) {
+    if (cachedData != null) {
+      setState(() {
+        data = cachedData;
+        key = GlobalKey();
+      });
+    } else {
       setState(() {
         loading = true;
       });
-      widget.component.getPreview(widget.timeline.room, event).then(
-        (value) async {
-          if (mounted) {
-            final image = value?.image;
-            if (image != null) {
-              if (context.mounted) {
-                await precacheImage(image, context);
-              }
-            }
 
-            if (mounted)
-              setState(() {
-                loading = false;
-                data = value;
-                key = GlobalKey();
-              });
-          }
-        },
-      );
+      if (event.status == TimelineEventStatus.synced) {
+        widget.component.getPreview(widget.timeline.room, event).then(
+          (value) async {
+            if (mounted) {
+              final image = value?.image;
+              if (image != null) {
+                if (context.mounted) {
+                  await precacheImage(image, context);
+                }
+              }
+
+              if (mounted)
+                setState(() {
+                  loading = false;
+                  data = value;
+                  key = GlobalKey();
+                });
+            }
+          },
+        );
+      }
     }
   }
 }

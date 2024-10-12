@@ -1,4 +1,5 @@
 import 'package:commet/client/components/url_preview/url_preview_component.dart';
+import 'package:commet/client/matrix/extensions/matrix_client_extensions.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
@@ -109,6 +110,14 @@ pQIDAQAB
     return event.links?.isNotEmpty == true;
   }
 
+  Future<String> getRequestPath() async {
+    if (await client.getMatrixClient().authenticatedMediaSupported()) {
+      return '/client/v1/media/preview_url';
+    } else {
+      return '/media/v3/preview_url';
+    }
+  }
+
   Future<UrlPreviewData> getEncryptedPreviewData(
       matrix.Client client, Uri url) async {
     if (privatePreviewGetter == null) {
@@ -119,7 +128,7 @@ pQIDAQAB
     var proxyUrl = privatePreviewGetter!.getProxyUrl(url, key);
 
     var response = await client.request(
-        matrix.RequestType.GET, "/media/v3/preview_url",
+        matrix.RequestType.GET, await getRequestPath(),
         query: {"url": proxyUrl.toString()});
 
     var title = response['og:title'] as String?;
@@ -132,13 +141,16 @@ pQIDAQAB
     if (imageUrl != null) {
       var mxcUri = Uri.parse(imageUrl);
       if (mxcUri.scheme == "mxc") {
-        var response =
-            await client.httpClient.get(mxcUri.getDownloadLink(client));
+        try {
+          var response = await client.getContentFromUri(mxcUri);
+          var bytes = response.data;
+          var decrypted = privatePreviewGetter!.decryptContent(bytes, key);
 
-        var bytes = response.bodyBytes;
-        var decrypted = privatePreviewGetter!.decryptContent(bytes, key);
-
-        image = Image.memory(decrypted).image;
+          image = Image.memory(decrypted).image;
+        } catch (e, t) {
+          Log.onError(e, t,
+              content: "Failed to get encrypted url preview image data");
+        }
       }
     }
 
@@ -164,7 +176,7 @@ pQIDAQAB
     late Map<String, Object?> response;
     try {
       response = await client.request(
-          matrix.RequestType.GET, "/media/v3/preview_url",
+          matrix.RequestType.GET, await getRequestPath(),
           query: {"url": url.toString()});
     } catch (e, s) {
       if (e is MatrixException) {
