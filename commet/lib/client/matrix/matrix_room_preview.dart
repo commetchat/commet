@@ -1,3 +1,4 @@
+import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/matrix/matrix_peer.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:flutter/widgets.dart';
@@ -23,9 +24,8 @@ class MatrixSpaceRoomChunkPreview implements RoomPreview {
 
   MatrixSpaceRoomChunkPreview(this.chunk, this.matrixClient) {
     avatar = chunk.avatarUrl != null
-        ? NetworkImage(chunk.avatarUrl!
-            .getThumbnail(matrixClient, width: 60, height: 60)
-            .toString())
+        ? MatrixMxcImage(chunk.avatarUrl!, matrixClient,
+            doFullres: false, doThumbnail: true)
         : null;
 
     if (chunk.roomType == "m.space") {
