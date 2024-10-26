@@ -9,6 +9,7 @@ import 'package:commet/utils/text_utils.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_html/flutter_html.dart' as html;
 import 'package:html/parser.dart' as html_parser;
 import 'package:html/dom.dart' as dom;
 import 'package:matrix/matrix.dart' as matrix;
@@ -39,6 +40,7 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
   static final CodeBlockHtmlExtension _codeBlock = CodeBlockHtmlExtension();
   static final CodeHtmlExtension _code = CodeHtmlExtension();
   static final LinkifyHtmlExtension _linkify = LinkifyHtmlExtension();
+  static final LineBreakHtmlExtension _lineBreak = LineBreakHtmlExtension();
 
   static const Set<String> allowedHtmlTags = {
     'body',
@@ -107,6 +109,7 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
         _codeBlock,
         _code,
         _linkify,
+        _lineBreak,
         imageExtension
       ],
       style: {
@@ -127,14 +130,21 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
             color: Theme.of(context).colorScheme.primary,
             width: 2,
           )),
-          padding: HtmlPaddings(left: HtmlPadding(4)),
+          padding: HtmlPaddings(
+            left: HtmlPadding(4),
+          ),
           margin: Margins(
-            bottom: Margin.zero(),
-            left: Margin(4),
-            top: Margin.zero(),
+            bottom: Margin(8),
+            left: Margin(8),
+            top: Margin(8),
             right: Margin.zero(),
           ),
           whiteSpace: WhiteSpace.pre,
+        ),
+        "p": Style(
+          border: Border.all(),
+          margin: Margins.all(0),
+          padding: HtmlPaddings.all(0),
         )
       },
       onLinkTap: (url, attributes, element) {
@@ -254,6 +264,31 @@ class CodeBlockHtmlExtension extends HtmlExtension {
   }
 
   static const Set<String> tags = {"pre"};
+
+  @override
+  Set<String> get supportedTags => tags;
+}
+
+class LineBreakHtmlExtension extends HtmlExtension {
+  @override
+  InlineSpan build(ExtensionContext context) {
+    var result =
+        context.parser.buildFromExtension(context, extensionsToIgnore: {this});
+
+    if (context.node is! dom.Element) {
+      return result;
+    }
+
+    return TextSpan(children: [
+      if (context.element?.previousElementSibling != null)
+        const TextSpan(text: "\n"),
+      result,
+      if (context.element?.nextElementSibling != null)
+        const TextSpan(text: "\n"),
+    ]);
+  }
+
+  static const Set<String> tags = {"p"};
 
   @override
   Set<String> get supportedTags => tags;
