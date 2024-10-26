@@ -1,7 +1,6 @@
 import 'package:commet/client/auth.dart';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
-import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/utils/custom_uri.dart';
@@ -30,10 +29,25 @@ class MatrixSSOLoginFlow implements SsoLoginFlow {
         id: json['id'],
         name: json['name'],
         icon: json['icon'] != null
-            ? MatrixMxcImage(Uri.parse(json['icon']), client.getMatrixClient())
+            ? getLoginFlowImage(
+                Uri.parse(
+                  json['icon'],
+                ),
+                client,
+              )
             : null,
         brand: json['brand'],
       );
+
+  static NetworkImage getLoginFlowImage(Uri mxc, MatrixClient client) {
+    var path =
+        '_matrix/media/v3/thumbnail/${Uri.encodeComponent(mxc.authority)}/${Uri.encodeComponent(mxc.pathSegments.first)}';
+
+    var server = client.getMatrixClient().baseUri!;
+    var request =
+        server.replace(path: path, query: "width=96&height=96&method=crop");
+    return NetworkImage(request.toString());
+  }
 
   @override
   Future<LoginResult> submit(Client client) async {
