@@ -406,7 +406,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "promptConfirmCreateEmoticon": "作成しました!",
+  "promptConfirmCreateEmoticon": "作成する!",
   "@promptConfirmCreateEmoticon": {
     "description": "Prompt to confirm the creation of an Emoticon Pack, Emoji, or Sticker",
     "type": "text",
@@ -546,7 +546,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelMatrixPermissionsBanUserTitle": "ユーザーBAN",
+  "labelMatrixPermissionsBanUserTitle": "ユーザーをBAN",
   "@labelMatrixPermissionsBanUserTitle": {
     "description": "Title for the permission to ban other users from the room",
     "type": "text",
@@ -1140,19 +1140,19 @@
     "type": "text",
     "placeholders": {}
   },
-  "promptConfirmRoomCreation": "ルームを作成しました!",
+  "promptConfirmRoomCreation": "ルームを作成する!",
   "@promptConfirmRoomCreation": {
     "description": "Label for a button which confirms the creation of a room",
     "type": "text",
     "placeholders": {}
   },
-  "promptConfirmSpaceCreation": "スペースを作成しました!",
+  "promptConfirmSpaceCreation": "スペースを作成する!",
   "@promptConfirmSpaceCreation": {
     "description": "Label for a button which confirms the creation of a space",
     "type": "text",
     "placeholders": {}
   },
-  "promptConfirmRoomJoin": "ルームに参加しました!",
+  "promptConfirmRoomJoin": "ルームに参加する!",
   "@promptConfirmRoomJoin": {
     "description": "Label for a button which confirms the joining of a room",
     "type": "text",
@@ -1280,7 +1280,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "promptConfirmSpaceJoin": "スペースに参加しました!",
+  "promptConfirmSpaceJoin": "スペースに参加する!",
   "@promptConfirmSpaceJoin": {
     "description": "Label for a button which confirms the joining of a space",
     "type": "text",
@@ -1433,6 +1433,114 @@
   "promptCopyComplete": "コピーしました!",
   "@promptCopyComplete": {
     "description": "Prompt text for after a copy has been completed",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelInvitationBodyWithSender": "{user}があなたをルームに招待しました",
+  "@labelInvitationBodyWithSender": {
+    "description": "Message body for when an invitation was received, and we have a name for the sender",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "labelInvitationsForUser": "{user}への招待",
+  "@labelInvitationsForUser": {
+    "description": "Label for the list of incoming invitations, specifying which user these invitations are intended for",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "labelInvitations": "招待リスト",
+  "@labelInvitations": {
+    "description": "Label for the list of incoming invitations",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelImageContainsLocationInfo": "警告:この画像には位置情報のメタデータが含まれています",
+  "@labelImageContainsLocationInfo": {
+    "description": "Prompt text for the option to send a file in its original state, without any further processing such as removing metadata",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceSubspacesList": "スペース",
+  "@labelSpaceSubspacesList": {
+    "description": "Header label for the list of child spaces in a space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptImportPack": "パックをインポート",
+  "@promptImportPack": {
+    "description": "Prompt to import a set of emoticons from an existing pack",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptDownload": "ダウンロード",
+  "@promptDownload": {
+    "description": "Generic prompt to download something",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomAvatarDescription": "ルームのアバターを変更",
+  "@labelMatrixPermissionsRoomAvatarDescription": {
+    "description": "Title for the permission to add change the rooms avatar image",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptAttachmentProcessingSendOriginal": "ファイルをそのまま送信する",
+  "@promptAttachmentProcessingSendOriginal": {
+    "description": "Prompt text for the option to send a file in its original state, without any further processing such as removing metadata",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomHistoryVisibilityTitle": "ルームの履歴設定",
+  "@labelMatrixPermissionsRoomHistoryVisibilityTitle": {
+    "description": "Title for the permission to add change room history settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomHistoryVisibilityDescription": "ユーザーがこのルームのチャット履歴の表示/非表示を変更できるようにする",
+  "@labelMatrixPermissionsRoomHistoryVisibilityDescription": {
+    "description": "describes the permission to change room history settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomDeleteMessagesDescription": "ユーザーが他のユーザーから送信されたメッセージを削除できるようにする",
+  "@labelMatrixPermissionsRoomDeleteMessagesDescription": {
+    "description": "Describes the permission to delete messages",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomSendMessagesDescription": "ユーザーがこのルームでメッセージを送信できるようにする",
+  "@labelMatrixPermissionsRoomSendMessagesDescription": {
+    "description": "Describes the permission to send messages",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelEncryptedPreviewDescription": "プロキシサーバー({proxyUrl})を使用して、暗号化されたチャットでURLプレビューを取得します。これらのリクエストの内容は、Commetの「暗号化された URL プレビュー」を使用してホームサーバーから非表示になります。\n詳細:https://github.com/commetchat/encrypted_url_preview",
+  "@labelEncryptedPreviewDescription": {
+    "description": "Explains briefly how encrypted url preview works",
+    "type": "text",
+    "placeholders": {
+      "proxyUrl": {}
+    }
+  },
+  "promptSubmit": "送信",
+  "@promptSubmit": {
+    "description": "Generic prompt to submit something",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsSpaceManageChildrenDescription": "このスペースに属するルームの変更を許可する",
+  "@labelMatrixPermissionsSpaceManageChildrenDescription": {
+    "description": "Describes the permission to manage child rooms",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsSpaceManageChildrenTitle": "スペースに属するルームの設定",
+  "@labelMatrixPermissionsSpaceManageChildrenTitle": {
+    "description": "Title for permission to manage children",
     "type": "text",
     "placeholders": {}
   }
