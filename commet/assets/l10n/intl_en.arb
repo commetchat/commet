@@ -141,7 +141,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelEmojiPickerGifTab": "Gif",
+  "labelEmojiPickerGifTab": "GIF",
   "@labelEmojiPickerGifTab": {
     "description": "Label for the gif search tab in the emoji picker",
     "type": "text",
@@ -815,25 +815,25 @@
     "type": "text",
     "placeholders": {}
   },
-  "errorMatrixPassphraseMustContainUpperAndLowercase": "Passphrase must contain atleast 1 Uppercase and 1 Lowercase letter",
+  "errorMatrixPassphraseMustContainUpperAndLowercase": "Passphrase must contain at least 1 Uppercase and 1 Lowercase letter",
   "@errorMatrixPassphraseMustContainUpperAndLowercase": {
     "description": "Explains constraints of recovery passphrase",
     "type": "text",
     "placeholders": {}
   },
-  "errorMatrixPassphraseMustContainNumber": "Passphrase must contain atleast 1 number",
+  "errorMatrixPassphraseMustContainNumber": "Passphrase must contain at least 1 number",
   "@errorMatrixPassphraseMustContainNumber": {
     "description": "Explains constraints of recovery passphrase",
     "type": "text",
     "placeholders": {}
   },
-  "errorMatrixPassphraseMustContainSymbol": "Passphrase must contain atleast 1 symbol",
+  "errorMatrixPassphraseMustContainSymbol": "Passphrase must contain at least 1 symbol",
   "@errorMatrixPassphraseMustContainSymbol": {
     "description": "Explains constraints of recovery passphrase",
     "type": "text",
     "placeholders": {}
   },
-  "erroMatrixPassphraseMustBeLonger": "Passphrase must be atleast 10 characters long",
+  "erroMatrixPassphraseMustBeLonger": "Passphrase must be at least 10 characters long",
   "@erroMatrixPassphraseMustBeLonger": {
     "description": "Explains constraints of recovery passphrase",
     "type": "text",
@@ -881,7 +881,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelMatrixWarnResetKeysIsPermanent": "Resetting your keys is permanent, and will result in a loss of your chat history backup. You almost definitely dont want to do this!",
+  "labelMatrixWarnResetKeysIsPermanent": "Resetting your keys is permanent, and will result in a loss of your chat history backup. You almost definitely don't want to do this!",
   "@labelMatrixWarnResetKeysIsPermanent": {
     "description": "Explains that resetting keys is permanent, should emphasize that this isnt really a great idea",
     "type": "text",
@@ -893,7 +893,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelMatrixExplainOnlineKeyBackup": "Online key backup will allow you to retreive message history in the event that you lose access to all your sessions",
+  "labelMatrixExplainOnlineKeyBackup": "Online key backup will allow you to retrieve message history in the event that you lose access to all your sessions",
   "@labelMatrixExplainOnlineKeyBackup": {
     "description": "Explains what the message backup does",
     "type": "text",
@@ -947,7 +947,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelRestoreMatrixBackupTitle": "Restore backup",
+  "labelRestoreMatrixBackupTitle": "Restore from backup",
   "@labelRestoreMatrixBackupTitle": {
     "description": "Title of the popup dialog for restoring message backup",
     "type": "text",
@@ -1007,13 +1007,13 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelGifSearchToggle": "Gif search",
+  "labelGifSearchToggle": "GIF search",
   "@labelGifSearchToggle": {
     "description": "Label for the toggle for enabling and disabling gif search",
     "type": "text",
     "placeholders": {}
   },
-  "labelGifSearchDescription": "Enable use of Tenor gif search. Requests will be proxied via {proxyUrl}",
+  "labelGifSearchDescription": "Enable use of Tenor GIF search. Requests will be proxied via {proxyUrl}",
   "@labelGifSearchDescription": {
     "description": "Explains that gifs will be fetched via proxy",
     "type": "text",
@@ -1027,7 +1027,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelEncryptedPreviewDescription": "Enable use of a proxy server ({proxyUrl}) to get url preview in an encrypted chat. The content of these requests will be hidden from your homeserver using Commet's 'encrypted url preview'\nLearn more: https://github.com/commetchat/encrypted_url_preview",
+  "labelEncryptedPreviewDescription": "Enable use of a proxy server ({proxyUrl}) to get URL preview in an encrypted chat. The content of these requests will be hidden from your homeserver using Commet's 'encrypted URL preview'\nLearn more: https://github.com/commetchat/encrypted_url_preview",
   "@labelEncryptedPreviewDescription": {
     "description": "Explains briefly how encrypted url preview works",
     "type": "text",
@@ -1053,7 +1053,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelSettingsStickerCompatibilityExplanation": "In some matrix clients, sending a sticker as 'm.sticker' will cause the sticker to not load correctly. Enabling this setting will send stickers as 'm.image' which will allow them to render correctly",
+  "labelSettingsStickerCompatibilityExplanation": "In some Matrix clients, sending a sticker as 'm.sticker' will cause the sticker to not load correctly. Enabling this setting will send stickers as 'm.image' which will allow them to render correctly",
   "@labelSettingsStickerCompatibilityExplanation": {
     "description": "Explains what sticker compatibility mode does",
     "type": "text",
@@ -1101,7 +1101,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelThemeAmoled": "Amoled",
+  "labelThemeAmoled": "AMOLED",
   "@labelThemeAmoled": {
     "description": "Label for the light theme",
     "type": "text",
