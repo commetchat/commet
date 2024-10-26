@@ -62,7 +62,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelEmojiPickerGifTab": "Gif",
+  "labelEmojiPickerGifTab": "GIF",
   "@labelEmojiPickerGifTab": {
     "description": "Label for the gif search tab in the emoji picker",
     "type": "text",
@@ -888,7 +888,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelRestoreMatrixBackupTitle": "Taasta varundusest",
+  "labelRestoreMatrixBackupTitle": "Taasta varukoopiast",
   "@labelRestoreMatrixBackupTitle": {
     "description": "Title of the popup dialog for restoring message backup",
     "type": "text",
@@ -972,7 +972,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelThemeAmoled": "Amoled",
+  "labelThemeAmoled": "AMOLED",
   "@labelThemeAmoled": {
     "description": "Label for the light theme",
     "type": "text",
@@ -990,7 +990,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelGifSearchToggle": "Gif-piltide otsing",
+  "labelGifSearchToggle": "GIF-piltide otsing",
   "@labelGifSearchToggle": {
     "description": "Label for the toggle for enabling and disabling gif search",
     "type": "text",
@@ -1202,7 +1202,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelGifSearchDescription": "Gif-piltide otsinguks kasuta teenust Tenor. Otsingupäringud suuname läbi {proxyUrl} proksiserveri",
+  "labelGifSearchDescription": "GIF-piltide otsinguks kasuta teenust Tenor. Otsingupäringud suuname läbi {proxyUrl} proksiserveri",
   "@labelGifSearchDescription": {
     "description": "Explains that gifs will be fetched via proxy",
     "type": "text",
@@ -1210,7 +1210,7 @@
       "proxyUrl": {}
     }
   },
-  "labelEncryptedPreviewDescription": "Urlide eelvaate laadimiseks krüptitud vestlustes võta kasutusele proksiserver ({proxyUrl}). Selliste päringute sisu saab olema sinu koduserveri eest peidetud Commeti „krüptitud urlide eelvaate“ abil\nLisateavet leiad siit: https://github.com/commetchat/encrypted_url_preview",
+  "labelEncryptedPreviewDescription": "Võrguaadresside eelvaate laadimiseks krüptitud vestlustes võta kasutusele proksiserver ({proxyUrl}). Selliste päringute sisu saab olema sinu koduserveri eest peidetud Commeti „krüptitud võrguaadresside eelvaate“ abil\nLisateavet leiad siit: https://github.com/commetchat/encrypted_url_preview",
   "@labelEncryptedPreviewDescription": {
     "description": "Explains briefly how encrypted url preview works",
     "type": "text",
