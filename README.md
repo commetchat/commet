@@ -26,11 +26,14 @@ Commet is a client for [Matrix](https://matrix.org) focused on providing a featu
 - End to End Encryption
 - Custom Emoji + Stickers
 - GIF Search
+- Threads
+- Encrypted Room Search
 - Multiple Accounts
 - Spaces
 - Emoji verification & cross signing
 - Push Notifications
 - URL Preview
+  
 # Translation
 Help translate Commet to your language on [Weblate](https://hosted.weblate.org/projects/commetchat/commet/)
 
