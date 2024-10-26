@@ -298,7 +298,7 @@ class MatrixClient extends Client {
     return _matrixClient.logout();
   }
 
-  void _postLoginSuccess() async {
+  Future<void> _postLoginSuccess() async {
     await _updateOwnProfile();
     for (var component in getAllComponents()!) {
       if (component is NeedsPostLoginInit) {
@@ -610,7 +610,7 @@ class MatrixClient extends Client {
 
     if (result == LoginResult.success) {
       preferences.addRegisteredMatrixClient(identifier);
-      _postLoginSuccess();
+      await _postLoginSuccess();
     }
 
     return result;
