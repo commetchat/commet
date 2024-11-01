@@ -3,9 +3,17 @@
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-  outputs = { self, nixpkgs }: {
+  outputs = { self, nixpkgs }:
+    let pkgs = import nixpkgs {
+        system = "x86_64-linux";
+        config = {
+            allowUnfree = true;
+            permittedInsecurePackages = [ "olm-3.2.16" ];
+        };
+    };
 
-    defaultPackage.x86_64-linux = with nixpkgs.legacyPackages.x86_64-linux; stdenv.mkDerivation {
+    in {
+      defaultPackage.x86_64-linux = with pkgs; stdenv.mkDerivation {
       name = "my-env";
       buildInputs = [
         ninja
@@ -14,17 +22,13 @@
         mpv
         ffmpeg
         mimalloc
-		  flutter
-		  dart
-		  libass
-		  pkg-config
-		  android-tools
-		  android-studio
+        flutter
+        dart
+        libass
+        pkg-config
+        android-tools
+        android-studio
       ];
-		shellHook = ''
-        # Start Android Studio silently
-        android-studio &> /dev/null &
-      '';
     };
   };
 }
