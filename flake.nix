@@ -1,7 +1,7 @@
 {
   description = "Commet";
 
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+  inputs.nixpkgs.url = "nixpkgs/nixos-unstable";
 
   outputs = { self, nixpkgs }:
     let pkgs = import nixpkgs {
@@ -22,6 +22,7 @@
         mpv
         ffmpeg
         mimalloc
+        libepoxy
         flutter
         dart
         libass
