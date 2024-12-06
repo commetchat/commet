@@ -73,9 +73,7 @@ dependencies:
       url: https://github.com/commetchat/matrix-dart-sdk.git
       ref: main
   matrix_dart_sdk_drift_db:
-    git:
-      url: https://github.com/commetchat/matrix-dart-sdk-drift-db.git
-      ref: update/flutter
+    git: https://github.com/commetchat/matrix-dart-sdk-drift-db.git
   encrypted_url_preview: 
     git: https://github.com/commetchat/encrypted_url_preview.git
   signal_sticker_api: 
@@ -85,7 +83,7 @@ dependencies:
   encrypt: ^5.0.3
   pointycastle: ^3.7.4
   flutter_web_auth_2: ^3.1.1
-  drift: ^2.18.0
+  drift: ^2.22.1
   archive: ^3.6.1
   exif: ^3.3.0
   image: ^4.2.0
@@ -94,7 +92,7 @@ dependencies:
   ## ---- Probably good to keep this stuff at the bottom of the list
   ## Begin Google Services Dependencies
   #firebase_core: ^2.30.0
-  #firebase_messaging: ^14.8.2
+  #firebase_messaging: ^14.7.10
   ## End Google Services Dependencies
   ## ----
   ## ----

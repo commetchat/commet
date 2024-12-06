@@ -338,18 +338,18 @@ packages:
     dependency: "direct main"
     description:
       name: drift
-      sha256: df027d168a2985a2e9da900adeba2ab0136f0d84436592cf3cd5135f82c8579c
+      sha256: c2d073d35ad441730812f4ea05b5dd031fb81c5f9786a4f5fb77ecd6307b6f74
       url: "https://pub.dev"
     source: hosted
-    version: "2.21.0"
+    version: "2.22.1"
   drift_dev:
     dependency: "direct dev"
     description:
       name: drift_dev
-      sha256: "623649abe932fc17bd32e578e7e05f7ac5e7dd0b33e6c8669a0634105d1389bf"
+      sha256: f4ab5d6976b1e31551ceb82ff597a505bda7818ff4f7be08a1da9d55eb6e730c
       url: "https://pub.dev"
     source: hosted
-    version: "2.21.2"
+    version: "2.22.1"
   dropdown_button2:
     dependency: transitive
     description:
@@ -924,8 +924,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "update/flutter"
-      resolved-ref: "2d49d7d3242429b0b49a3e8eacaf0c74cd912176"
+      ref: HEAD
+      resolved-ref: "59b86f5b420df8a45671d6c1db08242a9fe206f3"
       url: "https://github.com/commetchat/matrix-dart-sdk-drift-db.git"
     source: git
     version: "0.0.1"
@@ -1619,10 +1619,10 @@ packages:
     dependency: transitive
     description:
       name: sqlparser
-      sha256: d77749237609784e337ec36c979d41f6f38a7b279df98622ae23929c8eb954a4
+      sha256: "4cad4b2c5f63dc9ea1a8dcffb58cf762322bea5dd8836870164a65e913bdae41"
       url: "https://pub.dev"
     source: hosted
-    version: "0.39.2"
+    version: "0.40.0"
   stack_trace:
     dependency: transitive
     description:
