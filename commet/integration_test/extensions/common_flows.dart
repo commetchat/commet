@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:commet/cache/app_data.dart';
 import 'package:commet/config/app_config.dart';
 import 'package:commet/ui/organisms/side_navigation_bar/side_navigation_bar.dart';
 import 'package:commet/ui/pages/login/login_page.dart';
@@ -48,7 +49,7 @@ extension CommonFlows on WidgetTester {
   }
 
   Future<void> clean() async {
-    await fileCache?.close();
+    await AppData.instance.close();
     await preferences.clear();
     await clearUserData();
   }

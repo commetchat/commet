@@ -38,6 +38,10 @@ class Preferences {
 
   final StreamController _onSettingChanged = StreamController.broadcast();
   Stream get onSettingChanged => _onSettingChanged.stream;
+
+  final StreamController _developerModeChanged = StreamController.broadcast();
+  Stream get onDeveloperModeChanged => _developerModeChanged.stream;
+
   bool isInit = false;
 
   Future<void> init() async {
@@ -184,6 +188,7 @@ class Preferences {
   Future<void> setDeveloperMode(bool value) async {
     await _preferences!.setBool(_developerMode, value);
     _onSettingChanged.add(null);
+    _developerModeChanged.add(null);
   }
 
   bool get tenorGifSearchEnabled =>

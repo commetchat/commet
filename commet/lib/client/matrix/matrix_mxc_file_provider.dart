@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:commet/cache/app_data.dart';
 import 'package:commet/cache/file_provider.dart';
 import 'package:commet/debug/log.dart';
-import 'package:commet/main.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
 class MxcFileProvider implements FileProvider {
@@ -16,7 +16,7 @@ class MxcFileProvider implements FileProvider {
 
   @override
   Future<Uri?> resolve({String? savePath}) async {
-    var cached = await fileCache?.getFile(fileIdentifier);
+    var cached = await AppData.instance.fileCache?.getFile(fileIdentifier);
     if (cached != null) {
       return cached;
     }
@@ -27,7 +27,7 @@ class MxcFileProvider implements FileProvider {
       return null;
     }
 
-    return fileCache?.putFile(fileIdentifier, bytes);
+    return AppData.instance.fileCache?.putFile(fileIdentifier, bytes);
   }
 
   @override
@@ -43,7 +43,7 @@ class MxcFileProvider implements FileProvider {
   Future<Uint8List?> getFileData() async {
     Uint8List? bytes;
 
-    var cached = await fileCache?.getFile(fileIdentifier);
+    var cached = await AppData.instance.fileCache?.getFile(fileIdentifier);
     if (cached != null) {
       return File.fromUri(cached).readAsBytes();
     }

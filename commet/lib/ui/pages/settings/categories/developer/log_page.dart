@@ -1,15 +1,14 @@
 import 'dart:async';
 
-import 'package:commet/config/build_config.dart';
+import 'package:commet/cache/error_log.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/ui/atoms/code_block.dart';
 import 'package:commet/ui/atoms/tiny_pill.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
-import 'package:device_info_plus/device_info_plus.dart';
+import 'package:commet/utils/error_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
-import 'package:url_launcher/url_launcher.dart';
 
 class LogPage extends StatefulWidget {
   const LogPage({super.key});
@@ -178,12 +177,16 @@ class _LogPageState extends State<LogPage> {
                 padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
                 child: tiamat.Button.secondary(
                   text: "Report Issue",
-                  onTap: () => reportIssue(entry),
+                  onTap: () => ErrorUtils.reportIssue(ErrorEntry(
+                      stackTrace: entry.trace.toString(),
+                      detail: entry.content,
+                      lastOccurred: entry.time,
+                      occurrences: 1)),
                 ),
               ),
             Text.rich(TextSpan(children: buildAnsiStyledTest(entry.content))),
-            if (entry is LogEntryException && entry.trace != null)
-              Codeblock(text: entry.trace!.toString()),
+            if (entry is LogEntryException)
+              Codeblock(text: entry.trace.toString()),
           ],
         ),
       ),
@@ -194,55 +197,5 @@ class _LogPageState extends State<LogPage> {
     setState(() {
       count = Log.log.length;
     });
-  }
-
-  reportIssue(LogEntryException entry) async {
-    var data = await getErrorData(entry);
-    var uri = Uri.https("github.com", "/commetchat/commet/issues/new", {
-      "title": entry.content.split("\n").first,
-      "body": data,
-      "labels": "bug",
-    });
-
-    launchUrl(uri, mode: LaunchMode.externalApplication);
-  }
-
-  Future<String> getErrorData(LogEntryException entry) async {
-    var deviceInfo = await DeviceInfoPlugin().deviceInfo;
-    return """
-> [!NOTE]
-> This issue has been automatically filled out by Commet's issue reporter
-
-### Exception: 
-${entry.content}
-
-${entry.trace != null ? """
-<details open>
-<summary>Stack Trace</summary>
-<br>
-
-```
-${entry.trace.toString()}
-```
-</details>
-""" : "No stack trace was available for this error"}
-
-<details open>
-<summary>Device Information</summary>
-<br>
-
-**Device**
-Platform: `${BuildConfig.PLATFORM}`
-Version: `${BuildConfig.VERSION_TAG}`
-Git Hash: `${BuildConfig.GIT_HASH}`
-Detail: `${BuildConfig.BUILD_DETAIL}`
-
-
-**System Info**
-${deviceInfo.data["name"] is String ? "Name: `${deviceInfo.data["name"]}`" : ""}
-${deviceInfo.data["version"] is String ? "Version: `${deviceInfo.data["version"]}`" : ""}
-${deviceInfo.data["product"] is String ? "Product: `${deviceInfo.data["product"]}`" : ""}
-</details>
-""";
   }
 }

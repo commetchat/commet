@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:commet/cache/app_data.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/notifying_list.dart';
@@ -27,7 +28,7 @@ class LogEntry {
 
 class LogEntryException extends LogEntry {
   Object exception;
-  StackTrace? trace;
+  StackTrace trace;
 
   LogEntryException(super.type, super.content, this.exception, this.trace);
 }
@@ -39,6 +40,13 @@ class Log {
   static String prefix = "";
 
   static void add(LogEntry entry) {
+    if (entry is LogEntryException) {
+      final error = entry;
+
+      AppData.instance.errorLog?.storeError(
+          error.trace.toString(), error.content, error.exception.toString());
+    }
+
     if (log.isNotEmpty &&
         log.last.type == entry.type &&
         log.last.rawContent == entry.rawContent) {
@@ -70,7 +78,7 @@ class Log {
           LogType.error,
           "${error.toString()}${info != null ? " ($info)" : ""}",
           error,
-          stackTrace));
+          stackTrace ?? StackTrace.current));
       return null;
     },
     handleUncaughtError: (self, parent, zone, error, stackTrace) {
@@ -130,7 +138,8 @@ class Log {
   }
 
   static void onError(Object object, StackTrace trace, {String? content}) {
-    String? info = getDetailFromStackTrace(trace);
+    String info = getDetailFromStackTrace(trace);
+
     var entry = LogEntryException(LogType.error,
         content ?? "${object.toString()} ($info)", object, trace);
     _print(entry);
@@ -150,12 +159,12 @@ class Log {
         LogType.error,
         "${details.exception.toString()}${info != null ? " ($info)" : ""}",
         details.exception,
-        details.stack));
+        details.stack ?? StackTrace.current));
 
     _previousReporter?.call(details);
   }
 
-  static String? getDetailFromStackTrace(StackTrace stack) {
+  static String getDetailFromStackTrace(StackTrace stack) {
     String? info;
 
     var str = stack.toString();
@@ -164,6 +173,6 @@ class Log {
       info = str.substring(match.start, match.end);
     }
 
-    return info;
+    return info ?? "Failed to extract detail";
   }
 }

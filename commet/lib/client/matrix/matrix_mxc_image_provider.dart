@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:commet/cache/app_data.dart';
 import 'package:commet/client/matrix/extensions/matrix_client_extensions.dart';
 import 'package:commet/debug/log.dart';
-import 'package:commet/main.dart';
 import 'package:commet/utils/mime.dart';
 import 'package:matrix/matrix.dart';
 
@@ -42,8 +42,8 @@ class MatrixMxcImage extends LODImageProvider {
       {bool cache = false}) async {
     var identifier = getThumbnailIdentifier(uri);
 
-    if (await fileCache?.hasFile(identifier) == true) {
-      var cacheUri = await fileCache?.getFile(identifier);
+    if (await AppData.instance.fileCache?.hasFile(identifier) == true) {
+      var cacheUri = await AppData.instance.fileCache?.getFile(identifier);
 
       if (cacheUri != null) {
         return File.fromUri(cacheUri).readAsBytes();
@@ -67,7 +67,7 @@ class MatrixMxcImage extends LODImageProvider {
     }
 
     if (bytes != null && cache) {
-      fileCache?.putFile(identifier, bytes);
+      AppData.instance.fileCache?.putFile(identifier, bytes);
       return bytes;
     }
 
@@ -79,8 +79,8 @@ class MatrixMxcImage extends LODImageProvider {
       {bool cache = true}) async {
     var identifier = getIdentifier(uri);
 
-    if (await fileCache?.hasFile(identifier) == true) {
-      var cacheUri = await fileCache?.getFile(identifier);
+    if (await AppData.instance.fileCache?.hasFile(identifier) == true) {
+      var cacheUri = await AppData.instance.fileCache?.getFile(identifier);
 
       if (cacheUri != null) {
         return File.fromUri(cacheUri).readAsBytes();
@@ -102,7 +102,7 @@ class MatrixMxcImage extends LODImageProvider {
     }
 
     if (bytes != null && cache) {
-      fileCache?.putFile(identifier, bytes);
+      AppData.instance.fileCache?.putFile(identifier, bytes);
       return bytes;
     }
 
@@ -112,13 +112,13 @@ class MatrixMxcImage extends LODImageProvider {
   @override
   Future<bool> hasCachedFullres() async {
     var id = getIdentifier(identifier);
-    return await fileCache?.hasFile(id) == true;
+    return await AppData.instance.fileCache?.hasFile(id) == true;
   }
 
   @override
   Future<bool> hasCachedThumbnail() async {
     var id = getThumbnailIdentifier(identifier);
-    return await fileCache?.hasFile(id) == true;
+    return await AppData.instance.fileCache?.hasFile(id) == true;
   }
 
   @override

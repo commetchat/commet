@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
+import 'package:commet/cache/app_data.dart';
 import 'package:commet/cache/file_provider.dart';
-import 'package:commet/main.dart';
 
 class CacheFileProvider implements FileProvider {
   @override
@@ -14,7 +14,7 @@ class CacheFileProvider implements FileProvider {
 
   @override
   Future<Uri?> resolve({String? savePath}) async {
-    return fileCache?.fetchFile(fileIdentifier, getter);
+    return AppData.instance.fileCache?.fetchFile(fileIdentifier, getter);
   }
 
   @override

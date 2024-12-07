@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:commet/cache/app_data.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/debug/log.dart';
-import 'package:commet/main.dart';
 import 'package:commet/utils/background_tasks/background_task_manager.dart';
 
 class MatrixImportEmoticonPackTask
@@ -56,7 +56,8 @@ class MatrixImportEmoticonPackTask
     for (var i = 0; i < images.length; i++) {
       var data = images[i];
       var uri = await mx.uploadContent(data);
-      fileCache?.putFile(MatrixMxcImage.getIdentifier(uri), data);
+      AppData.instance.fileCache
+          ?.putFile(MatrixMxcImage.getIdentifier(uri), data);
       results[i] = uri;
 
       current += 1;
