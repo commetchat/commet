@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:collection';
 
-import 'package:commet/cache/file_cache.dart';
+import 'package:commet/cache/app_data.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
@@ -35,12 +35,8 @@ class BackgroundNotificationsManager {
     isHeadless = true;
     await NotificationManager.init(isBackgroundService: true);
 
-    if (fileCache == null) {
-      fileCache = FileCache.getFileCacheInstance();
-
-      if (fileCache != null) {
-        await fileCache?.init();
-      }
+    if (AppData.instance.isInit == false) {
+      await AppData.instance.init();
     }
 
     shortcutsManager.init();
