@@ -423,7 +423,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelEmojiPickerGifTab": "Gif",
+  "labelEmojiPickerGifTab": "GIF",
   "@labelEmojiPickerGifTab": {
     "description": "Label for the gif search tab in the emoji picker",
     "type": "text",
@@ -910,7 +910,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelRestoreMatrixBackupTitle": "Restaurar cópia de segurança",
+  "labelRestoreMatrixBackupTitle": "Restaurar de cópia de segurança",
   "@labelRestoreMatrixBackupTitle": {
     "description": "Title of the popup dialog for restoring message backup",
     "type": "text",
