@@ -3,6 +3,7 @@ import 'package:commet/client/room.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_view_single.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class RoomPinnedMessagesWidget extends StatefulWidget {
@@ -18,6 +19,11 @@ class RoomPinnedMessagesWidget extends StatefulWidget {
 
 class _RoomPinnedMessagesWidgetState extends State<RoomPinnedMessagesWidget> {
   List<TimelineEvent>? events;
+
+  String get noPinnedMessages => Intl.message("No messages have been pinned!",
+      desc:
+          "Placeholder label in the pinned messages menu that is shown when there are no pinned messages",
+      name: "noPinnedMessages");
 
   @override
   void initState() {
@@ -35,8 +41,7 @@ class _RoomPinnedMessagesWidgetState extends State<RoomPinnedMessagesWidget> {
 
     if (events!.isEmpty) {
       return tiamat.Tile(
-          child: Center(
-              child: tiamat.Text.label("No messages have been pinned!")));
+          child: Center(child: tiamat.Text.label(noPinnedMessages)));
     }
 
     return tiamat.Tile.low(

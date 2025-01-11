@@ -17,6 +17,7 @@ import 'package:commet/utils/download_utils.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 
 class TimelineEventMenu {
   final Timeline timeline;
@@ -30,6 +31,18 @@ class TimelineEventMenu {
   final Function()? onActionFinished;
 
   final bool isThreadTimeline;
+
+  String get promptPinMessage => Intl.message("Pin Message",
+      desc: "Label for the menu option to pin a message",
+      name: "promptPinMessage");
+
+  String get promptReplyInThread => Intl.message("Reply In Thread",
+      desc: "Label for the menu option to reply to a message inside a thread",
+      name: "promptReplyInThread");
+
+  String get promptShowSource => Intl.message("Show Source",
+      desc: "Label for the menu option to view the JSON source of an event",
+      name: "promptShowSource");
 
   TimelineEventMenu({
     required this.timeline,
@@ -112,7 +125,7 @@ class TimelineEventMenu {
         ),
       if (canReplyInThread)
         TimelineEventMenuEntry(
-          name: "Reply in Thread",
+          name: promptReplyInThread,
           icon: Icons.message_rounded,
           action: (context) {
             EventBus.openThread.add((
@@ -140,7 +153,7 @@ class TimelineEventMenu {
     secondaryActions = [
       if (canPin)
         TimelineEventMenuEntry(
-            name: "Pin Message",
+            name: promptPinMessage,
             icon: Icons.push_pin,
             action: (context) {
               pins!.pinMessage(event.eventId);
@@ -158,7 +171,7 @@ class TimelineEventMenu {
               onActionFinished?.call();
             }),
       TimelineEventMenuEntry(
-          name: "Show Source",
+          name: promptShowSource,
           icon: Icons.code,
           action: (BuildContext context) {
             onActionFinished?.call();

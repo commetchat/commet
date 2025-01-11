@@ -1,333 +1,314 @@
 {
-  "@@last_modified": "2024-07-06T13:01:41.301375",
-  "labelRoomsList": "Rooms",
-  "@labelRoomsList": {
-    "description": "Header label for the list of rooms",
+  "@@last_modified": "2025-01-11T19:31:22.818827",
+  "promptReply": "Reply",
+  "@promptReply": {
+    "description": "Generic prompt to reply to a message",
     "type": "text",
     "placeholders": {}
   },
-  "fileDragDropPrompt": "Drop a file to upload...",
-  "@fileDragDropPrompt": {
-    "description": "Text that is shown when a user is dragging a file",
+  "promptAddReaction": "Add Reaction",
+  "@promptAddReaction": {
+    "description": "Generic prompt to add reaction to a message",
     "type": "text",
     "placeholders": {}
   },
-  "typingUsers": "{howMany,plural, =1{{user1} is typing...}=2{{user1} and {user2} are typing...}few{{user1}, {user2}, and {user3} are typing...}other{Several people are typing...}}",
-  "@typingUsers": {
-    "description": "Text to display which users are currently typing",
-    "type": "text",
-    "placeholders": {
-      "howMany": {},
-      "user1": {},
-      "user2": {},
-      "user3": {}
-    }
-  },
-  "messageEditedMarker": "(Edited)",
-  "@messageEditedMarker": {
-    "description": "Short text to mark that a message has been edited",
+  "promptEdit": "Edit",
+  "@promptEdit": {
+    "description": "Generic prompt to edit something",
     "type": "text",
     "placeholders": {}
   },
-  "messagePlaceholderSticker": "{user} sent a sticker",
-  "@messagePlaceholderSticker": {
-    "description": "Message body for when a user sends a sticker",
-    "type": "text",
-    "placeholders": {
-      "user": {}
-    }
-  },
-  "messagePlaceholderUserCreatedRoom": "{user} created the room!",
-  "@messagePlaceholderUserCreatedRoom": {
-    "description": "Message body for when a user created the room",
-    "type": "text",
-    "placeholders": {
-      "user": {}
-    }
-  },
-  "messagePlaceholderUserJoinedRoom": "{user} joined the room!",
-  "@messagePlaceholderUserJoinedRoom": {
-    "description": "Message body for when a user joins the room",
-    "type": "text",
-    "placeholders": {
-      "user": {}
-    }
-  },
-  "messagePlaceholderUserLeftRoom": "{user} left the room",
-  "@messagePlaceholderUserLeftRoom": {
-    "description": "Message body for when a user leaves the room",
-    "type": "text",
-    "placeholders": {
-      "user": {}
-    }
-  },
-  "messagePlaceholderUserUpdatedAvatar": "{user} updated their avatar",
-  "@messagePlaceholderUserUpdatedAvatar": {
-    "description": "Message body for when a user updates their avatar",
-    "type": "text",
-    "placeholders": {
-      "user": {}
-    }
-  },
-  "messagePlaceholderUserUpdatedName": "{user} updated their display name",
-  "@messagePlaceholderUserUpdatedName": {
-    "description": "Message body for when a user updates their display name",
-    "type": "text",
-    "placeholders": {
-      "user": {}
-    }
-  },
-  "messagePlaceholderUserInvited": "{sender} invited {invitedUser}",
-  "@messagePlaceholderUserInvited": {
-    "description": "Message body for when a user invites another user to the room",
-    "type": "text",
-    "placeholders": {
-      "sender": {},
-      "invitedUser": {}
-    }
-  },
-  "messagePlaceholderUserRejectedInvite": "{user} rejected the invitation",
-  "@messagePlaceholderUserRejectedInvite": {
-    "description": "Message body for when a user rejected an invitation to a room",
-    "type": "text",
-    "placeholders": {
-      "user": {}
-    }
-  },
-  "messageUserEmote": "*{user} {emote}",
-  "@messageUserEmote": {
-    "description": "Message to display when a user does a custom emote (/me)",
-    "type": "text",
-    "placeholders": {
-      "user": {},
-      "emote": {}
-    }
-  },
-  "errorMessageFailedToSend": "Failed to send",
-  "@errorMessageFailedToSend": {
-    "description": "Text that is placed below a message when the message fails to send",
+  "promptOptions": "Options",
+  "@promptOptions": {
+    "description": "Generic prompt for options, generally would be used to open a settings menu, extra details or similar",
     "type": "text",
     "placeholders": {}
   },
-  "messageFailedToDecrypt": "Failed to decrypt event",
-  "@messageFailedToDecrypt": {
-    "description": "Placeholde text for when a message fails to decrypt",
+  "promptSettings": "Settings",
+  "@promptSettings": {
+    "description": "Generic prompt for settings, usually will open a settings menu or similar",
     "type": "text",
     "placeholders": {}
   },
-  "labelJumpToLatest": "Jump to latest",
-  "@labelJumpToLatest": {
-    "description": "Label for the button which jumps the room timeline view to the latest message",
+  "promptHome": "Home",
+  "@promptHome": {
+    "description": "Generic prompt to go home, usually will go back to a main menu, or similar",
     "type": "text",
     "placeholders": {}
   },
-  "labelInvitationBodyWithSender": "{user} invited you to a room",
-  "@labelInvitationBodyWithSender": {
-    "description": "Message body for when an invitation was received, and we have a name for the sender",
-    "type": "text",
-    "placeholders": {
-      "user": {}
-    }
-  },
-  "labelEmojiPickerEmojiTab": "Emoji",
-  "@labelEmojiPickerEmojiTab": {
-    "description": "Label for the emoji tab in emoji picker",
+  "promptAccept": "Accept",
+  "@promptAccept": {
+    "description": "Generic prompt to accept something, probably a request of some kind",
     "type": "text",
     "placeholders": {}
   },
-  "labelEmojiPickerStickerTab": "Sticker",
-  "@labelEmojiPickerStickerTab": {
-    "description": "Label for the sticker tab in the emoji picker",
+  "promptReject": "Reject",
+  "@promptReject": {
+    "description": "Generic prompt to reject something, probably a request of some kind",
     "type": "text",
     "placeholders": {}
   },
-  "labelEmojiPickerGifTab": "GIF",
-  "@labelEmojiPickerGifTab": {
-    "description": "Label for the gif search tab in the emoji picker",
+  "promptApply": "Apply",
+  "@promptApply": {
+    "description": "Generic prompt to apply something, probably a setting",
     "type": "text",
     "placeholders": {}
   },
-  "labelInvitationsForUser": "Invitations for {user}",
-  "@labelInvitationsForUser": {
-    "description": "Label for the list of incoming invitations, specifying which user these invitations are intended for",
-    "type": "text",
-    "placeholders": {
-      "user": {}
-    }
-  },
-  "labelInvitations": "Invitations",
-  "@labelInvitations": {
-    "description": "Label for the list of incoming invitations",
+  "promptDelete": "Delete",
+  "@promptDelete": {
+    "description": "Generic prompt to delete something",
     "type": "text",
     "placeholders": {}
   },
-  "sendEncryptedMessagePrompt": "Send an encrypted message",
-  "@sendEncryptedMessagePrompt": {
-    "description": "Placeholder text for message input in an encrypted room",
+  "promptDownload": "Download",
+  "@promptDownload": {
+    "description": "Generic prompt to download something",
     "type": "text",
     "placeholders": {}
   },
-  "sendUnencryptedMessagePrompt": "Send a message",
-  "@sendUnencryptedMessagePrompt": {
-    "description": "Placeholder text for message input in an unencrypted room",
+  "promptJoin": "Join",
+  "@promptJoin": {
+    "description": "Generic prompt to join a room",
     "type": "text",
     "placeholders": {}
   },
-  "cantSentMessagePrompt": "You do not have permission to send a message in this room",
-  "@cantSentMessagePrompt": {
-    "description": "Text that explains the user cannot send a message in this room",
+  "promptSubmit": "Submit",
+  "@promptSubmit": {
+    "description": "Generic prompt to submit something",
     "type": "text",
     "placeholders": {}
   },
-  "labelChatPageFileTooLarge": "This file is too large to upload!",
-  "@labelChatPageFileTooLarge": {
-    "description": "Text that is shown when the user attempts to upload a file that is greater than the allowed size",
+  "promptContinue": "Continue",
+  "@promptContinue": {
+    "description": "Generic prompt to continue with some action",
     "type": "text",
     "placeholders": {}
   },
-  "labelChatPageFileTooLargeTitle": "Max file size exceeded",
-  "@labelChatPageFileTooLargeTitle": {
-    "description": "Title for the dialog that is shown when the user attempts to upload a file that is greater than the allowed size",
+  "promptConfirm": "Confirm",
+  "@promptConfirm": {
+    "description": "Generic prompt to confirm some action",
     "type": "text",
     "placeholders": {}
   },
-  "promptAttachmentProcessingSendOriginal": "Send Original",
-  "@promptAttachmentProcessingSendOriginal": {
-    "description": "Prompt text for the option to send a file in its original state, without any further processing such as removing metadata",
+  "promptDone": "Done",
+  "@promptDone": {
+    "description": "Generic prompt to confirm that you are done",
     "type": "text",
     "placeholders": {}
   },
-  "labelImageContainsLocationInfo": "Warning: This image contains location metadata",
-  "@labelImageContainsLocationInfo": {
-    "description": "Prompt text for the option to send a file in its original state, without any further processing such as removing metadata",
+  "promptReset": "Reset",
+  "@promptReset": {
+    "description": "Generic prompt to reset something",
     "type": "text",
     "placeholders": {}
   },
-  "labelHomeRecentActivity": "Recent Activity",
-  "@labelHomeRecentActivity": {
-    "description": "Short label for header of recent room activity",
+  "promptEnable": "Enable",
+  "@promptEnable": {
+    "description": "Generic prompt to enable something",
     "type": "text",
     "placeholders": {}
   },
-  "labelHomeAlerts": "Alerts",
-  "@labelHomeAlerts": {
-    "description": "Short label for header of alerts",
+  "promptRestore": "Restore",
+  "@promptRestore": {
+    "description": "Generic prompt to restore something",
     "type": "text",
     "placeholders": {}
   },
-  "labelHomeRoomsList": "Rooms",
-  "@labelHomeRoomsList": {
-    "description": "Short label for header of rooms list",
+  "promptPoliteNo": "No, thanks",
+  "@promptPoliteNo": {
+    "description": "Generic message to decline something, using nice manners :)",
     "type": "text",
     "placeholders": {}
   },
-  "labelHomeInvitations": "Invitations",
-  "@labelHomeInvitations": {
-    "description": "Short label for header of invitations list",
+  "promptBack": "Back",
+  "@promptBack": {
+    "description": "Prompt text to go backwards, probably for navigation",
     "type": "text",
     "placeholders": {}
   },
-  "tooltipSpaceSettings": "Space settings",
-  "@tooltipSpaceSettings": {
-    "description": "Tooltip for the button that opens space settings",
+  "promptCopy": "Copy",
+  "@promptCopy": {
+    "description": "Prompt to copy text",
     "type": "text",
     "placeholders": {}
   },
-  "tooltipAddRoom": "Add room",
-  "@tooltipAddRoom": {
-    "description": "Tooltip for the button that adds a new room to a space",
+  "promptCopyComplete": "Copied!",
+  "@promptCopyComplete": {
+    "description": "Prompt text for after a copy has been completed",
     "type": "text",
     "placeholders": {}
   },
-  "labelSpaceRoomsList": "Rooms",
-  "@labelSpaceRoomsList": {
-    "description": "Header label for the list of rooms in a space",
+  "labelOr": "Or",
+  "@labelOr": {
+    "description": "Text that is placed between two or more options: [button1] or [button2]",
     "type": "text",
     "placeholders": {}
   },
-  "labelSpaceSubspacesList": "Spaces",
-  "@labelSpaceSubspacesList": {
-    "description": "Header label for the list of child spaces in a space",
+  "promptLeaveSpace": "Leave Space",
+  "@promptLeaveSpace": {
+    "description": "Text on a button to leave a space",
     "type": "text",
     "placeholders": {}
   },
-  "labelSpaceAvailableRoomsList": "Available rooms",
-  "@labelSpaceAvailableRoomsList": {
-    "description": "Header label for the list of rooms in a space, which the user has not yet joined but are available",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelSpaceVisibilityPublic": "Public space",
-  "@labelSpaceVisibilityPublic": {
-    "description": "Label to display that the space is publically available",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelSpaceVisibilityPrivate": "Private space",
-  "@labelSpaceVisibilityPrivate": {
-    "description": "Label to display that the space is private",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelSpaceGettingText": "Welcome to \n\n # {spaceName}",
-  "@labelSpaceGettingText": {
-    "description": "Greeting to the space, supports markdown formatting",
+  "promptLeaveSpaceConfirmation": "Are you sure you want to leave {spaceName}?",
+  "@promptLeaveSpaceConfirmation": {
+    "description": "Text for the popup dialog confirming the intent to leave a space",
     "type": "text",
     "placeholders": {
       "spaceName": {}
     }
   },
-  "promptOpenDirectMessage": "Message",
-  "@promptOpenDirectMessage": {
-    "description": "Prompt on the button to open a direct message with another user",
+  "labelSettingsWindowBehaviourTitle": "Window behaviour",
+  "@labelSettingsWindowBehaviourTitle": {
+    "description": "Header for the window behaviour section of settings",
     "type": "text",
     "placeholders": {}
   },
-  "promptAddSpace": "Add Space",
-  "@promptAddSpace": {
-    "description": "Prompt to add a new space",
+  "labelSettingsMinimizeOnCloseToggle": "Minimize on close",
+  "@labelSettingsMinimizeOnCloseToggle": {
+    "description": "Label for the toggle to turn on and off minimize on close",
     "type": "text",
     "placeholders": {}
   },
-  "directMessagesListHeaderMobile": "Direct Messages",
-  "@directMessagesListHeaderMobile": {
-    "description": "The header for the direct messages list on desktop",
+  "labelSettingsMinimizeOnCloseExplanation": "When closing the window, the app will be minimized instead of exited",
+  "@labelSettingsMinimizeOnCloseExplanation": {
+    "description": "Explains what the 'minimize on close' setting does",
     "type": "text",
     "placeholders": {}
   },
-  "directMessagesListHeaderDesktop": "Direct Messages",
-  "@directMessagesListHeaderDesktop": {
-    "description": "The header for the direct messages list on desktop",
+  "labelSettingsAppTheme": "Theme",
+  "@labelSettingsAppTheme": {
+    "description": "Label for theme section of app appearance",
     "type": "text",
     "placeholders": {}
   },
-  "unifiedPushExplainer": "# Unified Push\nThis version of Commet was built without Google Play Services. In order to receive push notifications, you will need to use [Unified Push](https://unifiedpush.org/). \n\nIf you already have a Unified Push compatible distributor app installed, you can configure it below\n",
-  "@unifiedPushExplainer": {
-    "description": "Explains the need for unified push. Supports markdown",
+  "labelAppScale": "App Scale",
+  "@labelAppScale": {
+    "description": "Label for the setting which controls the UI scale of the overall app",
     "type": "text",
     "placeholders": {}
   },
-  "labelEnableUnifiedPush": "Enable Unified Push",
-  "@labelEnableUnifiedPush": {
-    "description": "Label for the toggle to enable Unified Push",
+  "labelThirdPartyServicesTitle": "Third party services",
+  "@labelThirdPartyServicesTitle": {
+    "description": "Header for the third party services section in settings",
     "type": "text",
     "placeholders": {}
   },
-  "labelEnableUnifiedPushEndpoint": "Endpoint",
-  "@labelEnableUnifiedPushEndpoint": {
-    "description": "Label for the Unified Push endpoint",
+  "labelGifSearchToggle": "Gif search",
+  "@labelGifSearchToggle": {
+    "description": "Label for the toggle for enabling and disabling gif search",
     "type": "text",
     "placeholders": {}
   },
-  "labelUnifiedPushNoEndpointFound": "No endpoint found, something went wrong :(",
-  "@labelUnifiedPushNoEndpointFound": {
-    "description": "Message for when a unified push endpoint could not be registered",
+  "labelGifSearchDescription": "Enable use of Tenor gif search. Requests will be proxied via {proxyUrl}",
+  "@labelGifSearchDescription": {
+    "description": "Explains that gifs will be fetched via proxy",
+    "type": "text",
+    "placeholders": {
+      "proxyUrl": {}
+    }
+  },
+  "labelEncryptedPreview": "URL Preview in Encrypted Chats (Experimental)",
+  "@labelEncryptedPreview": {
+    "description": "Label for the toggle for enabling and disabling encrypted url preview",
     "type": "text",
     "placeholders": {}
   },
-  "setupPageBeforeYouBegin": "Before you begin...",
-  "@setupPageBeforeYouBegin": {
-    "description": "Title for first time setup page",
+  "labelEncryptedPreviewDescription": "Enable use of a proxy server ({proxyUrl}) to get url preview in an encrypted chat. The content of these requests will be hidden from your homeserver using Commet's 'encrypted url preview'\nLearn more: https://github.com/commetchat/encrypted_url_preview",
+  "@labelEncryptedPreviewDescription": {
+    "description": "Explains briefly how encrypted url preview works",
+    "type": "text",
+    "placeholders": {
+      "proxyUrl": {}
+    }
+  },
+  "labelThemeDark": "Dark Theme",
+  "@labelThemeDark": {
+    "description": "Label for the dark theme",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelThemeLight": "Light Theme",
+  "@labelThemeLight": {
+    "description": "Label for the light theme",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelThemeAmoled": "Amoled",
+  "@labelThemeAmoled": {
+    "description": "Label for the light theme",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsDeveloperMode": "Developer mode",
+  "@labelSettingsDeveloperMode": {
+    "description": "Header for the settings to enable developer mode",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsDeveloperModeExplanation": "Shows extra information, useful for developers",
+  "@labelSettingsDeveloperModeExplanation": {
+    "description": "Explains what developer mode does",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelStickerCompatibility": "Sticker compatibility",
+  "@labelStickerCompatibility": {
+    "description": "Header for the settings to enable sticker compatibility mode",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsStickerCompatibilityExplanation": "In some matrix clients, sending a sticker as 'm.sticker' will cause the sticker to not load correctly. Enabling this setting will send stickers as 'm.image' which will allow them to render correctly",
+  "@labelSettingsStickerCompatibilityExplanation": {
+    "description": "Explains what sticker compatibility mode does",
+    "type": "text",
+    "placeholders": {}
+  },
+  "notificationSettingsNotSupported": "Push notifications are not supported on this system",
+  "@notificationSettingsNotSupported": {
+    "description": "Message to display when push notifications are not supported",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsAppGeneral": "General",
+  "@labelSettingsAppGeneral": {
+    "description": "Label for the App General settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsAppAppearance": "Appearance",
+  "@labelSettingsAppAppearance": {
+    "description": "Label for the App Appearance settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsWindowBehaviour": "Window Behaviour",
+  "@labelSettingsWindowBehaviour": {
+    "description": "Label for the Window Behaviour settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsAppAdvanced": "Advanced",
+  "@labelSettingsAppAdvanced": {
+    "description": "Label for the App Advanced settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsAppNotifications": "Notifications",
+  "@labelSettingsAppNotifications": {
+    "description": "Label for the App notifications settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsAppDeveloperUtils": "Developer Utils",
+  "@labelSettingsAppDeveloperUtils": {
+    "description": "Label for the developer utils settings page, usually hidden unless developer mode is turned on",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsCategoryApp": "App Settings",
+  "@labelSettingsCategoryApp": {
+    "description": "Label for the settings category of the overall App settings/",
     "type": "text",
     "placeholders": {}
   },
@@ -370,298 +351,6 @@
   "labelSettingsAppLogs": "Logs",
   "@labelSettingsAppLogs": {
     "description": "Label for the logs settings page, usually hidden unless developer mode is turned on",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelPushRuleNotifyAll": "All Messages",
-  "@labelPushRuleNotifyAll": {
-    "description": "Label for the push rule which notifies for all received messages",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelPushRuleMentionsAndKeywords": "Mentions & Keywords",
-  "@labelPushRuleMentionsAndKeywords": {
-    "description": "Label for the push rule which notifies only for keywords and mentions",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelPushRuleNone": "Mute",
-  "@labelPushRuleNone": {
-    "description": "Label for the push rule which sends no notifications",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelRoomSettingsNotifications": "Notifications",
-  "@labelRoomSettingsNotifications": {
-    "description": "Label for the notifications section in room settings",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptEnableEncryptionRoomSettings": "Enable Encryption",
-  "@promptEnableEncryptionRoomSettings": {
-    "description": "Short prompt to enable encryption for a room",
-    "type": "text",
-    "placeholders": {}
-  },
-  "encryptionCannotBeDisabledExplanationRoomSettings": "If enabled, encryption cannot be disabled later",
-  "@encryptionCannotBeDisabledExplanationRoomSettings": {
-    "description": "Explains that encryption cannot be disabled once enabled",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptCreateEmoticonPack": "Create pack",
-  "@promptCreateEmoticonPack": {
-    "description": "Prompt to create a new emoticon pack, for emoji or stickers",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptImportPack": "Import pack",
-  "@promptImportPack": {
-    "description": "Prompt to import a set of emoticons from an existing pack",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptConfirmDeleteEmoticonPack": "Are you sure you want to delete the **{packName}** pack?",
-  "@promptConfirmDeleteEmoticonPack": {
-    "description": "Prompt to confirm deletion of an emoticon pack, supports markdown to emphasise the pack name",
-    "type": "text",
-    "placeholders": {
-      "packName": {}
-    }
-  },
-  "createEmoticonDialogTitle": "Create Emote",
-  "@createEmoticonDialogTitle": {
-    "description": "Title of a dialog that pops up when choosing to create a new emoticon",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptConfirmDeleteEmoticon": "Are you sure you want to delete **{emoticon}**?",
-  "@promptConfirmDeleteEmoticon": {
-    "description": "Prompt to confirm deletion of an emoticon pack, supports markdown to emphasise the emote name",
-    "type": "text",
-    "placeholders": {
-      "emoticon": {}
-    }
-  },
-  "promptRenameEmoticon": "Rename emote",
-  "@promptRenameEmoticon": {
-    "description": "Tooltip for button to rename emoticon",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptEmoticonPackName": "Pack name",
-  "@promptEmoticonPackName": {
-    "description": "Prompt for the input of the name of an emoticon pack",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptEmojiName": "Emoji name",
-  "@promptEmojiName": {
-    "description": "Prompt for the input of the name of an emoji",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptStickerName": "Sticker name",
-  "@promptStickerName": {
-    "description": "Prompt for the input of a sticker",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptConfirmCreateEmoticon": "Create!",
-  "@promptConfirmCreateEmoticon": {
-    "description": "Prompt to confirm the creation of an Emoticon Pack, Emoji, or Sticker",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelRoomSettingsGeneral": "General",
-  "@labelRoomSettingsGeneral": {
-    "description": "Label for general room settings",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelRoomSettingsAppearance": "Appearance",
-  "@labelRoomSettingsAppearance": {
-    "description": "Label for room appearance settings",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelRoomSettingsSecurity": "Security",
-  "@labelRoomSettingsSecurity": {
-    "description": "Label for room security settings",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelRoomSettingsEmoticons": "Emoticons",
-  "@labelRoomSettingsEmoticons": {
-    "description": "Label for room Emoticon settings",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelRoomSettingsDeveloper": "Developer",
-  "@labelRoomSettingsDeveloper": {
-    "description": "Label for room developer settings",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelRoomSettingsCategory": "Room Settings",
-  "@labelRoomSettingsCategory": {
-    "description": "Label for the overall settings category of a room",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelRoomSettingsPermissions": "Permissions",
-  "@labelRoomSettingsPermissions": {
-    "description": "Label for room permission settings",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelMatrixPermissionsRoleAdmin": "Admin",
-  "@labelMatrixPermissionsRoleAdmin": {
-    "description": "Label for the room administrator role",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelMatrixPermissionsRoleModerator": "Moderator",
-  "@labelMatrixPermissionsRoleModerator": {
-    "description": "Label for the room moderator role",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelMatrixPermissionsRoleMember": "Room Member",
-  "@labelMatrixPermissionsRoleMember": {
-    "description": "Label for the room member role",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelMatrixPermissionsSpaceManageChildrenTitle": "Manage Children",
-  "@labelMatrixPermissionsSpaceManageChildrenTitle": {
-    "description": "Title for permission to manage children",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelMatrixPermissionsSpaceManageChildrenDescription": "Allows the user to manage which rooms are part of this space",
-  "@labelMatrixPermissionsSpaceManageChildrenDescription": {
-    "description": "Describes the permission to manage child rooms",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelMatrixPermissionsRoomDeleteMessagesTitle": "Delete Messages",
-  "@labelMatrixPermissionsRoomDeleteMessagesTitle": {
-    "description": "Title for permission to delete messages",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelMatrixPermissionsRoomDeleteMessagesDescription": "Allows the user to delete messages sent by others",
-  "@labelMatrixPermissionsRoomDeleteMessagesDescription": {
-    "description": "Describes the permission to delete messages",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelMatrixPermissionsRoomSendMessagesTitle": "Send Messages",
-  "@labelMatrixPermissionsRoomSendMessagesTitle": {
-    "description": "Title for the permission to send messages",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelMatrixPermissionsRoomSendMessagesDescription": "Allows a user to send messages in this room",
-  "@labelMatrixPermissionsRoomSendMessagesDescription": {
-    "description": "Describes the permission to send messages",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelMatrixPermissionsRoomAddReactionsTitle": "Add Reactions",
-  "@labelMatrixPermissionsRoomAddReactionsTitle": {
-    "description": "Title for the permission to add an emoji reaction to a message",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelMatrixPermissionsRoomAddReactionsDescription": "Add reactions to messages",
-  "@labelMatrixPermissionsRoomAddReactionsDescription": {
-    "description": "describes the permission to add an emoji reaction to a message",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelMatrixPermissionsRoomHistoryVisibilityTitle": "History Visibility",
-  "@labelMatrixPermissionsRoomHistoryVisibilityTitle": {
-    "description": "Title for the permission to add change room history settings",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelMatrixPermissionsRoomHistoryVisibilityDescription": "Allows the user to change the visibility of chat history in this room",
-  "@labelMatrixPermissionsRoomHistoryVisibilityDescription": {
-    "description": "describes the permission to change room history settings",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelMatrixPermissionsRoomAvatarTitle": "Set Room Avatar",
-  "@labelMatrixPermissionsRoomAvatarTitle": {
-    "description": "Title for the permission to add change the rooms avatar image",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelMatrixPermissionsRoomAvatarDescription": "Change the room's avatar image",
-  "@labelMatrixPermissionsRoomAvatarDescription": {
-    "description": "Title for the permission to add change the rooms avatar image",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelMatrixPermissionsChangeRoomNameTitle": "Change room name",
-  "@labelMatrixPermissionsChangeRoomNameTitle": {
-    "description": "Title for the permission to add change the rooms name",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelMatrixPermissionsChangeRoomNameDescription": "Allows the user to change the name of this room",
-  "@labelMatrixPermissionsChangeRoomNameDescription": {
-    "description": "Description for the permission to add change the rooms name",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelMatrixPermissionsChangeRoomTopicTitle": "Change room topic",
-  "@labelMatrixPermissionsChangeRoomTopicTitle": {
-    "description": "Title for the permission to add change the rooms topic",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelMatrixPermissionsChangeRoomTopicDescription": "Allows the user to change the topic of this room",
-  "@labelMatrixPermissionsChangeRoomTopicDescription": {
-    "description": "Description for the permission to add change the rooms topic",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelMatrixPermissionsChangeRoomPermissionsTitle": "Change permissions",
-  "@labelMatrixPermissionsChangeRoomPermissionsTitle": {
-    "description": "Title for the permission to change permissions of the room",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelMatrixPermissionsChangeRoomPermissionsDescription": "Allows the user to change permission settings",
-  "@labelMatrixPermissionsChangeRoomPermissionsDescription": {
-    "description": "Description for the permission to change permissions of the room",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelMatrixPermissionsKickUserTitle": "Kick users",
-  "@labelMatrixPermissionsKickUserTitle": {
-    "description": "Title for the permission to kick other users out of the room",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelMatrixPermissionsKickUserDescription": "Kick other users out of the room",
-  "@labelMatrixPermissionsKickUserDescription": {
-    "description": "Description for the permission to kick other users out of the room",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelMatrixPermissionsBanUserTitle": "Ban users",
-  "@labelMatrixPermissionsBanUserTitle": {
-    "description": "Title for the permission to ban other users from the room",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelMatrixPermissionsBanUserDescription": "Ban other users from the room",
-  "@labelMatrixPermissionsBanUserDescription": {
-    "description": "Description for the permission to ban other users from the room",
     "type": "text",
     "placeholders": {}
   },
@@ -815,25 +504,25 @@
     "type": "text",
     "placeholders": {}
   },
-  "errorMatrixPassphraseMustContainUpperAndLowercase": "Passphrase must contain at least 1 Uppercase and 1 Lowercase letter",
+  "errorMatrixPassphraseMustContainUpperAndLowercase": "Passphrase must contain atleast 1 Uppercase and 1 Lowercase letter",
   "@errorMatrixPassphraseMustContainUpperAndLowercase": {
     "description": "Explains constraints of recovery passphrase",
     "type": "text",
     "placeholders": {}
   },
-  "errorMatrixPassphraseMustContainNumber": "Passphrase must contain at least 1 number",
+  "errorMatrixPassphraseMustContainNumber": "Passphrase must contain atleast 1 number",
   "@errorMatrixPassphraseMustContainNumber": {
     "description": "Explains constraints of recovery passphrase",
     "type": "text",
     "placeholders": {}
   },
-  "errorMatrixPassphraseMustContainSymbol": "Passphrase must contain at least 1 symbol",
+  "errorMatrixPassphraseMustContainSymbol": "Passphrase must contain atleast 1 symbol",
   "@errorMatrixPassphraseMustContainSymbol": {
     "description": "Explains constraints of recovery passphrase",
     "type": "text",
     "placeholders": {}
   },
-  "erroMatrixPassphraseMustBeLonger": "Passphrase must be at least 10 characters long",
+  "erroMatrixPassphraseMustBeLonger": "Passphrase must be atleast 10 characters long",
   "@erroMatrixPassphraseMustBeLonger": {
     "description": "Explains constraints of recovery passphrase",
     "type": "text",
@@ -881,7 +570,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelMatrixWarnResetKeysIsPermanent": "Resetting your keys is permanent, and will result in a loss of your chat history backup. You almost definitely don't want to do this!",
+  "labelMatrixWarnResetKeysIsPermanent": "Resetting your keys is permanent, and will result in a loss of your chat history backup. You almost definitely dont want to do this!",
   "@labelMatrixWarnResetKeysIsPermanent": {
     "description": "Explains that resetting keys is permanent, should emphasize that this isnt really a great idea",
     "type": "text",
@@ -893,9 +582,15 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelMatrixExplainOnlineKeyBackup": "Online key backup will allow you to retrieve message history in the event that you lose access to all your sessions",
+  "labelMatrixExplainOnlineKeyBackup": "Online key backup will allow you to retreive message history in the event that you lose access to all your sessions",
   "@labelMatrixExplainOnlineKeyBackup": {
     "description": "Explains what the message backup does",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptMatrixVerifySession": "Verify",
+  "@promptMatrixVerifySession": {
+    "description": "Text on the button to verify a session",
     "type": "text",
     "placeholders": {}
   },
@@ -947,169 +642,301 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelRestoreMatrixBackupTitle": "Restore from backup",
+  "labelRestoreMatrixBackupTitle": "Restore backup",
   "@labelRestoreMatrixBackupTitle": {
     "description": "Title of the popup dialog for restoring message backup",
     "type": "text",
     "placeholders": {}
   },
-  "promptMatrixVerifySession": "Verify",
-  "@promptMatrixVerifySession": {
-    "description": "Text on the button to verify a session",
+  "labelMatrixPermissionsRoleAdmin": "Admin",
+  "@labelMatrixPermissionsRoleAdmin": {
+    "description": "Label for the room administrator role",
     "type": "text",
     "placeholders": {}
   },
-  "labelSettingsAppGeneral": "General",
-  "@labelSettingsAppGeneral": {
-    "description": "Label for the App General settings page",
+  "labelMatrixPermissionsRoleModerator": "Moderator",
+  "@labelMatrixPermissionsRoleModerator": {
+    "description": "Label for the room moderator role",
     "type": "text",
     "placeholders": {}
   },
-  "labelSettingsAppAppearance": "Appearance",
-  "@labelSettingsAppAppearance": {
-    "description": "Label for the App Appearance settings page",
+  "labelMatrixPermissionsRoleMember": "Room Member",
+  "@labelMatrixPermissionsRoleMember": {
+    "description": "Label for the room member role",
     "type": "text",
     "placeholders": {}
   },
-  "labelSettingsWindowBehaviour": "Window Behaviour",
-  "@labelSettingsWindowBehaviour": {
-    "description": "Label for the Window Behaviour settings page",
+  "labelMatrixPermissionsSpaceManageChildrenTitle": "Manage Children",
+  "@labelMatrixPermissionsSpaceManageChildrenTitle": {
+    "description": "Title for permission to manage children",
     "type": "text",
     "placeholders": {}
   },
-  "labelSettingsAppAdvanced": "Advanced",
-  "@labelSettingsAppAdvanced": {
-    "description": "Label for the App Advanced settings page",
+  "labelMatrixPermissionsSpaceManageChildrenDescription": "Allows the user to manage which rooms are part of this space",
+  "@labelMatrixPermissionsSpaceManageChildrenDescription": {
+    "description": "Describes the permission to manage child rooms",
     "type": "text",
     "placeholders": {}
   },
-  "labelSettingsAppNotifications": "Notifications",
-  "@labelSettingsAppNotifications": {
-    "description": "Label for the App notifications settings page",
+  "labelMatrixPermissionsRoomDeleteMessagesTitle": "Delete Messages",
+  "@labelMatrixPermissionsRoomDeleteMessagesTitle": {
+    "description": "Title for permission to delete messages",
     "type": "text",
     "placeholders": {}
   },
-  "labelSettingsAppDeveloperUtils": "Developer Utils",
-  "@labelSettingsAppDeveloperUtils": {
-    "description": "Label for the developer utils settings page, usually hidden unless developer mode is turned on",
+  "labelMatrixPermissionsRoomDeleteMessagesDescription": "Allows the user to delete messages sent by others",
+  "@labelMatrixPermissionsRoomDeleteMessagesDescription": {
+    "description": "Describes the permission to delete messages",
     "type": "text",
     "placeholders": {}
   },
-  "labelSettingsCategoryApp": "App Settings",
-  "@labelSettingsCategoryApp": {
-    "description": "Label for the settings category of the overall App settings/",
+  "labelMatrixPermissionsRoomSendMessagesTitle": "Send Messages",
+  "@labelMatrixPermissionsRoomSendMessagesTitle": {
+    "description": "Title for the permission to send messages",
     "type": "text",
     "placeholders": {}
   },
-  "labelThirdPartyServicesTitle": "Third party services",
-  "@labelThirdPartyServicesTitle": {
-    "description": "Header for the third party services section in settings",
+  "labelMatrixPermissionsRoomSendMessagesDescription": "Allows a user to send messages in this room",
+  "@labelMatrixPermissionsRoomSendMessagesDescription": {
+    "description": "Describes the permission to send messages",
     "type": "text",
     "placeholders": {}
   },
-  "labelGifSearchToggle": "GIF search",
-  "@labelGifSearchToggle": {
-    "description": "Label for the toggle for enabling and disabling gif search",
+  "labelMatrixPermissionsRoomAddReactionsTitle": "Add Reactions",
+  "@labelMatrixPermissionsRoomAddReactionsTitle": {
+    "description": "Title for the permission to add an emoji reaction to a message",
     "type": "text",
     "placeholders": {}
   },
-  "labelGifSearchDescription": "Enable use of Tenor GIF search. Requests will be proxied via {proxyUrl}",
-  "@labelGifSearchDescription": {
-    "description": "Explains that gifs will be fetched via proxy",
+  "labelMatrixPermissionsRoomAddReactionsDescription": "Add reactions to messages",
+  "@labelMatrixPermissionsRoomAddReactionsDescription": {
+    "description": "describes the permission to add an emoji reaction to a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomHistoryVisibilityTitle": "History Visibility",
+  "@labelMatrixPermissionsRoomHistoryVisibilityTitle": {
+    "description": "Title for the permission to add change room history settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomHistoryVisibilityDescription": "Allows the user to change the visibility of chat history in this room",
+  "@labelMatrixPermissionsRoomHistoryVisibilityDescription": {
+    "description": "describes the permission to change room history settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomAvatarTitle": "Set Room Avatar",
+  "@labelMatrixPermissionsRoomAvatarTitle": {
+    "description": "Title for the permission to add change the rooms avatar image",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomAvatarDescription": "Change the room's avatar image",
+  "@labelMatrixPermissionsRoomAvatarDescription": {
+    "description": "Title for the permission to add change the rooms avatar image",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsChangeRoomNameTitle": "Change room name",
+  "@labelMatrixPermissionsChangeRoomNameTitle": {
+    "description": "Title for the permission to add change the rooms name",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsChangeRoomNameDescription": "Allows the user to change the name of this room",
+  "@labelMatrixPermissionsChangeRoomNameDescription": {
+    "description": "Description for the permission to add change the rooms name",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsChangeRoomTopicTitle": "Change room topic",
+  "@labelMatrixPermissionsChangeRoomTopicTitle": {
+    "description": "Title for the permission to add change the rooms topic",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsChangeRoomTopicDescription": "Allows the user to change the topic of this room",
+  "@labelMatrixPermissionsChangeRoomTopicDescription": {
+    "description": "Description for the permission to add change the rooms topic",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsChangeRoomPermissionsTitle": "Change permissions",
+  "@labelMatrixPermissionsChangeRoomPermissionsTitle": {
+    "description": "Title for the permission to change permissions of the room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsChangeRoomPermissionsDescription": "Allows the user to change permission settings",
+  "@labelMatrixPermissionsChangeRoomPermissionsDescription": {
+    "description": "Description for the permission to change permissions of the room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsKickUserTitle": "Kick users",
+  "@labelMatrixPermissionsKickUserTitle": {
+    "description": "Title for the permission to kick other users out of the room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsKickUserDescription": "Kick other users out of the room",
+  "@labelMatrixPermissionsKickUserDescription": {
+    "description": "Description for the permission to kick other users out of the room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsBanUserTitle": "Ban users",
+  "@labelMatrixPermissionsBanUserTitle": {
+    "description": "Title for the permission to ban other users from the room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsBanUserDescription": "Ban other users from the room",
+  "@labelMatrixPermissionsBanUserDescription": {
+    "description": "Description for the permission to ban other users from the room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsGeneral": "General",
+  "@labelRoomSettingsGeneral": {
+    "description": "Label for general room settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsAppearance": "Appearance",
+  "@labelRoomSettingsAppearance": {
+    "description": "Label for room appearance settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsSecurity": "Security",
+  "@labelRoomSettingsSecurity": {
+    "description": "Label for room security settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsEmoticons": "Emoticons",
+  "@labelRoomSettingsEmoticons": {
+    "description": "Label for room Emoticon settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsDeveloper": "Developer",
+  "@labelRoomSettingsDeveloper": {
+    "description": "Label for room developer settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsCategory": "Room Settings",
+  "@labelRoomSettingsCategory": {
+    "description": "Label for the overall settings category of a room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsPermissions": "Permissions",
+  "@labelRoomSettingsPermissions": {
+    "description": "Label for room permission settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptEnableEncryptionRoomSettings": "Enable Encryption",
+  "@promptEnableEncryptionRoomSettings": {
+    "description": "Short prompt to enable encryption for a room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "encryptionCannotBeDisabledExplanationRoomSettings": "If enabled, encryption cannot be disabled later",
+  "@encryptionCannotBeDisabledExplanationRoomSettings": {
+    "description": "Explains that encryption cannot be disabled once enabled",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptCreateEmoticonPack": "Create pack",
+  "@promptCreateEmoticonPack": {
+    "description": "Prompt to create a new emoticon pack, for emoji or stickers",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptImportPack": "Import pack",
+  "@promptImportPack": {
+    "description": "Prompt to import a set of emoticons from an existing pack",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmDeleteEmoticonPack": "Are you sure you want to delete the **{packName}** pack?",
+  "@promptConfirmDeleteEmoticonPack": {
+    "description": "Prompt to confirm deletion of an emoticon pack, supports markdown to emphasise the pack name",
     "type": "text",
     "placeholders": {
-      "proxyUrl": {}
+      "packName": {}
     }
   },
-  "labelEncryptedPreview": "URL Preview in Encrypted Chats (Experimental)",
-  "@labelEncryptedPreview": {
-    "description": "Label for the toggle for enabling and disabling encrypted url preview",
+  "createEmoticonDialogTitle": "Create Emote",
+  "@createEmoticonDialogTitle": {
+    "description": "Title of a dialog that pops up when choosing to create a new emoticon",
     "type": "text",
     "placeholders": {}
   },
-  "labelEncryptedPreviewDescription": "Enable use of a proxy server ({proxyUrl}) to get URL preview in an encrypted chat. The content of these requests will be hidden from your homeserver using Commet's 'encrypted URL preview'\nLearn more: https://github.com/commetchat/encrypted_url_preview",
-  "@labelEncryptedPreviewDescription": {
-    "description": "Explains briefly how encrypted url preview works",
+  "promptConfirmDeleteEmoticon": "Are you sure you want to delete **{emoticon}**?",
+  "@promptConfirmDeleteEmoticon": {
+    "description": "Prompt to confirm deletion of an emoticon pack, supports markdown to emphasise the emote name",
     "type": "text",
     "placeholders": {
-      "proxyUrl": {}
+      "emoticon": {}
     }
   },
-  "labelSettingsDeveloperMode": "Developer mode",
-  "@labelSettingsDeveloperMode": {
-    "description": "Header for the settings to enable developer mode",
+  "promptRenameEmoticon": "Rename emote",
+  "@promptRenameEmoticon": {
+    "description": "Tooltip for button to rename emoticon",
     "type": "text",
     "placeholders": {}
   },
-  "labelSettingsDeveloperModeExplanation": "Shows extra information, useful for developers",
-  "@labelSettingsDeveloperModeExplanation": {
-    "description": "Explains what developer mode does",
+  "promptEmoticonPackName": "Pack name",
+  "@promptEmoticonPackName": {
+    "description": "Prompt for the input of the name of an emoticon pack",
     "type": "text",
     "placeholders": {}
   },
-  "labelStickerCompatibility": "Sticker compatibility",
-  "@labelStickerCompatibility": {
-    "description": "Header for the settings to enable sticker compatibility mode",
+  "promptEmojiName": "Emoji name",
+  "@promptEmojiName": {
+    "description": "Prompt for the input of the name of an emoji",
     "type": "text",
     "placeholders": {}
   },
-  "labelSettingsStickerCompatibilityExplanation": "In some Matrix clients, sending a sticker as 'm.sticker' will cause the sticker to not load correctly. Enabling this setting will send stickers as 'm.image' which will allow them to render correctly",
-  "@labelSettingsStickerCompatibilityExplanation": {
-    "description": "Explains what sticker compatibility mode does",
+  "promptStickerName": "Sticker name",
+  "@promptStickerName": {
+    "description": "Prompt for the input of a sticker",
     "type": "text",
     "placeholders": {}
   },
-  "labelSettingsWindowBehaviourTitle": "Window behaviour",
-  "@labelSettingsWindowBehaviourTitle": {
-    "description": "Header for the window behaviour section of settings",
+  "promptConfirmCreateEmoticon": "Create!",
+  "@promptConfirmCreateEmoticon": {
+    "description": "Prompt to confirm the creation of an Emoticon Pack, Emoji, or Sticker",
     "type": "text",
     "placeholders": {}
   },
-  "labelSettingsMinimizeOnCloseToggle": "Minimize on close",
-  "@labelSettingsMinimizeOnCloseToggle": {
-    "description": "Label for the toggle to turn on and off minimize on close",
+  "labelPushRuleNotifyAll": "All Messages",
+  "@labelPushRuleNotifyAll": {
+    "description": "Label for the push rule which notifies for all received messages",
     "type": "text",
     "placeholders": {}
   },
-  "labelSettingsMinimizeOnCloseExplanation": "When closing the window, the app will be minimized instead of exited",
-  "@labelSettingsMinimizeOnCloseExplanation": {
-    "description": "Explains what the 'minimize on close' setting does",
+  "labelPushRuleMentionsAndKeywords": "Mentions & Keywords",
+  "@labelPushRuleMentionsAndKeywords": {
+    "description": "Label for the push rule which notifies only for keywords and mentions",
     "type": "text",
     "placeholders": {}
   },
-  "labelSettingsAppTheme": "Theme",
-  "@labelSettingsAppTheme": {
-    "description": "Label for theme section of app appearance",
+  "labelPushRuleNone": "Mute",
+  "@labelPushRuleNone": {
+    "description": "Label for the push rule which sends no notifications",
     "type": "text",
     "placeholders": {}
   },
-  "labelAppScale": "App Scale",
-  "@labelAppScale": {
-    "description": "Label for the setting which controls the UI scale of the overall app",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelThemeDark": "Dark Theme",
-  "@labelThemeDark": {
-    "description": "Label for the dark theme",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelThemeLight": "Light Theme",
-  "@labelThemeLight": {
-    "description": "Label for the light theme",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelThemeAmoled": "AMOLED",
-  "@labelThemeAmoled": {
-    "description": "Label for the light theme",
-    "type": "text",
-    "placeholders": {}
-  },
-  "notificationSettingsNotSupported": "Push notifications are not supported on this system",
-  "@notificationSettingsNotSupported": {
-    "description": "Message to display when push notifications are not supported",
+  "labelRoomSettingsNotifications": "Notifications",
+  "@labelRoomSettingsNotifications": {
+    "description": "Label for the notifications section in room settings",
     "type": "text",
     "placeholders": {}
   },
@@ -1127,59 +954,33 @@
       "roomName": {}
     }
   },
-  "promptLeaveSpace": "Leave Space",
-  "@promptLeaveSpace": {
-    "description": "Text on a button to leave a space",
+  "unifiedPushExplainer": "# Unified Push\nThis version of Commet was built without Google Play Services. In order to receive push notifications, you will need to use [Unified Push](https://unifiedpush.org/). \n\nIf you already have a Unified Push compatible distributor app installed, you can configure it below\n",
+  "@unifiedPushExplainer": {
+    "description": "Explains the need for unified push. Supports markdown",
     "type": "text",
     "placeholders": {}
   },
-  "promptLeaveSpaceConfirmation": "Are you sure you want to leave {spaceName}?",
-  "@promptLeaveSpaceConfirmation": {
-    "description": "Text for the popup dialog confirming the intent to leave a space",
-    "type": "text",
-    "placeholders": {
-      "spaceName": {}
-    }
-  },
-  "messageLoginFailed": "Login Failed...",
-  "@messageLoginFailed": {
-    "description": "Generic text to show that an attempted login has failed",
+  "labelEnableUnifiedPush": "Enable Unified Push",
+  "@labelEnableUnifiedPush": {
+    "description": "Label for the toggle to enable Unified Push",
     "type": "text",
     "placeholders": {}
   },
-  "messageLoginError": "An error occured",
-  "@messageLoginError": {
-    "description": "A generic error message to convey that an error occured when attempting to login",
+  "labelEnableUnifiedPushEndpoint": "Endpoint",
+  "@labelEnableUnifiedPushEndpoint": {
+    "description": "Label for the Unified Push endpoint",
     "type": "text",
     "placeholders": {}
   },
-  "messageAlreadyLoggedIn": "You have already logged in to this account",
-  "@messageAlreadyLoggedIn": {
-    "description": "An error message displayed when the user attempts to add an account which has already been logged in to on this device",
+  "labelUnifiedPushNoEndpointFound": "No endpoint found, something went wrong :(",
+  "@labelUnifiedPushNoEndpointFound": {
+    "description": "Message for when a unified push endpoint could not be registered",
     "type": "text",
     "placeholders": {}
   },
-  "promptHomeserver": "Homeserver",
-  "@promptHomeserver": {
-    "description": "Placeholder text for homeserver field on login form",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptUsername": "Username",
-  "@promptUsername": {
-    "description": "Placeholder text for username field on login form",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptPassword": "Password",
-  "@promptPassword": {
-    "description": "Placeholder text for password field on login form",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptSubmitLogin": "Login",
-  "@promptSubmitLogin": {
-    "description": "Prompt to submit the username and password, and attempt to login",
+  "setupPageBeforeYouBegin": "Before you begin...",
+  "@setupPageBeforeYouBegin": {
+    "description": "Title for first time setup page",
     "type": "text",
     "placeholders": {}
   },
@@ -1339,6 +1140,60 @@
     "type": "text",
     "placeholders": {}
   },
+  "messageLoginFailed": "Login Failed...",
+  "@messageLoginFailed": {
+    "description": "Generic text to show that an attempted login has failed",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageLoginError": "An error occured",
+  "@messageLoginError": {
+    "description": "A generic error message to convey that an error occured when attempting to login",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageAlreadyLoggedIn": "You have already logged in to this account",
+  "@messageAlreadyLoggedIn": {
+    "description": "An error message displayed when the user attempts to add an account which has already been logged in to on this device",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptHomeserver": "Homeserver",
+  "@promptHomeserver": {
+    "description": "Placeholder text for homeserver field on login form",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptUsername": "Username",
+  "@promptUsername": {
+    "description": "Placeholder text for username field on login form",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptPassword": "Password",
+  "@promptPassword": {
+    "description": "Placeholder text for password field on login form",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptSubmitLogin": "Login",
+  "@promptSubmitLogin": {
+    "description": "Prompt to submit the username and password, and attempt to login",
+    "type": "text",
+    "placeholders": {}
+  },
+  "directMessagesListHeaderDesktop": "Direct Messages",
+  "@directMessagesListHeaderDesktop": {
+    "description": "The header for the direct messages list on desktop",
+    "type": "text",
+    "placeholders": {}
+  },
+  "directMessagesListHeaderMobile": "Direct Messages",
+  "@directMessagesListHeaderMobile": {
+    "description": "The header for the direct messages list on desktop",
+    "type": "text",
+    "placeholders": {}
+  },
   "messageWaitingOtherDeviceToAccept": "Waiting for the other device to accept the request",
   "@messageWaitingOtherDeviceToAccept": {
     "description": "Message to show while waiting for another device to accept a matrix session verification request",
@@ -1377,6 +1232,261 @@
     "type": "text",
     "placeholders": {}
   },
+  "fileDragDropPrompt": "Drop a file to upload...",
+  "@fileDragDropPrompt": {
+    "description": "Text that is shown when a user is dragging a file",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomsList": "Rooms",
+  "@labelRoomsList": {
+    "description": "Header label for the list of rooms",
+    "type": "text",
+    "placeholders": {}
+  },
+  "typingUsers": "{howMany,plural, =1{{user1} is typing...}=2{{user1} and {user2} are typing...}few{{user1}, {user2}, and {user3} are typing...}other{Several people are typing...}}",
+  "@typingUsers": {
+    "description": "Text to display which users are currently typing",
+    "type": "text",
+    "placeholders": {
+      "howMany": {},
+      "user1": {},
+      "user2": {},
+      "user3": {}
+    }
+  },
+  "labelInvitationBodyWithSender": "{user} invited you to a room",
+  "@labelInvitationBodyWithSender": {
+    "description": "Message body for when an invitation was received, and we have a name for the sender",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "labelJumpToLatest": "Jump to latest",
+  "@labelJumpToLatest": {
+    "description": "Label for the button which jumps the room timeline view to the latest message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageEditedMarker": "(Edited)",
+  "@messageEditedMarker": {
+    "description": "Short text to mark that a message has been edited",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelEmojiPickerEmojiTab": "Emoji",
+  "@labelEmojiPickerEmojiTab": {
+    "description": "Label for the emoji tab in emoji picker",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelEmojiPickerStickerTab": "Sticker",
+  "@labelEmojiPickerStickerTab": {
+    "description": "Label for the sticker tab in the emoji picker",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelEmojiPickerGifTab": "Gif",
+  "@labelEmojiPickerGifTab": {
+    "description": "Label for the gif search tab in the emoji picker",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptPinMessage": "Pin Message",
+  "@promptPinMessage": {
+    "description": "Label for the menu option to pin a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptReplyInThread": "Reply In Thread",
+  "@promptReplyInThread": {
+    "description": "Label for the menu option to reply to a message inside a thread",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptShowSource": "Show Source",
+  "@promptShowSource": {
+    "description": "Label for the menu option to view the JSON source of an event",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messagePlaceholderSticker": "{user} sent a sticker",
+  "@messagePlaceholderSticker": {
+    "description": "Message body for when a user sends a sticker",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messagePlaceholderUserCreatedRoom": "{user} created the room!",
+  "@messagePlaceholderUserCreatedRoom": {
+    "description": "Message body for when a user created the room",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "errorMessageFailedToSend": "Failed to send",
+  "@errorMessageFailedToSend": {
+    "description": "Text that is placed below a message when the message fails to send",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageFailedToDecrypt": "Failed to decrypt event",
+  "@messageFailedToDecrypt": {
+    "description": "Placeholde text for when a message fails to decrypt",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptAddSpace": "Add Space",
+  "@promptAddSpace": {
+    "description": "Prompt to add a new space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelChatPageFileTooLarge": "This file is too large to upload!",
+  "@labelChatPageFileTooLarge": {
+    "description": "Text that is shown when the user attempts to upload a file that is greater than the allowed size",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelChatPageFileTooLargeTitle": "Max file size exceeded",
+  "@labelChatPageFileTooLargeTitle": {
+    "description": "Title for the dialog that is shown when the user attempts to upload a file that is greater than the allowed size",
+    "type": "text",
+    "placeholders": {}
+  },
+  "sendEncryptedMessagePrompt": "Send an encrypted message",
+  "@sendEncryptedMessagePrompt": {
+    "description": "Placeholder text for message input in an encrypted room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "sendUnencryptedMessagePrompt": "Send a message",
+  "@sendUnencryptedMessagePrompt": {
+    "description": "Placeholder text for message input in an unencrypted room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "cantSentMessagePrompt": "You do not have permission to send a message in this room",
+  "@cantSentMessagePrompt": {
+    "description": "Text that explains the user cannot send a message in this room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptOpenDirectMessage": "Message",
+  "@promptOpenDirectMessage": {
+    "description": "Prompt on the button to open a direct message with another user",
+    "type": "text",
+    "placeholders": {}
+  },
+  "tooltipSpaceSettings": "Space settings",
+  "@tooltipSpaceSettings": {
+    "description": "Tooltip for the button that opens space settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "tooltipAddRoom": "Add room",
+  "@tooltipAddRoom": {
+    "description": "Tooltip for the button that adds a new room to a space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceRoomsList": "Rooms",
+  "@labelSpaceRoomsList": {
+    "description": "Header label for the list of rooms in a space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceSubspacesList": "Spaces",
+  "@labelSpaceSubspacesList": {
+    "description": "Header label for the list of child spaces in a space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceAvailableRoomsList": "Available rooms",
+  "@labelSpaceAvailableRoomsList": {
+    "description": "Header label for the list of rooms in a space, which the user has not yet joined but are available",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceVisibilityPublic": "Public space",
+  "@labelSpaceVisibilityPublic": {
+    "description": "Label to display that the space is publically available",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceVisibilityPrivate": "Private space",
+  "@labelSpaceVisibilityPrivate": {
+    "description": "Label to display that the space is private",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceGettingText": "Welcome to \n\n # {spaceName}",
+  "@labelSpaceGettingText": {
+    "description": "Greeting to the space, supports markdown formatting",
+    "type": "text",
+    "placeholders": {
+      "spaceName": {}
+    }
+  },
+  "noPinnedMessages": "No messages have been pinned!",
+  "@noPinnedMessages": {
+    "description": "Placeholder label in the pinned messages menu that is shown when there are no pinned messages",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelInvitationsForUser": "Invitations for {user}",
+  "@labelInvitationsForUser": {
+    "description": "Label for the list of incoming invitations, specifying which user these invitations are intended for",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "labelInvitations": "Invitations",
+  "@labelInvitations": {
+    "description": "Label for the list of incoming invitations",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptAttachmentProcessingSendOriginal": "Send Original",
+  "@promptAttachmentProcessingSendOriginal": {
+    "description": "Prompt text for the option to send a file in its original state, without any further processing such as removing metadata",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelImageContainsLocationInfo": "Warning: This image contains location metadata",
+  "@labelImageContainsLocationInfo": {
+    "description": "Prompt text for the option to send a file in its original state, without any further processing such as removing metadata",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelHomeRecentActivity": "Recent Activity",
+  "@labelHomeRecentActivity": {
+    "description": "Short label for header of recent room activity",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelHomeAlerts": "Alerts",
+  "@labelHomeAlerts": {
+    "description": "Short label for header of alerts",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelHomeRoomsList": "Rooms",
+  "@labelHomeRoomsList": {
+    "description": "Short label for header of rooms list",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelHomeInvitations": "Invitations",
+  "@labelHomeInvitations": {
+    "description": "Short label for header of invitations list",
+    "type": "text",
+    "placeholders": {}
+  },
   "notificationModifiersPrivacyEnhanced": "Sent a message",
   "@notificationModifiersPrivacyEnhanced": {
     "description": "Placeholder text to put in a notification when the user has privacy enhanced notifications enabled.",
@@ -1395,148 +1505,106 @@
     "type": "text",
     "placeholders": {}
   },
-  "promptReply": "Reply",
-  "@promptReply": {
-    "description": "Generic prompt to reply to a message",
+  "messageUserEmote": "*{user} {emote}",
+  "@messageUserEmote": {
+    "description": "Message to display when a user does a custom emote (/me)",
     "type": "text",
-    "placeholders": {}
+    "placeholders": {
+      "user": {},
+      "emote": {}
+    }
   },
-  "promptAddReaction": "Add Reaction",
-  "@promptAddReaction": {
-    "description": "Generic prompt to add reaction to a message",
+  "messagePlaceholderUserJoinedRoom": "{user} joined the room!",
+  "@messagePlaceholderUserJoinedRoom": {
+    "description": "Message body for when a user joins the room",
     "type": "text",
-    "placeholders": {}
+    "placeholders": {
+      "user": {}
+    }
   },
-  "promptEdit": "Edit",
-  "@promptEdit": {
-    "description": "Generic prompt to edit something",
+  "messagePlaceholderUserLeftRoom": "{user} left the room",
+  "@messagePlaceholderUserLeftRoom": {
+    "description": "Message body for when a user leaves the room",
     "type": "text",
-    "placeholders": {}
+    "placeholders": {
+      "user": {}
+    }
   },
-  "promptOptions": "Options",
-  "@promptOptions": {
-    "description": "Generic prompt for options, generally would be used to open a settings menu, extra details or similar",
+  "messagePlaceholderUserUpdatedAvatar": "{user} updated their avatar",
+  "@messagePlaceholderUserUpdatedAvatar": {
+    "description": "Message body for when a user updates their avatar",
     "type": "text",
-    "placeholders": {}
+    "placeholders": {
+      "user": {}
+    }
   },
-  "promptSettings": "Settings",
-  "@promptSettings": {
-    "description": "Generic prompt for settings, usually will open a settings menu or similar",
+  "messagePlaceholderUserUpdatedName": "{user} updated their display name",
+  "@messagePlaceholderUserUpdatedName": {
+    "description": "Message body for when a user updates their display name",
     "type": "text",
-    "placeholders": {}
+    "placeholders": {
+      "user": {}
+    }
   },
-  "promptHome": "Home",
-  "@promptHome": {
-    "description": "Generic prompt to go home, usually will go back to a main menu, or similar",
+  "messagePlaceholderUserUpdatedNameDetailed": "{user} changed their display name to '{newName}'",
+  "@messagePlaceholderUserUpdatedNameDetailed": {
+    "description": "Message body for when a user updates their display name",
     "type": "text",
-    "placeholders": {}
+    "placeholders": {
+      "user": {},
+      "newName": {}
+    }
   },
-  "promptAccept": "Accept",
-  "@promptAccept": {
-    "description": "Generic prompt to accept something, probably a request of some kind",
+  "messagePlaceholderUserInvited": "{sender} invited {invitedUser}",
+  "@messagePlaceholderUserInvited": {
+    "description": "Message body for when a user invites another user to the room",
     "type": "text",
-    "placeholders": {}
+    "placeholders": {
+      "sender": {},
+      "invitedUser": {}
+    }
   },
-  "promptReject": "Reject",
-  "@promptReject": {
-    "description": "Generic prompt to reject something, probably a request of some kind",
+  "messagePlaceholderUserRejectedInvite": "{user} rejected the invitation",
+  "@messagePlaceholderUserRejectedInvite": {
+    "description": "Message body for when a user rejected an invitation to a room",
     "type": "text",
-    "placeholders": {}
+    "placeholders": {
+      "user": {}
+    }
   },
-  "promptApply": "Apply",
-  "@promptApply": {
-    "description": "Generic prompt to apply something, probably a setting",
+  "messageUserRetractedInvite": "{sender} uninvited {user}",
+  "@messageUserRetractedInvite": {
+    "description": "Message body for when a user's invitation to a room was withdrawn",
     "type": "text",
-    "placeholders": {}
+    "placeholders": {
+      "sender": {},
+      "user": {}
+    }
   },
-  "promptDelete": "Delete",
-  "@promptDelete": {
-    "description": "Generic prompt to delete something",
+  "messageUserAcceptedInvite": "{user} accepted the invitiation",
+  "@messageUserAcceptedInvite": {
+    "description": "Message body for when a user accepted an invitation to a room",
     "type": "text",
-    "placeholders": {}
+    "placeholders": {
+      "user": {}
+    }
   },
-  "promptDownload": "Download",
-  "@promptDownload": {
-    "description": "Generic prompt to download something",
+  "messageUserBanned": "{sender} banned {user}",
+  "@messageUserBanned": {
+    "description": "Message body for when a user bans another user from the room",
     "type": "text",
-    "placeholders": {}
+    "placeholders": {
+      "sender": {},
+      "user": {}
+    }
   },
-  "promptJoin": "Join",
-  "@promptJoin": {
-    "description": "Generic prompt to join a room",
+  "messageUserUnbanned": "{sender} unbanned {user}",
+  "@messageUserUnbanned": {
+    "description": "Message body for when a user reverts a ban of another user",
     "type": "text",
-    "placeholders": {}
-  },
-  "promptSubmit": "Submit",
-  "@promptSubmit": {
-    "description": "Generic prompt to submit something",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptContinue": "Continue",
-  "@promptContinue": {
-    "description": "Generic prompt to continue with some action",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptConfirm": "Confirm",
-  "@promptConfirm": {
-    "description": "Generic prompt to confirm some action",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptDone": "Done",
-  "@promptDone": {
-    "description": "Generic prompt to confirm that you are done",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptReset": "Reset",
-  "@promptReset": {
-    "description": "Generic prompt to reset something",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptEnable": "Enable",
-  "@promptEnable": {
-    "description": "Generic prompt to enable something",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptRestore": "Restore",
-  "@promptRestore": {
-    "description": "Generic prompt to restore something",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptPoliteNo": "No, thanks",
-  "@promptPoliteNo": {
-    "description": "Generic message to decline something, using nice manners :)",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptBack": "Back",
-  "@promptBack": {
-    "description": "Prompt text to go backwards, probably for navigation",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptCopy": "Copy",
-  "@promptCopy": {
-    "description": "Prompt to copy text",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptCopyComplete": "Copied!",
-  "@promptCopyComplete": {
-    "description": "Prompt text for after a copy has been completed",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelOr": "Or",
-  "@labelOr": {
-    "description": "Text that is placed between two or more options: [button1] or [button2]",
-    "type": "text",
-    "placeholders": {}
+    "placeholders": {
+      "sender": {},
+      "user": {}
+    }
   }
 }
