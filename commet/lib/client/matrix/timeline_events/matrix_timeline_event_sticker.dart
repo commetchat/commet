@@ -9,8 +9,15 @@ class MatrixTimelineEventSticker extends MatrixTimelineEvent
     with MatrixTimelineEventRelated, MatrixTimelineEventReactions
     implements TimelineEventSticker {
   MatrixTimelineEventSticker(super.event, {required super.client}) {
-    stickerImage = MatrixMxcImage(
-        Uri.parse(event.content["url"] as String), client.getMatrixClient());
+    String? uri;
+    if (event.content.containsKey('url')) {
+      uri = event.content['url'] as String;
+    } else if (event.content.containsKey('file')) {
+      var file = event.content['file'] as Map<String, dynamic>;
+      uri = file['url'];
+    }
+    stickerImage = MatrixMxcImage(Uri.parse(uri!), client.getMatrixClient(),
+        matrixEvent: event);
 
     stickerName = event.body;
   }
