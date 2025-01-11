@@ -50,6 +50,8 @@ class MatrixTimeline extends Timeline {
         onRemove: onEventRemoved,
         eventContextId: contextEventId);
 
+    _matrixRoom.postLoad();
+
     // This could maybe make load times realllly slow if we have a ton of stuff in the cache?
     // Might be better to only convert as many as we would need to display immediately and then convert the rest on demand
     convertAllTimelineEvents();

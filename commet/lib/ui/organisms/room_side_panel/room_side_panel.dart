@@ -5,6 +5,7 @@ import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/organisms/chat/chat.dart';
 import 'package:commet/ui/organisms/room_event_search/room_event_search_widget.dart';
 import 'package:commet/ui/organisms/room_members_list/room_members_list.dart';
+import 'package:commet/ui/organisms/room_pinned_messages/room_pinned_messages_widget.dart';
 import 'package:commet/ui/organisms/room_quick_access_menu/room_quick_access_menu_mobile.dart';
 import 'package:commet/ui/pages/main/main_page.dart';
 import 'package:commet/utils/event_bus.dart';
@@ -12,11 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:tiamat/atoms/tile.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
-enum SidePanelState {
-  defaultView,
-  thread,
-  search,
-}
+enum SidePanelState { defaultView, thread, search, pinnedMessages }
 
 class RoomSidePanel extends StatefulWidget {
   const RoomSidePanel({required this.state, this.builder, super.key});
@@ -43,6 +40,7 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
       EventBus.openThread.stream.listen(onOpenThreadSignal),
       EventBus.closeThread.stream.listen(onCloseThreadSignal),
       EventBus.startSearch.stream.listen(onStartSearch),
+      EventBus.openPinnedMessages.stream.listen(onShowPinnedMessages),
     ];
     super.initState();
   }
@@ -104,6 +102,8 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
         return buildThread();
       case SidePanelState.search:
         return buildSearch();
+      case SidePanelState.pinnedMessages:
+        return buildPinnedMessages();
     }
   }
 
@@ -197,7 +197,33 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
 
   void onStartSearch(void event) {
     setState(() {
-      state = SidePanelState.search;
+      if (state == SidePanelState.search) {
+        state = SidePanelState.defaultView;
+      } else {
+        state = SidePanelState.search;
+      }
     });
+  }
+
+  void onShowPinnedMessages(void event) {
+    setState(() {
+      if (state == SidePanelState.pinnedMessages) {
+        state = SidePanelState.defaultView;
+      } else {
+        state = SidePanelState.pinnedMessages;
+      }
+    });
+  }
+
+  Widget buildPinnedMessages() {
+    return SizedBox(
+        width: Layout.desktop ? 300 : null,
+        child: RoomPinnedMessagesWidget(
+          room: widget.state.currentRoom!,
+          onEventClicked: (eventId) {
+            EventBus.jumpToEvent.add(eventId);
+            EventBus.focusTimeline.add(null);
+          },
+        ));
   }
 }
