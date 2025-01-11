@@ -428,9 +428,10 @@ class MatrixRoom extends Room {
       }
 
       final result = switch (event.type) {
-        matrix.EventTypes.Sticker => event.content['url'] is String
-            ? MatrixTimelineEventSticker(event, client: c)
-            : null,
+        matrix.EventTypes.Sticker =>
+          event.content['url'] is String || event.content.containsKey('file')
+              ? MatrixTimelineEventSticker(event, client: c)
+              : null,
         matrix.EventTypes.Encrypted =>
           MatrixTimelineEventEncrypted(event, client: c),
         matrix.EventTypes.Reaction =>
