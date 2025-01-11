@@ -1,5 +1,6 @@
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/components/emoticon/emoticon_component.dart';
+import 'package:commet/client/components/pinned_messages/pinned_messages_component.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/timeline.dart';
@@ -62,6 +63,9 @@ class TimelineEventMenu {
     bool canReplyInThread = !isThreadTimeline && event is TimelineEventMessage;
 
     bool canCopy = event is TimelineEventMessage;
+
+    var pins = timeline.room.getComponent<PinnedMessagesComponent>();
+    bool canPin = pins?.canPinMessages == true;
 
     primaryActions = [
       if (canEditEvent)
@@ -134,6 +138,13 @@ class TimelineEventMenu {
     ];
 
     secondaryActions = [
+      if (canPin)
+        TimelineEventMenuEntry(
+            name: "Pin Message",
+            icon: Icons.push_pin,
+            action: (context) {
+              pins!.pinMessage(event.eventId);
+            }),
       if (canCopy)
         TimelineEventMenuEntry(
             name: CommonStrings.promptCopy,
