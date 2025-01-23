@@ -102,7 +102,9 @@ class MainPageState extends State<MainPage> {
 
     if (_previousSpace != null) return _previousSpace!.client.self!;
 
-    return clientManager.clients.first.self!;
+    return clientManager.clients
+        .firstWhere((client) => client.self != null)
+        .self!;
   }
 
   @override

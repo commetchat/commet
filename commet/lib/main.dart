@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:commet/cache/file_cache.dart';
+import 'package:commet/cache/app_data.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/component.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
@@ -39,7 +39,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:tiamat/config/style/theme_dark.dart';
 
 final GlobalKey<NavigatorState> navigator = GlobalKey();
-FileCache? fileCache;
+
 Preferences preferences = Preferences();
 ShortcutsManager shortcutsManager = ShortcutsManager();
 BackgroundTaskManager backgroundTaskManager = BackgroundTaskManager();
@@ -145,11 +145,7 @@ WidgetsBinding ensureBindingInit() {
 Future<void> initNecessary() async {
   sqfliteFfiInit();
   await preferences.init();
-  fileCache = FileCache.getFileCacheInstance();
-
-  await Future.wait([
-    if (fileCache != null) fileCache!.init(),
-  ]);
+  await AppData.instance.init();
 
   clientManager = await ClientManager.init();
   Diagnostics.setPostInit();
