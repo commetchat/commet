@@ -30,14 +30,20 @@ class MatrixMessageEffectsComponent
   MatrixMessageEffectsComponent(this.client) {
     var mx = client.getMatrixClient();
 
-    mx.addCommand("snowfall",
-        (args) => sendWithMsgType(args, msgType: effectTypeSnowfall));
+    mx.addCommand(
+        "snowfall",
+        (args) =>
+            sendWithMsgType(args, msgType: effectTypeSnowfall, fallback: "❄️"));
 
-    mx.addCommand("confetti",
-        (args) => sendWithMsgType(args, msgType: effectTypeConfetti));
+    mx.addCommand(
+        "confetti",
+        (args) =>
+            sendWithMsgType(args, msgType: effectTypeConfetti, fallback: "🎉"));
 
-    mx.addCommand("spaceinvaders",
-        (args) => sendWithMsgType(args, msgType: effectTypeSpaceInvaders));
+    mx.addCommand(
+        "spaceinvaders",
+        (args) => sendWithMsgType(args,
+            msgType: effectTypeSpaceInvaders, fallback: "👾"));
   }
 
   static const Set<String> knownEffectTypes = {
@@ -100,10 +106,10 @@ class MatrixMessageEffectsComponent
   }
 
   FutureOr<String?> sendWithMsgType(matrix.CommandArgs args,
-      {required String msgType}) async {
+      {required String msgType, required String fallback}) async {
     args.room.sendEvent({
       "msgtype": msgType,
-      "body": args.msg,
+      "body": args.msg.trim().isEmpty ? fallback : args.msg,
     });
 
     return null;
