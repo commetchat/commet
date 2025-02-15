@@ -1631,6 +1631,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.11.1"
+  starfield:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: "6e3dee6dd4f56c3d8afb180832c27418d101c86f"
+      url: "https://github.com/lagmachine-com/starfield.git"
+    source: git
+    version: "0.0.1"
   stream_channel:
     dependency: transitive
     description:
