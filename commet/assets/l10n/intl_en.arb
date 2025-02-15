@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-02-15T23:48:51.118840",
+  "@@last_modified": "2025-02-16T09:59:31.227694",
   "labelRoomsList": "Rooms",
   "@labelRoomsList": {
     "description": "Header label for the list of rooms",
@@ -589,6 +589,18 @@
     "placeholders": {
       "proxyUrl": {}
     }
+  },
+  "labelMessageEffectsTitle": "Message Effects",
+  "@labelMessageEffectsTitle": {
+    "description": "Header for the settings tile for message effects, such as confetti",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMessageEffectsDescription": "Messages can be sent with additional effects, such as confetti",
+  "@labelMessageEffectsDescription": {
+    "description": "Label describing what message effects are",
+    "type": "text",
+    "placeholders": {}
   },
   "labelThemeDark": "Dark Theme",
   "@labelThemeDark": {

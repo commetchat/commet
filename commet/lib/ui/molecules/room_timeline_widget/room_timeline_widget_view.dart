@@ -151,7 +151,9 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
         widget.markAsRead?.call(timeline.events[0]);
       }
 
-      effects?.doEffect(timeline.events[index]);
+      if (preferences.messageEffectsEnabled) {
+        effects?.doEffect(timeline.events[index]);
+      }
     }
 
     setState(() {});

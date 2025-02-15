@@ -43,6 +43,16 @@ class GeneralSettingsPageState extends State<GeneralSettingsPage> {
       args: [proxyUrl],
       name: "labelEncryptedPreviewDescription");
 
+  String get labelMessageEffectsTitle => Intl.message("Message Effects",
+      desc:
+          "Header for the settings tile for message effects, such as confetti",
+      name: "labelMessageEffectsTitle");
+
+  String get labelMessageEffectsDescription => Intl.message(
+      "Messages can be sent with additional effects, such as confetti",
+      desc: "Label describing what message effects are",
+      name: "labelMessageEffectsDescription");
+
   @override
   void initState() {
     enableTenor = preferences.tenorGifSearchEnabled;
@@ -52,43 +62,65 @@ class GeneralSettingsPageState extends State<GeneralSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Panel(
-      header: labelThirdPartyServicesTitle,
-      mode: TileType.surfaceContainerLow,
-      child: Column(children: [
-        settingToggle(
-          enableTenor,
-          title: labelGifSearchToggle,
-          description: labelGifSearchDescription(preferences.proxyUrl),
-          onChanged: (value) async {
-            setState(() {
-              enableTenor = value;
-            });
-            await preferences.setTenorGifSearch(value);
-            setState(() {
-              enableTenor = preferences.tenorGifSearchEnabled;
-            });
-          },
+    return Column(
+      children: [
+        Panel(
+          header: labelThirdPartyServicesTitle,
+          mode: TileType.surfaceContainerLow,
+          child: Column(children: [
+            settingToggle(
+              enableTenor,
+              title: labelGifSearchToggle,
+              description: labelGifSearchDescription(preferences.proxyUrl),
+              onChanged: (value) async {
+                setState(() {
+                  enableTenor = value;
+                });
+                await preferences.setTenorGifSearch(value);
+                setState(() {
+                  enableTenor = preferences.tenorGifSearchEnabled;
+                });
+              },
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            settingToggle(
+              enableEncryptedPreview,
+              title: labelEncryptedPreview,
+              description:
+                  labelEncryptedPreviewDescription("telescope.commet.chat"),
+              onChanged: (value) async {
+                setState(() {
+                  enableEncryptedPreview = value;
+                });
+                await preferences.setUseUrlPreviewInE2EEChat(value);
+                setState(() {
+                  enableEncryptedPreview = preferences.urlPreviewInE2EEChat;
+                });
+              },
+            ),
+          ]),
         ),
         const SizedBox(
           height: 10,
         ),
-        settingToggle(
-          enableEncryptedPreview,
-          title: labelEncryptedPreview,
-          description:
-              labelEncryptedPreviewDescription("telescope.commet.chat"),
-          onChanged: (value) async {
-            setState(() {
-              enableEncryptedPreview = value;
-            });
-            await preferences.setUseUrlPreviewInE2EEChat(value);
-            setState(() {
-              enableEncryptedPreview = preferences.urlPreviewInE2EEChat;
-            });
-          },
+        Panel(
+          header: labelMessageEffectsTitle,
+          mode: TileType.surfaceContainerLow,
+          child: Column(children: [
+            settingToggle(
+              preferences.messageEffectsEnabled,
+              title: labelMessageEffectsTitle,
+              description: labelMessageEffectsDescription,
+              onChanged: (value) async {
+                await preferences.setMessageEffectsEnabled(value);
+                setState(() {});
+              },
+            ),
+          ]),
         ),
-      ]),
+      ],
     );
   }
 
