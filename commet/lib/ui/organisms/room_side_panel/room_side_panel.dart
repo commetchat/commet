@@ -218,12 +218,24 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
   Widget buildPinnedMessages() {
     return SizedBox(
         width: Layout.desktop ? 300 : null,
-        child: RoomPinnedMessagesWidget(
-          room: widget.state.currentRoom!,
-          onEventClicked: (eventId) {
-            EventBus.jumpToEvent.add(eventId);
-            EventBus.focusTimeline.add(null);
-          },
+        child: Column(
+          children: [
+            if (Layout.mobile)
+              RoomQuickAccessMenuViewMobile(
+                room: widget.state.currentRoom!,
+                key: ValueKey(
+                    "quick_access_menu_${widget.state.currentRoom!.localId}"),
+              ),
+            Expanded(
+              child: RoomPinnedMessagesWidget(
+                room: widget.state.currentRoom!,
+                onEventClicked: (eventId) {
+                  EventBus.jumpToEvent.add(eventId);
+                  EventBus.focusTimeline.add(null);
+                },
+              ),
+            ),
+          ],
         ));
   }
 }
