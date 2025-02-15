@@ -168,6 +168,7 @@ class TimelineEventMenu {
             icon: Icons.push_pin,
             action: (context) {
               pins!.pinMessage(event.eventId);
+              onActionFinished?.call();
             }),
       if (canUnpin)
         TimelineEventMenuEntry(
@@ -175,6 +176,7 @@ class TimelineEventMenu {
             icon: Icons.push_pin,
             action: (context) {
               pins!.unpinMessage(event.eventId);
+              onActionFinished?.call();
             }),
       if (canCopy)
         TimelineEventMenuEntry(
