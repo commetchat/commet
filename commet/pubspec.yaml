@@ -39,7 +39,7 @@ dependencies:
   provider: ^6.0.0
   receive_intent: ^0.2.4
   scrollable_positioned_list: ^0.3.8
-  shared_preferences: ^2.0.18
+  shared_preferences: ^2.5.2
   sqflite: ^2.3.0
   sqflite_common_ffi: ^2.3.0+4
   test: ^1.24.3
