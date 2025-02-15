@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-02-16T09:59:31.227694",
+  "@@last_modified": "2025-02-16T10:27:45.795453",
   "labelRoomsList": "Rooms",
   "@labelRoomsList": {
     "description": "Header label for the list of rooms",
@@ -1305,6 +1305,12 @@
   "promptShowSource": "Show Source",
   "@promptShowSource": {
     "description": "Label for the menu option to view the JSON source of an event",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptReplayMessageEffect": "Replay Effect",
+  "@promptReplayMessageEffect": {
+    "description": "If a message was sent with an effect, this prompts to replay the effect",
     "type": "text",
     "placeholders": {}
   },
