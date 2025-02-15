@@ -28,4 +28,22 @@ class MatrixPinnedMessagesComponent
     pins.add(eventId);
     await room.matrixRoom.setPinnedEvents(pins);
   }
+
+  @override
+  Future<void> unpinMessage(String eventId) async {
+    var pins = room.matrixRoom.pinnedEventIds.toList();
+    pins.removeWhere((e) => e == eventId);
+    await room.matrixRoom.setPinnedEvents(pins);
+  }
+
+  @override
+  bool isMessagePinned(String eventId) {
+    final state = room.matrixRoom.getState(EventTypes.RoomPinnedEvents);
+    if (state == null) {
+      return false;
+    }
+
+    final pins = state.content["pinned"] as List<dynamic>;
+    return pins.contains(eventId);
+  }
 }

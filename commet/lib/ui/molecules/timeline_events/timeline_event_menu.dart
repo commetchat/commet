@@ -36,6 +36,10 @@ class TimelineEventMenu {
       desc: "Label for the menu option to pin a message",
       name: "promptPinMessage");
 
+  String get promptUnpinMessage => Intl.message("Unpin Message",
+      desc: "Label for the menu option to unpin a message",
+      name: "promptUnpinMessage");
+
   String get promptReplyInThread => Intl.message("Reply In Thread",
       desc: "Label for the menu option to reply to a message inside a thread",
       name: "promptReplyInThread");
@@ -78,10 +82,14 @@ class TimelineEventMenu {
     bool canCopy = event is TimelineEventMessage;
 
     var pins = timeline.room.getComponent<PinnedMessagesComponent>();
-    bool canPin = pins?.canPinMessages == true &&
+
+    bool canEditPinState = pins?.canPinMessages == true &&
         (event is TimelineEventMessage ||
             event is TimelineEventSticker ||
             event is TimelineEventEmote);
+    bool isPinned = pins?.isMessagePinned(event.eventId) == true;
+    bool canPin = canEditPinState && !isPinned;
+    bool canUnpin = canEditPinState && isPinned;
 
     primaryActions = [
       if (canEditEvent)
@@ -160,6 +168,13 @@ class TimelineEventMenu {
             icon: Icons.push_pin,
             action: (context) {
               pins!.pinMessage(event.eventId);
+            }),
+      if (canUnpin)
+        TimelineEventMenuEntry(
+            name: promptUnpinMessage,
+            icon: Icons.push_pin,
+            action: (context) {
+              pins!.unpinMessage(event.eventId);
             }),
       if (canCopy)
         TimelineEventMenuEntry(

@@ -7,5 +7,9 @@ abstract class PinnedMessagesComponent<R extends Client, T extends Room>
 
   Future<void> pinMessage(String eventId);
 
+  Future<void> unpinMessage(String eventId);
+
+  bool isMessagePinned(String eventId);
+
   bool get canPinMessages;
 }
