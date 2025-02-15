@@ -78,7 +78,10 @@ class TimelineEventMenu {
     bool canCopy = event is TimelineEventMessage;
 
     var pins = timeline.room.getComponent<PinnedMessagesComponent>();
-    bool canPin = pins?.canPinMessages == true;
+    bool canPin = pins?.canPinMessages == true &&
+        (event is TimelineEventMessage ||
+            event is TimelineEventSticker ||
+            event is TimelineEventEmote);
 
     primaryActions = [
       if (canEditEvent)
