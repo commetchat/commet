@@ -131,7 +131,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelSettingsStickerCompatibilityExplanation": "在某些 Matrix 客户端中，以 'm.sticker' 格式发送贴纸会导致贴纸无法正确加载。启用此设置后，贴纸将以 'm.image' 的形式发送，从而可以正确渲染",
+  "labelSettingsStickerCompatibilityExplanation": "在某些 matrix 客户端中，以 'm.sticker' 格式发送贴纸会导致贴纸无法正确加载。启用此设置后，贴纸将以 'm.image' 的形式发送，从而可以正确渲染",
   "@labelSettingsStickerCompatibilityExplanation": {
     "description": "Explains what sticker compatibility mode does",
     "type": "text",
@@ -266,7 +266,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelEmojiPickerGifTab": "GIF",
+  "labelEmojiPickerGifTab": "Gif",
   "@labelEmojiPickerGifTab": {
     "description": "Label for the gif search tab in the emoji picker",
     "type": "text",
@@ -970,7 +970,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelRestoreMatrixBackupTitle": "从备份文件恢复",
+  "labelRestoreMatrixBackupTitle": "恢复备份",
   "@labelRestoreMatrixBackupTitle": {
     "description": "Title of the popup dialog for restoring message backup",
     "type": "text",
@@ -1048,13 +1048,13 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelGifSearchToggle": "GIF 搜索",
+  "labelGifSearchToggle": "Gif 搜索",
   "@labelGifSearchToggle": {
     "description": "Label for the toggle for enabling and disabling gif search",
     "type": "text",
     "placeholders": {}
   },
-  "labelGifSearchDescription": "启用 Tenor GIF 搜索。请求将通过 {proxyUrl} 进行代理",
+  "labelGifSearchDescription": "启用 Tenor gif 搜索。请求将通过 {proxyUrl} 进行代理",
   "@labelGifSearchDescription": {
     "description": "Explains that gifs will be fetched via proxy",
     "type": "text",
@@ -1086,7 +1086,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelEncryptedPreviewDescription": "启用使用代理服务器 ({proxyUrl}) 在加密聊天中获取 URL 预览。这些请求的内容将使用 Commet 的“加密URL预览”以隐藏您的主服务器\n了解更多：https://github.com/commetchat/encrypted_url_preview",
+  "labelEncryptedPreviewDescription": "启用使用代理服务器 ({proxyUrl}) 在加密聊天中获取 url 预览。这些请求的内容将使用 Commet 的“加密 url 预览”以隐藏您的主服务器\n了解更多：https://github.com/commetchat/encrypted_url_preview",
   "@labelEncryptedPreviewDescription": {
     "description": "Explains briefly how encrypted url preview works",
     "type": "text",
@@ -1130,7 +1130,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelThemeAmoled": "AMOLED主题",
+  "labelThemeAmoled": "Amoled",
   "@labelThemeAmoled": {
     "description": "Label for the light theme",
     "type": "text",
@@ -1537,5 +1537,113 @@
     "description": "Prompt text to go backwards, probably for navigation",
     "type": "text",
     "placeholders": {}
+  },
+  "noPinnedMessages": "没有消息被置顶！",
+  "@noPinnedMessages": {
+    "description": "Placeholder label in the pinned messages menu that is shown when there are no pinned messages",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageUserBanned": "{sender} 封禁了 {user}",
+  "@messageUserBanned": {
+    "description": "Message body for when a user bans another user from the room",
+    "type": "text",
+    "placeholders": {
+      "sender": {},
+      "user": {}
+    }
+  },
+  "messageUserUnbanned": "{sender} 解封了 {user}",
+  "@messageUserUnbanned": {
+    "description": "Message body for when a user reverts a ban of another user",
+    "type": "text",
+    "placeholders": {
+      "sender": {},
+      "user": {}
+    }
+  },
+  "messageUserPinnedEvent": "{user} 置顶了一条消息！",
+  "@messageUserPinnedEvent": {
+    "description": "Message body for when a user adds an event to the room's pinned messages",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messageUserUnpinnedEvent": "{user} 取消置顶了消息",
+  "@messageUserUnpinnedEvent": {
+    "description": "Message body for when a user removes an event from the room's pinned messages",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "promptPinMessage": "置顶消息",
+  "@promptPinMessage": {
+    "description": "Label for the menu option to pin a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptUnpinMessage": "取消置顶消息",
+  "@promptUnpinMessage": {
+    "description": "Label for the menu option to unpin a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptReplyInThread": "在消息列中回复",
+  "@promptReplyInThread": {
+    "description": "Label for the menu option to reply to a message inside a thread",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptShowSource": "显示源码",
+  "@promptShowSource": {
+    "description": "Label for the menu option to view the JSON source of an event",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMessageEffectsTitle": "消息效果",
+  "@labelMessageEffectsTitle": {
+    "description": "Header for the settings tile for message effects, such as confetti",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMessageEffectsDescription": "消息可以附加额外效果发送，例如五彩纸屑",
+  "@labelMessageEffectsDescription": {
+    "description": "Label describing what message effects are",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptReplayMessageEffect": "重放效果",
+  "@promptReplayMessageEffect": {
+    "description": "If a message was sent with an effect, this prompts to replay the effect",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messagePlaceholderUserUpdatedNameDetailed": "{user} 将他们的显示名称更改为 '{newName}'",
+  "@messagePlaceholderUserUpdatedNameDetailed": {
+    "description": "Message body for when a user updates their display name",
+    "type": "text",
+    "placeholders": {
+      "user": {},
+      "newName": {}
+    }
+  },
+  "messageUserRetractedInvite": "{sender} 撤回了对 {user} 的邀请",
+  "@messageUserRetractedInvite": {
+    "description": "Message body for when a user's invitation to a room was withdrawn",
+    "type": "text",
+    "placeholders": {
+      "sender": {},
+      "user": {}
+    }
+  },
+  "messageUserAcceptedInvite": "{user} 接受了邀请",
+  "@messageUserAcceptedInvite": {
+    "description": "Message body for when a user accepted an invitation to a room",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
   }
 }
