@@ -7,6 +7,10 @@
 
 #include "flutter/generated_plugin_registrant.h"
 
+#include <filesystem> 
+using namespace std;
+using namespace std::filesystem;
+
 struct _MyApplication {
   GtkApplication parent_instance;
   char** dart_entrypoint_arguments;
@@ -22,6 +26,11 @@ static void my_application_activate(GApplication* application) {
 
   
   gtk_window_set_title(window, "commet");
+  
+  const string iconFilename = "assets/images/app_icon/app_icon_rounded.png";
+  path execDir = canonical(read_symlink("/proc/self/exe")).parent_path();
+  path iconPath = execDir / "data/flutter_assets" / iconFilename;
+  gtk_window_set_icon_from_file(GTK_WINDOW(window), iconPath.c_str(), NULL);
 
   gtk_window_set_default_size(window, 1280, 720);
   gtk_widget_show(GTK_WIDGET(window));
