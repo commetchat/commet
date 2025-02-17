@@ -589,7 +589,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "errorMatrixPassphraseMustContainUpperAndLowercase": "La frase de contraseña debe contener al menos una mayúscula y una minúscula",
+  "errorMatrixPassphraseMustContainUpperAndLowercase": "La frase de contraseña debe contener al menos una mayúscula y una minúscula.",
   "@errorMatrixPassphraseMustContainUpperAndLowercase": {
     "description": "Explains constraints of recovery passphrase",
     "type": "text",
@@ -661,7 +661,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelMatrixWarnResetKeysIsPermanent": "Restablecer tus claves es permanente, y resultará en la pérdida de la copia de seguridad de tu historial de chats. ¡Es casi seguro que no quieres hacer esto!",
+  "labelMatrixWarnResetKeysIsPermanent": "Restablecer tus claves es permanente, y resultará en la pérdida de la copia de seguridad de tu historial de chat. ¡Es casi seguro que no quieres hacer esto!",
   "@labelMatrixWarnResetKeysIsPermanent": {
     "description": "Explains that resetting keys is permanent, should emphasize that this isnt really a great idea",
     "type": "text",
@@ -1019,7 +1019,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelRestoreMatrixBackupTitle": "Restaurar copia de seguridad",
+  "labelRestoreMatrixBackupTitle": "Restaurar desde copia de seguridad",
   "@labelRestoreMatrixBackupTitle": {
     "description": "Title of the popup dialog for restoring message backup",
     "type": "text",
@@ -1103,7 +1103,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelGifSearchToggle": "Buscar gifs",
+  "labelGifSearchToggle": "Buscar gif",
   "@labelGifSearchToggle": {
     "description": "Label for the toggle for enabling and disabling gif search",
     "type": "text",
@@ -1304,7 +1304,7 @@
       "emote": {}
     }
   },
-  "labelThemeAmoled": "Amoled",
+  "labelThemeAmoled": "AMOLED",
   "@labelThemeAmoled": {
     "description": "Label for the light theme",
     "type": "text",
@@ -1324,7 +1324,7 @@
       "proxyUrl": {}
     }
   },
-  "labelSettingsStickerCompatibilityExplanation": "En algunos clientes de matrix, enviar una etiqueta como 'm.sticker' hará que la etiqueta no se cargue correctamente. Al habilitar esta configuración, se enviarán pegatinas como 'm.image', lo que permitirá que se representen correctamente",
+  "labelSettingsStickerCompatibilityExplanation": "En algunos clientes de Matrix, enviar una etiqueta como 'm.sticker' hará que la etiqueta no se cargue correctamente. Al habilitar esta configuración, se enviarán pegatinas como 'm.image', lo que permitirá que se representen correctamente",
   "@labelSettingsStickerCompatibilityExplanation": {
     "description": "Explains what sticker compatibility mode does",
     "type": "text",

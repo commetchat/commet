@@ -74,7 +74,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "promptCreateEmoticonPack": "Sortu bilduma",
+  "promptCreateEmoticonPack": "Sortu sorta",
   "@promptCreateEmoticonPack": {
     "description": "Prompt to create a new emoticon pack, for emoji or stickers",
     "type": "text",
@@ -98,7 +98,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "promptConfirmDeleteEmoticonPack": "Ziur **{packName}** bilduma ezabatu nahi duzula?",
+  "promptConfirmDeleteEmoticonPack": "Ziur **{packName}** sorta ezabatu nahi duzula?",
   "@promptConfirmDeleteEmoticonPack": {
     "description": "Prompt to confirm deletion of an emoticon pack, supports markdown to emphasise the pack name",
     "type": "text",
@@ -124,25 +124,25 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelMatrixPermissionsRoomSendMessagesTitle": "Mezuak bidaltzea",
+  "labelMatrixPermissionsRoomSendMessagesTitle": "Mezuen bidalketa",
   "@labelMatrixPermissionsRoomSendMessagesTitle": {
     "description": "Title for the permission to send messages",
     "type": "text",
     "placeholders": {}
   },
-  "labelMatrixPermissionsRoomAddReactionsTitle": "Erreakzioak gehitzea",
+  "labelMatrixPermissionsRoomAddReactionsTitle": "Erreakzioen erabilera",
   "@labelMatrixPermissionsRoomAddReactionsTitle": {
     "description": "Title for the permission to add an emoji reaction to a message",
     "type": "text",
     "placeholders": {}
   },
-  "labelMatrixPermissionsRoomHistoryVisibilityTitle": "Historiaren ikusgaitasuna",
+  "labelMatrixPermissionsRoomHistoryVisibilityTitle": "Historiaren ikusgaitasunaren aldaketa",
   "@labelMatrixPermissionsRoomHistoryVisibilityTitle": {
     "description": "Title for the permission to add change room history settings",
     "type": "text",
     "placeholders": {}
   },
-  "labelMatrixPermissionsChangeRoomPermissionsTitle": "Baimenak aldatzea",
+  "labelMatrixPermissionsChangeRoomPermissionsTitle": "Baimenen aldaketa",
   "@labelMatrixPermissionsChangeRoomPermissionsTitle": {
     "description": "Title for the permission to change permissions of the room",
     "type": "text",
@@ -184,7 +184,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelRestoreMatrixBackupTitle": "Leheneratu babeskopia",
+  "labelRestoreMatrixBackupTitle": "Leheneratu babeskopia erabiliz",
   "@labelRestoreMatrixBackupTitle": {
     "description": "Title of the popup dialog for restoring message backup",
     "type": "text",
@@ -334,7 +334,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelMatrixPermissionsRoomAvatarDescription": "Aldatu gelaren abatar irudia",
+  "labelMatrixPermissionsRoomAvatarDescription": "Gela honen abatar-irudia aldatzeko ahalmena",
   "@labelMatrixPermissionsRoomAvatarDescription": {
     "description": "Title for the permission to add change the rooms avatar image",
     "type": "text",
@@ -384,13 +384,13 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelMatrixPermissionsRoomSendMessagesDescription": "Erabiltzailea baimentzen du gela honetan mezuak bidaltzeko",
+  "labelMatrixPermissionsRoomSendMessagesDescription": "Gela honetan mezuak bidaltzeko ahalmena",
   "@labelMatrixPermissionsRoomSendMessagesDescription": {
     "description": "Describes the permission to send messages",
     "type": "text",
     "placeholders": {}
   },
-  "labelMatrixPermissionsChangeRoomTopicDescription": "Erabiltzailea baimentzen du gela honen gaia aldatzeko",
+  "labelMatrixPermissionsChangeRoomTopicDescription": "Gela honen gaia aldatzeko ahalmena",
   "@labelMatrixPermissionsChangeRoomTopicDescription": {
     "description": "Description for the permission to add change the rooms topic",
     "type": "text",
@@ -446,7 +446,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelThemeAmoled": "Amoled",
+  "labelThemeAmoled": "AMOLED",
   "@labelThemeAmoled": {
     "description": "Label for the light theme",
     "type": "text",
@@ -795,7 +795,7 @@
       "user": {}
     }
   },
-  "labelJumpToLatest": "Joan mezu berrienetara",
+  "labelJumpToLatest": "Joan mezu berrienera",
   "@labelJumpToLatest": {
     "description": "Label for the button which jumps the room timeline view to the latest message",
     "type": "text",
@@ -842,7 +842,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelEmojiPickerGifTab": "Gifak",
+  "labelEmojiPickerGifTab": "GIFak",
   "@labelEmojiPickerGifTab": {
     "description": "Label for the gif search tab in the emoji picker",
     "type": "text",
@@ -862,13 +862,13 @@
     "type": "text",
     "placeholders": {}
   },
-  "sendEncryptedMessagePrompt": "Bidali zifratutako mezu bat",
+  "sendEncryptedMessagePrompt": "Bidali zifratutako mezua",
   "@sendEncryptedMessagePrompt": {
     "description": "Placeholder text for message input in an encrypted room",
     "type": "text",
     "placeholders": {}
   },
-  "sendUnencryptedMessagePrompt": "Bidali mezu bat",
+  "sendUnencryptedMessagePrompt": "Bidali mezua",
   "@sendUnencryptedMessagePrompt": {
     "description": "Placeholder text for message input in an unencrypted room",
     "type": "text",
@@ -928,7 +928,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelHomeRecentActivity": "Berriki gertatutakoak",
+  "labelHomeRecentActivity": "Oraintsu",
   "@labelHomeRecentActivity": {
     "description": "Short label for header of recent room activity",
     "type": "text",
@@ -1042,7 +1042,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "promptImportPack": "Inportatu bilduma",
+  "promptImportPack": "Inportatu sorta",
   "@promptImportPack": {
     "description": "Prompt to import a set of emoticons from an existing pack",
     "type": "text",
@@ -1056,7 +1056,7 @@
       "emoticon": {}
     }
   },
-  "promptEmoticonPackName": "Bildumaren izena",
+  "promptEmoticonPackName": "Sortaren izena",
   "@promptEmoticonPackName": {
     "description": "Prompt for the input of the name of an emoticon pack",
     "type": "text",
@@ -1122,103 +1122,103 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelMatrixPermissionsRoomDeleteMessagesDescription": "Besteei bidalitako mezuak ezabatzea ahalbidetzen du",
+  "labelMatrixPermissionsRoomDeleteMessagesDescription": "Beste erabiltzaileek bidalitako mezuak ezabatzeko ahalmena",
   "@labelMatrixPermissionsRoomDeleteMessagesDescription": {
     "description": "Describes the permission to delete messages",
     "type": "text",
     "placeholders": {}
   },
-  "labelMatrixPermissionsRoomDeleteMessagesTitle": "Mezuak ezabatzea",
+  "labelMatrixPermissionsRoomDeleteMessagesTitle": "Mezuen ezabaketa",
   "@labelMatrixPermissionsRoomDeleteMessagesTitle": {
     "description": "Title for permission to delete messages",
     "type": "text",
     "placeholders": {}
   },
-  "labelMatrixPermissionsRoleMember": "Gelaren kidea",
+  "labelMatrixPermissionsRoleMember": "Kidea",
   "@labelMatrixPermissionsRoleMember": {
     "description": "Label for the room member role",
     "type": "text",
     "placeholders": {}
   },
-  "labelMatrixPermissionsSpaceManageChildrenDescription": "Erabiltzailea baimentzen du gune honetako gelak zeintzuk diren kudeatzeko",
+  "labelMatrixPermissionsSpaceManageChildrenDescription": "Gune honetako gelak zeiuntzuk diren kudeatzeko ahalmena",
   "@labelMatrixPermissionsSpaceManageChildrenDescription": {
     "description": "Describes the permission to manage child rooms",
     "type": "text",
     "placeholders": {}
   },
-  "labelMatrixPermissionsSpaceManageChildrenTitle": "Kudeatu habiratutakoak",
+  "labelMatrixPermissionsSpaceManageChildrenTitle": "Habiratutakoen kudeaketa",
   "@labelMatrixPermissionsSpaceManageChildrenTitle": {
     "description": "Title for permission to manage children",
     "type": "text",
     "placeholders": {}
   },
-  "labelMatrixPermissionsRoomAvatarTitle": "Ezarri gelaren abatarra",
+  "labelMatrixPermissionsRoomAvatarTitle": "Gelaren abatarraren aldaketa",
   "@labelMatrixPermissionsRoomAvatarTitle": {
     "description": "Title for the permission to add change the rooms avatar image",
     "type": "text",
     "placeholders": {}
   },
-  "labelMatrixPermissionsChangeRoomNameTitle": "Aldatu gelaren izena",
+  "labelMatrixPermissionsChangeRoomNameTitle": "Gelaren izenaren aldaketa",
   "@labelMatrixPermissionsChangeRoomNameTitle": {
     "description": "Title for the permission to add change the rooms name",
     "type": "text",
     "placeholders": {}
   },
-  "labelMatrixPermissionsRoomAddReactionsDescription": "Erabiltzailea baimentzen du mezuei errakzionatzeko",
+  "labelMatrixPermissionsRoomAddReactionsDescription": "Mezuei erreakzionatzeko ahalmena",
   "@labelMatrixPermissionsRoomAddReactionsDescription": {
     "description": "describes the permission to add an emoji reaction to a message",
     "type": "text",
     "placeholders": {}
   },
-  "labelMatrixPermissionsRoomHistoryVisibilityDescription": "Erabiltzailea baimentzen du gela honetako txat historiaren ikusgaitasuna aldatzeko",
+  "labelMatrixPermissionsRoomHistoryVisibilityDescription": "Gela honen txat-historiaren ikusgaitasuna aldatzeko ahalmena",
   "@labelMatrixPermissionsRoomHistoryVisibilityDescription": {
     "description": "describes the permission to change room history settings",
     "type": "text",
     "placeholders": {}
   },
-  "labelMatrixPermissionsChangeRoomNameDescription": "Erabiltzailea baimentzen du gela honen izena aldatzeko",
+  "labelMatrixPermissionsChangeRoomNameDescription": "Gela honen izena aldatzeko ahalmena",
   "@labelMatrixPermissionsChangeRoomNameDescription": {
     "description": "Description for the permission to add change the rooms name",
     "type": "text",
     "placeholders": {}
   },
-  "labelMatrixPermissionsKickUserTitle": "Erabiltzaileak kanporatzea",
+  "labelMatrixPermissionsKickUserTitle": "Erabiltzaileen kanporaketa",
   "@labelMatrixPermissionsKickUserTitle": {
     "description": "Title for the permission to kick other users out of the room",
     "type": "text",
     "placeholders": {}
   },
-  "labelMatrixPermissionsBanUserTitle": "Erabiltzaileei debekua jartzea",
+  "labelMatrixPermissionsBanUserTitle": "Debekuen ezarpena",
   "@labelMatrixPermissionsBanUserTitle": {
     "description": "Title for the permission to ban other users from the room",
     "type": "text",
     "placeholders": {}
   },
-  "labelSettingsTabManageAccounts": "Kontuak kudeatzea",
+  "labelSettingsTabManageAccounts": "Kontuen kudeaketa",
   "@labelSettingsTabManageAccounts": {
     "description": "Label for the Manage Accounts settings",
     "type": "text",
     "placeholders": {}
   },
-  "labelMatrixPermissionsChangeRoomTopicTitle": "Aldatu gelaren gaia",
+  "labelMatrixPermissionsChangeRoomTopicTitle": "Gelaren gaiaren aldaketa",
   "@labelMatrixPermissionsChangeRoomTopicTitle": {
     "description": "Title for the permission to add change the rooms topic",
     "type": "text",
     "placeholders": {}
   },
-  "labelMatrixPermissionsKickUserDescription": "Beste erabiltzaileak gelatik kanporatzeko gaitasuna",
+  "labelMatrixPermissionsKickUserDescription": "Erabiltzaileak gelatik kanporatzeko ahalmena",
   "@labelMatrixPermissionsKickUserDescription": {
     "description": "Description for the permission to kick other users out of the room",
     "type": "text",
     "placeholders": {}
   },
-  "labelMatrixPermissionsBanUserDescription": "Beste erabiltzaileei gelara sartzeko debekua jartzeko gaitasuna",
+  "labelMatrixPermissionsBanUserDescription": "Erabiltzaileei gelako sarbidea galarazteko ahalmena",
   "@labelMatrixPermissionsBanUserDescription": {
     "description": "Description for the permission to ban other users from the room",
     "type": "text",
     "placeholders": {}
   },
-  "labelMatrixPermissionsChangeRoomPermissionsDescription": "Erabiltzailea baimentzen du baimenen ezarpenak aldatzeko",
+  "labelMatrixPermissionsChangeRoomPermissionsDescription": "Gela honen baimenen ezarpenak aldatzeko ahalmena",
   "@labelMatrixPermissionsChangeRoomPermissionsDescription": {
     "description": "Description for the permission to change permissions of the room",
     "type": "text",
@@ -1278,7 +1278,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "promptAbortWipingMatrixKeys": "Itxaron, ez!",
+  "promptAbortWipingMatrixKeys": "Itxaron! Ez!",
   "@promptAbortWipingMatrixKeys": {
     "description": "Text on the button which aborts wiping matrix encryption keys",
     "type": "text",
@@ -1446,7 +1446,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelMatrixMessageBackupExplanation": "Mezuen historiaren babeskopia bat gordetzen du, saio guztiak galtzen badituzu. Zure mezuak zifratu egingo dira igo aurretik",
+  "labelMatrixMessageBackupExplanation": "Gorde mezuen historiaren babeskopia saio guztiak galtzen badituzu historia berreskuratzeko. Mezuak zifratuko dira igo aurretik",
   "@labelMatrixMessageBackupExplanation": {
     "description": "Explains what matrix message backup does",
     "type": "text",
@@ -1506,7 +1506,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelGifSearchToggle": "Gif bilatzailea",
+  "labelGifSearchToggle": "GIF bilatzailea",
   "@labelGifSearchToggle": {
     "description": "Label for the toggle for enabling and disabling gif search",
     "type": "text",
@@ -1530,7 +1530,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelGifSearchDescription": "Gaitu Tenor gif bilaketa erabiltzeko. Eskaerak {proxyUrl} bidez bideratuko dira",
+  "labelGifSearchDescription": "Gaitu Tenor GIFen bilaketa erabiltzeko. Eskaerak {proxyUrl} bidez bideratuko dira",
   "@labelGifSearchDescription": {
     "description": "Explains that gifs will be fetched via proxy",
     "type": "text",
