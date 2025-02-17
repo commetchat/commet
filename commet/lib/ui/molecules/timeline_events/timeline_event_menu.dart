@@ -1,5 +1,6 @@
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/components/emoticon/emoticon_component.dart';
+import 'package:commet/client/components/message_effects/message_effect_component.dart';
 import 'package:commet/client/components/pinned_messages/pinned_messages_component.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
@@ -48,6 +49,11 @@ class TimelineEventMenu {
       desc: "Label for the menu option to view the JSON source of an event",
       name: "promptShowSource");
 
+  String get promptReplayMessageEffect => Intl.message("Replay Effect",
+      desc:
+          "If a message was sent with an effect, this prompts to replay the effect",
+      name: "promptReplayMessageEffect");
+
   TimelineEventMenu({
     required this.timeline,
     required this.event,
@@ -91,7 +97,19 @@ class TimelineEventMenu {
     bool canPin = canEditPinState && !isPinned;
     bool canUnpin = canEditPinState && isPinned;
 
+    var effects = timeline.room.client.getComponent<MessageEffectComponent>();
+
+    bool hasEffect = effects?.hasEffect(event) == true;
+
     primaryActions = [
+      if (hasEffect)
+        TimelineEventMenuEntry(
+            name: promptReplayMessageEffect,
+            icon: Icons.celebration,
+            action: (BuildContext context) {
+              effects?.doEffect(event);
+              onActionFinished?.call();
+            }),
       if (canEditEvent)
         TimelineEventMenuEntry(
             name: CommonStrings.promptEdit,
@@ -134,19 +152,6 @@ class TimelineEventMenu {
             });
           },
         ),
-      if (canReplyInThread)
-        TimelineEventMenuEntry(
-          name: promptReplyInThread,
-          icon: Icons.message_rounded,
-          action: (context) {
-            EventBus.openThread.add((
-              timeline.client.identifier,
-              timeline.room.identifier,
-              event.eventId
-            ));
-            onActionFinished?.call();
-          },
-        ),
       if (canDeleteEvent)
         TimelineEventMenuEntry(
             name: CommonStrings.promptDelete,
@@ -162,6 +167,19 @@ class TimelineEventMenu {
     ];
 
     secondaryActions = [
+      if (canReplyInThread)
+        TimelineEventMenuEntry(
+          name: promptReplyInThread,
+          icon: Icons.message_rounded,
+          action: (context) {
+            EventBus.openThread.add((
+              timeline.client.identifier,
+              timeline.room.identifier,
+              event.eventId
+            ));
+            onActionFinished?.call();
+          },
+        ),
       if (canPin)
         TimelineEventMenuEntry(
             name: promptPinMessage,

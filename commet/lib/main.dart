@@ -18,6 +18,7 @@ import 'package:commet/ui/pages/main/main_page.dart';
 import 'package:commet/utils/android_intent_helper.dart';
 import 'package:commet/utils/custom_uri.dart';
 import 'package:commet/utils/background_tasks/background_task_manager.dart';
+import 'package:commet/utils/database/database_server.dart';
 import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/scaled_app.dart';
@@ -145,6 +146,8 @@ WidgetsBinding ensureBindingInit() {
 Future<void> initNecessary() async {
   sqfliteFfiInit();
   await preferences.init();
+  await initDatabaseServer();
+
   fileCache = FileCache.getFileCacheInstance();
 
   await Future.wait([
