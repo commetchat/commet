@@ -5,8 +5,8 @@
   <summary>Your space to connect!</summary>
   <developer_name>Airyz</developer_name>
   <url type="homepage">https://commet.chat</url>
-  <metadata_license>AGPL-3.0</metadata_license>
-  <project_license>AGPL-3.0</project_license>
+  <metadata_license>AGPL-3.0-only</metadata_license>
+  <project_license>AGPL-3.0-only</project_license>
   <supports>
     <control>pointing</control>
     <control>keyboard</control>
