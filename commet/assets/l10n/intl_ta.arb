@@ -633,25 +633,6 @@
     "type": "text",
     "placeholders": {}
   },
-  "typingUsers": "{howMany, plural, = 1 {{{user1} தட்டச்சு செய்கிறது ...} = 2 {{{user1} மற்றும் {user2} தட்டச்சு செய்கின்றன ...} சில {{user1}, {user2}, மற்றும் {user3} தட்டச்சு செய்கின்றன. ..} பிற {Several people are typing...}}",
-  "@typingUsers": {
-    "description": "Text to display which users are currently typing",
-    "type": "text",
-    "placeholders": {
-      "howMany": {},
-      "user1": {},
-      "user2": {},
-      "user3": {}
-    }
-  },
-  "messagePlaceholderSticker": "{பயனர் a ஒரு ச்டிக்கரை அனுப்பினார்",
-  "@messagePlaceholderSticker": {
-    "description": "Message body for when a user sends a sticker",
-    "type": "text",
-    "placeholders": {
-      "user": {}
-    }
-  },
   "messagePlaceholderUserCreatedRoom": "{user} அறையை உருவாக்கினார்!",
   "@messagePlaceholderUserCreatedRoom": {
     "description": "Message body for when a user created the room",
@@ -739,14 +720,6 @@
   "labelInvitationBodyWithSender": "{user} உங்களை ஒரு அறைக்கு அழைத்தார்",
   "@labelInvitationBodyWithSender": {
     "description": "Message body for when an invitation was received, and we have a name for the sender",
-    "type": "text",
-    "placeholders": {
-      "user": {}
-    }
-  },
-  "labelInvitationsForUser": "{பயனருக்கான அழைப்புகள்",
-  "@labelInvitationsForUser": {
-    "description": "Label for the list of incoming invitations, specifying which user these invitations are intended for",
     "type": "text",
     "placeholders": {
       "user": {}
@@ -1511,14 +1484,6 @@
     "description": "Text on a button to leave a space",
     "type": "text",
     "placeholders": {}
-  },
-  "promptLeaveSpaceConfirmation": "நீங்கள் நிச்சயமாக {ச்பேச் பெயேனை விட்டு வெளியேற விரும்புகிறீர்களா?",
-  "@promptLeaveSpaceConfirmation": {
-    "description": "Text for the popup dialog confirming the intent to leave a space",
-    "type": "text",
-    "placeholders": {
-      "spaceName": {}
-    }
   },
   "messageLoginFailed": "உள்நுழைவு தோல்வியுற்றது ...",
   "@messageLoginFailed": {
