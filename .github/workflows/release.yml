@@ -384,7 +384,7 @@ jobs:
         with:
           flutter-version: '3.24.4'
           channel: 'stable'
-commet-linux-portable-x64.tar.gz
+
       - name: Setup Tools
         run: |
           sudo apt-get update -y
