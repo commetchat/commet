@@ -134,6 +134,8 @@ class Log {
     var entry = LogEntryException(LogType.error,
         content ?? "${object.toString()} ($info)", object, trace);
     _print(entry);
+    // ignore: avoid_print
+    print(trace);
   }
 
   static Function(FlutterErrorDetails)? _previousReporter;
