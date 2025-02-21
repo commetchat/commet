@@ -1,5 +1,7 @@
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/components/emoticon/emoticon_component.dart';
+import 'package:commet/client/components/message_effects/message_effect_component.dart';
+import 'package:commet/client/components/pinned_messages/pinned_messages_component.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/timeline.dart';
@@ -16,6 +18,7 @@ import 'package:commet/utils/download_utils.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 
 class TimelineEventMenu {
   final Timeline timeline;
@@ -29,6 +32,27 @@ class TimelineEventMenu {
   final Function()? onActionFinished;
 
   final bool isThreadTimeline;
+
+  String get promptPinMessage => Intl.message("Pin Message",
+      desc: "Label for the menu option to pin a message",
+      name: "promptPinMessage");
+
+  String get promptUnpinMessage => Intl.message("Unpin Message",
+      desc: "Label for the menu option to unpin a message",
+      name: "promptUnpinMessage");
+
+  String get promptReplyInThread => Intl.message("Reply In Thread",
+      desc: "Label for the menu option to reply to a message inside a thread",
+      name: "promptReplyInThread");
+
+  String get promptShowSource => Intl.message("Show Source",
+      desc: "Label for the menu option to view the JSON source of an event",
+      name: "promptShowSource");
+
+  String get promptReplayMessageEffect => Intl.message("Replay Effect",
+      desc:
+          "If a message was sent with an effect, this prompts to replay the effect",
+      name: "promptReplayMessageEffect");
 
   TimelineEventMenu({
     required this.timeline,
@@ -63,7 +87,29 @@ class TimelineEventMenu {
 
     bool canCopy = event is TimelineEventMessage;
 
+    var pins = timeline.room.getComponent<PinnedMessagesComponent>();
+
+    bool canEditPinState = pins?.canPinMessages == true &&
+        (event is TimelineEventMessage ||
+            event is TimelineEventSticker ||
+            event is TimelineEventEmote);
+    bool isPinned = pins?.isMessagePinned(event.eventId) == true;
+    bool canPin = canEditPinState && !isPinned;
+    bool canUnpin = canEditPinState && isPinned;
+
+    var effects = timeline.room.client.getComponent<MessageEffectComponent>();
+
+    bool hasEffect = effects?.hasEffect(event) == true;
+
     primaryActions = [
+      if (hasEffect)
+        TimelineEventMenuEntry(
+            name: promptReplayMessageEffect,
+            icon: Icons.celebration,
+            action: (BuildContext context) {
+              effects?.doEffect(event);
+              onActionFinished?.call();
+            }),
       if (canEditEvent)
         TimelineEventMenuEntry(
             name: CommonStrings.promptEdit,
@@ -106,19 +152,6 @@ class TimelineEventMenu {
             });
           },
         ),
-      if (canReplyInThread)
-        TimelineEventMenuEntry(
-          name: "Reply in Thread",
-          icon: Icons.message_rounded,
-          action: (context) {
-            EventBus.openThread.add((
-              timeline.client.identifier,
-              timeline.room.identifier,
-              event.eventId
-            ));
-            onActionFinished?.call();
-          },
-        ),
       if (canDeleteEvent)
         TimelineEventMenuEntry(
             name: CommonStrings.promptDelete,
@@ -134,6 +167,35 @@ class TimelineEventMenu {
     ];
 
     secondaryActions = [
+      if (canReplyInThread)
+        TimelineEventMenuEntry(
+          name: promptReplyInThread,
+          icon: Icons.message_rounded,
+          action: (context) {
+            EventBus.openThread.add((
+              timeline.client.identifier,
+              timeline.room.identifier,
+              event.eventId
+            ));
+            onActionFinished?.call();
+          },
+        ),
+      if (canPin)
+        TimelineEventMenuEntry(
+            name: promptPinMessage,
+            icon: Icons.push_pin,
+            action: (context) {
+              pins!.pinMessage(event.eventId);
+              onActionFinished?.call();
+            }),
+      if (canUnpin)
+        TimelineEventMenuEntry(
+            name: promptUnpinMessage,
+            icon: Icons.push_pin,
+            action: (context) {
+              pins!.unpinMessage(event.eventId);
+              onActionFinished?.call();
+            }),
       if (canCopy)
         TimelineEventMenuEntry(
             name: CommonStrings.promptCopy,
@@ -147,7 +209,7 @@ class TimelineEventMenu {
               onActionFinished?.call();
             }),
       TimelineEventMenuEntry(
-          name: "Show Source",
+          name: promptShowSource,
           icon: Icons.code,
           action: (BuildContext context) {
             onActionFinished?.call();

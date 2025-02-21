@@ -7,6 +7,7 @@ import 'package:commet/ui/molecules/read_indicator.dart';
 import 'package:commet/ui/molecules/room_timeline_widget/room_timeline_widget.dart';
 import 'package:commet/ui/molecules/typing_indicators_widget.dart';
 import 'package:commet/ui/organisms/chat/chat.dart';
+import 'package:commet/ui/organisms/particle_player/particle_player.dart';
 import 'package:commet/utils/autofill_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -42,7 +43,11 @@ class ChatView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(children: [
-      Expanded(child: timeline()),
+      Expanded(
+          child: Stack(
+        fit: StackFit.expand,
+        children: [timeline(), const ParticlePlayer()],
+      )),
       input(),
     ]);
   }

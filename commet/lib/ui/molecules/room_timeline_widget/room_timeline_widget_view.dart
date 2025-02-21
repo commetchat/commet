@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:commet/client/components/message_effects/message_effect_component.dart';
 import 'package:commet/client/timeline.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/config/build_config.dart';
@@ -78,6 +79,8 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
   bool isLoadingFuture = false;
   bool isLoadingHistory = false;
 
+  MessageEffectComponent? effects;
+
   @override
   void initState() {
     initFromTimeline(widget.timeline);
@@ -85,6 +88,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
     controller = ScrollController(initialScrollOffset: -999999);
     EventBus.jumpToEvent.stream.listen(jumpToEvent);
     WidgetsBinding.instance.addPostFrameCallback(onAfterFirstFrame);
+    effects = widget.timeline.client.getComponent<MessageEffectComponent>();
     super.initState();
   }
 
@@ -145,6 +149,10 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
         });
 
         widget.markAsRead?.call(timeline.events[0]);
+      }
+
+      if (preferences.messageEffectsEnabled) {
+        effects?.doEffect(timeline.events[index]);
       }
     }
 

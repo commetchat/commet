@@ -21,7 +21,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2.8.0
         with:
-          flutter-version: '3.22.3'
+          flutter-version: '3.24.4'
           channel: 'stable'
 
       - name: Clone Olm
@@ -48,7 +48,7 @@ jobs:
       - name: Build Windows App
         run: |
           cd .\commet
-          dart run scripts/build_release.dart --platform windows --version_tag ${{ github.event.release.tag_name || 'v0.0.0' }} --git_hash ${{ github.sha }}
+          dart run scripts/build_release.dart --platform windows --version_tag ${{ github.event.release.tag_name || 'v0.0.0-artifact' }} --git_hash ${{ github.sha }}
 
       - name: Include libolm
         run: |
@@ -72,6 +72,13 @@ jobs:
           asset_name: commet-windows.zip
           asset_content_type: application/zip
 
+      - name: Upload Artifact
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: commet-windows.zip
+          path: .\commet-windows.zip
+
 
   release-android:
     runs-on: ubuntu-latest
@@ -84,7 +91,7 @@ jobs:
       - name: Setup Flutter 
         uses: subosito/flutter-action@v2.8.0
         with:
-          flutter-version: '3.22.3'
+          flutter-version: '3.24.4'
           channel: 'stable'
 
       - name: Setup Java
@@ -110,7 +117,7 @@ jobs:
       - name: Build APK
         run: |
           cd $PROJECT_PATH
-          dart run scripts/build_release.dart --platform android --version_tag ${{ github.event.release.tag_name || 'v0.0.0' }} --git_hash ${{ github.sha }}
+          dart run scripts/build_release.dart --platform android --version_tag ${{ github.event.release.tag_name || 'v0.0.0-artifact' }} --git_hash ${{ github.sha }}
                     
       - name: Upload to release
         if: github.event_name == 'release'
@@ -123,6 +130,13 @@ jobs:
           asset_name: commet-android.apk
           asset_content_type: application/vnd.android.package-archive
 
+      - name: Upload Artifact
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: commet-android.apk
+          path: commet/build/app/outputs/flutter-apk/app-release.apk
+
   release-android-google-services:
     runs-on: ubuntu-latest
     steps:
@@ -134,7 +148,7 @@ jobs:
       - name: Setup Flutter 
         uses: subosito/flutter-action@v2.8.0
         with:
-          flutter-version: '3.22.3'
+          flutter-version: '3.24.4'
           channel: 'stable'
 
       - name: Setup Java
@@ -161,7 +175,7 @@ jobs:
       - name: Build APK
         run: |
           cd $PROJECT_PATH
-          dart run scripts/build_release.dart --platform android --version_tag ${{ github.event.release.tag_name || 'v0.0.0' }} --git_hash ${{ github.sha }} --enable_google_services true --build_detail google_services
+          dart run scripts/build_release.dart --platform android --version_tag ${{ github.event.release.tag_name || 'v0.0.0-artifact' }} --git_hash ${{ github.sha }} --enable_google_services true --build_detail google_services
                     
       - name: Upload to release
         if: github.event_name == 'release'
@@ -173,6 +187,14 @@ jobs:
           asset_path: commet/build/app/outputs/flutter-apk/app-release.apk
           asset_name: commet-android-google-services.apk
           asset_content_type: application/vnd.android.package-archive
+
+
+      - name: Upload Artifact
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: commet-android-google-services.apk
+          path: commet/build/app/outputs/flutter-apk/app-release.apk
 
   release-linux-debian:
     strategy:
@@ -188,7 +210,7 @@ jobs:
       - name: Setup Flutter 
         uses: subosito/flutter-action@v2.8.0
         with:
-          flutter-version: '3.22.3'
+          flutter-version: '3.24.4'
           channel: 'stable'
 
       - name: Setup Tools
@@ -204,14 +226,14 @@ jobs:
       - name: Build Linux
         run: |
           cd $PROJECT_PATH
-          dart run scripts/build_release.dart --platform linux --version_tag ${{ github.event.release.tag_name || 'v0.0.0' }} --git_hash ${{ github.sha }} --build_detail debian
+          dart run scripts/build_release.dart --platform linux --version_tag ${{ github.event.release.tag_name || 'v0.0.0-artifact' }} --git_hash ${{ github.sha }} --build_detail debian
 
       - name: Create Package
         run: | 
           mv $PROJECT_PATH/linux/debian/DEBIAN/control-${{ matrix.os }} $PROJECT_PATH/linux/debian/DEBIAN/control
           cp -r $PROJECT_PATH/linux/debian ./commet-pkg
           cp -r $PROJECT_PATH/build/linux/x64/release/bundle ./commet-pkg/usr/lib/chat.commet.commetapp
-          version=$(echo ${{ github.event.release.tag_name || 'v0.0.0' }} | grep -oP '[0-9]+([.][0-9]+)+')
+          version=$(echo ${{ github.event.release.tag_name || 'v0.0.0-artifact' }} | grep -oP '[0-9]+([.][0-9]+)+')
           echo $version
           cd ./commet-pkg
           sed -i "s/{{VERSION_TAG}}/$version/g" ./DEBIAN/control
@@ -228,6 +250,13 @@ jobs:
           asset_name: commet-${{ matrix.os }}-x64.deb
           asset_content_type: application/vnd.debian.binary-package
 
+      - name: Upload Artifact
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: commet-${{ matrix.os }}-x64.deb
+          path: commet-pkg/commet-linux-x64.deb
+
   release-linux-flatpak:
     runs-on: ubuntu-latest
     steps:
@@ -239,7 +268,7 @@ jobs:
       - name: Setup Flutter 
         uses: subosito/flutter-action@v2.8.0
         with:
-          flutter-version: '3.22.3'
+          flutter-version: '3.24.4'
           channel: 'stable'
 
       - name: Setup Tools
@@ -255,7 +284,7 @@ jobs:
       - name: Build Linux
         run: |
           cd $PROJECT_PATH
-          dart run scripts/build_release.dart --platform linux --version_tag ${{ github.event.release.tag_name || 'v0.0.0' }} --git_hash ${{ github.sha }} --build_detail flatpak
+          dart run scripts/build_release.dart --platform linux --version_tag ${{ github.event.release.tag_name || 'v0.0.0-artifact' }} --git_hash ${{ github.sha }} --build_detail flatpak
 
       - name: Create Flatpak
         run: | 
@@ -263,7 +292,7 @@ jobs:
           sudo flatpak install -y flathub org.freedesktop.Platform//23.08 org.freedesktop.Sdk//23.08
           mkdir -p commet/linux/flatpak/commet
           cp -r $PROJECT_PATH/build/linux/x64/release/bundle $PROJECT_PATH/linux/flatpak/commet/bundle
-          version=$(echo ${{ github.event.release.tag_name || 'v0.0.0' }} | grep -oP '[0-9]+([.][0-9]+)+')
+          version=$(echo ${{ github.event.release.tag_name || 'v0.0.0-artifact' }} | grep -oP '[0-9]+([.][0-9]+)+')
           echo $version
           cd $PROJECT_PATH/linux/flatpak
           sed -i "s/{{VERSION_TAG}}/$version/g" ./chat.commet.commetapp.desktop
@@ -282,6 +311,13 @@ jobs:
           asset_name: chat.commet.commetapp.flatpak
           asset_content_type: application/octet-stream
 
+      - name: Upload Artifact
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: chat.commet.commetapp.flatpak
+          path: commet/linux/flatpak/chat.commet.commetapp.flatpak
+
   release-linux-portable:
     runs-on: ubuntu-latest
     steps:
@@ -293,7 +329,7 @@ jobs:
       - name: Setup Flutter 
         uses: subosito/flutter-action@v2.8.0
         with:
-          flutter-version: '3.22.3'
+          flutter-version: '3.24.4'
           channel: 'stable'
 
       - name: Setup Tools
@@ -309,7 +345,7 @@ jobs:
       - name: Build Linux
         run: |
           cd $PROJECT_PATH
-          dart run scripts/build_release.dart --platform linux --version_tag ${{ github.event.release.tag_name || 'v0.0.0' }} --git_hash ${{ github.sha }} --build_detail linux-x64
+          dart run scripts/build_release.dart --platform linux --version_tag ${{ github.event.release.tag_name || 'v0.0.0-artifact' }} --git_hash ${{ github.sha }} --build_detail linux-x64
 
       - name: Create archive
         run: |
@@ -327,6 +363,14 @@ jobs:
           asset_name: commet-linux-portable-x64.tar.gz
           asset_content_type: application/gzip
 
+      - name: Upload Artifact
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: commet-linux-portable-x64.tar.gz
+          path: commet/build/linux/x64/release/commet-linux-portable-x64.tar.gz
+
+
   release-web:
     runs-on: ubuntu-latest
     steps:
@@ -338,7 +382,7 @@ jobs:
       - name: Setup Flutter 
         uses: subosito/flutter-action@v2.8.0
         with:
-          flutter-version: '3.22.3'
+          flutter-version: '3.24.4'
           channel: 'stable'
 
       - name: Setup Tools
@@ -365,7 +409,7 @@ jobs:
       - name: Build Web
         run: |
           cd $PROJECT_PATH
-          dart run scripts/build_release.dart --platform web --version_tag ${{ github.event.release.tag_name || 'v0.0.0' }} --git_hash ${{ github.sha }}
+          dart run scripts/build_release.dart --platform web --version_tag ${{ github.event.release.tag_name || 'v0.0.0-artifact' }} --git_hash ${{ github.sha }}
       
       - name: Create archive
         run: |
@@ -382,3 +426,10 @@ jobs:
           asset_path: commet/build/commet-web.tar.gz
           asset_name: commet-web.tar.gz
           asset_content_type: application/gzip
+
+      - name: Upload Artifact
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: commet-web.tar.gz
+          path: commet/build/commet-web.tar.gz

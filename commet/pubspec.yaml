@@ -17,7 +17,7 @@ dependencies:
   flutter_blurhash: ^0.8.2
   flutter_markdown: ^0.6.9+1
   flutter_olm: ^1.2.0
-  flutter_openssl_crypto: ^0.1.0
+  flutter_openssl_crypto: ^0.5.0
   flutter_staggered_grid_view: ^0.7.0
   flutter_svg: ^2.0.7
   html: ^0.15.2
@@ -28,9 +28,9 @@ dependencies:
   intl_translation: ^0.20.0
   intl_utils: any
   just_the_tooltip: ^0.0.12
-  media_kit: ^1.1.7
-  media_kit_libs_video: ^1.0.1
-  media_kit_video: ^1.1.8
+  media_kit: ^1.1.11
+  media_kit_video: ^1.2.5
+  media_kit_libs_video: ^1.0.5 
   mime: ^1.0.4
   olm: ^2.0.3
   pasteboard: ^0.2.0
@@ -40,7 +40,7 @@ dependencies:
   provider: ^6.0.0
   receive_intent: ^0.2.4
   scrollable_positioned_list: ^0.3.8
-  shared_preferences: ^2.0.18
+  shared_preferences: ^2.5.2
   sqflite: ^2.3.0
   sqflite_common_ffi: ^2.3.0+4
   test: ^1.24.3
@@ -74,18 +74,19 @@ dependencies:
       url: https://github.com/commetchat/matrix-dart-sdk.git
       ref: main
   matrix_dart_sdk_drift_db:
-    git:
-      url: https://github.com/commetchat/matrix-dart-sdk-drift-db.git
+    git: https://github.com/commetchat/matrix-dart-sdk-drift-db.git
   encrypted_url_preview: 
     git: https://github.com/commetchat/encrypted_url_preview.git
   signal_sticker_api: 
     git: https://github.com/commetchat/signal-sticker-api.git
+  starfield: 
+    git: https://github.com/lagmachine-com/starfield.git
   sqlite3_flutter_libs: ^0.5.23
   fuzzy: ^0.5.1
   encrypt: ^5.0.3
   pointycastle: ^3.7.4
   flutter_web_auth_2: ^3.1.1
-  drift: ^2.18.0
+  drift: ^2.22.1
   archive: ^3.6.1
   exif: ^3.3.0
   image: ^4.2.0
@@ -94,7 +95,7 @@ dependencies:
   ## ---- Probably good to keep this stuff at the bottom of the list
   ## Begin Google Services Dependencies
   #firebase_core: ^2.30.0
-  #firebase_messaging: ^14.8.2
+  #firebase_messaging: ^14.7.10
   ## End Google Services Dependencies
   ## ----
   ## ----
@@ -106,46 +107,6 @@ dependency_overrides:
     git: 
       url: https://github.com/commetchat/matrix-dart-sdk.git
       ref: main
-
-  media_kit:
-    git: 
-      url: https://github.com/Airyzz/media-kit.git
-      path: ./media_kit
-  media_kit_video:
-    git: 
-      url: https://github.com/Airyzz/media-kit.git
-      path: ./media_kit_video
-
-  media_kit_native_event_loop:
-    git: 
-      url: https://github.com/Airyzz/media-kit.git
-      path: ./media_kit_native_event_loop
-
-  media_kit_libs_video:
-    git: 
-      url: https://github.com/Airyzz/media-kit.git
-      path: ./libs/universal/media_kit_libs_video
-
-  media_kit_libs_android_video:
-    git: 
-      url: https://github.com/Airyzz/media-kit.git
-      path: ./libs/android/media_kit_libs_android_video
-  media_kit_libs_ios_video:
-    git: 
-      url: https://github.com/Airyzz/media-kit.git
-      path: ./libs/ios/media_kit_libs_ios_video
-  media_kit_libs_macos_video:
-    git: 
-      url: https://github.com/Airyzz/media-kit.git
-      path: ./libs/macos/media_kit_libs_macos_video
-  media_kit_libs_windows_video:
-    git: 
-      url: https://github.com/Airyzz/media-kit.git
-      path: ./libs/windows/media_kit_libs_windows_video
-  media_kit_libs_linux:
-    git: 
-      url: https://github.com/Airyzz/media-kit.git
-      path: ./libs/linux/media_kit_libs_linux
 
 dev_dependencies: 
   build_runner: ^2.4.11
@@ -188,6 +149,7 @@ flutter:
   assets: 
     - assets/l10n/
     - assets/images/app_icon/
+    - assets/images/effects/particles/
     - assets/emoji_data/
     - assets/emoji_data/shortcodes/
     - assets/js/package/

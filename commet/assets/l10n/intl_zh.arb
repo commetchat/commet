@@ -1,0 +1,1649 @@
+{
+  "labelRoomsList": "房间",
+  "@labelRoomsList": {
+    "description": "Header label for the list of rooms",
+    "type": "text",
+    "placeholders": {}
+  },
+  "fileDragDropPrompt": "拖放文件以上传...",
+  "@fileDragDropPrompt": {
+    "description": "Text that is shown when a user is dragging a file",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelImageContainsLocationInfo": "警告：此图像包含位置信息元数据",
+  "@labelImageContainsLocationInfo": {
+    "description": "Prompt text for the option to send a file in its original state, without any further processing such as removing metadata",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelHomeRecentActivity": "最近活动",
+  "@labelHomeRecentActivity": {
+    "description": "Short label for header of recent room activity",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelHomeAlerts": "警告",
+  "@labelHomeAlerts": {
+    "description": "Short label for header of alerts",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptCreateEmoticonPack": "创建包",
+  "@promptCreateEmoticonPack": {
+    "description": "Prompt to create a new emoticon pack, for emoji or stickers",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomHistoryVisibilityDescription": "允许用户更改此房间的聊天历史可见性",
+  "@labelMatrixPermissionsRoomHistoryVisibilityDescription": {
+    "description": "describes the permission to change room history settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomAvatarTitle": "设置房间头像",
+  "@labelMatrixPermissionsRoomAvatarTitle": {
+    "description": "Title for the permission to add change the rooms avatar image",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsKickUserDescription": "将其它用户踢出房间",
+  "@labelMatrixPermissionsKickUserDescription": {
+    "description": "Description for the permission to kick other users out of the room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsBanUserTitle": "禁止用户",
+  "@labelMatrixPermissionsBanUserTitle": {
+    "description": "Title for the permission to ban other users from the room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsBanUserDescription": "禁止其它用户进入房间",
+  "@labelMatrixPermissionsBanUserDescription": {
+    "description": "Description for the permission to ban other users from the room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsTabManageAccounts": "管理账户",
+  "@labelSettingsTabManageAccounts": {
+    "description": "Label for the Manage Accounts settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsTabProfile": "个人资料",
+  "@labelSettingsTabProfile": {
+    "description": "Label for the Profile settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixAskEnableMessageBackup": "您想启用在线密钥备份吗？",
+  "@labelMatrixAskEnableMessageBackup": {
+    "description": "Asks the user if they want to enable online backup",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixExplainOnlineKeyBackup": "在线密钥备份将允许您在失去对所有会话的访问时检索消息历史",
+  "@labelMatrixExplainOnlineKeyBackup": {
+    "description": "Explains what the message backup does",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsWindowBehaviourTitle": "窗口行为",
+  "@labelSettingsWindowBehaviourTitle": {
+    "description": "Header for the window behaviour section of settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirm": "确认",
+  "@promptConfirm": {
+    "description": "Generic prompt to confirm some action",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptDone": "完成",
+  "@promptDone": {
+    "description": "Generic prompt to confirm that you are done",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptReset": "重置",
+  "@promptReset": {
+    "description": "Generic prompt to reset something",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptCopy": "复制",
+  "@promptCopy": {
+    "description": "Prompt to copy text",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptCopyComplete": "已复制！",
+  "@promptCopyComplete": {
+    "description": "Prompt text for after a copy has been completed",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelOr": "或者",
+  "@labelOr": {
+    "description": "Text that is placed between two or more options: [button1] or [button2]",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsStickerCompatibilityExplanation": "在某些 matrix 客户端中，以 'm.sticker' 格式发送贴纸会导致贴纸无法正确加载。启用此设置后，贴纸将以 'm.image' 的形式发送，从而可以正确渲染",
+  "@labelSettingsStickerCompatibilityExplanation": {
+    "description": "Explains what sticker compatibility mode does",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageEditedMarker": "（已编辑）",
+  "@messageEditedMarker": {
+    "description": "Short text to mark that a message has been edited",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messagePlaceholderSticker": "{user} 发送了一个贴纸",
+  "@messagePlaceholderSticker": {
+    "description": "Message body for when a user sends a sticker",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messagePlaceholderUserCreatedRoom": "{user} 创建了房间！",
+  "@messagePlaceholderUserCreatedRoom": {
+    "description": "Message body for when a user created the room",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messagePlaceholderUserJoinedRoom": "{user} 加入了房间！",
+  "@messagePlaceholderUserJoinedRoom": {
+    "description": "Message body for when a user joins the room",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messagePlaceholderUserLeftRoom": "{user} 离开了房间",
+  "@messagePlaceholderUserLeftRoom": {
+    "description": "Message body for when a user leaves the room",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "typingUsers": "{howMany,plural, =1{{user1} 正在输入...}=2{{user1} 和 {user2} 正在输入...}few{{user1}, {user2} 和 {user3} 正在输入...}other{几个人正在输入...}}",
+  "@typingUsers": {
+    "description": "Text to display which users are currently typing",
+    "type": "text",
+    "placeholders": {
+      "howMany": {},
+      "user1": {},
+      "user2": {},
+      "user3": {}
+    }
+  },
+  "messagePlaceholderUserUpdatedAvatar": "{user} 更新了他们的头像",
+  "@messagePlaceholderUserUpdatedAvatar": {
+    "description": "Message body for when a user updates their avatar",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messagePlaceholderUserUpdatedName": "{user} 更新了他们的显示名称",
+  "@messagePlaceholderUserUpdatedName": {
+    "description": "Message body for when a user updates their display name",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messagePlaceholderUserInvited": "{sender} 邀请了 {invitedUser}",
+  "@messagePlaceholderUserInvited": {
+    "description": "Message body for when a user invites another user to the room",
+    "type": "text",
+    "placeholders": {
+      "sender": {},
+      "invitedUser": {}
+    }
+  },
+  "messagePlaceholderUserRejectedInvite": "{user} 拒绝了邀请",
+  "@messagePlaceholderUserRejectedInvite": {
+    "description": "Message body for when a user rejected an invitation to a room",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messageUserEmote": "*{user} {emote}",
+  "@messageUserEmote": {
+    "description": "Message to display when a user does a custom emote (/me)",
+    "type": "text",
+    "placeholders": {
+      "user": {},
+      "emote": {}
+    }
+  },
+  "errorMessageFailedToSend": "发送失败",
+  "@errorMessageFailedToSend": {
+    "description": "Text that is placed below a message when the message fails to send",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageFailedToDecrypt": "解密事件失败",
+  "@messageFailedToDecrypt": {
+    "description": "Placeholde text for when a message fails to decrypt",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelJumpToLatest": "跳转到最新",
+  "@labelJumpToLatest": {
+    "description": "Label for the button which jumps the room timeline view to the latest message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelInvitationBodyWithSender": "{user} 邀请您加入房间",
+  "@labelInvitationBodyWithSender": {
+    "description": "Message body for when an invitation was received, and we have a name for the sender",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "labelEmojiPickerEmojiTab": "表情符号",
+  "@labelEmojiPickerEmojiTab": {
+    "description": "Label for the emoji tab in emoji picker",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelEmojiPickerStickerTab": "贴纸",
+  "@labelEmojiPickerStickerTab": {
+    "description": "Label for the sticker tab in the emoji picker",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelEmojiPickerGifTab": "Gif",
+  "@labelEmojiPickerGifTab": {
+    "description": "Label for the gif search tab in the emoji picker",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelInvitationsForUser": "对 {user} 的邀请",
+  "@labelInvitationsForUser": {
+    "description": "Label for the list of incoming invitations, specifying which user these invitations are intended for",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "labelInvitations": "邀请",
+  "@labelInvitations": {
+    "description": "Label for the list of incoming invitations",
+    "type": "text",
+    "placeholders": {}
+  },
+  "sendEncryptedMessagePrompt": "发送加密消息",
+  "@sendEncryptedMessagePrompt": {
+    "description": "Placeholder text for message input in an encrypted room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "sendUnencryptedMessagePrompt": "发送消息",
+  "@sendUnencryptedMessagePrompt": {
+    "description": "Placeholder text for message input in an unencrypted room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "cantSentMessagePrompt": "您没有权限在此房间发送消息",
+  "@cantSentMessagePrompt": {
+    "description": "Text that explains the user cannot send a message in this room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelChatPageFileTooLarge": "此文件太大，无法上传！",
+  "@labelChatPageFileTooLarge": {
+    "description": "Text that is shown when the user attempts to upload a file that is greater than the allowed size",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelChatPageFileTooLargeTitle": "超出最大文件大小",
+  "@labelChatPageFileTooLargeTitle": {
+    "description": "Title for the dialog that is shown when the user attempts to upload a file that is greater than the allowed size",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptAttachmentProcessingSendOriginal": "发送原件",
+  "@promptAttachmentProcessingSendOriginal": {
+    "description": "Prompt text for the option to send a file in its original state, without any further processing such as removing metadata",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelHomeRoomsList": "房间",
+  "@labelHomeRoomsList": {
+    "description": "Short label for header of rooms list",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelHomeInvitations": "邀请",
+  "@labelHomeInvitations": {
+    "description": "Short label for header of invitations list",
+    "type": "text",
+    "placeholders": {}
+  },
+  "tooltipSpaceSettings": "空间设置",
+  "@tooltipSpaceSettings": {
+    "description": "Tooltip for the button that opens space settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "tooltipAddRoom": "添加房间",
+  "@tooltipAddRoom": {
+    "description": "Tooltip for the button that adds a new room to a space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceRoomsList": "房间",
+  "@labelSpaceRoomsList": {
+    "description": "Header label for the list of rooms in a space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceSubspacesList": "空间",
+  "@labelSpaceSubspacesList": {
+    "description": "Header label for the list of child spaces in a space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceAvailableRoomsList": "可用房间",
+  "@labelSpaceAvailableRoomsList": {
+    "description": "Header label for the list of rooms in a space, which the user has not yet joined but are available",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceVisibilityPublic": "公共空间",
+  "@labelSpaceVisibilityPublic": {
+    "description": "Label to display that the space is publically available",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceVisibilityPrivate": "私有空间",
+  "@labelSpaceVisibilityPrivate": {
+    "description": "Label to display that the space is private",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceGettingText": "欢迎来到 \n\n # {spaceName}",
+  "@labelSpaceGettingText": {
+    "description": "Greeting to the space, supports markdown formatting",
+    "type": "text",
+    "placeholders": {
+      "spaceName": {}
+    }
+  },
+  "promptOpenDirectMessage": "消息",
+  "@promptOpenDirectMessage": {
+    "description": "Prompt on the button to open a direct message with another user",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptAddSpace": "添加空间",
+  "@promptAddSpace": {
+    "description": "Prompt to add a new space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "directMessagesListHeaderMobile": "私信",
+  "@directMessagesListHeaderMobile": {
+    "description": "The header for the direct messages list on desktop",
+    "type": "text",
+    "placeholders": {}
+  },
+  "directMessagesListHeaderDesktop": "私信",
+  "@directMessagesListHeaderDesktop": {
+    "description": "The header for the direct messages list on desktop",
+    "type": "text",
+    "placeholders": {}
+  },
+  "unifiedPushExplainer": "# UnifiedPush\n此版本的 Commet 是在没有 Google Play 服务的情况下构建的。为了接收推送通知，您需要使用 [UnifiedPush](https://unifiedpush.org/)。 \n\n如果您已经安装了兼容 UnifiedPush 的分发器应用，可以在下面进行配置\n",
+  "@unifiedPushExplainer": {
+    "description": "Explains the need for unified push. Supports markdown",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelEnableUnifiedPush": "启用 UnifiedPush",
+  "@labelEnableUnifiedPush": {
+    "description": "Label for the toggle to enable Unified Push",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelEnableUnifiedPushEndpoint": "端点",
+  "@labelEnableUnifiedPushEndpoint": {
+    "description": "Label for the Unified Push endpoint",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelUnifiedPushNoEndpointFound": "未找到端点，出现问题 :(",
+  "@labelUnifiedPushNoEndpointFound": {
+    "description": "Message for when a unified push endpoint could not be registered",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsCategorySpace": "空间设置",
+  "@labelSettingsCategorySpace": {
+    "description": "Label for the overall space settings category",
+    "type": "text",
+    "placeholders": {}
+  },
+  "setupPageBeforeYouBegin": "在开始之前...",
+  "@setupPageBeforeYouBegin": {
+    "description": "Title for first time setup page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceSettingsGeneral": "常规",
+  "@labelSpaceSettingsGeneral": {
+    "description": "Label for general space settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceAppearanceSettings": "外观",
+  "@labelSpaceAppearanceSettings": {
+    "description": "Label for space appearance settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceEmoticonSettings": "表情",
+  "@labelSpaceEmoticonSettings": {
+    "description": "Label for space emoticon settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpacePermissionSettings": "权限",
+  "@labelSpacePermissionSettings": {
+    "description": "Label for space permission settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceDeveloperSettings": "开发者",
+  "@labelSpaceDeveloperSettings": {
+    "description": "Label for space developer settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsAppLogs": "日志",
+  "@labelSettingsAppLogs": {
+    "description": "Label for the logs settings page, usually hidden unless developer mode is turned on",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelPushRuleNotifyAll": "所有消息",
+  "@labelPushRuleNotifyAll": {
+    "description": "Label for the push rule which notifies for all received messages",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelPushRuleMentionsAndKeywords": "提及和关键词",
+  "@labelPushRuleMentionsAndKeywords": {
+    "description": "Label for the push rule which notifies only for keywords and mentions",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelPushRuleNone": "静音",
+  "@labelPushRuleNone": {
+    "description": "Label for the push rule which sends no notifications",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsNotifications": "通知",
+  "@labelRoomSettingsNotifications": {
+    "description": "Label for the notifications section in room settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptEnableEncryptionRoomSettings": "启用加密",
+  "@promptEnableEncryptionRoomSettings": {
+    "description": "Short prompt to enable encryption for a room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "encryptionCannotBeDisabledExplanationRoomSettings": "如果启用，以后将无法禁用加密功能",
+  "@encryptionCannotBeDisabledExplanationRoomSettings": {
+    "description": "Explains that encryption cannot be disabled once enabled",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptImportPack": "导入包",
+  "@promptImportPack": {
+    "description": "Prompt to import a set of emoticons from an existing pack",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmDeleteEmoticonPack": "您确定要删除 **{packName}** 包吗？",
+  "@promptConfirmDeleteEmoticonPack": {
+    "description": "Prompt to confirm deletion of an emoticon pack, supports markdown to emphasise the pack name",
+    "type": "text",
+    "placeholders": {
+      "packName": {}
+    }
+  },
+  "createEmoticonDialogTitle": "创建表情",
+  "@createEmoticonDialogTitle": {
+    "description": "Title of a dialog that pops up when choosing to create a new emoticon",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmDeleteEmoticon": "您确定要删除 **{emoticon}** 吗？",
+  "@promptConfirmDeleteEmoticon": {
+    "description": "Prompt to confirm deletion of an emoticon pack, supports markdown to emphasise the emote name",
+    "type": "text",
+    "placeholders": {
+      "emoticon": {}
+    }
+  },
+  "promptRenameEmoticon": "重命名表情",
+  "@promptRenameEmoticon": {
+    "description": "Tooltip for button to rename emoticon",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptEmoticonPackName": "表情包名称",
+  "@promptEmoticonPackName": {
+    "description": "Prompt for the input of the name of an emoticon pack",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptStickerName": "贴纸名称",
+  "@promptStickerName": {
+    "description": "Prompt for the input of a sticker",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmCreateEmoticon": "创建！",
+  "@promptConfirmCreateEmoticon": {
+    "description": "Prompt to confirm the creation of an Emoticon Pack, Emoji, or Sticker",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsGeneral": "通用",
+  "@labelRoomSettingsGeneral": {
+    "description": "Label for general room settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsAppearance": "外观",
+  "@labelRoomSettingsAppearance": {
+    "description": "Label for room appearance settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptEmojiName": "表情符号名称",
+  "@promptEmojiName": {
+    "description": "Prompt for the input of the name of an emoji",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsSecurity": "安全性",
+  "@labelRoomSettingsSecurity": {
+    "description": "Label for room security settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsEmoticons": "表情",
+  "@labelRoomSettingsEmoticons": {
+    "description": "Label for room Emoticon settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsDeveloper": "开发者",
+  "@labelRoomSettingsDeveloper": {
+    "description": "Label for room developer settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsCategory": "房间设置",
+  "@labelRoomSettingsCategory": {
+    "description": "Label for the overall settings category of a room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsPermissions": "权限",
+  "@labelRoomSettingsPermissions": {
+    "description": "Label for room permission settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoleModerator": "管理者",
+  "@labelMatrixPermissionsRoleModerator": {
+    "description": "Label for the room moderator role",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoleAdmin": "管理员",
+  "@labelMatrixPermissionsRoleAdmin": {
+    "description": "Label for the room administrator role",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoleMember": "成员",
+  "@labelMatrixPermissionsRoleMember": {
+    "description": "Label for the room member role",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsSpaceManageChildrenTitle": "管理子房间",
+  "@labelMatrixPermissionsSpaceManageChildrenTitle": {
+    "description": "Title for permission to manage children",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsSpaceManageChildrenDescription": "允许用户管理空间中的子房间",
+  "@labelMatrixPermissionsSpaceManageChildrenDescription": {
+    "description": "Describes the permission to manage child rooms",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomDeleteMessagesDescription": "允许用户删除其它人发送的消息",
+  "@labelMatrixPermissionsRoomDeleteMessagesDescription": {
+    "description": "Describes the permission to delete messages",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomSendMessagesTitle": "发送消息",
+  "@labelMatrixPermissionsRoomSendMessagesTitle": {
+    "description": "Title for the permission to send messages",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomSendMessagesDescription": "允许用户在此房间发送消息",
+  "@labelMatrixPermissionsRoomSendMessagesDescription": {
+    "description": "Describes the permission to send messages",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomAddReactionsTitle": "添加反馈",
+  "@labelMatrixPermissionsRoomAddReactionsTitle": {
+    "description": "Title for the permission to add an emoji reaction to a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomDeleteMessagesTitle": "删除消息",
+  "@labelMatrixPermissionsRoomDeleteMessagesTitle": {
+    "description": "Title for permission to delete messages",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomAddReactionsDescription": "在消息中添加反应",
+  "@labelMatrixPermissionsRoomAddReactionsDescription": {
+    "description": "describes the permission to add an emoji reaction to a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomHistoryVisibilityTitle": "历史可见性",
+  "@labelMatrixPermissionsRoomHistoryVisibilityTitle": {
+    "description": "Title for the permission to add change room history settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomAvatarDescription": "更改房间的头像图片",
+  "@labelMatrixPermissionsRoomAvatarDescription": {
+    "description": "Title for the permission to add change the rooms avatar image",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsChangeRoomNameTitle": "更改房间名称",
+  "@labelMatrixPermissionsChangeRoomNameTitle": {
+    "description": "Title for the permission to add change the rooms name",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsChangeRoomNameDescription": "允许用户更改此房间的名称",
+  "@labelMatrixPermissionsChangeRoomNameDescription": {
+    "description": "Description for the permission to add change the rooms name",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsChangeRoomTopicTitle": "更改房间主题",
+  "@labelMatrixPermissionsChangeRoomTopicTitle": {
+    "description": "Title for the permission to add change the rooms topic",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsChangeRoomTopicDescription": "允许用户更改此房间的主题",
+  "@labelMatrixPermissionsChangeRoomTopicDescription": {
+    "description": "Description for the permission to add change the rooms topic",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsChangeRoomPermissionsTitle": "更改权限",
+  "@labelMatrixPermissionsChangeRoomPermissionsTitle": {
+    "description": "Title for the permission to change permissions of the room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptGenerateMatrixRecoveryKey": "生成密钥",
+  "@promptGenerateMatrixRecoveryKey": {
+    "description": "Button text to generate a recovery key",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsChangeRoomPermissionsDescription": "允许用户更改权限设置",
+  "@labelMatrixPermissionsChangeRoomPermissionsDescription": {
+    "description": "Description for the permission to change permissions of the room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsKickUserTitle": "踢出用户",
+  "@labelMatrixPermissionsKickUserTitle": {
+    "description": "Title for the permission to kick other users out of the room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsTabSecurity": "安全",
+  "@labelSettingsTabSecurity": {
+    "description": "Label for the Security settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsTabEmoticons": "表情",
+  "@labelSettingsTabEmoticons": {
+    "description": "Label for the Emoticons settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsTabDeveloper": "开发者",
+  "@labelSettingsTabDeveloper": {
+    "description": "Label for the Developer settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsCategoryAccount": "账号",
+  "@labelSettingsCategoryAccount": {
+    "description": "Label for the settings category Account",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptAddAccount": "添加账号",
+  "@promptAddAccount": {
+    "description": "Label for button in settings to add another account",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptLogoutSingleAccount": "登出",
+  "@promptLogoutSingleAccount": {
+    "description": "Label for button in settings to log out of an account",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelCurrentAccountsHeader": "当前账号",
+  "@labelCurrentAccountsHeader": {
+    "description": "Label for header of accounts list",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptWipeMatrixKeys": "清除密钥",
+  "@promptWipeMatrixKeys": {
+    "description": "Text on the button to wipe matrix encryption keys",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptAbortWipingMatrixKeys": "等一下，不！",
+  "@promptAbortWipingMatrixKeys": {
+    "description": "Text on the button which aborts wiping matrix encryption keys",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixRecoveryKeyCreateExplanation": "我们需要设置一个安全密钥，用于访问消息历史。我们可以为您生成一个密钥，或者您可以选择自己的安全短语",
+  "@labelMatrixRecoveryKeyCreateExplanation": {
+    "description": "Explains what the matrix recovery key does, and that it can be generated or user input",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptSetMatrixPassphrase": "设置短语",
+  "@promptSetMatrixPassphrase": {
+    "description": "Button text to set a passphrase",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptUseExistingMatrixKeys": "使用现有密钥",
+  "@promptUseExistingMatrixKeys": {
+    "description": "Button text to opt to use existing keys",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptCreateNewMatrixKeys": "不，创建新密钥",
+  "@promptCreateNewMatrixKeys": {
+    "description": "Button text to opt to create new keys",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptWipeMatrixBackup": "清除备份",
+  "@promptWipeMatrixBackup": {
+    "description": "Button text to wipe the matrix message backup",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelExistingMatrixKeysFound": "已找到现有签名密钥！",
+  "@labelExistingMatrixKeysFound": {
+    "description": "Text that is shown when the user is setting up cross signing, but has existing keys",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelAskUseExistingMatrixKeys": "您想使用现有密钥吗？",
+  "@labelAskUseExistingMatrixKeys": {
+    "description": "Text that is shown when the user is setting up cross signing, but has existing keys and asks the user if they would like to use those keys",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptEnableMatrixBackup": "启用备份",
+  "@promptEnableMatrixBackup": {
+    "description": "Button text to enable to encrypted message backup",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixRecoveryKeyExplanation": "这是您的恢复密钥。如果您失去对所有其它会话的访问，可以用它来验证您的会话。请将其保存在安全的地方！",
+  "@labelMatrixRecoveryKeyExplanation": {
+    "description": "Gives a brief description about the function on the recovery key",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixRecoveryKeyPromptExplanation": "要解锁您的旧消息，请输入在之前会话中生成的恢复密钥。您的恢复密钥不是您的密码。",
+  "@labelMatrixRecoveryKeyPromptExplanation": {
+    "description": "Shown when a user is attempting to recover their old messages, explains that they need the recovery key",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptMatrixRecoveryKeyInput": "恢复密钥",
+  "@promptMatrixRecoveryKeyInput": {
+    "description": "Placeholder text for the recovery key input box",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmWipingCrossSigningKeys": "您确定要清除您的交叉签名密钥吗？",
+  "@promptConfirmWipingCrossSigningKeys": {
+    "description": "Asks the user if they are sure they want to wipe the keys",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixSecurityPhraseShouldNotBePassword": "您的安全短语应与您的账号密码不同",
+  "@labelMatrixSecurityPhraseShouldNotBePassword": {
+    "description": "Tells the user to not use their password as their security phrase",
+    "type": "text",
+    "placeholders": {}
+  },
+  "errorMatrixPassphraseMustContainUpperAndLowercase": "密码必须包含至少1个大写字母和1个小写字母",
+  "@errorMatrixPassphraseMustContainUpperAndLowercase": {
+    "description": "Explains constraints of recovery passphrase",
+    "type": "text",
+    "placeholders": {}
+  },
+  "placeholderMatrixConfirmSecurityPhrase": "确认安全短语",
+  "@placeholderMatrixConfirmSecurityPhrase": {
+    "description": "Placeholder text for the confirm passphrase text input",
+    "type": "text",
+    "placeholders": {}
+  },
+  "errorMatrixPassphrasesDontMatch": "密码不匹配",
+  "@errorMatrixPassphrasesDontMatch": {
+    "description": "Error when the user enters passphrase twice and the two dont match",
+    "type": "text",
+    "placeholders": {}
+  },
+  "errorMatrixPassphraseMustContainNumber": "密码必须包含至少1个数字",
+  "@errorMatrixPassphraseMustContainNumber": {
+    "description": "Explains constraints of recovery passphrase",
+    "type": "text",
+    "placeholders": {}
+  },
+  "errorMatrixPassphraseMustContainSymbol": "密码必须包含至少1个符号",
+  "@errorMatrixPassphraseMustContainSymbol": {
+    "description": "Explains constraints of recovery passphrase",
+    "type": "text",
+    "placeholders": {}
+  },
+  "erroMatrixPassphraseMustBeLonger": "密码长度必须至少为10个字符",
+  "@erroMatrixPassphraseMustBeLonger": {
+    "description": "Explains constraints of recovery passphrase",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixConfirmSecurityPhrase": "确认安全短语：",
+  "@labelMatrixConfirmSecurityPhrase": {
+    "description": "Prompts the user to input their passphrase again",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPromptPassphrase": "安全短语：",
+  "@labelMatrixPromptPassphrase": {
+    "description": "Prompt the user to enter passphrase",
+    "type": "text",
+    "placeholders": {}
+  },
+  "placeholderMatrixEnterSecutiyPhrase": "安全短语",
+  "@placeholderMatrixEnterSecutiyPhrase": {
+    "description": "Placeholder text for the passphrase text box",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixExistingMessageBackupFound": "已找到现有备份！",
+  "@labelMatrixExistingMessageBackupFound": {
+    "description": "Message to explain that existing backup has been found",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixAskWipeBackupToContinue": "如果您正在更改交叉签名密钥，您需要清除现有备份...继续吗？",
+  "@labelMatrixAskWipeBackupToContinue": {
+    "description": "Asks the user if they want to wipe their existing backup to continue changing their cross signing keys",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixWarnResetKeysIsPermanent": "重置密钥是永久性的，将导致您的聊天历史备份丢失。您几乎肯定不想这样做！",
+  "@labelMatrixWarnResetKeysIsPermanent": {
+    "description": "Explains that resetting keys is permanent, should emphasize that this isnt really a great idea",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixCrossSigning": "交叉签名",
+  "@labelMatrixCrossSigning": {
+    "description": "Title label for matrix cross signing",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixCrossSigningAndBackup": "交叉签名与备份",
+  "@labelMatrixCrossSigningAndBackup": {
+    "description": "Header label for matrix cross signing and message backup section",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixAccountSessions": "会话",
+  "@labelMatrixAccountSessions": {
+    "description": "Title label for account sessions",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptSetupMatrixMessageBackup": "设置备份",
+  "@promptSetupMatrixMessageBackup": {
+    "description": "Text on the button to begin the setup process for message backup",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRestoreMatrixBackupTitle": "恢复备份",
+  "@labelRestoreMatrixBackupTitle": {
+    "description": "Title of the popup dialog for restoring message backup",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixCrossSigningExplanation": "设置以验证并跟踪您的所有会话",
+  "@labelMatrixCrossSigningExplanation": {
+    "description": "Explains what matrix cross signing does",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixResetCrossSigningTitle": "重置交叉签名",
+  "@labelMatrixResetCrossSigningTitle": {
+    "description": "Title for the popup dialog when resetting cross signing",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixMessageBackup": "消息备份",
+  "@labelMatrixMessageBackup": {
+    "description": "TItle label for matrix message backup settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixMessageBackupExplanation": "维护您的消息历史备份，以防您失去所有会话。您的消息将在上传前进行加密",
+  "@labelMatrixMessageBackupExplanation": {
+    "description": "Explains what matrix message backup does",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptMatrixVerifySession": "验证",
+  "@promptMatrixVerifySession": {
+    "description": "Text on the button to verify a session",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsAppGeneral": "通用",
+  "@labelSettingsAppGeneral": {
+    "description": "Label for the App General settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsAppAppearance": "外观",
+  "@labelSettingsAppAppearance": {
+    "description": "Label for the App Appearance settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsWindowBehaviour": "窗口行为",
+  "@labelSettingsWindowBehaviour": {
+    "description": "Label for the Window Behaviour settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsAppAdvanced": "高级",
+  "@labelSettingsAppAdvanced": {
+    "description": "Label for the App Advanced settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsAppNotifications": "通知",
+  "@labelSettingsAppNotifications": {
+    "description": "Label for the App notifications settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsCategoryApp": "应用设置",
+  "@labelSettingsCategoryApp": {
+    "description": "Label for the settings category of the overall App settings/",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelThirdPartyServicesTitle": "第三方服务",
+  "@labelThirdPartyServicesTitle": {
+    "description": "Header for the third party services section in settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelGifSearchToggle": "Gif 搜索",
+  "@labelGifSearchToggle": {
+    "description": "Label for the toggle for enabling and disabling gif search",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelGifSearchDescription": "启用 Tenor gif 搜索。请求将通过 {proxyUrl} 进行代理",
+  "@labelGifSearchDescription": {
+    "description": "Explains that gifs will be fetched via proxy",
+    "type": "text",
+    "placeholders": {
+      "proxyUrl": {}
+    }
+  },
+  "labelSettingsAppDeveloperUtils": "开发者工具",
+  "@labelSettingsAppDeveloperUtils": {
+    "description": "Label for the developer utils settings page, usually hidden unless developer mode is turned on",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelEncryptedPreview": "加密聊天中显示 URL 预览（实验性）",
+  "@labelEncryptedPreview": {
+    "description": "Label for the toggle for enabling and disabling encrypted url preview",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsDeveloperMode": "开发者模式",
+  "@labelSettingsDeveloperMode": {
+    "description": "Header for the settings to enable developer mode",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsDeveloperModeExplanation": "显示额外的信息，对开发者有用",
+  "@labelSettingsDeveloperModeExplanation": {
+    "description": "Explains what developer mode does",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelEncryptedPreviewDescription": "启用使用代理服务器 ({proxyUrl}) 在加密聊天中获取 url 预览。这些请求的内容将使用 Commet 的“加密 url 预览”以隐藏您的主服务器\n了解更多：https://github.com/commetchat/encrypted_url_preview",
+  "@labelEncryptedPreviewDescription": {
+    "description": "Explains briefly how encrypted url preview works",
+    "type": "text",
+    "placeholders": {
+      "proxyUrl": {}
+    }
+  },
+  "labelStickerCompatibility": "贴纸兼容性",
+  "@labelStickerCompatibility": {
+    "description": "Header for the settings to enable sticker compatibility mode",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsMinimizeOnCloseToggle": "最小化关闭",
+  "@labelSettingsMinimizeOnCloseToggle": {
+    "description": "Label for the toggle to turn on and off minimize on close",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsAppTheme": "主题",
+  "@labelSettingsAppTheme": {
+    "description": "Label for theme section of app appearance",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelAppScale": "应用缩放",
+  "@labelAppScale": {
+    "description": "Label for the setting which controls the UI scale of the overall app",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelThemeDark": "暗黑主题",
+  "@labelThemeDark": {
+    "description": "Label for the dark theme",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelThemeLight": "亮色主题",
+  "@labelThemeLight": {
+    "description": "Label for the light theme",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelThemeAmoled": "Amoled",
+  "@labelThemeAmoled": {
+    "description": "Label for the light theme",
+    "type": "text",
+    "placeholders": {}
+  },
+  "notificationSettingsNotSupported": "该系统不支持推送通知",
+  "@notificationSettingsNotSupported": {
+    "description": "Message to display when push notifications are not supported",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptLeaveRoom": "离开房间",
+  "@promptLeaveRoom": {
+    "description": "Text on a button to leave a room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptLeaveRoomConfirmation": "您确定要离开 \"{roomName}\" 吗？",
+  "@promptLeaveRoomConfirmation": {
+    "description": "Text for the popup dialog confirming the intent to leave",
+    "type": "text",
+    "placeholders": {
+      "roomName": {}
+    }
+  },
+  "promptLeaveSpace": "离开空间",
+  "@promptLeaveSpace": {
+    "description": "Text on a button to leave a space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsMinimizeOnCloseExplanation": "关闭窗口时，应用将被最小化而不是退出",
+  "@labelSettingsMinimizeOnCloseExplanation": {
+    "description": "Explains what the 'minimize on close' setting does",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptLeaveSpaceConfirmation": "您确定要离开 \"{spaceName}\" 吗？",
+  "@promptLeaveSpaceConfirmation": {
+    "description": "Text for the popup dialog confirming the intent to leave a space",
+    "type": "text",
+    "placeholders": {
+      "spaceName": {}
+    }
+  },
+  "messageLoginFailed": "登录失败…",
+  "@messageLoginFailed": {
+    "description": "Generic text to show that an attempted login has failed",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageLoginError": "发生错误",
+  "@messageLoginError": {
+    "description": "A generic error message to convey that an error occured when attempting to login",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptPassword": "密码",
+  "@promptPassword": {
+    "description": "Placeholder text for password field on login form",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptSubmitLogin": "登录",
+  "@promptSubmitLogin": {
+    "description": "Prompt to submit the username and password, and attempt to login",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptRoomName": "房间名称",
+  "@promptRoomName": {
+    "description": "Prompt to enter a room name, placeholder text for text input",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageAlreadyLoggedIn": "您已经在此设备上登录了此帐户",
+  "@messageAlreadyLoggedIn": {
+    "description": "An error message displayed when the user attempts to add an account which has already been logged in to on this device",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptSpaceName": "空间名称",
+  "@promptSpaceName": {
+    "description": "Prompt to enter a space name, placeholder text for text input",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptHomeserver": "主服务器",
+  "@promptHomeserver": {
+    "description": "Placeholder text for homeserver field on login form",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptUsername": "用户名",
+  "@promptUsername": {
+    "description": "Placeholder text for username field on login form",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptTopic": "主题（可选）",
+  "@promptTopic": {
+    "description": "Prompt to enter a topic for room or space, specifying that doing so is optional",
+    "type": "text",
+    "placeholders": {}
+  },
+  "roomVisibilityPrivateExplanation": "此房间仅可通过邀请访问",
+  "@roomVisibilityPrivateExplanation": {
+    "description": "Explains what 'private' room visibility means",
+    "type": "text",
+    "placeholders": {}
+  },
+  "roomVisibilityPublicExplanation": "此房间对于互联网上的任何人均可访问",
+  "@roomVisibilityPublicExplanation": {
+    "description": "Explains what 'public' visibility means",
+    "type": "text",
+    "placeholders": {}
+  },
+  "spaceVisibilityPrivateExplanation": "此空间仅可通过邀请访问",
+  "@spaceVisibilityPrivateExplanation": {
+    "description": "Explains what 'private' space visibility means",
+    "type": "text",
+    "placeholders": {}
+  },
+  "spaceVisibilityPublicExplanation": "此空间对于互联网上的任何人均可访问",
+  "@spaceVisibilityPublicExplanation": {
+    "description": "Explains what 'public' space visibility means",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelVisibilityPrivate": "私有",
+  "@labelVisibilityPrivate": {
+    "description": "Short label for room visibility private",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelVisibilityPublic": "公共",
+  "@labelVisibilityPublic": {
+    "description": "Short label for room visibility public",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptEnableEncryption": "启用加密",
+  "@promptEnableEncryption": {
+    "description": "Short prompt to enable encryption for a room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "encryptionCannotBeDisabledExplanation": "如果启用，以后将无法禁用加密功能",
+  "@encryptionCannotBeDisabledExplanation": {
+    "description": "Explains that encryption cannot be disabled once enabled",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmRoomCreation": "创建房间！",
+  "@promptConfirmRoomCreation": {
+    "description": "Label for a button which confirms the creation of a room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmSpaceCreation": "创建空间！",
+  "@promptConfirmSpaceCreation": {
+    "description": "Label for a button which confirms the creation of a space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmRoomJoin": "加入房间！",
+  "@promptConfirmRoomJoin": {
+    "description": "Label for a button which confirms the joining of a room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmSpaceJoin": "加入空间！",
+  "@promptConfirmSpaceJoin": {
+    "description": "Label for a button which confirms the joining of a space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptSpaceAddress": "空间地址：",
+  "@promptSpaceAddress": {
+    "description": "Short label to prompt for the input of a space address",
+    "type": "text",
+    "placeholders": {}
+  },
+  "placeholderRoomAddress": "#awesome-room:matrix.org",
+  "@placeholderRoomAddress": {
+    "description": "Placeholder / Example for a room address",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptRoomAddress": "房间地址：",
+  "@promptRoomAddress": {
+    "description": "Short label to prompt for the input of a room address",
+    "type": "text",
+    "placeholders": {}
+  },
+  "placeholderSpaceAddress": "#awesome-space:matrix.org",
+  "@placeholderSpaceAddress": {
+    "description": "Placeholder / Example for a space address",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelCouldNotLoadRoomPreview": "无法加载房间预览",
+  "@labelCouldNotLoadRoomPreview": {
+    "description": "Error message for when a room preview was not able to be loaded",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptAddSelectedRooms": "添加选定的房间",
+  "@promptAddSelectedRooms": {
+    "description": "Prompt to add the selected rooms to a space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptCreateNewSpace": "创建新空间",
+  "@promptCreateNewSpace": {
+    "description": "Prompt to create a new space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptJoinExistingSpace": "加入现有空间",
+  "@promptJoinExistingSpace": {
+    "description": "Prompt to join a space which already exists",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptCreateNewRoom": "创建新房间",
+  "@promptCreateNewRoom": {
+    "description": "Prompt to create a new room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptJoinExistingRoom": "加入现有房间",
+  "@promptJoinExistingRoom": {
+    "description": "Prompt to join a room which already exists",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptUseExistingRoom": "使用现有房间",
+  "@promptUseExistingRoom": {
+    "description": "Button text to choose to use an existing room when adding a room to a space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageWaitingOtherDeviceToAccept": "等待其它设备接受请求",
+  "@messageWaitingOtherDeviceToAccept": {
+    "description": "Message to show while waiting for another device to accept a matrix session verification request",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageMatrixSessionVerificationRequest": "**{username}** 请求验证您的会话",
+  "@messageMatrixSessionVerificationRequest": {
+    "description": "Message to show when another user has requested to verify your matrix session. Supports markdown to emphasise the user name",
+    "type": "text",
+    "placeholders": {
+      "username": {}
+    }
+  },
+  "messageSasEmojiVerificationPrompt": "检查表情符号是否相同，并且顺序与其它设备上的相同",
+  "@messageSasEmojiVerificationPrompt": {
+    "description": "Explains what to look for when verifying using emoji. Needs to portray that the emoji MUST be the same AND in the same order",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmEmojiMatches": "它们匹配！",
+  "@promptConfirmEmojiMatches": {
+    "description": "Button text to confirm that the emoji matches",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptEmojiDoNotMatch": "它们不匹配",
+  "@promptEmojiDoNotMatch": {
+    "description": "Button text to confirm that the emoji do NOT match",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageVerificationComplete": "验证完成！",
+  "@messageVerificationComplete": {
+    "description": "Message to show when verification was completed successfully, and the session has been verified",
+    "type": "text",
+    "placeholders": {}
+  },
+  "notificationModifiersPrivacyEnhanced": "发送了一条消息",
+  "@notificationModifiersPrivacyEnhanced": {
+    "description": "Placeholder text to put in a notification when the user has privacy enhanced notifications enabled.",
+    "type": "text",
+    "placeholders": {}
+  },
+  "matrixClientOlmMissingMessage": "libolm 未安装或未找到。在解决之前，端到端加密将不可用",
+  "@matrixClientOlmMissingMessage": {
+    "description": "Text that explains to the user that libolm dependency is not found",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptReply": "回复",
+  "@promptReply": {
+    "description": "Generic prompt to reply to a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptAddReaction": "添加反应",
+  "@promptAddReaction": {
+    "description": "Generic prompt to add reaction to a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "matrixClientEncryptionWarningTitle": "加密警告",
+  "@matrixClientEncryptionWarningTitle": {
+    "description": "Title of a warning about encryption",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptEdit": "编辑",
+  "@promptEdit": {
+    "description": "Generic prompt to edit something",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptOptions": "选项",
+  "@promptOptions": {
+    "description": "Generic prompt for options, generally would be used to open a settings menu, extra details or similar",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptSettings": "设置",
+  "@promptSettings": {
+    "description": "Generic prompt for settings, usually will open a settings menu or similar",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptHome": "主页",
+  "@promptHome": {
+    "description": "Generic prompt to go home, usually will go back to a main menu, or similar",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptAccept": "接受",
+  "@promptAccept": {
+    "description": "Generic prompt to accept something, probably a request of some kind",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptReject": "拒绝",
+  "@promptReject": {
+    "description": "Generic prompt to reject something, probably a request of some kind",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptApply": "应用",
+  "@promptApply": {
+    "description": "Generic prompt to apply something, probably a setting",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptDelete": "删除",
+  "@promptDelete": {
+    "description": "Generic prompt to delete something",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptDownload": "下载",
+  "@promptDownload": {
+    "description": "Generic prompt to download something",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptJoin": "加入",
+  "@promptJoin": {
+    "description": "Generic prompt to join a room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptSubmit": "提交",
+  "@promptSubmit": {
+    "description": "Generic prompt to submit something",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptContinue": "继续",
+  "@promptContinue": {
+    "description": "Generic prompt to continue with some action",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptEnable": "启用",
+  "@promptEnable": {
+    "description": "Generic prompt to enable something",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptRestore": "恢复",
+  "@promptRestore": {
+    "description": "Generic prompt to restore something",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptPoliteNo": "不，谢谢",
+  "@promptPoliteNo": {
+    "description": "Generic message to decline something, using nice manners :)",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptBack": "返回",
+  "@promptBack": {
+    "description": "Prompt text to go backwards, probably for navigation",
+    "type": "text",
+    "placeholders": {}
+  },
+  "noPinnedMessages": "没有消息被置顶！",
+  "@noPinnedMessages": {
+    "description": "Placeholder label in the pinned messages menu that is shown when there are no pinned messages",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageUserBanned": "{sender} 封禁了 {user}",
+  "@messageUserBanned": {
+    "description": "Message body for when a user bans another user from the room",
+    "type": "text",
+    "placeholders": {
+      "sender": {},
+      "user": {}
+    }
+  },
+  "messageUserUnbanned": "{sender} 解封了 {user}",
+  "@messageUserUnbanned": {
+    "description": "Message body for when a user reverts a ban of another user",
+    "type": "text",
+    "placeholders": {
+      "sender": {},
+      "user": {}
+    }
+  },
+  "messageUserPinnedEvent": "{user} 置顶了一条消息！",
+  "@messageUserPinnedEvent": {
+    "description": "Message body for when a user adds an event to the room's pinned messages",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messageUserUnpinnedEvent": "{user} 取消置顶了消息",
+  "@messageUserUnpinnedEvent": {
+    "description": "Message body for when a user removes an event from the room's pinned messages",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "promptPinMessage": "置顶消息",
+  "@promptPinMessage": {
+    "description": "Label for the menu option to pin a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptUnpinMessage": "取消置顶消息",
+  "@promptUnpinMessage": {
+    "description": "Label for the menu option to unpin a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptReplyInThread": "在消息列中回复",
+  "@promptReplyInThread": {
+    "description": "Label for the menu option to reply to a message inside a thread",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptShowSource": "显示源码",
+  "@promptShowSource": {
+    "description": "Label for the menu option to view the JSON source of an event",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMessageEffectsTitle": "消息效果",
+  "@labelMessageEffectsTitle": {
+    "description": "Header for the settings tile for message effects, such as confetti",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMessageEffectsDescription": "消息可以附加额外效果发送，例如五彩纸屑",
+  "@labelMessageEffectsDescription": {
+    "description": "Label describing what message effects are",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptReplayMessageEffect": "重放效果",
+  "@promptReplayMessageEffect": {
+    "description": "If a message was sent with an effect, this prompts to replay the effect",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messagePlaceholderUserUpdatedNameDetailed": "{user} 将他们的显示名称更改为 '{newName}'",
+  "@messagePlaceholderUserUpdatedNameDetailed": {
+    "description": "Message body for when a user updates their display name",
+    "type": "text",
+    "placeholders": {
+      "user": {},
+      "newName": {}
+    }
+  },
+  "messageUserRetractedInvite": "{sender} 撤回了对 {user} 的邀请",
+  "@messageUserRetractedInvite": {
+    "description": "Message body for when a user's invitation to a room was withdrawn",
+    "type": "text",
+    "placeholders": {
+      "sender": {},
+      "user": {}
+    }
+  },
+  "messageUserAcceptedInvite": "{user} 接受了邀请",
+  "@messageUserAcceptedInvite": {
+    "description": "Message body for when a user accepted an invitation to a room",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  }
+}

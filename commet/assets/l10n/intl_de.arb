@@ -330,7 +330,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelGifSearchToggle": "Gif-Suche",
+  "labelGifSearchToggle": "GIF-Suche",
   "@labelGifSearchToggle": {
     "description": "Label for the toggle for enabling and disabling gif search",
     "type": "text",

@@ -45,6 +45,29 @@
           ];
         };
         androidSdk = androidComposition.androidsdk;
+
+        libraries = with pkgs; [
+              olm
+        ];
+
+        packages = with pkgs; [
+              flutter
+              androidSdk
+              jdk17
+              ninja
+              gtk3
+              mpv
+              ffmpeg
+              mimalloc
+              libepoxy
+              dart
+              libass
+              pkg-config
+              android-tools
+              android-studio
+              bashInteractive
+        ];
+
       in
       {
         devShell =
@@ -56,24 +79,8 @@
             JAVA_17_HOME = jdk17.home;
             SHELL = "${pkgs.bashInteractive}/bin/bash";
             GRADLE_OPTS = "-Dorg.gradle.project.android.aapt2FromMavenOverride=${ANDROID_SDK_ROOT}/build-tools/${aapt2buildToolsVersion}/aapt2";
-            buildInputs = [
-              flutter
-              androidSdk
-              jdk17
-              ninja
-              gtk3
-              olm
-              mpv
-              ffmpeg
-              mimalloc
-              libepoxy
-              dart
-              libass
-              pkg-config
-              android-tools
-              android-studio
-              bashInteractive
-            ];
+            LD_LIBRARY_PATH = "${pkgs.lib.makeLibraryPath libraries}";
+            buildInputs = libraries ++ packages;
           };
       }
     );

@@ -675,7 +675,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelGifSearchDescription": "Поиск гифок через Tenor. Запросы будут передаваться через {proxyUrl}",
+  "labelGifSearchDescription": "Включить поиск GIF-анимаций через Tenor. Запросы будут передаваться через {proxyUrl}",
   "@labelGifSearchDescription": {
     "description": "Explains that gifs will be fetched via proxy",
     "type": "text",
