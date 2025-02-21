@@ -10,7 +10,7 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 
 class RoomTextButton extends StatefulWidget {
   const RoomTextButton(this.room,
-                       {this.highlight = false, this.onTap, super.key});
+      {this.highlight = false, this.onTap, super.key});
   final bool highlight;
   final Room room;
   final Function(Room room)? onTap;
@@ -41,21 +41,21 @@ class _RoomTextButtonState extends State<RoomTextButton> {
   @override
   Widget build(BuildContext context) {
     var isDm = widget.room.client
-    .getComponent<DirectMessagesComponent>()
-    ?.isRoomDirectMessage(widget.room) ??
-    false;
+            .getComponent<DirectMessagesComponent>()
+            ?.isRoomDirectMessage(widget.room) ??
+        false;
 
     IconData defaultIcon = isDm ? Icons.alternate_email : Icons.tag;
 
     var color = Theme.of(context).colorScheme.secondary;
 
     if (widget.room.notificationCount > 0 ||
-      widget.room.highlightedNotificationCount > 0 ||
-      widget.highlight) {
+        widget.room.highlightedNotificationCount > 0 ||
+        widget.highlight) {
       color = Theme.of(context).colorScheme.onSurface;
-      }
+    }
 
-      bool useRoomIcons = preferences.showRoomIcons;
+    bool useRoomIcons = preferences.showRoomIcons;
 
     return SizedBox(
       height: 30,
@@ -66,21 +66,22 @@ class _RoomTextButtonState extends State<RoomTextButton> {
         avatar: useRoomIcons ? widget.room.avatar : null,
         avatarRadius: 12,
         avatarPlaceholderColor: useRoomIcons
-        ? (widget.room.defaultColor ?? Theme.of(context).colorScheme.primary)
-        : null,
+            ? (widget.room.defaultColor ??
+                Theme.of(context).colorScheme.primary)
+            : null,
         avatarPlaceholderText: useRoomIcons ? widget.room.displayName : null,
         iconColor: color,
         textColor: color,
         softwrap: false,
         onTap: () => widget.onTap?.call(widget.room),
         footer: widget.room.displayHighlightedNotificationCount > 0
-        ? NotificationBadge(widget.room.displayHighlightedNotificationCount)
-        : widget.room.displayNotificationCount > 0
-        ? const Padding(
-          padding: EdgeInsets.all(2.0),
-          child: DotIndicator(),
-        )
-        : null,
+            ? NotificationBadge(widget.room.displayHighlightedNotificationCount)
+            : widget.room.displayNotificationCount > 0
+                ? const Padding(
+                    padding: EdgeInsets.all(2.0),
+                    child: DotIndicator(),
+                  )
+                : null,
       ),
     );
   }

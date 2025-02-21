@@ -11,12 +11,12 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 
 class SpaceList extends StatefulWidget {
   const SpaceList(this.space,
-                  {this.onRoomSelected,
-                    this.onChildAdded,
-                    this.onChildRemoved,
-                    this.onChildUpdated,
-                    this.isTopLevel = true,
-                    super.key});
+      {this.onRoomSelected,
+      this.onChildAdded,
+      this.onChildRemoved,
+      this.onChildUpdated,
+      this.isTopLevel = true,
+      super.key});
   final Function(Room room)? onRoomSelected;
 
   final Stream<void>? onChildAdded;
@@ -37,7 +37,7 @@ class _SpaceListState extends State<SpaceList> {
 
   Room? selectedRoom;
   String get labelRoomsList => Intl.message("Rooms",
-                                            desc: "Header label for the list of rooms", name: "labelRoomsList");
+      desc: "Header label for the list of rooms", name: "labelRoomsList");
 
   @override
   void initState() {
@@ -48,12 +48,13 @@ class _SpaceListState extends State<SpaceList> {
       widget.space.onUpdate.listen(onSpaceUpdated),
       if (widget.onChildAdded != null)
         widget.onChildAdded!.listen(onSpaceUpdated),
-        if (widget.onChildRemoved != null)
-          widget.onChildRemoved!.listen(onSpaceUpdated),
-          if (widget.onChildUpdated != null)
-            widget.onChildUpdated!.listen(onSpaceUpdated),
-            for (var room in widget.space.rooms) room.onUpdate.listen(onRoomUpdated),
-              preferences.onSettingChanged.listen((_) => setState(() {})),  // Added listener
+      if (widget.onChildRemoved != null)
+        widget.onChildRemoved!.listen(onSpaceUpdated),
+      if (widget.onChildUpdated != null)
+        widget.onChildUpdated!.listen(onSpaceUpdated),
+      for (var room in widget.space.rooms) room.onUpdate.listen(onRoomUpdated),
+      preferences.onSettingChanged
+          .listen((_) => setState(() {})), // Added listener
     ];
 
     super.initState();
@@ -89,32 +90,32 @@ class _SpaceListState extends State<SpaceList> {
       children: [
         if (subSpaces.isNotEmpty)
           Padding(
-            padding: EdgeInsets.fromLTRB(0, widget.isTopLevel ? 12 : 0, 0, 0),
-            child: ImplicitlyAnimatedList(
-              itemData: subSpaces,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(0),
-              initialAnimation: false,
-              itemBuilder: (context, data) {
-                return tiamat.TextButtonExpander(data.displayName,
-                                                 initiallyExpanded: true,
-                                                 childrenPadding: const EdgeInsets.fromLTRB(2, 0, 0, 0),
-                                                 iconColor: Theme.of(context).colorScheme.secondary,
-                                                 textColor: Theme.of(context).colorScheme.secondary,
-                                                 children: [
-                                                   Padding(
-                                                     padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
-                                                     child: SpaceList(
-                                                       data,
-                                                       isTopLevel: false,
-                                                       onRoomSelected: widget.onRoomSelected,
-                                                     ),
-                                                   )
-                                                 ]);
-              },
-            )),
-            if (widget.space.rooms.isNotEmpty) roomsList()
+              padding: EdgeInsets.fromLTRB(0, widget.isTopLevel ? 12 : 0, 0, 0),
+              child: ImplicitlyAnimatedList(
+                itemData: subSpaces,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                padding: const EdgeInsets.all(0),
+                initialAnimation: false,
+                itemBuilder: (context, data) {
+                  return tiamat.TextButtonExpander(data.displayName,
+                      initiallyExpanded: true,
+                      childrenPadding: const EdgeInsets.fromLTRB(2, 0, 0, 0),
+                      iconColor: Theme.of(context).colorScheme.secondary,
+                      textColor: Theme.of(context).colorScheme.secondary,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
+                          child: SpaceList(
+                            data,
+                            isTopLevel: false,
+                            onRoomSelected: widget.onRoomSelected,
+                          ),
+                        )
+                      ]);
+                },
+              )),
+        if (widget.space.rooms.isNotEmpty) roomsList()
       ],
     );
   }
@@ -122,11 +123,11 @@ class _SpaceListState extends State<SpaceList> {
   Widget roomsList() {
     if (widget.isTopLevel) {
       return tiamat.TextButtonExpander(labelRoomsList,
-                                       childrenPadding: const EdgeInsets.fromLTRB(2, 0, 0, 0),
-                                       initiallyExpanded: true,
-                                       iconColor: Theme.of(context).colorScheme.secondary,
-                                       textColor: Theme.of(context).colorScheme.secondary,
-                                       children: [buildRoomsList()]);
+          childrenPadding: const EdgeInsets.fromLTRB(2, 0, 0, 0),
+          initiallyExpanded: true,
+          iconColor: Theme.of(context).colorScheme.secondary,
+          textColor: Theme.of(context).colorScheme.secondary,
+          children: [buildRoomsList()]);
     } else {
       return buildRoomsList();
     }
@@ -141,12 +142,12 @@ class _SpaceListState extends State<SpaceList> {
       initialAnimation: false,
       itemBuilder: (context, data) {
         return SizedBox(
-          height: 37,
-          child: RoomTextButton(
-            data,
-            onTap: widget.onRoomSelected,
-            highlight: selectedRoom == data,
-          ));
+            height: 37,
+            child: RoomTextButton(
+              data,
+              onTap: widget.onRoomSelected,
+              highlight: selectedRoom == data,
+            ));
       },
     );
   }

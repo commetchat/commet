@@ -268,7 +268,7 @@ class Preferences {
   }
 
   bool get messageEffectsEnabled =>
-  _preferences!.getBool(_messageEffectsEnabled) ?? true;
+      _preferences!.getBool(_messageEffectsEnabled) ?? true;
 
   bool get showRoomIcons => _preferences!.getBool(_showRoomIcons) ?? false;
 
