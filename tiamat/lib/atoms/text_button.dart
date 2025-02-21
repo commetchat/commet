@@ -189,6 +189,8 @@ class TextButton extends StatelessWidget {
     return material.TextButton(
         clipBehavior: Clip.antiAlias,
         style: ButtonStyle(
+          padding: MaterialStatePropertyAll(
+              material.EdgeInsets.fromLTRB(8, 0, 8, 0)),
           backgroundColor: MaterialStatePropertyAll(highlighted
               ? Theme.of(context).colorScheme.secondaryContainer
               : null),

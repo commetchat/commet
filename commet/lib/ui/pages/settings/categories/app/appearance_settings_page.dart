@@ -46,16 +46,22 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
     return Column(
       children: [
         themeSettings(context),
+        const SizedBox(
+          height: 10,
+        ),
         Panel(
           header: labelAppScale,
           mode: TileType.surfaceContainerLow,
           child: const UIScaleSelector(),
         ),
+        const SizedBox(
+          height: 10,
+        ),
         Panel(
           header: "Other Options",
           mode: TileType.surfaceContainerLow,
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 8, 0, 8),
+            padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
             child: GeneralSettingsPageState.settingToggle(
               preferences.showRoomIcons,
               title: labelEnableRoomIcons,
@@ -113,9 +119,6 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
             const Seperator(),
             const ThemeListWidget(),
           ]),
-        ),
-        const SizedBox(
-          height: 10,
         ),
       ],
     );
