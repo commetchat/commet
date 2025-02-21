@@ -65,10 +65,7 @@ class _RoomTextButtonState extends State<RoomTextButton> {
         icon: useRoomIcons ? null : defaultIcon,
         avatar: useRoomIcons ? widget.room.avatar : null,
         avatarRadius: 12,
-        avatarPlaceholderColor: useRoomIcons
-            ? (widget.room.defaultColor ??
-                Theme.of(context).colorScheme.primary)
-            : null,
+        avatarPlaceholderColor: useRoomIcons ? widget.room.defaultColor : null,
         avatarPlaceholderText: useRoomIcons ? widget.room.displayName : null,
         iconColor: color,
         textColor: color,
