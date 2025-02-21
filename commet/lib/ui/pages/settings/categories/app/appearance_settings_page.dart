@@ -19,13 +19,22 @@ class AppearanceSettingsPage extends StatefulWidget {
 
 class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
   String get labelSettingsAppTheme => Intl.message("Theme",
-      name: "labelSettingsAppTheme",
-      desc: "Label for theme section of app appearance");
+                                                   name: "labelSettingsAppTheme",
+                                                   desc: "Label for theme section of app appearance");
 
   String get labelAppScale => Intl.message("App Scale",
-      name: 'labelAppScale',
-      desc:
-          "Label for the setting which controls the UI scale of the overall app");
+                                           name: 'labelAppScale',
+                                           desc:
+                                           "Label for the setting which controls the UI scale of the overall app");
+
+  String get labelEnableRoomIcons => Intl.message("Enable Room Icons",
+                                                  name: "labelEnableRoomIcons",
+                                                  desc: "Label for enabling room icons in the appearance settings");
+
+  String get labelEnableRoomIconsDescription => Intl.message(
+    "Show room icons instead of #'s",
+    name: "labelEnableRoomIconsDescription",
+    desc: "Description for the enable room icons setting");
 
   @override
   void initState() {
@@ -81,6 +90,19 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
                   });
                   var theme = await preferences.resolveTheme();
                   if (context.mounted) ThemeChanger.setTheme(context, theme);
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
+              child: GeneralSettingsPageState.settingToggle(
+                preferences.showRoomIcons,
+                title: labelEnableRoomIcons,
+                description: labelEnableRoomIconsDescription,
+                onChanged: (value) async {
+                  setState(() {
+                    preferences.setShowRoomIcons(value);
+                  });
                 },
               ),
             ),

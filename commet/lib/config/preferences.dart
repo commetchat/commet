@@ -36,6 +36,7 @@ class Preferences {
   static const String _messageEffectsEnabled = "message_effects_enabled";
   static const String _lastForegroundServiceSucceeded =
       "did_last_foreground_service_run_succeed";
+  static const String _showRoomIcons = "show_room_icons";
 
   final StreamController _onSettingChanged = StreamController.broadcast();
   Stream get onSettingChanged => _onSettingChanged.stream;
@@ -267,5 +268,12 @@ class Preferences {
   }
 
   bool get messageEffectsEnabled =>
-      _preferences!.getBool(_messageEffectsEnabled) ?? true;
+  _preferences!.getBool(_messageEffectsEnabled) ?? true;
+
+  bool get showRoomIcons => _preferences!.getBool(_showRoomIcons) ?? false;
+
+  Future<void> setShowRoomIcons(bool value) async {
+    await _preferences!.setBool(_showRoomIcons, value);
+    _onSettingChanged.add(null);
+  }
 }
