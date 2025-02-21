@@ -27,22 +27,23 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
       desc:
           "Label for the setting which controls the UI scale of the overall app");
 
-  String get labelEnableRoomIcons => Intl.message("Enable Room Icons",
-      name: "labelEnableRoomIcons",
-      desc: "Label for enabling room icons in the appearance settings");
+  String get labelUseRoomAvatars => Intl.message("Use room avatars",
+      name: "labelUseRoomAvatars",
+      desc: "Label for enabling using room avatars instead of icons");
 
   String get labelEnableRoomIconsDescription =>
-      Intl.message("Show room icons instead of #'s",
+      Intl.message("Show room avatar images instead of icons",
           name: "labelEnableRoomIconsDescription",
           desc: "Description for the enable room icons setting");
 
-  String get labelEnableGenericIcons => Intl.message("Enable Generic Icons",
-      name: "labelEnableGenericIcons",
-      desc: "Label for enabling generic icons in the appearance settings");
+  String get labelUseRoomAvatarPlaceholders =>
+      Intl.message("Use placeholder avatars",
+          name: "labelUseRoomAvatarPlaceholders",
+          desc: "Label for enabling generic icons in the appearance settings");
 
-  String get labelEnableGenericIconsDescription => Intl.message(
-      "Show # or generic (color + letters) icons when no room icon is available",
-      name: "labelEnableGenericIconsDescription",
+  String get labelUseRoomAvatarPlaceholdersDescription => Intl.message(
+      "When a room does not have an avatar set, or using them is disabled, fallback to a generic color + first letter placeholder for the image",
+      name: "labelUseRoomAvatarPlaceholdersDescription",
       desc: "Description for the enable generic icons setting");
 
   @override
@@ -74,23 +75,23 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
             child: Column(
               children: [
                 GeneralSettingsPageState.settingToggle(
-                  preferences.showRoomIcons,
-                  title: labelEnableRoomIcons,
+                  preferences.showRoomAvatars,
+                  title: labelUseRoomAvatars,
                   description: labelEnableRoomIconsDescription,
                   onChanged: (value) async {
                     setState(() {
-                      preferences.setShowRoomIcons(value);
+                      preferences.setShowRoomAvatars(value);
                     });
                   },
                 ),
                 const Seperator(),
                 GeneralSettingsPageState.settingToggle(
-                  preferences.useGenericIcons,
-                  title: labelEnableGenericIcons,
-                  description: labelEnableGenericIconsDescription,
+                  preferences.usePlaceholderRoomAvatars,
+                  title: labelUseRoomAvatarPlaceholders,
+                  description: labelUseRoomAvatarPlaceholdersDescription,
                   onChanged: (value) async {
                     setState(() {
-                      preferences.setUseGenericIcons(value);
+                      preferences.setUsePlaceholderRoomAvatars(value);
                     });
                   },
                 ),

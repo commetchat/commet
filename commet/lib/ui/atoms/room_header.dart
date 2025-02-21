@@ -45,8 +45,8 @@ class _RoomHeaderState extends State<RoomHeader> {
             ?.isRoomDirectMessage(widget.room) ??
         false;
 
-    bool showRoomIcons = preferences.showRoomIcons;
-    bool useGenericIcons = preferences.useGenericIcons;
+    bool showRoomIcons = preferences.showRoomAvatars;
+    bool useGenericIcons = preferences.usePlaceholderRoomAvatars;
 
     bool shouldShowDefaultIcon = (!showRoomIcons && !useGenericIcons) ||
         (showRoomIcons && !useGenericIcons && widget.room.avatar == null);
@@ -57,11 +57,11 @@ class _RoomHeaderState extends State<RoomHeader> {
     if (shouldShowDefaultIcon) {
       iconWidget = m.Icon(
         defaultIcon,
-        size: 40,
+        size: 30,
       );
     } else {
       iconWidget = tiamat.Avatar(
-        radius: 20,
+        radius: 15,
         image: showRoomIcons && widget.room.avatar != null
             ? widget.room.avatar
             : null,
@@ -91,9 +91,12 @@ class _RoomHeaderState extends State<RoomHeader> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   SizedBox(
-                    width: 40,
-                    height: 40,
+                    width: 30,
+                    height: 30,
                     child: iconWidget,
+                  ),
+                  const SizedBox(
+                    width: 10,
                   ),
                   Flexible(
                     child: m.Text(

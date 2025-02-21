@@ -36,8 +36,9 @@ class Preferences {
   static const String _messageEffectsEnabled = "message_effects_enabled";
   static const String _lastForegroundServiceSucceeded =
       "did_last_foreground_service_run_succeed";
-  static const String _showRoomIcons = "show_room_icons";
-  static const String _useGenericIcons = "use_generic_icons";
+  static const String _showRoomAvatars = "show_room_avatars";
+  static const String _usePlaceholderRoomAvatars =
+      "use_placeholder_room_avatars";
 
   final StreamController _onSettingChanged = StreamController.broadcast();
   Stream get onSettingChanged => _onSettingChanged.stream;
@@ -271,17 +272,18 @@ class Preferences {
   bool get messageEffectsEnabled =>
       _preferences!.getBool(_messageEffectsEnabled) ?? true;
 
-  bool get showRoomIcons => _preferences!.getBool(_showRoomIcons) ?? true;
+  bool get showRoomAvatars => _preferences!.getBool(_showRoomAvatars) ?? true;
 
-  Future<void> setShowRoomIcons(bool value) async {
-    await _preferences!.setBool(_showRoomIcons, value);
+  Future<void> setShowRoomAvatars(bool value) async {
+    await _preferences!.setBool(_showRoomAvatars, value);
     _onSettingChanged.add(null);
   }
 
-  bool get useGenericIcons => _preferences!.getBool(_useGenericIcons) ?? true;
+  bool get usePlaceholderRoomAvatars =>
+      _preferences!.getBool(_usePlaceholderRoomAvatars) ?? false;
 
-  Future<void> setUseGenericIcons(bool value) async {
-    await _preferences!.setBool(_useGenericIcons, value);
+  Future<void> setUsePlaceholderRoomAvatars(bool value) async {
+    await _preferences!.setBool(_usePlaceholderRoomAvatars, value);
     _onSettingChanged.add(null);
   }
 }

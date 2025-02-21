@@ -54,8 +54,8 @@ class _RoomTextButtonState extends State<RoomTextButton> {
       color = Theme.of(context).colorScheme.onSurface;
     }
 
-    bool showRoomIcons = preferences.showRoomIcons;
-    bool useGenericIcons = preferences.useGenericIcons;
+    bool showRoomIcons = preferences.showRoomAvatars;
+    bool useGenericIcons = preferences.usePlaceholderRoomAvatars;
 
     bool shouldShowDefaultIcon = (!showRoomIcons && !useGenericIcons) ||
         (showRoomIcons && !useGenericIcons && widget.room.avatar == null);
