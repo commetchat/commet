@@ -53,8 +53,7 @@ class _SpaceListState extends State<SpaceList> {
       if (widget.onChildUpdated != null)
         widget.onChildUpdated!.listen(onSpaceUpdated),
       for (var room in widget.space.rooms) room.onUpdate.listen(onRoomUpdated),
-      preferences.onSettingChanged
-          .listen((_) => setState(() {})), // Added listener
+      preferences.onSettingChanged.listen((_) => setState(() {})),
     ];
 
     super.initState();
