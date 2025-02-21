@@ -38,39 +38,47 @@ class _RoomTextButtonState extends State<RoomTextButton> {
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
     var isDm = widget.room.client
-            .getComponent<DirectMessagesComponent>()
-            ?.isRoomDirectMessage(widget.room) ??
-        false;
+    .getComponent<DirectMessagesComponent>()
+    ?.isRoomDirectMessage(widget.room) ??
+    false;
 
-    IconData icon = isDm ? Icons.alternate_email : Icons.tag;
+    IconData fallbackIcon = isDm ? Icons.alternate_email : Icons.tag;
 
     var color = Theme.of(context).colorScheme.secondary;
 
     if (widget.room.notificationCount > 0 ||
-        widget.room.highlightedNotificationCount > 0 ||
-        widget.highlight) color = Theme.of(context).colorScheme.onSurface;
+      widget.room.highlightedNotificationCount > 0 ||
+      widget.highlight) {
+      color = Theme.of(context).colorScheme.onSurface;
+      }
 
-    return SizedBox(
+      return SizedBox(
         height: 30,
-        child: tiamat.TextButton(
-          highlighted: widget.highlight,
-          widget.room.displayName,
-          icon: icon,
-          iconColor: color,
-          textColor: color,
-          softwrap: false,
+        child: ListTile(
+          leading: widget.room.avatar != null
+          ? CircleAvatar(
+            backgroundImage: widget.room.avatar,
+            radius: 12,
+          )
+          : Icon(fallbackIcon, color: color),
+          title: Text(
+            widget.room.displayName,
+            style: TextStyle(color: color),
+            overflow: TextOverflow.ellipsis,
+          ),
           onTap: () => widget.onTap?.call(widget.room),
-          footer: widget.room.displayHighlightedNotificationCount > 0
-              ? NotificationBadge(
-                  widget.room.displayHighlightedNotificationCount)
-              : widget.room.displayNotificationCount > 0
-                  ? const Padding(
-                      padding: EdgeInsets.all(2.0),
-                      child: DotIndicator(),
-                    )
-                  : null,
-        ));
+          trailing: widget.room.displayHighlightedNotificationCount > 0
+          ? NotificationBadge(widget.room.displayHighlightedNotificationCount)
+          : widget.room.displayNotificationCount > 0
+          ? const Padding(
+            padding: EdgeInsets.all(2.0),
+            child: DotIndicator(),
+          )
+          : null,
+        ),
+      );
   }
 }
