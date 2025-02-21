@@ -50,7 +50,20 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
           header: labelAppScale,
           mode: TileType.surfaceContainerLow,
           child: const UIScaleSelector(),
-        )
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 8, 0, 8),
+          child: GeneralSettingsPageState.settingToggle(
+            preferences.showRoomIcons,
+            title: labelEnableRoomIcons,
+            description: labelEnableRoomIconsDescription,
+            onChanged: (value) async {
+              setState(() {
+                preferences.setShowRoomIcons(value);
+              });
+            },
+          ),
+        ),
       ],
     );
   }
@@ -90,19 +103,6 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
                   });
                   var theme = await preferences.resolveTheme();
                   if (context.mounted) ThemeChanger.setTheme(context, theme);
-                },
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
-              child: GeneralSettingsPageState.settingToggle(
-                preferences.showRoomIcons,
-                title: labelEnableRoomIcons,
-                description: labelEnableRoomIconsDescription,
-                onChanged: (value) async {
-                  setState(() {
-                    preferences.setShowRoomIcons(value);
-                  });
                 },
               ),
             ),
