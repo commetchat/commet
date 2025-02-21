@@ -46,7 +46,6 @@ class _RoomTextButtonState extends State<RoomTextButton> {
         false;
 
     IconData defaultIcon = isDm ? Icons.alternate_email : Icons.tag;
-
     var color = Theme.of(context).colorScheme.secondary;
 
     if (widget.room.notificationCount > 0 ||
@@ -55,18 +54,32 @@ class _RoomTextButtonState extends State<RoomTextButton> {
       color = Theme.of(context).colorScheme.onSurface;
     }
 
-    bool useRoomIcons = preferences.showRoomIcons;
+    bool showRoomIcons = preferences.showRoomIcons;
+    bool useGenericIcons = preferences.useGenericIcons;
+
+    bool shouldShowDefaultIcon = (!showRoomIcons && !useGenericIcons) ||
+        (showRoomIcons && !useGenericIcons && widget.room.avatar == null);
 
     return SizedBox(
       height: 30,
       child: tiamat.TextButton(
         highlighted: widget.highlight,
         widget.room.displayName,
-        icon: useRoomIcons ? null : defaultIcon,
-        avatar: useRoomIcons ? widget.room.avatar : null,
+        icon: shouldShowDefaultIcon ? defaultIcon : null,
+        avatar: showRoomIcons && widget.room.avatar != null
+            ? widget.room.avatar
+            : null,
         avatarRadius: 12,
-        avatarPlaceholderColor: useRoomIcons ? widget.room.defaultColor : null,
-        avatarPlaceholderText: useRoomIcons ? widget.room.displayName : null,
+        avatarPlaceholderColor:
+            (showRoomIcons && useGenericIcons && widget.room.avatar == null) ||
+                    (!showRoomIcons && useGenericIcons)
+                ? widget.room.defaultColor
+                : null,
+        avatarPlaceholderText:
+            (showRoomIcons && useGenericIcons && widget.room.avatar == null) ||
+                    (!showRoomIcons && useGenericIcons)
+                ? widget.room.displayName
+                : null,
         iconColor: color,
         textColor: color,
         softwrap: false,

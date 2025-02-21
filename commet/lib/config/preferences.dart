@@ -37,6 +37,7 @@ class Preferences {
   static const String _lastForegroundServiceSucceeded =
       "did_last_foreground_service_run_succeed";
   static const String _showRoomIcons = "show_room_icons";
+  static const String _useGenericIcons = "use_generic_icons";
 
   final StreamController _onSettingChanged = StreamController.broadcast();
   Stream get onSettingChanged => _onSettingChanged.stream;
@@ -274,6 +275,13 @@ class Preferences {
 
   Future<void> setShowRoomIcons(bool value) async {
     await _preferences!.setBool(_showRoomIcons, value);
+    _onSettingChanged.add(null);
+  }
+
+  bool get useGenericIcons => _preferences!.getBool(_useGenericIcons) ?? true;
+
+  Future<void> setUseGenericIcons(bool value) async {
+    await _preferences!.setBool(_useGenericIcons, value);
     _onSettingChanged.add(null);
   }
 }

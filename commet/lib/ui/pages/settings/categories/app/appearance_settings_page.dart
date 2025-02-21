@@ -36,6 +36,15 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
           name: "labelEnableRoomIconsDescription",
           desc: "Description for the enable room icons setting");
 
+  String get labelEnableGenericIcons => Intl.message("Enable Generic Icons",
+      name: "labelEnableGenericIcons",
+      desc: "Label for enabling generic icons in the appearance settings");
+
+  String get labelEnableGenericIconsDescription => Intl.message(
+      "Show # or generic (color + letters) icons when no room icon is available",
+      name: "labelEnableGenericIconsDescription",
+      desc: "Description for the enable generic icons setting");
+
   @override
   void initState() {
     super.initState();
@@ -62,15 +71,30 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
           mode: TileType.surfaceContainerLow,
           child: Padding(
             padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-            child: GeneralSettingsPageState.settingToggle(
-              preferences.showRoomIcons,
-              title: labelEnableRoomIcons,
-              description: labelEnableRoomIconsDescription,
-              onChanged: (value) async {
-                setState(() {
-                  preferences.setShowRoomIcons(value);
-                });
-              },
+            child: Column(
+              children: [
+                GeneralSettingsPageState.settingToggle(
+                  preferences.showRoomIcons,
+                  title: labelEnableRoomIcons,
+                  description: labelEnableRoomIconsDescription,
+                  onChanged: (value) async {
+                    setState(() {
+                      preferences.setShowRoomIcons(value);
+                    });
+                  },
+                ),
+                const Seperator(),
+                GeneralSettingsPageState.settingToggle(
+                  preferences.useGenericIcons,
+                  title: labelEnableGenericIcons,
+                  description: labelEnableGenericIconsDescription,
+                  onChanged: (value) async {
+                    setState(() {
+                      preferences.setUseGenericIcons(value);
+                    });
+                  },
+                ),
+              ],
             ),
           ),
         ),
