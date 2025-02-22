@@ -27,6 +27,25 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
       desc:
           "Label for the setting which controls the UI scale of the overall app");
 
+  String get labelUseRoomAvatars => Intl.message("Use room avatars",
+      name: "labelUseRoomAvatars",
+      desc: "Label for enabling using room avatars instead of icons");
+
+  String get labelEnableRoomIconsDescription =>
+      Intl.message("Show room avatar images instead of icons",
+          name: "labelEnableRoomIconsDescription",
+          desc: "Description for the enable room icons setting");
+
+  String get labelUseRoomAvatarPlaceholders =>
+      Intl.message("Use placeholder avatars",
+          name: "labelUseRoomAvatarPlaceholders",
+          desc: "Label for enabling generic icons in the appearance settings");
+
+  String get labelUseRoomAvatarPlaceholdersDescription => Intl.message(
+      "When a room does not have an avatar set, or using them is disabled, fallback to a generic color + first letter placeholder for the image",
+      name: "labelUseRoomAvatarPlaceholdersDescription",
+      desc: "Description for the enable generic icons setting");
+
   @override
   void initState() {
     super.initState();
@@ -37,11 +56,49 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
     return Column(
       children: [
         themeSettings(context),
+        const SizedBox(
+          height: 10,
+        ),
         Panel(
           header: labelAppScale,
           mode: TileType.surfaceContainerLow,
           child: const UIScaleSelector(),
-        )
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        Panel(
+          header: "Other Options",
+          mode: TileType.surfaceContainerLow,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+            child: Column(
+              children: [
+                GeneralSettingsPageState.settingToggle(
+                  preferences.showRoomAvatars,
+                  title: labelUseRoomAvatars,
+                  description: labelEnableRoomIconsDescription,
+                  onChanged: (value) async {
+                    setState(() {
+                      preferences.setShowRoomAvatars(value);
+                    });
+                  },
+                ),
+                const Seperator(),
+                GeneralSettingsPageState.settingToggle(
+                  preferences.usePlaceholderRoomAvatars,
+                  title: labelUseRoomAvatarPlaceholders,
+                  description: labelUseRoomAvatarPlaceholdersDescription,
+                  onChanged: (value) async {
+                    setState(() {
+                      preferences.setUsePlaceholderRoomAvatars(value);
+                    });
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -87,9 +144,6 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
             const Seperator(),
             const ThemeListWidget(),
           ]),
-        ),
-        const SizedBox(
-          height: 10,
         ),
       ],
     );

@@ -36,6 +36,9 @@ class Preferences {
   static const String _messageEffectsEnabled = "message_effects_enabled";
   static const String _lastForegroundServiceSucceeded =
       "did_last_foreground_service_run_succeed";
+  static const String _showRoomAvatars = "show_room_avatars";
+  static const String _usePlaceholderRoomAvatars =
+      "use_placeholder_room_avatars";
 
   final StreamController _onSettingChanged = StreamController.broadcast();
   Stream get onSettingChanged => _onSettingChanged.stream;
@@ -268,4 +271,19 @@ class Preferences {
 
   bool get messageEffectsEnabled =>
       _preferences!.getBool(_messageEffectsEnabled) ?? true;
+
+  bool get showRoomAvatars => _preferences!.getBool(_showRoomAvatars) ?? true;
+
+  Future<void> setShowRoomAvatars(bool value) async {
+    await _preferences!.setBool(_showRoomAvatars, value);
+    _onSettingChanged.add(null);
+  }
+
+  bool get usePlaceholderRoomAvatars =>
+      _preferences!.getBool(_usePlaceholderRoomAvatars) ?? false;
+
+  Future<void> setUsePlaceholderRoomAvatars(bool value) async {
+    await _preferences!.setBool(_usePlaceholderRoomAvatars, value);
+    _onSettingChanged.add(null);
+  }
 }

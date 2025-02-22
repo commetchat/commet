@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:commet/client/client.dart';
+import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/room_text_button.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
@@ -52,6 +53,7 @@ class _SpaceListState extends State<SpaceList> {
       if (widget.onChildUpdated != null)
         widget.onChildUpdated!.listen(onSpaceUpdated),
       for (var room in widget.space.rooms) room.onUpdate.listen(onRoomUpdated),
+      preferences.onSettingChanged.listen((_) => setState(() {})),
     ];
 
     super.initState();
