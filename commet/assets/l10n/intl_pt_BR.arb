@@ -417,7 +417,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelEmojiPickerStickerTab": "Sticker",
+  "labelEmojiPickerStickerTab": "Figurinha",
   "@labelEmojiPickerStickerTab": {
     "description": "Label for the sticker tab in the emoji picker",
     "type": "text",
@@ -619,7 +619,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "promptStickerName": "Nome do sticker",
+  "promptStickerName": "Nome da figurinha",
   "@promptStickerName": {
     "description": "Prompt for the input of a sticker",
     "type": "text",
@@ -910,7 +910,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelRestoreMatrixBackupTitle": "Restaurar de cópia de segurança",
+  "labelRestoreMatrixBackupTitle": "Restaurar cópia de segurança",
   "@labelRestoreMatrixBackupTitle": {
     "description": "Title of the popup dialog for restoring message backup",
     "type": "text",
@@ -1543,5 +1543,113 @@
     "description": "Placeholder text for the passphrase text box",
     "type": "text",
     "placeholders": {}
+  },
+  "noPinnedMessages": "Nenhuma mensagem foi fixa!",
+  "@noPinnedMessages": {
+    "description": "Placeholder label in the pinned messages menu that is shown when there are no pinned messages",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMessageEffectsTitle": "Efeitos de Mensagem",
+  "@labelMessageEffectsTitle": {
+    "description": "Header for the settings tile for message effects, such as confetti",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMessageEffectsDescription": "Mensagens podem ser enviadas com efeitos adicionais, como confete",
+  "@labelMessageEffectsDescription": {
+    "description": "Label describing what message effects are",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptPinMessage": "Fixar Mensagem",
+  "@promptPinMessage": {
+    "description": "Label for the menu option to pin a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptUnpinMessage": "Desafixar Mensagem",
+  "@promptUnpinMessage": {
+    "description": "Label for the menu option to unpin a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptReplyInThread": "Responder No Tópico",
+  "@promptReplyInThread": {
+    "description": "Label for the menu option to reply to a message inside a thread",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptReplayMessageEffect": "Reproduzir Efeito",
+  "@promptReplayMessageEffect": {
+    "description": "If a message was sent with an effect, this prompts to replay the effect",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptShowSource": "Mostrar Fonte",
+  "@promptShowSource": {
+    "description": "Label for the menu option to view the JSON source of an event",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messagePlaceholderUserUpdatedNameDetailed": "{user} mudou seu nome para '{newName}'",
+  "@messagePlaceholderUserUpdatedNameDetailed": {
+    "description": "Message body for when a user updates their display name",
+    "type": "text",
+    "placeholders": {
+      "user": {},
+      "newName": {}
+    }
+  },
+  "messageUserRetractedInvite": "{sender} desconvidou {user}",
+  "@messageUserRetractedInvite": {
+    "description": "Message body for when a user's invitation to a room was withdrawn",
+    "type": "text",
+    "placeholders": {
+      "sender": {},
+      "user": {}
+    }
+  },
+  "messageUserUnbanned": "{sender} desbaniu {user}",
+  "@messageUserUnbanned": {
+    "description": "Message body for when a user reverts a ban of another user",
+    "type": "text",
+    "placeholders": {
+      "sender": {},
+      "user": {}
+    }
+  },
+  "messageUserPinnedEvent": "{user} fixou uma mensagem!",
+  "@messageUserPinnedEvent": {
+    "description": "Message body for when a user adds an event to the room's pinned messages",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messageUserUnpinnedEvent": "{user} desafixou uma mensagem",
+  "@messageUserUnpinnedEvent": {
+    "description": "Message body for when a user removes an event from the room's pinned messages",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messageUserBanned": "{sender} baniu {user}",
+  "@messageUserBanned": {
+    "description": "Message body for when a user bans another user from the room",
+    "type": "text",
+    "placeholders": {
+      "sender": {},
+      "user": {}
+    }
+  },
+  "messageUserAcceptedInvite": "{user} aceitou o convite",
+  "@messageUserAcceptedInvite": {
+    "description": "Message body for when a user accepted an invitation to a room",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
   }
 }
