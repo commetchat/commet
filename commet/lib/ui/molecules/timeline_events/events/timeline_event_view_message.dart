@@ -229,9 +229,10 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
 
     attachments = event.attachments;
 
-    doUrlPreview =
-        previewComponent?.shouldGetPreviewData(room, event) == true &&
-            event.links?.isNotEmpty == true;
+    doUrlPreview = widget.timeline != null &&
+        previewComponent?.shouldGetPreviewData(widget.timeline!, event) ==
+            true &&
+        event.getLinks(timeline: widget.timeline!)?.isEmpty == false;
   }
 
   String timestampToString(DateTime time) {
