@@ -5,6 +5,7 @@ import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/component.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/config/global_config.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/config/preferences.dart';
@@ -152,6 +153,7 @@ Future<void> initNecessary() async {
 
   await Future.wait([
     if (fileCache != null) fileCache!.init(),
+    GlobalConfig.init(),
   ]);
 
   clientManager = await ClientManager.init();

@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:commet/client/auth.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/config/global_config.dart';
 import 'package:commet/ui/atoms/shader/star_trails.dart';
 import 'package:commet/ui/navigation/navigation_utils.dart';
 import 'package:commet/ui/pages/settings/app_settings_page.dart';
@@ -52,7 +53,7 @@ class LoginPageView extends StatefulWidget {
 
 class _LoginPageViewState extends State<LoginPageView> {
   final TextEditingController _homeserverTextField = TextEditingController(
-    text: 'matrix.org',
+    text: GlobalConfig.defaultHomeserver,
   );
   final TextEditingController _usernameTextField = TextEditingController();
   final TextEditingController _passwordTextField = TextEditingController();

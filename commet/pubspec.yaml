@@ -147,6 +147,7 @@ flutter_launcher_icons:
 
 flutter: 
   assets: 
+    - assets/config/
     - assets/l10n/
     - assets/images/app_icon/
     - assets/images/effects/particles/
