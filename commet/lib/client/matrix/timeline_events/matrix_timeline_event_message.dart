@@ -20,13 +20,9 @@ class MatrixTimelineEventMessage extends MatrixTimelineEvent
     implements TimelineEventMessage {
   MatrixTimelineEventMessage(super.event, {required super.client}) {
     attachments = _parseAnyAttachments();
-    links = _findLinks();
   }
 
   matrix.Client get mx => client.getMatrixClient();
-
-  @override
-  late List<Uri>? links;
 
   @override
   late List<Attachment>? attachments;
@@ -156,8 +152,9 @@ class MatrixTimelineEventMessage extends MatrixTimelineEvent
     return null;
   }
 
-  List<Uri>? _findLinks() {
-    var text = _getFormattedBody();
+  @override
+  List<Uri>? getLinks({Timeline? timeline}) {
+    var text = _getFormattedBody(timeline: timeline);
     var start = text.indexOf("<mx-reply>");
     var end = text.indexOf("</mx-reply>");
 

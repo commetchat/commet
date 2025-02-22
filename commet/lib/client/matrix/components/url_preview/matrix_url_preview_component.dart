@@ -3,7 +3,7 @@ import 'package:commet/client/matrix/extensions/matrix_client_extensions.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
-import 'package:commet/client/room.dart';
+import 'package:commet/client/timeline.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/client/timeline_events/timeline_event_message.dart';
 import 'package:commet/debug/log.dart';
@@ -41,10 +41,13 @@ pQIDAQAB
   }
 
   @override
-  Future<UrlPreviewData?> getPreview(Room room, TimelineEvent event) async {
+  Future<UrlPreviewData?> getPreview(
+      Timeline timeline, TimelineEvent event) async {
     if (event is! TimelineEventMessage) {
       return null;
     }
+
+    final room = timeline.room;
 
     if (room.isE2EE && preferences.urlPreviewInE2EEChat == false) {
       Log.i(
@@ -54,7 +57,7 @@ pQIDAQAB
 
     var mxClient = (room as MatrixRoom).matrixRoom.client;
 
-    var uri = event.links!.first;
+    var uri = event.getLinks(timeline: timeline)!.first;
 
     if (cache.containsKey(uri.toString())) {
       return cache[uri.toString()];
@@ -80,12 +83,17 @@ pQIDAQAB
   }
 
   @override
-  UrlPreviewData? getCachedPreview(Room room, TimelineEvent event) {
+  UrlPreviewData? getCachedPreview(Timeline timeline, TimelineEvent event) {
     if (event is! TimelineEventMessage) {
       return null;
     }
 
-    var uri = event.links!.first;
+    var uri = event.getLinks(timeline: timeline)?.firstOrNull;
+
+    if (uri == null) {
+      return null;
+    }
+
     if (cache.containsKey(uri.toString())) {
       return cache[uri.toString()];
     }
@@ -94,10 +102,12 @@ pQIDAQAB
   }
 
   @override
-  bool shouldGetPreviewData(Room room, TimelineEvent event) {
+  bool shouldGetPreviewData(Timeline timeline, TimelineEvent event) {
     if (event is! TimelineEventMessage) {
       return false;
     }
+
+    final room = timeline.room;
 
     if (room.isE2EE && preferences.urlPreviewInE2EEChat == false) {
       return false;
@@ -107,7 +117,9 @@ pQIDAQAB
       return false;
     }
 
-    return event.links?.isNotEmpty == true;
+    final links = event.getLinks(timeline: timeline);
+
+    return links?.isNotEmpty == true;
   }
 
   Future<String> getRequestPath() async {

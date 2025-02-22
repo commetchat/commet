@@ -60,8 +60,7 @@ class _TimelineEventViewUrlPreviewsState
 
   void setStateFromIndex(int index) {
     var event = widget.timeline.events[index];
-    var cachedData =
-        widget.component.getCachedPreview(widget.timeline.room, event);
+    var cachedData = widget.component.getCachedPreview(widget.timeline, event);
 
     if (cachedData != null) {
       setState(() {
@@ -71,10 +70,11 @@ class _TimelineEventViewUrlPreviewsState
     } else {
       setState(() {
         loading = true;
+        data = null;
       });
 
       if (event.status == TimelineEventStatus.synced) {
-        widget.component.getPreview(widget.timeline.room, event).then(
+        widget.component.getPreview(widget.timeline, event).then(
           (value) async {
             if (mounted) {
               final image = value?.image;

@@ -11,5 +11,5 @@ abstract class TimelineEventMessage extends TimelineEvent {
 
   bool isEdited(Timeline timeline);
 
-  List<Uri>? get links => null;
+  List<Uri>? getLinks({Timeline? timeline});
 }
