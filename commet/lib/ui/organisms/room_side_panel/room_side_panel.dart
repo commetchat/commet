@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
@@ -9,6 +10,7 @@ import 'package:commet/ui/organisms/room_pinned_messages/room_pinned_messages_wi
 import 'package:commet/ui/organisms/room_quick_access_menu/room_quick_access_menu_mobile.dart';
 import 'package:commet/ui/pages/main/main_page.dart';
 import 'package:commet/utils/event_bus.dart';
+import 'package:commet/utils/scaled_app.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/atoms/tile.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -148,36 +150,86 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
     );
   }
 
+  Widget keyboardAdaptor(Widget child, {bool ignore = false}) {
+    var scaledQuery = MediaQuery.of(context).scale();
+    var offset = max(scaledQuery.viewInsets.bottom, scaledQuery.padding.bottom);
+
+    return ScaledSafeArea(
+        bottom: false,
+        child: Padding(
+            padding: EdgeInsets.fromLTRB(0, 0, 0, offset), child: child));
+  }
+
   Widget buildThread() {
-    return Tile(
-      caulkPadLeft: true,
-      caulkClipTopLeft: true,
-      caulkClipBottomLeft: true,
-      caulkPadBottom: true,
-      child: Stack(
-        children: [
-          Chat(
-            widget.state.currentRoom!,
-            threadId: currentThreadId,
-            key: ValueKey(
-                "room-timeline-key-${widget.state.currentRoom!.localId}_thread_$currentThreadId"),
-          ),
-          ScaledSafeArea(
-            child: Align(
-              alignment: Alignment.topRight,
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: tiamat.CircleButton(
-                  icon: Icons.close,
-                  radius: 24,
-                  onPressed: () => EventBus.closeThread.add(null),
+    if (Layout.mobile) {
+      return Tile(
+        caulkPadLeft: true,
+        caulkClipTopLeft: true,
+        caulkClipBottomLeft: true,
+        caulkPadBottom: true,
+        child: keyboardAdaptor(
+      	  Column(
+      	    children: [
+      	  	  Flexible(
+                child: Stack(
+                  children: [
+                    Chat(
+                      widget.state.currentRoom!,
+                      threadId: currentThreadId,
+                      key: ValueKey(
+                          "room-timeline-key-${widget.state.currentRoom!.localId}_thread_$currentThreadId"),
+                    ),
+                    ScaledSafeArea(
+                      child: Align(
+                        alignment: Alignment.topRight,
+                        child: Padding(
+                          padding: const EdgeInsets.all(24.0),
+                          child: tiamat.CircleButton(
+                            icon: Icons.close,
+                            radius: 24,
+                            onPressed: () => EventBus.closeThread.add(null),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+      	  	  ),
+      	    ],
+      	  ),
+        ),
+      );
+    } else {
+      return Tile(
+        caulkPadLeft: true,
+        caulkClipTopLeft: true,
+        caulkClipBottomLeft: true,
+        caulkPadBottom: true,
+        child: Stack(
+          children: [
+            Chat(
+              widget.state.currentRoom!,
+              threadId: currentThreadId,
+              key: ValueKey(
+                  "room-timeline-key-${widget.state.currentRoom!.localId}_thread_$currentThreadId"),
+            ),
+            ScaledSafeArea(
+              child: Align(
+                alignment: Alignment.topRight,
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: tiamat.CircleButton(
+                    icon: Icons.close,
+                    radius: 24,
+                    onPressed: () => EventBus.closeThread.add(null),
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    }
   }
 
   Widget buildSearch() {
