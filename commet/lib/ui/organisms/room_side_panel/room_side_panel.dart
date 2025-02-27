@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:commet/config/layout_config.dart';
+import 'package:commet/ui/atoms/keyboard_adaptor.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/organisms/chat/chat.dart';
 import 'package:commet/ui/organisms/room_event_search/room_event_search_widget.dart';
@@ -150,16 +151,6 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
     );
   }
 
-  Widget keyboardAdaptor(Widget child, {bool ignore = false}) {
-    var scaledQuery = MediaQuery.of(context).scale();
-    var offset = max(scaledQuery.viewInsets.bottom, scaledQuery.padding.bottom);
-
-    return ScaledSafeArea(
-        bottom: false,
-        child: Padding(
-            padding: EdgeInsets.fromLTRB(0, 0, 0, offset), child: child));
-  }
-
   Widget buildThread() {
     if (Layout.mobile) {
       return Tile(
@@ -167,7 +158,7 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
         caulkClipTopLeft: true,
         caulkClipBottomLeft: true,
         caulkPadBottom: true,
-        child: keyboardAdaptor(
+        child: KeyboardAdaptor(
       	  Column(
       	    children: [
       	  	  Flexible(
