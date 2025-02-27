@@ -152,75 +152,43 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
   }
 
   Widget buildThread() {
-    if (Layout.mobile) {
-      return Tile(
-        caulkPadLeft: true,
-        caulkClipTopLeft: true,
-        caulkClipBottomLeft: true,
-        caulkPadBottom: true,
-        child: KeyboardAdaptor(
-      	  Column(
-      	    children: [
-      	  	  Flexible(
-                child: Stack(
-                  children: [
-                    Chat(
-                      widget.state.currentRoom!,
-                      threadId: currentThreadId,
-                      key: ValueKey(
-                          "room-timeline-key-${widget.state.currentRoom!.localId}_thread_$currentThreadId"),
-                    ),
-                    ScaledSafeArea(
-                      child: Align(
-                        alignment: Alignment.topRight,
-                        child: Padding(
-                          padding: const EdgeInsets.all(24.0),
-                          child: tiamat.CircleButton(
-                            icon: Icons.close,
-                            radius: 24,
-                            onPressed: () => EventBus.closeThread.add(null),
-                          ),
+    return Tile(
+      caulkPadLeft: true,
+      caulkClipTopLeft: true,
+      caulkClipBottomLeft: true,
+      caulkPadBottom: true,
+      child: KeyboardAdaptor(
+    	  Column(
+    	    children: [
+    	  	  Flexible(
+              child: Stack(
+                children: [
+                  Chat(
+                    widget.state.currentRoom!,
+                    threadId: currentThreadId,
+                    key: ValueKey(
+                        "room-timeline-key-${widget.state.currentRoom!.localId}_thread_$currentThreadId"),
+                  ),
+                  ScaledSafeArea(
+                    child: Align(
+                      alignment: Alignment.topRight,
+                      child: Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: tiamat.CircleButton(
+                          icon: Icons.close,
+                          radius: 24,
+                          onPressed: () => EventBus.closeThread.add(null),
                         ),
                       ),
                     ),
-                  ],
-                ),
-      	  	  ),
-      	    ],
-      	  ),
-        ),
-      );
-    } else {
-      return Tile(
-        caulkPadLeft: true,
-        caulkClipTopLeft: true,
-        caulkClipBottomLeft: true,
-        caulkPadBottom: true,
-        child: Stack(
-          children: [
-            Chat(
-              widget.state.currentRoom!,
-              threadId: currentThreadId,
-              key: ValueKey(
-                  "room-timeline-key-${widget.state.currentRoom!.localId}_thread_$currentThreadId"),
-            ),
-            ScaledSafeArea(
-              child: Align(
-                alignment: Alignment.topRight,
-                child: Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: tiamat.CircleButton(
-                    icon: Icons.close,
-                    radius: 24,
-                    onPressed: () => EventBus.closeThread.add(null),
                   ),
-                ),
+                ],
               ),
-            ),
-          ],
-        ),
-      );
-    }
+    	  	  ),
+    	    ],
+    	  ),
+      ),
+    );
   }
 
   Widget buildSearch() {
