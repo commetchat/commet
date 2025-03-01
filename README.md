@@ -74,15 +74,15 @@ When building Commet, there are some additional command line arguments that must
 **Required**
 | **Argument** | **Valid Values**                                                          | **Description**                                                                                              |
 |--------------|---------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
-| PLATFORM    | 'desktop', 'mobile', 'linux', 'windows', 'macos', 'android', 'ios', 'web' | Defines which platform to build for                                                                          |
+| PLATFORM     | 'desktop', 'mobile', 'linux', 'windows', 'macos', 'android', 'ios', 'web' | Defines which platform to build for                                                                          |
 | BUILD_MODE   | 'release', 'debug'                                                        | When building with 'debug' flag, additional debug information will be shown                                  |
 
 **Optional**
-| **Argument** | **Valid Values**                                                          | **Description**                                                                                              |
-|--------------|---------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
-| GIT_HASH     | *                                                                         | Supply the current git hash when building to show in info screen                                             |
-| VERSION_TAG  | *                                                                         | Supply the current build version, to display app version                                                     |
-| BUILD_DETAIL | *                                                                         | Can provide additional detail about the current build, for example if it was being built for Flatpak or Snap |
+| **Argument** | **Valid Values** | **Description**                                                                                              |
+|--------------|------------------|--------------------------------------------------------------------------------------------------------------|
+| GIT_HASH     | *                | Supply the current git hash when building to show in info screen                                             |
+| VERSION_TAG  | *                | Supply the current build version, to display app version                                                     |
+| BUILD_DETAIL | *                | Can provide additional detail about the current build, for example if it was being built for Flatpak or Snap |
 
 **Example:**
 
@@ -90,3 +90,37 @@ When building Commet, there are some additional command line arguments that must
 cd commet
 flutter run --dart-define BUILD_MODE=debug --dart-define PLATFORM=linux
 ```
+
+## Building on macOS
+
+These are rough notes, based on the experience of getting Commet compiled and running for
+macOS and iOS from a mac.
+
+- Install [Homebrew](https://brew.sh)
+- Install ninja with `brew install ninja`
+  - Repeat for "gtk", "mpv", "ffmpeg", "libmpv", "mimalloc"
+- If you want to run locally only (on a mac), you can install OLM with 
+  `brew install libolm`. If you want to generate a universal binary, then the Commet 
+  Xcode project for macOS includes a Cocoapods installation of "OLMKit" along with a shell
+  script to create an alias to the compiled library named "libolm.3.dylib", so that the
+  application can find it.
+- For both macOS and iOS, open the Xcode projects by opening the ".xcworkspace" file
+  instead of the ".xcodeproj" file.
+  - In these files, set up code signing appropriately. You will need:
+    - An apple code signing certificate for iOS (and the same for macOS if you want to be
+      able to run the app non-locally)
+    - An Apple Push Services certificate for push notification support
+    - An Apple Identifier for your app bundle name (e.g. "chat.commet.app.WHATEVER")
+    - An Apple device profile for each device (mac or phone) you want to test on
+    - An Apple services key for push services (and your own Firebase set-up to go with it)
+      if you want to use push notifications outside of the main commet set-up
+
+The current set-up specifies the Podfile for both macOS and iOS (rather than having 
+Flutter generate it) because the generated Podfile both sets the wrong target OS versions
+and includes a test target which is not actually present in the code. In addition, on
+macOS, the pod install of 'OLMKit' *must* be done manually in the pod file because the
+Flutter pod definition of OLMKit will only install it on iOS, and Homebrew will only
+install the version of libolm that matches the system architecture on which it's running.
+In addition, the Homebrew libolm is linked with the rest of the homebrew installation, and
+thus the library may fail to work, even embedded in the app, if installed on a different
+system.
