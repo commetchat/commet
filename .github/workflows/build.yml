@@ -163,3 +163,32 @@ jobs:
         run: |
           cd $PROJECT_PATH
           flutter build web --release --dart-define PLATFORM=web
+
+  build-mac:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: 'true'
+
+      - name: Setup Flutter 
+        uses: subosito/flutter-action@v2.8.0
+        with:
+          flutter-version: '3.24.4'
+          channel: 'stable'
+
+      - name: Setup Tools
+        uses: gerlero/brew-install@v1
+        with:
+          packages: ninja gtk+3 mpv ffmpeg mimalloc
+
+      - name: Code Generation
+        run: |
+          cd $PROJECT_PATH
+          dart run scripts/codegen.dart
+
+      - name: Build Mac
+        run: |
+          cd $PROJECT_PATH
+          flutter build macos --release --dart-define PLATFORM=macos
