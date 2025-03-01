@@ -158,9 +158,9 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
       caulkClipBottomLeft: true,
       caulkPadBottom: true,
       child: KeyboardAdaptor(
-    	  Column(
-    	    children: [
-    	  	  Flexible(
+        Column(
+          children: [
+            Flexible(
               child: Stack(
                 children: [
                   Chat(
@@ -184,9 +184,9 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
                   ),
                 ],
               ),
-    	  	  ),
-    	    ],
-    	  ),
+            ),
+          ],
+        ),
       ),
     );
   }
