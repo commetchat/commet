@@ -5,7 +5,7 @@ import 'package:commet/utils/scaled_app.dart';
 import 'package:flutter/material.dart';
 
 class KeyboardAdaptor extends StatelessWidget {
-  const KeyboardAdaptor(Widget this.child, {bool this.ignore = false});
+  const KeyboardAdaptor(Widget this.child, {super.key, this.ignore = false});
   final Widget? child;
   final bool ignore;
 

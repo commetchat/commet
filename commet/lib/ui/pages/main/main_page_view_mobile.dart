@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:commet/client/room.dart';
 import 'package:commet/ui/atoms/room_header.dart';
 import 'package:commet/ui/atoms/keyboard_adaptor.dart';

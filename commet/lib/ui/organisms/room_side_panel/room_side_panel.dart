@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/atoms/keyboard_adaptor.dart';
@@ -11,7 +10,6 @@ import 'package:commet/ui/organisms/room_pinned_messages/room_pinned_messages_wi
 import 'package:commet/ui/organisms/room_quick_access_menu/room_quick_access_menu_mobile.dart';
 import 'package:commet/ui/pages/main/main_page.dart';
 import 'package:commet/utils/event_bus.dart';
-import 'package:commet/utils/scaled_app.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/atoms/tile.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
