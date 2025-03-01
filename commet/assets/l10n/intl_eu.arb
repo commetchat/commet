@@ -184,7 +184,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelRestoreMatrixBackupTitle": "Leheneratu babeskopia erabiliz",
+  "labelRestoreMatrixBackupTitle": "Leheneratu babeskopia",
   "@labelRestoreMatrixBackupTitle": {
     "description": "Title of the popup dialog for restoring message backup",
     "type": "text",
@@ -396,7 +396,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "unifiedPushExplainer": "# Unified Push\nCommeten bertsio honek ez du Google Play Services erabiltzen. Push jakinarazpenak jasotzeko, [Unified Push](https://unifiedpush.org/) erabili beharko duzu.\n\nUnified Push-ekin bateragarria den banaketa aplikazio bat instalatuta baduzu, ondoren konfigura dezakezu\n",
+  "unifiedPushExplainer": "# Unified Push\nCommeten bertsio honek ez du Google Play Services erabiltzen. Push jakinarazpenak jasotzeko, [Unified Push](https://unifiedpush.org/) erabili beharko duzu.\n\nUnified Push-ekin bateragarria den banaketa aplikazio bat instalatuta baduzu, hemen konfigura dezakezu\n",
   "@unifiedPushExplainer": {
     "description": "Explains the need for unified push. Supports markdown",
     "type": "text",
@@ -1537,5 +1537,113 @@
     "placeholders": {
       "proxyUrl": {}
     }
+  },
+  "noPinnedMessages": "Ez da mezurik finkatu!",
+  "@noPinnedMessages": {
+    "description": "Placeholder label in the pinned messages menu that is shown when there are no pinned messages",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messagePlaceholderUserUpdatedNameDetailed": "{user}(e)k pantaila-izena '{newName}'(e)ra aldatu du",
+  "@messagePlaceholderUserUpdatedNameDetailed": {
+    "description": "Message body for when a user updates their display name",
+    "type": "text",
+    "placeholders": {
+      "user": {},
+      "newName": {}
+    }
+  },
+  "messageUserRetractedInvite": "{sender}(e)k {user}(r)i egindako gonbidapena atzera bota du",
+  "@messageUserRetractedInvite": {
+    "description": "Message body for when a user's invitation to a room was withdrawn",
+    "type": "text",
+    "placeholders": {
+      "sender": {},
+      "user": {}
+    }
+  },
+  "messageUserAcceptedInvite": "{user}(e)k gonbidapena onartu du",
+  "@messageUserAcceptedInvite": {
+    "description": "Message body for when a user accepted an invitation to a room",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messageUserBanned": "{sender}(e)k debekua ezarri dio {user}(r)i",
+  "@messageUserBanned": {
+    "description": "Message body for when a user bans another user from the room",
+    "type": "text",
+    "placeholders": {
+      "sender": {},
+      "user": {}
+    }
+  },
+  "messageUserUnbanned": "{sender}(e)k debekua kendu dio {user}(r)i",
+  "@messageUserUnbanned": {
+    "description": "Message body for when a user reverts a ban of another user",
+    "type": "text",
+    "placeholders": {
+      "sender": {},
+      "user": {}
+    }
+  },
+  "messageUserPinnedEvent": "{user}()ek mezu bat finkatu du!",
+  "@messageUserPinnedEvent": {
+    "description": "Message body for when a user adds an event to the room's pinned messages",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messageUserUnpinnedEvent": "{user}(e)k mezu bat finkatzeari utzi dio",
+  "@messageUserUnpinnedEvent": {
+    "description": "Message body for when a user removes an event from the room's pinned messages",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "labelMessageEffectsTitle": "Mezu-efektuak",
+  "@labelMessageEffectsTitle": {
+    "description": "Header for the settings tile for message effects, such as confetti",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMessageEffectsDescription": "Mezuak efektu gehigarriekin bidal daitezke, konfetiekin esaterako",
+  "@labelMessageEffectsDescription": {
+    "description": "Label describing what message effects are",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptPinMessage": "Finkatu mezua",
+  "@promptPinMessage": {
+    "description": "Label for the menu option to pin a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptUnpinMessage": "Utzi mezua finkatzeari",
+  "@promptUnpinMessage": {
+    "description": "Label for the menu option to unpin a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptReplyInThread": "Erantzun harian",
+  "@promptReplyInThread": {
+    "description": "Label for the menu option to reply to a message inside a thread",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptShowSource": "Erakutsi iturburua",
+  "@promptShowSource": {
+    "description": "Label for the menu option to view the JSON source of an event",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptReplayMessageEffect": "Erreproduzitu berriz efektua",
+  "@promptReplayMessageEffect": {
+    "description": "If a message was sent with an effect, this prompts to replay the effect",
+    "type": "text",
+    "placeholders": {}
   }
 }
