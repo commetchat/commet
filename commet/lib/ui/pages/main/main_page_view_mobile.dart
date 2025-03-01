@@ -1,7 +1,6 @@
-import 'dart:math';
-
 import 'package:commet/client/room.dart';
 import 'package:commet/ui/atoms/room_header.dart';
+import 'package:commet/ui/atoms/keyboard_adaptor.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/atoms/space_header.dart';
 import 'package:commet/ui/molecules/direct_message_list.dart';
@@ -176,16 +175,6 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
     );
   }
 
-  Widget keyboardAdaptor(Widget child, {bool ignore = false}) {
-    var scaledQuery = MediaQuery.of(context).scale();
-    var offset = max(scaledQuery.viewInsets.bottom, scaledQuery.padding.bottom);
-
-    return ScaledSafeArea(
-        bottom: false,
-        child: Padding(
-            padding: EdgeInsets.fromLTRB(0, 0, 0, offset), child: child));
-  }
-
   Widget mainPanel() {
     if (widget.state.currentSpace != null && widget.state.currentRoom == null) {
       return Tile(
@@ -212,7 +201,7 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
         offset = scaledQuery.padding.bottom;
       }
       return Tile(
-        child: keyboardAdaptor(
+        child: KeyboardAdaptor(
           Column(
             children: [
               Tile.low(
