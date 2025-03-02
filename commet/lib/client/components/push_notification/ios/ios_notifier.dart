@@ -44,9 +44,9 @@ class IOSNotifier implements Notifier {
             DarwinNotificationAction.plain(
               'id_1',
               'Action 1',
-              options: <DarwinNotificationActionOption>{
-                DarwinNotificationActionOption.foreground,
-              },
+//              options: <DarwinNotificationActionOption>{
+//                DarwinNotificationActionOption.foreground,
+//              },
             ),
           ],
           options: <DarwinNotificationCategoryOption>{
