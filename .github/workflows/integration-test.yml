@@ -67,7 +67,7 @@ jobs:
 
       - name: Upload Artifact
         if: failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: result.mkv
           path: commet/video.mkv

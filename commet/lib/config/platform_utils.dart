@@ -22,4 +22,9 @@ class PlatformUtils {
   static bool get isWeb {
     return kIsWeb;
   }
+
+  static bool get isIOS {
+    if (kIsWeb) return false;
+    return Platform.isIOS;
+  }
 }

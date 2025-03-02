@@ -4,20 +4,22 @@ import 'dart:async';
 
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/components/push_notification/android/android_notifier.dart';
+import 'package:commet/client/components/push_notification/ios/ios_notifier.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/components/push_notification/notifier.dart';
 import 'package:commet/client/room.dart';
+import 'package:commet/config/platform_utils.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/service/background_service.dart';
 import 'package:commet/service/background_service_notifications/background_service_task_notification.dart';
 
 // Manage these to enable / disable firebase
-// import 'package:firebase_core/firebase_core.dart';
-// import 'package:firebase_messaging/firebase_messaging.dart';
-dynamic Firebase;
-dynamic FirebaseMessaging;
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+//dynamic Firebase;
+//dynamic FirebaseMessaging;
 // --------
 
 Future<void> onForegroundMessage(dynamic message) async {
@@ -65,7 +67,7 @@ Future<void> _firebaseMessagingBackgroundHandler(dynamic message) async {
 }
 
 class FirebasePushNotifier implements Notifier {
-  late AndroidNotifier notifier;
+  late Notifier notifier;
 
   @override
   bool get hasPermission => notifier.hasPermission;
@@ -74,7 +76,13 @@ class FirebasePushNotifier implements Notifier {
   bool get needsToken => true;
 
   FirebasePushNotifier() {
-    notifier = AndroidNotifier();
+    if (PlatformUtils.isAndroid) {
+      notifier = AndroidNotifier();
+    } else if (PlatformUtils.isIOS) {
+      notifier = IOSNotifier();
+    } else {
+      notifier = AndroidNotifier();
+    }
   }
 
   @override
