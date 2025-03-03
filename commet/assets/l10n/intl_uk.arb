@@ -1601,7 +1601,7 @@
       "emote": {}
     }
   },
-  "messagePlaceholderUserUpdatedNameDetailed": "{user} змінив своє ім'я на '{newName}'",
+  "messagePlaceholderUserUpdatedNameDetailed": "{user} змінив своє ім'я на «{newName}»",
   "@messagePlaceholderUserUpdatedNameDetailed": {
     "description": "Message body for when a user updates their display name",
     "type": "text",
@@ -1651,5 +1651,29 @@
     "placeholders": {
       "user": {}
     }
+  },
+  "labelUseRoomAvatars": "Використовувати аватари кімнат",
+  "@labelUseRoomAvatars": {
+    "description": "Label for enabling using room avatars instead of icons",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelUseRoomAvatarPlaceholdersDescription": "Якщо в кімнаті немає набору аватарів або їх використання вимкнено, використовується загальний колір + заповнювач першої літери для зображення",
+  "@labelUseRoomAvatarPlaceholdersDescription": {
+    "description": "Description for the enable generic icons setting",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelEnableRoomIconsDescription": "Показувати зображення аватарів кімнат замість значків",
+  "@labelEnableRoomIconsDescription": {
+    "description": "Description for the enable room icons setting",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelUseRoomAvatarPlaceholders": "Використовувати аватарки-заповнювачі",
+  "@labelUseRoomAvatarPlaceholders": {
+    "description": "Label for enabling generic icons in the appearance settings",
+    "type": "text",
+    "placeholders": {}
   }
 }
