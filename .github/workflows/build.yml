@@ -164,9 +164,6 @@ jobs:
           cd $PROJECT_PATH
           flutter build web --release --dart-define PLATFORM=web
 
-  build_with_signing:
-    runs-on: macos-latest
-
   build-mac:
     runs-on: macos-latest
     steps:
@@ -186,7 +183,7 @@ jobs:
         with:
           packages: ninja gtk+3 mpv ffmpeg mimalloc
 
-      - name: Install the Apple certificate and provisioning profile
+      - name: Setup Provisioning Profile
         env:
           BUILD_CERTIFICATE_BASE64: ${{ secrets.APPLE_SIGNING_P12 }}
           P12_PASSWORD: ${{ secrets.APPLE_SIGNING_P12_PASSWORD }}
@@ -195,11 +192,13 @@ jobs:
         run: |
           # create variables
           CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
-          PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
+          PP_PATH=$RUNNER_TEMP/build_pp.provisionprofile
           KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
 
           # import certificate and provisioning profile from secrets
+          echo "Making Build Certificate"
           echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH
+          echo "Making Provisioning Profile"
           echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o $PP_PATH
 
           # create temporary keychain
