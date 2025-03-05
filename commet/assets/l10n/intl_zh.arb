@@ -1314,7 +1314,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "placeholderRoomAddress": "#awesome-room:matrix.org",
+  "placeholderRoomAddress": "#awesome-room:example.com",
   "@placeholderRoomAddress": {
     "description": "Placeholder / Example for a room address",
     "type": "text",
@@ -1326,7 +1326,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "placeholderSpaceAddress": "#awesome-space:matrix.org",
+  "placeholderSpaceAddress": "#awesome-space:example.com",
   "@placeholderSpaceAddress": {
     "description": "Placeholder / Example for a space address",
     "type": "text",
