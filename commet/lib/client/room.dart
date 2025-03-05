@@ -75,6 +75,10 @@ abstract class Room {
     List<ProcessedAttachment> processedAttachments,
   });
 
+  Future<void> cancelSend(TimelineEvent event);
+
+  Future<void> retrySend(TimelineEvent event);
+
   /// Add an emoticon reaction to a message
   Future<TimelineEvent?> addReaction(
       TimelineEvent reactingTo, Emoticon reaction);

@@ -82,8 +82,8 @@ class MatrixTimeline extends Timeline {
   }
 
   void onEventRemoved(index) {
-    events.removeAt(index);
     onRemove.add(index);
+    events.removeAt(index);
   }
 
   @override
