@@ -137,12 +137,12 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
       name: "promptSpaceAddress",
       desc: "Short label to prompt for the input of a space address");
 
-  String get placeholderRoomAddress => Intl.message("#awesome-room:matrix.org",
+  String get placeholderRoomAddress => Intl.message("#awesome-room:example.com",
       name: "placeholderRoomAddress",
       desc: "Placeholder / Example for a room address");
 
   String get placeholderSpaceAddress =>
-      Intl.message("#awesome-space:matrix.org",
+      Intl.message("#awesome-space:example.com",
           name: "placeholderSpaceAddress",
           desc: "Placeholder / Example for a space address");
 
