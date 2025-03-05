@@ -643,4 +643,16 @@ class MatrixRoom extends Room {
       _onUpdate.add(null);
     }
   }
+
+  @override
+  Future<void> cancelSend(TimelineEvent event) async {
+    final mxEvent = event as MatrixTimelineEvent;
+    await mxEvent.event.cancelSend();
+  }
+
+  @override
+  Future<void> retrySend(TimelineEvent event) async {
+    final mxEvent = event as MatrixTimelineEvent;
+    await mxEvent.event.sendAgain();
+  }
 }
