@@ -9,6 +9,7 @@
 .history
 .svn/
 *.g.dart
+*.reflectable.dart
 *.widgetbook.dart
 migrate_working_dir/
 

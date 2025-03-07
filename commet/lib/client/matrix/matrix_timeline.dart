@@ -6,10 +6,12 @@ import 'package:commet/client/matrix/timeline_events/matrix_timeline_event.dart'
 import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/client/timeline_events/timeline_event_message.dart';
 import 'package:commet/client/timeline_events/timeline_event_sticker.dart';
+import 'package:commet/ui/pages/developer/app_inspector/value_reflector_widget.dart';
 
 import '../client.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
+@Reflector()
 class MatrixTimeline extends Timeline {
   matrix.Timeline? _matrixTimeline;
   late matrix.Room _matrixRoom;
