@@ -18,8 +18,6 @@ import 'package:commet/ui/molecules/timeline_events/timeline_event_menu.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_menu_dialog.dart';
 import 'package:flutter/material.dart';
 
-import 'package:tiamat/tiamat.dart' as tiamat;
-
 class TimelineViewEntry extends StatefulWidget {
   const TimelineViewEntry(
       {required this.timeline,
@@ -118,6 +116,8 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
       return TimelineEventWidgetDisplayType.message;
     } else if (event is TimelineEventGeneric) {
       return TimelineEventWidgetDisplayType.generic;
+    } else if (event.status == TimelineEventStatus.error) {
+      return TimelineEventWidgetDisplayType.generic;
     } else {
       return TimelineEventWidgetDisplayType.hidden;
     }
@@ -187,7 +187,8 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
       return Container();
     }
 
-    if (status == TimelineEventStatus.sending) {
+    if (status == TimelineEventStatus.sending ||
+        status == TimelineEventStatus.error) {
       result = Opacity(
         opacity: 0.5,
         child: result,
@@ -195,10 +196,18 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
     }
 
     if (status == TimelineEventStatus.error) {
-      result = Column(
+      result = Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          result,
-          const tiamat.Text.error("Failed to send"),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+            child: Icon(
+              Icons.error,
+              size: 14,
+              color: Theme.of(context).colorScheme.error,
+            ),
+          ),
+          Expanded(child: result),
         ],
       );
     }

@@ -62,9 +62,10 @@ enum EventRelationshipType { reply }
 abstract class Timeline {
   late List<TimelineEvent> events = List.empty(growable: true);
   final Map<String, TimelineEvent> _eventsDict = {};
-  late StreamController<int> onEventAdded = StreamController.broadcast();
-  late StreamController<int> onChange = StreamController.broadcast();
-  late StreamController<int> onRemove = StreamController.broadcast();
+  late StreamController<int> onEventAdded =
+      StreamController.broadcast(sync: true);
+  late StreamController<int> onChange = StreamController.broadcast(sync: true);
+  late StreamController<int> onRemove = StreamController.broadcast(sync: true);
   late Client client;
   late Room room;
 
