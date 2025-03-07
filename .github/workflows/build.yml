@@ -222,9 +222,8 @@ jobs:
 
       - name: Pre-run Xcodebuild
         run: |
-          WORKSPACE: $PROJECT_PATH/macos/Runner.xcworkspace
           cd $PROJECT_PATH
-          xcodebuild build -workspace $WORKSPACE \
+          xcodebuild build -workspace ./macos/Runner.xcworkspace \
             --scheme Runner \
             --configuration Release \
             --destination 'generic/platform=OS X' \
