@@ -220,14 +220,10 @@ jobs:
           cd $PROJECT_PATH
           dart run scripts/codegen.dart
 
-#       - name: Pre-run Xcodebuild
-#         run: |
-#           cd $PROJECT_PATH
-#           xcodebuild build -workspace ./macos/Runner.xcworkspace \
-#             -scheme Runner \
-#             -configuration Release \
-#             -destination 'generic/platform=OS X' \
-#             -allowProvisioningUpdates
+      - name: Install Provisioning Profile
+        uses: akiojin/install-provisioning-profile-github-action@v1.0
+        with:
+          base64: ${{ secrets.APPLE_MACOS_PROVISIONING_BASE64 }}
 
       - name: Build Mac
         run: |
