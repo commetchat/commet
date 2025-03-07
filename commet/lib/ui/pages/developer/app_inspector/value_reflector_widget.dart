@@ -39,6 +39,7 @@ class _ValueReflectorWidgetState extends State<ValueReflectorWidget> {
           matrix.Event: ReflectableMatrixEvent,
           SpaceChild: ReflectableMatrixSpaceChild,
           SpaceParent: ReflectableMatrixSpaceParent,
+          matrix.BasicEvent: ReflectableMatrixBasicEvent
         }[widget.value.runtimeType] ??
         widget.value.runtimeType;
 

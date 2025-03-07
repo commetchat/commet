@@ -33,3 +33,8 @@ class ReflectableMatrixSpaceChild extends SpaceChild {
 class ReflectableMatrixSpaceParent extends SpaceParent {
   ReflectableMatrixSpaceParent.fromState(super.state) : super.fromState();
 }
+
+@Reflector()
+class ReflectableMatrixBasicEvent extends matrix.BasicEvent {
+  ReflectableMatrixBasicEvent({required super.type, required super.content});
+}

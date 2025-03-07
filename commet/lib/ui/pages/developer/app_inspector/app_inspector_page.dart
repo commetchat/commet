@@ -12,24 +12,26 @@ class AppInspectorPage extends StatelessWidget {
     return Scaffold(
       body: SingleChildScrollView(
         child: ScaledSafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: tiamat.CircleButton(
-                  icon: Icons.arrow_back,
-                  radius: 27,
-                  onPressed: () => Navigator.of(context).pop(),
+          child: SelectionArea(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: tiamat.CircleButton(
+                    icon: Icons.arrow_back,
+                    radius: 27,
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
                 ),
-              ),
-              const Padding(
-                padding: EdgeInsets.all(20.0),
-                child: tiamat.Text.body(
-                    "Warning: This inspector allows you to view lots of information that would typically be hidden, some of which could be sensitive. It is recommended that you do not view this page if your screen may be visible to others\n\nWhile effort has been made to redact sensitive information, we cannot guarantee that we have caught everything. Continue at your own risk."),
-              ),
-              ValueReflectorWidget(value: clientManager!)
-            ],
+                const Padding(
+                  padding: EdgeInsets.all(20.0),
+                  child: tiamat.Text.body(
+                      "Warning: This inspector allows you to view lots of information that would typically be hidden, some of which could be sensitive. It is recommended that you do not view this page if your screen may be visible to others\n\nWhile effort has been made to redact sensitive information, we cannot guarantee that we have caught everything. Continue at your own risk."),
+                ),
+                ValueReflectorWidget(value: clientManager!)
+              ],
+            ),
           ),
         ),
       ),
