@@ -47,6 +47,11 @@ class FieldInspectorState extends State<FieldInspector> {
     } catch (_) {}
 
     try {
+      var v = "$value displayName: ${value.displayName}";
+      return v;
+    } catch (_) {}
+
+    try {
       var v = "$value id: ${value.id}";
       return v;
     } catch (_) {}
