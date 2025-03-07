@@ -176,7 +176,8 @@
 				33CC10EB2044A3C60003C045 /* Resources */,
 				3399D490228B24CF009A79C7 /* ShellScript */,
 				11C171EF4F711973987131AF /* [CP] Embed Pods Frameworks */,
-				60367AC32D7239A000EA0A89 /* ShellScript */,
+				6063DE702D7B737B00E5E1D0 /* ShellScript */,
+				D7E4758527804155CB687CDB /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -323,8 +324,9 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		60367AC32D7239A000EA0A89 /* ShellScript */ = {
+		6063DE702D7B737B00E5E1D0 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
@@ -338,7 +340,24 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nframedir=${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}\nstartfile=$framedir/OLMKit.framework/Versions/Current/OLMKit\nendfile=$framedir/libolm.3.dylib\necho \"linking $startfile to $endfile\"\neval \"ln $startfile $endfile\"\necho \"Listing Frameworks Dir:\"\neval \"ls $framedir/\"\n";
+			shellScript = "framedir=${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}\nln -s \"./OLMKit\" $framedir/OLMKit.framework/libolm.3.dylib\n";
+		};
+		D7E4758527804155CB687CDB /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources.sh\"\n";
+			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -378,7 +397,7 @@
 /* Begin XCBuildConfiguration section */
 		338D0CE9231458BD00FA5F75 /* Profile */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
+			baseConfigurationReference = 333000ED22D3DE5D00554162 /* Warnings.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -439,6 +458,11 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				"LD_RUNPATH_SEARCH_PATHS[arch=*]" = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../Frameworks/OLMKit.framework",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				PRODUCT_BUNDLE_IDENTIFIER = chat.commet.commetapp.macos;
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -448,6 +472,7 @@
 		};
 		338D0CEB231458BD00FA5F75 /* Profile */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 33CEB47222A05771004F2AC0 /* Flutter-Debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Manual;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -570,6 +595,11 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				"LD_RUNPATH_SEARCH_PATHS[arch=*]" = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../Frameworks/OLMKit.framework",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				PRODUCT_BUNDLE_IDENTIFIER = chat.commet.commetapp.macos;
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -595,6 +625,11 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				"LD_RUNPATH_SEARCH_PATHS[arch=*]" = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../Frameworks/OLMKit.framework",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				PRODUCT_BUNDLE_IDENTIFIER = chat.commet.commetapp.macos;
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -604,6 +639,7 @@
 		};
 		33CC111C2044C6BA0003C045 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 33CEB47222A05771004F2AC0 /* Flutter-Debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Manual;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -612,6 +648,7 @@
 		};
 		33CC111D2044C6BA0003C045 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 33CEB47422A05771004F2AC0 /* Flutter-Release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				PRODUCT_NAME = "$(TARGET_NAME)";

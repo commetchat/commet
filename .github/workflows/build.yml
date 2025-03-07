@@ -220,6 +220,16 @@ jobs:
           cd $PROJECT_PATH
           dart run scripts/codegen.dart
 
+      - name: Pre-run Xcodebuild
+        run: |
+          WORKSPACE: $PROJECT_PATH/macos/Runner.xcworkspace
+          cd $PROJECT_PATH
+          xcodebuild build -workspace $WORKSPACE \
+            --scheme Runner \
+            --configuration Release \
+            --destination 'generic/platform=OS X' \
+            --allowProvisioningUpdates
+
       - name: Build Mac
         run: |
           cd $PROJECT_PATH
