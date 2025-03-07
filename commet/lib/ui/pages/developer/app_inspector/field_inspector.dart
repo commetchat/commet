@@ -1,4 +1,3 @@
-import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/ui/pages/developer/app_inspector/reflectable_extensions.dart';
 import 'package:commet/ui/pages/developer/app_inspector/value_reflector_widget.dart';
 import 'package:flutter/material.dart';
@@ -38,17 +37,17 @@ class FieldInspectorState extends State<FieldInspector> {
     }
 
     try {
-      var v = "name: ${value.name}";
+      var v = "$value name: ${value.name}";
       return v;
     } catch (_) {}
 
     try {
-      var v = "displayname: ${value.displayname}";
+      var v = "$value displayname: ${value.displayname}";
       return v;
     } catch (_) {}
 
     try {
-      var v = "id: ${value.id}";
+      var v = "$value id: ${value.id}";
       return v;
     } catch (_) {}
 
@@ -57,40 +56,83 @@ class FieldInspectorState extends State<FieldInspector> {
 
   @override
   Widget build(BuildContext context) {
+    final color = (Theme.of(context).brightness == Brightness.dark
+            ? Colors.white
+            : Colors.black)
+        .withAlpha(7);
+
     return ExpansionTile(
       expandedCrossAxisAlignment: CrossAxisAlignment.start,
       expandedAlignment: Alignment.topLeft,
+      backgroundColor: color,
       dense: true,
       title: Row(
         children: [
           tiamat.Text(widget.declaration.simpleName.toString()),
-          SizedBox(width: 20),
-          tiamat.Text.labelLow(displayValue(fieldValue))
+          const SizedBox(width: 20),
+          Flexible(
+            child: tiamat.Text.labelLow(
+              displayValue(fieldValue),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          )
         ],
       ),
-      children: [
-        tiamat.Tile.low(
-            child: Padding(
-          padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
-          child: buildValue(fieldValue),
-        ))
-      ],
+      children: [buildValue(fieldValue)],
     );
   }
 
-  Widget buildValue(dynamic value) {
-    print("Building value: ${value}");
-
+  Widget buildValue(dynamic value, {int index = 0}) {
     if (value == null) {
-      return tiamat.Text("null");
+      return const tiamat.Text("null");
     }
 
     if (value is List) {
       return Column(
-        children: (value as List).map((e) => buildValue(e)).toList(),
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: (value)
+            .mapIndexed((e, i) => Container(child: buildValue(e)))
+            .toList(),
       );
     }
 
-    return ValueReflectorWidget(value: value);
+    if (value is Map) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: value.keys.mapIndexed((e, i) {
+          var label = displayValue(e);
+          if (label == "") {
+            label = "\"\"";
+          }
+          return Padding(
+            padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                tiamat.Text.labelLow(
+                  "$label:",
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+                  child: buildValue(value[e], index: i),
+                )
+              ],
+            ),
+          );
+        }).toList(),
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
+      child: ValueReflectorWidget(
+        value: value,
+        index: index,
+      ),
+    );
   }
 }

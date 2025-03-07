@@ -1,5 +1,4 @@
 import 'package:commet/main.reflectable.dart';
-import 'package:commet/ui/pages/developer/app_inspector/app_inspector_page.dart';
 import 'package:commet/ui/pages/developer/app_inspector/field_inspector.dart';
 import 'package:commet/ui/pages/developer/app_inspector/reflectable_matrix_client.dart';
 import 'package:flutter/material.dart';
@@ -13,11 +12,12 @@ class Reflector extends Reflectable {
             libraryDependenciesCapability);
 }
 
-const reflector = const Reflector();
+const reflector = Reflector();
 
 class ValueReflectorWidget extends StatefulWidget {
-  const ValueReflectorWidget({required this.value, super.key});
+  const ValueReflectorWidget({required this.value, super.key, this.index = 0});
   final dynamic value;
+  final int index;
 
   @override
   State<ValueReflectorWidget> createState() => _ValueReflectorWidgetState();
@@ -25,7 +25,7 @@ class ValueReflectorWidget extends StatefulWidget {
 
 class _ValueReflectorWidgetState extends State<ValueReflectorWidget> {
   ClassMirror? classMirror;
-
+  late List<String> keys;
   @override
   void initState() {
     initializeReflectable();
@@ -33,11 +33,17 @@ class _ValueReflectorWidgetState extends State<ValueReflectorWidget> {
     var type = {
           matrix.Client: ReflectableMatrixClient,
           matrix.Room: ReflectableMatrixRoom,
+          matrix.Event: ReflectableMatrixEvent,
         }[widget.value.runtimeType] ??
         widget.value.runtimeType;
 
     if (reflector.canReflectType(type)) {
       classMirror = reflector.reflectType(type) as ClassMirror;
+      keys = classMirror!.instanceMembers.keys.toList()
+        ..sort((a, b) => a.compareTo(b))
+        ..removeWhere((e) =>
+            classMirror!.instanceMembers[e]!.isRegularMethod ||
+            classMirror!.instanceMembers[e]!.isSetter);
     }
 
     super.initState();
@@ -46,24 +52,43 @@ class _ValueReflectorWidgetState extends State<ValueReflectorWidget> {
   @override
   Widget build(BuildContext context) {
     if (classMirror == null) {
-      return tiamat.Text.label(widget.value.toString());
+      return tiamat.Text.labelLow(widget.value.toString());
     }
 
-    var sorted = classMirror!.instanceMembers.keys.toList()
-      ..sort((a, b) => a.compareTo(b));
-    return ExpansionTile(
-        title: tiamat.Text.label(
-            "${FieldInspectorState.displayValue(widget.value)}"),
-        children: [
-          Column(
-              children: sorted.map((e) {
-            print("Building: ${e}");
+    final color = (Theme.of(context).brightness == Brightness.dark
+            ? Colors.white
+            : Colors.black)
+        .withAlpha(7);
 
-            return FieldInspector(
-              declaration: classMirror!.instanceMembers[e]!,
-              instance: widget.value,
-            );
-          }).toList()),
-        ]);
+    return Padding(
+      padding: const EdgeInsets.all(2),
+      child: ExpansionTile(
+          backgroundColor: color,
+          title:
+              tiamat.Text.label(FieldInspectorState.displayValue(widget.value)),
+          children: [
+            Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: MainAxisSize.min,
+                children: keys.mapIndexed((e, i) {
+                  if ([
+                    "accessToken",
+                    "bearerToken",
+                    "fingerprintKey",
+                    "identityKey"
+                  ].contains(e)) {
+                    return Padding(
+                      padding: const EdgeInsets.fromLTRB(8, 4, 0, 4),
+                      child: tiamat.Text.error("$e (Redacted)"),
+                    );
+                  }
+
+                  return FieldInspector(
+                    declaration: classMirror!.instanceMembers[e]!,
+                    instance: widget.value,
+                  );
+                }).toList()),
+          ]),
+    );
   }
 }

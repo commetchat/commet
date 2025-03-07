@@ -1,3 +1,4 @@
+// ignore: implementation_imports
 import 'package:reflectable/src/reflectable_builder_based.dart' as builder;
 
 class ReflectableExtensions {
