@@ -1,5 +1,7 @@
 import 'package:commet/ui/pages/developer/app_inspector/value_reflector_widget.dart';
 import 'package:matrix/matrix.dart' as matrix;
+// ignore: implementation_imports
+import 'package:matrix/src/utils/space_child.dart';
 
 @Reflector()
 class ReflectableMatrixClient extends matrix.Client {
@@ -20,4 +22,14 @@ class ReflectableMatrixEvent extends matrix.Event {
       required super.senderId,
       required super.originServerTs,
       required super.room});
+}
+
+@Reflector()
+class ReflectableMatrixSpaceChild extends SpaceChild {
+  ReflectableMatrixSpaceChild.fromState(super.state) : super.fromState();
+}
+
+@Reflector()
+class ReflectableMatrixSpaceParent extends SpaceParent {
+  ReflectableMatrixSpaceParent.fromState(super.state) : super.fromState();
 }

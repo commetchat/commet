@@ -6,6 +6,9 @@ import 'package:reflectable/reflectable.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:matrix/matrix.dart' as matrix;
 
+// ignore: implementation_imports
+import 'package:matrix/src/utils/space_child.dart';
+
 class Reflector extends Reflectable {
   const Reflector()
       : super(typingCapability, invokingCapability,
@@ -34,6 +37,8 @@ class _ValueReflectorWidgetState extends State<ValueReflectorWidget> {
           matrix.Client: ReflectableMatrixClient,
           matrix.Room: ReflectableMatrixRoom,
           matrix.Event: ReflectableMatrixEvent,
+          SpaceChild: ReflectableMatrixSpaceChild,
+          SpaceParent: ReflectableMatrixSpaceParent,
         }[widget.value.runtimeType] ??
         widget.value.runtimeType;
 
