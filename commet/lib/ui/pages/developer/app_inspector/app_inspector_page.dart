@@ -26,7 +26,7 @@ class AppInspectorPage extends StatelessWidget {
               const Padding(
                 padding: EdgeInsets.all(20.0),
                 child: tiamat.Text.body(
-                    "Warning: This inspector allows you to view lots of information that would typically be hidden, some of which could be sensitive. It is recommended that you do not view this page while it may be visible to others\n\nWhile effort has been made to redact sensitive information, we cannot guarantee that we have caught everything. Continue at your own risk."),
+                    "Warning: This inspector allows you to view lots of information that would typically be hidden, some of which could be sensitive. It is recommended that you do not view this page if your screen may be visible to others\n\nWhile effort has been made to redact sensitive information, we cannot guarantee that we have caught everything. Continue at your own risk."),
               ),
               ValueReflectorWidget(value: clientManager!)
             ],
