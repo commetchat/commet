@@ -5,7 +5,9 @@ import 'package:commet/config/app_config.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/navigation_utils.dart';
+import 'package:commet/ui/pages/developer/app_inspector/app_inspector_page.dart';
 import 'package:commet/ui/pages/developer/benchmarks/timeline_viewer_benchmark.dart';
+import 'package:commet/ui/pages/developer/app_inspector/value_reflector_widget.dart';
 import 'package:commet/ui/pages/settings/categories/developer/cumulative_diagnostics_widget.dart';
 import 'package:commet/utils/background_tasks/background_task_manager.dart';
 import 'package:commet/utils/background_tasks/mock_tasks.dart';
@@ -30,6 +32,7 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
         children: [
       performance(),
       benchmarks(),
+      inspect(),
       windowSize(),
       notificationTests(),
       rendering(),
@@ -85,6 +88,28 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
               )
             ]),
           )
+        ]);
+  }
+
+  Widget inspect() {
+    return ExpansionTile(
+        title: const tiamat.Text.labelEmphasised("Inspect"),
+        initiallyExpanded: false,
+        backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
+        collapsedBackgroundColor:
+            Theme.of(context).colorScheme.surfaceContainerLow,
+        children: [
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              tiamat.Button(
+                text: "Inspect App State",
+                onTap: () => NavigationUtils.navigateTo(
+                    context, const AppInspectorPage()),
+              )
+            ],
+          ),
         ]);
   }
 
