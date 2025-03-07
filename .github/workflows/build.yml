@@ -224,10 +224,10 @@ jobs:
         run: |
           cd $PROJECT_PATH
           xcodebuild build -workspace ./macos/Runner.xcworkspace \
-            --scheme Runner \
-            --configuration Release \
-            --destination 'generic/platform=OS X' \
-            --allowProvisioningUpdates
+            -scheme Runner \
+            -configuration Release \
+            -destination 'generic/platform=OS X' \
+            -allowProvisioningUpdates
 
       - name: Build Mac
         run: |
