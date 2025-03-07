@@ -232,7 +232,7 @@ jobs:
       - name: Build Mac
         run: |
           cd $PROJECT_PATH
-          flutter build macos --release --dart-define PLATFORM=macos
+          flutter build macos --dart-define BUILD_MODE=release --dart-define PLATFORM=macos
 
       - name: Clean up keychain and provisioning profile
         if: ${{ always() }}
