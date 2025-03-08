@@ -212,9 +212,9 @@ jobs:
           security list-keychain -d user -s $KEYCHAIN_PATH
 
           # apply provisioning profile
-          mkdir -p '~/Library/Developer/Xcode/UserData/Provisioning Profiles'
-          cp $PP_PATH '~/Library/Developer/Xcode/UserData/Provisioning Profiles'
-          ln -s '~/Library/MobileDevice/Provisioning Profiles' '~/Library/Developer/Xcode/UserData/Provisioning Profiles'
+          mkdir -p '~/Library/MobileDevice/Provisioning Profiles'
+          cp $PP_PATH '~/Library/MobileDevice/Provisioning Profiles/'
+          ln -s '~/Library/Developer/Xcode/UserData/Provisioning Profiles' '~/Library/MobileDevice/Provisioning Profiles'
 
       - name: Code Generation
         run: |
