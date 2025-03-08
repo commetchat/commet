@@ -214,7 +214,7 @@ jobs:
           # apply provisioning profile
           mkdir -p '~/Library/Developer/Xcode/UserData/Provisioning Profiles'
           cp $PP_PATH '~/Library/Developer/Xcode/UserData/Provisioning Profiles'
-          ln -s '~/Library/Developer/Xcode/UserData/Provisioning Profiles' '~/Library/MobileDevice/Provisioning Profiles'
+          ln -s '~/Library/MobileDevice/Provisioning Profiles' '~/Library/Developer/Xcode/UserData/Provisioning Profiles'
 
       - name: Code Generation
         run: |
