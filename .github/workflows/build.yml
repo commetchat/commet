@@ -220,10 +220,13 @@ jobs:
           cd $PROJECT_PATH
           dart run scripts/codegen.dart
 
-      - name: Install Provisioning Profile
-        uses: akiojin/install-provisioning-profile-github-action@v1.0
+      - uses: nickwph/apple-provisioning-profile-action@v1
         with:
-          base64: ${{ secrets.APPLE_MACOS_PROVISIONING_BASE64 }}
+          profile-base64: ${{ secrets.APPLE_MACOS_PROVISIONING_BASE64 }}
+      - uses: nickwph/apple-build-certificate-action@v1      # Optional: Recommend to use with apple-build-certificate-action
+        with:
+          certificate-base64: ${{ secrets.ADHOC_MACOS_J6B4LYQ6NB_SIGNING_P12 }}
+          certificate-password: ${{ secrets.APPLE_SIGNING_P12_PASSWORD }}
 
       - name: Build Mac
         run: |
