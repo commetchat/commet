@@ -178,10 +178,10 @@ jobs:
           flutter-version: '3.24.4'
           channel: 'stable'
 
-      - name: Setup Tools
-        uses: gerlero/brew-install@v1
-        with:
-          packages: ninja gtk+3 mpv ffmpeg mimalloc
+#       - name: Setup Tools
+#         uses: gerlero/brew-install@v1
+#         with:
+#           packages: ninja gtk+3 mpv ffmpeg mimalloc
 
       - name: Setup Provisioning Profile
         env:
