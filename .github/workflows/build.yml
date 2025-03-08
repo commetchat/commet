@@ -212,21 +212,13 @@ jobs:
           security list-keychain -d user -s $KEYCHAIN_PATH
 
           # apply provisioning profile
-          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          mkdir -p ~/Library/Developer/Xcode/UserData/Provisioning\ Profiles
           cp $PP_PATH ~/Library/Developer/Xcode/UserData/Provisioning\ Profiles
 
       - name: Code Generation
         run: |
           cd $PROJECT_PATH
           dart run scripts/codegen.dart
-
-#       - uses: nickwph/apple-provisioning-profile-action@v1
-#         with:
-#           profile-base64: ${{ secrets.APPLE_MACOS_PROVISIONING_BASE64 }}
-#       - uses: nickwph/apple-build-certificate-action@v1      # Optional: Recommend to use with apple-build-certificate-action
-#         with:
-#           certificate-base64: ${{ secrets.ADHOC_MACOS_J6B4LYQ6NB_SIGNING_P12 }}
-#           certificate-password: ${{ secrets.APPLE_SIGNING_P12_PASSWORD }}
 
       - name: Build Mac
         run: |
