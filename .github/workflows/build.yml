@@ -215,7 +215,6 @@ jobs:
           mkdir -p '~/Library/MobileDevice/Provisioning Profiles'
           cp $PP_PATH '~/Library/MobileDevice/Provisioning Profiles/'
           ln -s '~/Library/Developer/Xcode/UserData/Provisioning Profiles' '~/Library/MobileDevice/Provisioning Profiles'
-          xcode-project use-profiles
 
       - name: Code Generation
         run: |
