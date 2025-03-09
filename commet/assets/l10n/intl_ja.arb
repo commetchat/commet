@@ -1543,5 +1543,47 @@
     "description": "Title for permission to manage children",
     "type": "text",
     "placeholders": {}
+  },
+  "promptPinMessage": "メッセージをピン留めする",
+  "@promptPinMessage": {
+    "description": "Label for the menu option to pin a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelUseRoomAvatars": "ルームアバターを使用する",
+  "@labelUseRoomAvatars": {
+    "description": "Label for enabling using room avatars instead of icons",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptUnpinMessage": "メッセージのピン留めを外す",
+  "@promptUnpinMessage": {
+    "description": "Label for the menu option to unpin a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptReplyInThread": "スレッドで返信",
+  "@promptReplyInThread": {
+    "description": "Label for the menu option to reply to a message inside a thread",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMessageEffectsTitle": "メッセージエフェクト",
+  "@labelMessageEffectsTitle": {
+    "description": "Header for the settings tile for message effects, such as confetti",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMessageEffectsDescription": "紙吹雪のようなエフェクトを追加してメッセージを送信することができます",
+  "@labelMessageEffectsDescription": {
+    "description": "Label describing what message effects are",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptShowSource": "ソースを表示",
+  "@promptShowSource": {
+    "description": "Label for the menu option to view the JSON source of an event",
+    "type": "text",
+    "placeholders": {}
   }
 }
