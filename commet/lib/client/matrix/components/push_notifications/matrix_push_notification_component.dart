@@ -28,7 +28,7 @@ class MatrixPushNotificationComponent
         pushers.any((element) => element.pushkey == pushKey)) {
       return;
     }
-    
+
     var profileTag = "";
     var appId = "chat.commet.commetapp";
     if (PlatformUtils.isAndroid) {

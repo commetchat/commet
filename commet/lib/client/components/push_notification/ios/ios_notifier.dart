@@ -15,7 +15,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 class IOSNotifier implements Notifier {
   static const String _channelName = "PushNotificationChannel";
   static const MethodChannel _channel = MethodChannel(_channelName);
- 
+
   @override
   bool hasPermission = false;
 
@@ -43,7 +43,7 @@ class IOSNotifier implements Notifier {
   }
 
   Future<void> displayMessageNotification(
-    MessageNotificationContent content) async {
+      MessageNotificationContent content) async {
     var client = clientManager?.getClient(content.clientId);
     var room = client?.getRoom(content.roomId);
 
@@ -60,7 +60,7 @@ class IOSNotifier implements Notifier {
     ]);
 
     EventBus.openRoom.add((content.roomId, content.clientId));
- }
+  }
 
   @override
   Future<bool> requestPermission() async {
@@ -80,26 +80,27 @@ class IOSNotifier implements Notifier {
       throw PlatformException(message: e.message, code: e.code);
     }
   }
-  
- static void onResponse(NotificationResponse details) {
-   Log.i("Got a notification response: $details");
 
-   if (details.payload == null) return;
+  static void onResponse(NotificationResponse details) {
+    Log.i("Got a notification response: $details");
 
-   var uri = CustomURI.parse(details.payload!);
+    if (details.payload == null) return;
 
-   if (details.notificationResponseType ==
-       NotificationResponseType.selectedNotification) {
-     if (uri is OpenRoomURI) {
-       EventBus.openRoom.add((uri.roomId, uri.clientId));
-     }
-   }
- }
+    var uri = CustomURI.parse(details.payload!);
+
+    if (details.notificationResponseType ==
+        NotificationResponseType.selectedNotification) {
+      if (uri is OpenRoomURI) {
+        EventBus.openRoom.add((uri.roomId, uri.clientId));
+      }
+    }
+  }
 
   @override
   Future<String?> getToken() async {
     try {
-      String? token = await _channel.invokeMethod<String>("retrieveDeviceToken");
+      String? token =
+          await _channel.invokeMethod<String>("retrieveDeviceToken");
       Log.i("APNS Device Token is $token");
       return token;
     } on PlatformException catch (e) {
@@ -107,22 +108,22 @@ class IOSNotifier implements Notifier {
     }
   }
 
- @override
- Map<String, dynamic>? extraRegistrationData() {
-   var extraData = {
-     "default_payload": {
-       "aps": {
-         "alert": {
-           "loc-args": [],
-           "loc-key": "Notification",
-         },
-         "mutable-content": 1,
-         "content_available": 1,
-       },
-     },
-   };
-   return extraData;
- }
+  @override
+  Map<String, dynamic>? extraRegistrationData() {
+    var extraData = {
+      "default_payload": {
+        "aps": {
+          "alert": {
+            "loc-args": [],
+            "loc-key": "Notification",
+          },
+          "mutable-content": 1,
+          "content_available": 1,
+        },
+      },
+    };
+    return extraData;
+  }
 
   static handlerPushNotificationData({required BuildContext context}) async {
     _channel.setMethodCallHandler((call) async {
@@ -134,37 +135,37 @@ class IOSNotifier implements Notifier {
           return;
         }
 
-        var client =
-          clientManager!.clients.firstWhere((element) => element.hasRoom(roomId));
+        var client = clientManager!.clients
+            .firstWhere((element) => element.hasRoom(roomId));
         var room = client.getRoom(roomId);
         var event = await room!.getEvent(eventId);
 
         var user = await room.fetchMember(event!.senderId);
 
         bool isDirectMessage = client
-          .getComponent<DirectMessagesComponent>()
-          ?.isRoomDirectMessage(room) ??
-          false;
+                .getComponent<DirectMessagesComponent>()
+                ?.isRoomDirectMessage(room) ??
+            false;
 
         NotificationManager.notify(MessageNotificationContent(
-          senderName: user.displayName,
-          senderId: user.identifier,
-          roomName: room.displayName,
-          content: event.plainTextBody,
-          eventId: eventId,
-          roomId: room.identifier,
-          clientId: client.identifier,
-          senderImage: user.avatar,
-          roomImage: await room.getShortcutImage(),
-          isDirectMessage: isDirectMessage));
+            senderName: user.displayName,
+            senderId: user.identifier,
+            roomName: room.displayName,
+            content: event.plainTextBody,
+            eventId: eventId,
+            roomId: room.identifier,
+            clientId: client.identifier,
+            senderImage: user.avatar,
+            roomImage: await room.getShortcutImage(),
+            isDirectMessage: isDirectMessage));
       }
     });
   }
 
- @override
- Future<void> clearNotifications(Room room) async {
-   return;
- }
+  @override
+  Future<void> clearNotifications(Room room) async {
+    return;
+  }
 }
 
 //@pragma('vm:entry-point')
@@ -274,7 +275,7 @@ class IOSNotifier implements Notifier {
 //        NotificationOption.badge
 //      ],
 //    );
-//    
+//
 //    NativePush.instance.notificationStream.listen((notification) {
 //      onNotification(notification);
 //      Log.i('Received notification: $notification');
@@ -438,7 +439,7 @@ class IOSNotifier implements Notifier {
 //   await flutterLocalNotificationsPlugin?.initialize(initSettings,
 //       onDidReceiveBackgroundNotificationResponse: onBackgroundResponse,
 //       onDidReceiveNotificationResponse: onResponse);
-//   
+//
 //   if (!isHeadless) {
 //     checkPermission();
 //   }
