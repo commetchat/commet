@@ -178,11 +178,6 @@ jobs:
           flutter-version: '3.24.4'
           channel: 'stable'
 
-#       - name: Setup Tools
-#         uses: gerlero/brew-install@v1
-#         with:
-#           packages: ninja gtk+3 mpv ffmpeg mimalloc
-
       - name: Setup Provisioning Profile
         env:
           BUILD_CERTIFICATE_BASE64: ${{ secrets.YORK_DEV_ID_APP_P12 }}
@@ -225,6 +220,69 @@ jobs:
         run: |
           cd $PROJECT_PATH
           flutter build macos --dart-define BUILD_MODE=release --dart-define PLATFORM=macos
+
+      - name: Clean up keychain and provisioning profile
+        if: ${{ always() }}
+        run: |
+          security delete-keychain $RUNNER_TEMP/app-signing.keychain-db
+          rm ~/Library/MobileDevice/Provisioning\ Profiles/build_pp.provisionprofile
+
+  build-ios:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+
+      - name: Setup Flutter 
+        uses: subosito/flutter-action@v2.8.0
+        with:
+          flutter-version: '3.24.4'
+          channel: 'stable'
+
+      - name: Setup Provisioning Profile
+        env:
+          BUILD_CERTIFICATE_BASE64: ${{ secrets.YORK_IOS_CERT_P12 }}
+          P12_PASSWORD: ${{ secrets.YORK_IOS_CERT_P12_PASSWORD }}
+          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.COMMET_IOS_PROFILE_PROVISIONPROFILE }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: |
+          # create variables
+          CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
+          PP_PATH=$RUNNER_TEMP/build_pp.provisionprofile
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+
+          # import certificate and provisioning profile from secrets
+          echo "Making Build Certificate"
+          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH
+          echo "Making Provisioning Profile"
+          echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o $PP_PATH
+
+          # create temporary keychain
+          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+
+          # import certificate to keychain
+          security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security list-keychain -d user -s $KEYCHAIN_PATH
+
+          # apply provisioning profile
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/
+#          ln -s ~/Library/Developer/Xcode/UserData/Provisioning\ Profiles ~/Library/MobileDevice/Provisioning\ Profiles
+
+      - name: Code Generation
+        run: |
+          cd $PROJECT_PATH
+          dart run scripts/codegen.dart
+
+      - name: Build Mac
+        run: |
+          cd $PROJECT_PATH
+          flutter build ipa --export-options-plist=ios/export.plist --dart-define BUILD_MODE=release --dart-define PLATFORM=ios
 
       - name: Clean up keychain and provisioning profile
         if: ${{ always() }}

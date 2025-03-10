@@ -198,7 +198,30 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
               ));
             },
           ),
-        ])
+        ]),
+        Wrap(spacing: 8, runSpacing: 8, children: [
+          tiamat.Button(
+            text: "Delayed Message Notification",
+            onTap: () async {
+              var client = clientManager!.clients.first;
+              var room = client.rooms.first;
+              var user = client.self!;
+              Future.delayed(const Duration(milliseconds: 5000), () {
+                NotificationManager.notify(MessageNotificationContent(
+                  senderName: user.displayName,
+                  senderImage: user.avatar,
+                  senderId: user.identifier,
+                  roomName: room.displayName,
+                  roomId: room.identifier,
+                  content: "Test Message!",
+                  clientId: client.identifier,
+                  eventId: "fake_event_id",
+                  isDirectMessage: true,
+                ));
+              });
+            },
+          ),
+        ]),
       ],
     );
   }

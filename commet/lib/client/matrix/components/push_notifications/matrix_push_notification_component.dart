@@ -2,6 +2,7 @@ import 'package:commet/client/components/push_notification/notification_manager.
 import 'package:commet/client/components/push_notification/push_notification_component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/config/platform_utils.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:matrix/matrix.dart';
@@ -27,9 +28,22 @@ class MatrixPushNotificationComponent
         pushers.any((element) => element.pushkey == pushKey)) {
       return;
     }
+    
+    var profileTag = "";
+    var appId = "chat.commet.commetapp";
+    if (PlatformUtils.isAndroid) {
+      appId = "chat.commet.commetapp.android";
+      profileTag = "android";
+    } else if (PlatformUtils.isIOS) {
+      appId = "chat.commet.commetapp.quirt";
+      profileTag = "ios";
+    } else if (PlatformUtils.isMacOS) {
+      appId = "chat.commet.commetapp.macos";
+      profileTag = "macos";
+    }
 
     var pusher = Pusher(
-        appId: "chat.commet.commetapp.android",
+        appId: appId,
         pushkey: pushKey,
         appDisplayName: BuildConfig.appName,
         data: PusherData(
@@ -39,7 +53,8 @@ class MatrixPushNotificationComponent
         ),
         deviceDisplayName: deviceName,
         kind: "http",
-        lang: "en");
+        lang: "en",
+        profileTag: profileTag);
 
     await matrixClient.postPusher(pusher, append: true);
   }

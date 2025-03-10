@@ -1,5 +1,5 @@
-import 'dart:ui';
-
+//import 'package:commet/client/components/direct_messages/direct_message_component.dart';
+//import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notifier.dart';
 import 'package:commet/client/room.dart';
@@ -7,174 +7,416 @@ import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/custom_uri.dart';
 import 'package:commet/utils/event_bus.dart';
-import 'package:commet/utils/image_utils.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+//import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+//import 'package:commet/firebase_options.dart';
+
+//@pragma('vm:entry-point')
+//void onBackgroundResponse(NotificationResponse details) {
+//  Log.i("Got a background notification response: $details");
+//}
+//
+//Future<void> onNotification(dynamic message) async {
+//  String? eventId = message.data['event_id'];
+//  String? roomId = message.data['room_id'];
+//  if (eventId == null || roomId == null) {
+//    return;
+//  }
+//
+//  Log.i("Got firebase message: $message");
+//
+//  var client =
+//      clientManager!.clients.firstWhere((element) => element.hasRoom(roomId));
+//  var room = client.getRoom(roomId);
+//  var event = await room!.getEvent(eventId);
+//
+//  var user = await room.fetchMember(event!.senderId);
+//
+//  Log.i("Dispatching notification");
+//
+//  bool isDirectMessage = client
+//          .getComponent<DirectMessagesComponent>()
+//          ?.isRoomDirectMessage(room) ??
+//      false;
+//
+//  NotificationManager.notify(MessageNotificationContent(
+//      senderName: user.displayName,
+//      senderId: user.identifier,
+//      roomName: room.displayName,
+//      content: event.plainTextBody,
+//      eventId: eventId,
+//      roomId: room.identifier,
+//      clientId: client.identifier,
+//      senderImage: user.avatar,
+//      roomImage: await room.getShortcutImage(),
+//      isDirectMessage: isDirectMessage));
+//}
+//
+//class IOSNotifier implements Notifier {
+//  @override
+//  bool get hasPermission => true;
+//
+//  @override
+//  bool get needsToken => false;
+//
+//  @override
+//  bool get enabled => true;
+//
+//  FlutterLocalNotificationsPlugin? flutterLocalNotificationsPlugin;
+//
+//  String? token;
+//
+//  @override
+//  Future<void> init() async {
+//    Log.i("Initializing ios push notifier");
+//
+//    flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+//
+//    final DarwinInitializationSettings settings = DarwinInitializationSettings(
+//      requestSoundPermission: false,
+//      requestBadgePermission: false,
+//      requestAlertPermission: false,
+//      notificationCategories: [
+//        DarwinNotificationCategory(
+//          'plainCategory',
+//          actions: <DarwinNotificationAction>[
+//            DarwinNotificationAction.plain(
+//              'id_1',
+//              'Action 1',
+//             options: <DarwinNotificationActionOption>{
+//               DarwinNotificationActionOption.foreground,
+//             },
+//            ),
+//          ],
+//          options: <DarwinNotificationCategoryOption>{
+//            DarwinNotificationCategoryOption.hiddenPreviewShowTitle,
+//          },
+//        )
+//      ],
+//    );
+//
+//    final initSettings = InitializationSettings(iOS: settings);
+//
+//    await flutterLocalNotificationsPlugin?.initialize(initSettings,
+//        onDidReceiveBackgroundNotificationResponse: onBackgroundResponse,
+//        onDidReceiveNotificationResponse: onResponse);
+//
+//    await NativePush.instance.initialize(
+//      firebaseOptions: {
+//        'apiKey': DefaultFirebaseOptions.currentPlatform.apiKey,
+//        'projectId': DefaultFirebaseOptions.currentPlatform.projectId,
+//        'messagingSenderId': DefaultFirebaseOptions.currentPlatform.messagingSenderId,
+//        'applicationId': DefaultFirebaseOptions.currentPlatform.appId,
+//      },
+//      useDefaultNotificationChannel: true,
+//    );
+//
+//    await NativePush.instance.registerForRemoteNotification(
+//      options: [
+//        NotificationOption.alert,
+//        NotificationOption.sound,
+//        NotificationOption.badge
+//      ],
+//    );
+//    
+//    NativePush.instance.notificationStream.listen((notification) {
+//      onNotification(notification);
+//      Log.i('Received notification: $notification');
+//    });
+//  }
+//
+//  static void onResponse(NotificationResponse details) {
+//    Log.i("Got a notification response: $details");
+//
+//    if (details.payload == null) return;
+//
+//    var uri = CustomURI.parse(details.payload!);
+//
+//    if (details.notificationResponseType ==
+//        NotificationResponseType.selectedNotification) {
+//      if (uri is OpenRoomURI) {
+//        EventBus.openRoom.add((uri.roomId, uri.clientId));
+//      }
+//    }
+//  }
+//
+//  @override
+//  Future<void> notify(NotificationContent notification) async {
+//   Log.i("Notifying $notification");
+//   switch (notification.runtimeType) {
+//     case MessageNotificationContent:
+//       return displayMessageNotification(
+//           notification as MessageNotificationContent);
+//     default:
+//   }
+//  }
+//
+//  Future<void> displayMessageNotification(
+//      MessageNotificationContent content) async {
+//    var client = clientManager?.getClient(content.clientId);
+//    var room = client?.getRoom(content.roomId);
+//
+//    Log.i("Displaying Message $content");
+//
+//    if (room == null) {
+//      return;
+//    }
+//
+//    if (shortcutsManager.loading != null) {
+//      await shortcutsManager.loading;
+//    }
+//
+//    await Future.wait([
+//      shortcutsManager.createShortcutForRoom(room),
+//    ]);
+//
+//    var id = room.identifier.hashCode;
+//
+//    var payload =
+//        OpenRoomURI(roomId: content.roomId, clientId: content.clientId)
+//            .toString();
+//
+//    const DarwinNotificationDetails details =
+//        DarwinNotificationDetails(
+//          interruptionLevel: InterruptionLevel.active,
+//          categoryIdentifier: 'plainCategory'
+//        );
+//
+//    const NotificationDetails notificationDetails =
+//        NotificationDetails(iOS: details);
+//    await flutterLocalNotificationsPlugin?.show(
+//        id, null, content.content, notificationDetails,
+//        payload: payload);
+//  }
+//
+//  @override
+//  Future<String?> getToken() async {
+//    final (service, token) = await NativePush.instance.notificationToken;
+//    return token;
+//  }
+//
+//  @override
+//  Future<bool> requestPermission() async {
+//    return true;
+//  }
+//
+//  @override
+//  Map<String, dynamic>? extraRegistrationData() {
+//    var extraData = {
+//      "type": "fcm",
+//      "default_payload": {
+//        "aps": {
+//          "alert": {
+//            "loc-args": [],
+//            "loc-key": "Notification",
+//          },
+//          "mutable-content": 1,
+//          "content_available": 1,
+//        },
+//      },
+//      "data_message": "ios",
+////      "content_available": 1,
+////      "apns": {"payload": {"aps": {"mutable-content": 1, "content-available": 1}}},
+//    };
+//    return extraData;
+//  }
+//
+//  @override
+//  Future<void> clearNotifications(Room room) async {
+//    var notifications =
+//        await flutterLocalNotificationsPlugin?.getActiveNotifications();
+//
+//    if (notifications == null) return;
+//
+//    for (var noti in notifications) {
+//      if (noti.groupKey == room.identifier) {
+//        flutterLocalNotificationsPlugin?.cancel(noti.id!);
+//      }
+//    }
+//  }
+//}
 
 @pragma('vm:entry-point')
 void onBackgroundResponse(NotificationResponse details) {
-  Log.i("Got a background notification response: $details");
+ Log.i("Got a background notification response: $details");
 }
 
 class IOSNotifier implements Notifier {
-  @override
-  bool hasPermission = false;
+ @override
+ bool hasPermission = false;
 
-  @override
-  bool get needsToken => false;
+ @override
+ bool get needsToken => true;
 
-  FlutterLocalNotificationsPlugin? flutterLocalNotificationsPlugin;
+ FlutterLocalNotificationsPlugin? flutterLocalNotificationsPlugin;
 
-  @override
-  bool get enabled => true;
+ @override
+ bool get enabled => true;
 
-  @override
-  Future<void> init() async {
-    flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+ @override
+ Future<void> init() async {
+   flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
-    final DarwinInitializationSettings settings = DarwinInitializationSettings(
-      requestSoundPermission: false,
-      requestBadgePermission: false,
-      requestAlertPermission: false,
-      notificationCategories: [
-        DarwinNotificationCategory(
-          'plainCategory',
-          actions: <DarwinNotificationAction>[
-            DarwinNotificationAction.plain(
-              'id_1',
-              'Action 1',
-//              options: <DarwinNotificationActionOption>{
-//                DarwinNotificationActionOption.foreground,
-//              },
-            ),
-          ],
-          options: <DarwinNotificationCategoryOption>{
-            DarwinNotificationCategoryOption.hiddenPreviewShowTitle,
-          },
-        )
-      ],
-    );
+   final DarwinInitializationSettings settings = DarwinInitializationSettings(
+     notificationCategories: [
+       DarwinNotificationCategory(
+         'plainCategory',
+         actions: <DarwinNotificationAction>[
+           DarwinNotificationAction.plain(
+             'id_1',
+             'Action 1',
+            options: <DarwinNotificationActionOption>{
+              DarwinNotificationActionOption.foreground,
+            },
+           ),
+         ],
+         options: <DarwinNotificationCategoryOption>{
+           DarwinNotificationCategoryOption.hiddenPreviewShowTitle,
+         },
+       )
+     ],
+   );
 
-    final initSettings = InitializationSettings(iOS: settings);
+   final initSettings = InitializationSettings(iOS: settings);
 
-    await flutterLocalNotificationsPlugin?.initialize(initSettings,
-        onDidReceiveBackgroundNotificationResponse: onBackgroundResponse,
-        onDidReceiveNotificationResponse: onResponse);
+   await flutterLocalNotificationsPlugin?.initialize(initSettings,
+       onDidReceiveBackgroundNotificationResponse: onBackgroundResponse,
+       onDidReceiveNotificationResponse: onResponse);
 
-    if (!isHeadless) {
-      checkPermission();
-    }
-  }
+   if (!isHeadless) {
+     checkPermission();
+   }
+ }
 
-  Future<void> checkPermission() async {
-    var ios = flutterLocalNotificationsPlugin!
-        .resolvePlatformSpecificImplementation<
-            IOSFlutterLocalNotificationsPlugin>()!;
-    hasPermission =
-        await ios.requestPermissions(alert: true, badge: true, sound: true) ??
-            false;
-  }
+ Future<void> checkPermission() async {
+   var ios = flutterLocalNotificationsPlugin!
+       .resolvePlatformSpecificImplementation<
+           IOSFlutterLocalNotificationsPlugin>()!;
+   hasPermission =
+       await ios.requestPermissions(alert: true, badge: true, sound: true) ?? false;
+ }
 
-  @override
-  Future<void> notify(NotificationContent notification) async {
-    switch (notification.runtimeType) {
-      case MessageNotificationContent:
-        return displayMessageNotification(
-            notification as MessageNotificationContent);
-      default:
-    }
-  }
+ @override
+ Future<void> notify(NotificationContent notification) async {
+   switch (notification.runtimeType) {
+     case MessageNotificationContent:
+       return displayMessageNotification(
+           notification as MessageNotificationContent);
+     default:
+   }
+ }
 
-  Future<void> displayMessageNotification(
-      MessageNotificationContent content) async {
-    var client = clientManager?.getClient(content.clientId);
-    var room = client?.getRoom(content.roomId);
+ Future<void> displayMessageNotification(
+     MessageNotificationContent content) async {
+   var client = clientManager?.getClient(content.clientId);
+   var room = client?.getRoom(content.roomId);
 
-    if (room == null) {
-      return;
-    }
+   if (room == null) {
+     return;
+   }
 
-    if (flutterLocalNotificationsPlugin == null) {
-      Log.i(
-          "Flutter local notifications plugin was null. Something went wrong");
-      return;
-    }
+   if (flutterLocalNotificationsPlugin == null) {
+     Log.i(
+         "Flutter local notifications plugin was null. Something went wrong");
+     return;
+   }
 
-    if (shortcutsManager.loading != null) {
-      await shortcutsManager.loading;
-    }
+   if (shortcutsManager.loading != null) {
+     await shortcutsManager.loading;
+   }
 
-    await Future.wait([
-      shortcutsManager.createShortcutForRoom(room),
-    ]);
+   await Future.wait([
+     shortcutsManager.createShortcutForRoom(room),
+   ]);
 
-    var id = room.identifier.hashCode;
+   var id = room.identifier.hashCode;
 
-    var payload =
-        OpenRoomURI(roomId: content.roomId, clientId: content.clientId)
-            .toString();
+   var payload =
+       OpenRoomURI(roomId: content.roomId, clientId: content.clientId)
+           .toString();
 
-    const DarwinNotificationDetails details =
-        DarwinNotificationDetails(categoryIdentifier: 'plainCategory');
+   const DarwinNotificationDetails details =
+       DarwinNotificationDetails(
+         interruptionLevel: InterruptionLevel.active,
+         categoryIdentifier: 'plainCategory'
+       );
 
-    const NotificationDetails notificationDetails =
-        NotificationDetails(iOS: details);
-    await flutterLocalNotificationsPlugin?.show(
-        id, null, content.content, notificationDetails,
-        payload: payload);
-  }
+   const NotificationDetails notificationDetails =
+       NotificationDetails(iOS: details);
+   await flutterLocalNotificationsPlugin?.show(
+       id, null, content.content, notificationDetails,
+       payload: payload);
+ }
 
-  Future<Uint8List?> getImageBytes(ImageProvider? provider) async {
-    if (provider != null) {
-      var data = await ImageUtils.imageProviderToImage(provider);
-      var bytes = await data.toByteData(format: ImageByteFormat.png);
-      return bytes?.buffer.asUint8List();
-    }
-    return null;
-  }
+ @override
+ Future<bool> requestPermission() async {
+   var ios = flutterLocalNotificationsPlugin!
+       .resolvePlatformSpecificImplementation<
+           IOSFlutterLocalNotificationsPlugin>()!;
+   hasPermission =
+       await ios.requestPermissions(alert: true, badge: true, sound: true) ?? false;
+   return hasPermission;
+ }
 
-  @override
-  Future<bool> requestPermission() async {
-    return true;
-  }
+ static void onResponse(NotificationResponse details) {
+   Log.i("Got a notification response: $details");
 
-  static void onResponse(NotificationResponse details) {
-    Log.i("Got a notification response: $details");
+   if (details.payload == null) return;
 
-    if (details.payload == null) return;
+   var uri = CustomURI.parse(details.payload!);
 
-    var uri = CustomURI.parse(details.payload!);
+   if (details.notificationResponseType ==
+       NotificationResponseType.selectedNotification) {
+     if (uri is OpenRoomURI) {
+       EventBus.openRoom.add((uri.roomId, uri.clientId));
+     }
+   }
+ }
 
-    if (details.notificationResponseType ==
-        NotificationResponseType.selectedNotification) {
-      if (uri is OpenRoomURI) {
-        EventBus.openRoom.add((uri.roomId, uri.clientId));
-      }
-    }
-  }
+ @override
+ Future<String?> getToken() async {
+   var firebaseInstance = FirebaseMessaging.instance;
+   var apns = await firebaseInstance.getAPNSToken();
+   Log.i('apns $apns ');
+   var firebase = await firebaseInstance.getToken();
+   Log.i('token $firebase');
+   return firebase;
+ }
 
-  @override
-  Future<String?> getToken() async {
-    return null;
-  }
+ @override
+ Map<String, dynamic>? extraRegistrationData() {
+   var extraData = {
+     "type": "fcm",
+     "default_payload": {
+       "aps": {
+         "alert": {
+           "loc-args": [],
+           "loc-key": "Notification",
+         },
+         "mutable-content": 1,
+         "content_available": 1,
+       },
+     },
+     "data_message": "ios",
+     "content_available": 1,
+     "apns": {"payload": {"aps": {"mutable-content": 1, "content-available": 1}}},
+   };
+   return extraData;
+ }
 
-  @override
-  Map<String, dynamic>? extraRegistrationData() {
-    return null;
-  }
+ @override
+ Future<void> clearNotifications(Room room) async {
+   var notifications =
+       await flutterLocalNotificationsPlugin?.getActiveNotifications();
 
-  @override
-  Future<void> clearNotifications(Room room) async {
-    var notifications =
-        await flutterLocalNotificationsPlugin?.getActiveNotifications();
+   if (notifications == null) return;
 
-    if (notifications == null) return;
-
-    for (var noti in notifications) {
-      if (noti.groupKey == room.identifier) {
-        flutterLocalNotificationsPlugin?.cancel(noti.id!);
-      }
-    }
-  }
+   for (var noti in notifications) {
+     if (noti.groupKey == room.identifier) {
+       flutterLocalNotificationsPlugin?.cancel(noti.id!);
+     }
+   }
+ }
 }

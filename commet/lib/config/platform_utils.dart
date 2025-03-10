@@ -27,4 +27,9 @@ class PlatformUtils {
     if (kIsWeb) return false;
     return Platform.isIOS;
   }
+
+  static bool get isMacOS {
+    if (kIsWeb) return false;
+    return Platform.isMacOS;
+  }
 }
