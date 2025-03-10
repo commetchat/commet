@@ -82,7 +82,7 @@ class NotificationManager {
     }
 
     if (PlatformUtils.isIOS) {
-      return FirebasePushNotifier();
+      return IOSNotifier();
     }
 
     return null;

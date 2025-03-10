@@ -209,7 +209,6 @@ jobs:
           # apply provisioning profile
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/
-          ln -s ~/Library/Developer/Xcode/UserData/Provisioning\ Profiles ~/Library/MobileDevice/Provisioning\ Profiles
 
       - name: Code Generation
         run: |
@@ -279,7 +278,7 @@ jobs:
           cd $PROJECT_PATH
           dart run scripts/codegen.dart
 
-      - name: Build Mac
+      - name: Build iOS
         run: |
           cd $PROJECT_PATH
           flutter build ipa --export-options-plist=ios/export.plist --dart-define BUILD_MODE=release --dart-define PLATFORM=ios

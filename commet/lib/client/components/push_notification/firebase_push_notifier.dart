@@ -4,23 +4,20 @@ import 'dart:async';
 
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/components/push_notification/android/android_notifier.dart';
-import 'package:commet/client/components/push_notification/ios/ios_notifier.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/components/push_notification/notifier.dart';
 import 'package:commet/client/room.dart';
-import 'package:commet/config/platform_utils.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/service/background_service.dart';
 import 'package:commet/service/background_service_notifications/background_service_task_notification.dart';
 
 // Manage these to enable / disable firebase
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:commet/firebase_options.dart';
-//dynamic Firebase;
-//dynamic FirebaseMessaging;
+// import 'package:firebase_core/firebase_core.dart';
+// import 'package:firebase_messaging/firebase_messaging.dart';
+dynamic Firebase;
+dynamic FirebaseMessaging;
 // --------
 
 Future<void> onForegroundMessage(dynamic message) async {
@@ -77,13 +74,7 @@ class FirebasePushNotifier implements Notifier {
   bool get needsToken => true;
 
   FirebasePushNotifier() {
-    if (PlatformUtils.isAndroid) {
-      notifier = AndroidNotifier();
-    } else if (PlatformUtils.isIOS) {
-      notifier = IOSNotifier();
-    } else {
-      notifier = AndroidNotifier();
-    }
+    notifier = AndroidNotifier();
   }
 
   @override
@@ -96,18 +87,8 @@ class FirebasePushNotifier implements Notifier {
     Log.i("Initializing firebase push notifier");
     await notifier.init();
 
-    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    await Firebase.initializeApp();
     Log.i("Initialized App");
-    if (PlatformUtils.isIOS) {
-      var fb = FirebaseMessaging.instance;
-      var apns_token = await fb.getAPNSToken();
-      Log.i("APNS token is $apns_token");
-      await fb.setForegroundNotificationPresentationOptions(
-        alert: true,
-        badge: true,
-        sound: true,
-      );    
-    }
     FirebaseMessaging.instance.onTokenRefresh.listen((event) {
       token = event;
       Log.i("Got new token: $token");
@@ -133,17 +114,11 @@ class FirebasePushNotifier implements Notifier {
 
   @override
   Future<String?> getToken() async {
-    if (PlatformUtils.isIOS) {
-      return notifier.getToken();
-    }
     return preferences.fcmKey;
   }
 
   @override
   Map<String, dynamic>? extraRegistrationData() {
-    if (PlatformUtils.isIOS) {
-      return notifier.extraRegistrationData();
-    }
     return {"type": "fcm"};
   }
 
