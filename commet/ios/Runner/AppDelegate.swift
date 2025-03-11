@@ -2,6 +2,7 @@ import UIKit
 import Flutter
 import flutter_background_service_ios
 import UserNotifications
+import flutter_local_notifications
 
 @main
 @objc class AppDelegate: FlutterAppDelegate {
@@ -19,6 +20,9 @@ import UserNotifications
 	  UNUserNotificationCenter.current().delegate = self as? UNUserNotificationCenterDelegate
 	}
     SwiftFlutterBackgroundServicePlugin.taskIdentifier = "dev.flutter.background.refresh"
+    FlutterLocalNotificationsPlugin.setPluginRegistrantCallback { (registry) in
+      GeneratedPluginRegistrant.register(with: registry)
+    }
 
     pushNotificationChannel.setMethodCallHandler { [weak self] (call: FlutterMethodCall, result: @escaping FlutterResult) in
       switch call.method {
@@ -39,9 +43,11 @@ import UserNotifications
   }
 
   override func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-    let tokenParts = deviceToken.map { data in String(format: "%02.2hhx", data) }
-    let token = tokenParts.joined()
-    self.deviceToken = token
+    let deviceTokenString = deviceToken.reduce("", { $0 + String(format: "%02X", $1) })
+    let controller: FlutterViewController = window?.rootViewController as! FlutterViewController
+    let pushNotificationChannel = FlutterMethodChannel(name: channelName, binaryMessenger: controller.binaryMessenger)
+    self.deviceToken = deviceTokenString
+    pushNotificationChannel.invokeMethod("didRegister", arguments: deviceTokenString)
   }
 
   override func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
@@ -65,11 +71,18 @@ import UserNotifications
   }
   
   private func getDeviceToken(result: @escaping FlutterResult) {
-    if(deviceToken.isEmpty){
+    if(deviceToken.isEmpty) {
       result(FlutterError(code: "UNAVAILABLE", message: "Device token not available", details: nil))
-    } else{
+    } else {
       result(deviceToken)
     }
+  }
+  
+  override func application(_ application: UIApplication,
+                     didReceiveRemoteNotification userInfo: [AnyHashable: Any],
+                     fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+    handleNotification(methodName: "onBackgroundNotification", userInfo: userInfo)  
+    completionHandler(UIBackgroundFetchResult.noData)
   }
 
   override func userNotificationCenter(_ center: UNUserNotificationCenter,
@@ -86,13 +99,13 @@ import UserNotifications
                           didReceive response: UNNotificationResponse,
                           withCompletionHandler completionHandler: @escaping () -> Void) {
     let userInfo = response.notification.request.content.userInfo
-    handleNotification(userInfo: userInfo)
+    handleNotification(methodName: "onPushNotification", userInfo: userInfo)
     completionHandler()
   }
 
-  private func handleNotification(userInfo: [AnyHashable: Any]) {
+  private func handleNotification(methodName: String, userInfo: [AnyHashable: Any]) {
     let controller: FlutterViewController = window?.rootViewController as! FlutterViewController
     let pushNotificationChannel = FlutterMethodChannel(name: channelName, binaryMessenger: controller.binaryMessenger)
-    pushNotificationChannel.invokeMethod("onPushNotification", arguments: userInfo)
+    pushNotificationChannel.invokeMethod(methodName, arguments: userInfo)
   }
 }

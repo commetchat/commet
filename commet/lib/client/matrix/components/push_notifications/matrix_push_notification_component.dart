@@ -78,6 +78,7 @@ class MatrixPushNotificationComponent
 
   @override
   Future<void> updatePushers() async {
+    Log.i("in updatePushers()");
     if (NotificationManager.notifierLoading != null) {
       await NotificationManager.notifierLoading;
     }
@@ -101,6 +102,7 @@ class MatrixPushNotificationComponent
     await cleanOldPushers(key, name, uri);
 
     if (key == null) {
+      Log.w("Device key is null");
       return;
     }
 
