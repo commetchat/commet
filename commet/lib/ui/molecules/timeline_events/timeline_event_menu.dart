@@ -54,6 +54,16 @@ class TimelineEventMenu {
           "If a message was sent with an effect, this prompts to replay the effect",
       name: "promptReplayMessageEffect");
 
+  String get promptCancelEventSend => Intl.message("Cancel",
+      desc:
+          "When a message failed to send, this prompts to cancel sending the event",
+      name: "promptCancelEventSend");
+
+  String get promptRetryEventSend => Intl.message("Retry",
+      desc:
+          "When a message failed to send, this prompts to retry sending the event",
+      name: "promptRetryEventSend");
+
   TimelineEventMenu({
     required this.timeline,
     required this.event,
@@ -62,46 +72,81 @@ class TimelineEventMenu {
     this.onActionFinished,
     this.isThreadTimeline = false,
   }) {
-    bool canEditEvent = event is TimelineEventMessage &&
-        timeline.room.permissions.canUserEditMessages &&
-        event.senderId == timeline.room.client.self!.identifier &&
-        setEditingEvent != null;
-
-    bool canDeleteEvent = timeline.canDeleteEvent(event);
-
-    bool canReply = event is TimelineEventMessage ||
-        event is TimelineEventSticker ||
-        event is TimelineEventEmote;
-
+    bool canEditEvent = false;
     bool canSaveAttachment = false;
-    if (event is TimelineEventMessage) {
-      canSaveAttachment =
-          (event as TimelineEventMessage).attachments?.isNotEmpty == true;
-    }
-    var emoticons = timeline.room.getComponent<RoomEmoticonComponent>();
-    bool canAddReaction =
-        (event is TimelineEventMessage || event is TimelineEventSticker) &&
-            emoticons != null;
+    bool canAddReaction = false;
+    bool canReplyInThread = false;
+    bool canCopy = false;
+    bool canEditPinState = false;
+    bool canPin = false;
+    bool canUnpin = false;
+    bool hasEffect = false;
+    bool canReply = false;
+    bool canDeleteEvent = false;
 
-    bool canReplyInThread = !isThreadTimeline && event is TimelineEventMessage;
-
-    bool canCopy = event is TimelineEventMessage;
-
-    var pins = timeline.room.getComponent<PinnedMessagesComponent>();
-
-    bool canEditPinState = pins?.canPinMessages == true &&
-        (event is TimelineEventMessage ||
-            event is TimelineEventSticker ||
-            event is TimelineEventEmote);
-    bool isPinned = pins?.isMessagePinned(event.eventId) == true;
-    bool canPin = canEditPinState && !isPinned;
-    bool canUnpin = canEditPinState && isPinned;
+    bool canRetrySend = event.status == TimelineEventStatus.error;
+    bool canCancelSend = event.status == TimelineEventStatus.error;
 
     var effects = timeline.room.client.getComponent<MessageEffectComponent>();
+    var emoticons = timeline.room.getComponent<RoomEmoticonComponent>();
+    var pins = timeline.room.getComponent<PinnedMessagesComponent>();
 
-    bool hasEffect = effects?.hasEffect(event) == true;
+    if (event.status == TimelineEventStatus.synced) {
+      canEditEvent = event is TimelineEventMessage &&
+          timeline.room.permissions.canUserEditMessages &&
+          event.senderId == timeline.room.client.self!.identifier &&
+          setEditingEvent != null;
+
+      canDeleteEvent = timeline.canDeleteEvent(event) &&
+          event.status == TimelineEventStatus.synced;
+
+      canReply = event is TimelineEventMessage ||
+          event is TimelineEventSticker ||
+          event is TimelineEventEmote;
+
+      if (event is TimelineEventMessage) {
+        canSaveAttachment =
+            (event as TimelineEventMessage).attachments?.isNotEmpty == true;
+      }
+
+      canAddReaction =
+          (event is TimelineEventMessage || event is TimelineEventSticker) &&
+              emoticons != null;
+
+      canReplyInThread = !isThreadTimeline && event is TimelineEventMessage;
+
+      canCopy = event is TimelineEventMessage;
+
+      canEditPinState = pins?.canPinMessages == true &&
+          (event is TimelineEventMessage ||
+              event is TimelineEventSticker ||
+              event is TimelineEventEmote);
+
+      bool isPinned = pins?.isMessagePinned(event.eventId) == true;
+
+      canPin = canEditPinState && !isPinned;
+      canUnpin = canEditPinState && isPinned;
+
+      hasEffect = effects?.hasEffect(event) == true;
+    }
 
     primaryActions = [
+      if (canRetrySend)
+        TimelineEventMenuEntry(
+            name: promptRetryEventSend,
+            icon: Icons.refresh,
+            action: (BuildContext context) {
+              timeline.room.retrySend(event);
+              onActionFinished?.call();
+            }),
+      if (canCancelSend)
+        TimelineEventMenuEntry(
+            name: promptCancelEventSend,
+            icon: Icons.cancel,
+            action: (BuildContext context) {
+              timeline.room.cancelSend(event);
+              onActionFinished?.call();
+            }),
       if (hasEffect)
         TimelineEventMenuEntry(
             name: promptReplayMessageEffect,
@@ -143,7 +188,7 @@ class TimelineEventMenu {
           name: CommonStrings.promptAddReaction,
           icon: Icons.add_reaction,
           secondaryMenuBuilder: (context, dismissSecondaryMenu) {
-            return EmojiPicker(emoticons.availableEmoji,
+            return EmojiPicker(emoticons!.availableEmoji,
                 preferredTooltipDirection: AxisDirection.left,
                 onEmoticonPressed: (emote) async {
               timeline.room.addReaction(event, emote);

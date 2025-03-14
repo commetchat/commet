@@ -62,7 +62,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelEmojiPickerGifTab": "GIF",
+  "labelEmojiPickerGifTab": "Gif",
   "@labelEmojiPickerGifTab": {
     "description": "Label for the gif search tab in the emoji picker",
     "type": "text",
@@ -972,7 +972,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelThemeAmoled": "AMOLED",
+  "labelThemeAmoled": "Amoled",
   "@labelThemeAmoled": {
     "description": "Label for the light theme",
     "type": "text",
@@ -990,7 +990,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelGifSearchToggle": "GIF-piltide otsing",
+  "labelGifSearchToggle": "Gif-piltide otsing",
   "@labelGifSearchToggle": {
     "description": "Label for the toggle for enabling and disabling gif search",
     "type": "text",
@@ -1202,7 +1202,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelGifSearchDescription": "GIF-piltide otsinguks kasuta teenust Tenor. Otsingupäringud suuname läbi {proxyUrl} proksiserveri",
+  "labelGifSearchDescription": "Gif-piltide otsinguks kasuta teenust Tenor. Otsingupäringud suuname läbi {proxyUrl} proksiserveri",
   "@labelGifSearchDescription": {
     "description": "Explains that gifs will be fetched via proxy",
     "type": "text",
@@ -1543,5 +1543,113 @@
     "description": "Prompt to import a set of emoticons from an existing pack",
     "type": "text",
     "placeholders": {}
+  },
+  "noPinnedMessages": "Ühtegi sõnumit pole esiletõstetud!",
+  "@noPinnedMessages": {
+    "description": "Placeholder label in the pinned messages menu that is shown when there are no pinned messages",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMessageEffectsTitle": "Sõnumiefektid",
+  "@labelMessageEffectsTitle": {
+    "description": "Header for the settings tile for message effects, such as confetti",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMessageEffectsDescription": "Sõnumitele võid saatmisel lisada erinevaid efekte, nagu serpentiinid",
+  "@labelMessageEffectsDescription": {
+    "description": "Label describing what message effects are",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptPinMessage": "Tõsta sõnum esile",
+  "@promptPinMessage": {
+    "description": "Label for the menu option to pin a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptUnpinMessage": "Lõpeta sõnumi esiletõstmine",
+  "@promptUnpinMessage": {
+    "description": "Label for the menu option to unpin a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptReplyInThread": "Vasta jutulõngas",
+  "@promptReplyInThread": {
+    "description": "Label for the menu option to reply to a message inside a thread",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptShowSource": "Näita lähtekoodi",
+  "@promptShowSource": {
+    "description": "Label for the menu option to view the JSON source of an event",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptReplayMessageEffect": "Korda efekti uuesti",
+  "@promptReplayMessageEffect": {
+    "description": "If a message was sent with an effect, this prompts to replay the effect",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messagePlaceholderUserUpdatedNameDetailed": "{user} muutis oma uueks kuvatavaks nimeks '{newName}'",
+  "@messagePlaceholderUserUpdatedNameDetailed": {
+    "description": "Message body for when a user updates their display name",
+    "type": "text",
+    "placeholders": {
+      "user": {},
+      "newName": {}
+    }
+  },
+  "messageUserRetractedInvite": "{sender} võttis kasutaja „{user}“ kutse tagasi",
+  "@messageUserRetractedInvite": {
+    "description": "Message body for when a user's invitation to a room was withdrawn",
+    "type": "text",
+    "placeholders": {
+      "sender": {},
+      "user": {}
+    }
+  },
+  "messageUserAcceptedInvite": "{user} nõustus kutsega",
+  "@messageUserAcceptedInvite": {
+    "description": "Message body for when a user accepted an invitation to a room",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messageUserBanned": "{sender} seadis suhtluskeelu kasutajale „{user}“",
+  "@messageUserBanned": {
+    "description": "Message body for when a user bans another user from the room",
+    "type": "text",
+    "placeholders": {
+      "sender": {},
+      "user": {}
+    }
+  },
+  "messageUserPinnedEvent": "{user} tõstis sõnumi esile!",
+  "@messageUserPinnedEvent": {
+    "description": "Message body for when a user adds an event to the room's pinned messages",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messageUserUnpinnedEvent": "{user} eemaldas esiletõstetud sõnumi",
+  "@messageUserUnpinnedEvent": {
+    "description": "Message body for when a user removes an event from the room's pinned messages",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messageUserUnbanned": "{sender} eemaldas kasutaja „{user}“ suhtluskeelu",
+  "@messageUserUnbanned": {
+    "description": "Message body for when a user reverts a ban of another user",
+    "type": "text",
+    "placeholders": {
+      "sender": {},
+      "user": {}
+    }
   }
 }
