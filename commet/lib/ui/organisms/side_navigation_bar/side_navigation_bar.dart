@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/profile.dart';
-import 'package:commet/debug/log.dart';
 import 'package:commet/ui/molecules/space_selector.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/navigation/navigation_utils.dart';
@@ -94,7 +93,6 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
     _clientManager = Provider.of<ClientManager>(context, listen: false);
 
     topLevelSpaces = _clientManager.spaces.where((e) => e.isTopLevel).toList();
-    Log.d("Num top level spaces: ${topLevelSpaces.length}");
   }
 
   void onSpaceUpdate() {

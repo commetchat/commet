@@ -165,6 +165,7 @@ class TextButton extends StatelessWidget {
       this.avatarRadius = 12,
       this.avatarPlaceholderColor,
       this.avatarPlaceholderText,
+      this.softwrap,
       this.footer});
   final String text;
 
@@ -179,6 +180,7 @@ class TextButton extends StatelessWidget {
   final Widget? footer;
   final Color? textColor;
   final Color? iconColor;
+  final bool? softwrap;
 
   bool get useAvatar => avatar != null || avatarPlaceholderText != null;
 
@@ -187,13 +189,16 @@ class TextButton extends StatelessWidget {
     return material.TextButton(
         clipBehavior: Clip.antiAlias,
         style: ButtonStyle(
+          padding: MaterialStatePropertyAll(
+              material.EdgeInsets.fromLTRB(8, 0, 8, 0)),
           backgroundColor: MaterialStatePropertyAll(highlighted
               ? Theme.of(context).colorScheme.secondaryContainer
               : null),
         ),
         child: material
             .Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Row(
+          Flexible(
+              child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -226,19 +231,24 @@ class TextButton extends StatelessWidget {
                     ),
                   ),
                 ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
-                child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: tiamat.Text.labelEmphasised(
-                      text,
-                      color: highlighted
-                          ? Theme.of(context).colorScheme.onSecondaryContainer
-                          : textColor,
-                    )),
+              Flexible(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+                  child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: tiamat.Text.labelEmphasised(
+                        text,
+                        maxLines: 1,
+                        softwrap: softwrap,
+                        overflow: TextOverflow.fade,
+                        color: highlighted
+                            ? Theme.of(context).colorScheme.onSecondaryContainer
+                            : textColor,
+                      )),
+                ),
               ),
             ],
-          ),
+          )),
           if (footer != null) footer!,
         ]),
         onPressed: () => onTap?.call());

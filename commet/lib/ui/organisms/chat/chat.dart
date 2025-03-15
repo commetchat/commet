@@ -11,6 +11,9 @@ import 'package:commet/client/components/gif/gif_search_result.dart';
 import 'package:commet/client/components/read_receipts/read_receipt_component.dart';
 import 'package:commet/client/components/threads/thread_component.dart';
 import 'package:commet/client/components/typing_indicators/typing_indicator_component.dart';
+import 'package:commet/client/timeline_events/timeline_event.dart';
+import 'package:commet/client/timeline_events/timeline_event_message.dart';
+import 'package:commet/client/timeline_events/timeline_event_sticker.dart';
 
 import 'package:commet/debug/log.dart';
 import 'package:commet/ui/organisms/attachment_processor/attachment_processor.dart';
@@ -112,7 +115,7 @@ class ChatState extends State<Chat> {
   }
 
   Future<void> loadTimeline() async {
-    var t = await room.loadTimeline();
+    var t = await room.getTimeline();
     setState(() {
       _timeline = t;
     });
@@ -120,7 +123,7 @@ class ChatState extends State<Chat> {
 
   Future<void> loadThreadTimeline() async {
     Timeline? timeline = room.timeline;
-    timeline ??= await room.loadTimeline();
+    timeline ??= await room.getTimeline();
 
     var threadTimeline = await threadsComponent!.getThreadTimeline(
         roomTimeline: timeline, threadRootEventId: widget.threadId!);
@@ -250,12 +253,19 @@ class ChatState extends State<Chat> {
   }
 
   void setInteractingEvent(TimelineEvent? event, {EventInteractionType? type}) {
-    setState(() {
-      if (event == null) {
+    if (event == null) {
+      setState(() {
         interactingEvent = null;
         interactionType = null;
-        return;
-      }
+      });
+      return;
+    }
+
+    if (event is! TimelineEventMessage && event is! TimelineEventSticker) {
+      return;
+    }
+
+    setState(() {
       interactingEvent = event;
       interactionType = type;
 
@@ -264,7 +274,7 @@ class ChatState extends State<Chat> {
           onFocusMessageInput.add(null);
           break;
         case EventInteractionType.edit:
-          setMessageInputText.add(event.body!);
+          setMessageInputText.add(event.plainTextBody);
           onFocusMessageInput.add(null);
           break;
         default:
@@ -307,7 +317,7 @@ class ChatState extends State<Chat> {
 
       if (event.senderId != room.client.self!.identifier) continue;
 
-      if (event.type != EventType.message) continue;
+      if (event is TimelineEventMessage) continue;
 
       setInteractingEvent(event, type: EventInteractionType.edit);
       break;

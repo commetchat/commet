@@ -23,7 +23,7 @@ class EmojiReaction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var bgColor = material.Theme.of(context).colorScheme.tertiary;
+    var bgColor = material.Theme.of(context).colorScheme.primary;
 
     if (!highlighted) {
       bgColor = material.Theme.of(context).colorScheme.surfaceContainerLow;

@@ -1,9 +1,11 @@
 import 'package:commet/client/components/url_preview/url_preview_component.dart';
+import 'package:commet/client/matrix/extensions/matrix_client_extensions.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
-import 'package:commet/client/room.dart';
 import 'package:commet/client/timeline.dart';
+import 'package:commet/client/timeline_events/timeline_event.dart';
+import 'package:commet/client/timeline_events/timeline_event_message.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/mime.dart';
@@ -39,7 +41,14 @@ pQIDAQAB
   }
 
   @override
-  Future<UrlPreviewData?> getPreview(Room room, TimelineEvent event) async {
+  Future<UrlPreviewData?> getPreview(
+      Timeline timeline, TimelineEvent event) async {
+    if (event is! TimelineEventMessage) {
+      return null;
+    }
+
+    final room = timeline.room;
+
     if (room.isE2EE && preferences.urlPreviewInE2EEChat == false) {
       Log.i(
           "Not getting url preview because chat is encrypted and its not enabled");
@@ -48,7 +57,7 @@ pQIDAQAB
 
     var mxClient = (room as MatrixRoom).matrixRoom.client;
 
-    var uri = event.links!.first;
+    var uri = event.getLinks(timeline: timeline)!.first;
 
     if (cache.containsKey(uri.toString())) {
       return cache[uri.toString()];
@@ -74,8 +83,17 @@ pQIDAQAB
   }
 
   @override
-  UrlPreviewData? getCachedPreview(Room room, TimelineEvent event) {
-    var uri = event.links!.first;
+  UrlPreviewData? getCachedPreview(Timeline timeline, TimelineEvent event) {
+    if (event is! TimelineEventMessage) {
+      return null;
+    }
+
+    var uri = event.getLinks(timeline: timeline)?.firstOrNull;
+
+    if (uri == null) {
+      return null;
+    }
+
     if (cache.containsKey(uri.toString())) {
       return cache[uri.toString()];
     }
@@ -84,7 +102,13 @@ pQIDAQAB
   }
 
   @override
-  bool shouldGetPreviewData(Room room, TimelineEvent event) {
+  bool shouldGetPreviewData(Timeline timeline, TimelineEvent event) {
+    if (event is! TimelineEventMessage) {
+      return false;
+    }
+
+    final room = timeline.room;
+
     if (room.isE2EE && preferences.urlPreviewInE2EEChat == false) {
       return false;
     }
@@ -93,7 +117,17 @@ pQIDAQAB
       return false;
     }
 
-    return event.links?.isNotEmpty == true;
+    final links = event.getLinks(timeline: timeline);
+
+    return links?.isNotEmpty == true;
+  }
+
+  Future<String> getRequestPath() async {
+    if (await client.getMatrixClient().authenticatedMediaSupported()) {
+      return '/client/v1/media/preview_url';
+    } else {
+      return '/media/v3/preview_url';
+    }
   }
 
   Future<UrlPreviewData> getEncryptedPreviewData(
@@ -106,7 +140,7 @@ pQIDAQAB
     var proxyUrl = privatePreviewGetter!.getProxyUrl(url, key);
 
     var response = await client.request(
-        matrix.RequestType.GET, "/media/v3/preview_url",
+        matrix.RequestType.GET, await getRequestPath(),
         query: {"url": proxyUrl.toString()});
 
     var title = response['og:title'] as String?;
@@ -119,13 +153,16 @@ pQIDAQAB
     if (imageUrl != null) {
       var mxcUri = Uri.parse(imageUrl);
       if (mxcUri.scheme == "mxc") {
-        var response =
-            await client.httpClient.get(mxcUri.getDownloadLink(client));
+        try {
+          var response = await client.getContentFromUri(mxcUri);
+          var bytes = response.data;
+          var decrypted = privatePreviewGetter!.decryptContent(bytes, key);
 
-        var bytes = response.bodyBytes;
-        var decrypted = privatePreviewGetter!.decryptContent(bytes, key);
-
-        image = Image.memory(decrypted).image;
+          image = Image.memory(decrypted).image;
+        } catch (e, t) {
+          Log.onError(e, t,
+              content: "Failed to get encrypted url preview image data");
+        }
       }
     }
 
@@ -151,7 +188,7 @@ pQIDAQAB
     late Map<String, Object?> response;
     try {
       response = await client.request(
-          matrix.RequestType.GET, "/media/v3/preview_url",
+          matrix.RequestType.GET, await getRequestPath(),
           query: {"url": url.toString()});
     } catch (e, s) {
       if (e is MatrixException) {

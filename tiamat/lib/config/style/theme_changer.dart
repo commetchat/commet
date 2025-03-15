@@ -98,11 +98,7 @@ class ThemeChangerState extends State<ThemeChanger>
     fileObserver?.cancel();
     themeFile = file;
 
-    if (Platform.isWindows) {
-      fileObserver = file.parent.watch().listen(onThemeFileChanged);
-    } else {
-      fileObserver = file.watch().listen(onThemeFileChanged);
-    }
+    fileObserver = file.parent.watch().listen(onThemeFileChanged);
 
     print("Listening for theme file changes");
 

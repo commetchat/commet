@@ -71,7 +71,17 @@ class MatrixPushNotificationComponent
     var mxClient = client.getMatrixClient();
     var extraData = notifier?.extraRegistrationData();
     var name = mxClient.clientName;
-    var uri = Uri.https(preferences.pushGateway, "/_matrix/push/v1/notify");
+
+    var uri = Uri.parse(preferences.pushGateway);
+    if (uri.hasScheme == false) {
+      uri = Uri.https(preferences.pushGateway);
+    }
+
+    uri = Uri(
+        scheme: uri.scheme,
+        host: uri.host,
+        port: uri.port,
+        path: "/_matrix/push/v1/notify");
 
     await cleanOldPushers(key, name, uri);
 

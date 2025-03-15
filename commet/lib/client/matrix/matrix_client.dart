@@ -160,8 +160,8 @@ class MatrixClient extends Client {
             try {
               await client.init(true, isBackgroundService: isBackgroundService);
             } catch (error, trace) {
-              Log.e("Unable to load client $clientName from database");
-              Log.onError(error, trace);
+              Log.onError(error, trace,
+                  content: "Unable to load client $clientName from database");
 
               client.self = ErrorProfile();
               manager.alertManager.addAlert(Alert(AlertType.warning,
@@ -205,8 +205,8 @@ class MatrixClient extends Client {
             startSyncLoop: !isBackgroundService,
             onMigration: () => Log.w("Matrix Database is migrating"));
       });
-      self =
-          MatrixProfile(_matrixClient, await _matrixClient.fetchOwnProfile());
+
+      await _updateOwnProfile();
 
       if (!isBackgroundService) {
         firstSync = _matrixClient.oneShotSync();
@@ -299,15 +299,35 @@ class MatrixClient extends Client {
     return _matrixClient.logout();
   }
 
-  void _postLoginSuccess() async {
-    if (_matrixClient.userID != null) {
-      self =
-          MatrixProfile(_matrixClient, await _matrixClient.fetchOwnProfile());
-    }
-
+  Future<void> _postLoginSuccess() async {
+    await _updateOwnProfile();
     for (var component in getAllComponents()!) {
       if (component is NeedsPostLoginInit) {
         (component as NeedsPostLoginInit).postLoginInit();
+      }
+    }
+  }
+
+  Future<void> _updateOwnProfile() async {
+    final id = _matrixClient.userID;
+    if (id != null) {
+      var data = await _matrixClient.database!.getUserProfile(id);
+      if (data != null) {
+        self = MatrixProfile(
+            _matrixClient,
+            matrix.Profile(
+              userId: id,
+              displayName: data.displayname,
+              avatarUrl: data.avatarUrl,
+            ));
+
+        // Update own profile, but lets not wait for it before continuing
+        _matrixClient.getProfileFromUserId(id).then((profile) {
+          self = MatrixProfile(_matrixClient, profile);
+        });
+      } else {
+        self = MatrixProfile(_matrixClient,
+            await _matrixClient.getProfileFromUserId(_matrixClient.userID!));
       }
     }
   }
@@ -323,7 +343,8 @@ class MatrixClient extends Client {
   }
 
   void _updateSpacesList() {
-    var allSpaces = _matrixClient.rooms.where((element) => element.isSpace);
+    var allSpaces = _matrixClient.rooms.where((element) =>
+        element.isSpace && element.membership == matrix.Membership.join);
 
     for (var space in allSpaces) {
       if (hasSpace(space.id)) continue;
@@ -590,7 +611,7 @@ class MatrixClient extends Client {
 
     if (result == LoginResult.success) {
       preferences.addRegisteredMatrixClient(identifier);
-      _postLoginSuccess();
+      await _postLoginSuccess();
     }
 
     return result;

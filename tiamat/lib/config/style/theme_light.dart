@@ -28,6 +28,7 @@ class ThemeLightColors {
 class ThemeLight {
   static ThemeData get theme {
     var scheme = ColorScheme.fromSeed(
+        dynamicSchemeVariant: DynamicSchemeVariant.monochrome,
         seedColor: Colors.white,
         brightness: Brightness.light,
         primaryContainer: ThemeLightColors.primary,

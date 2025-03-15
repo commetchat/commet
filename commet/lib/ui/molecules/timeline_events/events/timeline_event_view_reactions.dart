@@ -1,5 +1,7 @@
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/timeline.dart';
+import 'package:commet/client/timeline_events/timeline_event.dart';
+import 'package:commet/client/timeline_events/timeline_event_feature_reactions.dart';
 import 'package:commet/ui/atoms/emoji_reaction.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_layout.dart';
 import 'package:flutter/material.dart';
@@ -64,7 +66,11 @@ class _TimelineEventViewReactionsState extends State<TimelineEventViewReactions>
 
   void setStateFromIndex(int index) {
     setState(() {
-      reactions = widget.timeline.events[index].reactions!;
+      final event = widget.timeline.events[index];
+      if (event is TimelineEventFeatureReactions) {
+        reactions = (event as TimelineEventFeatureReactions)
+            .getReactions(widget.timeline);
+      }
     });
   }
 }

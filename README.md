@@ -26,11 +26,14 @@ Commet is a client for [Matrix](https://matrix.org) focused on providing a featu
 - End to End Encryption
 - Custom Emoji + Stickers
 - GIF Search
+- Threads
+- Encrypted Room Search
 - Multiple Accounts
 - Spaces
 - Emoji verification & cross signing
 - Push Notifications
 - URL Preview
+  
 # Translation
 Help translate Commet to your language on [Weblate](https://hosted.weblate.org/projects/commetchat/commet/)
 
@@ -39,7 +42,7 @@ Help translate Commet to your language on [Weblate](https://hosted.weblate.org/p
 </a>
 
 # Development
-Commet is built using [Flutter](https://flutter.dev), currently v3.22.2 
+Commet is built using [Flutter](https://flutter.dev), currently v3.24.4 
 
 This repo currently has a monorepo structure, containing two flutter projects: Commet and Tiamat. Commet is the main client, and Tiamat is a sort of wrapper around Material with some extra goodies, which is used to maintain a consistent style across the app. Tiamat may eventually be moved to its own repo, but for now it is maintained here for ease of development.
 ## Building

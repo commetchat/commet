@@ -95,10 +95,10 @@ Future<bool> initBackgroundService() async {
     return true;
   } catch (exception) {
     if (exception is MissingPluginException) {
-      Log.d(
+      Log.w(
           "Failed to start background service due to missing implementation. This wont show the banner, ${Isolate.current.debugName}");
     } else {
-      Log.d(
+      Log.w(
           "Failed to start background service!, ${Isolate.current.debugName}");
       await preferences.init();
       await preferences.setLastForegroundServiceRunSucceeded(false);

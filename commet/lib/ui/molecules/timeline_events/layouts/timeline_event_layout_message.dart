@@ -16,6 +16,7 @@ class TimelineEventLayoutMessage extends StatelessWidget {
       this.inResponseTo,
       this.reactions,
       this.timestamp,
+      this.sticker,
       this.thread,
       this.urlPreviews,
       this.edited = false,
@@ -30,6 +31,7 @@ class TimelineEventLayoutMessage extends StatelessWidget {
   final Widget? reactions;
   final Widget? urlPreviews;
   final Widget? thread;
+  final Widget? sticker;
   final bool showSender;
   final bool edited;
   final String? timestamp;
@@ -71,6 +73,7 @@ class TimelineEventLayoutMessage extends StatelessWidget {
                         RepaintBoundary(child: formattedContent!),
                       if (edited) tiamat.Text.labelLow(messageEditedMarker),
                       if (attachments != null) attachments!,
+                      if (sticker != null) sticker!,
                       if (urlPreviews != null) urlPreviews!,
                       if (reactions != null)
                         Padding(

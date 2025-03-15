@@ -41,13 +41,13 @@ class Switch extends StatefulWidget {
 }
 
 class _SwitchState extends State<Switch> {
-  late material.MaterialStateProperty<Icon?> thumbIcon;
+  late material.WidgetStateProperty<Icon?> thumbIcon;
   @override
   void initState() {
     super.initState();
-    thumbIcon = material.MaterialStateProperty.resolveWith<Icon?>(
-      (Set<material.MaterialState> states) {
-        if (states.contains(material.MaterialState.selected)) {
+    thumbIcon = material.WidgetStateProperty.resolveWith<Icon?>(
+      (Set<material.WidgetState> states) {
+        if (states.contains(material.WidgetState.selected)) {
           if (widget.onIcon == null) return null;
           return Icon(widget.onIcon!);
         }
@@ -63,10 +63,10 @@ class _SwitchState extends State<Switch> {
       onChanged: widget.onChanged,
       thumbIcon: thumbIcon,
       value: widget.state,
-      thumbColor: material.MaterialStateProperty.resolveWith(
-        (Set<material.MaterialState> states) {
-          if (states.contains(material.MaterialState.selected)) {
-            return material.Theme.of(context).colorScheme.surface;
+      thumbColor: material.WidgetStateProperty.resolveWith(
+        (Set<material.WidgetState> states) {
+          if (states.contains(material.WidgetState.selected)) {
+            return material.Theme.of(context).colorScheme.onPrimary;
           }
           return material.Theme.of(context).colorScheme.secondary;
         },

@@ -1,7 +1,6 @@
-import 'dart:math';
-
 import 'package:commet/client/room.dart';
 import 'package:commet/ui/atoms/room_header.dart';
+import 'package:commet/ui/atoms/keyboard_adaptor.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/atoms/space_header.dart';
 import 'package:commet/ui/molecules/direct_message_list.dart';
@@ -11,6 +10,7 @@ import 'package:commet/ui/organisms/background_task_view/background_task_view_co
 import 'package:commet/ui/organisms/chat/chat.dart';
 import 'package:commet/ui/organisms/home_screen/home_screen.dart';
 import 'package:commet/ui/organisms/room_members_list/room_members_list.dart';
+import 'package:commet/ui/organisms/room_side_panel/room_side_panel.dart';
 import 'package:commet/ui/organisms/side_navigation_bar/side_navigation_bar.dart';
 import 'package:commet/ui/organisms/space_summary/space_summary.dart';
 import 'package:commet/ui/pages/main/main_page.dart';
@@ -50,6 +50,10 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
       panelsKey.currentState?.reveal(RevealSide.right);
     });
     EventBus.closeThread.stream.listen((event) {
+      panelsKey.currentState?.reveal(RevealSide.main);
+    });
+
+    EventBus.focusTimeline.stream.listen((event) {
       panelsKey.currentState?.reveal(RevealSide.main);
     });
 
@@ -104,39 +108,25 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
   }
 
   Widget? rightPanel(BuildContext context) {
-    if (widget.state.currentThreadId != null &&
-        widget.state.currentRoom != null) {
-      return Tile(
-        child: keyboardAdaptor(
-          Stack(
+    if (widget.state.currentRoom != null) {
+      return Tile.surfaceContainer(
+        caulkPadLeft: true,
+        caulkClipTopLeft: true,
+        caulkClipBottomLeft: true,
+        child: ScaledSafeArea(
+          bottom: false,
+          child: Column(
             children: [
-              Chat(
-                widget.state.currentRoom!,
-                threadId: widget.state.currentThreadId,
-                key: ValueKey(
-                    "room-timeline-key-${widget.state.currentRoom!.localId}_thread_${widget.state.currentThreadId!}"),
-              ),
-              ScaledSafeArea(
-                child: Align(
-                  alignment: Alignment.topRight,
-                  child: Padding(
-                    padding: const EdgeInsets.all(24.0),
-                    child: tiamat.CircleButton(
-                      icon: Icons.close,
-                      radius: 24,
-                      onPressed: () => EventBus.closeThread.add(null),
-                    ),
-                  ),
-                ),
-              ),
+              Expanded(
+                child: RoomSidePanel(
+                    key: ValueKey(
+                        "room-side-panel-${widget.state.currentRoom!.localId}"),
+                    state: widget.state),
+              )
             ],
           ),
         ),
       );
-    }
-
-    if (widget.state.currentRoom != null) {
-      return userList();
     }
 
     return null;
@@ -185,16 +175,6 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
     );
   }
 
-  Widget keyboardAdaptor(Widget child, {bool ignore = false}) {
-    var scaledQuery = MediaQuery.of(context).scale();
-    var offset = max(scaledQuery.viewInsets.bottom, scaledQuery.padding.bottom);
-
-    return ScaledSafeArea(
-        bottom: false,
-        child: Padding(
-            padding: EdgeInsets.fromLTRB(0, 0, 0, offset), child: child));
-  }
-
   Widget mainPanel() {
     if (widget.state.currentSpace != null && widget.state.currentRoom == null) {
       return Tile(
@@ -221,7 +201,7 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
         offset = scaledQuery.padding.bottom;
       }
       return Tile(
-        child: keyboardAdaptor(
+        child: KeyboardAdaptor(
           Column(
             children: [
               Tile.low(
@@ -336,16 +316,19 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
               onTap: clearSelectedRoom,
             ),
             Expanded(
-                child: SpaceViewer(
-              widget.state.currentSpace!,
-              key: ValueKey(
-                  "space-view-key-${widget.state.currentSpace!.localId}"),
-              onChildAdded: widget.state.clientManager.onSpaceAdded,
-              onChildRemoved: widget.state.clientManager.onSpaceRemoved,
-              onChildUpdated: widget.state.clientManager.onSpaceUpdated.stream,
-              onRoomSelected: (room) async {
-                selectRoom(room);
-              },
+                child: SingleChildScrollView(
+              child: SpaceViewer(
+                widget.state.currentSpace!,
+                key: ValueKey(
+                    "space-view-key-${widget.state.currentSpace!.localId}"),
+                onChildAdded: widget.state.clientManager.onSpaceAdded,
+                onChildRemoved: widget.state.clientManager.onSpaceRemoved,
+                onChildUpdated:
+                    widget.state.clientManager.onSpaceUpdated.stream,
+                onRoomSelected: (room) async {
+                  selectRoom(room);
+                },
+              ),
             )),
           ],
         ),

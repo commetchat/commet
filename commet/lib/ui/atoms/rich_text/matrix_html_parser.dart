@@ -39,6 +39,7 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
   static final CodeBlockHtmlExtension _codeBlock = CodeBlockHtmlExtension();
   static final CodeHtmlExtension _code = CodeHtmlExtension();
   static final LinkifyHtmlExtension _linkify = LinkifyHtmlExtension();
+  static final LineBreakHtmlExtension _lineBreak = LineBreakHtmlExtension();
 
   static const Set<String> allowedHtmlTags = {
     'body',
@@ -107,6 +108,7 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
         _codeBlock,
         _code,
         _linkify,
+        _lineBreak,
         imageExtension
       ],
       style: {
@@ -127,14 +129,21 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
             color: Theme.of(context).colorScheme.primary,
             width: 2,
           )),
-          padding: HtmlPaddings(left: HtmlPadding(4)),
+          padding: HtmlPaddings(
+            left: HtmlPadding(4),
+          ),
           margin: Margins(
-            bottom: Margin.zero(),
-            left: Margin(4),
-            top: Margin.zero(),
+            bottom: Margin(8),
+            left: Margin(8),
+            top: Margin(8),
             right: Margin.zero(),
           ),
           whiteSpace: WhiteSpace.pre,
+        ),
+        "p": Style(
+          border: Border.all(),
+          margin: Margins.all(0),
+          padding: HtmlPaddings.all(0),
         )
       },
       onLinkTap: (url, attributes, element) {
@@ -259,6 +268,31 @@ class CodeBlockHtmlExtension extends HtmlExtension {
   Set<String> get supportedTags => tags;
 }
 
+class LineBreakHtmlExtension extends HtmlExtension {
+  @override
+  InlineSpan build(ExtensionContext context) {
+    var result =
+        context.parser.buildFromExtension(context, extensionsToIgnore: {this});
+
+    if (context.node is! dom.Element) {
+      return result;
+    }
+
+    return TextSpan(children: [
+      if (context.element?.previousElementSibling != null)
+        const TextSpan(text: "\n"),
+      result,
+      if (context.element?.nextElementSibling != null)
+        const TextSpan(text: "\n"),
+    ]);
+  }
+
+  static const Set<String> tags = {"p"};
+
+  @override
+  Set<String> get supportedTags => tags;
+}
+
 class CodeHtmlExtension extends HtmlExtension {
   @override
   InlineSpan build(ExtensionContext context) {
@@ -269,7 +303,10 @@ class CodeHtmlExtension extends HtmlExtension {
 
     return TextSpan(
         text: context.node.text,
-        style: TextStyle(fontFamily: "Code", color: color));
+        style: TextStyle(
+            fontFamily: "Code",
+            color: color,
+            fontFeatures: const [FontFeature.disable("calt")]));
   }
 
   static const Set<String> tags = {"code"};

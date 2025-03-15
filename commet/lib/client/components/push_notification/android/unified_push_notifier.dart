@@ -71,6 +71,10 @@ class UnifiedPushNotifier implements Notifier {
 
   @override
   Future<String?> getToken() async {
+    if (preferences.unifiedPushEnabled != true) {
+      return null;
+    }
+
     return preferences.unifiedPushEndpoint;
   }
 
@@ -112,7 +116,7 @@ class UnifiedPushNotifier implements Notifier {
         senderName: user.displayName,
         senderId: user.identifier,
         roomName: room.displayName,
-        content: event.body!,
+        content: event.plainTextBody,
         eventId: eventId,
         roomId: room.identifier,
         clientId: client.identifier,

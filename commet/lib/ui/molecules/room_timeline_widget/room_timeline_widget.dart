@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:commet/client/client.dart';
+import 'package:commet/client/timeline_events/timeline_event.dart';
+import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/molecules/room_timeline_widget/room_timeline_widget_view.dart';
 import 'package:flutter/material.dart';
 
@@ -24,8 +26,6 @@ class RoomTimelineWidget extends StatefulWidget {
 
 class _RoomTimelineWidgetState extends State<RoomTimelineWidget>
     with WidgetsBindingObserver {
-  Future? loadingHistory;
-
   GlobalKey timelineViewKey = GlobalKey();
 
   StreamSubscription? sub;
@@ -76,37 +76,21 @@ class _RoomTimelineWidgetState extends State<RoomTimelineWidget>
 
   @override
   Widget build(BuildContext context) {
-    return RoomTimelineWidgetView(
+    Widget result = RoomTimelineWidgetView(
       key: timelineViewKey,
       timeline: widget.timeline,
-      onViewScrolled: onViewScrolled,
       onAttachedToBottom: onAttachedToBottom,
       isThreadTimeline: widget.isThreadTimeline,
       setReplyingEvent: widget.setReplyingEvent,
       setEditingEvent: widget.setEditingEvent,
       markAsRead: markAsRead,
     );
-  }
 
-  void onViewScrolled(
-      {required double offset, required double maxScrollExtent}) {
-    double loadingThreshold = 500;
-    var state = timelineViewKey.currentState as RoomTimelineWidgetViewState?;
-
-    // When the history items are empty, the sliver takes up exactly the height of the viewport, so we should use that height instead
-    if (state?.historyItemsCount == 0) {
-      var renderBox =
-          timelineViewKey.currentContext?.findRenderObject() as RenderBox?;
-      if (renderBox != null) {
-        loadingThreshold = renderBox.size.height;
-      }
+    if (Layout.desktop) {
+      result = SelectionArea(child: result);
     }
 
-    if (offset > maxScrollExtent - loadingThreshold && loadingHistory == null) {
-      loadMoreHistory();
-    }
-
-    if (state?.attachedToBottom == true) {}
+    return result;
   }
 
   void onAttachedToBottom() {
@@ -114,11 +98,5 @@ class _RoomTimelineWidgetState extends State<RoomTimelineWidget>
       markAsRead(widget.timeline.events.first);
       widget.clearNotifications?.call(widget.timeline.room);
     }
-  }
-
-  void loadMoreHistory() async {
-    loadingHistory = widget.timeline.loadMoreHistory();
-    await loadingHistory;
-    loadingHistory = null;
   }
 }
