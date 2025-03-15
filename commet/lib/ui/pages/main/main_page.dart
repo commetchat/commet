@@ -39,7 +39,6 @@ class MainPageState extends State<MainPage> {
   Room? _previousRoom;
   Space? _previousSpace;
 
-  String? _currentThreadId;
   MainPageSubView _currentView = MainPageSubView.home;
 
   StreamSubscription? onSpaceUpdateSubscription;

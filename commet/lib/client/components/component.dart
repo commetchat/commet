@@ -1,4 +1,5 @@
 import 'package:commet/client/client.dart';
+import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/main.dart';
 import 'package:flutter/widgets.dart';
 
