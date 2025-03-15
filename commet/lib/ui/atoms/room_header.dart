@@ -14,7 +14,6 @@ class RoomHeader extends StatefulWidget {
   final Room room;
   final Widget? menu;
   final Function()? onTap;
-  final Function()? startCall;
 
   @override
   State<RoomHeader> createState() => _RoomHeaderState();

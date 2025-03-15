@@ -3,7 +3,6 @@ import 'package:commet/main.dart';
 import 'package:commet/ui/pages/settings/categories/app/advanced_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/app/appearance_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/app/general_settings_page.dart';
-import 'package:commet/ui/pages/settings/categories/app/notification_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/app/voip_settings/voip_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/app/notification_settings/notification_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/app/window_settings.dart';

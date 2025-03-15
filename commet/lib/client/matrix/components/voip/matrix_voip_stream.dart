@@ -79,7 +79,7 @@ class MatrixVoipStream implements VoipStream {
         return false;
       }
 
-      return element.values["trackIdentifier"] == track?.id;
+      return element.values["trackIdentifier"] == track.id;
     });
 
     if (stat == null) return 0;
