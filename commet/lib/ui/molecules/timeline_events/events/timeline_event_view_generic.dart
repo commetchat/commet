@@ -1,4 +1,6 @@
-import 'package:commet/client/timeline.dart';
+import 'package:commet/client/client.dart';
+import 'package:commet/client/timeline_events/timeline_event.dart';
+import 'package:commet/client/timeline_events/timeline_event_generic.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -11,9 +13,15 @@ import 'package:tiamat/atoms/avatar.dart';
 
 class TimelineEventViewGeneric extends StatefulWidget {
   const TimelineEventViewGeneric(
-      {required this.timeline, required this.initialIndex, super.key});
-  final Timeline timeline;
+      {this.timeline,
+      this.initialEvent,
+      required this.initialIndex,
+      this.room,
+      super.key});
+  final Timeline? timeline;
   final int initialIndex;
+  final Room? room;
+  final TimelineEvent? initialEvent;
   @override
   State<TimelineEventViewGeneric> createState() =>
       _TimelineEventViewGenericState();
@@ -21,9 +29,9 @@ class TimelineEventViewGeneric extends StatefulWidget {
 
 class _TimelineEventViewGenericState extends State<TimelineEventViewGeneric>
     implements TimelineEventViewWidget {
-  late String? text;
-  late IconData? icon;
-  late ImageProvider? senderAvatar;
+  String? text;
+  IconData? icon;
+  ImageProvider? senderAvatar;
 
   String messagePlaceholderSticker(String user) =>
       Intl.message("$user sent a sticker",
@@ -37,48 +45,6 @@ class _TimelineEventViewGenericState extends State<TimelineEventViewGeneric>
           args: [user],
           name: "messagePlaceholderUserCreatedRoom");
 
-  String messagePlaceholderUserJoinedRoom(String user) =>
-      Intl.message("$user joined the room!",
-          desc: "Message body for when a user joins the room",
-          args: [user],
-          name: "messagePlaceholderUserJoinedRoom");
-
-  String messagePlaceholderUserLeftRoom(String user) =>
-      Intl.message("$user left the room",
-          desc: "Message body for when a user leaves the room",
-          args: [user],
-          name: "messagePlaceholderUserLeftRoom");
-
-  String messagePlaceholderUserUpdatedAvatar(String user) =>
-      Intl.message("$user updated their avatar",
-          desc: "Message body for when a user updates their avatar",
-          args: [user],
-          name: "messagePlaceholderUserUpdatedAvatar");
-
-  String messagePlaceholderUserUpdatedName(String user) =>
-      Intl.message("$user updated their display name",
-          desc: "Message body for when a user updates their display name",
-          args: [user],
-          name: "messagePlaceholderUserUpdatedName");
-
-  String messagePlaceholderUserInvited(String sender, String invitedUser) =>
-      Intl.message("$sender invited $invitedUser",
-          desc: "Message body for when a user invites another user to the room",
-          args: [sender, invitedUser],
-          name: "messagePlaceholderUserInvited");
-
-  String messagePlaceholderUserRejectedInvite(String user) =>
-      Intl.message("$user rejected the invitation",
-          desc: "Message body for when a user rejected an invitation to a room",
-          args: [user],
-          name: "messagePlaceholderUserRejectedInvite");
-
-  String messageUserEmote(String user, String emote) =>
-      Intl.message("*$user $emote",
-          desc: "Message to display when a user does a custom emote (/me)",
-          args: [user, emote],
-          name: "messageUserEmote");
-
   String get errorMessageFailedToSend => Intl.message("Failed to send",
       desc:
           "Text that is placed below a message when the message fails to send",
@@ -86,7 +52,13 @@ class _TimelineEventViewGenericState extends State<TimelineEventViewGeneric>
 
   @override
   void initState() {
-    setStateFromindex(widget.initialIndex);
+    if (widget.timeline != null) {
+      setStateFromindex(widget.initialIndex);
+    }
+
+    if (widget.initialEvent != null) {
+      loadStateFromEvent(widget.initialEvent!);
+    }
     super.initState();
   }
 
@@ -144,42 +116,24 @@ class _TimelineEventViewGenericState extends State<TimelineEventViewGeneric>
   }
 
   void setStateFromindex(int index) {
-    var event = widget.timeline.events[index];
-    var sender = widget.timeline.room.getMemberOrFallback(event.senderId);
-    var displayName = sender.displayName;
+    var event = widget.timeline!.events[index];
+    loadStateFromEvent(event);
+  }
 
-    if ([EventType.emote].contains(event.type)) {
-      senderAvatar = sender.avatar;
-    } else {
-      senderAvatar = null;
+  void loadStateFromEvent(TimelineEvent event) {
+    var room = widget.room ?? widget.timeline?.room;
+    if (event is! TimelineEventGeneric) {
+      text = event.plainTextBody;
+      icon = Icons.question_mark;
+      return;
     }
 
-    text = switch (event.type) {
-      EventType.roomCreated => messagePlaceholderUserCreatedRoom(displayName),
-      EventType.memberJoined => messagePlaceholderUserJoinedRoom(displayName),
-      EventType.memberLeft => messagePlaceholderUserLeftRoom(displayName),
-      EventType.memberAvatar =>
-        messagePlaceholderUserUpdatedAvatar(displayName),
-      EventType.memberDisplayName =>
-        messagePlaceholderUserUpdatedName(displayName),
-      EventType.memberInvited =>
-        messagePlaceholderUserInvited(displayName, event.stateKey!),
-      EventType.memberInvitationRejected =>
-        messagePlaceholderUserRejectedInvite(displayName),
-      EventType.emote => messageUserEmote(displayName, event.body ?? ""),
-      _ => "$displayName: ${event.body}"
-    };
+    text = event.getBody(timeline: widget.timeline);
+    icon = event.icon;
 
-    icon = switch (event.type) {
-      EventType.roomCreated => m.Icons.room_preferences_outlined,
-      EventType.memberJoined => m.Icons.waving_hand_rounded,
-      EventType.memberLeft => m.Icons.subdirectory_arrow_left_rounded,
-      EventType.memberAvatar => m.Icons.person,
-      EventType.memberDisplayName => m.Icons.edit,
-      EventType.memberInvited => m.Icons.person_add,
-      EventType.memberInvitationRejected =>
-        m.Icons.subdirectory_arrow_left_rounded,
-      _ => null
-    };
+    var sender = room!.getMemberOrFallback(event.senderId);
+    if (event.showSenderAvatar) {
+      senderAvatar = sender.avatar;
+    }
   }
 }

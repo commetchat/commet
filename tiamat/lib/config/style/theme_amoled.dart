@@ -28,7 +28,7 @@ class ThemeAmoled {
               secondaryContainer: Color.fromARGB(255, 40, 40, 40),
               surface: ThemeAmoledColors.surface,
               error: Color.fromARGB(255, 255, 124, 124),
-              onPrimary: Colors.white,
+              onPrimary: Colors.black,
               onSecondary: ThemeAmoledColors.onSurface,
               onSurface: Colors.white,
               onError: Colors.white,

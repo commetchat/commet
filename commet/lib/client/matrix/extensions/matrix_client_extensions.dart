@@ -1,25 +1,19 @@
-import 'package:commet/cache/cache_file_provider.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_emoticon_component.dart';
+import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart';
+import 'package:matrix/matrix_api_lite/generated/fixed_model.dart';
 
 extension MatrixExtensions on Client {
-  CacheFileProvider getMxcThumbnail(String mxc, double width, double height) {
-    var uri = Uri.parse(mxc);
-    return CacheFileProvider("thumbnail_${width}x${height}_${mxc.toString()}",
-        () async {
-      return (await httpClient
-              .get(uri.getThumbnail(this, width: width, height: height)))
-          .bodyBytes;
-    });
+  Future<FileResponse> getContentFromUri(Uri uri) {
+    return getContent(uri.authority, uri.pathSegments.first);
   }
 
-  CacheFileProvider getMxcFile(String mxc) {
-    var uri = Uri.parse(mxc);
-    return CacheFileProvider(mxc.toString(), () async {
-      return (await httpClient.get(uri.getDownloadLink(this))).bodyBytes;
-    });
+  Future<FileResponse> getContentThumbnailFromUri(
+      Uri uri, int width, int height) {
+    return getContentThumbnail(
+        uri.authority, uri.pathSegments.first, width, height);
   }
 
   Future<RoomPreview?> getRoomPreview(String roomId) async {
@@ -36,8 +30,8 @@ extension MatrixExtensions on Client {
 
     if (avatarState.isNotEmpty) {
       var mxc = Uri.parse(avatarState.first.content['url'] as String);
-      var thumbnail = mxc.getThumbnail(this, width: 60, height: 60);
-      avatar = NetworkImage(thumbnail.toString());
+      avatar = MatrixMxcImage(mxc, this,
+          doFullres: false, doThumbnail: true, cache: false);
     }
 
     var topicState = state.where((element) => element.type == "m.room.topic");

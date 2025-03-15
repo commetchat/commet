@@ -35,8 +35,12 @@ class Preferences {
   static const String _useFallbackTurnServer = "use_fallback_turn_server";
   static const String _fallbackTurnServer = "fallback_turn_server";
   static const String _urlPreviewInE2EEChat = "use_url_preview_in_e2ee_chat";
+  static const String _messageEffectsEnabled = "message_effects_enabled";
   static const String _lastForegroundServiceSucceeded =
       "did_last_foreground_service_run_succeed";
+  static const String _showRoomAvatars = "show_room_avatars";
+  static const String _usePlaceholderRoomAvatars =
+      "use_placeholder_room_avatars";
 
   final StreamController _onSettingChanged = StreamController.broadcast();
   Stream get onSettingChanged => _onSettingChanged.stream;
@@ -224,8 +228,9 @@ class Preferences {
     await _preferences!.setString(_pushGateway, value);
   }
 
-  String get pushGateway =>
-      _preferences!.getString(_pushGateway) ?? "push.commet.chat";
+  String get pushGateway => BuildConfig.ENABLE_GOOGLE_SERVICES
+      ? "push.commet.chat"
+      : _preferences!.getString(_pushGateway) ?? "push.commet.chat";
 
   String? get lastDownloadLocation =>
       _preferences!.getString(_lastDownloadLocation);
@@ -270,5 +275,27 @@ class Preferences {
     } else {
       await _preferences!.setBool(_lastForegroundServiceSucceeded, value);
     }
+  }
+
+  Future<void> setMessageEffectsEnabled(bool value) async {
+    await _preferences!.setBool(_messageEffectsEnabled, value);
+  }
+
+  bool get messageEffectsEnabled =>
+      _preferences!.getBool(_messageEffectsEnabled) ?? true;
+
+  bool get showRoomAvatars => _preferences!.getBool(_showRoomAvatars) ?? true;
+
+  Future<void> setShowRoomAvatars(bool value) async {
+    await _preferences!.setBool(_showRoomAvatars, value);
+    _onSettingChanged.add(null);
+  }
+
+  bool get usePlaceholderRoomAvatars =>
+      _preferences!.getBool(_usePlaceholderRoomAvatars) ?? false;
+
+  Future<void> setUsePlaceholderRoomAvatars(bool value) async {
+    await _preferences!.setBool(_usePlaceholderRoomAvatars, value);
+    _onSettingChanged.add(null);
   }
 }

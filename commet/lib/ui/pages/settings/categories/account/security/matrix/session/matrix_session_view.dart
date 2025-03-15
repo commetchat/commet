@@ -1,4 +1,5 @@
 import 'package:commet/config/layout_config.dart';
+import 'package:commet/ui/atoms/tiny_pill.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -59,19 +60,9 @@ class MatrixSessionView extends StatelessWidget {
                         Row(
                           children: [
                             if (isThisDevice)
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(5),
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .primary),
-                                  child: const Padding(
-                                    padding: EdgeInsets.all(2.0),
-                                    child: tiamat.Text.tiny("This Device"),
-                                  ),
-                                ),
+                              const Padding(
+                                padding: EdgeInsets.fromLTRB(0, 0, 8, 0),
+                                child: TinyPill("This Device"),
                               ),
                             tiamat.Text.labelLow(deviceId),
                           ],

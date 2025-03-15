@@ -114,6 +114,7 @@ class Text extends StatelessWidget {
       this.type = TextType.label,
       this.overflow,
       this.color,
+      this.softwrap,
       this.autoAdjustBrightness,
       this.maxLines});
   final String text;
@@ -122,56 +123,93 @@ class Text extends StatelessWidget {
   final TextOverflow? overflow;
   final int? maxLines;
   final bool? autoAdjustBrightness;
+  final bool? softwrap;
 
   const Text.label(
     this.text, {
     Key? key,
     this.overflow,
     this.maxLines,
+    this.softwrap,
   })  : type = TextType.label,
         color = null,
         autoAdjustBrightness = false,
         super(key: key);
 
-  const Text.labelEmphasised(this.text,
-      {Key? key, this.overflow, this.color, this.maxLines})
-      : type = TextType.labelEmphasised,
+  const Text.labelEmphasised(
+    this.text, {
+    Key? key,
+    this.overflow,
+    this.color,
+    this.maxLines,
+    this.softwrap,
+  })  : type = TextType.labelEmphasised,
         autoAdjustBrightness = false,
         super(key: key);
 
-  const Text.error(this.text, {Key? key, this.overflow, this.maxLines})
-      : type = TextType.error,
+  const Text.error(
+    this.text, {
+    Key? key,
+    this.overflow,
+    this.maxLines,
+    this.softwrap,
+  })  : type = TextType.error,
         color = null,
         autoAdjustBrightness = false,
         super(key: key);
 
-  const Text.tiny(this.text,
-      {Key? key, this.overflow, this.maxLines, this.color})
-      : type = TextType.tiny,
+  const Text.tiny(
+    this.text, {
+    Key? key,
+    this.overflow,
+    this.maxLines,
+    this.color,
+    this.softwrap,
+  })  : type = TextType.tiny,
         autoAdjustBrightness = false,
         super(key: key);
 
-  const Text.body(this.text, {Key? key, this.overflow, this.maxLines})
-      : type = TextType.body,
+  const Text.body(
+    this.text, {
+    Key? key,
+    this.overflow,
+    this.maxLines,
+    this.softwrap,
+  })  : type = TextType.body,
         color = null,
         autoAdjustBrightness = false,
         super(key: key);
 
-  const Text.largeTitle(this.text, {Key? key, this.overflow, this.maxLines})
-      : type = TextType.largeTitle,
+  const Text.largeTitle(
+    this.text, {
+    Key? key,
+    this.overflow,
+    this.maxLines,
+    this.softwrap,
+  })  : type = TextType.largeTitle,
         color = null,
         autoAdjustBrightness = false,
         super(key: key);
 
-  const Text.name(this.text,
-      {Key? key, this.color, this.overflow, this.maxLines})
-      : type = TextType.name,
+  const Text.name(
+    this.text, {
+    Key? key,
+    this.color,
+    this.overflow,
+    this.maxLines,
+    this.softwrap,
+  })  : type = TextType.name,
         autoAdjustBrightness = true,
         super(key: key);
 
-  const Text.labelLow(this.text,
-      {Key? key, this.color, this.overflow, this.maxLines})
-      : type = TextType.labelLow,
+  const Text.labelLow(
+    this.text, {
+    Key? key,
+    this.color,
+    this.overflow,
+    this.maxLines,
+    this.softwrap,
+  })  : type = TextType.labelLow,
         autoAdjustBrightness = false,
         super(key: key);
 
@@ -246,6 +284,7 @@ class Text extends StatelessWidget {
     return material.Text(
       text,
       style: style,
+      softWrap: softwrap,
       overflow: overflow,
       maxLines: maxLines,
     );

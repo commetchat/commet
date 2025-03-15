@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:commet/client/matrix/extensions/matrix_client_extensions.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/mime.dart';
 import 'package:matrix/matrix.dart';
@@ -12,16 +14,18 @@ class MatrixMxcImage extends LODImageProvider {
       {String? blurhash,
       bool? doThumbnail,
       bool? doFullres,
+      bool cache = true,
       bool autoLoadFullRes = true,
       Event? matrixEvent})
       : super(
             blurhash: blurhash,
             loadThumbnail: (doThumbnail == null || doThumbnail == true)
-                ? () =>
-                    loadMatrixThumbnail(matrixClient, identifier, matrixEvent)
+                ? () => loadMatrixThumbnail(
+                    matrixClient, identifier, matrixEvent, cache: cache)
                 : null,
             loadFullRes: (doFullres == null || doFullres == true)
-                ? () => loadMatrixFullRes(matrixClient, identifier, matrixEvent)
+                ? () => loadMatrixFullRes(matrixClient, identifier, matrixEvent,
+                    cache: cache)
                 : null,
             autoLoadFullRes: autoLoadFullRes);
 
@@ -34,7 +38,8 @@ class MatrixMxcImage extends LODImageProvider {
   }
 
   static Future<Uint8List?> loadMatrixThumbnail(
-      Client client, Uri uri, Event? matrixEvent) async {
+      Client client, Uri uri, Event? matrixEvent,
+      {bool cache = false}) async {
     var identifier = getThumbnailIdentifier(uri);
 
     if (await fileCache?.hasFile(identifier) == true) {
@@ -53,14 +58,15 @@ class MatrixMxcImage extends LODImageProvider {
         bytes = data.bytes;
       }
     } else {
-      var response = await client.httpClient
-          .get(uri.getThumbnail(client, width: 90, height: 90));
-      if (response.statusCode == 200) {
-        bytes = response.bodyBytes;
+      try {
+        var response = await client.getContentThumbnailFromUri(uri, 90, 90);
+        bytes = response.data;
+      } catch (e, t) {
+        Log.onError(e, t, content: "Failed to get content thumbnail");
       }
     }
 
-    if (bytes != null) {
+    if (bytes != null && cache) {
       fileCache?.putFile(identifier, bytes);
       return bytes;
     }
@@ -69,7 +75,8 @@ class MatrixMxcImage extends LODImageProvider {
   }
 
   static Future<Uint8List?> loadMatrixFullRes(
-      Client client, Uri uri, Event? matrixEvent) async {
+      Client client, Uri uri, Event? matrixEvent,
+      {bool cache = true}) async {
     var identifier = getIdentifier(uri);
 
     if (await fileCache?.hasFile(identifier) == true) {
@@ -86,14 +93,15 @@ class MatrixMxcImage extends LODImageProvider {
 
       bytes = data.bytes;
     } else {
-      var response = await client.httpClient.get(uri.getDownloadLink(client));
-
-      if (response.statusCode == 200) {
-        bytes = response.bodyBytes;
+      try {
+        var response = await client.getContentFromUri(uri);
+        bytes = response.data;
+      } catch (e, t) {
+        Log.onError(e, t, content: "Failed to get content");
       }
     }
 
-    if (bytes != null) {
+    if (bytes != null && cache) {
       fileCache?.putFile(identifier, bytes);
       return bytes;
     }

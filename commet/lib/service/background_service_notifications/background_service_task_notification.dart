@@ -7,7 +7,9 @@ import 'package:commet/client/components/direct_messages/direct_message_componen
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/member.dart';
-import 'package:commet/client/timeline.dart';
+import 'package:commet/client/timeline_events/timeline_event_encrypted.dart';
+import 'package:commet/client/timeline_events/timeline_event_message.dart';
+import 'package:commet/client/timeline_events/timeline_event_sticker.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/service/background_service_task.dart';
@@ -88,14 +90,6 @@ class BackgroundNotificationsManager {
     var roomId = data["room_id"] as String;
     var eventId = data["event_id"] as String;
 
-    // for (var client in clientManager!.clients) {
-    //   Log.i("Looking for room: $roomId in client ${client.identifier}");
-
-    //   for (var room in client.rooms) {
-    //     Log.i("Has room: ${room.displayName}   (${room.identifier})");
-    //   }
-    // }
-
     var client =
         clientManager!.clients.firstWhere((element) => element.hasRoom(roomId));
 
@@ -107,28 +101,33 @@ class BackgroundNotificationsManager {
     Member? user = await room.fetchMember(event!.senderId);
 
     Log.i("Got user: $user  ($user)");
-    Log.i("Got event: ${event.body}");
-    Log.i("Received background notification data: $event");
-
-    Log.i(event.type);
 
     bool isDirectMessage = client
             .getComponent<DirectMessagesComponent>()
             ?.isRoomDirectMessage(room) ??
         false;
 
-    if (event.type == EventType.message || event.type == EventType.encrypted) {
-      await NotificationManager.notify(MessageNotificationContent(
+    if (event is TimelineEventEncrypted) {
+      var decrypted = await event.attemptDecrypt(room);
+      event = decrypted ?? event;
+    }
+
+    if (event is TimelineEventMessage ||
+        event is TimelineEventSticker ||
+        event is TimelineEventEncrypted) {
+      var content = MessageNotificationContent(
           senderName: user.displayName,
           senderId: user.identifier,
           roomName: room.displayName,
-          content: event.body!,
+          content: event.plainTextBody,
           eventId: eventId,
           roomId: room.identifier,
           clientId: client.identifier,
           senderImage: user.avatar,
           roomImage: room.avatar,
-          isDirectMessage: isDirectMessage));
+          isDirectMessage: isDirectMessage);
+
+      await NotificationManager.notify(content);
     }
   }
 }

@@ -1,8 +1,14 @@
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/components/emoticon/emoticon_component.dart';
+import 'package:commet/client/components/message_effects/message_effect_component.dart';
+import 'package:commet/client/components/pinned_messages/pinned_messages_component.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/timeline.dart';
+import 'package:commet/client/timeline_events/timeline_event.dart';
+import 'package:commet/client/timeline_events/timeline_event_emote.dart';
+import 'package:commet/client/timeline_events/timeline_event_message.dart';
+import 'package:commet/client/timeline_events/timeline_event_sticker.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/code_block.dart';
 import 'package:commet/ui/molecules/emoji_picker.dart';
@@ -11,6 +17,8 @@ import 'package:commet/utils/common_strings.dart';
 import 'package:commet/utils/download_utils.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 
 class TimelineEventMenu {
   final Timeline timeline;
@@ -25,6 +33,37 @@ class TimelineEventMenu {
 
   final bool isThreadTimeline;
 
+  String get promptPinMessage => Intl.message("Pin Message",
+      desc: "Label for the menu option to pin a message",
+      name: "promptPinMessage");
+
+  String get promptUnpinMessage => Intl.message("Unpin Message",
+      desc: "Label for the menu option to unpin a message",
+      name: "promptUnpinMessage");
+
+  String get promptReplyInThread => Intl.message("Reply In Thread",
+      desc: "Label for the menu option to reply to a message inside a thread",
+      name: "promptReplyInThread");
+
+  String get promptShowSource => Intl.message("Show Source",
+      desc: "Label for the menu option to view the JSON source of an event",
+      name: "promptShowSource");
+
+  String get promptReplayMessageEffect => Intl.message("Replay Effect",
+      desc:
+          "If a message was sent with an effect, this prompts to replay the effect",
+      name: "promptReplayMessageEffect");
+
+  String get promptCancelEventSend => Intl.message("Cancel",
+      desc:
+          "When a message failed to send, this prompts to cancel sending the event",
+      name: "promptCancelEventSend");
+
+  String get promptRetryEventSend => Intl.message("Retry",
+      desc:
+          "When a message failed to send, this prompts to retry sending the event",
+      name: "promptRetryEventSend");
+
   TimelineEventMenu({
     required this.timeline,
     required this.event,
@@ -33,28 +72,89 @@ class TimelineEventMenu {
     this.onActionFinished,
     this.isThreadTimeline = false,
   }) {
-    bool canEditEvent = event.type == EventType.message &&
-        timeline.room.permissions.canUserEditMessages &&
-        event.senderId == timeline.room.client.self!.identifier &&
-        setEditingEvent != null;
+    bool canEditEvent = false;
+    bool canSaveAttachment = false;
+    bool canAddReaction = false;
+    bool canReplyInThread = false;
+    bool canCopy = false;
+    bool canEditPinState = false;
+    bool canPin = false;
+    bool canUnpin = false;
+    bool hasEffect = false;
+    bool canReply = false;
+    bool canDeleteEvent = false;
 
-    bool canDeleteEvent = timeline.canDeleteEvent(event);
+    bool canRetrySend = event.status == TimelineEventStatus.error;
+    bool canCancelSend = event.status == TimelineEventStatus.error;
 
-    bool canReply = [EventType.message, EventType.emote, EventType.sticker]
-            .contains(event.type) &&
-        setReplyingEvent != null;
-
-    bool canSaveAttachment = event.attachments?.isNotEmpty ?? false;
-
+    var effects = timeline.room.client.getComponent<MessageEffectComponent>();
     var emoticons = timeline.room.getComponent<RoomEmoticonComponent>();
-    bool canAddReaction =
-        [EventType.message, EventType.sticker].contains(event.type) &&
-            emoticons != null;
+    var pins = timeline.room.getComponent<PinnedMessagesComponent>();
 
-    bool canReplyInThread =
-        !isThreadTimeline && event.type == EventType.message;
+    if (event.status == TimelineEventStatus.synced) {
+      canEditEvent = event is TimelineEventMessage &&
+          timeline.room.permissions.canUserEditMessages &&
+          event.senderId == timeline.room.client.self!.identifier &&
+          setEditingEvent != null;
+
+      canDeleteEvent = timeline.canDeleteEvent(event) &&
+          event.status == TimelineEventStatus.synced;
+
+      canReply = event is TimelineEventMessage ||
+          event is TimelineEventSticker ||
+          event is TimelineEventEmote;
+
+      if (event is TimelineEventMessage) {
+        canSaveAttachment =
+            (event as TimelineEventMessage).attachments?.isNotEmpty == true;
+      }
+
+      canAddReaction =
+          (event is TimelineEventMessage || event is TimelineEventSticker) &&
+              emoticons != null;
+
+      canReplyInThread = !isThreadTimeline && event is TimelineEventMessage;
+
+      canCopy = event is TimelineEventMessage;
+
+      canEditPinState = pins?.canPinMessages == true &&
+          (event is TimelineEventMessage ||
+              event is TimelineEventSticker ||
+              event is TimelineEventEmote);
+
+      bool isPinned = pins?.isMessagePinned(event.eventId) == true;
+
+      canPin = canEditPinState && !isPinned;
+      canUnpin = canEditPinState && isPinned;
+
+      hasEffect = effects?.hasEffect(event) == true;
+    }
 
     primaryActions = [
+      if (canRetrySend)
+        TimelineEventMenuEntry(
+            name: promptRetryEventSend,
+            icon: Icons.refresh,
+            action: (BuildContext context) {
+              timeline.room.retrySend(event);
+              onActionFinished?.call();
+            }),
+      if (canCancelSend)
+        TimelineEventMenuEntry(
+            name: promptCancelEventSend,
+            icon: Icons.cancel,
+            action: (BuildContext context) {
+              timeline.room.cancelSend(event);
+              onActionFinished?.call();
+            }),
+      if (hasEffect)
+        TimelineEventMenuEntry(
+            name: promptReplayMessageEffect,
+            icon: Icons.celebration,
+            action: (BuildContext context) {
+              effects?.doEffect(event);
+              onActionFinished?.call();
+            }),
       if (canEditEvent)
         TimelineEventMenuEntry(
             name: CommonStrings.promptEdit,
@@ -76,7 +176,8 @@ class TimelineEventMenu {
             name: CommonStrings.promptDownload,
             icon: Icons.download,
             action: (BuildContext context) {
-              var attachment = event.attachments?.firstOrNull;
+              var attachment =
+                  (event as TimelineEventMessage).attachments?.firstOrNull;
               if (attachment != null) {
                 DownloadUtils.downloadAttachment(attachment);
               }
@@ -87,26 +188,13 @@ class TimelineEventMenu {
           name: CommonStrings.promptAddReaction,
           icon: Icons.add_reaction,
           secondaryMenuBuilder: (context, dismissSecondaryMenu) {
-            return EmojiPicker(emoticons.availableEmoji,
+            return EmojiPicker(emoticons!.availableEmoji,
                 preferredTooltipDirection: AxisDirection.left,
                 onEmoticonPressed: (emote) async {
               timeline.room.addReaction(event, emote);
               await Future.delayed(const Duration(milliseconds: 100));
               dismissSecondaryMenu();
             });
-          },
-        ),
-      if (canReplyInThread)
-        TimelineEventMenuEntry(
-          name: "Reply in Thread",
-          icon: Icons.message_rounded,
-          action: (context) {
-            EventBus.openThread.add((
-              timeline.client.identifier,
-              timeline.room.identifier,
-              event.eventId
-            ));
-            onActionFinished?.call();
           },
         ),
       if (canDeleteEvent)
@@ -124,8 +212,49 @@ class TimelineEventMenu {
     ];
 
     secondaryActions = [
+      if (canReplyInThread)
+        TimelineEventMenuEntry(
+          name: promptReplyInThread,
+          icon: Icons.message_rounded,
+          action: (context) {
+            EventBus.openThread.add((
+              timeline.client.identifier,
+              timeline.room.identifier,
+              event.eventId
+            ));
+            onActionFinished?.call();
+          },
+        ),
+      if (canPin)
+        TimelineEventMenuEntry(
+            name: promptPinMessage,
+            icon: Icons.push_pin,
+            action: (context) {
+              pins!.pinMessage(event.eventId);
+              onActionFinished?.call();
+            }),
+      if (canUnpin)
+        TimelineEventMenuEntry(
+            name: promptUnpinMessage,
+            icon: Icons.push_pin,
+            action: (context) {
+              pins!.unpinMessage(event.eventId);
+              onActionFinished?.call();
+            }),
+      if (canCopy)
+        TimelineEventMenuEntry(
+            name: CommonStrings.promptCopy,
+            icon: Icons.copy,
+            action: (context) {
+              Clipboard.setData(
+                ClipboardData(
+                    text: (event as TimelineEventMessage).plainTextBody),
+              );
+
+              onActionFinished?.call();
+            }),
       TimelineEventMenuEntry(
-          name: "Show Source",
+          name: promptShowSource,
           icon: Icons.code,
           action: (BuildContext context) {
             onActionFinished?.call();
@@ -134,12 +263,12 @@ class TimelineEventMenu {
               title: "Source",
               builder: (context) {
                 return SelectionArea(
-                  child: Codeblock(text: event.rawContent, language: "json"),
+                  child: Codeblock(text: event.source, language: "json"),
                 );
               },
             );
           }),
-      if (preferences.developerMode && event.type == EventType.message)
+      if (preferences.developerMode && event is TimelineEventMessage)
         TimelineEventMenuEntry(
             name: "Show Notification",
             icon: Icons.notification_add,
@@ -153,7 +282,8 @@ class TimelineEventMenu {
                 roomName: room.displayName,
                 roomId: room.identifier,
                 roomImage: await room.getShortcutImage(),
-                content: event.body ?? "Sent a message",
+                content:
+                    (event as TimelineEventMessage).body ?? "Sent a message",
                 clientId: room.client.identifier,
                 eventId: event.eventId,
                 isDirectMessage: room.client

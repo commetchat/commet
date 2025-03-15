@@ -6,6 +6,7 @@ import 'package:commet/client/components/component.dart';
 import 'package:commet/client/components/room_component.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/components/space_component.dart';
+import 'package:commet/client/timeline_events/timeline_event.dart';
 
 import 'emoji_pack.dart';
 

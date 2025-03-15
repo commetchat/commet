@@ -1,5 +1,11 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/threads/thread_component.dart';
+import 'package:commet/client/timeline_events/timeline_event.dart';
+import 'package:commet/client/timeline_events/timeline_event_emote.dart';
+import 'package:commet/client/timeline_events/timeline_event_encrypted.dart';
+import 'package:commet/client/timeline_events/timeline_event_generic.dart';
+import 'package:commet/client/timeline_events/timeline_event_message.dart';
+import 'package:commet/client/timeline_events/timeline_event_sticker.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/diagnostic/benchmark_values.dart';
@@ -11,8 +17,6 @@ import 'package:commet/ui/molecules/timeline_events/timeline_event_layout.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_menu.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_menu_dialog.dart';
 import 'package:flutter/material.dart';
-
-import 'package:tiamat/tiamat.dart' as tiamat;
 
 class TimelineViewEntry extends StatefulWidget {
   const TimelineViewEntry(
@@ -44,10 +48,20 @@ class TimelineViewEntry extends StatefulWidget {
   State<TimelineViewEntry> createState() => TimelineViewEntryState();
 }
 
+// This enum exists because we need to know which type of message to render
+// But if we try to check the actual type of the event during build e.g: (`event is TimelineEventMessage`)
+// It causes extra widget rebuilds, so we check type only during the event update and store it with this enum
+// I thought maybe if we override hashcode of TimelineEventBase it would allow us to just check the type
+// But it didnt. I dont know if there is a way to fix that
+enum TimelineEventWidgetDisplayType {
+  message,
+  generic,
+  hidden,
+}
+
 class TimelineViewEntryState extends State<TimelineViewEntry>
     implements TimelineEventViewWidget, SelectableEventViewWidget {
   late String eventId;
-  late EventType eventType;
   late TimelineEventStatus status;
 
   // Note that this index is only reliable on builds - if an item is inserted in to the list, this index will be out of sync until its updated.
@@ -59,10 +73,13 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
   bool selected = false;
   bool isThreadReply = false;
   bool highlighted = false;
+  bool redacted = false;
+  TimelineEventWidgetDisplayType _widgetType =
+      TimelineEventWidgetDisplayType.hidden;
   LayerLink? timelineLayerLink;
 
   late DateTime time;
-  bool showDate = false;
+  bool showDateSeperator = false;
 
   ThreadsComponent? threads;
   @override
@@ -79,13 +96,31 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
 
   void loadState(int eventIndex) {
     var event = widget.timeline.events[eventIndex];
+    redacted = widget.timeline.isEventRedacted(event);
     eventId = event.eventId;
-    eventType = event.type;
     status = event.status;
     index = eventIndex;
     time = event.originServerTs;
-    showDate = shouldEventShowDate(eventIndex);
+
+    _widgetType = eventToDisplayType(event);
+
+    showDateSeperator = shouldEventShowDate(eventIndex);
     highlighted = event.eventId == widget.highlightedEventId;
+  }
+
+  static TimelineEventWidgetDisplayType eventToDisplayType(
+      TimelineEvent event) {
+    if (event is TimelineEventMessage ||
+        event is TimelineEventSticker ||
+        event is TimelineEventEncrypted) {
+      return TimelineEventWidgetDisplayType.message;
+    } else if (event is TimelineEventGeneric) {
+      return TimelineEventWidgetDisplayType.generic;
+    } else if (event.status == TimelineEventStatus.error) {
+      return TimelineEventWidgetDisplayType.generic;
+    } else {
+      return TimelineEventWidgetDisplayType.hidden;
+    }
   }
 
   bool shouldEventShowDate(int index) {
@@ -107,11 +142,10 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
       return false;
     }
 
-    if ([
-          EventType.emote,
-          EventType.message,
-        ].contains(widget.timeline.events[index].type) ==
-        false) {
+    var event = widget.timeline.events[index];
+    if (event is! TimelineEventMessage &&
+        event is! TimelineEventEmote &&
+        event is! TimelineEventSticker) {
       return false;
     }
 
@@ -146,22 +180,34 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
   Widget build(BuildContext context) {
     BenchmarkValues.numTimelineEventsBuilt += 1;
 
-    if (status == TimelineEventStatus.removed) return Container();
-
+    if (redacted) return Container();
     var result = buildEvent();
 
-    if (status == TimelineEventStatus.sending && result != null) {
+    if (result == null) {
+      return Container();
+    }
+
+    if (status == TimelineEventStatus.sending ||
+        status == TimelineEventStatus.error) {
       result = Opacity(
         opacity: 0.5,
         child: result,
       );
     }
 
-    if (status == TimelineEventStatus.error && result != null) {
-      result = Column(
+    if (status == TimelineEventStatus.error) {
+      result = Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          result,
-          const tiamat.Text.error("Failed to send"),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+            child: Icon(
+              Icons.error,
+              size: 14,
+              color: Theme.of(context).colorScheme.error,
+            ),
+          ),
+          Expanded(child: result),
         ],
       );
     }
@@ -230,55 +276,52 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
         children: [
           CompositedTransformTarget(
               link: timelineLayerLink!, child: const SizedBox()),
-          result ?? Container()
+          result
         ],
       );
     }
 
-    if (showDate) {
+    if (showDateSeperator) {
       result = Column(
-        children: [
-          TimelineEventDateTimeMarker(time: time),
-          result ?? Container()
-        ],
+        children: [TimelineEventDateTimeMarker(time: time), result],
       );
     }
 
-    return result ?? Container();
+    return result;
   }
 
   Widget? buildEvent() {
-    switch (eventType) {
-      case EventType.message:
-      case EventType.sticker:
-      case EventType.encrypted:
-        if (widget.singleEvent ||
-            (widget.isThreadTimeline) ||
-            (!widget.isThreadTimeline && !isThreadReply))
-          return TimelineEventViewMessage(
-              key: eventKey,
-              timeline: widget.timeline,
-              isThreadTimeline: widget.isThreadTimeline,
-              detailed: widget.showDetailed || selected,
-              overrideShowSender: widget.singleEvent,
-              jumpToEvent: widget.jumpToEvent,
-              initialIndex: widget.initialIndex);
-      case EventType.roomCreated:
-      case EventType.memberJoined:
-      case EventType.memberLeft:
-      case EventType.memberAvatar:
-      case EventType.memberDisplayName:
-      case EventType.memberInvited:
-      case EventType.memberInvitationRejected:
-      case EventType.emote:
-        return TimelineEventViewGeneric(
-          timeline: widget.timeline,
-          initialIndex: widget.initialIndex,
-          key: eventKey,
-        );
-      default:
-        break;
+    if (redacted) {
+      return null;
     }
+
+    if (widget.singleEvent == false &&
+        widget.isThreadTimeline == false &&
+        isThreadReply) {
+      return null;
+    }
+
+    if (_widgetType == TimelineEventWidgetDisplayType.message)
+      return TimelineEventViewMessage(
+          key: eventKey,
+          timeline: widget.timeline,
+          isThreadTimeline: widget.isThreadTimeline,
+          detailed: widget.showDetailed || selected,
+          overrideShowSender: widget.singleEvent,
+          jumpToEvent: widget.jumpToEvent,
+          initialIndex: widget.initialIndex);
+    if (_widgetType == TimelineEventWidgetDisplayType.generic)
+      return TimelineEventViewGeneric(
+        timeline: widget.timeline,
+        initialIndex: widget.initialIndex,
+        key: eventKey,
+      );
+
+    if (preferences.developerMode == false &&
+        _widgetType == TimelineEventWidgetDisplayType.hidden) {
+      return null;
+    }
+
     return preferences.developerMode
         ? TimelineEventViewGeneric(
             timeline: widget.timeline,

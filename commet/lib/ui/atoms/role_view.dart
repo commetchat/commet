@@ -10,7 +10,7 @@ class RoleView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var bg = Theme.of(context).colorScheme.surfaceContainerHigh;
+    var bg = Theme.of(context).colorScheme.surfaceContainerLow;
     var fg = Theme.of(context).colorScheme.onSurface;
 
     return Padding(

@@ -4,6 +4,7 @@ import 'package:tiamat/config/style/theme_base.dart';
 import 'package:tiamat/config/style/theme_common.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/config/style/theme_light.dart';
+import 'package:tiamat/config/style/theme_dark.dart';
 
 class ThemeYou {
   static Future<ThemeData> theme(Brightness brightness) async {
@@ -18,7 +19,16 @@ class ThemeYou {
       }
     }
 
-    return ThemeBase.theme(scheme!).copyWith(extensions: [
+    // fallback to default themes if device doesnt support dynamic color
+    if (scheme == null) {
+      if (brightness == Brightness.dark) {
+        return ThemeDark.theme;
+      } else {
+        return ThemeLight.theme;
+      }
+    }
+
+    return ThemeBase.theme(scheme).copyWith(extensions: [
       const ThemeSettings(),
       ExtraColors.fromScheme(scheme),
       FoundationSettings(color: scheme.surfaceDim)

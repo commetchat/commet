@@ -4,7 +4,6 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/member.dart';
 import 'package:commet/client/role.dart';
-import 'package:commet/debug/log.dart';
 import 'package:commet/ui/atoms/role_view.dart';
 import 'package:commet/ui/atoms/shimmer_loading.dart';
 import 'package:commet/ui/molecules/user_panel.dart';
@@ -40,9 +39,8 @@ class _RoomMemberListState extends State<RoomMemberList> {
 
     if (!widget.room.isMembersListComplete) {
       loadAllUsers();
-    } else {
-      Log.d("Member list is complete!");
     }
+
     super.initState();
   }
 

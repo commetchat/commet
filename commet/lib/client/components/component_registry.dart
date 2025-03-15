@@ -7,8 +7,11 @@ import 'package:commet/client/matrix/components/emoticon/matrix_emoticon_compone
 import 'package:commet/client/matrix/components/emoticon/matrix_emoticon_state_manager.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_room_emoticon_component.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_space_emoticon_component.dart';
+import 'package:commet/client/matrix/components/event_search/matrix_event_search_component.dart';
 import 'package:commet/client/matrix/components/gif/matrix_gif_component.dart';
 import 'package:commet/client/matrix/components/invitation/matrix_invitation_component.dart';
+import 'package:commet/client/matrix/components/pinned_messages/matrix_pinned_messages_component.dart';
+import 'package:commet/client/matrix/components/message_effects/matrix_message_effects_component.dart';
 import 'package:commet/client/matrix/components/push_notifications/matrix_push_notification_component.dart';
 import 'package:commet/client/matrix/components/rtc_data_channel/matrix_rtc_data_channel_component.dart';
 import 'package:commet/client/matrix/components/rtc_screen_share_annotation_component/matrix_rtc_screen_share_annotation_component.dart';
@@ -36,6 +39,8 @@ class ComponentRegistry {
       MatrixInvitationComponent(client),
       MatrixThreadsComponent(client),
       MatrixDirectMessagesComponent(client),
+      MatrixEventSearchComponent(client),
+      MatrixMessageEffectsComponent(client),
     ];
   }
 
@@ -46,6 +51,7 @@ class ComponentRegistry {
       MatrixGifComponent(client, room),
       MatrixReadReceiptComponent(client, room),
       MatrixTypingIndicatorsComponent(client, room),
+      MatrixPinnedMessagesComponent(client, room),
     ];
   }
 

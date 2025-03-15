@@ -24,7 +24,7 @@ class Mime {
 
   static bool isText(String mime) => mime.startsWith("text/");
 
-  static const videoTypes = {"video/mp4", "video/mpeg"};
+  static const videoTypes = {"video/mp4", "video/mpeg", "video/webm"};
 
   static const archiveTypes = {
     "application/x-7z-compressed",
@@ -57,7 +57,8 @@ class Mime {
     var resolver = mime.MimeTypeResolver();
     resolver.addMagicNumber([0x42, 0x4d], "image/bmp");
     resolver.addMagicNumber([0x3c, 0x73, 0x76, 0x67], "image/svg+xml"); // '<svg
-
-    return resolver.lookup(filepath, headerBytes: data);
+    var type = resolver.lookup(filepath);
+    type ??= resolver.lookup(filepath, headerBytes: data);
+    return type;
   }
 }

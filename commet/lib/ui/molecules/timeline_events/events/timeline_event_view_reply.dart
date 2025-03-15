@@ -1,4 +1,6 @@
 import 'package:commet/client/timeline.dart';
+import 'package:commet/client/timeline_events/timeline_event.dart';
+import 'package:commet/client/timeline_events/timeline_event_feature_related.dart';
 import 'package:commet/diagnostic/benchmark_values.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -36,11 +38,20 @@ class _TimelineEventViewReplyState extends State<TimelineEventViewReply> {
 
   void getStateFromIndex(int index) {
     var event = widget.timeline.events[index];
-    var replyEvent = widget.timeline.tryGetEvent(event.relatedEventId!);
+    if (event is! TimelineEventFeatureRelated) {
+      return;
+    }
+
+    var e = event as TimelineEventFeatureRelated;
+    if (e.relatedEventId == null) {
+      return;
+    }
+
+    var replyEvent = widget.timeline.tryGetEvent(e.relatedEventId!);
 
     if (replyEvent == null) {
       loading = true;
-      widget.timeline.room.getEvent(event.relatedEventId!).then((value) {
+      widget.timeline.room.getEvent(e.relatedEventId!).then((value) {
         if (mounted && value != null) {
           setStateFromEvent(value);
         }
@@ -56,7 +67,7 @@ class _TimelineEventViewReplyState extends State<TimelineEventViewReply> {
       var sender = widget.timeline.room.getMemberOrFallback(event.senderId);
       senderName = sender.displayName;
       senderColor = sender.defaultColor;
-      body = event.body ?? event.attachments?.firstOrNull?.name ?? "";
+      body = event.plainTextBody;
       loading = false;
     });
   }

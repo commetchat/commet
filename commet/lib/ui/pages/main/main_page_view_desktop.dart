@@ -8,9 +8,8 @@ import 'package:commet/ui/molecules/space_viewer.dart';
 import 'package:commet/ui/organisms/call_view/call.dart';
 import 'package:commet/ui/organisms/home_screen/home_screen.dart';
 import 'package:commet/ui/organisms/chat/chat.dart';
-import 'package:commet/ui/organisms/sidebar_call_icon/sidebar_calls_list.dart';
-import 'package:commet/ui/organisms/background_task_view/background_task_view_container.dart';
-import 'package:commet/ui/organisms/room_members_list/room_members_list.dart';
+import 'package:commet/ui/organisms/room_quick_access_menu/room_quick_access_menu_desktop.dart';
+import 'package:commet/ui/organisms/room_side_panel/room_side_panel.dart';
 import 'package:commet/ui/organisms/side_navigation_bar/side_navigation_bar.dart';
 import 'package:commet/ui/organisms/space_summary/space_summary.dart';
 import 'package:commet/ui/pages/main/main_page.dart';
@@ -197,6 +196,7 @@ class MainPageViewDesktop extends StatelessWidget {
 
   Widget roomChatView() {
     return Expanded(
+      key: ValueKey("room-chat-view-${state.currentRoom!.localId}"),
       child: Column(
         children: [
           Tile.low(
@@ -207,27 +207,23 @@ class MainPageViewDesktop extends StatelessWidget {
             caulkBorderBottom: true,
             child: SizedBox(
               height: 50,
-              child: RoomHeader(state.currentRoom!,
-                  onTap: state.currentRoom?.permissions.canEditAnything == true
-                      ? () => state.navigateRoomSettings()
-                      : null,
-                  showCallButton: state.currentRoom?.client
-                          .getComponent<VoipComponent>()
-                          ?.canCallRoom(state.currentRoom!.identifier) ==
-                      true, startCall: () {
-                if (state.currentRoom != null) {
-                  state.callRoom(state.currentRoom!);
-                }
-              }),
+              child: RoomHeader(
+                state.currentRoom!,
+                onTap: state.currentRoom?.permissions.canEditAnything == true
+                    ? () => state.navigateRoomSettings()
+                    : null,
+                menu: RoomQuickAccessMenuViewDesktop(
+                  room: state.currentRoom!,
+                ),
+              ),
             ),
           ),
-          if (state.currentCall != null)
-            Flexible(child: CallWidget(state.currentCall!)),
-          Flexible(
-            child: Row(
+          Expanded(
+            child: Flex(
+              direction: Axis.horizontal,
               mainAxisSize: MainAxisSize.max,
               children: [
-                Flexible(
+                Expanded(
                   child: Tile(
                     caulkPadLeft: true,
                     caulkClipTopLeft: true,
@@ -244,48 +240,25 @@ class MainPageViewDesktop extends StatelessWidget {
                     ),
                   ),
                 ),
-                if (state.currentThreadId != null)
-                  Flexible(
-                    child: Tile(
-                      caulkPadLeft: true,
-                      caulkClipTopLeft: true,
-                      caulkClipBottomLeft: true,
-                      caulkPadBottom: true,
-                      child: Stack(
-                        children: [
-                          Chat(
-                            state.currentRoom!,
-                            threadId: state.currentThreadId,
-                            key: ValueKey(
-                                "room-timeline-key-${state.currentRoom!.localId}_thread_${state.currentThreadId!}"),
-                          ),
-                          Align(
-                            alignment: Alignment.topRight,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: tiamat.CircleButton(
-                                icon: Icons.close,
-                                onPressed: () => EventBus.closeThread.add(null),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                if (state.currentThreadId == null)
-                  Tile.surfaceContainer(
-                    caulkPadLeft: true,
-                    caulkClipTopLeft: true,
-                    caulkClipBottomLeft: true,
-                    caulkPadBottom: true,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
-                      child: SizedBox(
-                          width: 200,
-                          child: RoomMembersListWidget(state.currentRoom!)),
-                    ),
-                  )
+                RoomSidePanel(
+                    key: ValueKey(
+                        "room-sidepanel-key-${state.currentRoom!.localId}"),
+                    state: state,
+                    builder: (state, child) {
+                      Widget result = Tile.surfaceContainer(
+                        caulkPadLeft: true,
+                        caulkPadBottom: true,
+                        caulkClipBottomLeft: true,
+                        caulkClipTopLeft: true,
+                        child: child,
+                      );
+
+                      if (state == SidePanelState.thread) {
+                        result = Flexible(child: result);
+                      }
+
+                      return result;
+                    })
               ],
             ),
           ),

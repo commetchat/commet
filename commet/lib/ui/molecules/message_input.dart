@@ -496,7 +496,7 @@ class MessageInputState extends State<MessageInput> {
                   borderRadius: BorderRadius.circular(3),
                   child: Material(
                     color: selected
-                        ? Theme.of(context).colorScheme.tertiaryContainer
+                        ? Theme.of(context).colorScheme.secondary
                         : Colors.transparent,
                     child: InkWell(
                       onTap: () => applyAutoFill(data),
@@ -509,7 +509,7 @@ class MessageInputState extends State<MessageInput> {
                             tiamat.Text.labelLow(
                               data.result,
                               color: selected
-                                  ? Theme.of(context).colorScheme.tertiary
+                                  ? Theme.of(context).colorScheme.onSecondary
                                   : Theme.of(context).colorScheme.secondary,
                             ),
                           ],
@@ -527,16 +527,31 @@ class MessageInputState extends State<MessageInput> {
   }
 
   Widget sendMessageButton() {
+    bool canSend = controller.text.isNotEmpty;
+
+    double targetValue = canSend ? 1 : 0;
     return Padding(
         padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-        child: SizedBox(
-            width: widget.size,
-            height: widget.size,
-            child: tiamat.CircleButton(
-              icon: Icons.send,
-              radius: widget.size * widget.iconScale,
-              onPressed: sendMessage,
-            )));
+        child: TweenAnimationBuilder(
+          tween: Tween<double>(begin: 0, end: targetValue),
+          duration: Durations.medium1,
+          builder: (context, value, child) {
+            return SizedBox(
+                width: widget.size,
+                height: widget.size,
+                child: tiamat.CircleButton(
+                  icon: Icons.send,
+                  radius: widget.size * widget.iconScale,
+                  onPressed: sendMessage,
+                  color: Color.lerp(
+                      Theme.of(context).colorScheme.primary.withAlpha(0),
+                      Theme.of(context).colorScheme.primary,
+                      value),
+                  iconColor: Color.lerp(Theme.of(context).colorScheme.secondary,
+                      Theme.of(context).colorScheme.onPrimary, value),
+                ));
+          },
+        ));
   }
 
   Widget toggleEmojiButton() {

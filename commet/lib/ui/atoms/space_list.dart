@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:commet/client/client.dart';
+import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/room_text_button.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
@@ -52,6 +53,7 @@ class _SpaceListState extends State<SpaceList> {
       if (widget.onChildUpdated != null)
         widget.onChildUpdated!.listen(onSpaceUpdated),
       for (var room in widget.space.rooms) room.onUpdate.listen(onRoomUpdated),
+      preferences.onSettingChanged.listen((_) => setState(() {})),
     ];
 
     super.initState();
@@ -97,6 +99,7 @@ class _SpaceListState extends State<SpaceList> {
                 itemBuilder: (context, data) {
                   return tiamat.TextButtonExpander(data.displayName,
                       initiallyExpanded: true,
+                      childrenPadding: const EdgeInsets.fromLTRB(2, 0, 0, 0),
                       iconColor: Theme.of(context).colorScheme.secondary,
                       textColor: Theme.of(context).colorScheme.secondary,
                       children: [
@@ -118,16 +121,12 @@ class _SpaceListState extends State<SpaceList> {
 
   Widget roomsList() {
     if (widget.isTopLevel) {
-      return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: tiamat.Text(
-            labelRoomsList,
-            color: Theme.of(context).colorScheme.secondary,
-          ),
-        ),
-        buildRoomsList()
-      ]);
+      return tiamat.TextButtonExpander(labelRoomsList,
+          childrenPadding: const EdgeInsets.fromLTRB(2, 0, 0, 0),
+          initiallyExpanded: true,
+          iconColor: Theme.of(context).colorScheme.secondary,
+          textColor: Theme.of(context).colorScheme.secondary,
+          children: [buildRoomsList()]);
     } else {
       return buildRoomsList();
     }

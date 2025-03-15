@@ -1,6 +1,7 @@
 import 'package:commet/client/attachment.dart';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/component.dart';
+import 'package:commet/client/timeline_events/timeline_event.dart';
 
 abstract class ThreadsComponent<T extends Client> implements Component<T> {
   bool isEventInResponseToThread(TimelineEvent event, Timeline timeline);

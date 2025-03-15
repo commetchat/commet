@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/ui/atoms/code_block.dart';
+import 'package:commet/ui/atoms/tiny_pill.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
@@ -109,6 +110,11 @@ class _LogPageState extends State<LogPage> {
                 children: [
                   Row(
                     children: [
+                      if (entry.count > 1)
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                          child: TinyPill("${entry.count}"),
+                        ),
                       Padding(
                         padding: const EdgeInsets.all(2.0),
                         child: Icon(

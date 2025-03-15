@@ -22,7 +22,7 @@ class ThemeBase {
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
       listTileTheme: ListTileThemeData(
         dense: true,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        contentPadding: EdgeInsets.fromLTRB(8, 2, 8, 0),
       ),
       canvasColor: scheme.surface,
       iconTheme: IconThemeData(color: scheme.secondary),
@@ -41,8 +41,6 @@ class ThemeBase {
       ),
       dialogTheme: DialogTheme(
           backgroundColor: scheme.surface, shadowColor: Colors.black),
-      switchTheme:
-          SwitchThemeData(thumbColor: WidgetStatePropertyAll(scheme.secondary)),
       dividerColor: scheme.outline,
       textButtonTheme: TextButtonThemeData(
           style: ButtonStyle(
