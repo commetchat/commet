@@ -1329,6 +1329,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.5"
+  reflectable:
+    dependency: "direct main"
+    description:
+      name: reflectable
+      sha256: f6abe4c7779c6c88f77b79a4317d9277c870c7292a3d6c2e56624c4846124368
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.10"
   safe_local_storage:
     dependency: transitive
     description:
