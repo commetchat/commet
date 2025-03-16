@@ -4,7 +4,7 @@ import 'package:commet/client/components/rtc_data_channel/rtc_data_channel_compo
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/matrix/components/rtc_data_channel/matrix_rtc_data_channel.dart';
 import 'package:commet/client/matrix/components/rtc_data_channel/matrix_rtc_data_media_stream.dart';
-import 'package:commet/client/matrix/components/rtc_screen_share_annotation_component/matrix_rtc_screen_share_annotation_component.dart';
+import 'package:commet/client/matrix/components/rtc_screen_share_annotation/matrix_rtc_screen_share_annotation_component.dart';
 import 'package:commet/client/matrix/components/voip/matrix_voip_session.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';

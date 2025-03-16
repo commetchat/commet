@@ -1,6 +1,7 @@
 import 'dart:async'; // For StreamSubscription
 
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
+import 'package:commet/client/components/voip_room/voip_room_component.dart';
 import 'package:commet/main.dart'; // For preferences
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' as m;
@@ -45,6 +46,8 @@ class _RoomHeaderState extends State<RoomHeader> {
             ?.isRoomDirectMessage(widget.room) ??
         false;
 
+    final voip = widget.room.getComponent<VoipRoomComponent>();
+
     bool showRoomIcons = preferences.showRoomAvatars;
     bool useGenericIcons = preferences.usePlaceholderRoomAvatars;
 
@@ -52,6 +55,10 @@ class _RoomHeaderState extends State<RoomHeader> {
         (showRoomIcons && !useGenericIcons && widget.room.avatar == null);
     IconData defaultIcon =
         isDirectMessage ? m.Icons.alternate_email_rounded : m.Icons.tag;
+
+    if (voip?.isVoipRoom == true) {
+      defaultIcon = m.Icons.volume_up_rounded;
+    }
 
     Widget iconWidget;
     if (shouldShowDefaultIcon) {

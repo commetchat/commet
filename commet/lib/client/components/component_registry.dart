@@ -18,6 +18,7 @@ import 'package:commet/client/matrix/components/read_receipts/matrix_read_receip
 import 'package:commet/client/matrix/components/threads/matrix_threads_component.dart';
 import 'package:commet/client/matrix/components/typing_indicators/matrix_typing_indicators_component.dart';
 import 'package:commet/client/matrix/components/url_preview/matrix_url_preview_component.dart';
+import 'package:commet/client/matrix/components/voip_room/matrix_voip_room_component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/matrix/matrix_space.dart';
@@ -50,6 +51,7 @@ class ComponentRegistry {
       MatrixReadReceiptComponent(client, room),
       MatrixTypingIndicatorsComponent(client, room),
       MatrixPinnedMessagesComponent(client, room),
+      MatrixVoipRoomComponent(client, room)
     ];
   }
 

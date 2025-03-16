@@ -10,6 +10,7 @@ import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/config/platform_utils.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/pages/settings/categories/app/voip_settings/voip_turn_fallback_dialog.dart';
@@ -217,10 +218,14 @@ class MatrixVoipComponent
   }
 
   @override
-  Future<void> handleGroupCallEnded(mx.GroupCallSession groupCall) async {}
+  Future<void> handleGroupCallEnded(mx.GroupCallSession groupCall) async {
+    Log.i("Group call ended!");
+  }
 
   @override
-  Future<void> handleNewGroupCall(mx.GroupCallSession groupCall) async {}
+  Future<void> handleNewGroupCall(mx.GroupCallSession groupCall) async {
+    Log.i("New group call started!");
+  }
 
   @override
   mx.EncryptionKeyProvider? get keyProvider => throw UnimplementedError();
