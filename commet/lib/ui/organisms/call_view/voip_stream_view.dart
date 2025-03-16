@@ -14,12 +14,14 @@ class VoipStreamView extends StatefulWidget {
       {super.key,
       this.fit = BoxFit.cover,
       this.borderColor,
+      this.canFullscreen = true,
       this.onFullscreen});
   final VoipStream stream;
   final VoipSession session;
   final BoxFit fit;
   final Function()? onFullscreen;
   final Color? borderColor;
+  final bool canFullscreen;
 
   @override
   State<VoipStreamView> createState() => _VoipStreamViewState();
@@ -75,7 +77,8 @@ class _VoipStreamViewState extends State<VoipStreamView>
                   decoration:
                       BoxDecoration(borderRadius: BorderRadius.circular(8)),
                   child: buildDefault()),
-              if (widget.stream.type == VoipStreamType.video ||
+              if (widget.canFullscreen &&
+                      widget.stream.type == VoipStreamType.video ||
                   widget.stream.type == VoipStreamType.screenshare)
                 SizedBox(
                   width: 40,

@@ -3,10 +3,14 @@ import 'dart:async';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
+import 'package:commet/client/matrix/components/rtc_data_channel/matrix_rtc_data_channel_component.dart';
+import 'package:commet/client/matrix/components/rtc_data_channel/matrix_rtc_data_media_stream.dart';
 import 'package:commet/client/matrix/components/voip/matrix_voip_stream.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
+import 'package:commet/debug/log.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:matrix/matrix.dart' as matrix;
+import 'package:uuid/uuid.dart';
 
 class MatrixVoipSession implements VoipSession {
   matrix.CallSession session;
@@ -18,6 +22,10 @@ class MatrixVoipSession implements VoipSession {
 
   List<StatsReport>? stats;
 
+  RTCDataChannel? channel;
+
+  DesktopCapturerSource? currentScreenshare;
+
   MatrixVoipSession(this.session, MatrixClient this.client) {
     session.onCallStateChanged.stream.listen((event) {
       _onStateChanged.add(null);
@@ -26,10 +34,16 @@ class MatrixVoipSession implements VoipSession {
     initStreams();
     session.onStreamAdd.stream.listen(onStreamAdded);
     session.onStreamRemoved.stream.listen(onStreamRemoved);
+
+    final dataComponent = client.getComponent<MatrixRTCDataChannelComponent>();
+    if (dataComponent != null) {
+      session.pc?.onDataChannel =
+          (channel) => dataComponent.dataChannelOpenedCallback(this, channel);
+    }
   }
 
   @override
-  String? get remoteUserId => session.remotePartyId;
+  String? get remoteUserId => session.remoteUserId;
 
   @override
   String get roomId => session.room.id;
@@ -129,6 +143,8 @@ class MatrixVoipSession implements VoipSession {
       }
     });
 
+    currentScreenshare = source;
+
     await stopScreenshare();
     session.addLocalStream(stream, matrix.SDPStreamMetadataPurpose.Screenshare);
   }
@@ -184,16 +200,25 @@ class MatrixVoipSession implements VoipSession {
       return false;
     }
 
+    if (![
+      matrix.SDPStreamMetadataPurpose.Screenshare,
+      matrix.SDPStreamMetadataPurpose.Usermedia
+    ].contains(stream.purpose)) {
+      return false;
+    }
+
     return true;
   }
 
   void onStreamAdded(matrix.WrappedMediaStream event) {
     if (shouldAddStream(event)) {
       streams.add(MatrixVoipStream(event, this));
+      _onStateChanged.add(null);
     }
   }
 
   void onStreamRemoved(matrix.WrappedMediaStream event) {
     streams.removeWhere((e) => e.streamId == event.stream?.id);
+    _onStateChanged.add(null);
   }
 }

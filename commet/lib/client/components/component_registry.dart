@@ -13,6 +13,8 @@ import 'package:commet/client/matrix/components/invitation/matrix_invitation_com
 import 'package:commet/client/matrix/components/pinned_messages/matrix_pinned_messages_component.dart';
 import 'package:commet/client/matrix/components/message_effects/matrix_message_effects_component.dart';
 import 'package:commet/client/matrix/components/push_notifications/matrix_push_notification_component.dart';
+import 'package:commet/client/matrix/components/rtc_data_channel/matrix_rtc_data_channel_component.dart';
+import 'package:commet/client/matrix/components/rtc_screen_share_annotation_component/matrix_rtc_screen_share_annotation_component.dart';
 import 'package:commet/client/matrix/components/voip/matrix_voip_component.dart';
 import 'package:commet/client/matrix/components/read_receipts/matrix_read_receipt_component.dart';
 import 'package:commet/client/matrix/components/threads/matrix_threads_component.dart';
@@ -31,6 +33,8 @@ class ComponentRegistry {
       MatrixPushNotificationComponent(client),
       MatrixCommandComponent(client),
       MatrixVoipComponent(client),
+      // MatrixRTCDataChannelComponent(client),
+      // MatrixRtcScreenShareAnnotationComponent(client),
       MatrixUrlPreviewComponent(client),
       MatrixInvitationComponent(client),
       MatrixThreadsComponent(client),

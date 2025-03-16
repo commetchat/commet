@@ -25,8 +25,7 @@ class MatrixVoipComponent
     implements
         VoipComponent<MatrixClient>,
         EventHandlerComponent,
-        mx.WebRTCDelegate,
-        mx.EncryptionKeyProvider {
+        mx.WebRTCDelegate {
   late mx.VoIP voip;
 
   @override
@@ -226,28 +225,5 @@ class MatrixVoipComponent
   Future<void> handleNewGroupCall(mx.GroupCallSession groupCall) async {}
 
   @override
-  mx.EncryptionKeyProvider? get keyProvider => this;
-
-  @override
-  Future<Uint8List> onExportKey(mx.CallParticipant participant, int index) {
-    Log.d("onExportKey called for participant: ${participant.userId} [$index]");
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<Uint8List> onRatchetKey(mx.CallParticipant participant, int index) {
-    Log.d(
-        "onRatchetKey called for participant: ${participant.userId} [$index]");
-    // TODO: implement onRatchetKey
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> onSetEncryptionKey(
-      mx.CallParticipant participant, Uint8List key, int index) {
-    Log.d(
-        "onSetEncryptionKey called for participant: ${participant.userId} [$index]");
-    // TODO: implement onSetEncryptionKey
-    throw UnimplementedError();
-  }
+  mx.EncryptionKeyProvider? get keyProvider => throw UnimplementedError();
 }
