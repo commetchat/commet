@@ -939,17 +939,17 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
-      resolved-ref: "4577a2619e92661c45a200bb31242922497f87ae"
+      ref: voip
+      resolved-ref: e4aafdda0080d00ed84e490b2a7a461fe15b3dda
       url: "https://github.com/commetchat/matrix-dart-sdk.git"
     source: git
-    version: "0.32.4"
+    version: "0.38.0"
   matrix_dart_sdk_drift_db:
     dependency: "direct main"
     description:
       path: "."
-      ref: HEAD
-      resolved-ref: ec6dea14a40d16204f3064532c391b978238fd81
+      ref: voip
+      resolved-ref: "2c99c0f900094ede08e63f9a5486a2fc67da15d3"
       url: "https://github.com/commetchat/matrix-dart-sdk-drift-db.git"
     source: git
     version: "0.0.1"

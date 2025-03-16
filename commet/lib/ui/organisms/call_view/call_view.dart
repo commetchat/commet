@@ -1,11 +1,7 @@
 import 'dart:async';
-
-import 'package:commet/client/components/rtc_data_channel/rtc_data_channel_component.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
-import 'package:commet/client/matrix/components/voip/matrix_voip_session.dart';
 import 'package:commet/client/room.dart';
-import 'package:commet/debug/log.dart';
 import 'package:commet/ui/atoms/lightbox.dart';
 import 'package:commet/ui/layout/bento.dart';
 import 'package:commet/ui/organisms/call_view/voip_fullscreen_stream_view.dart';
@@ -85,7 +81,7 @@ class _CallViewState extends State<CallView> {
         VoipState.connecting => callOutgoingView(),
         VoipState.ended => callEndedView(),
         VoipState.incoming => callIncomingView(),
-        _ => Placeholder()
+        _ => const Placeholder()
       },
     );
   }
@@ -137,26 +133,6 @@ class _CallViewState extends State<CallView> {
               child: Wrap(
                 spacing: 5,
                 children: [
-                  if (widget.currentSession is MatrixVoipSession)
-                    tiamat.CircleButton(
-                        icon: Icons.bug_report,
-                        onPressed: () async {
-                          var comp = widget.currentSession.client
-                              .getComponent<RTCDataChannelComponent>();
-                          if (comp != null) {
-                            var channel = await comp.createDataChannel(
-                                widget.currentSession,
-                                purpose: "chat.commet.screenshare_annotation");
-
-                            if (channel == null) {
-                              Log.w("Failed to create data channel!");
-                            }
-
-                            Timer.periodic(Duration(seconds: 1), (_) {
-                              channel?.sendMessage("Test message!");
-                            });
-                          }
-                        }),
                   if (canScreenshare)
                     tiamat.CircleButton(
                         icon: Icons.screen_share_outlined,

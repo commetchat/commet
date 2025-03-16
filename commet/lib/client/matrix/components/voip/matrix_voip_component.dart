@@ -1,7 +1,6 @@
 // ignore_for_file: depend_on_referenced_packages, implementation_imports
 
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:commet/client/components/component.dart';
 import 'package:commet/client/components/voip/voip_component.dart';
@@ -11,7 +10,6 @@ import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/config/platform_utils.dart';
-import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/pages/settings/categories/app/voip_settings/voip_turn_fallback_dialog.dart';
@@ -226,4 +224,7 @@ class MatrixVoipComponent
 
   @override
   mx.EncryptionKeyProvider? get keyProvider => throw UnimplementedError();
+
+  @override
+  Future<void> registerListeners(mx.CallSession session) async {}
 }

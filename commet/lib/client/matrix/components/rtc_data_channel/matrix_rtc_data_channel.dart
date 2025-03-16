@@ -19,9 +19,8 @@ class MatrixRtcDataChannel implements DataChannel {
   MatrixRtcDataChannel(this.session, this.channel, {this.purpose}) {
     channel.onMessage = receivedMessageCallback;
 
-    if (purpose == null) {
-      var metadata = session
-          .session.remoteSDPStreamMetadata?.sdpStreamMetadatas[channel.label];
+    if (purpose == null && channel.label != null) {
+      var metadata = session.session.getRemoteSDPStreamMetadata(channel.label!);
       purpose = metadata?.purpose;
     }
 

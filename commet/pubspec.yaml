@@ -74,7 +74,9 @@ dependencies:
       url: https://github.com/commetchat/matrix-dart-sdk.git
       ref: main
   matrix_dart_sdk_drift_db:
-    git: https://github.com/commetchat/matrix-dart-sdk-drift-db.git
+    git: 
+      url: https://github.com/commetchat/matrix-dart-sdk-drift-db.git
+      ref: voip
   encrypted_url_preview: 
     git: https://github.com/commetchat/encrypted_url_preview.git
   signal_sticker_api: 
@@ -108,7 +110,7 @@ dependency_overrides:
   matrix:
     git: 
       url: https://github.com/commetchat/matrix-dart-sdk.git
-      ref: main
+      ref: voip
 
 dev_dependencies: 
   build_runner: ^2.4.11

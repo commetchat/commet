@@ -4,13 +4,10 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:commet/client/matrix/components/rtc_data_channel/matrix_rtc_data_channel_component.dart';
-import 'package:commet/client/matrix/components/rtc_data_channel/matrix_rtc_data_media_stream.dart';
 import 'package:commet/client/matrix/components/voip/matrix_voip_stream.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
-import 'package:commet/debug/log.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:matrix/matrix.dart' as matrix;
-import 'package:uuid/uuid.dart';
 
 class MatrixVoipSession implements VoipSession {
   matrix.CallSession session;
