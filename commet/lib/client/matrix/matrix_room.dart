@@ -35,6 +35,7 @@ import 'package:commet/client/timeline_events/timeline_event_message.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
+import 'package:commet/ui/pages/developer/app_inspector/value_reflector_widget.dart';
 import 'package:commet/utils/image_utils.dart';
 import 'package:commet/utils/mime.dart';
 import 'package:flutter/material.dart';
@@ -49,6 +50,7 @@ import '../attachment.dart';
 import '../client.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
+@Reflector()
 class MatrixRoom extends Room {
   late matrix.Room _matrixRoom;
 

@@ -9,8 +9,10 @@ import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/stale_info.dart';
 import 'package:commet/client/tasks/client_connection_status_task.dart';
 import 'package:commet/main.dart';
+import 'package:commet/ui/pages/developer/app_inspector/value_reflector_widget.dart';
 import 'package:commet/utils/notifying_list.dart';
 
+@Reflector()
 class ClientManager {
   final Map<String, Client> _clients = {};
 

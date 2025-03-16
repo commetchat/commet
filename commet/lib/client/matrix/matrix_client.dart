@@ -18,6 +18,7 @@ import 'package:commet/debug/log.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
+import 'package:commet/ui/pages/developer/app_inspector/value_reflector_widget.dart';
 import 'package:commet/ui/pages/matrix/authentication/matrix_uia_request.dart';
 import 'package:commet/utils/list_extension.dart';
 import 'package:commet/utils/notifying_list.dart';
@@ -37,6 +38,7 @@ import 'matrix_room.dart';
 import 'matrix_space.dart';
 import 'package:olm/olm.dart' as olm;
 
+@Reflector()
 class MatrixClient extends Client {
   late matrix.Client _matrixClient;
   late final List<Component<MatrixClient>> componentsInternal;
@@ -44,6 +46,8 @@ class MatrixClient extends Client {
   Future? firstSync;
 
   matrix.MediaConfig? config;
+
+  matrix.Client get matrixClient => _matrixClient;
 
   late String _id;
 

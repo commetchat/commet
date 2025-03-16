@@ -93,6 +93,7 @@ dependencies:
   exif: ^3.3.0
   image: ^4.2.0
   flutter_webrtc: ^0.12.12+hotfix.1
+  reflectable: ^4.0.10
 
 
   ## ---- Putting some extra lines in here to help git with the diff
