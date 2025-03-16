@@ -550,13 +550,13 @@
     "type": "text",
     "placeholders": {}
   },
-  "placeholderRoomAddress": "#gela-zoragarria:matrix.org",
+  "placeholderRoomAddress": "#gela-zoragarria:adibidea.eus",
   "@placeholderRoomAddress": {
     "description": "Placeholder / Example for a room address. Please do not translate 'example.com' and keep the domain as is, this is a reserved domain specifically for use in examples, and translations could end up pointing to untrusted domains",
     "type": "text",
     "placeholders": {}
   },
-  "placeholderSpaceAddress": "#gune-zoragarria:matrix.org",
+  "placeholderSpaceAddress": "#gune-zoragarria:adibidea.eus",
   "@placeholderSpaceAddress": {
     "description": "Placeholder / Example for a space address. Please do not translate 'example.com' and keep the domain as is, this is a reserved domain specifically for use in examples, and translations could end up pointing to untrusted domains",
     "type": "text",
@@ -1544,7 +1544,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "messagePlaceholderUserUpdatedNameDetailed": "{user}(e)k pantaila-izena '{newName}'(e)ra aldatu du",
+  "messagePlaceholderUserUpdatedNameDetailed": "{user}(e)k pantaila-izena \"{newName}\"(e)ra aldatu du",
   "@messagePlaceholderUserUpdatedNameDetailed": {
     "description": "Message body for when a user updates their display name",
     "type": "text",
@@ -1643,6 +1643,30 @@
   "promptReplayMessageEffect": "Erreproduzitu berriz efektua",
   "@promptReplayMessageEffect": {
     "description": "If a message was sent with an effect, this prompts to replay the effect",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelUseRoomAvatars": "Erabili gelen abatarrak",
+  "@labelUseRoomAvatars": {
+    "description": "Label for enabling using room avatars instead of icons",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelEnableRoomIconsDescription": "Gelen abatar-irudia erakutsiko da ikonoen ordez",
+  "@labelEnableRoomIconsDescription": {
+    "description": "Description for the enable room icons setting",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelUseRoomAvatarPlaceholders": "Erabili abatar generikoak",
+  "@labelUseRoomAvatarPlaceholders": {
+    "description": "Label for enabling generic icons in the appearance settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelUseRoomAvatarPlaceholdersDescription": "Gela batek abatarrik ezarrita ez duenean, edo aukera ezgaituta dagoenean, kolore generiko bat eta lehen hizkia erabiliko da irudi orokor gisa",
+  "@labelUseRoomAvatarPlaceholdersDescription": {
+    "description": "Description for the enable generic icons setting",
     "type": "text",
     "placeholders": {}
   }
