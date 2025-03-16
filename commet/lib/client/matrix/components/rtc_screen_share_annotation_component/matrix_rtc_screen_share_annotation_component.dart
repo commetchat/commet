@@ -7,12 +7,16 @@ import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:commet/client/matrix/components/voip/matrix_voip_session.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 
-import 'package:constellation_dart/constellation_dart.dart'
-    as constellation_dart;
+// import 'package:constellation_dart/constellation_dart.dart'
+//     as constellation_dart;
+
+// ignore: implementation_imports
 import 'package:flutter_webrtc/src/desktop_capturer.dart';
 
 // ignore: implementation_imports
 import 'package:flutter_webrtc/src/native/desktop_capturer_impl.dart';
+
+dynamic constellation;
 
 class MatrixRtcScreenShareAnnotationComponent
     implements RTCScreenShareAnnotationComponent<MatrixClient> {
@@ -75,7 +79,7 @@ class MatrixRTCScreenShareAnnotationSession
   void listen(DataChannel? remoteChannel) {
     channel = remoteChannel;
     channel!.onMessageReceived.listen(onMessageReceived);
-    constellation_dart.main();
+    constellation.main();
   }
 
   @override
@@ -109,11 +113,11 @@ class MatrixRTCScreenShareAnnotationSession
       final room = session.client.getRoom(session.roomId);
       final member = room?.getMemberOrFallback(userId);
 
-      constellation_dart.createCursor(
+      constellation.createCursor(
           userId, session.remoteUserName ?? "Unknown User");
 
       if (member != null) {
-        constellation_dart.setCursorColor(userId, member.defaultColor);
+        constellation.setCursorColor(userId, member.defaultColor);
       }
 
       createdCursor = true;
@@ -127,9 +131,6 @@ class MatrixRTCScreenShareAnnotationSession
     var stream =
         session.streams.where((e) => e.streamId == streamId).firstOrNull;
     if (stream != null && stream.direction == VoipStreamDirection.outgoing) {
-      print(
-          "We own this stream, and we are screensharing: ${session.currentScreenshare?.name} ${session.currentScreenshare?.id}");
-
       if (session.currentScreenshare != null) {
         final share = session.currentScreenshare as DesktopCapturerSourceNative;
         final id = share.id;
@@ -138,17 +139,17 @@ class MatrixRTCScreenShareAnnotationSession
 
           switch (share.type) {
             case SourceType.Screen:
-              constellation_dart.setDisplay(id);
+              constellation.setDisplay(id);
               break;
 
             case SourceType.Window:
-              constellation_dart.setWindow(id);
+              constellation.setWindow(id);
               break;
           }
         }
       }
 
-      constellation_dart.setCursorPosition(userId, x.toDouble(), y.toDouble());
+      constellation.setCursorPosition(userId, x.toDouble(), y.toDouble());
     }
   }
 }

@@ -213,10 +213,12 @@ class MatrixVoipSession implements VoipSession {
   void onStreamAdded(matrix.WrappedMediaStream event) {
     if (shouldAddStream(event)) {
       streams.add(MatrixVoipStream(event, this));
+      _onStateChanged.add(null);
     }
   }
 
   void onStreamRemoved(matrix.WrappedMediaStream event) {
     streams.removeWhere((e) => e.streamId == event.stream?.id);
+    _onStateChanged.add(null);
   }
 }

@@ -5,6 +5,7 @@ import 'package:commet/ui/atoms/space_header.dart';
 import 'package:commet/ui/molecules/direct_message_list.dart';
 import 'package:commet/ui/molecules/space_viewer.dart';
 import 'package:commet/ui/organisms/background_task_view/background_task_view_container.dart';
+import 'package:commet/ui/organisms/call_view/call.dart';
 import 'package:commet/ui/organisms/home_screen/home_screen.dart';
 import 'package:commet/ui/organisms/chat/chat.dart';
 import 'package:commet/ui/organisms/room_quick_access_menu/room_quick_access_menu_desktop.dart';
@@ -218,6 +219,8 @@ class MainPageViewDesktop extends StatelessWidget {
               ),
             ),
           ),
+          if (state.currentCall != null)
+            Flexible(child: CallWidget(state.currentCall!)),
           Expanded(
             child: Flex(
               direction: Axis.horizontal,

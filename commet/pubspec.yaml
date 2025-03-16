@@ -79,8 +79,6 @@ dependencies:
     git: https://github.com/commetchat/encrypted_url_preview.git
   signal_sticker_api: 
     git: https://github.com/commetchat/signal-sticker-api.git
-  constellation_dart:
-    path: ../../constellation_dart
   starfield: 
     git: https://github.com/lagmachine-com/starfield.git
   sqlite3_flutter_libs: ^0.5.23
