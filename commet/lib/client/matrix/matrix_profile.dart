@@ -1,9 +1,11 @@
 import 'package:commet/client/matrix/matrix_member.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/profile.dart';
+import 'package:commet/ui/pages/developer/app_inspector/value_reflector_widget.dart';
 import 'package:flutter/widgets.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
+@Reflector()
 class MatrixProfile implements Profile {
   matrix.Profile profile;
   matrix.Client client;

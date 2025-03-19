@@ -11,12 +11,14 @@ import 'package:commet/client/matrix/matrix_room_permissions.dart';
 import 'package:commet/client/matrix/matrix_room_preview.dart';
 import 'package:commet/client/permissions.dart';
 import 'package:commet/client/room_preview.dart';
+import 'package:commet/ui/pages/developer/app_inspector/value_reflector_widget.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
 import 'matrix_peer.dart';
 
+@Reflector()
 class MatrixSpace extends Space {
   late matrix.Room _matrixRoom;
   late matrix.Client _matrixClient;
