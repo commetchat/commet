@@ -593,6 +593,8 @@ class MessageInputState extends State<MessageInput> {
             style: Theme.of(context).textTheme.bodyMedium!,
             maxLines: null,
             contextMenuBuilder: contextMenuBuilder,
+            keyboardType: TextInputType.text,
+            textCapitalization: TextCapitalization.sentences,
             decoration: InputDecoration(
                 contentPadding:
                     EdgeInsets.fromLTRB(8, padding / 2, 4, padding / 2),
