@@ -177,7 +177,6 @@
 				3399D490228B24CF009A79C7 /* ShellScript */,
 				11C171EF4F711973987131AF /* [CP] Embed Pods Frameworks */,
 				6063DE702D7B737B00E5E1D0 /* ShellScript */,
-				D7E4758527804155CB687CDB /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -341,23 +340,6 @@
 			shellPath = /bin/sh;
 			shellScript = "framedir=${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}\nln -s \"./OLMKit\" $framedir/OLMKit.framework/libolm.3.dylib\n";
 		};
-		D7E4758527804155CB687CDB /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -464,7 +446,7 @@
 					"@executable_path/../Frameworks",
 					"@executable_path/../Frameworks/OLMKit.framework",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				PRODUCT_BUNDLE_IDENTIFIER = chat.commet.commetapp.macos;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = commet_macos_profile;
@@ -604,7 +586,7 @@
 					"@executable_path/../Frameworks",
 					"@executable_path/../Frameworks/OLMKit.framework",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				PRODUCT_BUNDLE_IDENTIFIER = chat.commet.commetapp.macos;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = commet_macos_profile;
@@ -637,7 +619,7 @@
 					"@executable_path/../Frameworks",
 					"@executable_path/../Frameworks/OLMKit.framework",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				PRODUCT_BUNDLE_IDENTIFIER = chat.commet.commetapp.macos;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = commet_macos_profile;

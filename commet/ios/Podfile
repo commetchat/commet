@@ -52,3 +52,7 @@ post_install do |installer|
     end
   end
 end
+
+target 'servicer' do
+  use_frameworks!
+end

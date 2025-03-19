@@ -12,7 +12,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:convert/convert.dart';
 
-class IOSNotifier implements Notifier {
+class MacosNotifier implements Notifier {
   static const String _channelName = "PushNotificationChannel";
   static const MethodChannel _channel = MethodChannel(_channelName);
 
@@ -56,7 +56,7 @@ class IOSNotifier implements Notifier {
   @override
   Future<bool> requestPermission() async {
     try {
-      await IOSNotifier.requestPushNotificationPermission();
+      await MacosNotifier.requestPushNotificationPermission();
       return true;
     } on PlatformException catch (e) {
       Log.e("Error Getting Permission: $e.message");
@@ -86,7 +86,7 @@ class IOSNotifier implements Notifier {
   @override
   Future<String?> getToken() async {
     try {
-      String? token = await IOSNotifier.retriveDeviceToken();
+      String? token = await MacosNotifier.retriveDeviceToken();
       if (deviceTokenIsHex) {
         return token!.toLowerCase();
       }
@@ -117,6 +117,8 @@ class IOSNotifier implements Notifier {
 
   static handlerPushNotificationData({required BuildContext context}) async {
     _channel.setMethodCallHandler((call) async {
+      var callMethod = call.method;
+      Log.i("Channel Called with method $callMethod");
       if (call.method == "onPushNotification") {
         Log.i("in onPushNotification");
         final eventId = call.arguments['event_id'];
@@ -131,10 +133,13 @@ class IOSNotifier implements Notifier {
 
         EventBus.openRoom.add((roomId, client.identifier));
       } else if (call.method == "didRegister") {
-        Log.i("Registration Finished");
+        Log.i("Registered");
         hexDeviceTokenUpper = call.arguments as String;
+        Log.i("Received token $hexDeviceTokenUpper");
         base64DeviceToken = base64.encode(hex.decode(hexDeviceTokenUpper!));
+        Log.i("Base64-encoded token is $base64DeviceToken");
         hexDeviceTokenLower = hexDeviceTokenUpper!.toLowerCase();
+        Log.i("Lowercase Token is $hexDeviceTokenLower");
         if (deviceTokenIsHex) {
           deviceToken = hexDeviceTokenLower;
         } else {

@@ -1,8 +1,6 @@
 import UIKit
 import Flutter
-import flutter_background_service_ios
 import UserNotifications
-import flutter_local_notifications
 
 @main
 @objc class AppDelegate: FlutterAppDelegate {
@@ -19,10 +17,6 @@ import flutter_local_notifications
 	if #available(iOS 10.0, *) {
 	  UNUserNotificationCenter.current().delegate = self as? UNUserNotificationCenterDelegate
 	}
-    SwiftFlutterBackgroundServicePlugin.taskIdentifier = "dev.flutter.background.refresh"
-    FlutterLocalNotificationsPlugin.setPluginRegistrantCallback { (registry) in
-      GeneratedPluginRegistrant.register(with: registry)
-    }
 
     pushNotificationChannel.setMethodCallHandler { [weak self] (call: FlutterMethodCall, result: @escaping FlutterResult) in
       switch call.method {

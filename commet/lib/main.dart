@@ -1,9 +1,13 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:commet/cache/file_cache.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/component.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
+import 'package:commet/client/components/push_notification/ios/ios_notifier.dart';
+import 'package:commet/client/components/push_notification/ios/ios_mutable_notifier.dart';
+import 'package:commet/client/components/push_notification/macos/macos_notifier.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/global_config.dart';
 import 'package:commet/config/layout_config.dart';
@@ -39,6 +43,7 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:tiamat/config/style/theme_changer.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:tiamat/config/style/theme_dark.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 
 final GlobalKey<NavigatorState> navigator = GlobalKey();
 FileCache? fileCache;
@@ -94,6 +99,30 @@ void bubble() async {
         initialClientId: initialClientId,
         initialRoom: initialRoomId,
       )));
+}
+
+@pragma('vm:entry-point')
+void notificationMutationService() async {
+  DartPluginRegistrant.ensureInitialized();
+  Log.prefix = "notification-mutation-service";
+  Log.i("Starting notification mutation service");
+  final Completer completer = Completer();
+  if (!preferences.isInit) {
+    await preferences.init();
+  }
+  Log.i("Preferences initialized");
+
+  const String channelName = "PushServiceChannel";
+  const MethodChannel channel = MethodChannel(channelName);
+
+  var notificationMutator = IOSNotificationMutator(completer);
+  await notificationMutator.init();
+  Log.i("Initialized mutator class");
+
+  notificationMutator.channelHandler(channel: channel);
+  Log.i("listening");
+  await completer.future;
+  Log.i("done");
 }
 
 void main() async {
@@ -254,6 +283,11 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (PlatformUtils.isIOS) {
+      IOSNotifier.handlerPushNotificationData(context: context);
+    } else if (PlatformUtils.isMacOS) {
+      MacosNotifier.handlerPushNotificationData(context: context);
+    }
     return ThemeChanger(
         shouldFollowSystemTheme: () => preferences.shouldFollowSystemTheme,
         getDarkTheme: () {
