@@ -4,6 +4,8 @@
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
+require 'plist_lite'
+
 project 'Runner', {
   'Debug' => :debug,
   'Profile' => :release,
@@ -34,6 +36,10 @@ target 'Runner' do
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 end
 
+target 'servicer' do
+  use_frameworks!
+end
+
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
@@ -48,11 +54,54 @@ post_install do |installer|
         ## dart: PermissionGroup.notification
         'PERMISSION_NOTIFICATIONS=1',
       ]
-
+      
     end
   end
-end
-
-target 'servicer' do
-  use_frameworks!
+  
+  work_dir = Dir.pwd
+  app_id = ""
+  app_profile = ""
+  service_id = ""
+  service_profile = ""
+  team_id = ""
+  env_path = "#{work_dir}/Appinfo.xcconfig"
+  File.foreach( env_path ) do |line|
+    items = line.split("=")
+    if ("#{items[0]}" == "PRODUCT_SERVICE_BUNDLE_IDENTIFIER") then 
+      service_id = items[1].strip!
+    elsif ("#{items[0]}" == "PRODUCT_BUNDLE_IDENTIFIER") then
+      app_id = items[1].strip!
+    elsif ("#{items[0]}" == "PRODUCT_TEAM") then
+      team_id = items[1].strip!
+    elsif ("#{items[0]}" == "PRODUCT_PROFILE") then
+      app_profile = items[1].strip!
+    elsif ("#{items[0]}" == "PRODUCT_SERVICE_PROFILE") then
+      service_profile = items[1].strip!
+    end
+  end
+  Dir.glob("Pods/Target Support Files/Pods-servicer/*.xcconfig") do |xc_config_filename|
+    full_path_name = "#{work_dir}/#{xc_config_filename}"
+    if (File.exist?(full_path_name))
+      new_text = "PRODUCT_BUNDLE_IDENTIFIER = #{service_id}\n"
+    end
+    File.write(full_path_name, new_text, File.size(full_path_name), mode: 'a')
+  end
+  export_path = File.expand_path(File.join('..', "export.plist"), __FILE__)
+  puts "Export file path is #{export_path}"
+  provisioning_profiles={app_id => app_profile, service_id => service_profile}
+  plist = {
+    "destination" => "export", 
+    "manageAppVersionAndBuildNumber" => true, 
+    "method" => "app-store-connect", 
+    "provisioningProfiles" => provisioning_profiles,
+    "signingCertificate" => "Apple Distribution", 
+    "signingStyle" => "manual", 
+    "stripSwiftSymbols" => true, 
+    "teamID" => team_id,
+    "uploadSymbols" => true
+  }
+  puts plist
+  plist_text = PlistLite.dump(plist)
+  puts plist_text
+  File.open(export_path, "w") {|file| file.puts PlistLite.dump(plist) }
 end

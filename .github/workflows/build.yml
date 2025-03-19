@@ -245,11 +245,13 @@ jobs:
           BUILD_CERTIFICATE_BASE64: ${{ secrets.YORK_IOS_CERT_P12 }}
           P12_PASSWORD: ${{ secrets.YORK_IOS_CERT_P12_PASSWORD }}
           BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.COMMET_IOS_PROFILE_PROVISIONPROFILE }}
+          BUILD_EXTENSION_PROVISION_PROFILE_BASE64: ${{ secrets.COMMET_IOS_EXTENSION_MOBILEPROVISION }}
           KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
         run: |
           # create variables
           CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
-          PP_PATH=$RUNNER_TEMP/build_pp.provisionprofile
+          PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
+          PP_EXT_PATH=$RUNNER_TEMP/build_ext_pp.mobileprovision
           KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
 
           # import certificate and provisioning profile from secrets
@@ -257,6 +259,8 @@ jobs:
           echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH
           echo "Making Provisioning Profile"
           echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o $PP_PATH
+          echo "Making Extension Provisioning Profile"
+          echo -n "$BUILD_EXTENSION_PROVISION_PROFILE_BASE64" | base64 --decode -o $PP_EXT_PATH
 
           # create temporary keychain
           security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
@@ -271,12 +275,13 @@ jobs:
           # apply provisioning profile
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/
-#          ln -s ~/Library/Developer/Xcode/UserData/Provisioning\ Profiles ~/Library/MobileDevice/Provisioning\ Profiles
+          cp $PP_EXT_PATH ~/Library/MobileDevice/Provisioning\ Profiles/
 
       - name: Code Generation
         run: |
           cd $PROJECT_PATH
           dart run scripts/codegen.dart
+          gem install plist_lite
 
       - name: Build iOS
         run: |
