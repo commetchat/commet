@@ -280,19 +280,18 @@ jobs:
       - name: Code Generation
         run: |
           cd $PROJECT_PATH
-          dart run scripts/codegen.dart
           gem install plist_lite
+          dart run scripts/codegen.dart
+          cd ios
+          pod install
 
       - name: Build iOS
         run: |
           cd $PROJECT_PATH
-          cd ios
-          pod install
-          cd ..
           flutter build ipa --export-options-plist=ios/export.plist --dart-define BUILD_MODE=release --dart-define PLATFORM=ios
 
       - name: Clean up keychain and provisioning profile
         if: ${{ always() }}
         run: |
           security delete-keychain $RUNNER_TEMP/app-signing.keychain-db
-          rm ~/Library/MobileDevice/Provisioning\ Profiles/build_pp.provisionprofile
+          rm ~/Library/MobileDevice/Provisioning\ Profiles/build_pp.mobileprovision
