@@ -272,6 +272,7 @@
 				Base,
 			);
 			mainGroup = 97C146E51CF9000F007C117D;
+			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 97C146EF1CF9000F007C117D /* Products */;
 			projectDirPath = "";
@@ -549,8 +550,6 @@
 		6021A3272D828F45001F0660 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 6F71ADEFB749D97791F21965 /* Pods-servicer.debug.xcconfig */;
-			baseConfigurationReferenceAnchor = 6021A31F2D828F45001F0660 /* servicer */;
-			baseConfigurationReferenceRelativePath = "extension-debug.xcconfig";
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -597,8 +596,6 @@
 		6021A3282D828F45001F0660 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = ABF91C8D62261D1B58A78884 /* Pods-servicer.release.xcconfig */;
-			baseConfigurationReferenceAnchor = 6021A31F2D828F45001F0660 /* servicer */;
-			baseConfigurationReferenceRelativePath = extension.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -642,8 +639,6 @@
 		6021A3292D828F45001F0660 /* Profile */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D0E55B5F3A40F501ACD4023C /* Pods-servicer.profile.xcconfig */;
-			baseConfigurationReferenceAnchor = 6021A31F2D828F45001F0660 /* servicer */;
-			baseConfigurationReferenceRelativePath = "extension-profile.xcconfig";
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
