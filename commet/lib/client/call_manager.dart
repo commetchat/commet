@@ -117,6 +117,7 @@ class CallManager {
 
     player ??= Player();
     player?.open(Media("asset:///assets/sound/ringtone_out.ogg"));
+    player?.setPlaylistMode(PlaylistMode.loop);
   }
 
   void stopRingtone() {
