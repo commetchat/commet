@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
@@ -39,6 +40,8 @@ class CallManager {
     clientManager.onClientRemoved.stream.listen(_onClientRemoved);
   }
 
+  AudioPlayer? player;
+
   void _onClientAdded(int index) {
     var client = clientManager.clients[index];
 
@@ -55,28 +58,40 @@ class CallManager {
 
   void _onClientSessionStarted(VoipSession event) {
     var room = event.client.getRoom(event.roomId);
-    NotificationManager.notify(CallNotificationContent(
-        title: notificationTitleIncomingCall(event.roomName),
-        content: notificationContentUserIsCalling(
-            event.remoteUserName ?? event.remoteUserId!),
-        roomId: event.roomId,
-        roomName: event.roomName,
-        roomImage: room?.avatar,
-        callId: event.sessionId,
-        senderId: event.remoteUserId!,
-        senderImage: room?.getMemberOrFallback(event.remoteUserId!).avatar,
-        clientId: event.client.identifier,
-        isDirectMessage: event.client
-                .getComponent<DirectMessagesComponent>()
-                ?.isRoomDirectMessage(room!) ==
-            true));
-
     currentSessions.add(event);
+
+    if (event.state == VoipState.incoming) {
+      startRingtone();
+
+      NotificationManager.notify(CallNotificationContent(
+          title: notificationTitleIncomingCall(event.roomName),
+          content: notificationContentUserIsCalling(
+              event.remoteUserName ?? event.remoteUserId!),
+          roomId: event.roomId,
+          roomName: event.roomName,
+          roomImage: room?.avatar,
+          callId: event.sessionId,
+          senderId: event.remoteUserId!,
+          senderImage: room?.getMemberOrFallback(event.remoteUserId!).avatar,
+          clientId: event.client.identifier,
+          isDirectMessage: event.client
+                  .getComponent<DirectMessagesComponent>()
+                  ?.isRoomDirectMessage(room!) ==
+              true));
+    } else {
+      startOutgoingTone();
+    }
+
+    event.onStateChanged.listen((_) => onCallStateChanged(event));
   }
 
   void _onSessionEnded(VoipSession event) {
     currentSessions
         .removeWhere((element) => element.sessionId == event.sessionId);
+
+    if (currentSessions.where((e) => e.state == VoipState.incoming).isEmpty) {
+      stopRingtone();
+    }
   }
 
   VoipSession? getCallInRoom(Client client, String roomId) {
@@ -84,5 +99,40 @@ class CallManager {
         .where(
             (element) => element.client == client && element.roomId == roomId)
         .firstOrNull;
+  }
+
+  void startRingtone() {
+    if (player?.state == PlayerState.playing) {
+      return;
+    }
+
+    player ??= AudioPlayer();
+    player?.setReleaseMode(ReleaseMode.loop);
+    player?.play(
+      AssetSource("sound/ringtone_in.ogg"),
+    );
+  }
+
+  void startOutgoingTone() {
+    if (player?.state == PlayerState.playing) {
+      return;
+    }
+
+    player ??= AudioPlayer();
+    player?.setReleaseMode(ReleaseMode.loop);
+    player?.play(AssetSource("sound/ringtone_out.ogg"));
+  }
+
+  void stopRingtone() {
+    player?.stop();
+    player?.dispose();
+    player = null;
+  }
+
+  onCallStateChanged(VoipSession event) {
+    if (event.state == VoipState.connected ||
+        event.state == VoipState.connecting) {
+      stopRingtone();
+    }
   }
 }

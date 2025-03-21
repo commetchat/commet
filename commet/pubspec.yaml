@@ -94,6 +94,7 @@ dependencies:
   image: ^4.2.0
   flutter_webrtc: 0.12.11
   reflectable: ^4.0.10
+  audioplayers: ^6.4.0
 
 
   ## ---- Putting some extra lines in here to help git with the diff
@@ -154,6 +155,7 @@ flutter:
   assets: 
     - assets/config/
     - assets/l10n/
+    - assets/sound/
     - assets/images/app_icon/
     - assets/images/effects/particles/
     - assets/emoji_data/
