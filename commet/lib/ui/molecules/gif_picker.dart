@@ -110,14 +110,13 @@ class _GifPickerState extends State<GifPicker> {
     return tiamat.Tile.low(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: SizedBox(
-            height: BuildConfig.DESKTOP ? 30 : null,
-            child: TextField(
-              controller: _textController,
-              decoration: InputDecoration(
-                  icon: const Icon(Icons.search),
-                  hintText: widget.placeholderText),
-            )),
+        child: TextField(
+          controller: _textController,
+          decoration: InputDecoration(
+              isDense: true,
+              icon: const Icon(Icons.search),
+              hintText: widget.placeholderText),
+        ),
       ),
     );
   }
