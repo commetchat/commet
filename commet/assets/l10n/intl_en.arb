@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-03-02T07:32:30.174404",
+  "@@last_modified": "2025-03-21T16:22:16.121908",
   "labelRoomsList": "Rooms",
   "@labelRoomsList": {
     "description": "Header label for the list of rooms",
@@ -262,15 +262,15 @@
     "type": "text",
     "placeholders": {}
   },
-  "placeholderRoomAddress": "#awesome-room:example.com",
-  "@placeholderRoomAddress": {
-    "description": "Placeholder / Example for a room address",
+  "placeholderRoomAlias": "#awesome-room",
+  "@placeholderRoomAlias": {
+    "description": "Placeholder / Example for a room alias.",
     "type": "text",
     "placeholders": {}
   },
-  "placeholderSpaceAddress": "#awesome-space:example.com",
-  "@placeholderSpaceAddress": {
-    "description": "Placeholder / Example for a space address",
+  "placeholderSpaceAlias": "#awesome-space",
+  "@placeholderSpaceAlias": {
+    "description": "Placeholder / Example for a space alias.",
     "type": "text",
     "placeholders": {}
   },
@@ -1335,6 +1335,18 @@
   "promptReplayMessageEffect": "Replay Effect",
   "@promptReplayMessageEffect": {
     "description": "If a message was sent with an effect, this prompts to replay the effect",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptCancelEventSend": "Cancel",
+  "@promptCancelEventSend": {
+    "description": "When a message failed to send, this prompts to cancel sending the event",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptRetryEventSend": "Retry",
+  "@promptRetryEventSend": {
+    "description": "When a message failed to send, this prompts to retry sending the event",
     "type": "text",
     "placeholders": {}
   },
