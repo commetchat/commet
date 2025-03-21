@@ -139,12 +139,14 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
 
   String get placeholderRoomAddress => Intl.message("#awesome-room:example.com",
       name: "placeholderRoomAddress",
-      desc: "Placeholder / Example for a room address");
+      desc:
+          "Placeholder / Example for a room address. Please do not translate 'example.com' and keep the domain as is, this is a reserved domain specifically for use in examples, and translations could end up pointing to untrusted domains");
 
-  String get placeholderSpaceAddress =>
-      Intl.message("#awesome-space:example.com",
-          name: "placeholderSpaceAddress",
-          desc: "Placeholder / Example for a space address");
+  String get placeholderSpaceAddress => Intl.message(
+      "#awesome-space:example.com",
+      name: "placeholderSpaceAddress",
+      desc:
+          "Placeholder / Example for a space address. Please do not translate 'example.com' and keep the domain as is, this is a reserved domain specifically for use in examples, and translations could end up pointing to untrusted domains");
 
   String get labelCouldNotLoadRoomPreview => Intl.message(
       "Could not load a preview of the room",
