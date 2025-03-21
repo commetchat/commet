@@ -45,7 +45,7 @@ class MatrixClient extends Client {
 
   Future? firstSync;
 
-  matrix.ServerConfig? config;
+  matrix.MediaConfig? config;
 
   matrix.Client get matrixClient => _matrixClient;
 
@@ -79,6 +79,7 @@ class MatrixClient extends Client {
 
     _id = identifier;
     _matrixClient = _createMatrixClient(identifier);
+
     _matrixClient.onSync.stream.listen(onMatrixClientSync);
     componentsInternal = ComponentRegistry.getMatrixComponents(this);
   }
@@ -202,10 +203,13 @@ class MatrixClient extends Client {
       {bool isBackgroundService = false}) async {
     if (!_matrixClient.isLogged()) {
       await Diagnostics.general.timeAsync("Matrix client init", () async {
+        if (isBackgroundService) {
+          _matrixClient.abortSync();
+        }
+
         await _matrixClient.init(
             waitForFirstSync: !loadingFromCache,
             waitUntilLoadCompletedLoaded: true,
-            startSyncLoop: !isBackgroundService,
             onMigration: () => Log.w("Matrix Database is migrating"));
       });
 
@@ -284,7 +288,7 @@ class MatrixClient extends Client {
       },
       nativeImplementations: nativeImplementations,
       databaseBuilder: (client) => getMatrixDatabase(client.clientName),
-      logLevel: BuildConfig.RELEASE ? matrix.Level.warning : matrix.Level.info,
+      logLevel: matrix.Level.verbose,
     );
 
     client.onSyncStatus.stream.listen(onSyncStatusChanged);

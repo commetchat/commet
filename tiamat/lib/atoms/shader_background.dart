@@ -45,10 +45,12 @@ class _ShaderBackgroundState extends State<ShaderBackground> {
   void loadMyShader() async {
     loadingShader = true;
 
-    var program = await FragmentProgram.fromAsset('assets/shader/texture_coordinate.frag');
+    var program = await FragmentProgram.fromAsset(
+        'assets/shader/texture_coordinate.frag');
     shader = program.fragmentShader();
 
-    final imageData = await rootBundle.load('assets/images/placeholder/generic/checker_orange.png');
+    final imageData = await rootBundle
+        .load('assets/images/placeholder/generic/checker_orange.png');
     image = await decodeImageFromList(imageData.buffer.asUint8List());
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       if (disposing) return;
@@ -83,7 +85,8 @@ class _ShaderBackgroundState extends State<ShaderBackground> {
       return Container(
           key: key,
           child: CustomPaint(
-            painter: TextureCoordinatePainter(shader!, image!, window.width, window.height, offset),
+            painter: TextureCoordinatePainter(
+                shader!, image!, window.width, window.height, offset),
             child: Container(),
           ));
     }

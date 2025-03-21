@@ -100,8 +100,7 @@ class MatrixThreadTimeline implements Timeline {
       var event = mxevents[i];
 
       if (event.type == "m.room.encrypted") {
-        var decrypted =
-            await mx.encryption?.decryptRoomEvent(room.identifier, event);
+        var decrypted = await mx.encryption?.decryptRoomEvent(event);
         if (decrypted != null) {
           mxevents[i] = decrypted;
         }
@@ -125,8 +124,7 @@ class MatrixThreadTimeline implements Timeline {
       if (root != null) {
         var matrixEvent = matrix.Event.fromJson(root, room.matrixRoom);
         if (matrixEvent.type == "m.room.encrypted") {
-          var decrypted = await mx.encryption
-              ?.decryptRoomEvent(room.identifier, matrixEvent);
+          var decrypted = await mx.encryption?.decryptRoomEvent(matrixEvent);
           if (decrypted != null) {
             matrixEvent = decrypted;
           }
