@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:audioplayers/audioplayers.dart';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
@@ -11,6 +10,7 @@ import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/stale_info.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:intl/intl.dart';
+import 'package:media_kit/media_kit.dart';
 
 class CallManager {
   ClientManager clientManager;
@@ -40,7 +40,7 @@ class CallManager {
     clientManager.onClientRemoved.stream.listen(_onClientRemoved);
   }
 
-  AudioPlayer? player;
+  Player? player;
 
   void _onClientAdded(int index) {
     var client = clientManager.clients[index];
@@ -102,25 +102,21 @@ class CallManager {
   }
 
   void startRingtone() {
-    if (player?.state == PlayerState.playing) {
+    if (player?.state.playing == true) {
       return;
     }
 
-    player ??= AudioPlayer();
-    player?.setReleaseMode(ReleaseMode.loop);
-    player?.play(
-      AssetSource("sound/ringtone_in.ogg"),
-    );
+    player ??= Player();
+    player?.open(Media("asset:///assets/sound/ringtone_in.ogg"));
   }
 
   void startOutgoingTone() {
-    if (player?.state == PlayerState.playing) {
+    if (player?.state.playing == true) {
       return;
     }
 
-    player ??= AudioPlayer();
-    player?.setReleaseMode(ReleaseMode.loop);
-    player?.play(AssetSource("sound/ringtone_out.ogg"));
+    player ??= Player();
+    player?.open(Media("asset:///assets/sound/ringtone_out.ogg"));
   }
 
   void stopRingtone() {
