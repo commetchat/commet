@@ -550,13 +550,13 @@
     "type": "text",
     "placeholders": {}
   },
-  "placeholderRoomAddress": "#gela-zoragarria:adibidea.eus",
+  "placeholderRoomAddress": "#gela-zoragarria:example.com",
   "@placeholderRoomAddress": {
     "description": "Placeholder / Example for a room address. Please do not translate 'example.com' and keep the domain as is, this is a reserved domain specifically for use in examples, and translations could end up pointing to untrusted domains",
     "type": "text",
     "placeholders": {}
   },
-  "placeholderSpaceAddress": "#gune-zoragarria:adibidea.eus",
+  "placeholderSpaceAddress": "#gune-zoragarria:example.com",
   "@placeholderSpaceAddress": {
     "description": "Placeholder / Example for a space address. Please do not translate 'example.com' and keep the domain as is, this is a reserved domain specifically for use in examples, and translations could end up pointing to untrusted domains",
     "type": "text",
