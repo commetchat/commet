@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-03-21T16:12:27.319618",
+  "@@last_modified": "2025-03-21T16:22:16.121908",
   "labelRoomsList": "Rooms",
   "@labelRoomsList": {
     "description": "Header label for the list of rooms",
@@ -262,15 +262,15 @@
     "type": "text",
     "placeholders": {}
   },
-  "placeholderRoomAddress": "#awesome-room:example.com",
-  "@placeholderRoomAddress": {
-    "description": "Placeholder / Example for a room address. Please do not translate 'example.com' and keep the domain as is, this is a reserved domain specifically for use in examples, and translations could end up pointing to untrusted domains",
+  "placeholderRoomAlias": "#awesome-room",
+  "@placeholderRoomAlias": {
+    "description": "Placeholder / Example for a room alias.",
     "type": "text",
     "placeholders": {}
   },
-  "placeholderSpaceAddress": "#awesome-space:example.com",
-  "@placeholderSpaceAddress": {
-    "description": "Placeholder / Example for a space address. Please do not translate 'example.com' and keep the domain as is, this is a reserved domain specifically for use in examples, and translations could end up pointing to untrusted domains",
+  "placeholderSpaceAlias": "#awesome-space",
+  "@placeholderSpaceAlias": {
+    "description": "Placeholder / Example for a space alias.",
     "type": "text",
     "placeholders": {}
   },
