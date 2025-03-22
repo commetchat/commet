@@ -1675,5 +1675,29 @@
     "description": "Label for enabling generic icons in the appearance settings",
     "type": "text",
     "placeholders": {}
+  },
+  "placeholderSpaceAlias": "#крутецький-простір",
+  "@placeholderSpaceAlias": {
+    "description": "Placeholder / Example for a space alias.",
+    "type": "text",
+    "placeholders": {}
+  },
+  "placeholderRoomAlias": "#крутецька-кімната",
+  "@placeholderRoomAlias": {
+    "description": "Placeholder / Example for a room alias.",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptCancelEventSend": "Скасувати",
+  "@promptCancelEventSend": {
+    "description": "When a message failed to send, this prompts to cancel sending the event",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptRetryEventSend": "Повторити",
+  "@promptRetryEventSend": {
+    "description": "When a message failed to send, this prompts to retry sending the event",
+    "type": "text",
+    "placeholders": {}
   }
 }
