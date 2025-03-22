@@ -242,9 +242,9 @@ jobs:
 
       - name: Setup Provisioning Profile
         env:
-          BUILD_CERTIFICATE_BASE64: ${{ secrets.YORK_IOS_CERT_P12 }}
-          P12_PASSWORD: ${{ secrets.YORK_IOS_CERT_P12_PASSWORD }}
-          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.COMMET_IOS_PROFILE_PROVISIONPROFILE }}
+          BUILD_CERTIFICATE_BASE64: ${{ secrets.IOS_SIGNING_P12 }}
+          P12_PASSWORD: ${{ secrets.IOS_SIGNING_P12_PASSWORD }}
+          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.COMMET_IOS_MOBILEPROVISION }}
           BUILD_EXTENSION_PROVISION_PROFILE_BASE64: ${{ secrets.COMMET_IOS_EXTENSION_MOBILEPROVISION }}
           KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
         run: |
