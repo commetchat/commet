@@ -277,6 +277,19 @@ jobs:
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/
           cp $PP_EXT_PATH ~/Library/MobileDevice/Provisioning\ Profiles/
 
+      - name: Create Configuration
+        env:
+        run: |
+          cd $PROJECT_PATH/ios
+          touch AppInfo.xcconfig
+          echo PRODUCT_NAME=commet >> AppInfo.xcconfig
+          echo PRODUCT_BUNDLE_IDENTIFIER=${{ vars.BUNDLE_ID }} >> AppInfo.xcconfig
+          echo PRODUCT_SERVICE_BUNDLE_IDENTIFIER=${{ vars.BUNDLE_SERVICER_ID }} >> AppInfo.xcconfig
+          echo PRODUCT_COPYRIGHT="Copyright © 2023 commet.chat. All rights reserved." >> AppInfo.xcconfig
+          echo PRODUCT_TEAM=${{ secrets.DEV_TEAM_ID }} >> AppInfo.xcconfig
+          echo PRODUCT_PROFILE=${{ secrets.IOS_PROVISIONING_PROFILE_NAME }} >> AppInfo.xcconfig
+          echo PRODUCT_SERVICE_PROFILE=${{ secrets.IOS_EXTENSION_PROVISIONING_PROFILE_NAME }} >> AppInfo.xcconfig
+
       - name: Code Generation
         run: |
           cd $PROJECT_PATH
