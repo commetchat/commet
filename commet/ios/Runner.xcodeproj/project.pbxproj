@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 63;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -15,7 +15,6 @@
 		600CB1472D8F2B0A002E12F6 /* extension-debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 600CB1402D8F2B0A002E12F6 /* extension-debug.xcconfig */; };
 		600CB1482D8F2B0A002E12F6 /* extension-profile.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 600CB1412D8F2B0A002E12F6 /* extension-profile.xcconfig */; };
 		600CB14A2D8F2B0A002E12F6 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600CB1432D8F2B0A002E12F6 /* NotificationService.swift */; };
-		600D31212D83386000F738D9 /* Flutter.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 600D31202D83386000F738D9 /* Flutter.xcframework */; };
 		6021A3252D828F45001F0660 /* servicer.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 6021A31E2D828F45001F0660 /* servicer.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
@@ -97,7 +96,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				600D31212D83386000F738D9 /* Flutter.xcframework in Frameworks */,
 				F0DC56CC087774C439052C75 /* Pods_servicer.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
