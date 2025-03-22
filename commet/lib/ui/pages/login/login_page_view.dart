@@ -362,6 +362,7 @@ class _LoginPageViewState extends State<LoginPageView> {
       controller: _homeserverTextField,
       readOnly: widget.isLoggingIn,
       onChanged: widget.updateHomeserver,
+      keyboardType: TextInputType.url,
       inputFormatters: [FilteringTextInputFormatter.deny(RegExp("[ ]"))],
       decoration: InputDecoration(
           prefixText: 'https://',

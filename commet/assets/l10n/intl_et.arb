@@ -1178,9 +1178,9 @@
     "type": "text",
     "placeholders": {}
   },
-  "placeholderRoomAddress": "#vahva-jututuba:domeen.tld",
+  "placeholderRoomAddress": "#vahva-jututuba:example.com",
   "@placeholderRoomAddress": {
-    "description": "Placeholder / Example for a room address",
+    "description": "Placeholder / Example for a room address. Please do not translate 'example.com' and keep the domain as is, this is a reserved domain specifically for use in examples, and translations could end up pointing to untrusted domains",
     "type": "text",
     "placeholders": {}
   },
@@ -1264,7 +1264,7 @@
   },
   "placeholderSpaceAddress": "#vahva-kogukond:domeen.tld",
   "@placeholderSpaceAddress": {
-    "description": "Placeholder / Example for a space address",
+    "description": "Placeholder / Example for a space address. Please do not translate 'example.com' and keep the domain as is, this is a reserved domain specifically for use in examples, and translations could end up pointing to untrusted domains",
     "type": "text",
     "placeholders": {}
   },

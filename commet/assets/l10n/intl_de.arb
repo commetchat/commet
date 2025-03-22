@@ -1090,7 +1090,7 @@
   },
   "placeholderRoomAddress": "#ein-toller-raum:matrix.org",
   "@placeholderRoomAddress": {
-    "description": "Placeholder / Example for a room address",
+    "description": "Placeholder / Example for a room address. Please do not translate 'example.com' and keep the domain as is, this is a reserved domain specifically for use in examples, and translations could end up pointing to untrusted domains",
     "type": "text",
     "placeholders": {}
   },
@@ -1219,7 +1219,7 @@
   },
   "placeholderSpaceAddress": "#ein-toller-space:matrix.org",
   "@placeholderSpaceAddress": {
-    "description": "Placeholder / Example for a space address",
+    "description": "Placeholder / Example for a space address. Please do not translate 'example.com' and keep the domain as is, this is a reserved domain specifically for use in examples, and translations could end up pointing to untrusted domains",
     "type": "text",
     "placeholders": {}
   },
