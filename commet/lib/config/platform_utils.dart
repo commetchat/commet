@@ -22,4 +22,25 @@ class PlatformUtils {
   static bool get isWeb {
     return kIsWeb;
   }
+
+  static bool get isIOS {
+    if (kIsWeb) return false;
+    return Platform.isIOS;
+  }
+
+  static bool get isMacOS {
+    if (kIsWeb) return false;
+    return Platform.isMacOS;
+  }
+
+  static String get appID {
+    if (Platform.isIOS) {
+      return "chat.commet.commetapp.quirt";
+    } else if (Platform.isMacOS) {
+      return "chat.commet.commetapp.macos";
+    } else if (Platform.isAndroid) {
+      return "chat.commet.commetapp.android";
+    }
+    return "chat.commet.commetapp";
+  }
 }

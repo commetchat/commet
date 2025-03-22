@@ -65,7 +65,7 @@ Future<void> _firebaseMessagingBackgroundHandler(dynamic message) async {
 }
 
 class FirebasePushNotifier implements Notifier {
-  late AndroidNotifier notifier;
+  late Notifier notifier;
 
   @override
   bool get hasPermission => notifier.hasPermission;
