@@ -278,7 +278,6 @@ jobs:
           cp $PP_EXT_PATH ~/Library/MobileDevice/Provisioning\ Profiles/
 
       - name: Create Configuration
-        env:
         run: |
           cd $PROJECT_PATH/ios
           touch AppInfo.xcconfig
