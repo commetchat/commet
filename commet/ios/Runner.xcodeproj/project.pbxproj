@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 63;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -11,9 +11,6 @@
 		33094CB8717F20131D8A6C51 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DF23A21167A1629A46938202 /* Pods_Runner.framework */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
 		600CAF462D8B2821002E12F6 /* AppInfo.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 600CAF452D8B2821002E12F6 /* AppInfo.xcconfig */; };
-		600CB1462D8F2B0A002E12F6 /* extension.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 600CB13F2D8F2B0A002E12F6 /* extension.xcconfig */; };
-		600CB1472D8F2B0A002E12F6 /* extension-debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 600CB1402D8F2B0A002E12F6 /* extension-debug.xcconfig */; };
-		600CB1482D8F2B0A002E12F6 /* extension-profile.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 600CB1412D8F2B0A002E12F6 /* extension-profile.xcconfig */; };
 		600CB14A2D8F2B0A002E12F6 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600CB1432D8F2B0A002E12F6 /* NotificationService.swift */; };
 		6021A3252D828F45001F0660 /* servicer.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 6021A31E2D828F45001F0660 /* servicer.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
@@ -65,9 +62,6 @@
 		3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = AppFrameworkInfo.plist; path = Flutter/AppFrameworkInfo.plist; sourceTree = "<group>"; };
 		57C41A2591C5EDD8E3475A60 /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
 		600CAF452D8B2821002E12F6 /* AppInfo.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = AppInfo.xcconfig; sourceTree = "<group>"; };
-		600CB13F2D8F2B0A002E12F6 /* extension.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = extension.xcconfig; sourceTree = "<group>"; };
-		600CB1402D8F2B0A002E12F6 /* extension-debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "extension-debug.xcconfig"; sourceTree = "<group>"; };
-		600CB1412D8F2B0A002E12F6 /* extension-profile.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "extension-profile.xcconfig"; sourceTree = "<group>"; };
 		600CB1422D8F2B0A002E12F6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		600CB1432D8F2B0A002E12F6 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		600CB1442D8F2B0A002E12F6 /* servicer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = servicer.entitlements; sourceTree = "<group>"; };
@@ -124,9 +118,6 @@
 		600CB1452D8F2B0A002E12F6 /* servicer */ = {
 			isa = PBXGroup;
 			children = (
-				600CB13F2D8F2B0A002E12F6 /* extension.xcconfig */,
-				600CB1402D8F2B0A002E12F6 /* extension-debug.xcconfig */,
-				600CB1412D8F2B0A002E12F6 /* extension-profile.xcconfig */,
 				600CB1422D8F2B0A002E12F6 /* Info.plist */,
 				600CB1432D8F2B0A002E12F6 /* NotificationService.swift */,
 				600CB1442D8F2B0A002E12F6 /* servicer.entitlements */,
@@ -285,9 +276,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				600CB1462D8F2B0A002E12F6 /* extension.xcconfig in Resources */,
-				600CB1472D8F2B0A002E12F6 /* extension-debug.xcconfig in Resources */,
-				600CB1482D8F2B0A002E12F6 /* extension-profile.xcconfig in Resources */,
 				600CAF462D8B2821002E12F6 /* AppInfo.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
