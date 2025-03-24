@@ -1669,5 +1669,29 @@
     "description": "Description for the enable generic icons setting",
     "type": "text",
     "placeholders": {}
+  },
+  "placeholderRoomAlias": "#gela-zoragarria",
+  "@placeholderRoomAlias": {
+    "description": "Placeholder / Example for a room alias.",
+    "type": "text",
+    "placeholders": {}
+  },
+  "placeholderSpaceAlias": "#gune-zoragarria",
+  "@placeholderSpaceAlias": {
+    "description": "Placeholder / Example for a space alias.",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptCancelEventSend": "Utzi",
+  "@promptCancelEventSend": {
+    "description": "When a message failed to send, this prompts to cancel sending the event",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptRetryEventSend": "Saiatu berriro",
+  "@promptRetryEventSend": {
+    "description": "When a message failed to send, this prompts to retry sending the event",
+    "type": "text",
+    "placeholders": {}
   }
 }
