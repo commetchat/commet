@@ -222,6 +222,9 @@ class UnicodeEmoticonPack implements EmoticonPack {
       {EmoticonUsage? usage, String? name, Uint8List? imageData}) {
     throw UnimplementedError();
   }
+
+  @override
+  bool get isGloballyAvailable => false;
 }
 
 class UnicodeEmoticon extends Emoticon {

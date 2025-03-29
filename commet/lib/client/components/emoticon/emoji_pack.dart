@@ -11,6 +11,8 @@ abstract class EmoticonPack {
   String get ownerId;
   String get ownerDisplayName;
 
+  bool get isGloballyAvailable;
+
   Stream<int> get onEmoticonAdded;
 
   List<Emoticon> get emotes;

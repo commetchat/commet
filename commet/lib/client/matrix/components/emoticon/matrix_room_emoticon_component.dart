@@ -131,7 +131,7 @@ class MatrixRoomEmoticonComponent extends MatrixEmoticonComponent
         .where((element) => element.containsRoom(room.identifier))) {
       var component = space.getComponent<MatrixSpaceEmoticonComponent>();
       if (component != null) {
-        result.addAll(component.ownedPacks);
+        result.addAll(component.ownedPacks.where((e) => !result.contains(e)));
       }
     }
 
@@ -145,7 +145,8 @@ class MatrixRoomEmoticonComponent extends MatrixEmoticonComponent
     }
 
     if (globalComponent != null) {
-      result.addAll(globalComponent.ownedPacks);
+      result
+          .addAll(globalComponent.ownedPacks.where((e) => !result.contains(e)));
     }
 
     if (includeUnicode) result.addAll(UnicodeEmojis.packs!);

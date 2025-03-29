@@ -240,4 +240,32 @@ class MatrixEmoticonPack implements EmoticonPack {
   @override
   bool get isStickerPack =>
       [EmoticonUsage.sticker, EmoticonUsage.all].contains(usage);
+
+  @override
+  bool get isGloballyAvailable {
+    late Room room;
+    if (component is MatrixRoomEmoticonComponent) {
+      room = (component as MatrixRoomEmoticonComponent).room.matrixRoom;
+    } else if (component is MatrixSpaceEmoticonComponent) {
+      room = (component as MatrixSpaceEmoticonComponent).space.matrixRoom;
+    } else {
+      return false;
+    }
+
+    final data = room
+        .client.accountData[MatrixEmoticonComponent.globalEmoteRoomsStateKey];
+    if (data == null) {
+      return false;
+    }
+
+    final rooms = data.content.tryGetMap<String, dynamic>("rooms");
+
+    if (rooms == null) {
+      return false;
+    }
+
+    final roomData = rooms.tryGetMap<String, dynamic>(room.id);
+
+    return roomData?.containsKey(identifier) ?? false;
+  }
 }

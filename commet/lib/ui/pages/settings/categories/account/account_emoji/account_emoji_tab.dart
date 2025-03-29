@@ -69,8 +69,7 @@ class _AccountEmojiTabState extends State<AccountEmojiTab> {
         const SizedBox(
           height: 5,
         ),
-        if (component!.globalPacks().isNotEmpty)
-          AccountEmojiView(component!.globalPacks(), component!.ownedPacks),
+        if (component!.globalPacks().isNotEmpty) AccountEmojiView(component!),
       ],
     );
   }

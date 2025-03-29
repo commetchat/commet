@@ -36,7 +36,9 @@ class MatrixEmoticonPersonalStateManager implements MatrixEmoticonStateManager {
     });
 
     mx.onSync.stream.where((e) => e.accountData != null).listen((update) {
-      if (update.accountData?.any((e) => e.type == "im.ponies.user_emotes") ==
+      if (update.accountData?.any((e) =>
+              e.type == "im.ponies.user_emotes" ||
+              e.type == "im.ponies.emote_rooms") ==
           true) {
         onStateChangedController.add(null);
       }

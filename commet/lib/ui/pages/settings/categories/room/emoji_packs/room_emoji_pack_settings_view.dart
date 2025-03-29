@@ -6,6 +6,7 @@ import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/ui/molecules/image_picker.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
+import 'package:commet/ui/pages/settings/categories/room/emoji_packs/bulk_import_view.dart';
 import 'package:commet/utils/common_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -28,26 +29,46 @@ class _RoomEmojiPackSettingsViewState extends State<RoomEmojiPackSettingsView> {
   StreamSubscription? sub;
   bool canCreatePack = false;
 
+  String get promptImportPack => Intl.message("Import pack",
+      name: "promptImportPack",
+      desc: "Prompt to import a set of emoticons from an existing pack");
+
   @override
   void initState() {
     super.initState();
 
-    sub = widget.component.onStateChanged.listen((_) => setState(() {
-          updateState();
-        }));
+    sub = widget.component.onStateChanged.listen((_) => updateState());
 
     updateState();
   }
 
   void updateState() {
-    packs = widget.component.ownedPacks;
-    canCreatePack = widget.component.canCreatePack;
+    setState(() {
+      packs = widget.component.ownedPacks;
+      canCreatePack = widget.component.canCreatePack;
+    });
   }
 
   @override
   void dispose() {
     sub?.cancel;
     super.dispose();
+  }
+
+  void promptBulkImport() async {
+    await AdaptiveDialog.show(
+      context,
+      title: promptImportPack,
+      builder: (context) {
+        return EmoticonBulkImportDialog(
+          importPack: (name, avatarIndex, names, imageDatas) {
+            widget.component
+                .importEmoticonPack(name, avatarIndex, names, imageDatas);
+            Navigator.pop(context);
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -119,7 +140,16 @@ class _RoomEmojiPackSettingsViewState extends State<RoomEmojiPackSettingsView> {
                                       color: Theme.of(context)
                                           .colorScheme
                                           .secondaryContainer,
-                                      Icons.sticky_note_2_rounded)
+                                      Icons.sticky_note_2_rounded),
+                                tiamat.IconToggle(
+                                  icon: Icons.favorite,
+                                  size: 17,
+                                  state: e.isGloballyAvailable,
+                                  onPressed: (newState) async {
+                                    await e.markAsGlobal(newState);
+                                    updateState();
+                                  },
+                                ),
                               ],
                             ),
                           ],
@@ -143,19 +173,30 @@ class _RoomEmojiPackSettingsViewState extends State<RoomEmojiPackSettingsView> {
         if (canCreatePack)
           Align(
             alignment: Alignment.topRight,
-            child: tiamat.CircleButton(
-                icon: Icons.add,
-                onPressed: () => AdaptiveDialog.show(context,
-                    builder: (context) => EmoticonCreator(
-                          createPack: true,
-                          creatingNew: true,
-                          onCreate: (name, usage, newImageData) async {
-                            await widget.component
-                                .createEmoticonPack(name, newImageData);
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                tiamat.CircleButton(
+                    icon: Icons.auto_awesome_motion,
+                    onPressed: promptBulkImport),
+                SizedBox(
+                  width: 10,
+                ),
+                tiamat.CircleButton(
+                    icon: Icons.add,
+                    onPressed: () => AdaptiveDialog.show(context,
+                        builder: (context) => EmoticonCreator(
+                              createPack: true,
+                              creatingNew: true,
+                              onCreate: (name, usage, newImageData) async {
+                                await widget.component
+                                    .createEmoticonPack(name, newImageData);
 
-                            return true;
-                          },
-                        ))),
+                                return true;
+                              },
+                            ))),
+              ],
+            ),
           )
       ],
     );
@@ -318,7 +359,7 @@ class EmoticonCreator extends StatefulWidget {
 
 class _EmoticonCreatorState extends State<EmoticonCreator> {
   late EmoticonUsage usage;
-  late ImageProvider? image;
+  ImageProvider? image;
 
   Uint8List? imageData;
   TextEditingController controller = TextEditingController();
@@ -341,12 +382,20 @@ class _EmoticonCreatorState extends State<EmoticonCreator> {
   void initState() {
     super.initState();
 
-    if (widget.createPack && widget.pack != null) {
-      usage = widget.pack!.usage;
-      controller.text = widget.pack!.displayName;
-      image = widget.pack!.image;
+    if (widget.createPack) {
+      if (widget.pack != null) {
+        usage = widget.pack!.usage;
+        controller.text = widget.pack!.displayName;
+        image = widget.pack!.image;
+      } else {
+        usage = EmoticonUsage.all;
+      }
     } else {
-      usage = widget.initialEmoticon?.usage ?? EmoticonUsage.inherit;
+      if (widget.initialEmoticon != null) {
+        usage = widget.initialEmoticon!.usage;
+      } else {
+        usage = EmoticonUsage.inherit;
+      }
       controller.text = widget.initialEmoticon?.shortcode ?? "";
       image = widget.initialEmoticon?.image;
     }
@@ -442,7 +491,7 @@ class _EmoticonCreatorState extends State<EmoticonCreator> {
                             tiamat.Text.label(switch (item) {
                               EmoticonUsage.sticker => "Sticker",
                               EmoticonUsage.emoji => "Emoji",
-                              EmoticonUsage.inherit => "Follow Pack",
+                              EmoticonUsage.inherit => "Follow Pack Settings",
                               EmoticonUsage.all => "Emoji & Sticker",
                             })
                           ],
