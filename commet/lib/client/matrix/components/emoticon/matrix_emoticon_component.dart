@@ -225,6 +225,31 @@ class MatrixEmoticonComponent extends EmoticonComponent<MatrixClient> {
     return state.setState(packKey, content);
   }
 
+  Future<void> updatePack(String packKey,
+      {EmoticonUsage? usage, String? name, Uint8List? imageData}) async {
+    var content = state.getState(packKey);
+
+    if (usage != null) {
+      content['pack']['usage'] = switch (usage) {
+        EmoticonUsage.sticker => ["sticker"],
+        EmoticonUsage.emoji => ["emoticon"],
+        EmoticonUsage.all => ["emoticon", "sticker"],
+        EmoticonUsage.inherit => null,
+      };
+    }
+
+    if (name != null) {
+      content['pack']['display_name'] = name;
+    }
+
+    if (imageData != null) {
+      Uri url = await client.getMatrixClient().uploadContent(imageData);
+      content['pack']['avatar_url'] = url.toString();
+    }
+
+    return state.setState(packKey, content);
+  }
+
   Future<void> updateEmoticon(
     String packKey,
     String emoteName, {
@@ -242,6 +267,7 @@ class MatrixEmoticonComponent extends EmoticonComponent<MatrixClient> {
         EmoticonUsage.sticker => ["sticker"],
         EmoticonUsage.emoji => ["emoticon"],
         EmoticonUsage.all => ["emoticon", "sticker"],
+        EmoticonUsage.inherit => null,
       };
     }
 

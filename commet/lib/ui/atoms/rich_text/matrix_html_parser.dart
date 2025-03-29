@@ -221,6 +221,7 @@ class MatrixEmoticonHtmlExtension extends HtmlExtension {
         child: EmojiWidget(
       MatrixEmoticon(uri, client,
           shortcode: context.attributes["alt"] ?? "",
+          packUsage: EmoticonUsage.all,
           usage: EmoticonUsage.emoji),
       height: emojiSize,
     ));

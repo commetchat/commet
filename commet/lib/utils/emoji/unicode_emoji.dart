@@ -155,17 +155,9 @@ class UnicodeEmoticonPack implements EmoticonPack {
   }
 
   @override
-  Future<void> renameEmoticon(Emoticon emoticon, String name) {
-    throw UnimplementedError();
-  }
-
-  @override
   Future<void> markAsGlobal(bool isGlobal) {
     throw UnimplementedError();
   }
-
-  @override
-  bool get isGloballyAvailable => true;
 
   @override
   List<String> getShortcodes() {
@@ -199,9 +191,6 @@ class UnicodeEmoticonPack implements EmoticonPack {
   String get ownerId => "";
 
   @override
-  Future<void> setEmoticonUsage(Emoticon emoticon, EmoticonUsage usage) async {}
-
-  @override
   Future<void> setPackUsage(EmoticonUsage usage) async {}
 
   @override
@@ -214,7 +203,6 @@ class UnicodeEmoticonPack implements EmoticonPack {
       required Uint8List data,
       String? mimeType,
       EmoticonUsage? usage}) {
-    // TODO: implement addEmoticon
     throw UnimplementedError();
   }
 
@@ -226,7 +214,12 @@ class UnicodeEmoticonPack implements EmoticonPack {
       String? mimeType,
       EmoticonUsage? usage,
       required Emoticon previous}) {
-    // TODO: implement updateEmoticon
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> updatePack(
+      {EmoticonUsage? usage, String? name, Uint8List? imageData}) {
     throw UnimplementedError();
   }
 }
@@ -251,12 +244,6 @@ class UnicodeEmoticon extends Emoticon {
 
   @override
   bool get isSticker => false;
-
-  @override
-  bool get isMarkedEmoji => true;
-
-  @override
-  bool get isMarkedSticker => false;
 
   UnicodeEmoticon(String text, {String? shortcode}) {
     _shortcode = shortcode;

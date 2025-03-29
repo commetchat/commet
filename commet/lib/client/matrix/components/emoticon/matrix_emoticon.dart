@@ -21,8 +21,12 @@ class MatrixEmoticon implements Emoticon {
   @override
   EmoticonUsage usage;
 
+  EmoticonUsage packUsage;
+
   MatrixEmoticon(this.emojiUrl, matrix.Client client,
-      {required String shortcode, required this.usage}) {
+      {required this.packUsage,
+      required String shortcode,
+      required this.usage}) {
     _shortcode = shortcode;
     _image = MatrixMxcImage(emojiUrl, client, doThumbnail: false);
   }
@@ -56,9 +60,15 @@ class MatrixEmoticon implements Emoticon {
 
   @override
   bool get isSticker =>
-      usage == EmoticonUsage.sticker || usage == EmoticonUsage.all;
+      usage == EmoticonUsage.sticker ||
+      usage == EmoticonUsage.all ||
+      (usage == EmoticonUsage.inherit &&
+          [EmoticonUsage.sticker, EmoticonUsage.all].contains(packUsage));
 
   @override
   bool get isEmoji =>
-      usage == EmoticonUsage.emoji || usage == EmoticonUsage.all;
+      usage == EmoticonUsage.emoji ||
+      usage == EmoticonUsage.all ||
+      (usage == EmoticonUsage.inherit &&
+          [EmoticonUsage.emoji, EmoticonUsage.all].contains(packUsage));
 }

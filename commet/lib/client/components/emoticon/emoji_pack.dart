@@ -30,7 +30,14 @@ abstract class EmoticonPack {
 
   Future<void> setPackUsage(EmoticonUsage usage);
 
+  Future<void> updatePack(
+      {EmoticonUsage? usage, String? name, Uint8List? imageData});
+
   Emoticon? getByShortcode(String shortcode);
+
+  bool get isStickerPack;
+
+  bool get isEmojiPack;
 
   Future<void> updateEmoticon({
     String? slug,

@@ -26,16 +26,22 @@ class _RoomEmojiPackSettingsViewState extends State<RoomEmojiPackSettingsView> {
   late List<EmoticonPack> packs;
 
   StreamSubscription? sub;
+  bool canCreatePack = false;
 
   @override
   void initState() {
     super.initState();
 
     sub = widget.component.onStateChanged.listen((_) => setState(() {
-          packs = widget.component.ownedPacks;
+          updateState();
         }));
 
+    updateState();
+  }
+
+  void updateState() {
     packs = widget.component.ownedPacks;
+    canCreatePack = widget.component.canCreatePack;
   }
 
   @override
@@ -47,40 +53,111 @@ class _RoomEmojiPackSettingsViewState extends State<RoomEmojiPackSettingsView> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: packs
-          .map(
-            (e) => Padding(
-              padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
-              child: ExpansionTile(
-                collapsedBackgroundColor:
-                    Theme.of(context).colorScheme.surfaceContainer,
-                backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
-                title: Row(
-                  children: [
-                    if (e.image != null)
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
-                        child: SizedBox(
-                            width: 40,
-                            height: 40,
-                            child: Image(image: e.image!)),
-                      ),
-                    tiamat.Text.label(e.displayName),
-                  ],
-                ),
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
-                    child: EmoticonPackEditor(
-                      pack: e,
-                      editable: widget.editable,
+      children: [
+        Column(
+          children: packs
+              .map(
+                (e) => Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
+                  child: ExpansionTile(
+                    collapsedBackgroundColor:
+                        Theme.of(context).colorScheme.surfaceContainer,
+                    backgroundColor:
+                        Theme.of(context).colorScheme.surfaceContainer,
+                    title: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            if (e.image != null)
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+                                child: SizedBox(
+                                    width: 40,
+                                    height: 40,
+                                    child: Image(image: e.image!)),
+                              ),
+                            tiamat.Text.label(e.displayName),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Row(
+                              children: [
+                                if (widget.editable)
+                                  tiamat.IconButton(
+                                      size: 20,
+                                      icon: Icons.edit,
+                                      onPressed: () => AdaptiveDialog.show(
+                                          context,
+                                          builder: (context) => EmoticonCreator(
+                                                pack: e,
+                                                createPack: true,
+                                                onCreate: (name, usage,
+                                                    newImageData) async {
+                                                  await e.updatePack(
+                                                    name: name,
+                                                    usage: usage,
+                                                    imageData: newImageData,
+                                                  );
+                                                  return true;
+                                                },
+                                                onDelete: () {
+                                                  return widget.component
+                                                      .deleteEmoticonPack(e);
+                                                },
+                                              ))),
+                                if (e.isEmojiPack)
+                                  Icon(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondaryContainer,
+                                      size: 20,
+                                      Icons.emoji_emotions),
+                                if (e.isStickerPack)
+                                  Icon(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondaryContainer,
+                                      Icons.sticky_note_2_rounded)
+                              ],
+                            ),
+                          ],
+                        )
+                      ],
                     ),
-                  )
-                ],
-              ),
-            ),
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
+                        child: EmoticonPackEditor(
+                          pack: e,
+                          editable: widget.editable,
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              )
+              .toList(),
+        ),
+        if (canCreatePack)
+          Align(
+            alignment: Alignment.topRight,
+            child: tiamat.CircleButton(
+                icon: Icons.add,
+                onPressed: () => AdaptiveDialog.show(context,
+                    builder: (context) => EmoticonCreator(
+                          createPack: true,
+                          creatingNew: true,
+                          onCreate: (name, usage, newImageData) async {
+                            await widget.component
+                                .createEmoticonPack(name, newImageData);
+
+                            return true;
+                          },
+                        ))),
           )
-          .toList(),
+      ],
     );
   }
 }
@@ -118,7 +195,7 @@ class EmoticonPackEditor extends StatelessWidget {
                               : () => AdaptiveDialog.show(context,
                                   title: editEmoticonDialogTitle,
                                   builder: (context) => EmoticonCreator(
-                                        pack,
+                                        pack: pack,
                                         initialEmoticon: e,
                                         onCreate:
                                             (name, usage, newImageData) async {
@@ -166,7 +243,13 @@ class EmoticonPackEditor extends StatelessWidget {
                                           color: Theme.of(context)
                                               .colorScheme
                                               .secondaryContainer,
-                                          Icons.sticky_note_2_rounded)
+                                          Icons.sticky_note_2_rounded),
+                                    if (e.usage == EmoticonUsage.inherit)
+                                      Icon(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondaryContainer,
+                                          Icons.arrow_downward)
                                   ],
                                 )
                               ],
@@ -188,7 +271,8 @@ class EmoticonPackEditor extends StatelessWidget {
                 onPressed: () => AdaptiveDialog.show(context,
                     title: createEmoticonDialogTitle,
                     builder: (context) => EmoticonCreator(
-                          pack,
+                          pack: pack,
+                          creatingNew: true,
                           onCreate: (name, usage, newImageData) async {
                             await pack.addEmoticon(
                                 slug: name,
@@ -209,16 +293,19 @@ class EmoticonPackEditor extends StatelessWidget {
 }
 
 class EmoticonCreator extends StatefulWidget {
-  const EmoticonCreator(this.pack,
+  const EmoticonCreator(
       {this.initialEmoticon,
+      this.pack,
       this.createPack = false,
       this.onCreate,
       this.onDelete,
+      this.creatingNew = false,
       super.key});
 
   final Emoticon? initialEmoticon;
-  final EmoticonPack pack;
+  final EmoticonPack? pack;
   final bool createPack;
+  final bool creatingNew;
 
   final Future<bool> Function(
       String name, EmoticonUsage usage, Uint8List? newImageData)? onCreate;
@@ -254,9 +341,15 @@ class _EmoticonCreatorState extends State<EmoticonCreator> {
   void initState() {
     super.initState();
 
-    usage = widget.initialEmoticon?.usage ?? EmoticonUsage.all;
-    controller.text = widget.initialEmoticon?.shortcode ?? "";
-    image = widget.initialEmoticon?.image;
+    if (widget.createPack && widget.pack != null) {
+      usage = widget.pack!.usage;
+      controller.text = widget.pack!.displayName;
+      image = widget.pack!.image;
+    } else {
+      usage = widget.initialEmoticon?.usage ?? EmoticonUsage.inherit;
+      controller.text = widget.initialEmoticon?.shortcode ?? "";
+      image = widget.initialEmoticon?.image;
+    }
   }
 
   @override
@@ -271,133 +364,134 @@ class _EmoticonCreatorState extends State<EmoticonCreator> {
             ignoring: loading,
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: 300, maxHeight: 300),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SizedBox(
-                          width: 50,
-                          height: 50,
-                          child: ImagePicker(
-                            size: 50,
-                            icon: Icons.add_a_photo,
-                            withData: true,
-                            currentImage: image,
-                            onImageRead: (bytes, mimeType, filepath) {
-                              imageData = bytes;
-                              var name =
-                                  path.basename(filepath).split('.').first;
-                              if (controller.text.isEmpty &&
-                                  !widget.createPack) {
-                                controller.text = name;
-                              }
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(
+                        width: 50,
+                        height: 50,
+                        child: ImagePicker(
+                          size: 50,
+                          icon: Icons.add_a_photo,
+                          withData: true,
+                          currentImage: image,
+                          onImageRead: (bytes, mimeType, filepath) {
+                            imageData = bytes;
+                            var name = path.basename(filepath).split('.').first;
+                            if (controller.text.isEmpty && !widget.createPack) {
+                              controller.text = name;
+                            }
 
-                              image = Image.memory(bytes).image;
-                            },
+                            image = Image.memory(bytes).image;
+                          },
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 4,
+                      ),
+                      Expanded(
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(minWidth: 300),
+                          child: tiamat.TextInput(
+                            maxLines: 1,
+                            placeholder: widget.createPack
+                                ? promptEmoticonPackName
+                                : promptEmoteName,
+                            controller: controller,
                           ),
                         ),
-                        const SizedBox(
-                          width: 4,
-                        ),
-                        Expanded(
-                          child: ConstrainedBox(
-                            constraints: const BoxConstraints(minWidth: 300),
-                            child: tiamat.TextInput(
-                              maxLines: 1,
-                              placeholder: widget.createPack
-                                  ? promptEmoticonPackName
-                                  : promptEmoteName,
-                              controller: controller,
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 4,
-                    ),
-                    SizedBox(
-                      height: 40,
-                      width: 40,
-                      child: tiamat.DropdownSelector(
-                        itemHeight: 40,
-                        items: const [
-                          EmoticonUsage.emoji,
-                          EmoticonUsage.sticker,
-                          EmoticonUsage.all,
-                        ],
-                        value: usage,
-                        onItemSelected: (item) {
-                          setState(() {
-                            usage = item;
-                          });
-                        },
-                        itemBuilder: (item) {
-                          return Row(
-                            children: [
-                              Icon(switch (item) {
-                                EmoticonUsage.sticker => Icons.sticky_note_2,
-                                EmoticonUsage.emoji => Icons.emoji_emotions,
-                                EmoticonUsage.all => Icons.star
-                              }),
-                              const SizedBox(
-                                width: 8,
-                              ),
-                              tiamat.Text.label(switch (item) {
-                                EmoticonUsage.sticker => "Sticker",
-                                EmoticonUsage.emoji => "Emoji",
-                                EmoticonUsage.all => "Emoji & Sticker",
-                              })
-                            ],
-                          );
-                        },
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 4,
-                    ),
-                    SizedBox(
-                      height: 48,
-                      child: tiamat.Button(
-                        text: promptConfirmSaveEmoticon,
-                        onTap: () {
-                          if (controller.text.isNotEmpty) {
-                            setState(() {
-                              loading = true;
-                            });
-
-                            widget.onCreate
-                                ?.call(controller.text, usage, imageData)
-                                .then((e) => Navigator.of(context).pop());
-                          }
-                        },
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 4,
-                    ),
-                    if (widget.initialEmoticon != null)
-                      tiamat.Button.danger(
-                        text: CommonStrings.promptDelete,
-                        onTap: () {
-                          if (controller.text.isNotEmpty) {
-                            setState(() {
-                              loading = true;
-                            });
-
-                            widget.onDelete
-                                ?.call()
-                                .then((e) => Navigator.of(context).pop());
-                          }
-                        },
                       )
-                  ],
-                ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 4,
+                  ),
+                  SizedBox(
+                    height: 40,
+                    width: 40,
+                    child: tiamat.DropdownSelector(
+                      itemHeight: 40,
+                      items: [
+                        EmoticonUsage.emoji,
+                        EmoticonUsage.sticker,
+                        EmoticonUsage.all,
+                        if (!widget.createPack) EmoticonUsage.inherit,
+                      ],
+                      value: usage,
+                      onItemSelected: (item) {
+                        setState(() {
+                          usage = item;
+                        });
+                      },
+                      itemBuilder: (item) {
+                        return Row(
+                          children: [
+                            Icon(switch (item) {
+                              EmoticonUsage.sticker => Icons.sticky_note_2,
+                              EmoticonUsage.emoji => Icons.emoji_emotions,
+                              EmoticonUsage.inherit => Icons.arrow_downward,
+                              EmoticonUsage.all => Icons.star
+                            }),
+                            const SizedBox(
+                              width: 8,
+                            ),
+                            tiamat.Text.label(switch (item) {
+                              EmoticonUsage.sticker => "Sticker",
+                              EmoticonUsage.emoji => "Emoji",
+                              EmoticonUsage.inherit => "Follow Pack",
+                              EmoticonUsage.all => "Emoji & Sticker",
+                            })
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 4,
+                  ),
+                  SizedBox(
+                    height: 48,
+                    child: tiamat.Button(
+                      text: promptConfirmSaveEmoticon,
+                      onTap: () {
+                        if (controller.text.isNotEmpty) {
+                          setState(() {
+                            loading = true;
+                          });
+
+                          widget.onCreate
+                              ?.call(controller.text, usage, imageData)
+                              .then((e) => Navigator.of(context).pop());
+                        }
+                      },
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 4,
+                  ),
+                  if (!widget.creatingNew)
+                    tiamat.Button.danger(
+                      text: CommonStrings.promptDelete,
+                      onTap: () async {
+                        final confirm =
+                            await AdaptiveDialog.confirmation(context);
+
+                        if (confirm == true) {
+                          setState(() {
+                            loading = true;
+                          });
+
+                          widget.onDelete
+                              ?.call()
+                              .then((e) => Navigator.of(context).pop());
+                        }
+                      },
+                    )
+                ],
               ),
             ),
           ),

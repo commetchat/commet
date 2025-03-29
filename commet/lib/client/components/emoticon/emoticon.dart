@@ -5,6 +5,7 @@ enum EmoticonUsage {
   sticker,
   emoji,
   all,
+  inherit,
 }
 
 abstract class Emoticon {

@@ -36,7 +36,7 @@ class MatrixEmoticonPack implements EmoticonPack {
       final usage = usagesArrayToUsage(usages);
 
       return MatrixEmoticon(Uri.parse(url), component.client.getMatrixClient(),
-          shortcode: shortCode, usage: usage);
+          packUsage: this.usage, shortcode: shortCode, usage: usage);
     }).toList();
   }
 
@@ -83,7 +83,12 @@ class MatrixEmoticonPack implements EmoticonPack {
       return EmoticonUsage.sticker;
     }
 
-    return EmoticonUsage.all;
+    if ((usages?.contains("sticker") == true) &&
+        (usages?.contains("emoticon") == true)) {
+      return EmoticonUsage.all;
+    }
+
+    return EmoticonUsage.inherit;
   }
 
   @override
@@ -118,16 +123,12 @@ class MatrixEmoticonPack implements EmoticonPack {
   }
 
   @override
-  List<Emoticon> get emoji => emotes
-      .where((element) =>
-          [EmoticonUsage.all, EmoticonUsage.emoji].contains(element.usage))
-      .toList();
+  List<Emoticon> get emoji =>
+      emotes.where((element) => element.isEmoji).toList();
 
   @override
-  List<Emoticon> get stickers => emotes
-      .where((element) =>
-          [EmoticonUsage.all, EmoticonUsage.sticker].contains(element.usage))
-      .toList();
+  List<Emoticon> get stickers =>
+      emotes.where((element) => element.isSticker).toList();
 
   @override
   String get identifier => stateKey;
@@ -150,11 +151,12 @@ class MatrixEmoticonPack implements EmoticonPack {
     }
   }
 
-  List<String> _emoticonUsageToArray(EmoticonUsage usage) {
+  List<String>? _emoticonUsageToArray(EmoticonUsage usage) {
     final usages = switch (usage) {
       EmoticonUsage.sticker => ["sticker"],
       EmoticonUsage.emoji => ["emoticon"],
       EmoticonUsage.all => ["sticker", "emoticon"],
+      EmoticonUsage.inherit => null,
     };
 
     return usages;
@@ -164,6 +166,13 @@ class MatrixEmoticonPack implements EmoticonPack {
   Future<void> setPackUsage(EmoticonUsage usage) {
     final usages = _emoticonUsageToArray(usage);
     return component.setPackUsages(identifier, usages);
+  }
+
+  @override
+  Future<void> updatePack(
+      {EmoticonUsage? usage, String? name, Uint8List? imageData}) {
+    return component.updatePack(identifier,
+        usage: usage, name: name, imageData: imageData);
   }
 
   @override
@@ -213,5 +222,22 @@ class MatrixEmoticonPack implements EmoticonPack {
   int get hashCode => stateKey.hashCode;
 
   @override
-  EmoticonUsage get usage => throw UnimplementedError();
+  EmoticonUsage get usage {
+    final pack = state.tryGetMap<String, dynamic>("pack");
+    var usages = pack?.tryGetList<String>("usage");
+    var usage = usagesArrayToUsage(usages);
+    if (usage == EmoticonUsage.inherit) {
+      return EmoticonUsage.all;
+    } else {
+      return usage;
+    }
+  }
+
+  @override
+  bool get isEmojiPack =>
+      [EmoticonUsage.emoji, EmoticonUsage.all].contains(usage);
+
+  @override
+  bool get isStickerPack =>
+      [EmoticonUsage.sticker, EmoticonUsage.all].contains(usage);
 }
