@@ -44,19 +44,11 @@ class MatrixRoomAddressSettingsView extends StatefulWidget {
 
 class _MatrixRoomAddressSettingsViewState
     extends State<MatrixRoomAddressSettingsView> {
-  int? mainAliasIndex;
   String? errorMessage;
   StreamSubscription? subscription;
-  GlobalKey<DropdownSelectorState> stateKey = GlobalKey();
 
   @override
   void initState() {
-    if (widget.mainAlias != null) {
-      mainAliasIndex = widget.knownAliases.indexOf(widget.mainAlias!);
-      if (mainAliasIndex == -1) {
-        mainAliasIndex = null;
-      }
-    }
     subscription = widget.mainAliasChangedStream.listen(onMainAliasChanged);
 
     super.initState();
@@ -69,9 +61,7 @@ class _MatrixRoomAddressSettingsViewState
   }
 
   void onMainAliasChanged(String? value) {
-    stateKey.currentState?.setState(() {
-      stateKey.currentState?.value = value;
-    });
+    setState(() {});
   }
 
   @override
@@ -219,21 +209,20 @@ class _MatrixRoomAddressSettingsViewState
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           tiamat.DropdownSelector(
-            key: stateKey,
             items: widget.knownAliases,
-            defaultIndex: mainAliasIndex,
+            value: widget.mainAlias,
             itemHeight: 60,
             hint: tiamat.Text.labelLow(widget.canChangeMainAlias
                 ? "Select a main room address"
                 : "This room does not have a set main alias"),
-            onItemSelected: (item) => widget.setMainAlias(item),
+            onItemSelected: (item) => widget.setMainAlias(item!),
             itemBuilder: (item) {
               return Row(
                 children: [
                   Flexible(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: tiamat.Text.label(item),
+                      child: tiamat.Text.label(item!),
                     ),
                   ),
                   if (item == widget.mainAlias) const TinyPill("Main"),

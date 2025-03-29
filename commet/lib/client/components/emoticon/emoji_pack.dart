@@ -24,31 +24,30 @@ abstract class EmoticonPack {
   ImageProvider? get image;
   IconData? get icon;
 
-  bool get isStickerPack;
-  bool get isEmojiPack;
-  bool get isGloballyAvailable;
+  EmoticonUsage get usage;
 
   Future<void> deleteEmoticon(Emoticon emoticon);
 
-  Future<void> renameEmoticon(Emoticon emoticon, String name);
-
-  Future<void> markEmoticonAsSticker(Emoticon emoticon, bool isSticker);
-
-  Future<void> markEmoticonAsEmoji(Emoticon emoticon, bool isEmoji);
-
-  Future<void> markAsEmoji(bool isEmojiPack);
-
-  Future<void> markAsSticker(bool isStickerPack);
+  Future<void> setPackUsage(EmoticonUsage usage);
 
   Emoticon? getByShortcode(String shortcode);
 
-  Future<void> addEmoticon(
-      {required String slug,
-      String? shortcode,
-      required Uint8List data,
-      String? mimeType,
-      bool? isEmoji,
-      bool? isSticker});
+  Future<void> updateEmoticon({
+    String? slug,
+    String? shortcode,
+    Uint8List? data,
+    String? mimeType,
+    EmoticonUsage? usage,
+    required Emoticon previous,
+  });
+
+  Future<void> addEmoticon({
+    required String slug,
+    String? shortcode,
+    required Uint8List data,
+    String? mimeType,
+    EmoticonUsage usage,
+  });
 
   Future<void> markAsGlobal(bool isGlobal);
 

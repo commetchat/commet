@@ -28,37 +28,8 @@ class _RoomEmojiPackSettingsPageState extends State<RoomEmojiPackSettingsPage> {
   @override
   Widget build(BuildContext context) {
     return RoomEmojiPackSettingsView(
-      component.ownedPacks,
-      createNewPack: createNewPack,
-      onPackCreated: component.onOwnedPackAdded,
-      deletePack: deletePack,
-      deleteEmoticon: deleteEmoticon,
-      canCreatePack: component.canCreatePack,
-      renameEmoticon: renameEmoticon,
+      component: component,
       editable: widget.room.permissions.canEditRoomEmoticons,
-      importPack: importPack,
     );
-  }
-
-  Future<void> createNewPack(String name, Uint8List? avatarData) async {
-    await component.createEmoticonPack(name, avatarData);
-  }
-
-  Future<void> deletePack(EmoticonPack pack) async {
-    await component.deleteEmoticonPack(pack);
-  }
-
-  Future<void> deleteEmoticon(EmoticonPack pack, Emoticon emoticon) async {
-    await pack.deleteEmoticon(emoticon);
-  }
-
-  Future<void> renameEmoticon(
-      EmoticonPack pack, Emoticon emoticon, String name) async {
-    await pack.renameEmoticon(emoticon, name);
-  }
-
-  Future<void> importPack(String name, int avatarIndex, List<String> names,
-      List<Uint8List> imageDatas) async {
-    component.importEmoticonPack(name, avatarIndex, names, imageDatas);
   }
 }
