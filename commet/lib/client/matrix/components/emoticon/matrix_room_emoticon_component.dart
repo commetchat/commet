@@ -96,8 +96,15 @@ class MatrixRoomEmoticonComponent extends MatrixEmoticonComponent
       mimeType = Mime.lookupType("", data: data);
     }
 
+    var extension = "";
+
+    // element web wont render images if the body doesnt have an extension
+    if (mimeType != null) {
+      extension = ".${mimeType.split("/").last}";
+    }
+
     var content = {
-      "body": sticker.shortcode!,
+      "body": sticker.shortcode! + extension,
       "url": sticker.emojiUrl.toString(),
       if (preferences.stickerCompatibilityMode) "msgtype": "m.image",
       if (preferences.stickerCompatibilityMode)
