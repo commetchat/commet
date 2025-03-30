@@ -4,7 +4,6 @@ import 'package:commet/client/components/emoticon/emoji_pack.dart';
 import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/main.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class AccountEmojiView extends StatefulWidget {

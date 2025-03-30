@@ -179,7 +179,7 @@ class _RoomEmojiPackSettingsViewState extends State<RoomEmojiPackSettingsView> {
                 tiamat.CircleButton(
                     icon: Icons.auto_awesome_motion,
                     onPressed: promptBulkImport),
-                SizedBox(
+                const SizedBox(
                   width: 10,
                 ),
                 tiamat.CircleButton(
@@ -506,15 +506,16 @@ class _EmoticonCreatorState extends State<EmoticonCreator> {
                     height: 48,
                     child: tiamat.Button(
                       text: promptConfirmSaveEmoticon,
-                      onTap: () {
+                      onTap: () async {
                         if (controller.text.isNotEmpty) {
                           setState(() {
                             loading = true;
                           });
 
-                          widget.onCreate
-                              ?.call(controller.text, usage, imageData)
-                              .then((e) => Navigator.of(context).pop());
+                          await widget.onCreate
+                              ?.call(controller.text, usage, imageData);
+
+                          if (context.mounted) Navigator.of(context).pop();
                         }
                       },
                     ),
@@ -534,9 +535,9 @@ class _EmoticonCreatorState extends State<EmoticonCreator> {
                             loading = true;
                           });
 
-                          widget.onDelete
-                              ?.call()
-                              .then((e) => Navigator.of(context).pop());
+                          await widget.onDelete?.call();
+
+                          if (context.mounted) Navigator.of(context).pop();
                         }
                       },
                     )
