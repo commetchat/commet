@@ -60,7 +60,7 @@ class MatrixEmoticonPack implements EmoticonPack {
 
     if (url != null) {
       return MatrixMxcImage(Uri.parse(url), component.client.getMatrixClient(),
-          doFullres: true, fullResHeight: 32);
+          doFullres: true, fullResHeight: 64);
     }
 
     return null;

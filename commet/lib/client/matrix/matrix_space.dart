@@ -204,8 +204,8 @@ class MatrixSpace extends Space {
   void updateAvatar() {
     var avatar = MatrixMxcImage(_matrixRoom.avatar!, _matrixClient,
         doThumbnail: true,
-        thumbnailHeight: 96,
-        fullResHeight: 256,
+        thumbnailHeight: 128,
+        fullResHeight: 384,
         autoLoadFullRes: false);
     _avatar = avatar;
   }

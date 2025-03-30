@@ -13,7 +13,7 @@ class MatrixMember implements Member {
           doThumbnail: true,
           autoLoadFullRes: false,
           doFullres: false,
-          thumbnailHeight: 48)
+          thumbnailHeight: 86)
       : null;
 
   @override
