@@ -98,6 +98,7 @@ class MatrixRoomEmoticonComponent extends MatrixEmoticonComponent
 
     var extension = "";
 
+    // element web wont render images if the body doesnt have an extension
     if (mimeType != null) {
       extension = ".${mimeType.split("/").last}";
     }
