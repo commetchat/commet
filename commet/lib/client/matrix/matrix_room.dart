@@ -159,11 +159,6 @@ class MatrixRoom extends Room {
     _displayName = room.getLocalizedDisplayname();
     _components = ComponentRegistry.getMatrixRoomComponents(client, this);
 
-    if (room.avatar != null) {
-      _avatar = MatrixMxcImage(room.avatar!, _matrixRoom.client,
-          autoLoadFullRes: false);
-    }
-
     _lastStateEventTimestamp = DateTime.fromMillisecondsSinceEpoch(0);
     matrix.Event? latest = room.lastEvent;
 
@@ -187,12 +182,13 @@ class MatrixRoom extends Room {
   Future<void> updateAvatar() async {
     if (_matrixRoom.avatar != null) {
       _avatar = MatrixMxcImage(_matrixRoom.avatar!, _matrixRoom.client,
-          autoLoadFullRes: false);
+          thumbnailHeight: 32, fullResHeight: 128, autoLoadFullRes: false);
     } else if (_matrixRoom.isDirectChat) {
       var url = await _matrixRoom.client
           .getAvatarUrl(_matrixRoom.directChatMatrixID!);
       if (url != null) {
-        _avatar = MatrixMxcImage(url, _matrixRoom.client);
+        _avatar = MatrixMxcImage(url, _matrixRoom.client,
+            thumbnailHeight: 32, fullResHeight: 128, autoLoadFullRes: false);
       }
     }
 

@@ -59,7 +59,8 @@ class MatrixEmoticonPack implements EmoticonPack {
     final url = pack?.tryGet<String>("avatar_url");
 
     if (url != null) {
-      return MatrixMxcImage(Uri.parse(url), component.client.getMatrixClient());
+      return MatrixMxcImage(Uri.parse(url), component.client.getMatrixClient(),
+          doFullres: true, fullResHeight: 64);
     }
 
     return null;
