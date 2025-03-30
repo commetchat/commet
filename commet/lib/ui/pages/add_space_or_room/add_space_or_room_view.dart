@@ -275,6 +275,7 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
               child: tiamat.DropdownSelector<RoomVisibility>(
                 items: const [RoomVisibility.private, RoomVisibility.public],
                 itemHeight: 90,
+                value: visibility,
                 onItemSelected: (item) {
                   setState(() {
                     visibility = item;

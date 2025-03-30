@@ -70,7 +70,9 @@ mixin MatrixTimelineEventReactions on MatrixTimelineEvent
 
     if (key.startsWith("mxc://")) {
       return MatrixEmoticon(Uri.parse(key), timeline.room.client,
-          shortcode: event.content.tryGet("shortcode") ?? "");
+          shortcode: event.content.tryGet("shortcode") ?? "",
+          packUsage: EmoticonUsage.all,
+          usage: EmoticonUsage.all);
     }
 
     return UnicodeEmoticon(key, shortcode: content['shortcode'] as String?);

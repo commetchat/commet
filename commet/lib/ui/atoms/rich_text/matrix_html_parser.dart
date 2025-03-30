@@ -1,3 +1,4 @@
+import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_emoticon.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/ui/atoms/code_block.dart';
@@ -218,7 +219,10 @@ class MatrixEmoticonHtmlExtension extends HtmlExtension {
 
     return WidgetSpan(
         child: EmojiWidget(
-      MatrixEmoticon(uri, client, shortcode: context.attributes["alt"] ?? ""),
+      MatrixEmoticon(uri, client,
+          shortcode: context.attributes["alt"] ?? "",
+          packUsage: EmoticonUsage.all,
+          usage: EmoticonUsage.emoji),
       height: emojiSize,
     ));
   }
