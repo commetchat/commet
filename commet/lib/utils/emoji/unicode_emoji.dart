@@ -92,9 +92,6 @@ class UnicodeEmoticonPack implements EmoticonPack {
   String get identifier => throw UnimplementedError();
 
   @override
-  Stream<int> get onEmoticonAdded => throw UnimplementedError();
-
-  @override
   List<Emoticon> get emotes => _emoji!;
 
   @override
