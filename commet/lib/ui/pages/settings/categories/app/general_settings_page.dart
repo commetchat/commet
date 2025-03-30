@@ -31,17 +31,17 @@ class GeneralSettingsPageState extends State<GeneralSettingsPage> {
       args: [proxyUrl],
       name: "labelGifSearchDescription");
 
-  String get labelEncryptedPreview => Intl.message(
-      "URL Preview in Encrypted Chats (Experimental)",
+  String get labelUrlPreviewInEncryptedChatTitle => Intl.message(
+      "URL Preview in Encrypted Chats",
       desc:
-          "Label for the toggle for enabling and disabling encrypted url preview",
-      name: "labelEncryptedPreview");
+          "Label for the toggle for enabling and disabling use of url previews in encrypted chats",
+      name: "labelUrlPreviewInEncryptedChatTitle");
 
-  String labelEncryptedPreviewDescription(proxyUrl) => Intl.message(
-      "Enable use of a proxy server ($proxyUrl) to get url preview in an encrypted chat. The content of these requests will be hidden from your homeserver using Commet's 'encrypted url preview'\nLearn more: https://github.com/commetchat/encrypted_url_preview",
-      desc: "Explains briefly how encrypted url preview works",
-      args: [proxyUrl],
-      name: "labelEncryptedPreviewDescription");
+  String get labelUrlPreviewInEncryptedChatDescription => Intl.message(
+      "This will expose any URLs sent in your encrypted chats to your homeserver in order to fetch the preview",
+      desc:
+          "description for the toggle for enabling and disabling use of url previews in encrypted chats",
+      name: "labelUrlPreviewInEncryptedChatDescription");
 
   String get labelMessageEffectsTitle => Intl.message("Message Effects",
       desc:
@@ -87,9 +87,8 @@ class GeneralSettingsPageState extends State<GeneralSettingsPage> {
             ),
             settingToggle(
               enableEncryptedPreview,
-              title: labelEncryptedPreview,
-              description:
-                  labelEncryptedPreviewDescription("telescope.commet.chat"),
+              title: labelUrlPreviewInEncryptedChatTitle,
+              description: labelUrlPreviewInEncryptedChatDescription,
               onChanged: (value) async {
                 setState(() {
                   enableEncryptedPreview = value;

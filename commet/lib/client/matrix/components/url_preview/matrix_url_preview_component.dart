@@ -11,7 +11,6 @@ import 'package:commet/main.dart';
 import 'package:commet/utils/mime.dart';
 import 'package:flutter/widgets.dart';
 import 'package:matrix/matrix.dart' as matrix;
-import 'package:encrypted_url_preview/encrypted_url_preview.dart';
 import 'package:matrix/matrix_api_lite.dart';
 
 class MatrixUrlPreviewComponent implements UrlPreviewComponent<MatrixClient> {
@@ -22,23 +21,7 @@ class MatrixUrlPreviewComponent implements UrlPreviewComponent<MatrixClient> {
 
   Map<String, UrlPreviewData> cache = {};
 
-  EncryptedUrlPreview? privatePreviewGetter;
-
   bool? serverSupportsUrlPreview;
-
-  void createPrivatePreviewGetter() {
-    privatePreviewGetter = EncryptedUrlPreview(
-        proxyServerUrl: Uri.https("telescope.commet.chat"),
-        publicKeyPem: """-----BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAz+sAi8PsT4QwjV/+xXK0
-vwavZJEjkwJyFODGWkoo7qB87Y2yU6/C4csul6kQpxBFu9ID7mCavAlr93/c70Qm
-sgX791W7oOSpvyeffJe5iluzaglZ/KWYo6Bc0QajKT8rLdI5vUljVMyx/nR9rIhY
-PvSJhSFLC2ZyUhhTb/ZeLm0arEtGeyfo1V3nLGsJZJx12UK8E0FpKP14S7Wke9zM
-e05PDCU/llEQpUgQOJI9Vnji71Fgocii76aSULhXalGjQIzBGKib5MIYlb0Zgf8k
-wKkRg6IrNt5kjad4PoRKocxj3ylvuxEtMN582ni3lO4gi1uzzVvFtJBzrhNMjTPC
-pQIDAQAB
------END PUBLIC KEY-----""");
-  }
 
   @override
   Future<UrlPreviewData?> getPreview(
@@ -66,11 +49,7 @@ pQIDAQAB
     UrlPreviewData? data;
 
     try {
-      if (room.isE2EE) {
-        data = await getEncryptedPreviewData(mxClient, uri);
-      } else {
-        data = await fetchPreviewData(mxClient, uri);
-      }
+      data = await fetchPreviewData(mxClient, uri);
     } catch (_) {
       return null;
     }
@@ -128,59 +107,6 @@ pQIDAQAB
     } else {
       return '/media/v3/preview_url';
     }
-  }
-
-  Future<UrlPreviewData> getEncryptedPreviewData(
-      matrix.Client client, Uri url) async {
-    if (privatePreviewGetter == null) {
-      createPrivatePreviewGetter();
-    }
-
-    var key = privatePreviewGetter!.getNextKey();
-    var proxyUrl = privatePreviewGetter!.getProxyUrl(url, key);
-
-    var response = await client.request(
-        matrix.RequestType.GET, await getRequestPath(),
-        query: {"url": proxyUrl.toString()});
-
-    var title = response['og:title'] as String?;
-    var siteName = response['og:site_name'] as String?;
-    var imageUrl = response['og:image'] as String?;
-    var description = response['og:description'] as String?;
-
-    ImageProvider? image;
-
-    if (imageUrl != null) {
-      var mxcUri = Uri.parse(imageUrl);
-      if (mxcUri.scheme == "mxc") {
-        try {
-          var response = await client.getContentFromUri(mxcUri);
-          var bytes = response.data;
-          var decrypted = privatePreviewGetter!.decryptContent(bytes, key);
-
-          image = Image.memory(decrypted).image;
-        } catch (e, t) {
-          Log.onError(e, t,
-              content: "Failed to get encrypted url preview image data");
-        }
-      }
-    }
-
-    if (title != null)
-      title = privatePreviewGetter!.decryptContentString(title, key);
-    if (siteName != null)
-      siteName = privatePreviewGetter!.decryptContentString(siteName, key);
-
-    if (description != null)
-      description = privatePreviewGetter!
-          .decryptContentString(description, key)
-          .replaceAll("\n", "    ");
-
-    return UrlPreviewData(url,
-        siteName: siteName,
-        title: title,
-        description: description,
-        image: image);
   }
 
   Future<UrlPreviewData?> fetchPreviewData(

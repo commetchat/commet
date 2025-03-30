@@ -32,7 +32,7 @@ class Preferences {
   static const String _pushGateway = "push_gateway";
   static const String _lastDownloadLocation = "last_download_location";
   static const String _stickerCompatibilityMode = "sticker_compatibility_mode";
-  static const String _urlPreviewInE2EEChat = "use_url_preview_in_e2ee_chat";
+  static const String _urlPreviewInE2EEChat = "enable_url_preview_in_e2ee_chat";
   static const String _messageEffectsEnabled = "message_effects_enabled";
   static const String _lastForegroundServiceSucceeded =
       "did_last_foreground_service_run_succeed";
