@@ -28,7 +28,8 @@ class MatrixEmoticon implements Emoticon {
       required String shortcode,
       required this.usage}) {
     _shortcode = shortcode;
-    _image = MatrixMxcImage(emojiUrl, client, doThumbnail: false);
+    _image = MatrixMxcImage(emojiUrl, client,
+        doThumbnail: true, autoLoadFullRes: false);
   }
 
   void setShortcode(String shortcode) {

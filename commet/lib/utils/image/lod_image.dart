@@ -40,6 +40,14 @@ class LODImageProvider extends ImageProvider<LODImageProvider> {
   }
 
   @override
+  void resolveStreamForKey(ImageConfiguration configuration, ImageStream stream,
+      LODImageProvider key, ImageErrorListener handleError) {
+    super.resolveStreamForKey(configuration, stream, key, handleError);
+
+    completer = stream.completer as LODImageCompleter;
+  }
+
+  @override
   ImageStreamCompleter loadImage(
       LODImageProvider key, ImageDecoderCallback decode) {
     completer = LODImageCompleter(
