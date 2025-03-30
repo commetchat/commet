@@ -176,9 +176,6 @@ class MatrixEmoticonPack implements EmoticonPack {
   }
 
   @override
-  Stream<int> get onEmoticonAdded => throw UnimplementedError();
-
-  @override
   List<String> getShortcodes() {
     return emoji.map((e) => e.shortcode!).toList();
   }

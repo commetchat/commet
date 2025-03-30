@@ -13,8 +13,6 @@ abstract class EmoticonPack {
 
   bool get isGloballyAvailable;
 
-  Stream<int> get onEmoticonAdded;
-
   List<Emoticon> get emotes;
 
   List<Emoticon> get emoji;
