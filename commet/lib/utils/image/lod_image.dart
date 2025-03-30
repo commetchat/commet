@@ -13,18 +13,24 @@ enum LODImageType {
   fullres,
 }
 
-class LODImageProvider extends ImageProvider<LODImageProvider> {
+class LODImageProvider extends ImageProvider<String> {
   LODImageProvider(
       {this.blurhash,
       this.loadThumbnail,
       this.loadFullRes,
+      this.thumbnailHeight,
+      required this.id,
+      this.fullResHeight,
       this.autoLoadFullRes = true});
+  String id;
   String? blurhash;
   String? get mimeType => completer?.mimeType;
   bool autoLoadFullRes;
   Future<Uint8List?> Function()? loadThumbnail;
   Future<Uint8List?> Function()? loadFullRes;
   LODImageCompleter? completer;
+  int? thumbnailHeight;
+  int? fullResHeight;
 
   Future<bool> hasCachedFullres() async {
     return false;
@@ -35,27 +41,29 @@ class LODImageProvider extends ImageProvider<LODImageProvider> {
   }
 
   @override
-  Future<LODImageProvider> obtainKey(ImageConfiguration configuration) {
-    return SynchronousFuture<LODImageProvider>(this);
+  Future<String> obtainKey(ImageConfiguration configuration) {
+    return SynchronousFuture<String>(id);
   }
 
   @override
   void resolveStreamForKey(ImageConfiguration configuration, ImageStream stream,
-      LODImageProvider key, ImageErrorListener handleError) {
+      String key, ImageErrorListener handleError) {
     super.resolveStreamForKey(configuration, stream, key, handleError);
 
     completer = stream.completer as LODImageCompleter;
   }
 
   @override
-  ImageStreamCompleter loadImage(
-      LODImageProvider key, ImageDecoderCallback decode) {
+  ImageStreamCompleter loadImage(String key, ImageDecoderCallback decode) {
     completer = LODImageCompleter(
         blurhash: blurhash,
         loadThumbnail: loadThumbnail,
         loadFullRes: loadFullRes,
+        callback: decode,
         hasCachedFullres: hasCachedFullres,
         hasCachedThumbnail: hasCachedThumbnail,
+        thumbnailHeight: thumbnailHeight,
+        fullResHeight: fullResHeight,
         autoLoadFullres: autoLoadFullRes);
     return completer!;
   }
@@ -77,32 +85,42 @@ class LODImageCompleter extends ImageStreamCompleter {
   FrameInfo? _nextFrame;
   Codec? _codec;
   late Duration _shownTimestamp;
+  ImageDecoderCallback callback;
   Duration? _frameDuration;
   bool _frameCallbackScheduled = false;
   bool autoLoadFullres;
   String? mimeType;
   int _framesEmitted = 0;
+  int? thumbnailHeight;
+  int? fullResHeight;
   double scale = 1;
   Timer? _timer;
   bool _isFullResLoading = false;
 
   LODImageCompleter(
       {this.blurhash,
+      required this.callback,
       this.loadThumbnail,
       this.loadFullRes,
       this.hasCachedFullres,
       this.hasCachedThumbnail,
+      this.thumbnailHeight,
+      this.fullResHeight,
       this.autoLoadFullres = true}) {
     loadImages();
   }
 
   Future<void> loadImages() async {
-    if (hasCachedFullres != null && await (hasCachedFullres!.call()) == true) {
+    if (loadFullRes != null &&
+        autoLoadFullres &&
+        hasCachedFullres != null &&
+        await (hasCachedFullres!.call()) == true) {
       _loadFullRes();
       return;
     }
 
-    if (hasCachedThumbnail != null &&
+    if (loadThumbnail != null &&
+        hasCachedThumbnail != null &&
         await (hasCachedThumbnail!.call()) == true) {
       _loadThumbnail();
       return;
@@ -129,7 +147,12 @@ class LODImageCompleter extends ImageStreamCompleter {
 
     mimeType = Mime.lookupType("", data: bytes);
 
-    var codec = await instantiateImageCodec(bytes);
+    var codec = await callback(
+      await ImmutableBuffer.fromUint8List(bytes),
+      getTargetSize: (intrinsicWidth, intrinsicHeight) {
+        return TargetImageSize(height: thumbnailHeight);
+      },
+    );
 
     _setCodec(LODImageType.thumbnail, codec);
   }
@@ -145,8 +168,12 @@ class LODImageCompleter extends ImageStreamCompleter {
     if (bytes == null) return;
 
     mimeType = Mime.lookupType("", data: bytes);
-
-    var codec = await instantiateImageCodec(bytes);
+    var codec = await callback(
+      await ImmutableBuffer.fromUint8List(bytes),
+      getTargetSize: (intrinsicWidth, intrinsicHeight) {
+        return TargetImageSize(height: fullResHeight);
+      },
+    );
     _setCodec(LODImageType.fullres, codec);
   }
 

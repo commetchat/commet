@@ -29,7 +29,10 @@ class MatrixEmoticon implements Emoticon {
       required this.usage}) {
     _shortcode = shortcode;
     _image = MatrixMxcImage(emojiUrl, client,
-        doThumbnail: true, autoLoadFullRes: false);
+        fullResHeight: 100,
+        doThumbnail: false,
+        doFullres: true,
+        autoLoadFullRes: true);
   }
 
   void setShortcode(String shortcode) {
