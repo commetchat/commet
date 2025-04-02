@@ -26,6 +26,9 @@ class BuildConfig {
 
   static const bool RELEASE = _buildMode == _Constants.release;
 
+  static const String PUSH_GATEWAY =
+      String.fromEnvironment('PUSH_GATEWAY', defaultValue: "unset");
+
   static const bool DESKTOP = PLATFORM == _Constants._desktop ||
       PLATFORM == _Constants._linux ||
       PLATFORM == _Constants._windows ||
