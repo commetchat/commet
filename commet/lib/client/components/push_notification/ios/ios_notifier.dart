@@ -4,6 +4,7 @@ import 'package:commet/client/components/push_notification/notification_content.
 import 'package:commet/client/components/push_notification/notifier.dart';
 import 'package:commet/client/components/push_notification/push_notification_component.dart';
 import 'package:commet/client/room.dart';
+import 'package:commet/config/build_config.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/event_bus.dart';
@@ -20,8 +21,7 @@ class IOSNotifier implements Notifier {
   static String? hexDeviceTokenUpper;
   static String? hexDeviceTokenLower;
   static String? base64DeviceToken;
-  static const String pushGateway =
-      "https://sygnal.spacebinoculars.matrix.town";
+  static String pushGateway = "";
   static const bool deviceTokenIsHex = false;
 
   @override
@@ -35,6 +35,13 @@ class IOSNotifier implements Notifier {
 
   @override
   Future<void> init() async {
+    if (BuildConfig.PUSH_GATEWAY == "binocs") {
+      pushGateway = "https://sygnal.spacebinoculars.matrix.town";
+    } else if (BuildConfig.PUSH_GATEWAY != "unset") {
+      pushGateway = BuildConfig.PUSH_GATEWAY;
+    } else {
+      pushGateway = "push.commet.chat";
+    }
     preferences.setPushGateway(pushGateway);
     await requestPermission().then((value) async {
       await registerDevice().then((_) async {});

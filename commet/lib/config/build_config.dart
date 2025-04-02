@@ -22,6 +22,9 @@ class BuildConfig {
   static const bool ENABLE_GOOGLE_SERVICES =
       bool.fromEnvironment("ENABLE_GOOGLE_SERVICES", defaultValue: false);
 
+  static const String PUSH_GATEWAY =
+      String.fromEnvironment('PUSH_GATEWAY', defaultValue: "unset");
+
   static const bool DEBUG = _buildMode == _Constants._debug;
 
   static const bool RELEASE = _buildMode == _Constants.release;
