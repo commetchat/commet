@@ -309,7 +309,7 @@ jobs:
 
       - name: Build iOS
         env:
-          GATEWAY: ${{ vars.IOS_BUNDLE_ID }}
+          GATEWAY: ${{ vars.IOS_PUSH_GATEWAY }}
         run: |
           cd $PROJECT_PATH
           flutter build ipa --export-options-plist=ios/export.plist --dart-define BUILD_MODE=release --dart-define PLATFORM=ios --dart-define PUSH_GATEWAY=$GATEWAY
