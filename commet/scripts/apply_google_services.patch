@@ -54,8 +54,8 @@ index 5134142..417a061 100644
 -      bool.fromEnvironment("ENABLE_GOOGLE_SERVICES", defaultValue: false);
 +      bool.fromEnvironment("ENABLE_GOOGLE_SERVICES", defaultValue: true);
  
-  static const String PUSH_GATEWAY =
-      String.fromEnvironment('PUSH_GATEWAY', defaultValue: "unset");
+   static const bool DEBUG = _buildMode == _Constants._debug;
+ 
 diff --git a/commet/pubspec.yaml b/commet/pubspec.yaml
 index 8163da0..e3bb1c5 100644
 --- a/commet/pubspec.yaml
