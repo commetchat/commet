@@ -1070,7 +1070,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "placeholderRoomAddress": "#sala-incrível:matrix.org",
+  "placeholderRoomAddress": "#sala-incrível:example.com",
   "@placeholderRoomAddress": {
     "description": "Placeholder / Example for a room address. Please do not translate 'example.com' and keep the domain as is, this is a reserved domain specifically for use in examples, and translations could end up pointing to untrusted domains",
     "type": "text",
@@ -1224,7 +1224,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "placeholderSpaceAddress": "#espaço-incrível:matrix.org",
+  "placeholderSpaceAddress": "#espaço-incrível:example.com",
   "@placeholderSpaceAddress": {
     "description": "Placeholder / Example for a space address. Please do not translate 'example.com' and keep the domain as is, this is a reserved domain specifically for use in examples, and translations could end up pointing to untrusted domains",
     "type": "text",
@@ -1592,7 +1592,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "messagePlaceholderUserUpdatedNameDetailed": "{user} mudou seu nome para '{newName}'",
+  "messagePlaceholderUserUpdatedNameDetailed": "{user} mudou seu nome para \"{newName}\"",
   "@messagePlaceholderUserUpdatedNameDetailed": {
     "description": "Message body for when a user updates their display name",
     "type": "text",
@@ -1651,5 +1651,53 @@
     "placeholders": {
       "user": {}
     }
+  },
+  "labelUseRoomAvatars": "Usar avatares da sala",
+  "@labelUseRoomAvatars": {
+    "description": "Label for enabling using room avatars instead of icons",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelUseRoomAvatarPlaceholdersDescription": "Quando uma sala não tem um avatar configurado, ou seu uso está desativado, contingenciar para uma cor genérica + primeira letra substituta para a imagem",
+  "@labelUseRoomAvatarPlaceholdersDescription": {
+    "description": "Description for the enable generic icons setting",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelEnableRoomIconsDescription": "Mostrar imagens do avatar da sala em vez de ícones",
+  "@labelEnableRoomIconsDescription": {
+    "description": "Description for the enable room icons setting",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelUseRoomAvatarPlaceholders": "Usar avatares substitutos",
+  "@labelUseRoomAvatarPlaceholders": {
+    "description": "Label for enabling generic icons in the appearance settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "placeholderRoomAlias": "#sala-incrível",
+  "@placeholderRoomAlias": {
+    "description": "Placeholder / Example for a room alias.",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptCancelEventSend": "Cancelar",
+  "@promptCancelEventSend": {
+    "description": "When a message failed to send, this prompts to cancel sending the event",
+    "type": "text",
+    "placeholders": {}
+  },
+  "placeholderSpaceAlias": "#espaço-incrível",
+  "@placeholderSpaceAlias": {
+    "description": "Placeholder / Example for a space alias.",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptRetryEventSend": "Tentar novamente",
+  "@promptRetryEventSend": {
+    "description": "When a message failed to send, this prompts to retry sending the event",
+    "type": "text",
+    "placeholders": {}
   }
 }

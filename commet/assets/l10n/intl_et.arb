@@ -1592,7 +1592,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "messagePlaceholderUserUpdatedNameDetailed": "{user} muutis oma uueks kuvatavaks nimeks '{newName}'",
+  "messagePlaceholderUserUpdatedNameDetailed": "{user} muutis oma uueks kuvatavaks nimeks „{newName}“",
   "@messagePlaceholderUserUpdatedNameDetailed": {
     "description": "Message body for when a user updates their display name",
     "type": "text",
@@ -1651,5 +1651,53 @@
       "sender": {},
       "user": {}
     }
+  },
+  "labelEnableRoomIconsDescription": "Näita jututubade ikoonide asemel tunnuspilte",
+  "@labelEnableRoomIconsDescription": {
+    "description": "Description for the enable room icons setting",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelUseRoomAvatarPlaceholders": "Kasuta kohatäitena loodud tunnuspilte",
+  "@labelUseRoomAvatarPlaceholders": {
+    "description": "Label for enabling generic icons in the appearance settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelUseRoomAvatars": "Kasuta jututubade tunnuspilte",
+  "@labelUseRoomAvatars": {
+    "description": "Label for enabling using room avatars instead of icons",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelUseRoomAvatarPlaceholdersDescription": "Kui jututoa pole tunnuspilti kirjeldatud või nende kasutamine on keelatud, siis loo tunnuspilt üldisest taustavärvist ja jututoa nime esitähest",
+  "@labelUseRoomAvatarPlaceholdersDescription": {
+    "description": "Description for the enable generic icons setting",
+    "type": "text",
+    "placeholders": {}
+  },
+  "placeholderRoomAlias": "#vahva-jututuba",
+  "@placeholderRoomAlias": {
+    "description": "Placeholder / Example for a room alias.",
+    "type": "text",
+    "placeholders": {}
+  },
+  "placeholderSpaceAlias": "#toimekas-kogukond",
+  "@placeholderSpaceAlias": {
+    "description": "Placeholder / Example for a space alias.",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptCancelEventSend": "Katkesta",
+  "@promptCancelEventSend": {
+    "description": "When a message failed to send, this prompts to cancel sending the event",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptRetryEventSend": "Proovi uuesti",
+  "@promptRetryEventSend": {
+    "description": "When a message failed to send, this prompts to retry sending the event",
+    "type": "text",
+    "placeholders": {}
   }
 }
