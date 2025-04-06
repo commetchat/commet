@@ -282,6 +282,7 @@ class VideoPlayerState extends State<VideoPlayer> {
     setState(() {
       inited = true;
       playing = true;
+      shouldShowControls = false;
       controller.play();
       if (BuildConfig.MOBILE) hideControls();
     });
