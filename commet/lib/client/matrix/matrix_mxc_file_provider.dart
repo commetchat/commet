@@ -61,18 +61,33 @@ class MxcFileProvider implements FileProvider {
               .addAll({'authorization': 'Bearer ${client.accessToken}'});
           final response = await http.Client().send(request);
 
-          List<int> downloadedBytes = [];
+          List<int> downloadedBytes = response.contentLength != null
+              ? Uint8List(response.contentLength!)
+              : [];
+
           int downloaded = 0;
           if (response.statusCode != 200) {
             throw Exception("Unexpected response: ${response.statusCode}");
           }
 
+          var lastUpdatedProgress = DateTime.now();
+
           var data = response.stream.listen(
             (event) {
+              if (response.contentLength != null) {
+                downloadedBytes.setAll(downloaded, event);
+              } else {
+                downloadedBytes.addAll(event);
+              }
               downloaded += event.length;
-              fileDownloadProgress.add(
-                  DownloadProgress(downloaded, response.contentLength ?? -1));
-              downloadedBytes.addAll(event);
+
+              var now = DateTime.now();
+              if (now.difference(lastUpdatedProgress).inMilliseconds > 30) {
+                lastUpdatedProgress = now;
+
+                fileDownloadProgress.add(
+                    DownloadProgress(downloaded, response.contentLength ?? -1));
+              }
             },
             cancelOnError: true,
           ).asFuture();
