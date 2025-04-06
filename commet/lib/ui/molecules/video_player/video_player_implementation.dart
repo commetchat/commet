@@ -59,7 +59,14 @@ class _VideoPlayerImplementationState extends State<VideoPlayerImplementation> {
     controller = VideoController(player);
 
     Future.microtask(() async {
+      widget.controller.setBuffering(true);
+      var sub = widget.videoFile.onProgressChanged?.listen((data) {
+        widget.controller.setBufferingProgress(data);
+      });
       file = await widget.videoFile.resolve();
+
+      sub?.cancel();
+
       await player.open(Playlist([Media(file.toString())]),
           play: !widget.decodeFirstFrame);
       widget.controller.setBuffering(false);
@@ -71,11 +78,18 @@ class _VideoPlayerImplementationState extends State<VideoPlayerImplementation> {
   }
 
   @override
+  void dispose() {
+    player.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     if (loaded) {
       return Video(
         fit: BoxFit.cover,
         controller: controller!,
+        controls: null,
       );
     }
     return Container();
@@ -94,7 +108,8 @@ class _VideoPlayerImplementationState extends State<VideoPlayerImplementation> {
   }
 
   Future<void> replay() async {
-    await player.open(Playlist([Media(file.toString())]));
+    await player.seek(Duration.zero);
+    await player.play();
   }
 
   Future<void> seekTo(Duration duration) async {

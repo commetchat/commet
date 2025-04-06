@@ -1,9 +1,18 @@
 import 'dart:io';
 
+class DownloadProgress {
+  int downloaded;
+  int total;
+
+  DownloadProgress(this.downloaded, this.total);
+}
+
 abstract class FileProvider {
   Future<Uri?> resolve();
 
   Future<void> save(String filepath);
+
+  Stream<DownloadProgress>? get onProgressChanged;
 
   String get fileIdentifier;
 }
@@ -25,4 +34,7 @@ class SystemFileProvider implements FileProvider {
   }
 
   SystemFileProvider(this.file);
+
+  @override
+  Stream<DownloadProgress>? get onProgressChanged => null;
 }

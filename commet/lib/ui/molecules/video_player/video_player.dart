@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:commet/cache/file_provider.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/ui/atoms/tiny_pill.dart';
 import 'package:commet/ui/molecules/video_player/video_player_implementation.dart';
+import 'package:commet/utils/text_utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -41,6 +43,7 @@ class VideoPlayerState extends State<VideoPlayer> {
   bool playing = false;
   bool inited = false;
   bool buffering = false;
+  DownloadProgress? downloadProgress;
   late bool showThumbnail;
   bool shouldShowControls = true;
   bool isCompleted = false;
@@ -48,53 +51,58 @@ class VideoPlayerState extends State<VideoPlayer> {
   bool updateSlider = true;
   Timer? uiHideTimer;
 
-  StreamSubscription? bufferingListener;
-  StreamSubscription? completedListener;
-  StreamSubscription? progressListener;
+  late List<StreamSubscription> subscriptions;
 
   @override
   void initState() {
     showThumbnail = widget.doThumbnail;
 
     controller = widget.controller ?? VideoPlayerController();
-    bufferingListener = controller.isBuffering.listen((isBuffering) {
-      setState(() {
-        buffering = isBuffering;
 
-        if (!isBuffering) {
-          showThumbnail = false;
-        }
-      });
-    });
-
-    completedListener = controller.isCompleted.listen((event) {
-      setState(() {
-        isCompleted = event;
-        if (isCompleted) shouldShowControls = true;
-      });
-    });
-
-    progressListener = controller.onProgressed.listen((event) async {
-      var length = await controller.getLength();
-      if (updateSlider) {
+    subscriptions = [
+      controller.isBuffering.listen((isBuffering) {
         setState(() {
-          videoProgress = clampDouble(
-              event.inMilliseconds.toDouble() /
-                  length.inMilliseconds.toDouble(),
-              0,
-              1);
+          buffering = isBuffering;
+
+          if (!isBuffering) {
+            showThumbnail = false;
+          }
         });
-      }
-    });
+      }),
+      controller.isCompleted.listen((event) {
+        setState(() {
+          isCompleted = event;
+          if (isCompleted) shouldShowControls = true;
+        });
+      }),
+      controller.onDownloadProgressed.listen((event) {
+        setState(() {
+          downloadProgress = event;
+        });
+      }),
+      controller.onProgressed.listen((event) async {
+        var length = await controller.getLength();
+        if (updateSlider) {
+          setState(() {
+            videoProgress = clampDouble(
+                event.inMilliseconds.toDouble() /
+                    length.inMilliseconds.toDouble(),
+                0,
+                1);
+          });
+        }
+      })
+    ];
 
     super.initState();
   }
 
   @override
   void dispose() {
-    bufferingListener?.cancel();
-    completedListener?.cancel();
-    progressListener?.cancel();
+    for (var sub in subscriptions) {
+      sub.cancel();
+    }
+    subscriptions.clear();
     super.dispose();
   }
 
@@ -105,8 +113,42 @@ class VideoPlayerState extends State<VideoPlayer> {
       children: [
         if (widget.decodeFirstFrame || inited) pickPlayer(),
         if (showThumbnail) thumbnail(),
+        if (buffering) bufferingWidget(),
         controls()
       ],
+    );
+  }
+
+  Widget bufferingWidget() {
+    double? progress;
+    final download = downloadProgress;
+
+    if (download != null) {
+      progress = download.downloaded.toDouble() / download.total.toDouble();
+    }
+
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            width: 50,
+            height: 50,
+            child: CircularProgressIndicator(
+              value: progress,
+            ),
+          ),
+          if (download != null)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0, 16, 0, 0),
+              child: TinyPill(
+                  background: Theme.of(context).colorScheme.secondaryContainer,
+                  foreground:
+                      Theme.of(context).colorScheme.onSecondaryContainer,
+                  "${TextUtils.readableFileSize(download.downloaded)} / ${TextUtils.readableFileSize(download.total)}"),
+            )
+        ],
+      ),
     );
   }
 
@@ -123,7 +165,15 @@ class VideoPlayerState extends State<VideoPlayer> {
 
   Widget controls() {
     return GestureDetector(
-      onTap: showControls,
+      onTap: () {
+        if (BuildConfig.MOBILE) {
+          if (shouldShowControls) {
+            hideControls();
+          } else {
+            showControls();
+          }
+        }
+      },
       child: MouseRegion(
         onEnter: (_) {
           showControls();
@@ -232,6 +282,7 @@ class VideoPlayerState extends State<VideoPlayer> {
     setState(() {
       inited = true;
       playing = true;
+      shouldShowControls = false;
       controller.play();
       if (BuildConfig.MOBILE) hideControls();
     });
@@ -241,6 +292,7 @@ class VideoPlayerState extends State<VideoPlayer> {
     setState(() {
       playing = true;
       controller.replay();
+      shouldShowControls = false;
       if (BuildConfig.MOBILE) hideControls();
     });
   }

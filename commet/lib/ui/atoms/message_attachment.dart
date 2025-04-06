@@ -86,7 +86,8 @@ class _MessageAttachmentState extends State<MessageAttachment> {
         width: attachment.aspectRatio * 200,
         child: Panel(
             mainAxisSize: MainAxisSize.min,
-            header: attachment.name,
+            header:
+                "${attachment.name} ${attachment.fileSize != null ? "- ${TextUtils.readableFileSize(attachment.fileSize!)}" : ""}",
             mode: TileType.surfaceContainerLow,
             padding: 0,
             child: SizedBox(
