@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:commet/cache/file_provider.dart';
 import 'package:flutter/material.dart';
 
 class VideoPlayerController {
@@ -20,6 +21,9 @@ class VideoPlayerController {
 
   final StreamController<bool> _isBuffering = StreamController.broadcast();
 
+  final StreamController<DownloadProgress> _downloadProgress =
+      StreamController.broadcast();
+
   final StreamController<bool> _isCompleted = StreamController.broadcast();
 
   final StreamController<Duration> _onProgressed = StreamController.broadcast();
@@ -29,6 +33,8 @@ class VideoPlayerController {
   Stream<bool> get isCompleted => _isCompleted.stream;
 
   Stream<Duration> get onProgressed => _onProgressed.stream;
+
+  Stream<DownloadProgress> get onDownloadProgressed => _downloadProgress.stream;
 
   void attach(
       {required Future<void> Function() pause,
@@ -69,6 +75,10 @@ class VideoPlayerController {
 
   void setBuffering(bool isBuffering) {
     _isBuffering.add(isBuffering);
+  }
+
+  void setBufferingProgress(DownloadProgress progress) {
+    _downloadProgress.add(progress);
   }
 
   void setCompleted(bool isBuffering) {

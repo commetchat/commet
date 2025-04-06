@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:commet/cache/file_provider.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:matrix/matrix.dart' as matrix;
+import 'package:http/http.dart' as http;
 
 class MxcFileProvider implements FileProvider {
   final Uri uri;
@@ -13,6 +15,9 @@ class MxcFileProvider implements FileProvider {
   String get fileIdentifier => uri.toString();
 
   MxcFileProvider(this.client, this.uri, {this.event});
+
+  StreamController<DownloadProgress> fileDownloadProgress =
+      StreamController.broadcast();
 
   @override
   Future<Uri?> resolve({String? savePath}) async {
@@ -49,7 +54,34 @@ class MxcFileProvider implements FileProvider {
     }
 
     if (event != null) {
-      var file = await event!.downloadAndDecryptAttachment();
+      var file = await event!.downloadAndDecryptAttachment(
+        downloadCallback: (url) async {
+          var request = http.Request("GET", url);
+          request.headers
+              .addAll({'authorization': 'Bearer ${client.accessToken}'});
+          final response = await http.Client().send(request);
+
+          List<int> downloadedBytes = [];
+          int downloaded = 0;
+          if (response.statusCode != 200) {
+            throw Exception("Unexpected response: ${response.statusCode}");
+          }
+
+          var data = response.stream.listen(
+            (event) {
+              downloaded += event.length;
+              fileDownloadProgress.add(
+                  DownloadProgress(downloaded, response.contentLength ?? -1));
+              downloadedBytes.addAll(event);
+            },
+            cancelOnError: true,
+          ).asFuture();
+
+          await data;
+
+          return Uint8List.fromList(downloadedBytes);
+        },
+      );
       bytes = file.bytes;
     } else {
       try {
@@ -62,4 +94,8 @@ class MxcFileProvider implements FileProvider {
 
     return bytes;
   }
+
+  @override
+  Stream<DownloadProgress>? get onProgressChanged =>
+      fileDownloadProgress.stream;
 }
