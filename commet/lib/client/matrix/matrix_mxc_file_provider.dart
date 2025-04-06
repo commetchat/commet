@@ -82,7 +82,7 @@ class MxcFileProvider implements FileProvider {
               downloaded += event.length;
 
               var now = DateTime.now();
-              if (now.difference(lastUpdatedProgress).inMilliseconds > 30) {
+              if (now.difference(lastUpdatedProgress).inMilliseconds > 16) {
                 lastUpdatedProgress = now;
 
                 fileDownloadProgress.add(
