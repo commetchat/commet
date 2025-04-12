@@ -653,4 +653,20 @@ class MatrixRoom extends Room {
     final mxEvent = event as MatrixTimelineEvent;
     await mxEvent.event.sendAgain();
   }
+
+  @override
+  bool get shouldPreviewMedia {
+    switch (_matrixRoom.joinRules) {
+      case matrix.JoinRules.public:
+        return preferences.previewMediaInPublicRooms;
+
+      case matrix.JoinRules.knock:
+      case matrix.JoinRules.invite:
+      case matrix.JoinRules.private:
+        return preferences.previewMediaInPrivateRooms;
+
+      default:
+        return false;
+    }
+  }
 }

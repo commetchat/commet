@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-03-21T16:22:16.121908",
+  "@@last_modified": "2025-04-12T14:27:37.583027",
   "labelRoomsList": "Rooms",
   "@labelRoomsList": {
     "description": "Header label for the list of rooms",
@@ -576,19 +576,17 @@
       "proxyUrl": {}
     }
   },
-  "labelEncryptedPreview": "URL Preview in Encrypted Chats (Experimental)",
-  "@labelEncryptedPreview": {
-    "description": "Label for the toggle for enabling and disabling encrypted url preview",
+  "labelUrlPreviewInEncryptedChatTitle": "URL Preview in Encrypted Chats",
+  "@labelUrlPreviewInEncryptedChatTitle": {
+    "description": "Label for the toggle for enabling and disabling use of url previews in encrypted chats",
     "type": "text",
     "placeholders": {}
   },
-  "labelEncryptedPreviewDescription": "Enable use of a proxy server ({proxyUrl}) to get url preview in an encrypted chat. The content of these requests will be hidden from your homeserver using Commet's 'encrypted url preview'\nLearn more: https://github.com/commetchat/encrypted_url_preview",
-  "@labelEncryptedPreviewDescription": {
-    "description": "Explains briefly how encrypted url preview works",
+  "labelUrlPreviewInEncryptedChatDescription": "This will expose any URLs sent in your encrypted chats to your homeserver in order to fetch the preview",
+  "@labelUrlPreviewInEncryptedChatDescription": {
+    "description": "description for the toggle for enabling and disabling use of url previews in encrypted chats",
     "type": "text",
-    "placeholders": {
-      "proxyUrl": {}
-    }
+    "placeholders": {}
   },
   "labelMessageEffectsTitle": "Message Effects",
   "@labelMessageEffectsTitle": {
@@ -599,6 +597,36 @@
   "labelMessageEffectsDescription": "Messages can be sent with additional effects, such as confetti",
   "@labelMessageEffectsDescription": {
     "description": "Label describing what message effects are",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMediaPreviewSettingsTitle": "Media Preview",
+  "@labelMediaPreviewSettingsTitle": {
+    "description": "Header for the settings tile for for media preview toggles",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMediaPreviewPrivateRoomsToggle": "Private Rooms",
+  "@labelMediaPreviewPrivateRoomsToggle": {
+    "description": "Short label for the private rooms toggle in media previews section",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMediaPreviewPrivateRoomsToggleDescription": "Toggle previewing of images, videos, stickers and urls in private chats",
+  "@labelMediaPreviewPrivateRoomsToggleDescription": {
+    "description": "Label describing toggle of media previews for private rooms",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMediaPreviewPublicRoomsToggle": "Public Rooms",
+  "@labelMediaPreviewPublicRoomsToggle": {
+    "description": "Short label for the private rooms toggle in media previews section",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMediaPreviewPublicRoomsToggleDescription": "Toggle previewing of images, videos, stickers and urls in public chat rooms",
+  "@labelMediaPreviewPublicRoomsToggleDescription": {
+    "description": "Label describing toggle of media previews for public rooms",
     "type": "text",
     "placeholders": {}
   },
@@ -686,25 +714,11 @@
     "type": "text",
     "placeholders": {}
   },
-  "promptCreateEmoticonPack": "Create pack",
-  "@promptCreateEmoticonPack": {
-    "description": "Prompt to create a new emoticon pack, for emoji or stickers",
-    "type": "text",
-    "placeholders": {}
-  },
   "promptImportPack": "Import pack",
   "@promptImportPack": {
     "description": "Prompt to import a set of emoticons from an existing pack",
     "type": "text",
     "placeholders": {}
-  },
-  "promptConfirmDeleteEmoticonPack": "Are you sure you want to delete the **{packName}** pack?",
-  "@promptConfirmDeleteEmoticonPack": {
-    "description": "Prompt to confirm deletion of an emoticon pack, supports markdown to emphasise the pack name",
-    "type": "text",
-    "placeholders": {
-      "packName": {}
-    }
   },
   "createEmoticonDialogTitle": "Create Emote",
   "@createEmoticonDialogTitle": {
@@ -712,17 +726,9 @@
     "type": "text",
     "placeholders": {}
   },
-  "promptConfirmDeleteEmoticon": "Are you sure you want to delete **{emoticon}**?",
-  "@promptConfirmDeleteEmoticon": {
-    "description": "Prompt to confirm deletion of an emoticon pack, supports markdown to emphasise the emote name",
-    "type": "text",
-    "placeholders": {
-      "emoticon": {}
-    }
-  },
-  "promptRenameEmoticon": "Rename emote",
-  "@promptRenameEmoticon": {
-    "description": "Tooltip for button to rename emoticon",
+  "editEmoticonDialogTitle": "Edit Emote",
+  "@editEmoticonDialogTitle": {
+    "description": "Title of a dialog that pops up when choosing to edit an existing emoticon",
     "type": "text",
     "placeholders": {}
   },
@@ -732,20 +738,14 @@
     "type": "text",
     "placeholders": {}
   },
-  "promptEmojiName": "Emoji name",
-  "@promptEmojiName": {
+  "promptEmoteName": "Emote name",
+  "@promptEmoteName": {
     "description": "Prompt for the input of the name of an emoji",
     "type": "text",
     "placeholders": {}
   },
-  "promptStickerName": "Sticker name",
-  "@promptStickerName": {
-    "description": "Prompt for the input of a sticker",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptConfirmCreateEmoticon": "Create!",
-  "@promptConfirmCreateEmoticon": {
+  "promptConfirmSaveEmoticon": "Save!",
+  "@promptConfirmSaveEmoticon": {
     "description": "Prompt to confirm the creation of an Emoticon Pack, Emoji, or Sticker",
     "type": "text",
     "placeholders": {}
@@ -1347,6 +1347,12 @@
   "promptRetryEventSend": "Retry",
   "@promptRetryEventSend": {
     "description": "When a message failed to send, this prompts to retry sending the event",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptShowSticker": "Show sticker",
+  "@promptShowSticker": {
+    "description": "Prompt to display a sticker, shown when media previews are disabled",
     "type": "text",
     "placeholders": {}
   },

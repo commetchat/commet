@@ -116,7 +116,9 @@ class MatrixTimelineEventMessage extends MatrixTimelineEvent
                 doThumbnail: true,
                 matrixEvent: event),
             MxcFileProvider(mx, event.attachmentMxcUrl!, event: event),
+            mimeType: event.attachmentMimetype,
             width: width,
+            fileSize: event.infoMap['size'] as int?,
             name: filename,
             height: height);
       } else if (Mime.videoTypes.contains(event.attachmentMimetype)) {
@@ -134,6 +136,7 @@ class MatrixTimelineEventMessage extends MatrixTimelineEvent
                       matrixEvent: event)
                   : null,
               name: filename,
+              mimeType: event.attachmentMimetype,
               width: width,
               fileSize: event.infoMap['size'] as int?,
               height: height);

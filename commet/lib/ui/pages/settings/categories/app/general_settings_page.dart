@@ -53,6 +53,34 @@ class GeneralSettingsPageState extends State<GeneralSettingsPage> {
       desc: "Label describing what message effects are",
       name: "labelMessageEffectsDescription");
 
+  String get labelMediaPreviewSettingsTitle => Intl.message("Media Preview",
+      desc: "Header for the settings tile for for media preview toggles",
+      name: "labelMediaPreviewSettingsTitle");
+
+  String get labelMediaPreviewPrivateRoomsToggle => Intl.message(
+        "Private Rooms",
+        desc:
+            "Short label for the private rooms toggle in media previews section",
+        name: "labelMediaPreviewPrivateRoomsToggle",
+      );
+
+  String get labelMediaPreviewPrivateRoomsToggleDescription => Intl.message(
+      "Toggle previewing of images, videos, stickers and urls in private chats",
+      desc: "Label describing toggle of media previews for private rooms",
+      name: "labelMediaPreviewPrivateRoomsToggleDescription");
+
+  String get labelMediaPreviewPublicRoomsToggle => Intl.message(
+        "Public Rooms",
+        desc:
+            "Short label for the private rooms toggle in media previews section",
+        name: "labelMediaPreviewPublicRoomsToggle",
+      );
+
+  String get labelMediaPreviewPublicRoomsToggleDescription => Intl.message(
+      "Toggle previewing of images, videos, stickers and urls in public chat rooms",
+      desc: "Label describing toggle of media previews for public rooms",
+      name: "labelMediaPreviewPublicRoomsToggleDescription");
+
   @override
   void initState() {
     enableTenor = preferences.tenorGifSearchEnabled;
@@ -114,6 +142,33 @@ class GeneralSettingsPageState extends State<GeneralSettingsPage> {
               description: labelMessageEffectsDescription,
               onChanged: (value) async {
                 await preferences.setMessageEffectsEnabled(value);
+                setState(() {});
+              },
+            ),
+          ]),
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        Panel(
+          header: labelMediaPreviewSettingsTitle,
+          mode: TileType.surfaceContainerLow,
+          child: Column(children: [
+            settingToggle(
+              preferences.previewMediaInPrivateRooms,
+              title: labelMediaPreviewPrivateRoomsToggle,
+              description: labelMediaPreviewPrivateRoomsToggleDescription,
+              onChanged: (value) async {
+                await preferences.setMediaPreviewInPrivateRooms(value);
+                setState(() {});
+              },
+            ),
+            settingToggle(
+              preferences.previewMediaInPublicRooms,
+              title: labelMediaPreviewPublicRoomsToggle,
+              description: labelMediaPreviewPublicRoomsToggleDescription,
+              onChanged: (value) async {
+                await preferences.setMediaPreviewInPublicRooms(value);
                 setState(() {});
               },
             ),

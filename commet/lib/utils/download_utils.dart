@@ -9,15 +9,8 @@ class DownloadUtils {
     FileProvider? file;
     String name = "untitled";
 
-    // this is so dumb
-    if (attachment is ImageAttachment) {
+    if (attachment is FileAttachment) {
       file = attachment.file;
-      name = attachment.name;
-    } else if (attachment is VideoAttachment) {
-      file = attachment.videoFile;
-      name = attachment.name;
-    } else if (attachment is FileAttachment) {
-      file = attachment.provider;
       name = attachment.name;
     }
 

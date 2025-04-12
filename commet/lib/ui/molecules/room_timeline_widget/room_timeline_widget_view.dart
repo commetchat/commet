@@ -110,7 +110,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
       timeline.onEventAdded.stream.listen(onEventAdded),
       timeline.onChange.stream.listen(onEventChanged),
       timeline.onRemove.stream.listen(onEventRemoved),
-      timeline.onLoadingStatusChanged.listen(onLoadingStatusChanged)
+      timeline.onLoadingStatusChanged.listen(onLoadingStatusChanged),
     ];
 
     eventKeys = List.from(
@@ -377,6 +377,8 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
                                 setReplyingEvent: widget.setReplyingEvent,
                                 isThreadTimeline: widget.isThreadTimeline,
                                 highlightedEventId: highlightedEventId,
+                                previewMedia:
+                                    widget.timeline.room.shouldPreviewMedia,
                                 jumpToEvent: jumpToEvent,
                                 initialIndex: timelineIndex),
                           );
@@ -424,6 +426,8 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
                                 setReplyingEvent: widget.setReplyingEvent,
                                 isThreadTimeline: widget.isThreadTimeline,
                                 highlightedEventId: highlightedEventId,
+                                previewMedia:
+                                    widget.timeline.room.shouldPreviewMedia,
                                 jumpToEvent: jumpToEvent,
                                 initialIndex: timelineIndex),
                           );
