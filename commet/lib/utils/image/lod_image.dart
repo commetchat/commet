@@ -68,8 +68,8 @@ class LODImageProvider extends ImageProvider<String> {
     return completer!;
   }
 
-  void fetchFullRes() {
-    completer?.fetchFullRes();
+  Future<void> fetchFullRes() async {
+    await completer?.fetchFullRes();
   }
 }
 
