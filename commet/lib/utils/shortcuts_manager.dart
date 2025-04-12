@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
@@ -6,6 +7,7 @@ import 'package:commet/config/platform_utils.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/custom_uri.dart';
 import 'package:commet/utils/event_bus.dart';
+import 'package:commet/utils/image/lod_image.dart';
 import 'package:commet/utils/image_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_shortcuts/flutter_shortcuts.dart';
@@ -126,11 +128,21 @@ class ShortcutsManager {
 
     if (imageProvider != null) {
       c.drawColor(Colors.transparent, BlendMode.dstATop);
+
+      if (imageProvider is LODImageProvider) {
+        await imageProvider.fetchFullRes();
+      }
+
       var image = await ImageUtils.imageProviderToImage(imageProvider);
 
+      var smallestDimension = min(image.width, image.height).toDouble();
       c.drawImageRect(
           image,
-          Rect.fromLTWH(0, 0, image.width.toDouble(), image.height.toDouble()),
+          Rect.fromCenter(
+              center: Offset(
+                  image.width.toDouble() / 2, image.height.toDouble() / 2),
+              width: smallestDimension,
+              height: smallestDimension),
           Rect.fromCenter(
               center: center, width: size.width, height: size.height),
           Paint()..filterQuality = FilterQuality.medium);
