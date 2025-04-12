@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class TinyPill extends StatelessWidget {
-  const TinyPill(this.text, {super.key});
+  const TinyPill(this.text, {this.background, this.foreground, super.key});
   final String text;
+  final Color? background;
+  final Color? foreground;
 
   @override
   Widget build(BuildContext context) {
@@ -13,12 +15,14 @@ class TinyPill extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(5),
-            color: Theme.of(context).colorScheme.primaryContainer),
+            color:
+                background ?? Theme.of(context).colorScheme.primaryContainer),
         child: Padding(
           padding: const EdgeInsets.all(2.0),
           child: tiamat.Text.tiny(
             text,
-            color: Theme.of(context).colorScheme.onPrimaryContainer,
+            color:
+                foreground ?? Theme.of(context).colorScheme.onPrimaryContainer,
           ),
         ),
       ),

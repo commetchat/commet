@@ -19,4 +19,7 @@ class CacheFileProvider implements FileProvider {
 
   @override
   Future<void> save(String filepath) async {}
+
+  @override
+  Stream<DownloadProgress>? get onProgressChanged => null;
 }
