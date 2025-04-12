@@ -78,14 +78,17 @@ class MatrixTimelineEventMessage extends MatrixTimelineEvent
 
   @override
   Widget? buildFormattedContent({Timeline? timeline}) {
+    final room = client.getRoom(event.roomId!)!;
+
     var displayEvent = getDisplayEvent(timeline);
     bool isFormatted = displayEvent.content.tryGet<String>("format") != null;
     if (isFormatted) {
-      return MatrixHtmlParser.parse(_getFormattedBody(timeline: timeline), mx);
+      return MatrixHtmlParser.parse(
+          _getFormattedBody(timeline: timeline), mx, room);
     } else {
       var plain = _getPlaintextBody(timeline: timeline);
       if (plain != "") {
-        return MatrixHtmlParser.parse(plain, mx);
+        return MatrixHtmlParser.parse(plain, mx, room);
       }
     }
 

@@ -1,6 +1,7 @@
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_emoticon.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
+import 'package:commet/client/room.dart';
 import 'package:commet/ui/atoms/code_block.dart';
 import 'package:commet/ui/atoms/emoji_widget.dart';
 import 'package:commet/ui/atoms/rich_text/spans/link.dart';
@@ -15,20 +16,24 @@ import 'package:html/dom.dart' as dom;
 import 'package:matrix/matrix.dart' as matrix;
 import 'package:tiamat/config/style/theme_extensions.dart';
 
+import 'package:tiamat/tiamat.dart' as tiamat;
+
 class MatrixHtmlParser {
-  static Widget parse(String text, matrix.Client client) {
+  static Widget parse(String text, matrix.Client client, Room room) {
     return MatrixHtmlState(
       text,
       client,
+      room,
       key: GlobalKey(),
     );
   }
 }
 
 class MatrixHtmlState extends StatefulWidget {
-  const MatrixHtmlState(this.text, this.client, {super.key});
+  const MatrixHtmlState(this.text, this.client, this.room, {super.key});
   final String text;
   final matrix.Client client;
+  final Room room;
 
   @override
   State<MatrixHtmlState> createState() => _MatrixHtmlStateState();
@@ -99,8 +104,9 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
     bool big = shouldDoBigEmoji(document);
 
     // Making a new one of these for every message we pass might make a lot of garbage
-    var extension = MatrixEmoticonHtmlExtension(widget.client, big);
-    var imageExtension = MatrixImageExtension(widget.client);
+    var extension =
+        MatrixEmoticonHtmlExtension(widget.client, widget.room, big);
+    var imageExtension = MatrixImageExtension(widget.client, widget.room);
     var result = Html(
       data: widget.text,
       extensions: [
@@ -186,8 +192,9 @@ bool shouldDoBigEmoji(dom.Document document) {
 
 class MatrixEmoticonHtmlExtension extends HtmlExtension {
   final matrix.Client client;
+  final Room room;
   final bool bigEmoji;
-  const MatrixEmoticonHtmlExtension(this.client, this.bigEmoji);
+  const MatrixEmoticonHtmlExtension(this.client, this.room, this.bigEmoji);
 
   double get emojiSize => bigEmoji ? 48 : 20;
 
@@ -213,17 +220,40 @@ class MatrixEmoticonHtmlExtension extends HtmlExtension {
     if (context.attributes.containsKey("src")) {
       uri = Uri.parse(context.attributes["src"]!);
     }
+
     if (uri == null) {
       return TextSpan(text: context.attributes["alt"] ?? "");
     }
 
+    if (room.shouldPreviewMedia == false) {
+      return WidgetSpan(
+          alignment: PlaceholderAlignment.middle,
+          child: Tooltip(
+              padding: const EdgeInsets.all(0),
+              decoration: const BoxDecoration(
+                color: Colors.transparent,
+              ),
+              richMessage: WidgetSpan(
+                  child: EmojiWidget(
+                MatrixEmoticon(uri, client,
+                    shortcode: context.attributes["alt"] ?? "",
+                    packUsage: EmoticonUsage.all,
+                    usage: EmoticonUsage.emoji),
+                height: 48,
+              )),
+              child: tiamat.Text.labelLow(context.attributes["alt"] ?? "")));
+    }
+
     return WidgetSpan(
-        child: EmojiWidget(
-      MatrixEmoticon(uri, client,
-          shortcode: context.attributes["alt"] ?? "",
-          packUsage: EmoticonUsage.all,
-          usage: EmoticonUsage.emoji),
-      height: emojiSize,
+        child: Tooltip(
+      message: context.attributes["alt"] ?? "",
+      child: EmojiWidget(
+        MatrixEmoticon(uri, client,
+            shortcode: context.attributes["alt"] ?? "",
+            packUsage: EmoticonUsage.all,
+            usage: EmoticonUsage.emoji),
+        height: emojiSize,
+      ),
     ));
   }
 
@@ -381,7 +411,9 @@ class MatrixImageExtension extends HtmlExtension {
   final double defaultDimension;
 
   final matrix.Client client;
-  const MatrixImageExtension(this.client, {this.defaultDimension = 64});
+  final Room room;
+  const MatrixImageExtension(this.client, this.room,
+      {this.defaultDimension = 64});
 
   @override
   Set<String> get supportedTags => {'img'};
@@ -389,11 +421,12 @@ class MatrixImageExtension extends HtmlExtension {
   @override
   InlineSpan build(ExtensionContext context) {
     final mxcUrl = Uri.tryParse(context.attributes['src'] ?? '');
+
     if (mxcUrl == null) {
       return TextSpan(text: context.attributes['alt']);
     }
 
-    if (mxcUrl.scheme != 'mxc') {
+    if (mxcUrl.scheme != 'mxc' || !room.shouldPreviewMedia) {
       return LinkSpan.create(mxcUrl.toString(),
           destination: mxcUrl, context: context.buildContext!);
     }
