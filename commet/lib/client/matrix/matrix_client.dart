@@ -599,7 +599,7 @@ class MatrixClient extends Client {
 
     flows["flows"].where((element) => element['type'] == "m.login.sso").forEach(
       (element) {
-        element["identity_providers"].forEach((provider) {
+        element["identity_providers"]?.forEach((provider) {
           result.add(MatrixSSOLoginFlow.fromJson(this, provider));
         });
       },
