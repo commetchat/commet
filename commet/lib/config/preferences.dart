@@ -40,6 +40,12 @@ class Preferences {
   static const String _usePlaceholderRoomAvatars =
       "use_placeholder_room_avatars";
 
+  static const String _previewMediaInPublicRooms =
+      "preview_media_in_public_rooms";
+
+  static const String _previewMediaInPrivateRooms =
+      "preview_media_in_private_rooms";
+
   final StreamController _onSettingChanged = StreamController.broadcast();
   Stream get onSettingChanged => _onSettingChanged.stream;
   bool isInit = false;
@@ -284,6 +290,22 @@ class Preferences {
 
   Future<void> setUsePlaceholderRoomAvatars(bool value) async {
     await _preferences!.setBool(_usePlaceholderRoomAvatars, value);
+    _onSettingChanged.add(null);
+  }
+
+  bool get previewMediaInPublicRooms =>
+      _preferences!.getBool(_previewMediaInPublicRooms) ?? false;
+
+  Future<void> setMediaPreviewInPublicRooms(bool value) async {
+    await _preferences!.setBool(_previewMediaInPublicRooms, value);
+    _onSettingChanged.add(null);
+  }
+
+  bool get previewMediaInPrivateRooms =>
+      _preferences!.getBool(_previewMediaInPrivateRooms) ?? true;
+
+  Future<void> setMediaPreviewInPrivateRooms(bool value) async {
+    await _preferences!.setBool(_previewMediaInPrivateRooms, value);
     _onSettingChanged.add(null);
   }
 }

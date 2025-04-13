@@ -653,4 +653,31 @@ class MatrixRoom extends Room {
     final mxEvent = event as MatrixTimelineEvent;
     await mxEvent.event.sendAgain();
   }
+
+  @override
+  bool get shouldPreviewMedia {
+    switch (_matrixRoom.joinRules) {
+      case matrix.JoinRules.public:
+        return preferences.previewMediaInPublicRooms;
+
+      case matrix.JoinRules.knock:
+      case matrix.JoinRules.invite:
+      case matrix.JoinRules.private:
+        return preferences.previewMediaInPrivateRooms;
+
+      case matrix.JoinRules.restricted:
+        if (_client.spaces.any((e) =>
+            e.visibility == RoomVisibility.public &&
+            e.containsRoom(_matrixRoom.id))) {
+          // if any public space contains this room, consider the room public
+          // this is kind of flawed, because there could be public spaces we are not a member of
+          return preferences.previewMediaInPublicRooms;
+        } else {
+          return preferences.previewMediaInPrivateRooms;
+        }
+
+      default:
+        return false;
+    }
+  }
 }
