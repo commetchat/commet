@@ -1543,5 +1543,23 @@
     "placeholders": {
       "user": {}
     }
+  },
+  "promptCancelEventSend": "Abbrechen",
+  "@promptCancelEventSend": {
+    "description": "When a message failed to send, this prompts to cancel sending the event",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptRetryEventSend": "Wiederholen",
+  "@promptRetryEventSend": {
+    "description": "When a message failed to send, this prompts to retry sending the event",
+    "type": "text",
+    "placeholders": {}
+  },
+  "noPinnedMessages": "Es wurden noch keine Nachrichten angeheftet!",
+  "@noPinnedMessages": {
+    "description": "Placeholder label in the pinned messages menu that is shown when there are no pinned messages",
+    "type": "text",
+    "placeholders": {}
   }
 }

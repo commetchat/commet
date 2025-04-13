@@ -1620,7 +1620,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "messagePlaceholderUserUpdatedNameDetailed": "{user} 将他们的显示名称更改为 '{newName}'",
+  "messagePlaceholderUserUpdatedNameDetailed": "{user} 将他们的显示名称更改为 \"{newName}\"",
   "@messagePlaceholderUserUpdatedNameDetailed": {
     "description": "Message body for when a user updates their display name",
     "type": "text",
@@ -1645,5 +1645,29 @@
     "placeholders": {
       "user": {}
     }
+  },
+  "labelEnableRoomIconsDescription": "显示房间头像图片而不是图标",
+  "@labelEnableRoomIconsDescription": {
+    "description": "Description for the enable room icons setting",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelUseRoomAvatars": "使用房间头像",
+  "@labelUseRoomAvatars": {
+    "description": "Label for enabling using room avatars instead of icons",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelUseRoomAvatarPlaceholders": "使用占位符头像",
+  "@labelUseRoomAvatarPlaceholders": {
+    "description": "Label for enabling generic icons in the appearance settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelUseRoomAvatarPlaceholdersDescription": "当一个房间没有设置头像，或者使用头像被禁用时，回退到使用通用颜色加首字母的占位符作为图像",
+  "@labelUseRoomAvatarPlaceholdersDescription": {
+    "description": "Description for the enable generic icons setting",
+    "type": "text",
+    "placeholders": {}
   }
 }
