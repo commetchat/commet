@@ -24,10 +24,10 @@ index 7b03921..a059ce6 100644
      }
  }
  
-diff --git a/commet/lib/client/components/push_notification/android/firebase_push_notifier.dart b/commet/lib/client/components/push_notification/android/firebase_push_notifier.dart
+diff --git a/commet/lib/client/components/push_notification/firebase_push_notifier.dart b/commet/lib/client/components/push_notification/firebase_push_notifier.dart
 index 67d69a7..beb0791 100644
---- a/commet/lib/client/components/push_notification/android/firebase_push_notifier.dart
-+++ b/commet/lib/client/components/push_notification/android/firebase_push_notifier.dart
+--- a/commet/lib/client/components/push_notification/firebase_push_notifier.dart
++++ b/commet/lib/client/components/push_notification/firebase_push_notifier.dart
 @@ -12,10 +12,10 @@ import 'package:commet/service/background_service.dart';
  import 'package:commet/service/background_service_notifications/background_service_task_notification.dart';
  

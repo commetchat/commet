@@ -20,6 +20,7 @@ class MessageNotificationContent extends NotificationContent {
   String roomId;
   String clientId;
   String roomName;
+  String? source;
   bool isDirectMessage;
   ImageProvider? roomImage;
   ImageProvider? senderImage;
@@ -37,5 +38,6 @@ class MessageNotificationContent extends NotificationContent {
     this.roomImage,
     this.senderImage,
     this.attachedImage,
+    this.source,
   }) : super(title: senderName, content: content);
 }
