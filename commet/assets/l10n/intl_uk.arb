@@ -1699,5 +1699,17 @@
     "description": "When a message failed to send, this prompts to retry sending the event",
     "type": "text",
     "placeholders": {}
+  },
+  "labelUrlPreviewInEncryptedChatTitle": "Передперегляд URL-адрес у зашифрованих чатах",
+  "@labelUrlPreviewInEncryptedChatTitle": {
+    "description": "Label for the toggle for enabling and disabling use of url previews in encrypted chats",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelUrlPreviewInEncryptedChatDescription": "Це відкриє всі URL-адреси, надіслані в зашифрованих чатах, вашому домашньому серверу, щоби побачити передперегляд",
+  "@labelUrlPreviewInEncryptedChatDescription": {
+    "description": "description for the toggle for enabling and disabling use of url previews in encrypted chats",
+    "type": "text",
+    "placeholders": {}
   }
 }
