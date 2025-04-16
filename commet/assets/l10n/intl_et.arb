@@ -1699,5 +1699,71 @@
     "description": "When a message failed to send, this prompts to retry sending the event",
     "type": "text",
     "placeholders": {}
+  },
+  "labelMediaPreviewPublicRoomsToggle": "Avalikud jututoad",
+  "@labelMediaPreviewPublicRoomsToggle": {
+    "description": "Short label for the private rooms toggle in media previews section",
+    "type": "text",
+    "placeholders": {}
+  },
+  "editEmoticonDialogTitle": "Muuda emotikoni",
+  "@editEmoticonDialogTitle": {
+    "description": "Title of a dialog that pops up when choosing to edit an existing emoticon",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmSaveEmoticon": "Salvesta!",
+  "@promptConfirmSaveEmoticon": {
+    "description": "Prompt to confirm the creation of an Emoticon Pack, Emoji, or Sticker",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptEmoteName": "Emotikoni nimi",
+  "@promptEmoteName": {
+    "description": "Prompt for the input of the name of an emoji",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelUrlPreviewInEncryptedChatTitle": "Võrguaadresside eelvaade krüptitud vestlustes",
+  "@labelUrlPreviewInEncryptedChatTitle": {
+    "description": "Label for the toggle for enabling and disabling use of url previews in encrypted chats",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelUrlPreviewInEncryptedChatDescription": "Eelvaate kuvamiseks vajalikud kõik sinu krüptitud vestlustesse saadetud võrguaadressid muutuvad nähtavaks sinu koduserverile",
+  "@labelUrlPreviewInEncryptedChatDescription": {
+    "description": "description for the toggle for enabling and disabling use of url previews in encrypted chats",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMediaPreviewSettingsTitle": "Meedia eelvaade",
+  "@labelMediaPreviewSettingsTitle": {
+    "description": "Header for the settings tile for for media preview toggles",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMediaPreviewPrivateRoomsToggle": "Privaatsed jututoad",
+  "@labelMediaPreviewPrivateRoomsToggle": {
+    "description": "Short label for the private rooms toggle in media previews section",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMediaPreviewPrivateRoomsToggleDescription": "Lülita piltide, videote, kleepsude ja võrguaadresside kuvamine privaatsetes jututubades sisse/välja",
+  "@labelMediaPreviewPrivateRoomsToggleDescription": {
+    "description": "Label describing toggle of media previews for private rooms",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMediaPreviewPublicRoomsToggleDescription": "Lülita piltide, videote, kleepsude ja võrguaadresside kuvamine avalikes jututubades sisse/välja",
+  "@labelMediaPreviewPublicRoomsToggleDescription": {
+    "description": "Label describing toggle of media previews for public rooms",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptShowSticker": "Näita kleepsu",
+  "@promptShowSticker": {
+    "description": "Prompt to display a sticker, shown when media previews are disabled",
+    "type": "text",
+    "placeholders": {}
   }
 }
