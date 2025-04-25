@@ -36,6 +36,7 @@ class TimelineEventViewMessage extends StatefulWidget {
       this.overrideShowSender = false,
       this.jumpToEvent,
       this.detailed = false,
+      this.previewMedia = false,
       required this.initialIndex});
 
   final Function(String eventId)? jumpToEvent;
@@ -47,6 +48,7 @@ class TimelineEventViewMessage extends StatefulWidget {
   final bool overrideShowSender;
   final bool detailed;
   final bool isThreadTimeline;
+  final bool previewMedia;
 
   @override
   State<TimelineEventViewMessage> createState() =>
@@ -66,6 +68,7 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
   GlobalKey urlPreviewsKey = GlobalKey();
 
   Widget? formattedContent;
+  String? body;
   ImageProvider? senderAvatar;
   List<Attachment>? attachments;
   ImageProvider? sticker;
@@ -91,7 +94,9 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
     var room = widget.room ?? widget.timeline?.room;
     var client = room!.client;
     currentUserIdentifier = client.self!.identifier;
-    previewComponent = client.getComponent<UrlPreviewComponent>();
+    if (widget.previewMedia) {
+      previewComponent = client.getComponent<UrlPreviewComponent>();
+    }
 
     if (!widget.isThreadTimeline) {
       threadComponent = client.getComponent<ThreadsComponent>();
@@ -118,9 +123,18 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
       timestamp: timestampToString(sentTime),
       edited: edited,
       attachments: attachments != null
-          ? TimelineEventViewAttachments(attachments: attachments!)
+          ? TimelineEventViewAttachments(
+              attachments: attachments!,
+              previewMedia: widget.previewMedia,
+            )
           : null,
-      sticker: sticker != null ? TimelineEventViewSticker(sticker!) : null,
+      sticker: sticker != null
+          ? TimelineEventViewSticker(
+              sticker!,
+              stickerName: body,
+              previewMedia: widget.previewMedia,
+            )
+          : null,
       inResponseTo: isInResponse && widget.timeline != null
           ? TimelineEventViewReply(
               timeline: widget.timeline!,
@@ -206,6 +220,7 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
 
     if (event is TimelineEventSticker) {
       sticker = event.stickerImage;
+      body = event.plainTextBody;
     }
 
     isInResponse = event is TimelineEventFeatureRelated &&

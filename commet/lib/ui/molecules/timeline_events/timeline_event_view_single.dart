@@ -22,6 +22,7 @@ class TimelineEventViewSingle extends StatelessWidget {
         initialIndex: 0,
         detailed: true,
         initialEvent: event,
+        previewMedia: room.shouldPreviewMedia,
       );
     if (type == TimelineEventWidgetDisplayType.generic)
       return TimelineEventViewGeneric(

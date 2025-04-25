@@ -38,6 +38,8 @@ abstract class Room {
   /// Returns true if the room is secured by end to end encryption
   bool get isE2EE;
 
+  bool get shouldPreviewMedia;
+
   /// Returns a color to use for the room's avatar
   Color get defaultColor;
 

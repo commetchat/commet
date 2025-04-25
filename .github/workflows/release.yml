@@ -8,6 +8,7 @@ on:
 
 env:
   PROJECT_PATH: commet
+  COMMET_PROD: 1
 
 jobs:
   release-windows:

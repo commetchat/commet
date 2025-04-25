@@ -29,6 +29,7 @@ class TimelineViewEntry extends StatefulWidget {
       this.showDetailed = false,
       this.singleEvent = false,
       this.isThreadTimeline = false,
+      this.previewMedia = false,
       this.highlightedEventId,
       super.key});
   final Timeline timeline;
@@ -40,6 +41,7 @@ class TimelineViewEntry extends StatefulWidget {
   final bool showDetailed;
   final bool isThreadTimeline;
   final String? highlightedEventId;
+  final bool previewMedia;
 
   // Should be true if we are showing this event on its own, and not as part of a timeline
   final bool singleEvent;
@@ -97,6 +99,7 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
   void loadState(int eventIndex) {
     var event = widget.timeline.events[eventIndex];
     redacted = widget.timeline.isEventRedacted(event);
+
     eventId = event.eventId;
     status = event.status;
     index = eventIndex;
@@ -309,6 +312,7 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
           detailed: widget.showDetailed || selected,
           overrideShowSender: widget.singleEvent,
           jumpToEvent: widget.jumpToEvent,
+          previewMedia: widget.previewMedia,
           initialIndex: widget.initialIndex);
     if (_widgetType == TimelineEventWidgetDisplayType.generic)
       return TimelineEventViewGeneric(

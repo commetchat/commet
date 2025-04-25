@@ -16,8 +16,12 @@ class MatrixMxcImage extends LODImageProvider {
       bool? doFullres,
       bool cache = true,
       bool autoLoadFullRes = true,
+      super.thumbnailHeight,
+      super.fullResHeight,
       Event? matrixEvent})
       : super(
+            id:
+                "$identifier-$doThumbnail-$doFullres-$thumbnailHeight-$fullResHeight",
             blurhash: blurhash,
             loadThumbnail: (doThumbnail == null || doThumbnail == true)
                 ? () => loadMatrixThumbnail(

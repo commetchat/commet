@@ -62,30 +62,20 @@ class _AccountEmojiTabState extends State<AccountEmojiTab> {
       // I dont love using a key here, is there a better way to do this? i dont know
       key: ValueKey("account_emoji_editor_key_${selectedClient!.identifier}"),
       children: [
-        RoomEmojiPackSettingsView(component!.ownedPacks,
-            createNewPack: createPack,
-            defaultExpanded: true,
-            canCreatePack: component!.canCreatePack,
-            deleteEmoticon: deleteEmoticon,
-            deletePack: deletePack,
-            renameEmoticon: renameEmoticon,
-            onPackCreated: component!.onOwnedPackAdded),
+        RoomEmojiPackSettingsView(
+          component: component!,
+          editable: true,
+        ),
         const SizedBox(
           height: 5,
         ),
-        if (component!.globalPacks().isNotEmpty)
-          AccountEmojiView(component!.globalPacks(), component!.ownedPacks),
+        if (component!.globalPacks().isNotEmpty) AccountEmojiView(component!),
       ],
     );
   }
 
   Future<void> createPack(String name, Uint8List? avatarData) {
     return component!.createEmoticonPack(name, avatarData);
-  }
-
-  Future<void> renameEmoticon(
-      EmoticonPack pack, Emoticon emoticon, String name) {
-    return pack.renameEmoticon(emoticon, name);
   }
 
   Future<void> deleteEmoticon(EmoticonPack pack, Emoticon emoticon) {

@@ -1276,7 +1276,7 @@
   },
   "placeholderRoomAddress": "#awesome-room:example.com",
   "@placeholderRoomAddress": {
-    "description": "Placeholder / Example for a room address",
+    "description": "Placeholder / Example for a room address. Please do not translate 'example.com' and keep the domain as is, this is a reserved domain specifically for use in examples, and translations could end up pointing to untrusted domains",
     "type": "text",
     "placeholders": {}
   },
@@ -1294,7 +1294,7 @@
   },
   "placeholderSpaceAddress": "#awesome-space:example.com",
   "@placeholderSpaceAddress": {
-    "description": "Placeholder / Example for a space address",
+    "description": "Placeholder / Example for a space address. Please do not translate 'example.com' and keep the domain as is, this is a reserved domain specifically for use in examples, and translations could end up pointing to untrusted domains",
     "type": "text",
     "placeholders": {}
   },
@@ -1541,6 +1541,48 @@
   "labelMatrixPermissionsSpaceManageChildrenTitle": "スペースに属するルームの設定",
   "@labelMatrixPermissionsSpaceManageChildrenTitle": {
     "description": "Title for permission to manage children",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptPinMessage": "メッセージをピン留めする",
+  "@promptPinMessage": {
+    "description": "Label for the menu option to pin a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelUseRoomAvatars": "ルームアバターを使用する",
+  "@labelUseRoomAvatars": {
+    "description": "Label for enabling using room avatars instead of icons",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptUnpinMessage": "メッセージのピン留めを外す",
+  "@promptUnpinMessage": {
+    "description": "Label for the menu option to unpin a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptReplyInThread": "スレッドで返信",
+  "@promptReplyInThread": {
+    "description": "Label for the menu option to reply to a message inside a thread",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMessageEffectsTitle": "メッセージエフェクト",
+  "@labelMessageEffectsTitle": {
+    "description": "Header for the settings tile for message effects, such as confetti",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMessageEffectsDescription": "紙吹雪のようなエフェクトを追加してメッセージを送信することができます",
+  "@labelMessageEffectsDescription": {
+    "description": "Label describing what message effects are",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptShowSource": "ソースを表示",
+  "@promptShowSource": {
+    "description": "Label for the menu option to view the JSON source of an event",
     "type": "text",
     "placeholders": {}
   }

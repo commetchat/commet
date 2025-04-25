@@ -7,7 +7,14 @@ project(runner LANGUAGES CXX)
 set(BINARY_NAME "commet")
 # The unique GTK application identifier for this application. See:
 # https://wiki.gnome.org/HowDoI/ChooseApplicationID
-set(APPLICATION_ID "chat.commet.commetapp")
+
+if ($ENV{COMMET_PROD} MATCHES "1")
+  set(APPLICATION_ID "chat.commet.commetapp")
+  message("Building in PRODUCTION mode")
+else()
+  set(APPLICATION_ID "chat.commet.commetapp.develop")
+  message("Building in DEVELOP mode")
+endif()
 
 # Explicitly opt in to modern CMake behaviors to avoid warnings with recent
 # versions of CMake.

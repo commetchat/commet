@@ -1,27 +1,44 @@
+import 'dart:async';
+
 import 'package:commet/client/components/emoticon/emoji_pack.dart';
+import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/main.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class AccountEmojiView extends StatefulWidget {
-  const AccountEmojiView(this.globalPacks, this.personalPacks, {super.key});
-  final List<EmoticonPack> globalPacks;
-  final List<EmoticonPack> personalPacks;
+  const AccountEmojiView(this.component, {super.key});
+  final EmoticonComponent component;
   @override
   State<AccountEmojiView> createState() => _AccountEmojiViewState();
 }
 
 class _AccountEmojiViewState extends State<AccountEmojiView> {
+  late List<EmoticonPack> globalPacks;
+  StreamSubscription? sub;
+
+  @override
+  void initState() {
+    sub = widget.component.onStateChanged.listen((_) => updateState());
+    updateState();
+    super.initState();
+  }
+
+  void updateState() {
+    setState(() {
+      globalPacks = widget.component.globalPacks();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         tiamat.Panel(
-          header: "Global Packs",
+          header: "Favorite Packs",
           mode: tiamat.TileType.surfaceContainerLow,
-          child: Column(
-              children: widget.globalPacks.map((e) => packSummary(e)).toList()),
+          child:
+              Column(children: globalPacks.map((e) => packSummary(e)).toList()),
         ),
       ],
     );
@@ -33,25 +50,42 @@ class _AccountEmojiViewState extends State<AccountEmojiView> {
       child: SizedBox(
         height: 40,
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            if (pack.image != null)
-              Image(
-                image: pack.image!,
-                filterQuality: FilterQuality.medium,
-              ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  tiamat.Text.labelEmphasised(pack.displayName),
-                  tiamat.Text.labelLow(preferences.developerMode
-                      ? "${pack.ownerDisplayName} - (${pack.ownerId})"
-                      : pack.ownerDisplayName),
-                ],
-              ),
+            Row(
+              children: [
+                if (pack.image != null)
+                  SizedBox(
+                    width: 40,
+                    height: 40,
+                    child: Image(
+                      image: pack.image!,
+                      filterQuality: FilterQuality.medium,
+                    ),
+                  ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      tiamat.Text.labelEmphasised(pack.displayName),
+                      tiamat.Text.labelLow(preferences.developerMode
+                          ? "${pack.ownerDisplayName} - (${pack.ownerId})"
+                          : pack.ownerDisplayName),
+                    ],
+                  ),
+                ),
+              ],
             ),
+            SizedBox(
+              width: 40,
+              height: 40,
+              child: tiamat.IconButton(
+                icon: Icons.heart_broken,
+                onPressed: () => pack.markAsGlobal(false),
+              ),
+            )
           ],
         ),
       ),

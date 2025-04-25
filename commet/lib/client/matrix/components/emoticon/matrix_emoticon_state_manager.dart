@@ -12,6 +12,8 @@ abstract class MatrixEmoticonStateManager {
   Future<void> setState(String packKey, Map<String, dynamic> content);
 
   Stream<void> get onStateChanged;
+
+  String get id;
 }
 
 class MatrixEmoticonPersonalStateManager implements MatrixEmoticonStateManager {
@@ -33,9 +35,14 @@ class MatrixEmoticonPersonalStateManager implements MatrixEmoticonStateManager {
       onStateChangedController.add(null);
     });
 
-    mx.onSync.stream
-        .where((e) => e.accountData != null)
-        .listen((_) => onStateChangedController.add(null));
+    mx.onSync.stream.where((e) => e.accountData != null).listen((update) {
+      if (update.accountData?.any((e) =>
+              e.type == "im.ponies.user_emotes" ||
+              e.type == "im.ponies.emote_rooms") ==
+          true) {
+        onStateChangedController.add(null);
+      }
+    });
   }
 
   @override
@@ -62,6 +69,9 @@ class MatrixEmoticonPersonalStateManager implements MatrixEmoticonStateManager {
             ?.content ??
         {};
   }
+
+  @override
+  String get id => client.identifier;
 }
 
 class MatrixEmoticonRoomStateManager implements MatrixEmoticonStateManager {
@@ -119,4 +129,7 @@ class MatrixEmoticonRoomStateManager implements MatrixEmoticonStateManager {
 
   @override
   Stream<void> get onStateChanged => onStateChangedController.stream;
+
+  @override
+  String get id => room.id;
 }

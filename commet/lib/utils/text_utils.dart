@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/rich_text/spans/link.dart';
@@ -170,15 +168,33 @@ class TextUtils {
   }
 
   static String readableFileSize(num number, {bool base1024 = true}) {
-    final base = base1024 ? 1024 : 1000;
-    if (number <= 0) return "0";
-    final units = ["B", "kB", "MB", "GB", "TB"];
-    int digitGroups = (log(number) / log(base)).round();
-    // ignore: prefer_interpolation_to_compose_strings
-    return intl.NumberFormat("#,##0.#")
-            .format(number / pow(base, digitGroups)) +
-        " " +
-        units[digitGroups];
+    const List<String> affixes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
+    const useBase1024 = true;
+    const int round = 2;
+
+    // ignore: dead_code
+    num divider = useBase1024 ? 1024 : 1000;
+
+    num size = number;
+    num runningDivider = divider;
+    num runningPreviousDivider = 0;
+    int affix = 0;
+
+    while (size >= runningDivider && affix < affixes.length - 1) {
+      runningPreviousDivider = runningDivider;
+      runningDivider *= divider;
+      affix++;
+    }
+
+    String result =
+        (runningPreviousDivider == 0 ? size : size / runningPreviousDivider)
+            .toStringAsFixed(round);
+
+    //Check if the result ends with .00000 (depending on how many decimals) and remove it if found.
+    if (result.endsWith("0" * round))
+      result = result.substring(0, result.length - round - 1);
+
+    return "$result ${affixes[affix]}";
   }
 
   static String redactSensitiveInfo(String text) {

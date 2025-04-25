@@ -78,14 +78,17 @@ class MatrixTimelineEventMessage extends MatrixTimelineEvent
 
   @override
   Widget? buildFormattedContent({Timeline? timeline}) {
+    final room = client.getRoom(event.roomId!)!;
+
     var displayEvent = getDisplayEvent(timeline);
     bool isFormatted = displayEvent.content.tryGet<String>("format") != null;
     if (isFormatted) {
-      return MatrixHtmlParser.parse(_getFormattedBody(timeline: timeline), mx);
+      return MatrixHtmlParser.parse(
+          _getFormattedBody(timeline: timeline), mx, room);
     } else {
       var plain = _getPlaintextBody(timeline: timeline);
       if (plain != "") {
-        return MatrixHtmlParser.parse(plain, mx);
+        return MatrixHtmlParser.parse(plain, mx, room);
       }
     }
 
@@ -116,7 +119,9 @@ class MatrixTimelineEventMessage extends MatrixTimelineEvent
                 doThumbnail: true,
                 matrixEvent: event),
             MxcFileProvider(mx, event.attachmentMxcUrl!, event: event),
+            mimeType: event.attachmentMimetype,
             width: width,
+            fileSize: event.infoMap['size'] as int?,
             name: filename,
             height: height);
       } else if (Mime.videoTypes.contains(event.attachmentMimetype)) {
@@ -134,6 +139,7 @@ class MatrixTimelineEventMessage extends MatrixTimelineEvent
                       matrixEvent: event)
                   : null,
               name: filename,
+              mimeType: event.attachmentMimetype,
               width: width,
               fileSize: event.infoMap['size'] as int?,
               height: height);

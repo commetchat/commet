@@ -77,8 +77,7 @@ dependencies:
     git: 
       url: https://github.com/commetchat/matrix-dart-sdk-drift-db.git
       ref: voip
-  encrypted_url_preview: 
-    git: https://github.com/commetchat/encrypted_url_preview.git
+
   signal_sticker_api: 
     git: https://github.com/commetchat/signal-sticker-api.git
   starfield: 
