@@ -48,6 +48,8 @@
 
         libraries = with pkgs; [
               olm
+              libdrm
+              mesa
         ];
 
         packages = with pkgs; [

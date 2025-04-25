@@ -39,3 +39,29 @@ class MessageNotificationContent extends NotificationContent {
     this.attachedImage,
   }) : super(title: senderName, content: content);
 }
+
+class CallNotificationContent extends NotificationContent {
+  String roomId;
+  String senderId;
+  String roomName;
+  String clientId;
+  String callId;
+
+  bool isDirectMessage;
+
+  ImageProvider? roomImage;
+  ImageProvider? senderImage;
+
+  CallNotificationContent({
+    required this.roomId,
+    required this.senderId,
+    required this.roomName,
+    required this.clientId,
+    required this.callId,
+    required this.isDirectMessage,
+    this.senderImage,
+    required super.title,
+    required super.content,
+    this.roomImage,
+  });
+}
