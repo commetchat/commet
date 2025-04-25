@@ -9,8 +9,6 @@ import 'package:commet/service/background_service_task.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-// ignore: depend_on_referenced_packages
-import 'package:flutter_background_service_android/flutter_background_service_android.dart';
 
 const AndroidNotificationChannel channel = AndroidNotificationChannel(
   "background_service",

@@ -3,7 +3,6 @@ import 'package:commet/client/matrix/components/matrix_sync_listener.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:matrix/matrix.dart';
-import 'package:matrix/matrix_api_lite/model/sync_update.dart';
 
 class MatrixVoipRoomComponent
     implements

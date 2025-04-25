@@ -20,7 +20,6 @@ import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/scaled_app.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:media_kit_video/media_kit_video_controls/src/controls/methods/video_state.dart';
 import 'package:tiamat/atoms/foundation.dart';
 import 'package:tiamat/atoms/tile.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;

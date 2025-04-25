@@ -104,7 +104,6 @@ class MatrixRTCScreenShareAnnotationSession
   }
 
   void onMessageReceived(String event) {
-    print("Annotation received message: $event");
     if (session.currentScreenshare == null) return;
 
     final userId = session.remoteUserId ?? "unknown_user_id";

@@ -8,6 +8,7 @@ import 'package:commet/client/matrix/components/rtc_screen_share_annotation/matr
 import 'package:commet/client/matrix/components/voip/matrix_voip_session.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+// ignore: depend_on_referenced_packages
 import 'package:uuid/uuid.dart';
 
 class MatrixRTCDataChannelComponent

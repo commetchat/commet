@@ -1,5 +1,4 @@
 import 'package:commet/config/experiments.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -19,8 +18,8 @@ class _ExperimentsSettingsPageState extends State<ExperimentsSettingsPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
+        const Padding(
+          padding: EdgeInsets.all(8.0),
           child: tiamat.Text.label(
               "These features are still under development, and may contain bugs or security issues. Enable at your own risk"),
         ),
@@ -31,8 +30,8 @@ class _ExperimentsSettingsPageState extends State<ExperimentsSettingsPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Flexible(
-                  child: const Column(
+                const Flexible(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       tiamat.Text.labelEmphasised("1:1 Voice and Video Calls"),
