@@ -1,7 +1,9 @@
+import 'package:commet/client/components/voip/voip_component.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/settings/categories/app/advanced_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/app/appearance_settings_page.dart';
+import 'package:commet/ui/pages/settings/categories/app/experiments_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/app/general_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/app/voip_settings/voip_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/app/notification_settings/notification_settings_page.dart';
@@ -28,6 +30,10 @@ class SettingsCategoryApp implements SettingsCategory {
   String get labelSettingsAppAdvanced => Intl.message("Advanced",
       name: "labelSettingsAppAdvanced",
       desc: "Label for the App Advanced settings page");
+
+  String get labelSettingsAppExperiments => Intl.message("Experiments",
+      name: "labelSettingsAppExperiments",
+      desc: "Label for the App Experiments settings page");
 
   String get labelSettingsAppNotifications => Intl.message("Notifications",
       name: "labelSettingsAppNotifications",
@@ -59,12 +65,15 @@ class SettingsCategoryApp implements SettingsCategory {
             pageBuilder: (context) {
               return const AppearanceSettingsPage();
             }),
-        SettingsTab(
-            label: "Voice and Video",
-            icon: m.Icons.call,
-            pageBuilder: (context) {
-              return const VoipSettingsPage();
-            }),
+        if (clientManager?.clients
+                .any((e) => e.getComponent<VoipComponent>() != null) ==
+            true)
+          SettingsTab(
+              label: "Voice and Video",
+              icon: m.Icons.call,
+              pageBuilder: (context) {
+                return const VoipSettingsPage();
+              }),
         if (BuildConfig.DESKTOP)
           SettingsTab(
               label: labelSettingsWindowBehaviour,
@@ -86,6 +95,12 @@ class SettingsCategoryApp implements SettingsCategory {
             icon: m.Icons.code,
             pageBuilder: (context) {
               return const AdvancedSettingsPage();
+            }),
+        SettingsTab(
+            label: labelSettingsAppExperiments,
+            icon: m.Icons.science,
+            pageBuilder: (context) {
+              return const ExperimentsSettingsPage();
             }),
         if (preferences.developerMode)
           SettingsTab(

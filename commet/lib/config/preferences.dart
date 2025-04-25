@@ -48,6 +48,8 @@ class Preferences {
   static const String _previewMediaInPrivateRooms =
       "preview_media_in_private_rooms";
 
+  static const String _optedInExperiments = "opted_in_experiments";
+
   final StreamController _onSettingChanged = StreamController.broadcast();
   Stream get onSettingChanged => _onSettingChanged.stream;
   bool isInit = false;
@@ -319,5 +321,27 @@ class Preferences {
   Future<void> setMediaPreviewInPrivateRooms(bool value) async {
     await _preferences!.setBool(_previewMediaInPrivateRooms, value);
     _onSettingChanged.add(null);
+  }
+
+  Future<void> setExperimentEnabled(String experiment, bool value) async {
+    var experiments = _preferences?.getStringList(_optedInExperiments) ??
+        List.empty(growable: true);
+
+    if (value) {
+      if (experiments.contains(experiment) == false) {
+        experiments.add(experiment);
+      }
+    } else {
+      experiments.removeWhere((e) => e == experiment);
+    }
+
+    await _preferences!.setStringList(_optedInExperiments, experiments);
+  }
+
+  bool isExperimentEnabled(String experiment) {
+    return _preferences
+            ?.getStringList(_optedInExperiments)
+            ?.contains(experiment) ==
+        true;
   }
 }
