@@ -86,6 +86,10 @@ class _SidebarCallsListState extends State<SidebarCallsList> {
   }
 
   Widget buildOverlay(BuildContext context) {
+    if (Layout.mobile) {
+      return Container();
+    }
+
     if (link == null || selectedSession == null) {
       return Container();
     }
