@@ -23,7 +23,7 @@ class _SidebarCallsListState extends State<SidebarCallsList> {
   int count = 0;
   final GlobalKey listKey = GlobalKey();
 
-  late OverlayEntry overlay;
+  late OverlayEntry? overlay;
 
   VoipSession? selectedSession;
   LayerLink? link;
@@ -46,10 +46,12 @@ class _SidebarCallsListState extends State<SidebarCallsList> {
         setState(() {
           selectedSession = null;
           link = null;
-          overlay.markNeedsBuild();
+          overlay?.markNeedsBuild();
         });
       }
     });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => addOverlay());
 
     super.initState();
   }
@@ -80,14 +82,10 @@ class _SidebarCallsListState extends State<SidebarCallsList> {
 
   addOverlay() {
     overlay = OverlayEntry(builder: buildOverlay);
-    Overlay.of(context).insert(overlay);
+    Overlay.of(context).insert(overlay!);
   }
 
   Widget buildOverlay(BuildContext context) {
-    if (Layout.mobile) {
-      return Container();
-    }
-
     if (link == null || selectedSession == null) {
       return Container();
     }
@@ -134,7 +132,7 @@ class _SidebarCallsListState extends State<SidebarCallsList> {
       isHovered = hovered;
       showWhileUnhovered = selectedSession?.state == VoipState.incoming ||
           selectedSession?.state == VoipState.connecting;
-      overlay.markNeedsBuild();
+      overlay?.markNeedsBuild();
     });
   }
 
