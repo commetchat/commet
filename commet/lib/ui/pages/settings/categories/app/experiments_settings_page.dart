@@ -19,6 +19,11 @@ class _ExperimentsSettingsPageState extends State<ExperimentsSettingsPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: tiamat.Text.label(
+              "These features are still under development, and may contain bugs or security issues. Enable at your own risk"),
+        ),
         Panel(
           header: "Experiments",
           mode: TileType.surfaceContainerLow,
@@ -26,13 +31,15 @@ class _ExperimentsSettingsPageState extends State<ExperimentsSettingsPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    tiamat.Text.labelEmphasised("1:1 Voice and Video Calls"),
-                    tiamat.Text.labelLow(
-                        "Enables peer to peer voice and video calls, using WebRTC")
-                  ],
+                Flexible(
+                  child: const Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      tiamat.Text.labelEmphasised("1:1 Voice and Video Calls"),
+                      tiamat.Text.labelLow(
+                          "Enables peer to peer voice and video calls, using WebRTC")
+                    ],
+                  ),
                 ),
                 tiamat.Switch(
                   state: Experiments.voip,
