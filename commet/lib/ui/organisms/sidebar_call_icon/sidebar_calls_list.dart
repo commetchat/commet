@@ -1,5 +1,6 @@
 import 'package:commet/client/call_manager.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
+import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/organisms/mini_call_menu/mini_call_menu.dart';
 import 'package:commet/ui/organisms/sidebar_call_icon/sidebar_call_icon.dart';
 import 'package:commet/utils/notifying_list.dart';
@@ -50,8 +51,6 @@ class _SidebarCallsListState extends State<SidebarCallsList> {
       }
     });
 
-    WidgetsBinding.instance.addPostFrameCallback((_) => addOverlay());
-
     super.initState();
   }
 
@@ -85,6 +84,10 @@ class _SidebarCallsListState extends State<SidebarCallsList> {
   }
 
   Widget buildOverlay(BuildContext context) {
+    if (Layout.mobile) {
+      return Container();
+    }
+
     if (link == null || selectedSession == null) {
       return Container();
     }

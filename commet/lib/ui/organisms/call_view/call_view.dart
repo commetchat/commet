@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:commet/client/room.dart';
+import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/atoms/lightbox.dart';
 import 'package:commet/ui/layout/bento.dart';
 import 'package:commet/ui/organisms/call_view/voip_fullscreen_stream_view.dart';
@@ -126,7 +127,7 @@ class _CallViewState extends State<CallView> {
         children: [
           child,
           AnimatedOpacity(
-            opacity: isMouseHovering ? 1 : 0,
+            opacity: Layout.mobile || isMouseHovering ? 1 : 0,
             duration: const Duration(milliseconds: 200),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
