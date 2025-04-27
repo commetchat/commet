@@ -53,7 +53,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "errorMatrixPassphraseMustContainUpperAndLowercase": "பாச்ஃபிரேசில் குறைந்தது 1 பெரிய எழுத்து மற்றும் 1 சிறிய எழுத்துக்கள் இருக்க வேண்டும்",
+  "errorMatrixPassphraseMustContainUpperAndLowercase": "பாச்ஃபிரேசில் குறைந்தபட்சம் 1 பெரிய எழுத்து மற்றும் 1 சிறிய எழுத்துக்கள் இருக்க வேண்டும்",
   "@errorMatrixPassphraseMustContainUpperAndLowercase": {
     "description": "Explains constraints of recovery passphrase",
     "type": "text",
@@ -65,19 +65,19 @@
     "type": "text",
     "placeholders": {}
   },
-  "errorMatrixPassphraseMustContainNumber": "பாச்ஃபிரேசில் குறைந்தது 1 எண்ணைக் கொண்டிருக்க வேண்டும்",
+  "errorMatrixPassphraseMustContainNumber": "பாச்ஃபிரேசில் குறைந்தபட்சம் 1 எண் இருக்க வேண்டும்",
   "@errorMatrixPassphraseMustContainNumber": {
     "description": "Explains constraints of recovery passphrase",
     "type": "text",
     "placeholders": {}
   },
-  "errorMatrixPassphraseMustContainSymbol": "பாச்ஃபிரேசில் குறைந்தது 1 அடையாளம் இருக்க வேண்டும்",
+  "errorMatrixPassphraseMustContainSymbol": "பாச்ஃபிரேசில் குறைந்தபட்சம் 1 அடையாளம் இருக்க வேண்டும்",
   "@errorMatrixPassphraseMustContainSymbol": {
     "description": "Explains constraints of recovery passphrase",
     "type": "text",
     "placeholders": {}
   },
-  "erroMatrixPassphraseMustBeLonger": "கடவுச்சொல் குறைந்தது 10 எழுத்துக்கள் நீளமாக இருக்க வேண்டும்",
+  "erroMatrixPassphraseMustBeLonger": "பாச்ஃபிரேச் குறைந்தபட்சம் 10 எழுத்துக்கள் நீளமாக இருக்க வேண்டும்",
   "@erroMatrixPassphraseMustBeLonger": {
     "description": "Explains constraints of recovery passphrase",
     "type": "text",
@@ -203,7 +203,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelRestoreMatrixBackupTitle": "காப்புப்பிரதியிலிருந்து மீட்டமைக்கவும்",
+  "labelRestoreMatrixBackupTitle": "காப்புப்பிரதியை மீட்டமைக்கவும்",
   "@labelRestoreMatrixBackupTitle": {
     "description": "Title of the popup dialog for restoring message backup",
     "type": "text",
@@ -597,7 +597,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "promptRestore": "மீட்டமை",
+  "promptRestore": "மீட்டெடு",
   "@promptRestore": {
     "description": "Generic prompt to restore something",
     "type": "text",
@@ -737,7 +737,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelEmojiPickerGifTab": "Gif",
+  "labelEmojiPickerGifTab": "வச",
   "@labelEmojiPickerGifTab": {
     "description": "Label for the gif search tab in the emoji picker",
     "type": "text",
@@ -1500,6 +1500,263 @@
   "messageAlreadyLoggedIn": "நீங்கள் ஏற்கனவே இந்த கணக்கில் உள்நுழைந்துள்ளீர்கள்",
   "@messageAlreadyLoggedIn": {
     "description": "An error message displayed when the user attempts to add an account which has already been logged in to on this device",
+    "type": "text",
+    "placeholders": {}
+  },
+  "placeholderRoomAlias": "#அற்புதமான அறை",
+  "@placeholderRoomAlias": {
+    "description": "Placeholder / Example for a room alias.",
+    "type": "text",
+    "placeholders": {}
+  },
+  "placeholderSpaceAlias": "#அற்புதமான-இடம்",
+  "@placeholderSpaceAlias": {
+    "description": "Placeholder / Example for a space alias.",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptCancelEventSend": "ரத்துசெய்",
+  "@promptCancelEventSend": {
+    "description": "When a message failed to send, this prompts to cancel sending the event",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptRetryEventSend": "மீண்டும் முயற்சிக்கவும்",
+  "@promptRetryEventSend": {
+    "description": "When a message failed to send, this prompts to retry sending the event",
+    "type": "text",
+    "placeholders": {}
+  },
+  "typingUsers": "{howMany,plural, =1{{user1} தட்டச்சு செய்கிறார்...}=2{{user1} மற்றும் {user2} தட்டச்சு செய்கின்றனர்...}few{{user1}, {user2}, மற்றும் {user3} தட்டச்சு செய்கின்றனர்...}other{பலர் தட்டச்சு செய்கின்றனர்...}}",
+  "@typingUsers": {
+    "description": "Text to display which users are currently typing",
+    "type": "text",
+    "placeholders": {
+      "howMany": {},
+      "user1": {},
+      "user2": {},
+      "user3": {}
+    }
+  },
+  "labelUseRoomAvatars": "அறை அவதாரங்களைப் பயன்படுத்துங்கள்",
+  "@labelUseRoomAvatars": {
+    "description": "Label for enabling using room avatars instead of icons",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptReplayMessageEffect": "மறுதொடக்கம் விளைவு",
+  "@promptReplayMessageEffect": {
+    "description": "If a message was sent with an effect, this prompts to replay the effect",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messagePlaceholderUserUpdatedNameDetailed": "{user} அவர்களின் காட்சி பெயரை \"{newName}\" என்று மாற்றினார்",
+  "@messagePlaceholderUserUpdatedNameDetailed": {
+    "description": "Message body for when a user updates their display name",
+    "type": "text",
+    "placeholders": {
+      "user": {},
+      "newName": {}
+    }
+  },
+  "messageUserPinnedEvent": "{user} ஒரு செய்தியை பொருத்தினார்!",
+  "@messageUserPinnedEvent": {
+    "description": "Message body for when a user adds an event to the room's pinned messages",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messageUserUnpinnedEvent": "{user} ஒரு செய்தியை இணைக்கவில்லை",
+  "@messageUserUnpinnedEvent": {
+    "description": "Message body for when a user removes an event from the room's pinned messages",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "labelInvitationsForUser": "{user}க்கான அழைப்புகள்",
+  "@labelInvitationsForUser": {
+    "description": "Label for the list of incoming invitations, specifying which user these invitations are intended for",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "labelUrlPreviewInEncryptedChatDescription": "முன்னோட்டத்தைப் பெறுவதற்காக உங்கள் மறைகுறியாக்கப்பட்ட அரட்டைகளில் அனுப்பப்பட்ட எந்த முகவரி களையும் உங்கள் ஓம்சர்வருக்கு அனுப்பும் எந்த முகவரி களையும் இது அம்பலப்படுத்தும்",
+  "@labelUrlPreviewInEncryptedChatDescription": {
+    "description": "description for the toggle for enabling and disabling use of url previews in encrypted chats",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageUserAcceptedInvite": "{user} அழைப்பை ஏற்றுக்கொண்டார்",
+  "@messageUserAcceptedInvite": {
+    "description": "Message body for when a user accepted an invitation to a room",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messageUserBanned": "{sender} தடைசெய்யப்பட்ட {user}",
+  "@messageUserBanned": {
+    "description": "Message body for when a user bans another user from the room",
+    "type": "text",
+    "placeholders": {
+      "sender": {},
+      "user": {}
+    }
+  },
+  "promptLeaveSpaceConfirmation": "நீங்கள் நிச்சயமாக {spaceName} விட்டு வெளியேற விரும்புகிறீர்களா?",
+  "@promptLeaveSpaceConfirmation": {
+    "description": "Text for the popup dialog confirming the intent to leave a space",
+    "type": "text",
+    "placeholders": {
+      "spaceName": {}
+    }
+  },
+  "labelMediaPreviewPublicRoomsToggleDescription": "பொது அரட்டை அறைகளில் படங்கள், வீடியோக்கள், ச்டிக்கர்கள் மற்றும் முகவரி களின் முன்னோட்டத்தை நிலைநிறுத்துங்கள்",
+  "@labelMediaPreviewPublicRoomsToggleDescription": {
+    "description": "Label describing toggle of media previews for public rooms",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelEnableRoomIconsDescription": "ஐகான்களுக்கு பதிலாக அறை அவதார் படங்களைக் காட்டு",
+  "@labelEnableRoomIconsDescription": {
+    "description": "Description for the enable room icons setting",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelUseRoomAvatarPlaceholders": "ஒதுக்கிட அவதாரங்களைப் பயன்படுத்துங்கள்",
+  "@labelUseRoomAvatarPlaceholders": {
+    "description": "Label for enabling generic icons in the appearance settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelUseRoomAvatarPlaceholdersDescription": "ஒரு அறைக்கு அவதார் தொகுப்பு இல்லாதபோது, அல்லது அவற்றைப் பயன்படுத்துவது முடக்கப்பட்டிருக்கும் போது, ஒரு பொதுவான வண்ணத்திற்கு குறைவடையும் + படத்திற்கான முதல் கடிதம் ஒதுக்கிடத்தில்",
+  "@labelUseRoomAvatarPlaceholdersDescription": {
+    "description": "Description for the enable generic icons setting",
+    "type": "text",
+    "placeholders": {}
+  },
+  "editEmoticonDialogTitle": "எமோட் திருத்து",
+  "@editEmoticonDialogTitle": {
+    "description": "Title of a dialog that pops up when choosing to edit an existing emoticon",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptEmoteName": "எமோட் பெயர்",
+  "@promptEmoteName": {
+    "description": "Prompt for the input of the name of an emoji",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmSaveEmoticon": "சேமிக்கவும்!",
+  "@promptConfirmSaveEmoticon": {
+    "description": "Prompt to confirm the creation of an Emoticon Pack, Emoji, or Sticker",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelUrlPreviewInEncryptedChatTitle": "மறைகுறியாக்கப்பட்ட அரட்டைகளில் முகவரி முன்னோட்டம்",
+  "@labelUrlPreviewInEncryptedChatTitle": {
+    "description": "Label for the toggle for enabling and disabling use of url previews in encrypted chats",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMediaPreviewSettingsTitle": "மீடியா முன்னோட்டம்",
+  "@labelMediaPreviewSettingsTitle": {
+    "description": "Header for the settings tile for for media preview toggles",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMediaPreviewPrivateRoomsToggle": "தனியார் அறைகள்",
+  "@labelMediaPreviewPrivateRoomsToggle": {
+    "description": "Short label for the private rooms toggle in media previews section",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMediaPreviewPrivateRoomsToggleDescription": "தனிப்பட்ட அரட்டைகளில் படங்கள், வீடியோக்கள், ச்டிக்கர்கள் மற்றும் முகவரி களின் முன்னோட்டத்தை நிலைநிறுத்துங்கள்",
+  "@labelMediaPreviewPrivateRoomsToggleDescription": {
+    "description": "Label describing toggle of media previews for private rooms",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMediaPreviewPublicRoomsToggle": "பொது அறைகள்",
+  "@labelMediaPreviewPublicRoomsToggle": {
+    "description": "Short label for the private rooms toggle in media previews section",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptShowSticker": "ச்டிக்கர் காட்டு",
+  "@promptShowSticker": {
+    "description": "Prompt to display a sticker, shown when media previews are disabled",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messagePlaceholderSticker": "{user} ஒரு ச்டிக்கரை அனுப்பினார்",
+  "@messagePlaceholderSticker": {
+    "description": "Message body for when a user sends a sticker",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messageUserRetractedInvite": "{sender} அறிவிக்கப்படாத {user}",
+  "@messageUserRetractedInvite": {
+    "description": "Message body for when a user's invitation to a room was withdrawn",
+    "type": "text",
+    "placeholders": {
+      "sender": {},
+      "user": {}
+    }
+  },
+  "messageUserUnbanned": "{sender} தடைசெய்யப்படாத {user}",
+  "@messageUserUnbanned": {
+    "description": "Message body for when a user reverts a ban of another user",
+    "type": "text",
+    "placeholders": {
+      "sender": {},
+      "user": {}
+    }
+  },
+  "noPinnedMessages": "செய்திகள் எதுவும் பொருத்தப்படவில்லை!",
+  "@noPinnedMessages": {
+    "description": "Placeholder label in the pinned messages menu that is shown when there are no pinned messages",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptPinMessage": "முள் செய்தி",
+  "@promptPinMessage": {
+    "description": "Label for the menu option to pin a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptUnpinMessage": "அவிழ்க்கும் செய்தி",
+  "@promptUnpinMessage": {
+    "description": "Label for the menu option to unpin a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptReplyInThread": "நூலில் பதில்",
+  "@promptReplyInThread": {
+    "description": "Label for the menu option to reply to a message inside a thread",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptShowSource": "மூலத்தைக் காட்டு",
+  "@promptShowSource": {
+    "description": "Label for the menu option to view the JSON source of an event",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMessageEffectsTitle": "செய்தி விளைவுகள்",
+  "@labelMessageEffectsTitle": {
+    "description": "Header for the settings tile for message effects, such as confetti",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMessageEffectsDescription": "கான்ஃபெட்டி போன்ற கூடுதல் விளைவுகளுடன் செய்திகளை அனுப்பலாம்",
+  "@labelMessageEffectsDescription": {
+    "description": "Label describing what message effects are",
     "type": "text",
     "placeholders": {}
   }
