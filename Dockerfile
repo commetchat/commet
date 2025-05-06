@@ -14,13 +14,15 @@ RUN apt-get update && \
 RUN mkdir -p /opt/flutter && \
     curl -L "https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}-stable.tar.xz" \
         | tar -xJf - -C /opt/flutter && \
-        git config --global --add safe.directory /opt/flutter/flutter
+        git config --global --add safe.directory /opt/flutter/flutter && \
+        useradd -ms /bin/bash commet
 
 ENV FLUTTER_HOME=/opt/flutter/flutter
 ENV PATH="${FLUTTER_HOME}/bin:${PATH}"
 
 COPY . /app
 WORKDIR /app/commet
+USER commet
 
 RUN flutter config --no-analytics && \
     flutter pub get && \
