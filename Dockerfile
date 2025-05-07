@@ -34,7 +34,7 @@ RUN flutter pub get && \
 # Stage 2
 FROM nginx:1.28-alpine AS olm-build-env
 
-RUN apk add --no-cache --update alpine-sdk && \
+RUN apk add --no-cache --update alpine-sdk cmake && \
     git clone https://gitlab.matrix.org/matrix-org/olm.git && \
     cd olm && git checkout 7e0c8277032e40308987257b711b38af8d77cc69 && \
     cmake -DCMAKE_BUILD_TYPE=Release . -A x64 -Bbuild && \
