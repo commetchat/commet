@@ -21,6 +21,7 @@ RUN mkdir -p /opt/flutter && \
         chown -R commet:commet /opt/flutter
 
 COPY . /app
+RUN chown -R commet:commet /app
 WORKDIR /app/commet
 USER commet
 
