@@ -10,6 +10,12 @@ env:
   PROJECT_PATH: commet
   COMMET_PROD: 1
 
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+
+
 jobs:
   release-windows:
     runs-on: windows-latest
@@ -439,46 +445,21 @@ jobs:
     runs-on: ubuntu-latest
     needs: release-web
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - name: Log in to GitHub Container Registry
+      - name: Log in to GHCR
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push Docker image
+      - name: Build and push Docker image to GHCR
         uses: docker/build-push-action@v3
         with:
           context: .
           file: ./Dockerfile
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/commet:${{ github.event.release.tag_name }}
-            ghcr.io/${{ github.repository_owner }}/commet:latest
-
-      - name: Pull and save image as archive
-        run: |
-          docker pull ghcr.io/${{ github.repository_owner }}/commet:${{ github.event.release.tag_name }}
-          docker save ghcr.io/${{ github.repository_owner }}/commet:${{ github.event.release.tag_name }} \
-            | gzip > commet-${{ github.event.release.tag_name }}.tar.gz
-
-      - name: Upload Docker image archive to release
-        if: github.event_name == 'release'
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: commet-${{ github.event.release.tag_name }}.tar.gz
-          asset_name: commet-docker-${{ github.event.release.tag_name }}.tar.gz
-          asset_content_type: application/gzip
-
-      - name: Upload Docker image archive as artifact
-        if: github.event_name == 'workflow_dispatch'
-        uses: actions/upload-artifact@v4
-        with:
-          name: commet-docker-${{ github.event.release.tag_name }}.tar.gz
-          path: commet-${{ github.event.release.tag_name }}.tar.gz
+            ghcr.io/${{ github.repository }}:${{ github.event.release.tag_name }}
+            ghcr.io/${{ github.repository }}:latest
