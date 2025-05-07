@@ -16,7 +16,8 @@ RUN mkdir -p /opt/flutter && \
         | tar -xJf - -C /opt/flutter && \
         git config --global --add safe.directory /opt/flutter/flutter && \
         flutter config --no-analytics && \
-        useradd -ms /bin/bash commet
+        useradd -ms /bin/bash commet && \
+        chown -R commet:commet /opt/flutter
 
 ENV FLUTTER_HOME=/opt/flutter/flutter
 ENV PATH="${FLUTTER_HOME}/bin:${PATH}"
