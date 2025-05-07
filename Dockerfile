@@ -32,18 +32,21 @@ RUN flutter pub get && \
     flutter build web
 
 # Stage 2
-FROM nginx:1.28-alpine AS olm-build-env
+# FROM nginx:1.28-alpine AS olm-build-env
 
-RUN apk add --no-cache --update alpine-sdk cmake && \
-    git clone https://gitlab.matrix.org/matrix-org/olm.git && \
-    cd olm && git checkout 7e0c8277032e40308987257b711b38af8d77cc69 && \
-    cmake -DCMAKE_BUILD_TYPE=Release . -Bbuild && \
-    cmake --build build --config Release && \
-    make install
+# RUN apk add --no-cache --update alpine-sdk cmake && \
+#     git clone https://gitlab.matrix.org/matrix-org/olm.git && \
+#     cd olm && git checkout 7e0c8277032e40308987257b711b38af8d77cc69 && \
+#     cmake -DCMAKE_BUILD_TYPE=Release . -Bbuild && \
+#     cmake --build build --config Release && \
+#     make install
 
 # Stage 3
-FROM nginx:1.28-alpine
+FROM nginx:1.28-bookworm
 COPY --from=build-env /app/commet/build/web /usr/share/nginx/html
-COPY --from=olm-build-env /usr/local/lib/libolm.so.3.2.16 /usr/local/lib/libolm.so.3.2.16
-RUN ln -sf libolm.so.3.2.16 /usr/local/lib/libolm.so.3 && \
-    ln -sf libolm.so.3.2.16 /usr/local/lib/libolm.so
+# COPY --from=olm-build-env /usr/local/lib/libolm.so.3.2.16 /usr/local/lib/libolm.so.3.2.16
+# RUN ln -sf libolm.so.3.2.16 /usr/local/lib/libolm.so.3 && \
+#     ln -sf libolm.so.3.2.16 /usr/local/lib/libolm.so
+RUN apt-get update && \
+    apt-get install -y ninja-build libgtk-3-dev libolm3 libmpv-dev mpv ffmpeg libmimalloc-dev && \
+    rm -rf /var/lib/apt/lists/*
