@@ -174,4 +174,4 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          ./commet/scripts/build_docker.sh
+          ./$PROJECT_PATH/scripts/build-docker-image.sh
