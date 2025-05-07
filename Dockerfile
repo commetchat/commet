@@ -1,4 +1,5 @@
-FROM ubuntu:latest
+# Stage 1
+FROM ubuntu:latest AS build-env
 
 ARG FLUTTER_VERSION=3.24.4
 
@@ -27,6 +28,9 @@ WORKDIR /app/commet
 USER commet
 
 RUN flutter pub get && \
-    dart run scripts/codegen.dart
+    dart run scripts/codegen.dart && \
+    flutter build web
 
-CMD ["flutter", "run"]
+# Stage 2
+FROM nginx:1.21.1-alpine
+COPY --from=build-env /app/commet/build/web /usr/share/nginx/html
