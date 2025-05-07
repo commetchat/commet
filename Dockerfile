@@ -3,8 +3,7 @@ FROM ubuntu:latest
 ARG FLUTTER_VERSION=3.24.4
 
 ENV DEBIAN_FRONTEND=noninteractive \
-    FLUTTER_HOME=/opt/flutter/flutter \
-    PATH="${FLUTTER_HOME}/bin:${PATH}"
+    PATH="/opt/flutter/flutter/bin:${PATH}"
 
 RUN apt-get update && \
     apt-get install -y curl git unzip xz-utils zip libglu1-mesa \
