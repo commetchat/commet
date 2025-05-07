@@ -443,7 +443,7 @@ jobs:
 
   release-docker:
     runs-on: ubuntu-latest
-    needs: release-web
+    
     steps:
       - uses: actions/checkout@v3
 
