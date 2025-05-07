@@ -34,3 +34,4 @@ RUN flutter pub get && \
 # Stage 2
 FROM nginx:1.21.1-alpine
 COPY --from=build-env /app/commet/build/web /usr/share/nginx/html
+RUN apk add --no-cache --update olm
