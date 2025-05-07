@@ -17,6 +17,7 @@ RUN mkdir -p /opt/flutter && \
         | tar -xJf - -C /opt/flutter && \
         git config --global --add safe.directory /opt/flutter/flutter && \
         flutter config --no-analytics && \
+        flutter config --no-cli-animations && \
         useradd -ms /bin/bash commet && \
         chown -R commet:commet /opt/flutter
 
