@@ -2,7 +2,9 @@ FROM ubuntu:latest
 
 ARG FLUTTER_VERSION=3.24.4
 
-ENV DEBIAN_FRONTEND=noninteractive
+ENV DEBIAN_FRONTEND=noninteractive \
+    FLUTTER_HOME=/opt/flutter/flutter \
+    PATH="${FLUTTER_HOME}/bin:${PATH}"
 
 RUN apt-get update && \
     apt-get install -y curl git unzip xz-utils zip libglu1-mesa \
@@ -18,9 +20,6 @@ RUN mkdir -p /opt/flutter && \
         flutter config --no-analytics && \
         useradd -ms /bin/bash commet && \
         chown -R commet:commet /opt/flutter
-
-ENV FLUTTER_HOME=/opt/flutter/flutter
-ENV PATH="${FLUTTER_HOME}/bin:${PATH}"
 
 COPY . /app
 WORKDIR /app/commet
