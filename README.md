@@ -90,3 +90,11 @@ When building Commet, there are some additional command line arguments that must
 cd commet
 flutter run --dart-define BUILD_MODE=debug --dart-define PLATFORM=linux
 ```
+
+# Running
+
+## Docker
+
+```bash
+docker run -p 8080:80 ghcr.io/mrraph/commet
+```
