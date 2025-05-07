@@ -446,7 +446,11 @@ jobs:
     
     steps:
       - uses: actions/checkout@v3
-
+      
+      - name: Set lowercase image name
+        run: |
+          echo "IMAGE_NAME=${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
+          
       - name: Log in to GHCR
         uses: docker/login-action@v2
         with:
@@ -461,5 +465,5 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}:${{ github.event.release.tag_name }}
-            ghcr.io/${{ github.repository }}:latest
+            ghcr.io/${{ env.IMAGE_NAME }}:${{ github.event.release.tag_name }}
+            ghcr.io/${{ env.IMAGE_NAME }}:latest
