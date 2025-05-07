@@ -1277,7 +1277,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelMatrixPermissionsRoomAvatarDescription": "Changer l'image de l'avatar du salon",
+  "labelMatrixPermissionsRoomAvatarDescription": "Changer l'avatar du salon",
   "@labelMatrixPermissionsRoomAvatarDescription": {
     "description": "Title for the permission to add change the rooms avatar image",
     "type": "text",
@@ -1369,7 +1369,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelEnableUnifiedPushEndpoint": "Endpoint",
+  "labelEnableUnifiedPushEndpoint": "Point de terminaison",
   "@labelEnableUnifiedPushEndpoint": {
     "description": "Label for the Unified Push endpoint",
     "type": "text",
@@ -1480,13 +1480,13 @@
     "type": "text",
     "placeholders": {}
   },
-  "unifiedPushExplainer": "# Unified Push\nCette version de Commet a été compilée sans les Google Play Services. Pour recevoir des notifications push, vous aurez besoin d'utiliser [Unified Push](https://unifiedpush.org/).\n\nSi vous disposez déjà d'une application de distribution de notifications compatible avec Unified Push, vous pouvez l'utiliser dans la configuration ci-dessous\n",
+  "unifiedPushExplainer": "# Unified Push\nCette version de Commet a été compilée sans les services Google Play. Pour recevoir des notifications push, vous aurez besoin d'utiliser [Unified Push](https://unifiedpush.org/).\n\nSi vous disposez déjà d'une application de distribution de notifications compatible avec Unified Push, vous pouvez l'utiliser dans la configuration ci-dessous\n",
   "@unifiedPushExplainer": {
     "description": "Explains the need for unified push. Supports markdown",
     "type": "text",
     "placeholders": {}
   },
-  "labelUnifiedPushNoEndpointFound": "Aucun endpoint trouvé, quelque chose s'est mal déroulé :(",
+  "labelUnifiedPushNoEndpointFound": "Aucun point de terminaison trouvé, quelque chose s'est mal déroulé :(",
   "@labelUnifiedPushNoEndpointFound": {
     "description": "Message for when a unified push endpoint could not be registered",
     "type": "text",
@@ -1547,6 +1547,228 @@
   "labelJumpToLatest": "Revenir aux derniers messages",
   "@labelJumpToLatest": {
     "description": "Label for the button which jumps the room timeline view to the latest message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptUnpinMessage": "Désépingler le message",
+  "@promptUnpinMessage": {
+    "description": "Label for the menu option to unpin a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageUserPinnedEvent": "{user} a épinglé un message !",
+  "@messageUserPinnedEvent": {
+    "description": "Message body for when a user adds an event to the room's pinned messages",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "labelUrlPreviewInEncryptedChatDescription": "Cela exposera toutes les URL envoyées dans vos discussions cryptées à votre serveur personnel afin de récupérer l'aperçu",
+  "@labelUrlPreviewInEncryptedChatDescription": {
+    "description": "description for the toggle for enabling and disabling use of url previews in encrypted chats",
+    "type": "text",
+    "placeholders": {}
+  },
+  "placeholderRoomAlias": "#super-canal",
+  "@placeholderRoomAlias": {
+    "description": "Placeholder / Example for a room alias.",
+    "type": "text",
+    "placeholders": {}
+  },
+  "placeholderSpaceAlias": "#super-espace",
+  "@placeholderSpaceAlias": {
+    "description": "Placeholder / Example for a space alias.",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptCancelEventSend": "Annuler",
+  "@promptCancelEventSend": {
+    "description": "When a message failed to send, this prompts to cancel sending the event",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptRetryEventSend": "Réessayer",
+  "@promptRetryEventSend": {
+    "description": "When a message failed to send, this prompts to retry sending the event",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelUrlPreviewInEncryptedChatTitle": "Prévisualisation des URLs dans les chats chiffrés",
+  "@labelUrlPreviewInEncryptedChatTitle": {
+    "description": "Label for the toggle for enabling and disabling use of url previews in encrypted chats",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMediaPreviewSettingsTitle": "Prévisualisation des médias",
+  "@labelMediaPreviewSettingsTitle": {
+    "description": "Header for the settings tile for for media preview toggles",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMediaPreviewPrivateRoomsToggle": "Canaux Privés",
+  "@labelMediaPreviewPrivateRoomsToggle": {
+    "description": "Short label for the private rooms toggle in media previews section",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMediaPreviewPrivateRoomsToggleDescription": "Activer/désactiver l'aperçu des images, des vidéos, des autocollants et des URL dans les discussions privées",
+  "@labelMediaPreviewPrivateRoomsToggleDescription": {
+    "description": "Label describing toggle of media previews for private rooms",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMediaPreviewPublicRoomsToggle": "Canaux Publics",
+  "@labelMediaPreviewPublicRoomsToggle": {
+    "description": "Short label for the private rooms toggle in media previews section",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMediaPreviewPublicRoomsToggleDescription": "Activer/désactiver l'aperçu des images, des vidéos, des autocollants et des URL dans les salles de discussion publiques",
+  "@labelMediaPreviewPublicRoomsToggleDescription": {
+    "description": "Label describing toggle of media previews for public rooms",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelUseRoomAvatars": "Utiliser les avatars des canaux",
+  "@labelUseRoomAvatars": {
+    "description": "Label for enabling using room avatars instead of icons",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelEnableRoomIconsDescription": "Afficher les images d'avatar de la salle d'exposition au lieu des icônes",
+  "@labelEnableRoomIconsDescription": {
+    "description": "Description for the enable room icons setting",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelUseRoomAvatarPlaceholders": "Utiliser les avatars par défaut",
+  "@labelUseRoomAvatarPlaceholders": {
+    "description": "Label for enabling generic icons in the appearance settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelUseRoomAvatarPlaceholdersDescription": "Lorsqu'une salle n'a pas d'avatar défini, ou que son utilisation est désactivée, utilisez une couleur générique + un espace réservé à la première lettre pour l'image",
+  "@labelUseRoomAvatarPlaceholdersDescription": {
+    "description": "Description for the enable generic icons setting",
+    "type": "text",
+    "placeholders": {}
+  },
+  "editEmoticonDialogTitle": "Modifier l'émote",
+  "@editEmoticonDialogTitle": {
+    "description": "Title of a dialog that pops up when choosing to edit an existing emoticon",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptEmoteName": "Nom de l'émote",
+  "@promptEmoteName": {
+    "description": "Prompt for the input of the name of an emoji",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmSaveEmoticon": "Enregistrer !",
+  "@promptConfirmSaveEmoticon": {
+    "description": "Prompt to confirm the creation of an Emoticon Pack, Emoji, or Sticker",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptPinMessage": "Message épinglé",
+  "@promptPinMessage": {
+    "description": "Label for the menu option to pin a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptReplyInThread": "Répondre dans un fil",
+  "@promptReplyInThread": {
+    "description": "Label for the menu option to reply to a message inside a thread",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptShowSticker": "Voir le sticker",
+  "@promptShowSticker": {
+    "description": "Prompt to display a sticker, shown when media previews are disabled",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messagePlaceholderUserUpdatedNameDetailed": "l'utilisateur {user} a changé son nom d'affichage en \"{newName}\"",
+  "@messagePlaceholderUserUpdatedNameDetailed": {
+    "description": "Message body for when a user updates their display name",
+    "type": "text",
+    "placeholders": {
+      "user": {},
+      "newName": {}
+    }
+  },
+  "messageUserRetractedInvite": "{sender} a désinvité {user}",
+  "@messageUserRetractedInvite": {
+    "description": "Message body for when a user's invitation to a room was withdrawn",
+    "type": "text",
+    "placeholders": {
+      "sender": {},
+      "user": {}
+    }
+  },
+  "messageUserAcceptedInvite": "{user} a accepté l'invitiation",
+  "@messageUserAcceptedInvite": {
+    "description": "Message body for when a user accepted an invitation to a room",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messageUserBanned": "{sender} a banni {user}",
+  "@messageUserBanned": {
+    "description": "Message body for when a user bans another user from the room",
+    "type": "text",
+    "placeholders": {
+      "sender": {},
+      "user": {}
+    }
+  },
+  "messageUserUnbanned": "{sender} a débanni {user}",
+  "@messageUserUnbanned": {
+    "description": "Message body for when a user reverts a ban of another user",
+    "type": "text",
+    "placeholders": {
+      "sender": {},
+      "user": {}
+    }
+  },
+  "messageUserUnpinnedEvent": "{user} a désépinglé un message",
+  "@messageUserUnpinnedEvent": {
+    "description": "Message body for when a user removes an event from the room's pinned messages",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "noPinnedMessages": "Aucun message n'a été épinglé !",
+  "@noPinnedMessages": {
+    "description": "Placeholder label in the pinned messages menu that is shown when there are no pinned messages",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMessageEffectsTitle": "Effets de message",
+  "@labelMessageEffectsTitle": {
+    "description": "Header for the settings tile for message effects, such as confetti",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMessageEffectsDescription": "Les messages peuvent être envoyés avec des effets supplémentaires, tels que des confettis",
+  "@labelMessageEffectsDescription": {
+    "description": "Label describing what message effects are",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptShowSource": "Voir la source",
+  "@promptShowSource": {
+    "description": "Label for the menu option to view the JSON source of an event",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptReplayMessageEffect": "Rejouer l'effet",
+  "@promptReplayMessageEffect": {
+    "description": "If a message was sent with an effect, this prompts to replay the effect",
     "type": "text",
     "placeholders": {}
   }
