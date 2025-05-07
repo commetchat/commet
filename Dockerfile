@@ -38,7 +38,8 @@ RUN apk add --no-cache --update alpine-sdk cmake && \
     git clone https://gitlab.matrix.org/matrix-org/olm.git && \
     cd olm && git checkout 7e0c8277032e40308987257b711b38af8d77cc69 && \
     cmake -DCMAKE_BUILD_TYPE=Release . -Bbuild && \
-    cmake --build build --config Release
+    cmake --build build --config Release && \
+    make install
 
 # Stage 3
 FROM nginx:1.28-alpine
