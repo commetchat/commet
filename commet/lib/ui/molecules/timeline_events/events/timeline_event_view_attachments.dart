@@ -3,8 +3,11 @@ import 'package:commet/ui/atoms/message_attachment.dart';
 import 'package:flutter/material.dart';
 
 class TimelineEventViewAttachments extends StatelessWidget {
-  const TimelineEventViewAttachments({required this.attachments, super.key});
+  const TimelineEventViewAttachments(
+      {required this.attachments, this.previewMedia = false, super.key});
   final List<Attachment> attachments;
+  final bool previewMedia;
+
   @override
   Widget build(BuildContext context) {
     return Wrap(
@@ -14,6 +17,7 @@ class TimelineEventViewAttachments extends StatelessWidget {
                 child: RepaintBoundary(
                   child: MessageAttachment(
                     e,
+                    previewMedia: previewMedia,
                   ),
                 ),
               ))

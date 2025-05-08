@@ -76,8 +76,8 @@ class _IconToggleState extends State<IconToggle> {
         icon: widget.icon,
         size: widget.size,
         iconColor: widget.state
-            ? m.Theme.of(context).colorScheme.onPrimary
-            : m.Theme.of(context).colorScheme.secondary,
+            ? m.Theme.of(context).colorScheme.primary
+            : m.Theme.of(context).colorScheme.onPrimary,
         onPressed: () => widget.onPressed?.call(!widget.state),
         backgroundColor: widget.backgroundColor);
   }

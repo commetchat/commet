@@ -18,55 +18,25 @@ class MatrixEmoticon implements Emoticon {
 
   Uri emojiUrl;
 
-  late bool _isEmojiPack;
-  late bool _isStickerPack;
-  late bool _isMarkedEmoji;
-  late bool _isMarkedSticker;
-
   @override
-  bool get isEmoji => _isEmojiPack || _isMarkedEmoji;
+  EmoticonUsage usage;
 
-  @override
-  bool get isSticker => _isStickerPack || _isMarkedSticker;
-
-  @override
-  bool get isMarkedEmoji => _isMarkedEmoji;
-
-  @override
-  bool get isMarkedSticker => _isMarkedSticker;
+  EmoticonUsage packUsage;
 
   MatrixEmoticon(this.emojiUrl, matrix.Client client,
-      {required String shortcode,
-      bool isEmojiPack = true,
-      bool isStickerPack = true,
-      bool isMarkedSticker = false,
-      bool isMarkedEmoji = false}) {
+      {required this.packUsage,
+      required String shortcode,
+      required this.usage}) {
     _shortcode = shortcode;
-    _isEmojiPack = isEmojiPack;
-    _isStickerPack = isStickerPack;
-    _isMarkedEmoji = isMarkedEmoji;
-    _isMarkedSticker = isMarkedSticker;
-    _image = MatrixMxcImage(emojiUrl, client, doThumbnail: false);
+    _image = MatrixMxcImage(emojiUrl, client,
+        fullResHeight: 100,
+        doThumbnail: false,
+        doFullres: true,
+        autoLoadFullRes: true);
   }
 
   void setShortcode(String shortcode) {
     _shortcode = shortcode;
-  }
-
-  void markAsEmoji(bool value) {
-    _isMarkedEmoji = value;
-  }
-
-  void markAsSticker(bool value) {
-    _isMarkedSticker = value;
-  }
-
-  void markPackAsEmoji(bool value) {
-    _isEmojiPack = value;
-  }
-
-  void markPackAsSticker(bool value) {
-    _isStickerPack = value;
   }
 
   void setImage(MatrixMxcImage image) {
@@ -91,4 +61,18 @@ class MatrixEmoticon implements Emoticon {
   int get hashCode {
     return key.hashCode;
   }
+
+  @override
+  bool get isSticker =>
+      usage == EmoticonUsage.sticker ||
+      usage == EmoticonUsage.all ||
+      (usage == EmoticonUsage.inherit &&
+          [EmoticonUsage.sticker, EmoticonUsage.all].contains(packUsage));
+
+  @override
+  bool get isEmoji =>
+      usage == EmoticonUsage.emoji ||
+      usage == EmoticonUsage.all ||
+      (usage == EmoticonUsage.inherit &&
+          [EmoticonUsage.emoji, EmoticonUsage.all].contains(packUsage));
 }

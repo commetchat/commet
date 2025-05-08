@@ -12,7 +12,8 @@ class MatrixProfile implements Profile {
 
   @override
   ImageProvider<Object>? get avatar => profile.avatarUrl != null
-      ? MatrixMxcImage(profile.avatarUrl!, client)
+      ? MatrixMxcImage(profile.avatarUrl!, client,
+          autoLoadFullRes: false, thumbnailHeight: 128, fullResHeight: 128)
       : null;
 
   @override

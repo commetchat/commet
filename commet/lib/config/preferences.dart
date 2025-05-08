@@ -32,13 +32,19 @@ class Preferences {
   static const String _pushGateway = "push_gateway";
   static const String _lastDownloadLocation = "last_download_location";
   static const String _stickerCompatibilityMode = "sticker_compatibility_mode";
-  static const String _urlPreviewInE2EEChat = "use_url_preview_in_e2ee_chat";
+  static const String _urlPreviewInE2EEChat = "enable_url_preview_in_e2ee_chat";
   static const String _messageEffectsEnabled = "message_effects_enabled";
   static const String _lastForegroundServiceSucceeded =
       "did_last_foreground_service_run_succeed";
   static const String _showRoomAvatars = "show_room_avatars";
   static const String _usePlaceholderRoomAvatars =
       "use_placeholder_room_avatars";
+
+  static const String _previewMediaInPublicRooms =
+      "preview_media_in_public_rooms";
+
+  static const String _previewMediaInPrivateRooms =
+      "preview_media_in_private_rooms";
 
   final StreamController _onSettingChanged = StreamController.broadcast();
   Stream get onSettingChanged => _onSettingChanged.stream;
@@ -284,6 +290,22 @@ class Preferences {
 
   Future<void> setUsePlaceholderRoomAvatars(bool value) async {
     await _preferences!.setBool(_usePlaceholderRoomAvatars, value);
+    _onSettingChanged.add(null);
+  }
+
+  bool get previewMediaInPublicRooms =>
+      _preferences!.getBool(_previewMediaInPublicRooms) ?? false;
+
+  Future<void> setMediaPreviewInPublicRooms(bool value) async {
+    await _preferences!.setBool(_previewMediaInPublicRooms, value);
+    _onSettingChanged.add(null);
+  }
+
+  bool get previewMediaInPrivateRooms =>
+      _preferences!.getBool(_previewMediaInPrivateRooms) ?? true;
+
+  Future<void> setMediaPreviewInPrivateRooms(bool value) async {
+    await _preferences!.setBool(_previewMediaInPrivateRooms, value);
     _onSettingChanged.add(null);
   }
 }

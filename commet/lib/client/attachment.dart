@@ -57,47 +57,47 @@ class PendingFileAttachment {
   }
 }
 
-class ImageAttachment implements Attachment {
-  final ImageProvider image;
-  final FileProvider file;
-  final double? width;
-  final double? height;
-  @override
-  String name;
-
-  double get aspectRatio =>
-      (width != null && height != null) ? (width! / height!) : 1;
-
-  ImageAttachment(this.image, this.file,
-      {required this.name, this.width, this.height});
-}
-
-class VideoAttachment implements Attachment {
-  final ImageProvider? thumbnail;
-  final FileProvider videoFile;
-  final double? width;
-  final double? height;
-  final int? fileSize;
-  @override
-  String name;
-
-  double get aspectRatio =>
-      (width != null && height != null) ? (width! / height!) : 1;
-
-  VideoAttachment(this.videoFile,
-      {required this.name,
-      this.thumbnail,
-      this.width,
-      this.height,
-      this.fileSize});
-}
-
 class FileAttachment implements Attachment {
   @override
   String name;
   int? fileSize;
   String? mimeType;
-  FileProvider provider;
-  FileAttachment(this.provider,
-      {required this.name, this.fileSize, this.mimeType});
+  FileProvider file;
+  FileAttachment(this.file, {required this.name, this.fileSize, this.mimeType});
+}
+
+class ImageAttachment extends FileAttachment {
+  final ImageProvider image;
+  final double? width;
+  final double? height;
+
+  double get aspectRatio =>
+      (width != null && height != null) ? (width! / height!) : 1;
+
+  ImageAttachment(
+    this.image,
+    super.file, {
+    required super.name,
+    required super.mimeType,
+    super.fileSize,
+    this.width,
+    this.height,
+  });
+}
+
+class VideoAttachment extends FileAttachment {
+  final ImageProvider? thumbnail;
+  final double? width;
+  final double? height;
+
+  double get aspectRatio =>
+      (width != null && height != null) ? (width! / height!) : 1;
+
+  VideoAttachment(super.file,
+      {required super.name,
+      required super.mimeType,
+      this.thumbnail,
+      this.width,
+      this.height,
+      super.fileSize});
 }

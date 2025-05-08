@@ -12,10 +12,10 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 
 class MessageAttachment extends StatefulWidget {
   const MessageAttachment(this.attachment,
-      {super.key, this.ignorePointer = false});
+      {super.key, this.ignorePointer = false, this.previewMedia = false});
   final Attachment attachment;
   final bool ignorePointer;
-
+  final bool previewMedia;
   @override
   State<MessageAttachment> createState() => _MessageAttachmentState();
 }
@@ -31,15 +31,18 @@ class _MessageAttachmentState extends State<MessageAttachment> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.attachment is ImageAttachment) return buildImage();
-    if (widget.attachment is VideoAttachment) {
-      if (BuildConfig.WEB) {
-        return buildFile(Icons.video_file, widget.attachment.name, null);
+    if (widget.previewMedia) {
+      if (widget.attachment is ImageAttachment) return buildImage();
+      if (widget.attachment is VideoAttachment) {
+        if (BuildConfig.WEB) {
+          return buildFile(Icons.video_file, widget.attachment.name, null);
+        }
+        return buildVideo();
       }
-      return buildVideo();
     }
-    if (widget.attachment is FileAttachment) {
-      var attachment = widget.attachment as FileAttachment;
+
+    final attachment = widget.attachment;
+    if (attachment is FileAttachment) {
       return buildFile(Mime.toIcon(attachment.mimeType), attachment.name,
           attachment.fileSize);
     }
@@ -62,9 +65,7 @@ class _MessageAttachmentState extends State<MessageAttachment> {
                 child: AspectRatio(
                   aspectRatio: attachment.aspectRatio,
                   child: InkWell(
-                    onTap: () {
-                      Lightbox.show(context, image: attachment.image);
-                    },
+                    onTap: fullscreenAttachment,
                     child: Image(
                       image: attachment.image,
                       filterQuality: FilterQuality.medium,
@@ -86,7 +87,8 @@ class _MessageAttachmentState extends State<MessageAttachment> {
         width: attachment.aspectRatio * 200,
         child: Panel(
             mainAxisSize: MainAxisSize.min,
-            header: attachment.name,
+            header:
+                "${attachment.name} ${attachment.fileSize != null ? "- ${TextUtils.readableFileSize(attachment.fileSize!)}" : ""}",
             mode: TileType.surfaceContainerLow,
             padding: 0,
             child: SizedBox(
@@ -97,7 +99,7 @@ class _MessageAttachmentState extends State<MessageAttachment> {
                     child: isFullscreen
                         ? null
                         : VideoPlayer(
-                            attachment.videoFile,
+                            attachment.file,
                             thumbnail: attachment.thumbnail,
                             fileName: attachment.name,
                             doThumbnail: true,
@@ -109,13 +111,24 @@ class _MessageAttachmentState extends State<MessageAttachment> {
     );
   }
 
+  void fullscreenAttachment() {
+    if (widget.attachment is ImageAttachment) {
+      final attachment = widget.attachment as ImageAttachment;
+      Lightbox.show(context, image: attachment.image);
+    }
+
+    if (widget.attachment is VideoAttachment) {
+      fullscreenVideo();
+    }
+  }
+
   void fullscreenVideo() {
     var attachment = (widget.attachment as VideoAttachment);
     setState(() {
       isFullscreen = true;
     });
     Lightbox.show(context,
-            video: attachment.videoFile,
+            video: attachment.file,
             aspectRatio: attachment.aspectRatio,
             thumbnail: attachment.thumbnail,
             key: videoPlayerKey)
@@ -164,18 +177,29 @@ class _MessageAttachmentState extends State<MessageAttachment> {
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-              child: tiamat.IconButton(
-                size: 20,
-                icon: Icons.download,
-                onPressed: () async {
-                  if (widget.attachment is FileAttachment) {
-                    downloadAttachment(widget.attachment as FileAttachment);
-                  }
-                },
-              ),
-            )
+            if (widget.attachment is ImageAttachment ||
+                widget.attachment is VideoAttachment)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                child: tiamat.IconButton(
+                  size: 20,
+                  icon: Icons.visibility,
+                  onPressed: fullscreenAttachment,
+                ),
+              )
+            else
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                child: tiamat.IconButton(
+                  size: 20,
+                  icon: Icons.download,
+                  onPressed: () async {
+                    if (widget.attachment is FileAttachment) {
+                      downloadAttachment(widget.attachment as FileAttachment);
+                    }
+                  },
+                ),
+              )
           ],
         ),
       ),
@@ -188,7 +212,7 @@ class _MessageAttachmentState extends State<MessageAttachment> {
 
   Future<BackgroundTaskStatus> downloadTask(
       FileAttachment attachment, String path) async {
-    await attachment.provider.save(path);
+    await attachment.file.save(path);
 
     return BackgroundTaskStatus.completed;
   }
