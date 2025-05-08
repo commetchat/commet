@@ -20,6 +20,7 @@ class EmojiWidget extends StatelessWidget {
                 child: Image(
                   filterQuality: FilterQuality.medium,
                   isAntiAlias: true,
+                  fit: BoxFit.fitHeight,
                   width: height,
                   height: height,
                   image: emoji.image!,

@@ -159,11 +159,6 @@ class MatrixRoom extends Room {
     _displayName = room.getLocalizedDisplayname();
     _components = ComponentRegistry.getMatrixRoomComponents(client, this);
 
-    if (room.avatar != null) {
-      _avatar = MatrixMxcImage(room.avatar!, _matrixRoom.client,
-          autoLoadFullRes: false);
-    }
-
     _lastStateEventTimestamp = DateTime.fromMillisecondsSinceEpoch(0);
     matrix.Event? latest = room.lastEvent;
 
@@ -187,12 +182,13 @@ class MatrixRoom extends Room {
   Future<void> updateAvatar() async {
     if (_matrixRoom.avatar != null) {
       _avatar = MatrixMxcImage(_matrixRoom.avatar!, _matrixRoom.client,
-          autoLoadFullRes: false);
+          thumbnailHeight: 64, fullResHeight: 128, autoLoadFullRes: false);
     } else if (_matrixRoom.isDirectChat) {
       var url = await _matrixRoom.client
           .getAvatarUrl(_matrixRoom.directChatMatrixID!);
       if (url != null) {
-        _avatar = MatrixMxcImage(url, _matrixRoom.client);
+        _avatar = MatrixMxcImage(url, _matrixRoom.client,
+            thumbnailHeight: 64, fullResHeight: 128, autoLoadFullRes: false);
       }
     }
 
@@ -656,5 +652,32 @@ class MatrixRoom extends Room {
   Future<void> retrySend(TimelineEvent event) async {
     final mxEvent = event as MatrixTimelineEvent;
     await mxEvent.event.sendAgain();
+  }
+
+  @override
+  bool get shouldPreviewMedia {
+    switch (_matrixRoom.joinRules) {
+      case matrix.JoinRules.public:
+        return preferences.previewMediaInPublicRooms;
+
+      case matrix.JoinRules.knock:
+      case matrix.JoinRules.invite:
+      case matrix.JoinRules.private:
+        return preferences.previewMediaInPrivateRooms;
+
+      case matrix.JoinRules.restricted:
+        if (_client.spaces.any((e) =>
+            e.visibility == RoomVisibility.public &&
+            e.containsRoom(_matrixRoom.id))) {
+          // if any public space contains this room, consider the room public
+          // this is kind of flawed, because there could be public spaces we are not a member of
+          return preferences.previewMediaInPublicRooms;
+        } else {
+          return preferences.previewMediaInPrivateRooms;
+        }
+
+      default:
+        return false;
+    }
   }
 }

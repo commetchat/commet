@@ -31,17 +31,17 @@ class GeneralSettingsPageState extends State<GeneralSettingsPage> {
       args: [proxyUrl],
       name: "labelGifSearchDescription");
 
-  String get labelEncryptedPreview => Intl.message(
-      "URL Preview in Encrypted Chats (Experimental)",
+  String get labelUrlPreviewInEncryptedChatTitle => Intl.message(
+      "URL Preview in Encrypted Chats",
       desc:
-          "Label for the toggle for enabling and disabling encrypted url preview",
-      name: "labelEncryptedPreview");
+          "Label for the toggle for enabling and disabling use of url previews in encrypted chats",
+      name: "labelUrlPreviewInEncryptedChatTitle");
 
-  String labelEncryptedPreviewDescription(proxyUrl) => Intl.message(
-      "Enable use of a proxy server ($proxyUrl) to get url preview in an encrypted chat. The content of these requests will be hidden from your homeserver using Commet's 'encrypted url preview'\nLearn more: https://github.com/commetchat/encrypted_url_preview",
-      desc: "Explains briefly how encrypted url preview works",
-      args: [proxyUrl],
-      name: "labelEncryptedPreviewDescription");
+  String get labelUrlPreviewInEncryptedChatDescription => Intl.message(
+      "This will expose any URLs sent in your encrypted chats to your homeserver in order to fetch the preview",
+      desc:
+          "description for the toggle for enabling and disabling use of url previews in encrypted chats",
+      name: "labelUrlPreviewInEncryptedChatDescription");
 
   String get labelMessageEffectsTitle => Intl.message("Message Effects",
       desc:
@@ -52,6 +52,34 @@ class GeneralSettingsPageState extends State<GeneralSettingsPage> {
       "Messages can be sent with additional effects, such as confetti",
       desc: "Label describing what message effects are",
       name: "labelMessageEffectsDescription");
+
+  String get labelMediaPreviewSettingsTitle => Intl.message("Media Preview",
+      desc: "Header for the settings tile for for media preview toggles",
+      name: "labelMediaPreviewSettingsTitle");
+
+  String get labelMediaPreviewPrivateRoomsToggle => Intl.message(
+        "Private Rooms",
+        desc:
+            "Short label for the private rooms toggle in media previews section",
+        name: "labelMediaPreviewPrivateRoomsToggle",
+      );
+
+  String get labelMediaPreviewPrivateRoomsToggleDescription => Intl.message(
+      "Toggle previewing of images, videos, stickers and urls in private chats",
+      desc: "Label describing toggle of media previews for private rooms",
+      name: "labelMediaPreviewPrivateRoomsToggleDescription");
+
+  String get labelMediaPreviewPublicRoomsToggle => Intl.message(
+        "Public Rooms",
+        desc:
+            "Short label for the private rooms toggle in media previews section",
+        name: "labelMediaPreviewPublicRoomsToggle",
+      );
+
+  String get labelMediaPreviewPublicRoomsToggleDescription => Intl.message(
+      "Toggle previewing of images, videos, stickers and urls in public chat rooms",
+      desc: "Label describing toggle of media previews for public rooms",
+      name: "labelMediaPreviewPublicRoomsToggleDescription");
 
   @override
   void initState() {
@@ -87,9 +115,8 @@ class GeneralSettingsPageState extends State<GeneralSettingsPage> {
             ),
             settingToggle(
               enableEncryptedPreview,
-              title: labelEncryptedPreview,
-              description:
-                  labelEncryptedPreviewDescription("telescope.commet.chat"),
+              title: labelUrlPreviewInEncryptedChatTitle,
+              description: labelUrlPreviewInEncryptedChatDescription,
               onChanged: (value) async {
                 setState(() {
                   enableEncryptedPreview = value;
@@ -115,6 +142,33 @@ class GeneralSettingsPageState extends State<GeneralSettingsPage> {
               description: labelMessageEffectsDescription,
               onChanged: (value) async {
                 await preferences.setMessageEffectsEnabled(value);
+                setState(() {});
+              },
+            ),
+          ]),
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        Panel(
+          header: labelMediaPreviewSettingsTitle,
+          mode: TileType.surfaceContainerLow,
+          child: Column(children: [
+            settingToggle(
+              preferences.previewMediaInPrivateRooms,
+              title: labelMediaPreviewPrivateRoomsToggle,
+              description: labelMediaPreviewPrivateRoomsToggleDescription,
+              onChanged: (value) async {
+                await preferences.setMediaPreviewInPrivateRooms(value);
+                setState(() {});
+              },
+            ),
+            settingToggle(
+              preferences.previewMediaInPublicRooms,
+              title: labelMediaPreviewPublicRoomsToggle,
+              description: labelMediaPreviewPublicRoomsToggleDescription,
+              onChanged: (value) async {
+                await preferences.setMediaPreviewInPublicRooms(value);
                 setState(() {});
               },
             ),

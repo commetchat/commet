@@ -8,7 +8,6 @@ import 'package:commet/client/matrix/components/emoticon/matrix_room_emoticon_co
 import 'package:commet/client/matrix/components/emoticon/matrix_space_emoticon_component.dart';
 import 'package:commet/client/matrix/extensions/matrix_client_extensions.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
-import 'package:commet/utils/notifying_list.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fuzzy/fuzzy.dart';
 import 'package:matrix/matrix.dart';
@@ -18,116 +17,102 @@ class MatrixEmoticonPack implements EmoticonPack {
   String stateKey;
 
   @override
-  final NotifyingList<MatrixEmoticon> emotes =
-      NotifyingList.empty(growable: true);
+  List<MatrixEmoticon> get emotes {
+    final images = state.tryGetMap<String, Map<String, dynamic>>("images");
+
+    if (images == null) {
+      return List.empty();
+    }
+
+    return images.entries.map((e) {
+      final shortCode = e.key;
+      final url = e.value.tryGet<String>("url");
+      final usages = e.value.tryGetList<String>("usage");
+
+      if (url == null) {
+        throw UnimplementedError;
+      }
+
+      final usage = usagesArrayToUsage(usages);
+
+      return MatrixEmoticon(Uri.parse(url), component.client.getMatrixClient(),
+          packUsage: this.usage, shortcode: shortCode, usage: usage);
+    }).toList();
+  }
 
   late Map<String, Emoticon> shortcodeToEmoticon;
 
-  @override
-  late String displayName;
+  late Map<String, dynamic> state;
 
   @override
-  ImageProvider? image;
-
-  @override
-  IconData? icon;
-
-  MatrixEmoticonPack(
-    this.component,
-    this.stateKey,
-    Map<String, dynamic> initialState,
-  ) {
-    updateFromState(initialState);
-  }
-
-  void updateFromState(Map<String, dynamic> initialState) {
-    var info = initialState['pack'];
-    displayName = info?['display_name'] ?? component.getDefaultDisplayName();
-    shortcodeToEmoticon = <String, Emoticon>{};
-    if (info?['avatar_url'] != null) {
-      try {
-        var uri = Uri.parse(info!['avatar_url']!);
-        image = MatrixMxcImage(uri, component.client.getMatrixClient());
-      } catch (_) {}
-    }
-
-    image ??= component.getDefaultImage();
-    icon = component.getDefaultIcon();
-
-    var images = initialState['images'] as Map<String, dynamic>?;
-    if (images == null) return;
-
-    bool isStickerPackCache = isStickerPack;
-    bool isEmojiPackCache = isEmojiPack;
-
-    emotes.removeWhere((element) => images.containsKey(element.key) == false);
-    shortcodeToEmoticon.removeWhere((key, value) =>
-        emotes.any((element) => element.shortcode == key) == false);
-
-    for (var image in images.keys) {
-      var url = images[image]['url'];
-      if (url == null) {
-        continue;
-      }
-      var uri = Uri.parse(url);
-
-      var usages = images[image]['usage'] as List?;
-
-      bool markedSticker = false;
-      bool markedEmoji = false;
-      if (usages != null) {
-        markedSticker = usages.contains("sticker");
-        markedEmoji = usages.contains("emoticon");
-      }
-
-      var existing =
-          emotes.where((element) => element.key == image).firstOrNull;
-
-      if (existing != null) {
-        existing.markAsSticker(markedSticker);
-        existing.markAsEmoji(markedEmoji);
-        existing.markPackAsEmoji(isEmojiPackCache);
-        existing.markPackAsSticker(isStickerPackCache);
-
-        if (uri != existing.emojiUrl) {
-          existing.emojiUrl = uri;
-          existing.setImage(
-              MatrixMxcImage(uri, component.client.getMatrixClient()));
-        }
-      } else {
-        var emote = MatrixEmoticon(uri, component.client.getMatrixClient(),
-            shortcode: image,
-            isEmojiPack: isEmojiPackCache,
-            isStickerPack: isStickerPackCache,
-            isMarkedEmoji: markedEmoji,
-            isMarkedSticker: markedSticker);
-        emotes.add(emote);
-
-        if (emote.shortcode != null) {
-          shortcodeToEmoticon[emote.shortcode!] = emote;
-        }
-      }
-    }
+  String get displayName {
+    return state
+            .tryGetMap<String, dynamic>("pack")
+            ?.tryGet<String>("display_name") ??
+        "Unnamed Pack";
   }
 
   @override
-  Future<void> addEmoticon(
-      {required String slug,
-      String? shortcode,
-      required Uint8List data,
-      String? mimeType,
-      bool? isEmoji,
-      bool? isSticker}) async {
+  ImageProvider? get image {
+    final pack = state.tryGetMap<String, dynamic>("pack");
+
+    final url = pack?.tryGet<String>("avatar_url");
+
+    if (url != null) {
+      return MatrixMxcImage(Uri.parse(url), component.client.getMatrixClient(),
+          doFullres: true, fullResHeight: 64);
+    }
+
+    return null;
+  }
+
+  @override
+  IconData? get icon {
+    return component.getDefaultIcon();
+  }
+
+  MatrixEmoticonPack(this.component, this.stateKey, this.state);
+
+  EmoticonUsage usagesArrayToUsage(List<String>? usages) {
+    if ((usages?.contains("emoticon") == true) &&
+        (usages?.contains("sticker") == false)) {
+      return EmoticonUsage.emoji;
+    }
+
+    if ((usages?.contains("sticker") == true) &&
+        (usages?.contains("emoticon") == false)) {
+      return EmoticonUsage.sticker;
+    }
+
+    if ((usages?.contains("sticker") == true) &&
+        (usages?.contains("emoticon") == true)) {
+      return EmoticonUsage.all;
+    }
+
+    return EmoticonUsage.inherit;
+  }
+
+  @override
+  Future<void> addEmoticon({
+    required String slug,
+    String? shortcode,
+    required Uint8List data,
+    String? mimeType,
+    EmoticonUsage? usage,
+  }) async {
     await component.createEmoticon(identifier, shortcode!, data);
   }
 
-  List? _getUsage() {
-    var info =
-        component.state.getState(identifier)['pack'] as Map<String, dynamic>?;
-    if (info == null) return null;
-
-    var usage = info.tryGet("usage") as List?;
-    return usage;
+  @override
+  Future<void> updateEmoticon(
+      {String? slug,
+      String? shortcode,
+      Uint8List? data,
+      String? mimeType,
+      EmoticonUsage? usage,
+      required Emoticon previous}) async {
+    await component.updateEmoticon(identifier, shortcode!,
+        data: data, usage: usage, previous: previous);
   }
 
   @override
@@ -136,11 +121,6 @@ class MatrixEmoticonPack implements EmoticonPack {
   @override
   Future<void> deleteEmoticon(Emoticon emoticon) async {
     await component.deleteEmoticon(identifier, emoticon.shortcode!);
-    emotes.remove(emoticon);
-
-    if (emoticon.shortcode != null) {
-      shortcodeToEmoticon.remove(emoticon.shortcode);
-    }
   }
 
   @override
@@ -153,15 +133,6 @@ class MatrixEmoticonPack implements EmoticonPack {
 
   @override
   String get identifier => stateKey;
-
-  @override
-  bool get isEmojiPack => _getUsage()?.contains("emoticon") ?? true;
-
-  @override
-  bool get isGloballyAvailable => component.isGloballyAvailable(identifier);
-
-  @override
-  bool get isStickerPack => _getUsage()?.contains("sticker") ?? true;
 
   @override
   Future<void> markAsGlobal(bool isGlobal) async {
@@ -181,48 +152,28 @@ class MatrixEmoticonPack implements EmoticonPack {
     }
   }
 
-  @override
-  Future<void> markAsEmoji(bool isEmojiPack) async {
-    await component.setPackUsages(identifier,
-        [if (isEmojiPack) 'emoticon', if (isStickerPack) 'sticker']);
+  List<String>? _emoticonUsageToArray(EmoticonUsage usage) {
+    final usages = switch (usage) {
+      EmoticonUsage.sticker => ["sticker"],
+      EmoticonUsage.emoji => ["emoticon"],
+      EmoticonUsage.all => ["sticker", "emoticon"],
+      EmoticonUsage.inherit => null,
+    };
 
-    for (var emote in emotes) {
-      emote.markPackAsEmoji(isEmojiPack);
-    }
+    return usages;
   }
 
   @override
-  Future<void> markAsSticker(bool isStickerPack) async {
-    await component.setPackUsages(identifier,
-        [if (isEmojiPack) 'emoticon', if (isStickerPack) 'sticker']);
-
-    for (var emote in emotes) {
-      emote.markPackAsSticker(isStickerPack);
-    }
+  Future<void> setPackUsage(EmoticonUsage usage) {
+    final usages = _emoticonUsageToArray(usage);
+    return component.setPackUsages(identifier, usages);
   }
 
   @override
-  Future<void> markEmoticonAsEmoji(Emoticon emoticon, bool isEmoji) async {
-    await component.setEmoticonUsages(identifier, emoticon.shortcode!,
-        [if (isEmoji) 'emoticon', if (emoticon.isMarkedSticker) 'sticker']);
-
-    (emoticon as MatrixEmoticon).markAsEmoji(isEmoji);
-  }
-
-  @override
-  Future<void> markEmoticonAsSticker(Emoticon emoticon, bool isSticker) async {
-    await component.setEmoticonUsages(identifier, emoticon.shortcode!,
-        [if (emoticon.isMarkedEmoji) 'emoticon', if (isSticker) 'sticker']);
-
-    (emoticon as MatrixEmoticon).markAsSticker(isSticker);
-  }
-
-  @override
-  Stream<int> get onEmoticonAdded => emotes.onAdd;
-
-  @override
-  Future<void> renameEmoticon(Emoticon emoticon, String name) {
-    return component.renameEmoticon(identifier, emoticon.shortcode!, name);
+  Future<void> updatePack(
+      {EmoticonUsage? usage, String? name, Uint8List? imageData}) {
+    return component.updatePack(identifier,
+        usage: usage, name: name, imageData: imageData);
   }
 
   @override
@@ -255,4 +206,64 @@ class MatrixEmoticonPack implements EmoticonPack {
 
   @override
   String get ownerDisplayName => component.ownerDisplayName;
+
+  @override
+  bool operator ==(Object other) {
+    if (other is! MatrixEmoticonPack) return false;
+    if (other.component != component) return false;
+
+    return (other.stateKey == stateKey &&
+        other.component.state.id == component.state.id);
+  }
+
+  @override
+  int get hashCode => stateKey.hashCode;
+
+  @override
+  EmoticonUsage get usage {
+    final pack = state.tryGetMap<String, dynamic>("pack");
+    var usages = pack?.tryGetList<String>("usage");
+    var usage = usagesArrayToUsage(usages);
+    if (usage == EmoticonUsage.inherit) {
+      return EmoticonUsage.all;
+    } else {
+      return usage;
+    }
+  }
+
+  @override
+  bool get isEmojiPack =>
+      [EmoticonUsage.emoji, EmoticonUsage.all].contains(usage);
+
+  @override
+  bool get isStickerPack =>
+      [EmoticonUsage.sticker, EmoticonUsage.all].contains(usage);
+
+  @override
+  bool get isGloballyAvailable {
+    late Room room;
+    if (component is MatrixRoomEmoticonComponent) {
+      room = (component as MatrixRoomEmoticonComponent).room.matrixRoom;
+    } else if (component is MatrixSpaceEmoticonComponent) {
+      room = (component as MatrixSpaceEmoticonComponent).space.matrixRoom;
+    } else {
+      return false;
+    }
+
+    final data = room
+        .client.accountData[MatrixEmoticonComponent.globalEmoteRoomsStateKey];
+    if (data == null) {
+      return false;
+    }
+
+    final rooms = data.content.tryGetMap<String, dynamic>("rooms");
+
+    if (rooms == null) {
+      return false;
+    }
+
+    final roomData = rooms.tryGetMap<String, dynamic>(room.id);
+
+    return roomData?.containsKey(identifier) ?? false;
+  }
 }

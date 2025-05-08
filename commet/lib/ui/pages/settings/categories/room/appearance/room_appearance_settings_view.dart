@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:commet/ui/pages/settings/categories/account/profile/profile_edit_view.dart';
+import 'package:commet/utils/image/lod_image.dart';
 import 'package:flutter/material.dart';
 
 class RoomAppearanceSettingsView extends StatefulWidget {
@@ -27,6 +28,15 @@ class RoomAppearanceSettingsView extends StatefulWidget {
 
 class _RoomAppearanceSettingsViewState
     extends State<RoomAppearanceSettingsView> {
+  @override
+  void initState() {
+    final avatar = widget.avatar;
+    if (avatar is LODImageProvider) {
+      avatar.fetchFullRes();
+    }
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return ProfileEditView(

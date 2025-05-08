@@ -70,14 +70,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.0"
-  basic_utils:
-    dependency: transitive
-    description:
-      name: basic_utils
-      sha256: "2064b21d3c41ed7654bc82cc476fd65542e04d60059b74d5eed490a4da08fc6c"
-      url: "https://pub.dev"
-    source: hosted
-    version: "5.7.0"
   blurhash_dart:
     dependency: transitive
     description:
@@ -375,15 +367,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.0.3"
-  encrypted_url_preview:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "38ae4d905739237277decea9c564d7b7ebf2d52e"
-      url: "https://github.com/commetchat/encrypted_url_preview.git"
-    source: git
-    version: "1.0.0"
   enhanced_enum:
     dependency: transitive
     description:

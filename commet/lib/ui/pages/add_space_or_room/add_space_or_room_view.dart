@@ -137,14 +137,13 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
       name: "promptSpaceAddress",
       desc: "Short label to prompt for the input of a space address");
 
-  String get placeholderRoomAddress => Intl.message("#awesome-room:example.com",
-      name: "placeholderRoomAddress",
-      desc: "Placeholder / Example for a room address");
+  String get placeholderRoomAlias => Intl.message("#awesome-room",
+      name: "placeholderRoomAlias",
+      desc: "Placeholder / Example for a room alias.");
 
-  String get placeholderSpaceAddress =>
-      Intl.message("#awesome-space:example.com",
-          name: "placeholderSpaceAddress",
-          desc: "Placeholder / Example for a space address");
+  String get placeholderSpaceAlias => Intl.message("#awesome-space",
+      name: "placeholderSpaceAlias",
+      desc: "Placeholder / Example for a space alias.");
 
   String get labelCouldNotLoadRoomPreview => Intl.message(
       "Could not load a preview of the room",
@@ -276,6 +275,7 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
               child: tiamat.DropdownSelector<RoomVisibility>(
                 items: const [RoomVisibility.private, RoomVisibility.public],
                 itemHeight: 90,
+                value: visibility,
                 onItemSelected: (item) {
                   setState(() {
                     visibility = item;
@@ -396,8 +396,8 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
                 TextInput(
                   controller: spaceAddressController,
                   placeholder: widget.roomMode
-                      ? placeholderRoomAddress
-                      : placeholderSpaceAddress,
+                      ? "$placeholderRoomAlias:example.com"
+                      : "$placeholderSpaceAlias:example.com",
                 ),
               ],
             ),
