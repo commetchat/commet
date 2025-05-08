@@ -2,6 +2,7 @@ import 'package:commet/client/components/push_notification/notification_manager.
 import 'package:commet/client/components/push_notification/push_notification_component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/config/platform_utils.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:matrix/matrix.dart';
@@ -19,8 +20,6 @@ class MatrixPushNotificationComponent
       {Map<String, dynamic>? extraData}) async {
     var matrixClient = client.getMatrixClient();
 
-    Log.i("Current push key: $pushKey");
-
     var pushers = await matrixClient.getPushers();
 
     if (pushers != null &&
@@ -28,8 +27,10 @@ class MatrixPushNotificationComponent
       return;
     }
 
+    var appId = PlatformUtils.appID;
+
     var pusher = Pusher(
-        appId: "chat.commet.commetapp.android",
+        appId: appId,
         pushkey: pushKey,
         appDisplayName: BuildConfig.appName,
         data: PusherData(
@@ -52,9 +53,18 @@ class MatrixPushNotificationComponent
     // Check for stale pushers
     if (pushers != null) {
       for (var pusher in pushers) {
-        if (pusher.deviceDisplayName == deviceName &&
-            (pusher.pushkey != currentPushKey ||
-                pusher.data.url != pushGateway)) {
+        if (pusher.appId == PlatformUtils.appID &&
+            ((pusher.deviceDisplayName != deviceName &&
+                    pusher.pushkey == currentPushKey) ||
+                (pusher.deviceDisplayName == deviceName &&
+                    (pusher.pushkey != currentPushKey ||
+                        pusher.data.url != pushGateway)))) {
+          // 2 cases here:
+          //   - existing pusher with the same key (i.e. same device for
+          //     receiving notifications) but different device name, so
+          //     a change of some sort has happened.
+          //   - Same name but different key or different gateway
+          // But always we only want to remove the commet pushers.
           await matrixClient.deletePusher(pusher);
         }
       }
@@ -72,6 +82,10 @@ class MatrixPushNotificationComponent
     var extraData = notifier?.extraRegistrationData();
     var name = mxClient.clientName;
 
+    if (PlatformUtils.isIOS) {
+      name = "iPhone";
+    }
+
     var uri = Uri.parse(preferences.pushGateway);
     if (uri.hasScheme == false) {
       uri = Uri.https(preferences.pushGateway);
@@ -86,9 +100,11 @@ class MatrixPushNotificationComponent
     await cleanOldPushers(key, name, uri);
 
     if (key == null) {
+      Log.w("Device key is null");
       return;
     }
 
+    Log.i("Registering pusher");
     await ensurePushNotificationsRegistered(key, uri, name,
         extraData: extraData);
   }

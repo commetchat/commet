@@ -1,0 +1,107 @@
+# Uncomment this line to define a global platform for your project
+# platform :ios, '13.0'
+
+# CocoaPods analytics sends network stats synchronously affecting flutter build latency.
+ENV['COCOAPODS_DISABLE_STATS'] = 'true'
+
+require 'plist_lite'
+
+project 'Runner', {
+  'Debug' => :debug,
+  'Profile' => :release,
+  'Release' => :release,
+}
+
+def flutter_root
+  generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
+  unless File.exist?(generated_xcode_build_settings_path)
+    raise "#{generated_xcode_build_settings_path} must exist. If you're running pod install manually, make sure flutter pub get is executed first"
+  end
+
+  File.foreach(generated_xcode_build_settings_path) do |line|
+    matches = line.match(/FLUTTER_ROOT\=(.*)/)
+    return matches[1].strip if matches
+  end
+  raise "FLUTTER_ROOT not found in #{generated_xcode_build_settings_path}. Try deleting Generated.xcconfig, then run flutter pub get"
+end
+
+require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
+
+flutter_ios_podfile_setup
+
+target 'Runner' do
+  use_frameworks!
+  use_modular_headers!
+
+  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+end
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    flutter_additional_ios_build_settings(target)
+
+    target.build_configurations.each do |config|
+      # You can remove unused permissions here
+      # for more information: https://github.com/Baseflow/flutter-permission-handler/blob/main/permission_handler_apple/ios/Classes/PermissionHandlerEnums.h
+      # e.g. when you don't need camera permission, just add 'PERMISSION_CAMERA=0'
+      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
+        '$(inherited)',
+
+        ## dart: PermissionGroup.notification
+        'PERMISSION_NOTIFICATIONS=1',
+      ]
+      
+    end
+  end
+  
+  work_dir = Dir.pwd
+  app_id = ""
+  app_profile = ""
+  service_id = ""
+  service_profile = ""
+  team_id = ""
+  env_path = "#{work_dir}/Appinfo.xcconfig"
+  File.foreach( env_path ) do |line|
+    items = line.split("=")
+    if ("#{items[0]}" == "PRODUCT_SERVICE_BUNDLE_IDENTIFIER") then 
+      service_id = items[1].strip!
+    elsif ("#{items[0]}" == "PRODUCT_BUNDLE_IDENTIFIER") then
+      app_id = items[1].strip!
+    elsif ("#{items[0]}" == "PRODUCT_TEAM") then
+      team_id = items[1].strip!
+    elsif ("#{items[0]}" == "PRODUCT_PROFILE") then
+      app_profile = items[1].strip!
+    elsif ("#{items[0]}" == "PRODUCT_SERVICE_PROFILE") then
+      service_profile = items[1].strip!
+    end
+  end
+  Dir.glob("Pods/Target Support Files/Pods-servicer/*.xcconfig") do |xc_config_filename|
+    full_path_name = "#{work_dir}/#{xc_config_filename}"
+    if (File.exist?(full_path_name))
+      new_text = "PRODUCT_BUNDLE_IDENTIFIER = #{service_id}\n"
+    end
+    File.write(full_path_name, new_text, File.size(full_path_name), mode: 'a')
+  end
+  export_path = File.expand_path(File.join('..', "export.plist"), __FILE__)
+  puts "Export file path is #{export_path}"
+  provisioning_profiles={app_id => app_profile, service_id => service_profile}
+  plist = {
+    "destination" => "export", 
+    "manageAppVersionAndBuildNumber" => true, 
+    "method" => "app-store-connect", 
+    "provisioningProfiles" => provisioning_profiles,
+    "signingCertificate" => "Apple Distribution", 
+    "signingStyle" => "manual", 
+    "stripSwiftSymbols" => true, 
+    "teamID" => team_id,
+    "uploadSymbols" => true
+  }
+  puts plist
+  plist_text = PlistLite.dump(plist)
+  puts plist_text
+  File.open(export_path, "w") {|file| file.puts PlistLite.dump(plist) }
+end
+
+target 'servicer' do
+  use_frameworks!
+end

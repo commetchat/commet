@@ -1,9 +1,11 @@
 import 'package:commet/client/alert.dart';
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/push_notification/firebase_push_notifier.dart';
 import 'package:commet/client/components/push_notification/android/android_notifier.dart';
-import 'package:commet/client/components/push_notification/android/firebase_push_notifier.dart';
+import 'package:commet/client/components/push_notification/ios/ios_notifier.dart';
 import 'package:commet/client/components/push_notification/android/unified_push_notifier.dart';
 import 'package:commet/client/components/push_notification/linux/linux_notifier.dart';
+import 'package:commet/client/components/push_notification/macos/macos_notifier.dart';
 import 'package:commet/client/components/push_notification/modifiers/notification_modifiers.dart';
 import 'package:commet/client/components/push_notification/modifiers/suppress_active_room.dart';
 import 'package:commet/client/components/push_notification/modifiers/suppress_other_device_active.dart';
@@ -78,6 +80,14 @@ class NotificationManager {
 
         return UnifiedPushNotifier();
       }
+    }
+
+    if (PlatformUtils.isIOS) {
+      return IOSNotifier();
+    }
+
+    if (PlatformUtils.isMacOS) {
+      return MacosNotifier();
     }
 
     return null;

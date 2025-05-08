@@ -163,3 +163,159 @@ jobs:
         run: |
           cd $PROJECT_PATH
           flutter build web --release --dart-define PLATFORM=web
+
+  build-mac:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+
+      - name: Setup Flutter 
+        uses: subosito/flutter-action@v2.8.0
+        with:
+          flutter-version: '3.24.4'
+          channel: 'stable'
+    
+      - name: Setup Provisioning Profile
+        env:
+          BUILD_CERTIFICATE_BASE64: ${{ secrets.MACOS_SIGNING_P12 }}
+          P12_PASSWORD: ${{ secrets.MACOS_SIGNING_P12_PASSWORD }}
+          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.COMMET_MACOS_PROVISIONPROFILE }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: |
+          # create variables
+          CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
+          PP_PATH=$RUNNER_TEMP/build_pp.provisionprofile
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+
+          # import certificate and provisioning profile from secrets
+          echo "Making Build Certificate"
+          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH
+          echo "Making Provisioning Profile"
+          echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o $PP_PATH
+
+          # create temporary keychain
+          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+
+          # import certificate to keychain
+          security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security list-keychain -d user -s $KEYCHAIN_PATH
+
+          # apply provisioning profile
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/
+
+      - name: Create Configuration
+        run: |
+          cd $PROJECT_PATH/macos/Runner/Configs
+          touch AppInfo.xcconfig
+          echo PRODUCT_NAME=commet >> AppInfo.xcconfig
+          echo PRODUCT_BUNDLE_IDENTIFIER=${{ vars.MACOS_BUNDLE_ID }} >> AppInfo.xcconfig
+          echo PRODUCT_COPYRIGHT="Copyright © 2023 commet.chat. All rights reserved." >> AppInfo.xcconfig
+          echo PRODUCT_TEAM=${{ secrets.DEV_TEAM_ID }} >> AppInfo.xcconfig
+          echo PRODUCT_PROFILE=${{ secrets.MACOS_PROVISIONING_PROFILE_NAME }} >> AppInfo.xcconfig
+
+      - name: Code Generation
+        run: |
+          cd $PROJECT_PATH
+          dart run scripts/codegen.dart
+
+      - name: Build Mac
+        run: |
+          cd $PROJECT_PATH
+          flutter build macos --dart-define BUILD_MODE=release --dart-define PLATFORM=macos
+
+      - name: Clean up keychain and provisioning profile
+        if: ${{ always() }}
+        run: |
+          security delete-keychain $RUNNER_TEMP/app-signing.keychain-db
+          rm ~/Library/MobileDevice/Provisioning\ Profiles/build_pp.provisionprofile
+
+  build-ios:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+
+      - name: Setup Flutter 
+        uses: subosito/flutter-action@v2.8.0
+        with:
+          flutter-version: '3.24.4'
+          channel: 'stable'
+
+      - name: Setup Provisioning Profile
+        env:
+          BUILD_CERTIFICATE_BASE64: ${{ secrets.IOS_SIGNING_P12 }}
+          P12_PASSWORD: ${{ secrets.IOS_SIGNING_P12_PASSWORD }}
+          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.COMMET_IOS_MOBILEPROVISION }}
+          BUILD_EXTENSION_PROVISION_PROFILE_BASE64: ${{ secrets.COMMET_IOS_EXTENSION_MOBILEPROVISION }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: |
+          # create variables
+          CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
+          PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
+          PP_EXT_PATH=$RUNNER_TEMP/build_ext_pp.mobileprovision
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+
+          # import certificate and provisioning profile from secrets
+          echo "Making Build Certificate"
+          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH
+          echo "Making Provisioning Profile"
+          echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o $PP_PATH
+          echo "Making Extension Provisioning Profile"
+          echo -n "$BUILD_EXTENSION_PROVISION_PROFILE_BASE64" | base64 --decode -o $PP_EXT_PATH
+
+          # create temporary keychain
+          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+
+          # import certificate to keychain
+          security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security list-keychain -d user -s $KEYCHAIN_PATH
+
+          # apply provisioning profile
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/
+          cp $PP_EXT_PATH ~/Library/MobileDevice/Provisioning\ Profiles/
+
+      - name: Create Configuration
+        run: |
+          cd $PROJECT_PATH/ios
+          touch AppInfo.xcconfig
+          echo PRODUCT_NAME=commet >> AppInfo.xcconfig
+          echo PRODUCT_BUNDLE_IDENTIFIER=${{ vars.IOS_BUNDLE_ID }} >> AppInfo.xcconfig
+          echo PRODUCT_SERVICE_BUNDLE_IDENTIFIER=${{ vars.IOS_BUNDLE_SERVICER_ID }} >> AppInfo.xcconfig
+          echo PRODUCT_COPYRIGHT="Copyright © 2023 commet.chat. All rights reserved." >> AppInfo.xcconfig
+          echo PRODUCT_TEAM=${{ secrets.DEV_TEAM_ID }} >> AppInfo.xcconfig
+          echo PRODUCT_PROFILE=${{ secrets.IOS_PROVISIONING_PROFILE_NAME }} >> AppInfo.xcconfig
+          echo PRODUCT_SERVICE_PROFILE=${{ secrets.IOS_EXTENSION_PROVISIONING_PROFILE_NAME }} >> AppInfo.xcconfig
+
+      - name: Code Generation
+        run: |
+          cd $PROJECT_PATH
+          gem install plist_lite
+          dart run scripts/codegen.dart
+          cd ios
+          pod install
+
+      - name: Build iOS
+        env:
+          GATEWAY: ${{ vars.IOS_PUSH_GATEWAY }}
+        run: |
+          cd $PROJECT_PATH
+          flutter build ipa --export-options-plist=ios/export.plist --dart-define BUILD_MODE=release --dart-define PLATFORM=ios --dart-define PUSH_GATEWAY=$GATEWAY
+
+      - name: Clean up keychain and provisioning profile
+        if: ${{ always() }}
+        run: |
+          security delete-keychain $RUNNER_TEMP/app-signing.keychain-db
+          rm ~/Library/MobileDevice/Provisioning\ Profiles/build_pp.mobileprovision

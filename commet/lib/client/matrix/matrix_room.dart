@@ -225,7 +225,7 @@ class MatrixRoom extends Room {
     }
 
     // let push notifications handle it
-    if (BuildConfig.ANDROID) {
+    if (BuildConfig.ANDROID || BuildConfig.IOS) {
       return;
     }
 
