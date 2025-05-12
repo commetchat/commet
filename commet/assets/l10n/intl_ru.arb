@@ -115,7 +115,7 @@
       "user": {}
     }
   },
-  "messagePlaceholderUserInvited": "{sender} - приглашение для {invitedUser}",
+  "messagePlaceholderUserInvited": "{sender} приглас. {invitedUser}",
   "@messagePlaceholderUserInvited": {
     "description": "Message body for when a user invites another user to the room",
     "type": "text",
@@ -124,7 +124,7 @@
       "invitedUser": {}
     }
   },
-  "messagePlaceholderUserRejectedInvite": "{user} - отказ от приглашения",
+  "messagePlaceholderUserRejectedInvite": "{user} отклон. приглашение",
   "@messagePlaceholderUserRejectedInvite": {
     "description": "Message body for when a user rejected an invitation to a room",
     "type": "text",
@@ -253,7 +253,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelSpaceVisibilityPublic": "Публичное пространство",
+  "labelSpaceVisibilityPublic": "Общедоступное пространство",
   "@labelSpaceVisibilityPublic": {
     "description": "Label to display that the space is publically available",
     "type": "text",
@@ -663,7 +663,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelRestoreMatrixBackupTitle": "Восстановить из рез. копии",
+  "labelRestoreMatrixBackupTitle": "Восстановить рез. копию",
   "@labelRestoreMatrixBackupTitle": {
     "description": "Title of the popup dialog for restoring message backup",
     "type": "text",
@@ -861,7 +861,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelVisibilityPublic": "Публичная",
+  "labelVisibilityPublic": "Общедоступная",
   "@labelVisibilityPublic": {
     "description": "Short label for room visibility public",
     "type": "text",
@@ -1537,5 +1537,227 @@
     "description": "Generic prompt for options, generally would be used to open a settings menu, extra details or similar",
     "type": "text",
     "placeholders": {}
+  },
+  "promptRetryEventSend": "Повторить",
+  "@promptRetryEventSend": {
+    "description": "When a message failed to send, this prompts to retry sending the event",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptCancelEventSend": "Отменить",
+  "@promptCancelEventSend": {
+    "description": "When a message failed to send, this prompts to cancel sending the event",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messagePlaceholderUserUpdatedNameDetailed": "{user} измен. отображаемое имя на «{newName}»",
+  "@messagePlaceholderUserUpdatedNameDetailed": {
+    "description": "Message body for when a user updates their display name",
+    "type": "text",
+    "placeholders": {
+      "user": {},
+      "newName": {}
+    }
+  },
+  "messageUserBanned": "{sender} заблок. {user}",
+  "@messageUserBanned": {
+    "description": "Message body for when a user bans another user from the room",
+    "type": "text",
+    "placeholders": {
+      "sender": {},
+      "user": {}
+    }
+  },
+  "messageUserAcceptedInvite": "{user} прин. приглашение",
+  "@messageUserAcceptedInvite": {
+    "description": "Message body for when a user accepted an invitation to a room",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messageUserPinnedEvent": "{user} закреп. сообщение!",
+  "@messageUserPinnedEvent": {
+    "description": "Message body for when a user adds an event to the room's pinned messages",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messageUserUnpinnedEvent": "{user} откреп. сообщение",
+  "@messageUserUnpinnedEvent": {
+    "description": "Message body for when a user removes an event from the room's pinned messages",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "labelUseRoomAvatars": "Изображения комнат",
+  "@labelUseRoomAvatars": {
+    "description": "Label for enabling using room avatars instead of icons",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelEnableRoomIconsDescription": "Показывать изображения комнат вместо иконок",
+  "@labelEnableRoomIconsDescription": {
+    "description": "Description for the enable room icons setting",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelUseRoomAvatarPlaceholders": "Заглушки изображений комнат",
+  "@labelUseRoomAvatarPlaceholders": {
+    "description": "Label for enabling generic icons in the appearance settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptEmoteName": "Название эмотикона",
+  "@promptEmoteName": {
+    "description": "Prompt for the input of the name of an emoji",
+    "type": "text",
+    "placeholders": {}
+  },
+  "placeholderRoomAlias": "#восхитительная-комната",
+  "@placeholderRoomAlias": {
+    "description": "Placeholder / Example for a room alias.",
+    "type": "text",
+    "placeholders": {}
+  },
+  "noPinnedMessages": "Нет закреплённых сообщений!",
+  "@noPinnedMessages": {
+    "description": "Placeholder label in the pinned messages menu that is shown when there are no pinned messages",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmSaveEmoticon": "Сохранить!",
+  "@promptConfirmSaveEmoticon": {
+    "description": "Prompt to confirm the creation of an Emoticon Pack, Emoji, or Sticker",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageUserRetractedInvite": "{sender} отмен. приглашение {user}",
+  "@messageUserRetractedInvite": {
+    "description": "Message body for when a user's invitation to a room was withdrawn",
+    "type": "text",
+    "placeholders": {
+      "sender": {},
+      "user": {}
+    }
+  },
+  "placeholderSpaceAlias": "#изумительное-пространство",
+  "@placeholderSpaceAlias": {
+    "description": "Placeholder / Example for a space alias.",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelUrlPreviewInEncryptedChatTitle": "Предпросмотр ссылок в шифрованных комнатах",
+  "@labelUrlPreviewInEncryptedChatTitle": {
+    "description": "Label for the toggle for enabling and disabling use of url previews in encrypted chats",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelUrlPreviewInEncryptedChatDescription": "Запрашивать предпросмотр у вашего сервера Matrix даже для ссылок из зашифрованных комнат. Администраторы смогут их видеть",
+  "@labelUrlPreviewInEncryptedChatDescription": {
+    "description": "description for the toggle for enabling and disabling use of url previews in encrypted chats",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMediaPreviewSettingsTitle": "Предпросмотр медиавложений",
+  "@labelMediaPreviewSettingsTitle": {
+    "description": "Header for the settings tile for for media preview toggles",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMediaPreviewPrivateRoomsToggle": "Частные комнаты",
+  "@labelMediaPreviewPrivateRoomsToggle": {
+    "description": "Short label for the private rooms toggle in media previews section",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMediaPreviewPrivateRoomsToggleDescription": "Показывать миниатюры изображений, видео, стикеров и ссылок в приватных комнатах",
+  "@labelMediaPreviewPrivateRoomsToggleDescription": {
+    "description": "Label describing toggle of media previews for private rooms",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMediaPreviewPublicRoomsToggle": "Общедоступные комнаты",
+  "@labelMediaPreviewPublicRoomsToggle": {
+    "description": "Short label for the private rooms toggle in media previews section",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMediaPreviewPublicRoomsToggleDescription": "Показывать миниатюры изображений, видео, стикеров и ссылок в общедоступных комнатах",
+  "@labelMediaPreviewPublicRoomsToggleDescription": {
+    "description": "Label describing toggle of media previews for public rooms",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelUseRoomAvatarPlaceholdersDescription": "Если у комнаты нет изображения, или если они выключены, показывать цветные заглушки с первой буквой названия",
+  "@labelUseRoomAvatarPlaceholdersDescription": {
+    "description": "Description for the enable generic icons setting",
+    "type": "text",
+    "placeholders": {}
+  },
+  "editEmoticonDialogTitle": "Изменить эмотикон",
+  "@editEmoticonDialogTitle": {
+    "description": "Title of a dialog that pops up when choosing to edit an existing emoticon",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptPinMessage": "Закрепить сообщение",
+  "@promptPinMessage": {
+    "description": "Label for the menu option to pin a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptUnpinMessage": "Открепить сообщение",
+  "@promptUnpinMessage": {
+    "description": "Label for the menu option to unpin a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptReplyInThread": "Ответить в ветви",
+  "@promptReplyInThread": {
+    "description": "Label for the menu option to reply to a message inside a thread",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptShowSource": "Открыть исходник",
+  "@promptShowSource": {
+    "description": "Label for the menu option to view the JSON source of an event",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptReplayMessageEffect": "Воспроизвести повторно",
+  "@promptReplayMessageEffect": {
+    "description": "If a message was sent with an effect, this prompts to replay the effect",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptShowSticker": "Показать стикер",
+  "@promptShowSticker": {
+    "description": "Prompt to display a sticker, shown when media previews are disabled",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMessageEffectsTitle": "Эффекты",
+  "@labelMessageEffectsTitle": {
+    "description": "Header for the settings tile for message effects, such as confetti",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMessageEffectsDescription": "Отправка сообщений со спец. эффектами вроде конфетти 🎊",
+  "@labelMessageEffectsDescription": {
+    "description": "Label describing what message effects are",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageUserUnbanned": "{sender} разблок. {user}",
+  "@messageUserUnbanned": {
+    "description": "Message body for when a user reverts a ban of another user",
+    "type": "text",
+    "placeholders": {
+      "sender": {},
+      "user": {}
+    }
   }
 }
