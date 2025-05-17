@@ -203,13 +203,10 @@ class MatrixClient extends Client {
       {bool isBackgroundService = false}) async {
     if (!_matrixClient.isLogged()) {
       await Diagnostics.general.timeAsync("Matrix client init", () async {
-        if (isBackgroundService) {
-          _matrixClient.abortSync();
-        }
-
         await _matrixClient.init(
             waitForFirstSync: !loadingFromCache,
             waitUntilLoadCompletedLoaded: true,
+            startSyncLoop: !isBackgroundService,
             onMigration: () => Log.w("Matrix Database is migrating"));
       });
 

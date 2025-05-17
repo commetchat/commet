@@ -923,7 +923,7 @@ packages:
     description:
       path: "."
       ref: voip
-      resolved-ref: e4aafdda0080d00ed84e490b2a7a461fe15b3dda
+      resolved-ref: "8f9253a4ac670a69b70dfd9e1c66aa3fcbdcbd83"
       url: "https://github.com/commetchat/matrix-dart-sdk.git"
     source: git
     version: "0.38.0"
