@@ -1,6 +1,6 @@
 app-id: chat.commet.commetapp
 runtime: org.freedesktop.Platform
-runtime-version: '23.08'
+runtime-version: '24.08'
 sdk: org.freedesktop.Sdk
 command: commet
 separate-locales: false
@@ -9,7 +9,7 @@ add-extensions:
   org.freedesktop.Platform.ffmpeg-full:
     directory: lib/ffmpeg
     add-ld-path: .
-    version: '23.08'
+    version: '24.08'
     no-autodownload: true
     autodelete: false
 
