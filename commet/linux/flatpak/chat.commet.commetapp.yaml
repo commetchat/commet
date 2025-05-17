@@ -37,10 +37,16 @@ modules:
   - "/lib/pkgconfig"
   - "/share/man"
   buildsystem: meson
+  config-opts:
+  - -Dlibmpv=true
+  - -Dlua=disabled
+  - -Ddebug=false
+  - -Dbuild-date=false
+  - -Dcplayer=false
   sources:
   - type: git
     url: https://github.com/mpv-player/mpv.git
-    tag: v0.38.0
+    tag: v0.40.0
   - type: git
     url: https://code.videolan.org/videolan/libplacebo.git
     tag: v7.349.0
@@ -116,6 +122,8 @@ modules:
   - install -Dm644 icon.png /app/share/icons/hicolor/512x512/apps/chat.commet.commetapp.png
   - install -Dm644 chat.commet.commetapp.desktop /app/share/applications/chat.commet.commetapp.desktop
   - mkdir -p /app/bin
+  - ls /app/lib64
+  - cp -a /app/lib64/. /app/lib/
   - ln -s /app/commet/bundle/commet /app/bin/commet
   sources:
   - type: dir
