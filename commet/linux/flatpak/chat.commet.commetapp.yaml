@@ -36,20 +36,15 @@ modules:
   - "/include"
   - "/lib/pkgconfig"
   - "/share/man"
-  buildsystem: simple
-  build-commands:
-  - python3 waf configure --prefix=/app --enable-libmpv-shared --disable-cplayer --disable-build-date
-    --disable-alsa
-  - python3 waf build
-  - python3 waf install
+  buildsystem: meson
   sources:
   - type: git
     url: https://github.com/mpv-player/mpv.git
-    tag: v0.35.1
-  - type: file
-    url: https://waf.io/waf-2.0.25
-    sha256: 21199cd220ccf60434133e1fd2ab8c8e5217c3799199c82722543970dc8e38d5
-    dest-filename: waf
+    tag: v0.38.0
+  - type: git
+    url: https://code.videolan.org/videolan/libplacebo.git
+    tag: v7.349.0
+    dest: subprojects/libplacebo
   modules:
   - name: libass
     cleanup:
