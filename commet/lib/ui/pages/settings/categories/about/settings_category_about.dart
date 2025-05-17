@@ -1,4 +1,5 @@
 import 'package:commet/config/build_config.dart';
+import 'package:commet/config/platform_utils.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/settings/categories/developer/log_page.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
@@ -107,11 +108,16 @@ class _AppInfoState extends State<_AppInfo> {
                             ),
                             if (deviceInfo!.data["version"] is String)
                               tiamat.Text.labelLow(
-                                  deviceInfo!.data["version"]!.toString())
+                                  deviceInfo!.data["version"]!.toString()),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            if (PlatformUtils.isLinux)
+                              tiamat.Text.labelLow(PlatformUtils.displayServer)
                           ],
                         ),
                       if (preferences.developerMode)
-                        tiamat.Text.labelLow(getOlmVersion())
+                        tiamat.Text.labelLow(getOlmVersion()),
                     ],
                   ),
                   Padding(
@@ -165,6 +171,7 @@ Detail: `${BuildConfig.BUILD_DETAIL}`
 ${deviceInfo?.data["name"] is String ? "Name: `${deviceInfo!.data["name"]}`" : ""}
 ${deviceInfo?.data["version"] is String ? "Version: `${deviceInfo!.data["version"]}`" : ""}
 ${deviceInfo?.data["product"] is String ? "Product: `${deviceInfo!.data["product"]}`" : ""}
+${PlatformUtils.isLinux ? "Display Server: `${PlatformUtils.displayServer}`" : ""}
 </details>
 """;
 
