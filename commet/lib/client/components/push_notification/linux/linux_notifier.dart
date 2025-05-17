@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notifier.dart';
@@ -32,10 +33,38 @@ class LinuxNotifier implements Notifier {
 
   static void backgroundNotificationResponse(NotificationResponse details) {}
 
+  static const callAccept = "call.accept";
+  static const callDecline = "call.decline";
+  static const openRoom = "room.open";
+
   static void notificationResponse(NotificationResponse details) {
-    EventBus.openRoom.add((details.payload!, null));
-    windowManager.show();
-    windowManager.focus();
+    final payload = jsonDecode(details.payload!) as Map<String, dynamic>;
+
+    if ([callAccept, openRoom].contains(details.actionId)) {
+      final roomId = payload['room_id']!;
+      EventBus.openRoom.add((roomId, null));
+      windowManager.show();
+      windowManager.focus();
+    }
+
+    if ([callAccept, callDecline].contains(details.actionId)) {
+      final callId = payload['call_id'];
+      final clientId = payload['client_id'];
+      final session = clientManager?.callManager.currentSessions
+          .where(
+              (e) => e.sessionId == callId && e.client.identifier == clientId)
+          .firstOrNull;
+
+      if (session != null) {
+        if (details.actionId == callAccept) {
+          session.acceptCall(withMicrophone: true);
+        }
+
+        if (details.actionId == callDecline) {
+          session.declineCall();
+        }
+      }
+    }
   }
 
   @override
@@ -60,6 +89,8 @@ class LinuxNotifier implements Notifier {
       case MessageNotificationContent:
         return displayMessageNotification(
             notification as MessageNotificationContent);
+      case CallNotificationContent:
+        return displayCallNotification(notification as CallNotificationContent);
       default:
     }
   }
@@ -82,7 +113,7 @@ class LinuxNotifier implements Notifier {
 
     var details = LinuxNotificationDetails(
       icon: avatar == null ? null : FilePathLinuxIcon(avatar.toFilePath()),
-      defaultActionName: "NAVIGATE_ROOM",
+      defaultActionName: openRoom,
       category: LinuxNotificationCategory.imReceived,
     );
 
@@ -91,9 +122,50 @@ class LinuxNotifier implements Notifier {
       title = content.senderName;
     }
 
+    var payload = {
+      "room_id": content.roomId,
+    };
+
     flutterLocalNotificationsPlugin?.show(
         0, title, content.content, NotificationDetails(linux: details),
-        payload: content.roomId);
+        payload: jsonEncode(payload));
+  }
+
+  Future<void> displayCallNotification(CallNotificationContent content) async {
+    var client = clientManager?.getClient(content.clientId);
+    var room = client?.getRoom(content.roomId);
+
+    if (room == null) {
+      return;
+    }
+
+    var avatar = await ShortcutsManager.getCachedAvatarImage(
+        placeholderColor: room.getColorOfUser(content.senderId),
+        placeholderText: content.roomName,
+        identifier: content.senderId,
+        shouldZoomOut: false,
+        imageProvider: content.senderImage);
+
+    var details = LinuxNotificationDetails(
+        icon: avatar == null ? null : FilePathLinuxIcon(avatar.toFilePath()),
+        defaultActionName: openRoom,
+        category: LinuxNotificationCategory.imReceived,
+        timeout: const LinuxNotificationTimeout.expiresNever(),
+        urgency: LinuxNotificationUrgency.critical,
+        actions: const [
+          LinuxNotificationAction(key: callAccept, label: "Accept"),
+          LinuxNotificationAction(key: callDecline, label: "Decline"),
+        ]);
+
+    var payload = {
+      "room_id": content.roomId,
+      "client_id": content.clientId,
+      "call_id": content.callId
+    };
+
+    flutterLocalNotificationsPlugin?.show(
+        0, content.title, content.content, NotificationDetails(linux: details),
+        payload: jsonEncode(payload));
   }
 
   Future<ui.Image> determineImage(ImageProvider provider) async {
