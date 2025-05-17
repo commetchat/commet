@@ -116,7 +116,6 @@ modules:
   - install -Dm644 icon.png /app/share/icons/hicolor/512x512/apps/chat.commet.commetapp.png
   - install -Dm644 chat.commet.commetapp.desktop /app/share/applications/chat.commet.commetapp.desktop
   - mkdir -p /app/bin
-  - cp /app/lib/libmpv.so /app/lib/libmpv.so.1
   - ln -s /app/commet/bundle/commet /app/bin/commet
   sources:
   - type: dir
