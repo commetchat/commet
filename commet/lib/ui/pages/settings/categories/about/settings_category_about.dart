@@ -1,9 +1,6 @@
-import 'dart:io';
-
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/main.dart';
-import 'package:commet/ui/atoms/rich_text/matrix_html_parser.dart';
 import 'package:commet/ui/pages/settings/categories/developer/log_page.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
 import 'package:commet/ui/pages/settings/settings_tab.dart';
