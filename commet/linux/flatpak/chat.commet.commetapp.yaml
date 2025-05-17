@@ -1,6 +1,6 @@
 app-id: chat.commet.commetapp
 runtime: org.freedesktop.Platform
-runtime-version: '23.08'
+runtime-version: '24.08'
 sdk: org.freedesktop.Sdk
 command: commet
 separate-locales: false
@@ -9,7 +9,7 @@ add-extensions:
   org.freedesktop.Platform.ffmpeg-full:
     directory: lib/ffmpeg
     add-ld-path: .
-    version: '23.08'
+    version: '24.08'
     no-autodownload: true
     autodelete: false
 
@@ -36,20 +36,21 @@ modules:
   - "/include"
   - "/lib/pkgconfig"
   - "/share/man"
-  buildsystem: simple
-  build-commands:
-  - python3 waf configure --prefix=/app --enable-libmpv-shared --disable-cplayer --disable-build-date
-    --disable-alsa
-  - python3 waf build
-  - python3 waf install
+  buildsystem: meson
+  config-opts:
+  - -Dlibmpv=true
+  - -Dlua=disabled
+  - -Ddebug=false
+  - -Dbuild-date=false
+  - -Dcplayer=false
   sources:
   - type: git
     url: https://github.com/mpv-player/mpv.git
-    tag: v0.35.1
-  - type: file
-    url: https://waf.io/waf-2.0.25
-    sha256: 21199cd220ccf60434133e1fd2ab8c8e5217c3799199c82722543970dc8e38d5
-    dest-filename: waf
+    tag: v0.40.0
+  - type: git
+    url: https://code.videolan.org/videolan/libplacebo.git
+    tag: v7.349.0
+    dest: subprojects/libplacebo
   modules:
   - name: libass
     cleanup:
@@ -121,7 +122,8 @@ modules:
   - install -Dm644 icon.png /app/share/icons/hicolor/512x512/apps/chat.commet.commetapp.png
   - install -Dm644 chat.commet.commetapp.desktop /app/share/applications/chat.commet.commetapp.desktop
   - mkdir -p /app/bin
-  - cp /app/lib/libmpv.so /app/lib/libmpv.so.1
+  - ls /app/lib64
+  - cp -a /app/lib64/. /app/lib/
   - ln -s /app/commet/bundle/commet /app/bin/commet
   sources:
   - type: dir
