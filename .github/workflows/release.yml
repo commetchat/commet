@@ -10,6 +10,12 @@ env:
   PROJECT_PATH: commet
   COMMET_PROD: 1
 
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+
+
 jobs:
   release-windows:
     runs-on: windows-latest
@@ -434,3 +440,30 @@ jobs:
         with:
           name: commet-web.tar.gz
           path: commet/build/commet-web.tar.gz
+
+  release-docker:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set lowercase image name
+        run: |
+          echo "IMAGE_NAME=${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
+          
+      - name: Log in to GHCR
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image to GHCR
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ env.IMAGE_NAME }}:${{ github.event.release.tag_name }}
+            ghcr.io/${{ env.IMAGE_NAME }}:latest
