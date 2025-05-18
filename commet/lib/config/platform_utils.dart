@@ -22,4 +22,16 @@ class PlatformUtils {
   static bool get isWeb {
     return kIsWeb;
   }
+
+  static String get displayServer {
+    if (kIsWeb) return "unknown";
+
+    final env = Platform.environment;
+
+    if (env.containsKey("XDG_SESSION_TYPE")) {
+      return env["XDG_SESSION_TYPE"]!;
+    }
+
+    return "unknown";
+  }
 }
