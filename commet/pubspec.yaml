@@ -91,7 +91,7 @@ dependencies:
   archive: ^3.6.1
   exif: ^3.3.0
   image: ^4.2.0
-  flutter_webrtc: 0.12.11
+  flutter_webrtc: 0.14.0
   reflectable: ^4.0.10
 
 

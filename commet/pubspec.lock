@@ -290,10 +290,10 @@ packages:
     dependency: transitive
     description:
       name: dart_webrtc
-      sha256: b34e90bc82f33c1023cf98661369c37bccd648c8a4cf882a875d9f5d8bbef694
+      sha256: "5b76fd85ac95d6f5dee3e7d7de8d4b51bfbec1dc73804647c6aebb52d6297116"
       url: "https://pub.dev"
     source: hosted
-    version: "1.5.2+hotfix.1"
+    version: "1.5.3+hotfix.2"
   dbus:
     dependency: transitive
     description:
@@ -640,10 +640,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_webrtc
-      sha256: "6ea3a86d95b61cfe42d5715426d355b3cece6c88d0119de428d56f6c653811ce"
+      sha256: e84ca404ef4b0d07a0fcd676b15814fabd5bc08e8d4b8dd8b634f76beab1bb50
       url: "https://pub.dev"
     source: hosted
-    version: "0.12.11"
+    version: "0.14.0"
   frontend_server_client:
     dependency: transitive
     description:
@@ -2026,10 +2026,10 @@ packages:
     dependency: transitive
     description:
       name: webrtc_interface
-      sha256: e05f00091c9c70a15bab4ccb1b6c46d9a16a6075002f02cfac3641eccb05e25d
+      sha256: "86fe3afc81a08481dfb25cf14a5a94e27062ecef25544783f352c914e0bbc1ca"
       url: "https://pub.dev"
     source: hosted
-    version: "1.2.1+hotfix.1"
+    version: "1.2.2+hotfix.2"
   widgetbook_annotation:
     dependency: transitive
     description:
