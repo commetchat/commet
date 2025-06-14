@@ -33,7 +33,7 @@ jobs:
       - name: Check Code Style
         run: |
           cd $PROJECT_PATH
-          dart format -o none --fix --set-exit-if-changed .
+          dart format -o none --set-exit-if-changed .
         
       - name: Code Generation __φ(．．;)
         run: |
