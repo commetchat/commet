@@ -10,10 +10,10 @@ list(APPEND FLUTTER_PLUGIN_LIST
   media_kit_video
   pasteboard
   permission_handler_windows
-  screen_brightness_windows
   screen_retriever
   sqlite3_flutter_libs
   url_launcher_windows
+  volume_controller
   win_toast
   window_manager
   window_to_front
@@ -21,7 +21,6 @@ list(APPEND FLUTTER_PLUGIN_LIST
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST
   flutter_local_notifications_windows
-  media_kit_native_event_loop
 )
 
 set(PLUGIN_BUNDLED_LIBRARIES)

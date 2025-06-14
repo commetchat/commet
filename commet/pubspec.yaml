@@ -12,7 +12,6 @@ dependencies:
   desktop_drop: ^0.4.1
   desktop_notifications: ^0.6.3
   device_info_plus: ^9.0.3
-  file_picker: ^5.2.10
   flutter_background_service: ^5.0.5
   flutter_blurhash: ^0.8.2
   flutter_markdown: ^0.6.9+1
@@ -91,8 +90,9 @@ dependencies:
   archive: ^3.6.1
   exif: ^3.3.0
   image: ^4.2.0
-  flutter_webrtc: 0.13.1+hotfix.1
   reflectable: ^4.0.10
+  flutter_webrtc: ^0.14.1
+  file_picker: ^10.2.0
 
 
   ## ---- Putting some extra lines in here to help git with the diff
@@ -128,7 +128,6 @@ flutter_intl:
   class_name: T
   main_locale: en
   arb_dir: assets/l10n
-  output_dir: integration_test/generated
 
 flutter_launcher_icons: 
   image_path: assets/images/app_icon/app_icon_filled.png

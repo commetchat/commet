@@ -11,6 +11,7 @@ import 'package:commet/config/platform_utils.dart';
 import 'package:commet/config/preferences.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
+import 'package:commet/generated/l10n.dart';
 import 'package:commet/generated/l10n/messages_all_locales.dart';
 import 'package:commet/ui/pages/bubble/bubble_page.dart';
 import 'package:commet/ui/pages/fatal_error/fatal_error_page.dart';
@@ -32,7 +33,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:media_kit/media_kit.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:provider/provider.dart';
 import 'package:receive_intent/receive_intent.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -274,12 +274,12 @@ class App extends StatelessWidget {
             theme: theme,
             debugShowCheckedModeBanner: false,
             navigatorKey: navigator,
-            localizationsDelegates: T.localizationsDelegates,
+            localizationsDelegates: const [T.delegate],
             builder: (context, child) => Provider<ClientManager>(
               create: (context) => clientManager,
               child: child,
             ),
-            supportedLocales: T.supportedLocales,
+            supportedLocales: T.delegate.supportedLocales,
             home: AppView(
               clientManager: clientManager,
               initialClientId: initialClientId,

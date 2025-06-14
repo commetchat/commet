@@ -39,7 +39,7 @@ class ThemeBase {
       sliderTheme: SliderThemeData(
         inactiveTrackColor: scheme.primary.withAlpha(100),
       ),
-      dialogTheme: DialogTheme(
+      dialogTheme: DialogThemeData(
           backgroundColor: scheme.surface, shadowColor: Colors.black),
       dividerColor: scheme.outline,
       textButtonTheme: TextButtonThemeData(
