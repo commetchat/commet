@@ -15,7 +15,7 @@ dependencies:
   flutter_background_service: ^5.0.5
   flutter_blurhash: ^0.8.2
   flutter_markdown: ^0.6.9+1
-  flutter_olm: ^1.2.0
+  flutter_olm: ^2.0.0
   flutter_openssl_crypto: ^0.5.0
   flutter_staggered_grid_view: ^0.7.0
   flutter_svg: ^2.0.7
@@ -37,7 +37,6 @@ dependencies:
   path_provider: ^2.0.13
   permission_handler: ^11.0.1
   provider: ^6.0.0
-  receive_intent: ^0.2.4
   scrollable_positioned_list: ^0.3.8
   shared_preferences: ^2.5.2
   sqflite: ^2.3.0
@@ -62,10 +61,7 @@ dependencies:
       path: ./flutter_local_notifications
   flutter_localizations: 
     sdk: flutter
-  flutter_shortcuts: 
-    git: 
-      url: https://github.com/commetchat/flutter_shortcuts.git
-      ref: fix
+
   tiamat: 
     path: ../tiamat/
   matrix:
@@ -85,7 +81,6 @@ dependencies:
   fuzzy: ^0.5.1
   encrypt: ^5.0.3
   pointycastle: ^3.7.4
-  flutter_web_auth_2: ^3.1.1
   drift: ^2.22.1
   archive: ^3.6.1
   exif: ^3.3.0
@@ -93,6 +88,12 @@ dependencies:
   reflectable: ^4.0.10
   flutter_webrtc: ^0.14.1
   file_picker: ^10.2.0
+  flutter_web_auth_2: ^4.1.0
+  receive_intent:
+    git:
+      url: https://github.com/daadu/receive_intent
+      ref: master
+  flutter_shortcuts_new: ^2.0.0
 
 
   ## ---- Putting some extra lines in here to help git with the diff
