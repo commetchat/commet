@@ -3,4 +3,5 @@ template-arb-file: intl_en.arb
 output-localization-file: l10n.dart
 output-class: T
 preferred-supported-locales: ["en"]
-output_dir: integration_test/generated
+output-dir: lib/generated/l10n
+synthetic-package: false
