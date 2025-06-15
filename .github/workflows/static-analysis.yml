@@ -33,7 +33,8 @@ jobs:
       - name: Check Code Style
         run: |
           cd $PROJECT_PATH
-          dart format -o none --set-exit-if-changed .
+          flutter doctor
+          dart format -o none --show all --set-exit-if-changed .
         
       - name: Code Generation __φ(．．;)
         run: |
