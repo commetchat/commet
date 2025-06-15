@@ -1,3 +1,5 @@
+include: package:flutter_lints/flutter.yaml
+
 analyzer:
   errors:
     curly_braces_in_flow_control_structures: ignore
