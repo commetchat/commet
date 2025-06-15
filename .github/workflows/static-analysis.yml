@@ -35,6 +35,7 @@ jobs:
           cd $PROJECT_PATH
           flutter doctor
           flutter pub get
+          rm -r lib/generated
           dart format -o none --show all --set-exit-if-changed .
         
       - name: Code Generation __φ(．．;)
