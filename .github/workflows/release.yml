@@ -217,7 +217,7 @@ jobs:
       - name: Setup Tools
         run: |
           sudo apt-get update -y
-          sudo apt-get install -y ninja-build libgtk-3-dev libolm3 libmpv-dev mpv ffmpeg libmimalloc-dev
+          sudo apt-get install -y ninja-build libgtk-3-dev libolm3 libmpv-dev mpv ffmpeg libmimalloc-dev webkit2gtk-4.1
         
       - name: Code Generation
         run: |
@@ -275,7 +275,7 @@ jobs:
       - name: Setup Tools
         run: |
           sudo apt-get update -y
-          sudo apt-get install -y ninja-build libgtk-3-dev libolm3 libmpv-dev mpv ffmpeg libmimalloc-dev flatpak-builder flatpak
+          sudo apt-get install -y ninja-build libgtk-3-dev libolm3 libmpv-dev mpv ffmpeg libmimalloc-dev flatpak-builder flatpak webkit2gtk-4.1
         
       - name: Code Generation
         run: |
@@ -336,7 +336,7 @@ jobs:
       - name: Setup Tools
         run: |
           sudo apt-get update -y
-          sudo apt-get install -y ninja-build libgtk-3-dev libolm3 libmpv-dev mpv ffmpeg libmimalloc-dev
+          sudo apt-get install -y ninja-build libgtk-3-dev libolm3 libmpv-dev mpv ffmpeg libmimalloc-dev webkit2gtk-4.1
         
       - name: Code Generation
         run: |
@@ -389,7 +389,7 @@ jobs:
       - name: Setup Tools
         run: |
           sudo apt-get update -y
-          sudo apt-get install -y ninja-build libgtk-3-dev libolm3 libmpv-dev mpv ffmpeg
+          sudo apt-get install -y ninja-build libgtk-3-dev libolm3 libmpv-dev mpv ffmpeg webkit2gtk-4.1
         
       - name: Code Generation
         run: |
