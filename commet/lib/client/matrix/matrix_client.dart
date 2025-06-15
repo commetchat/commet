@@ -606,6 +606,10 @@ class MatrixClient extends Client {
       },
     );
 
+    if (result.isEmpty) {
+      result.add(MatrixSSOLoginFlow(name: "homeserver", id: null));
+    }
+
     return result;
   }
 
