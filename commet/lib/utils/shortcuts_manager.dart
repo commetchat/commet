@@ -10,8 +10,10 @@ import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/image/lod_image.dart';
 import 'package:commet/utils/image_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_shortcuts/flutter_shortcuts.dart';
+
 import 'dart:ui' as ui;
+
+import 'package:flutter_shortcuts_new/flutter_shortcuts_new.dart';
 
 class ShortcutsManager {
   FlutterShortcuts? shortcuts;
@@ -28,11 +30,11 @@ class ShortcutsManager {
   Future<void> createShortcutForRoom(Room room) async {
     if (loading != null) await loading;
 
-    var cachedAvatar = await getCachedAvatarImage(
-        identifier: room.identifier,
-        placeholderColor: room.defaultColor,
-        placeholderText: room.displayName,
-        imageProvider: await room.getShortcutImage());
+    // var cachedAvatar = await getCachedAvatarImage(
+    //     identifier: room.identifier,
+    //     placeholderColor: room.defaultColor,
+    //     placeholderText: room.displayName,
+    //     imageProvider: await room.getShortcutImage());
 
     var item = ShortcutItem(
         id: room.identifier,
@@ -40,8 +42,8 @@ class ShortcutsManager {
                 roomId: room.identifier, clientId: room.client.identifier)
             .toString(),
         shortLabel: room.displayName,
-        icon: cachedAvatar?.toFilePath(),
-        shortcutIconAsset: ShortcutIconAsset.fileAsset,
+        // icon: cachedAvatar?.toFilePath(),
+        // shortcutIconAsset: ShortcutIconAsset.memoryAsset,
         conversationShortcut: true);
 
     await shortcuts?.pushShortcutItem(shortcut: item);

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:commet/client/alert.dart';
+import 'package:commet/client/call_manager.dart';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/direct_messages/direct_message_aggregator.dart';
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
@@ -20,11 +21,13 @@ class ClientManager {
   final NotifyingList<Space> _spaces = NotifyingList.empty(growable: true);
 
   final AlertManager alertManager = AlertManager();
+  late CallManager callManager;
 
   late final DirectMessagesAggregator directMessages;
 
   ClientManager() {
     directMessages = DirectMessagesAggregator(this);
+    callManager = CallManager(this);
   }
 
   List<Room> get rooms => _rooms;

@@ -13,4 +13,5 @@ abstract class PasswordLoginFlow implements LoginFlow {
 abstract class SsoLoginFlow implements LoginFlow {
   ImageProvider? icon;
   String get name;
+  String? get id;
 }
