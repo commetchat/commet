@@ -34,6 +34,7 @@ jobs:
         run: |
           cd $PROJECT_PATH
           flutter doctor
+          flutter pub get
           dart format -o none --show all --set-exit-if-changed .
         
       - name: Code Generation __φ(．．;)
