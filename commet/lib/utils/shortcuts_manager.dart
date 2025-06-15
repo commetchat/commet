@@ -30,11 +30,11 @@ class ShortcutsManager {
   Future<void> createShortcutForRoom(Room room) async {
     if (loading != null) await loading;
 
-    var cachedAvatar = await getCachedAvatarImage(
-        identifier: room.identifier,
-        placeholderColor: room.defaultColor,
-        placeholderText: room.displayName,
-        imageProvider: await room.getShortcutImage());
+    // var cachedAvatar = await getCachedAvatarImage(
+    //     identifier: room.identifier,
+    //     placeholderColor: room.defaultColor,
+    //     placeholderText: room.displayName,
+    //     imageProvider: await room.getShortcutImage());
 
     var item = ShortcutItem(
         id: room.identifier,
