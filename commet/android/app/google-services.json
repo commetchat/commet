@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "714066565492",
+    "project_id": "commet-16334",
+    "storage_bucket": "commet-16334.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:714066565492:android:5769795fa988f8abe5b421",
+        "android_client_info": {
+          "package_name": "chat.commet.commetapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9p6VqktUpinkfK8AkBUvWtW7P9yebtCs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
