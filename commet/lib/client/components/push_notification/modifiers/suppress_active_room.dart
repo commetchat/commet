@@ -17,20 +17,20 @@ class NotificationModifierSuppressActiveRoom implements NotificationModifier {
 
   @override
   Future<NotificationContent?> process(NotificationContent content) async {
-    if (content is! MessageNotificationContent) return content;
-    if (roomId == null) return content;
+    if (content is MessageNotificationContent) {
+      if (BuildConfig.DESKTOP) {
+        if (!await windowManager.isFocused()) {
+          return content;
+        }
+      } else {
+        if (WidgetsBinding.instance.lifecycleState !=
+            AppLifecycleState.resumed) {
+          return content;
+        }
+      }
 
-    if (BuildConfig.DESKTOP) {
-      if (!await windowManager.isFocused()) {
-        return content;
-      }
-    } else {
-      if (WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed) {
-        return content;
-      }
+      if (content.roomId == roomId) return null;
     }
-
-    if (content.roomId == roomId) return null;
 
     return content;
   }

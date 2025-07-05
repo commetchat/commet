@@ -19,7 +19,7 @@ jobs:
       - name: Setup Flutter  ╰(✿˙ᗜ˙)੭━☆ﾟ.*･｡ﾟ
         uses: subosito/flutter-action@v2.8.0
         with:
-          flutter-version: '3.24.4'
+          flutter-version: '3.32.4'
           channel: 'stable'
 
       - name: Setup Tools  ᕙ|” ◉ ◡ ◉ ”|ᕗ
@@ -33,7 +33,10 @@ jobs:
       - name: Check Code Style
         run: |
           cd $PROJECT_PATH
-          dart format -o none --fix --set-exit-if-changed .
+          flutter doctor
+          flutter pub get
+          rm -r lib/generated
+          dart format -o none --show all --set-exit-if-changed .
         
       - name: Code Generation __φ(．．;)
         run: |

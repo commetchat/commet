@@ -11,6 +11,7 @@ import 'package:commet/config/platform_utils.dart';
 import 'package:commet/config/preferences.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
+import 'package:commet/generated/l10n.dart';
 import 'package:commet/generated/l10n/messages_all_locales.dart';
 import 'package:commet/ui/pages/bubble/bubble_page.dart';
 import 'package:commet/ui/pages/fatal_error/fatal_error_page.dart';
@@ -27,12 +28,11 @@ import 'package:commet/utils/shortcuts_manager.dart';
 import 'package:commet/utils/window_management.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:media_kit/media_kit.dart';
-import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:provider/provider.dart';
 import 'package:receive_intent/receive_intent.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -80,6 +80,7 @@ void bubble() async {
       title: 'Commet',
       theme: initialTheme,
       navigatorKey: navigator,
+      debugShowCheckedModeBanner: false,
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
@@ -97,7 +98,11 @@ void bubble() async {
 }
 
 void main() async {
-  runZonedGuarded(appMain, Log.onError, zoneSpecification: Log.spec);
+  if (BuildConfig.RELEASE) {
+    runZonedGuarded(appMain, Log.onError, zoneSpecification: Log.spec);
+  } else {
+    appMain();
+  }
 }
 
 void appMain() async {
@@ -176,7 +181,8 @@ Future<void> initGuiRequirements() async {
   Future.wait([
     WindowManagement.init(),
     UnicodeEmojis.load(),
-    initializeMessages(locale.languageCode)
+    initializeMessages(locale.languageCode),
+    initializeDateFormatting(locale.languageCode),
     // initializeMessagesDebug()
   ]);
 
@@ -269,12 +275,12 @@ class App extends StatelessWidget {
             theme: theme,
             debugShowCheckedModeBanner: false,
             navigatorKey: navigator,
-            localizationsDelegates: T.localizationsDelegates,
+            localizationsDelegates: const [T.delegate],
             builder: (context, child) => Provider<ClientManager>(
               create: (context) => clientManager,
               child: child,
             ),
-            supportedLocales: T.supportedLocales,
+            supportedLocales: T.delegate.supportedLocales,
             home: AppView(
               clientManager: clientManager,
               initialClientId: initialClientId,

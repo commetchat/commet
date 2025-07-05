@@ -48,7 +48,7 @@ class ParticleSystemConfetti extends ParticleSystemExplosion {
     super.sprite,
     super.spriteSize = 1,
     super.gravity = 30,
-  }) {}
+  });
 
   @override
   Alignment get alignment => Alignment.bottomCenter;

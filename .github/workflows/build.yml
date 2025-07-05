@@ -20,7 +20,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2.8.0
         with:
-          flutter-version: '3.24.4'
+          flutter-version: '3.32.4'
           channel: 'stable'
 
       - name: Configure Flutter
@@ -48,7 +48,7 @@ jobs:
       - name: Setup Flutter 
         uses: subosito/flutter-action@v2.8.0
         with:
-          flutter-version: '3.24.4'
+          flutter-version: '3.32.4'
           channel: 'stable'
 
       - name: Setup Java
@@ -82,7 +82,7 @@ jobs:
       - name: Setup Flutter 
         uses: subosito/flutter-action@v2.8.0
         with:
-          flutter-version: '3.24.4'
+          flutter-version: '3.32.4'
           channel: 'stable'
 
       - name: Setup Java
@@ -117,13 +117,13 @@ jobs:
       - name: Setup Flutter 
         uses: subosito/flutter-action@v2.8.0
         with:
-          flutter-version: '3.24.4'
+          flutter-version: '3.32.4'
           channel: 'stable'
 
       - name: Setup Tools
         run: |
           sudo apt-get update -y
-          sudo apt-get install -y ninja-build libgtk-3-dev libolm3 libmpv-dev mpv ffmpeg libmimalloc-dev
+          sudo apt-get install -y ninja-build libgtk-3-dev libolm3 libmpv-dev mpv ffmpeg libmimalloc-dev webkit2gtk-4.1
         
       - name: Code Generation
         run: |
@@ -134,6 +134,10 @@ jobs:
         run: |
           cd $PROJECT_PATH
           flutter build linux --release --dart-define PLATFORM=linux
+
+      - name: Run App
+        run: |
+          ldd $PROJECT_PATH/build/linux/x64/release/bundle/commet
 
   build-web:
     runs-on: ubuntu-latest
@@ -146,7 +150,7 @@ jobs:
       - name: Setup Flutter 
         uses: subosito/flutter-action@v2.8.0
         with:
-          flutter-version: '3.24.4'
+          flutter-version: '3.32.4'
           channel: 'stable'
 
       - name: Setup Tools

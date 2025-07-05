@@ -12,11 +12,10 @@ dependencies:
   desktop_drop: ^0.4.1
   desktop_notifications: ^0.6.3
   device_info_plus: ^9.0.3
-  file_picker: ^5.2.10
   flutter_background_service: ^5.0.5
   flutter_blurhash: ^0.8.2
   flutter_markdown: ^0.6.9+1
-  flutter_olm: ^1.2.0
+  flutter_olm: ^2.0.0
   flutter_openssl_crypto: ^0.5.0
   flutter_staggered_grid_view: ^0.7.0
   flutter_svg: ^2.0.7
@@ -38,7 +37,6 @@ dependencies:
   path_provider: ^2.0.13
   permission_handler: ^11.0.1
   provider: ^6.0.0
-  receive_intent: ^0.2.4
   scrollable_positioned_list: ^0.3.8
   shared_preferences: ^2.5.2
   sqflite: ^2.3.0
@@ -63,10 +61,7 @@ dependencies:
       path: ./flutter_local_notifications
   flutter_localizations: 
     sdk: flutter
-  flutter_shortcuts: 
-    git: 
-      url: https://github.com/commetchat/flutter_shortcuts.git
-      ref: fix
+
   tiamat: 
     path: ../tiamat/
   matrix:
@@ -74,7 +69,9 @@ dependencies:
       url: https://github.com/commetchat/matrix-dart-sdk.git
       ref: main
   matrix_dart_sdk_drift_db:
-    git: https://github.com/commetchat/matrix-dart-sdk-drift-db.git
+    git: 
+      url: https://github.com/commetchat/matrix-dart-sdk-drift-db.git
+      ref: voip
 
   signal_sticker_api: 
     git: https://github.com/commetchat/signal-sticker-api.git
@@ -84,12 +81,20 @@ dependencies:
   fuzzy: ^0.5.1
   encrypt: ^5.0.3
   pointycastle: ^3.7.4
-  flutter_web_auth_2: ^3.1.1
   drift: ^2.22.1
   archive: ^3.6.1
   exif: ^3.3.0
   image: ^4.2.0
   reflectable: ^4.0.10
+  flutter_webrtc: ^0.14.1
+  file_picker: ^10.2.0
+  flutter_web_auth_2: ^4.1.0
+  receive_intent:
+    git:
+      url: https://github.com/daadu/receive_intent
+      ref: master
+  flutter_shortcuts_new: ^2.0.0
+
 
   ## ---- Putting some extra lines in here to help git with the diff
   ## ---- Probably good to keep this stuff at the bottom of the list
@@ -106,12 +111,12 @@ dependency_overrides:
   matrix:
     git: 
       url: https://github.com/commetchat/matrix-dart-sdk.git
-      ref: main
+      ref: voip
 
 dev_dependencies: 
   build_runner: ^2.4.11
   flutter_launcher_icons: ^0.13.1
-  flutter_lints: ^2.0.0
+  flutter_lints: ^6.0.0
   msix: ^3.7.0
   pubspec_dependency_sorter: ^1.0.4
   flutter_test: 
@@ -124,7 +129,6 @@ flutter_intl:
   class_name: T
   main_locale: en
   arb_dir: assets/l10n
-  output_dir: integration_test/generated
 
 flutter_launcher_icons: 
   image_path: assets/images/app_icon/app_icon_filled.png
@@ -149,6 +153,7 @@ flutter:
   assets: 
     - assets/config/
     - assets/l10n/
+    - assets/sound/
     - assets/images/app_icon/
     - assets/images/effects/particles/
     - assets/emoji_data/
