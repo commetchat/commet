@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 
@@ -10,10 +11,10 @@ import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/image/lod_image.dart';
 import 'package:commet/utils/image_utils.dart';
 import 'package:flutter/material.dart';
-
 import 'dart:ui' as ui;
 
 import 'package:flutter_shortcuts_new/flutter_shortcuts_new.dart';
+import 'package:image/image.dart' as img;
 
 class ShortcutsManager {
   FlutterShortcuts? shortcuts;
@@ -30,11 +31,20 @@ class ShortcutsManager {
   Future<void> createShortcutForRoom(Room room) async {
     if (loading != null) await loading;
 
-    // var cachedAvatar = await getCachedAvatarImage(
-    //     identifier: room.identifier,
-    //     placeholderColor: room.defaultColor,
-    //     placeholderText: room.displayName,
-    //     imageProvider: await room.getShortcutImage());
+    var cachedAvatar = await getCachedAvatarImage(
+        identifier: room.identifier,
+        placeholderColor: room.defaultColor,
+        placeholderText: room.displayName,
+        asJpeg: true,
+        doCircleMask: false,
+        imageProvider: await room.getShortcutImage());
+
+    String? icon;
+    if (cachedAvatar != null) {
+      var file = File(cachedAvatar.toFilePath());
+      var bytes = await file.readAsBytes();
+      icon = ShortcutMemoryIcon(jpegImage: bytes).toString();
+    }
 
     var item = ShortcutItem(
         id: room.identifier,
@@ -42,8 +52,7 @@ class ShortcutsManager {
                 roomId: room.identifier, clientId: room.client.identifier)
             .toString(),
         shortLabel: room.displayName,
-        // icon: cachedAvatar?.toFilePath(),
-        // shortcutIconAsset: ShortcutIconAsset.memoryAsset,
+        icon: icon,
         conversationShortcut: true);
 
     await shortcuts?.pushShortcutItem(shortcut: item);
@@ -67,6 +76,7 @@ class ShortcutsManager {
       required String identifier,
       ImageProvider? imageProvider,
       bool shouldZoomOut = true,
+      bool asJpeg = false,
       bool doCircleMask = true}) async {
     String avatarId = "shortcutAvatar_$identifier";
 
@@ -86,6 +96,10 @@ class ShortcutsManager {
       avatarId += "_circle";
     }
 
+    if (asJpeg) {
+      avatarId += ".jpg";
+    }
+
     Uri? cachedAvatar = await fileCache?.getFile(avatarId);
 
     if (cachedAvatar != null) {
@@ -96,13 +110,27 @@ class ShortcutsManager {
         placeholderColor: placeholderColor,
         placeholderText: placeholderText,
         imageProvider: imageProvider,
+        doCircleMask: doCircleMask,
         shouldZoomOut: shouldZoomOut);
 
-    var bytes = (await image.toByteData(format: ImageByteFormat.png))!
+    if (asJpeg) {
+      var bytes = await image.toByteData(format: ImageByteFormat.rawRgba);
+      var finalImage = img.Image.fromBytes(
+          width: image.width,
+          height: image.height,
+          bytes: bytes!.buffer,
+          format: img.Format.uint8,
+          numChannels: 4,
+          order: img.ChannelOrder.rgba);
+      var jpg = img.encodeJpg(finalImage);
+
+      cachedAvatar = await fileCache?.putFile(avatarId, jpg);
+    } else {
+         var bytes = (await image.toByteData(format: ImageByteFormat.png))!
         .buffer
         .asUint8List();
-
-    cachedAvatar = await fileCache?.putFile(avatarId, bytes);
+        cachedAvatar = await fileCache?.putFile(avatarId, bytes);
+    }
 
     return cachedAvatar;
   }
