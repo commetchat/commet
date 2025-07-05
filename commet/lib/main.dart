@@ -28,9 +28,9 @@ import 'package:commet/utils/shortcuts_manager.dart';
 import 'package:commet/utils/window_management.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:provider/provider.dart';
@@ -181,7 +181,8 @@ Future<void> initGuiRequirements() async {
   Future.wait([
     WindowManagement.init(),
     UnicodeEmojis.load(),
-    initializeMessages(locale.languageCode)
+    initializeMessages(locale.languageCode),
+    initializeDateFormatting(locale.languageCode),
     // initializeMessagesDebug()
   ]);
 
