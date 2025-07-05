@@ -53,6 +53,7 @@ class ShortcutsManager {
             .toString(),
         shortLabel: room.displayName,
         icon: icon,
+        shortcutIconAsset: ShortcutIconAsset.memoryAsset,
         conversationShortcut: true);
 
     await shortcuts?.pushShortcutItem(shortcut: item);
