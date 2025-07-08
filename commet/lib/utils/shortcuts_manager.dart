@@ -127,10 +127,10 @@ class ShortcutsManager {
 
       cachedAvatar = await fileCache?.putFile(avatarId, jpg);
     } else {
-         var bytes = (await image.toByteData(format: ImageByteFormat.png))!
-        .buffer
-        .asUint8List();
-        cachedAvatar = await fileCache?.putFile(avatarId, bytes);
+      var bytes = (await image.toByteData(format: ImageByteFormat.png))!
+          .buffer
+          .asUint8List();
+      cachedAvatar = await fileCache?.putFile(avatarId, bytes);
     }
 
     return cachedAvatar;
