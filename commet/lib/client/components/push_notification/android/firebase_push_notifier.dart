@@ -16,8 +16,10 @@ import 'package:commet/service/background_service_notifications/background_servi
 // Manage these to enable / disable firebase
 // import 'package:firebase_core/firebase_core.dart';
 // import 'package:firebase_messaging/firebase_messaging.dart';
+// import 'package:commet/firebase_options.dart';
 dynamic Firebase;
 dynamic FirebaseMessaging;
+dynamic DefaultFirebaseOptions;
 // --------
 
 Future<void> onForegroundMessage(dynamic message) async {
@@ -87,7 +89,9 @@ class FirebasePushNotifier implements Notifier {
     Log.i("Initializing firebase push notifier");
     await notifier.init();
 
-    await Firebase.initializeApp();
+    await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform);
+
     Log.i("Initialized App");
     FirebaseMessaging.instance.onTokenRefresh.listen((event) {
       token = event;

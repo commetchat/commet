@@ -224,6 +224,12 @@ class _LoginPageViewState extends State<LoginPageView> {
   }
 
   Widget loginInputs(BuildContext context) {
+    var ssoFlows = widget.flows?.whereType<SsoLoginFlow>().toList();
+    SsoLoginFlow? defaultSso;
+    if (ssoFlows != null) {
+      defaultSso = ssoFlows.where((e) => e.id == null).firstOrNull;
+    }
+
     return Column(mainAxisSize: MainAxisSize.min, children: [
       Flexible(
         child: Row(
@@ -272,6 +278,14 @@ class _LoginPageViewState extends State<LoginPageView> {
                   ),
                 ],
               ),
+            if (defaultSso != null)
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: tiamat.Button.secondary(
+                  text: "Continue",
+                  onTap: () => {widget.doSsoLogin?.call(defaultSso!)},
+                ),
+              ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Wrap(
@@ -280,6 +294,7 @@ class _LoginPageViewState extends State<LoginPageView> {
                 alignment: WrapAlignment.spaceBetween,
                 children: widget.flows!
                     .whereType<SsoLoginFlow>()
+                    .where((e) => e != defaultSso)
                     .map((e) => tiamat.ImageButton(
                           placeholderText: e.name,
                           image: e.icon,

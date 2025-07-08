@@ -5,11 +5,13 @@ import 'package:commet/ui/atoms/space_header.dart';
 import 'package:commet/ui/molecules/direct_message_list.dart';
 import 'package:commet/ui/molecules/space_viewer.dart';
 import 'package:commet/ui/organisms/background_task_view/background_task_view_container.dart';
+import 'package:commet/ui/organisms/call_view/call.dart';
 import 'package:commet/ui/organisms/home_screen/home_screen.dart';
 import 'package:commet/ui/organisms/chat/chat.dart';
 import 'package:commet/ui/organisms/room_quick_access_menu/room_quick_access_menu_desktop.dart';
 import 'package:commet/ui/organisms/room_side_panel/room_side_panel.dart';
 import 'package:commet/ui/organisms/side_navigation_bar/side_navigation_bar.dart';
+import 'package:commet/ui/organisms/sidebar_call_icon/sidebar_calls_list.dart';
 import 'package:commet/ui/organisms/space_summary/space_summary.dart';
 import 'package:commet/ui/pages/main/main_page.dart';
 import 'package:commet/utils/event_bus.dart';
@@ -47,6 +49,12 @@ class MainPageViewDesktop extends StatelessWidget {
                   padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
                   child: SideNavigationBar(
                       currentUser: state.currentUser,
+                      extraEntryBuilders: [
+                        (width) {
+                          return SidebarCallsList(
+                              state.clientManager.callManager, width);
+                        }
+                      ],
                       onSpaceSelected: (space) {
                         state.selectSpace(space);
                       },
@@ -211,6 +219,8 @@ class MainPageViewDesktop extends StatelessWidget {
               ),
             ),
           ),
+          if (state.currentCall != null)
+            Flexible(child: CallWidget(state.currentCall!)),
           Expanded(
             child: Flex(
               direction: Axis.horizontal,

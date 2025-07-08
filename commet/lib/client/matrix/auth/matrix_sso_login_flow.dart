@@ -81,9 +81,9 @@ class MatrixSSOLoginFlow implements SsoLoginFlow {
       );
 
       final result = await FlutterWebAuth2.authenticate(
-        url: url.toString(),
-        callbackUrlScheme: callbackScheme,
-      );
+          url: url.toString(),
+          callbackUrlScheme: callbackScheme,
+          options: FlutterWebAuth2Options(useWebview: false));
 
       var token = Uri.parse(result).queryParameters['loginToken'];
       if (token?.isEmpty ?? false) {

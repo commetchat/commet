@@ -51,13 +51,13 @@ class MatrixCommandComponent extends CommandComponent<MatrixClient> {
     return false;
   }
 
-  FutureOr<String?> sendJson(matrix.CommandArgs args) {
+  FutureOr<String?> sendJson(matrix.CommandArgs args, StringBuffer? out) {
     var json = const JsonDecoder().convert(args.msg) as Map<String, dynamic>;
 
     var tx = client.getMatrixClient().generateUniqueTransactionId();
     client
         .getMatrixClient()
-        .sendMessage(args.room.id, json["type"], tx, json['content']);
+        .sendMessage(args.room!.id, json["type"], tx, json['content']);
 
     return null;
   }

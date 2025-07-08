@@ -7,11 +7,13 @@ import 'package:commet/ui/molecules/direct_message_list.dart';
 import 'package:commet/ui/molecules/overlapping_panels.dart';
 import 'package:commet/ui/molecules/space_viewer.dart';
 import 'package:commet/ui/organisms/background_task_view/background_task_view_container.dart';
+import 'package:commet/ui/organisms/call_view/call.dart';
 import 'package:commet/ui/organisms/chat/chat.dart';
 import 'package:commet/ui/organisms/home_screen/home_screen.dart';
 import 'package:commet/ui/organisms/room_members_list/room_members_list.dart';
 import 'package:commet/ui/organisms/room_side_panel/room_side_panel.dart';
 import 'package:commet/ui/organisms/side_navigation_bar/side_navigation_bar.dart';
+import 'package:commet/ui/organisms/sidebar_call_icon/sidebar_calls_list.dart';
 import 'package:commet/ui/organisms/space_summary/space_summary.dart';
 import 'package:commet/ui/pages/main/main_page.dart';
 import 'package:commet/utils/event_bus.dart';
@@ -161,6 +163,12 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
                   widget.state.selectRoom(room);
                   panelsKey.currentState?.reveal(RevealSide.main);
                 },
+                extraEntryBuilders: [
+                  (width) {
+                    return SidebarCallsList(
+                        widget.state.clientManager.callManager, width);
+                  }
+                ],
               ),
             ),
           ),
@@ -220,6 +228,8 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
                   ),
                 ),
               ),
+              if (widget.state.currentCall != null)
+                Flexible(child: CallWidget(widget.state.currentCall!)),
               Flexible(
                 child: Chat(
                   widget.state.currentRoom!,

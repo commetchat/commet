@@ -15,11 +15,13 @@ class Lightbox extends StatefulWidget {
     this.thumbnail,
     this.aspectRatio,
     this.contentKey,
+    this.customWidget,
     super.key,
   });
   final ImageProvider? image;
   final FileProvider? video;
   final ImageProvider? thumbnail;
+  final Widget? customWidget;
   final double? aspectRatio;
   final Key? contentKey;
 
@@ -31,6 +33,7 @@ class Lightbox extends StatefulWidget {
     ImageProvider? image,
     ImageProvider? thumbnail,
     FileProvider? video,
+    Widget? customWidget,
     double? aspectRatio,
     Key? key,
   }) {
@@ -46,6 +49,7 @@ class Lightbox extends StatefulWidget {
             aspectRatio: aspectRatio,
             thumbnail: thumbnail,
             contentKey: key,
+            customWidget: customWidget,
             key: GlobalKey(),
           );
         },
@@ -129,31 +133,32 @@ class _LightboxState extends State<Lightbox> {
                       onTap: () {},
                       child: AspectRatio(
                           aspectRatio: aspectRatio,
-                          child: widget.image != null
-                              ? Image(
-                                  fit: BoxFit.cover,
-                                  image: widget.image!,
-                                  isAntiAlias: true,
-                                  filterQuality: FilterQuality.medium,
-                                )
-                              : widget.video != null
-                                  ? dismissing
-                                      ? widget.thumbnail != null
-                                          ? Image(
-                                              fit: BoxFit.cover,
-                                              image: widget.thumbnail!,
+                          child: widget.customWidget ??
+                              (widget.image != null
+                                  ? Image(
+                                      fit: BoxFit.cover,
+                                      image: widget.image!,
+                                      isAntiAlias: true,
+                                      filterQuality: FilterQuality.medium,
+                                    )
+                                  : widget.video != null
+                                      ? dismissing
+                                          ? widget.thumbnail != null
+                                              ? Image(
+                                                  fit: BoxFit.cover,
+                                                  image: widget.thumbnail!,
+                                                )
+                                              : Container(
+                                                  color: Colors.black,
+                                                )
+                                          : VideoPlayer(
+                                              widget.video!,
+                                              showProgressBar: true,
+                                              canGoFullscreen: false,
+                                              thumbnail: widget.thumbnail,
+                                              key: widget.contentKey,
                                             )
-                                          : Container(
-                                              color: Colors.black,
-                                            )
-                                      : VideoPlayer(
-                                          widget.video!,
-                                          showProgressBar: true,
-                                          canGoFullscreen: false,
-                                          thumbnail: widget.thumbnail,
-                                          key: widget.contentKey,
-                                        )
-                                  : const Placeholder()),
+                                      : const Placeholder())),
                     ),
                   ),
                 ),

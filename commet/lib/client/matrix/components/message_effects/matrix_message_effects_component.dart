@@ -32,17 +32,17 @@ class MatrixMessageEffectsComponent
 
     mx.addCommand(
         "snowfall",
-        (args) =>
+        (args, _) =>
             sendWithMsgType(args, msgType: effectTypeSnowfall, fallback: "❄️"));
 
     mx.addCommand(
         "confetti",
-        (args) =>
+        (args, _) =>
             sendWithMsgType(args, msgType: effectTypeConfetti, fallback: "🎉"));
 
     mx.addCommand(
         "spaceinvaders",
-        (args) => sendWithMsgType(args,
+        (args, _) => sendWithMsgType(args,
             msgType: effectTypeSpaceInvaders, fallback: "👾"));
   }
 
@@ -107,7 +107,7 @@ class MatrixMessageEffectsComponent
 
   FutureOr<String?> sendWithMsgType(matrix.CommandArgs args,
       {required String msgType, required String fallback}) async {
-    args.room.sendEvent({
+    args.room?.sendEvent({
       "msgtype": msgType,
       "body": args.msg.trim().isEmpty ? fallback : args.msg,
     });

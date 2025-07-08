@@ -8,3 +8,4 @@ analyzer:
     - lib/generated/*.dart
     - lib/generated/l10n/*.dart
     - lib/main.widgetbook.dart
+    - integration_test/**
