@@ -90,8 +90,7 @@ class FirebasePushNotifier implements Notifier {
     await notifier.init();
 
     await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform
-    );
+        options: DefaultFirebaseOptions.currentPlatform);
 
     Log.i("Initialized App");
     FirebaseMessaging.instance.onTokenRefresh.listen((event) {
