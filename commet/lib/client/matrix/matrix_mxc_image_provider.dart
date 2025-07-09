@@ -58,7 +58,7 @@ class MatrixMxcImage extends LODImageProvider {
     if (matrixEvent != null) {
       var data =
           await matrixEvent.downloadAndDecryptAttachment(getThumbnail: true);
-      if (Mime.imageTypes.contains(data.mimeType)) {
+      if (Mime.imageTypes.contains(matrixEvent.thumbnailMimetype)) {
         bytes = data.bytes;
       }
     } else {

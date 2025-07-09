@@ -134,8 +134,8 @@ class MatrixTimelineEventMessage extends MatrixTimelineEvent
               thumbnail: event.videoThumbnailUrl != null
                   ? MatrixMxcImage(event.videoThumbnailUrl!, mx,
                       blurhash: event.attachmentBlurhash,
-                      doFullres: true,
-                      autoLoadFullRes: true,
+                      doFullres: false,
+                      autoLoadFullRes: false,
                       doThumbnail: true,
                       matrixEvent: event)
                   : null,
