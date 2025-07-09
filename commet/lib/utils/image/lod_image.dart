@@ -174,14 +174,14 @@ class LODImageCompleter extends ImageStreamCompleter {
         return TargetImageSize(height: fullResHeight);
       },
     );
-    _setCodec(LODImageType.fullres, codec);
+    await _setCodec(LODImageType.fullres, codec);
   }
 
-  void _setCodec(LODImageType type, Codec codec) {
+  Future<void> _setCodec(LODImageType type, Codec codec) async {
     if (type.index > (currentlyLoadedImage?.index ?? -1)) {
       _codec = codec;
       currentlyLoadedImage = type;
-      _decodeNextFrameAndSchedule();
+      await _decodeNextFrameAndSchedule();
     }
   }
 

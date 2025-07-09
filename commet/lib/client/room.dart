@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
+import 'package:commet/client/components/photo_album_room/photo_album_room_component.dart';
 import 'package:commet/client/components/room_component.dart';
+import 'package:commet/client/components/voip_room/voip_room_component.dart';
 import 'package:commet/client/member.dart';
 import 'package:commet/client/role.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
@@ -37,6 +40,25 @@ abstract class Room {
 
   /// Returns true if the room is secured by end to end encryption
   bool get isE2EE;
+
+  IconData get icon {
+    var dm = client.getComponent<DirectMessagesComponent>();
+    if (dm?.isRoomDirectMessage(this) == true) {
+      return Icons.alternate_email_rounded;
+    }
+
+    var voip = getComponent<VoipRoomComponent>();
+    if (voip?.isVoipRoom == true) {
+      return Icons.volume_up;
+    }
+
+    var photos = getComponent<PhotoAlbumRoom>();
+    if (photos?.isPhotoAlbum == true) {
+      return Icons.photo;
+    }
+
+    return Icons.tag;
+  }
 
   bool get shouldPreviewMedia;
 

@@ -117,6 +117,7 @@ class MatrixTimelineEventMessage extends MatrixTimelineEvent
             MatrixMxcImage(event.attachmentMxcUrl!, mx,
                 blurhash: event.attachmentBlurhash,
                 doThumbnail: true,
+                autoLoadFullRes: false,
                 matrixEvent: event),
             MxcFileProvider(mx, event.attachmentMxcUrl!, event: event),
             mimeType: event.attachmentMimetype,
@@ -133,13 +134,14 @@ class MatrixTimelineEventMessage extends MatrixTimelineEvent
               thumbnail: event.videoThumbnailUrl != null
                   ? MatrixMxcImage(event.videoThumbnailUrl!, mx,
                       blurhash: event.attachmentBlurhash,
-                      doFullres: false,
-                      autoLoadFullRes: false,
+                      doFullres: true,
+                      autoLoadFullRes: true,
                       doThumbnail: true,
                       matrixEvent: event)
                   : null,
               name: filename,
               mimeType: event.attachmentMimetype,
+              duration: event.attachmentDuration,
               width: width,
               fileSize: event.infoMap['size'] as int?,
               height: height);

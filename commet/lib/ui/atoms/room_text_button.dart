@@ -41,18 +41,7 @@ class _RoomTextButtonState extends State<RoomTextButton> {
 
   @override
   Widget build(BuildContext context) {
-    var isDm = widget.room.client
-            .getComponent<DirectMessagesComponent>()
-            ?.isRoomDirectMessage(widget.room) ??
-        false;
-
-    var voip = widget.room.getComponent<VoipRoomComponent>();
-
-    IconData defaultIcon = isDm ? Icons.alternate_email : Icons.tag;
-
-    if (voip?.isVoipRoom == true) {
-      defaultIcon = Icons.volume_up_rounded;
-    }
+    IconData defaultIcon = widget.room.icon;
 
     var color = Theme.of(context).colorScheme.secondary;
 

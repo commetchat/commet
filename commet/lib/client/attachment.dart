@@ -89,6 +89,7 @@ class VideoAttachment extends FileAttachment {
   final ImageProvider? thumbnail;
   final double? width;
   final double? height;
+  final Duration? duration;
 
   double get aspectRatio =>
       (width != null && height != null) ? (width! / height!) : 1;
@@ -99,5 +100,6 @@ class VideoAttachment extends FileAttachment {
       this.thumbnail,
       this.width,
       this.height,
+      this.duration,
       super.fileSize});
 }

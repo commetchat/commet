@@ -16,6 +16,7 @@ import 'package:commet/ui/organisms/side_navigation_bar/side_navigation_bar.dart
 import 'package:commet/ui/organisms/sidebar_call_icon/sidebar_calls_list.dart';
 import 'package:commet/ui/organisms/space_summary/space_summary.dart';
 import 'package:commet/ui/pages/main/main_page.dart';
+import 'package:commet/ui/pages/main/room_primary_view.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/scaled_app.dart';
 import 'package:flutter/material.dart';
@@ -231,10 +232,8 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
               if (widget.state.currentCall != null)
                 Flexible(child: CallWidget(widget.state.currentCall!)),
               Flexible(
-                child: Chat(
+                child: RoomPrimaryView(
                   widget.state.currentRoom!,
-                  key: ValueKey(
-                      "room-timeline-key-${widget.state.currentRoom!.localId}"),
                 ),
               ),
             ],

@@ -10,6 +10,7 @@ import 'package:commet/client/matrix/components/emoticon/matrix_space_emoticon_c
 import 'package:commet/client/matrix/components/event_search/matrix_event_search_component.dart';
 import 'package:commet/client/matrix/components/gif/matrix_gif_component.dart';
 import 'package:commet/client/matrix/components/invitation/matrix_invitation_component.dart';
+import 'package:commet/client/matrix/components/photo_album_room/matrix_photo_album_room_component.dart';
 import 'package:commet/client/matrix/components/pinned_messages/matrix_pinned_messages_component.dart';
 import 'package:commet/client/matrix/components/message_effects/matrix_message_effects_component.dart';
 import 'package:commet/client/matrix/components/push_notifications/matrix_push_notification_component.dart';
@@ -53,7 +54,9 @@ class ComponentRegistry {
       MatrixReadReceiptComponent(client, room),
       MatrixTypingIndicatorsComponent(client, room),
       MatrixPinnedMessagesComponent(client, room),
-      MatrixVoipRoomComponent(client, room)
+      MatrixVoipRoomComponent(client, room),
+      if (Experiments.photoAlbumRooms)
+        MatrixPhotoAlbumRoomComponent(client, room)
     ];
   }
 

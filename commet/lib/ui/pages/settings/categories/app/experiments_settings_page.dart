@@ -48,6 +48,31 @@ class _ExperimentsSettingsPageState extends State<ExperimentsSettingsPage> {
                   },
                 )
               ],
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Flexible(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      tiamat.Text.labelEmphasised("Photo Album Rooms"),
+                      tiamat.Text.labelLow(
+                          "Share photos and videos, with dedicated album viewer")
+                    ],
+                  ),
+                ),
+                tiamat.Switch(
+                  state: Experiments.photoAlbumRooms,
+                  onChanged: (value) async {
+                    await Experiments.setPhotoAlbumRooms(value);
+                    setState(() {});
+                  },
+                )
+              ],
             )
           ]),
         ),
