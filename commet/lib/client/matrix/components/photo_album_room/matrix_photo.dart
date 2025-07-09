@@ -1,55 +1,29 @@
 import 'package:commet/client/attachment.dart';
 import 'package:commet/client/components/photo_album_room/photo.dart';
+import 'package:commet/client/matrix/extensions/matrix_event_extensions.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event.dart';
+import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_message.dart';
+import 'package:commet/client/timeline.dart';
 import 'package:flutter/src/painting/image_provider.dart';
 
 class MatrixPhoto implements Photo {
   final MatrixTimelineEvent event;
 
-  @override
-  final Attachment attachment;
+  Attachment? get attachment =>
+      (event as MatrixTimelineEventMessage).attachments?.firstOrNull;
 
   MatrixPhoto(
-    this.event, {
-    required this.attachment,
-  });
+    this.event,
+  );
 
   @override
-  double get height {
-    if (attachment is ImageAttachment) {
-      return (attachment! as ImageAttachment).height!;
-    }
-
-    if (attachment is VideoAttachment) {
-      return (attachment! as VideoAttachment).height!;
-    }
-
-    throw UnimplementedError();
-  }
+  double? get height =>
+      (event as MatrixTimelineEventMessage).event.attachmentHeight;
 
   @override
-  double get width {
-    if (attachment is ImageAttachment) {
-      return (attachment! as ImageAttachment).width!;
-    }
-
-    if (attachment is VideoAttachment) {
-      return (attachment! as VideoAttachment).width!;
-    }
-
-    throw UnimplementedError();
-  }
+  double? get width =>
+      (event as MatrixTimelineEventMessage).event.attachmentWidth;
 
   @override
-  ImageProvider<Object> get image {
-    if (attachment is ImageAttachment) {
-      return (attachment! as ImageAttachment).image!;
-    }
-
-    if (attachment is VideoAttachment) {
-      return (attachment! as VideoAttachment).thumbnail!;
-    }
-
-    throw UnimplementedError();
-  }
+  TimelineEventStatus get status => event.status;
 }

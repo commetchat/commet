@@ -1,10 +1,20 @@
+import 'dart:async';
+
 import 'package:commet/client/attachment.dart';
 import 'package:commet/client/components/photo_album_room/photo.dart';
 import 'package:commet/client/components/photo_album_room/photo_album_room_component.dart';
 import 'package:commet/client/components/photo_album_room/photo_album_timeline.dart';
+import 'package:commet/client/matrix/components/photo_album_room/matrix_upload_photos_task.dart';
+import 'package:commet/client/matrix/matrix_room.dart';
+import 'package:commet/client/timeline.dart';
+import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/lightbox.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
+import 'package:commet/utils/background_tasks/background_task_manager.dart';
+import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/text_utils.dart';
+import 'package:desktop_drop/src/drop_target.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -24,6 +34,8 @@ class _PhotoAlbumViewState extends State<PhotoAlbumView> {
   bool loadingMorePhotos = false;
   var controller = ScrollController();
 
+  late List<StreamSubscription> subs;
+
   void onAdded(int event) {
     setState(() {
       numItems = timeline!.photos.length;
@@ -33,6 +45,7 @@ class _PhotoAlbumViewState extends State<PhotoAlbumView> {
   @override
   void initState() {
     controller.addListener(onScroll);
+
     widget.component.getTimeline().then((t) {
       if (mounted) {
         setState(() {
@@ -40,12 +53,25 @@ class _PhotoAlbumViewState extends State<PhotoAlbumView> {
           numItems = t.photos.length;
         });
 
-        t.onAdded.listen(onAdded);
+        subs = [
+          t.onAdded.listen(onAdded),
+          t.onChanged.listen(onChanged),
+          t.onRemoved.listen(onRemoved),
+          EventBus.onFileDropped.stream.listen(onFileDropped),
+        ];
         SchedulerBinding.instance.addPostFrameCallback(postFrameCallback);
       }
     });
 
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    for (var sub in subs) {
+      sub.cancel();
+    }
+    super.dispose();
   }
 
   void postFrameCallback(Duration timeStamp) {
@@ -69,7 +95,10 @@ class _PhotoAlbumViewState extends State<PhotoAlbumView> {
             setState(() {
               loadingMorePhotos = false;
             });
-            pollLoadingMorePhotos();
+
+            Future.delayed(Duration(seconds: 1)).then((_) {
+              pollLoadingMorePhotos();
+            });
           }
         });
       });
@@ -114,7 +143,7 @@ class _PhotoAlbumViewState extends State<PhotoAlbumView> {
               child: Align(
                 alignment: Alignment.bottomRight,
                 child: FloatingActionButton(
-                  onPressed: () {},
+                  onPressed: uploadImages,
                   child: Icon(Icons.add),
                 ),
               ),
@@ -130,10 +159,34 @@ class _PhotoAlbumViewState extends State<PhotoAlbumView> {
 
     Widget? result;
     var attachment = item.attachment;
+    width = item.width ?? 500;
+    height = item.height ?? 500;
+
+    var scheme = Theme.of(context).colorScheme;
+
+    if (attachment == null) {
+      if (item.status == TimelineEventStatus.sending) {
+        result = Container(
+          color: scheme.surfaceContainerLow,
+          child: Center(
+            child: CircularProgressIndicator(),
+          ),
+        );
+      }
+
+      if (item.status == TimelineEventStatus.error) {
+        result = Container(
+          color: scheme.surfaceContainerLow,
+          child: Center(
+              child: Icon(
+            Icons.error,
+            color: Theme.of(context).colorScheme.error,
+          )),
+        );
+      }
+    }
 
     if (attachment is ImageAttachment) {
-      width = attachment.width ?? 500;
-      height = attachment.height ?? 500;
       result = InkWell(
         onTap: () {
           Lightbox.show(context, image: attachment.image);
@@ -145,12 +198,7 @@ class _PhotoAlbumViewState extends State<PhotoAlbumView> {
       );
     }
 
-    var scheme = Theme.of(context).colorScheme;
-
     if (attachment is VideoAttachment) {
-      width = attachment.width ?? 500;
-      height = attachment.height ?? 500;
-
       result = Stack(
         fit: StackFit.expand,
         children: [
@@ -204,8 +252,35 @@ class _PhotoAlbumViewState extends State<PhotoAlbumView> {
       color: Colors.transparent,
       child: AspectRatio(
         aspectRatio: width / height,
-        child: result,
+        child: result!,
       ),
     );
+  }
+
+  void uploadImages() {
+    FilePicker.platform.pickFiles();
+  }
+
+  void onFileDropped(DropDoneDetails event) {
+    var files = event.files.map((e) => Uri.parse(e.path)).toList();
+
+    var task =
+        MatrixUploadPhotosTask(files, widget.component.room as MatrixRoom);
+
+    backgroundTaskManager.addTask(task);
+
+    task.uploadImages();
+  }
+
+  void onChanged(int event) {
+    setState(() {
+      numItems = timeline!.photos.length;
+    });
+  }
+
+  void onRemoved(int event) {
+    setState(() {
+      numItems = timeline!.photos.length;
+    });
   }
 }
