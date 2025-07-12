@@ -21,7 +21,7 @@ class DownloadUtils {
 
       var path = await FileUtils.getSaveFilePath(fileName: name);
       if (path != null) {
-        file.save(path);
+        await file.save(path);
       }
 
       return BackgroundTaskStatus.completed;
