@@ -10,6 +10,7 @@ import 'package:commet/client/matrix/auth/matrix_username_password_login_flow.da
 import 'package:commet/client/matrix/components/matrix_sync_listener.dart';
 import 'package:commet/client/matrix/database/matrix_database.dart';
 import 'package:commet/client/matrix/extensions/matrix_client_extensions.dart';
+import 'package:commet/client/matrix/matrix_native_implementations.dart';
 import 'package:commet/client/matrix/matrix_profile.dart';
 import 'package:commet/client/profile.dart';
 import 'package:commet/client/room_preview.dart';
@@ -68,7 +69,7 @@ class MatrixClient extends Client {
 
   matrix.NativeImplementations get nativeImplentations => BuildConfig.WEB
       ? const matrix.NativeImplementationsDummy()
-      : matrix.NativeImplementationsIsolate(compute);
+      : NativeImplementationsCustom(compute);
 
   MatrixClient({required String identifier}) {
     if (preferences.developerMode) {
