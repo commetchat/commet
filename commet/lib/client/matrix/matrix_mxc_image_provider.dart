@@ -114,12 +114,6 @@ class MatrixMxcImage extends LODImageProvider {
   }
 
   @override
-  Future<bool> hasCachedFullres() async {
-    var id = getIdentifier(identifier);
-    return await fileCache?.hasFile(id) == true;
-  }
-
-  @override
   Future<bool> hasCachedThumbnail() async {
     var id = getThumbnailIdentifier(identifier);
     return await fileCache?.hasFile(id) == true;
