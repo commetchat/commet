@@ -7,6 +7,8 @@ abstract class Photo {
 
   TimelineEventStatus get status;
 
+  String get id;
+
   double? get width;
   double? get height;
 }

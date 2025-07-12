@@ -26,4 +26,7 @@ class MatrixPhoto implements Photo {
 
   @override
   TimelineEventStatus get status => event.status;
+
+  @override
+  String get id => event.eventId;
 }

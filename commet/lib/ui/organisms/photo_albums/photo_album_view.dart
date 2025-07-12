@@ -221,6 +221,7 @@ class _PhotoAlbumViewState extends State<PhotoAlbumView> {
 
     if (attachment is ImageAttachment) {
       result = Stack(
+        key: ValueKey("photo-album-image:${item.id}"),
         fit: StackFit.expand,
         children: [
           Image(
@@ -242,6 +243,7 @@ class _PhotoAlbumViewState extends State<PhotoAlbumView> {
 
     if (attachment is VideoAttachment) {
       result = Stack(
+        key: ValueKey("photo-album-video:${item.id}"),
         fit: StackFit.expand,
         children: [
           Image(
