@@ -4,16 +4,25 @@ import 'package:commet/client/attachment.dart';
 import 'package:commet/client/components/photo_album_room/photo.dart';
 import 'package:commet/client/components/photo_album_room/photo_album_room_component.dart';
 import 'package:commet/client/components/photo_album_room/photo_album_timeline.dart';
+import 'package:commet/client/matrix/components/photo_album_room/matrix_photo.dart';
+import 'package:commet/client/matrix/components/photo_album_room/matrix_photo_album_room_component.dart';
+import 'package:commet/client/matrix/components/photo_album_room/matrix_photo_album_timeline.dart';
 import 'package:commet/client/matrix/components/photo_album_room/matrix_upload_photos_task.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/timeline.dart';
+import 'package:commet/config/layout_config.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/lightbox.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
+import 'package:commet/ui/molecules/timeline_events/timeline_event_menu.dart';
+import 'package:commet/ui/molecules/timeline_events/timeline_event_menu_dialog.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
+import 'package:commet/ui/organisms/photo_albums/photos_upload_view.dart';
 import 'package:commet/utils/background_tasks/background_task_manager.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/text_utils.dart';
 import 'package:desktop_drop/src/drop_target.dart';
+import 'package:drift/drift.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -186,15 +195,48 @@ class _PhotoAlbumViewState extends State<PhotoAlbumView> {
       }
     }
 
+    var callback = Layout.desktop
+        ? null
+        : () {
+            if (widget.component is MatrixPhotoAlbumRoomComponent) {
+              var event = (item as MatrixPhoto).event;
+              var tl = (timeline! as MatrixPhotoAlbumTimeline).matrixTimeline;
+
+              showModalBottomSheet(
+                  showDragHandle: true,
+                  isScrollControlled: true,
+                  elevation: 0,
+                  context: context,
+                  builder: (context) => TimelineEventMenuDialog(
+                        event: event,
+                        timeline: tl,
+                        menu: TimelineEventMenu(
+                          timeline: tl,
+                          event: event,
+                          onActionFinished: () => Navigator.of(context).pop(),
+                        ),
+                      ));
+            }
+          };
+
     if (attachment is ImageAttachment) {
-      result = InkWell(
-        onTap: () {
-          Lightbox.show(context, image: attachment.image);
-        },
-        child: Image(
-          fit: BoxFit.cover,
-          image: attachment.image,
-        ),
+      result = Stack(
+        fit: StackFit.expand,
+        children: [
+          Image(
+            fit: BoxFit.cover,
+            image: attachment.image,
+          ),
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () {
+                Lightbox.show(context, image: attachment.image);
+              },
+              onLongPress: callback,
+            ),
+          )
+        ],
       );
     }
 
@@ -202,17 +244,9 @@ class _PhotoAlbumViewState extends State<PhotoAlbumView> {
       result = Stack(
         fit: StackFit.expand,
         children: [
-          InkWell(
-            onTap: () {
-              Lightbox.show(context,
-                  video: attachment.file,
-                  aspectRatio: attachment.aspectRatio,
-                  thumbnail: attachment.thumbnail);
-            },
-            child: Image(
-              fit: BoxFit.cover,
-              image: attachment.thumbnail!,
-            ),
+          Image(
+            fit: BoxFit.cover,
+            image: attachment.thumbnail!,
           ),
           Align(
             alignment: Alignment.bottomRight,
@@ -243,33 +277,87 @@ class _PhotoAlbumViewState extends State<PhotoAlbumView> {
                 ),
               ),
             ),
-          )
+          ),
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onLongPress: callback,
+              onTap: () {
+                Lightbox.show(context,
+                    video: attachment.file,
+                    aspectRatio: attachment.aspectRatio,
+                    thumbnail: attachment.thumbnail);
+              },
+            ),
+          ),
         ],
       );
     }
 
-    return Material(
-      color: Colors.transparent,
-      child: AspectRatio(
-        aspectRatio: width / height,
-        child: result!,
-      ),
+    if (result != null) {
+      if (widget.component is MatrixPhotoAlbumRoomComponent) {
+        var menu = TimelineEventMenu(
+            timeline: (timeline! as MatrixPhotoAlbumTimeline).matrixTimeline,
+            event: (item as MatrixPhoto).event);
+
+        if (Layout.desktop) {
+          result = tiamat.ContextMenu(
+            items: (menu.primaryActions + menu.secondaryActions)
+                .map((e) => tiamat.ContextMenuItem(
+                    text: e.name,
+                    icon: e.icon,
+                    onPressed: () => e.action?.call(context)))
+                .toList(),
+            child: result!,
+          );
+        }
+      }
+    }
+
+    if (result == null) {
+      print("HOW!");
+    }
+
+    return AspectRatio(
+      aspectRatio: width / height,
+      child: result ?? Placeholder(),
     );
   }
 
-  void uploadImages() {
-    FilePicker.platform.pickFiles();
+  void uploadImages() async {
+    var files = await FilePicker.platform
+        .pickFiles(allowMultiple: true, withReadStream: true);
+    if (files == null) return;
+
+    var f = files.files
+        .map((e) => PickedPhoto(
+              filepath: e.path,
+              name: e.name,
+              getBytes: () async {
+                var result = List<int>.empty(growable: true);
+                await for (final data in e.readStream!) {
+                  print("Read ${data.length} bytes from file");
+                  result.addAll(data);
+                }
+
+                print("Read all ${result.length} bytes");
+
+                return Uint8List.fromList(result);
+              },
+            ))
+        .toList();
+
+    AdaptiveDialog.show(context,
+        builder: (_) => PhotosAlbumUploadView(f, widget.component));
   }
 
   void onFileDropped(DropDoneDetails event) {
-    var files = event.files.map((e) => Uri.parse(e.path)).toList();
-
-    var task =
-        MatrixUploadPhotosTask(files, widget.component.room as MatrixRoom);
-
-    backgroundTaskManager.addTask(task);
-
-    task.uploadImages();
+    var f = event.files
+        .map((e) => PickedPhoto(
+            filepath: e.path, name: e.name, getBytes: () => e.readAsBytes()))
+        .toList();
+    AdaptiveDialog.show(context,
+        builder: (_) => PhotosAlbumUploadView(f, widget.component));
   }
 
   void onChanged(int event) {

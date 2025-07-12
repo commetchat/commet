@@ -1,6 +1,7 @@
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/client/components/message_effects/message_effect_component.dart';
+import 'package:commet/client/components/photo_album_room/photo_album_room_component.dart';
 import 'package:commet/client/components/pinned_messages/pinned_messages_component.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
@@ -90,6 +91,7 @@ class TimelineEventMenu {
     var effects = timeline.room.client.getComponent<MessageEffectComponent>();
     var emoticons = timeline.room.getComponent<RoomEmoticonComponent>();
     var pins = timeline.room.getComponent<PinnedMessagesComponent>();
+    var photos = timeline.room.getComponent<PhotoAlbumRoom>();
 
     if (event.status == TimelineEventStatus.synced) {
       canEditEvent = event is TimelineEventMessage &&
@@ -103,6 +105,11 @@ class TimelineEventMenu {
       canReply = event is TimelineEventMessage ||
           event is TimelineEventSticker ||
           event is TimelineEventEmote;
+
+      if (photos?.isPhotoAlbum == true) {
+        canReply = false;
+        canEditEvent = false;
+      }
 
       if (event is TimelineEventMessage) {
         canSaveAttachment =

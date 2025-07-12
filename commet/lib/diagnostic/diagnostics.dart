@@ -1,3 +1,4 @@
+import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 
 class CumulativeMeasurement {
@@ -28,14 +29,14 @@ class CumulativeDiagnostics {
 
   Future<T> timeAsync<T>(String name, Future<T> Function() func) async {
     if (!preferences.developerMode) return func();
-
+    print("Timing: $name");
     Stopwatch s = Stopwatch();
     s.start();
 
     var result = await func();
 
     s.stop();
-
+    Log.i("Timed $name: ${s.elapsedMilliseconds}ms");
     addResult(name, s.elapsed);
     return result;
   }

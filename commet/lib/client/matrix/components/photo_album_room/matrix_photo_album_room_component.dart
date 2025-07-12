@@ -2,8 +2,10 @@ import 'package:commet/client/components/photo_album_room/photo_album_room_compo
 import 'package:commet/client/components/photo_album_room/photo_album_timeline.dart';
 import 'package:commet/client/matrix/components/matrix_sync_listener.dart';
 import 'package:commet/client/matrix/components/photo_album_room/matrix_photo_album_timeline.dart';
+import 'package:commet/client/matrix/components/photo_album_room/matrix_upload_photos_task.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
+import 'package:commet/main.dart';
 import 'package:matrix/matrix.dart';
 
 class MatrixPhotoAlbumRoomComponent
@@ -34,5 +36,14 @@ class MatrixPhotoAlbumRoomComponent
     var timeline = MatrixPhotoAlbumTimeline(room);
     await timeline.initTimeline();
     return timeline;
+  }
+
+  @override
+  Future<void> uploadPhotos(List<PickedPhoto> photos,
+      {bool sendOriginal = false, bool extractMetadata = true}) async {
+    var task = MatrixUploadPhotosTask(photos, room,
+        sendOriginal: sendOriginal, extractMetadata: extractMetadata);
+    backgroundTaskManager.addTask(task);
+    await task.uploadImages();
   }
 }

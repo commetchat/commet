@@ -117,7 +117,7 @@ class MatrixTimelineEventMessage extends MatrixTimelineEvent
             MatrixMxcImage(event.attachmentMxcUrl!, mx,
                 blurhash: event.attachmentBlurhash,
                 doThumbnail: true,
-                autoLoadFullRes: false,
+                autoLoadFullRes: !event.hasThumbnail,
                 matrixEvent: event),
             MxcFileProvider(mx, event.attachmentMxcUrl!, event: event),
             mimeType: event.attachmentMimetype,

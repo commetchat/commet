@@ -13,7 +13,7 @@ import 'package:commet/utils/notifying_list.dart';
 
 class MatrixPhotoAlbumTimeline implements PhotoAlbumTimeline {
   final MatrixRoom room;
-  late Timeline _timeline;
+  late Timeline matrixTimeline;
 
   NotifyingList<Photo> _photos = NotifyingList.empty(growable: true);
 
@@ -29,14 +29,14 @@ class MatrixPhotoAlbumTimeline implements PhotoAlbumTimeline {
   Stream<int> get onRemoved => _photos.onRemove;
 
   Future<void> initTimeline() async {
-    _timeline = await room.getTimeline();
-    for (var i = 0; i < _timeline.events.length; i++) {
-      handleNewEvent(_timeline.events[i], i);
+    matrixTimeline = await room.getTimeline();
+    for (var i = 0; i < matrixTimeline.events.length; i++) {
+      handleNewEvent(matrixTimeline.events[i], i);
     }
 
-    _timeline.onEventAdded.stream.listen(onEventAdded);
-    _timeline.onChange.stream.listen(onEventChanged);
-    _timeline.onRemove.stream.listen(onEventRemoved);
+    matrixTimeline.onEventAdded.stream.listen(onEventAdded);
+    matrixTimeline.onChange.stream.listen(onEventChanged);
+    matrixTimeline.onRemove.stream.listen(onEventRemoved);
   }
 
   void handleNewEvent(TimelineEvent event, int index) {
@@ -51,6 +51,18 @@ class MatrixPhotoAlbumTimeline implements PhotoAlbumTimeline {
 
     if (index != 0) {
       index = _photos.length;
+    }
+
+    var newIndex = _photos.indexWhere((photo) {
+      var p = photo as MatrixPhoto;
+      return (p.event.eventId == event.eventId ||
+          (p.event.event.transactionId != null &&
+              p.event.event.transactionId == event.event.transactionId));
+    });
+
+    if (newIndex != -1) {
+      print("New event already exists!");
+      return;
     }
 
     var photo = eventToPhoto(event);
@@ -68,27 +80,28 @@ class MatrixPhotoAlbumTimeline implements PhotoAlbumTimeline {
   List<Photo> get photos => _photos;
 
   void onEventAdded(int event) {
-    handleNewEvent(_timeline.events[event], event);
+    handleNewEvent(matrixTimeline.events[event], event);
   }
 
   @override
-  bool get canLoadMorePhotos => _timeline.canLoadHistory;
+  bool get canLoadMorePhotos => matrixTimeline.canLoadHistory;
 
   @override
   Future<void> loadMorePhotos() async {
-    await _timeline.loadMoreHistory();
+    await matrixTimeline.loadMoreHistory();
   }
 
   void onEventChanged(int index) {
     print("On Event Changed!");
-    var event = _timeline.events[index];
+    var event = matrixTimeline.events[index];
 
     if (event is! MatrixTimelineEventMessage) return;
 
     var newIndex = _photos.indexWhere((photo) {
       var p = photo as MatrixPhoto;
       return (p.event.eventId == event.eventId ||
-          p.event.event.transactionId == event.event.transactionId);
+          (p.event.event.transactionId != null &&
+              p.event.event.transactionId == event.event.transactionId));
     });
 
     if (newIndex == -1) {
@@ -104,7 +117,7 @@ class MatrixPhotoAlbumTimeline implements PhotoAlbumTimeline {
   }
 
   void onEventRemoved(int index) {
-    var event = _timeline.events[index];
+    var event = matrixTimeline.events[index];
 
     _photos
         .removeWhere((e) => (e as MatrixPhoto).event.eventId == event.eventId);
