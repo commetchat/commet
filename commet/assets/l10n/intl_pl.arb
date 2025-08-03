@@ -949,5 +949,109 @@
     "description": "Placeholder text for homeserver field on login form",
     "type": "text",
     "placeholders": {}
+  },
+  "noPinnedMessages": "Nie przypięto żadnych wiadomości!",
+  "@noPinnedMessages": {
+    "description": "Placeholder label in the pinned messages menu that is shown when there are no pinned messages",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelInvitationsForUser": "Zaproszenia dla {user}",
+  "@labelInvitationsForUser": {
+    "description": "Label for the list of incoming invitations, specifying which user these invitations are intended for",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "labelInvitations": "Zaproszenia",
+  "@labelInvitations": {
+    "description": "Label for the list of incoming invitations",
+    "type": "text",
+    "placeholders": {}
+  },
+  "cantSentMessagePrompt": "Nie masz uprawnień, by wysyłać tu wiadomości",
+  "@cantSentMessagePrompt": {
+    "description": "Text that explains the user cannot send a message in this room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceSubspacesList": "Przestrzenie",
+  "@labelSpaceSubspacesList": {
+    "description": "Header label for the list of child spaces in a space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceVisibilityPublic": "Publiczna przestrzeń",
+  "@labelSpaceVisibilityPublic": {
+    "description": "Label to display that the space is publically available",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptAddSpace": "Dodaj Przestrzeń",
+  "@promptAddSpace": {
+    "description": "Prompt to add a new space",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptAttachmentProcessingSendOriginal": "Wyślij Oryginalny",
+  "@promptAttachmentProcessingSendOriginal": {
+    "description": "Prompt text for the option to send a file in its original state, without any further processing such as removing metadata",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelImageContainsLocationInfo": "Uwaga: To zdjęcie zawiera dane lokalizacji",
+  "@labelImageContainsLocationInfo": {
+    "description": "Prompt text for the option to send a file in its original state, without any further processing such as removing metadata",
+    "type": "text",
+    "placeholders": {}
+  },
+  "setupPageBeforeYouBegin": "Zanim zaczniesz...",
+  "@setupPageBeforeYouBegin": {
+    "description": "Title for first time setup page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsDeveloperModeExplanation": "Pokazuje dodatkowe informacje, przydatne dla programistów",
+  "@labelSettingsDeveloperModeExplanation": {
+    "description": "Explains what developer mode does",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelStickerCompatibility": "Kompatybilność naklejek",
+  "@labelStickerCompatibility": {
+    "description": "Header for the settings to enable sticker compatibility mode",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMessageEffectsDescription": "Wiadomości mogą być wysyłane z dodatkowymi efektami, takimi jak konfetti",
+  "@labelMessageEffectsDescription": {
+    "description": "Label describing what message effects are",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelThemeAmoled": "AMOLED",
+  "@labelThemeAmoled": {
+    "description": "Label for the light theme",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomAddReactionsTitle": "Dodaj reakcje",
+  "@labelMatrixPermissionsRoomAddReactionsTitle": {
+    "description": "Title for the permission to add an emoji reaction to a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsRoomAddReactionsDescription": "Dodaj reakcje do wiadomości",
+  "@labelMatrixPermissionsRoomAddReactionsDescription": {
+    "description": "describes the permission to add an emoji reaction to a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsChangeRoomPermissionsDescription": "Zezwala użytkownikowi na zmianę ustawień uprawnień",
+  "@labelMatrixPermissionsChangeRoomPermissionsDescription": {
+    "description": "Description for the permission to change permissions of the room",
+    "type": "text",
+    "placeholders": {}
   }
 }
