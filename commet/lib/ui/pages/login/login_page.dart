@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:commet/client/auth.dart';
 import 'package:commet/client/client.dart';
+import 'package:commet/client/matrix/database/matrix_database.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/login/login_page_view.dart';
@@ -39,7 +40,7 @@ class LoginPageState extends State<LoginPage> {
   StreamSubscription? progressSubscription;
   double? progress;
   List<LoginFlow>? loginFlows;
-  late Client loginClient;
+  Client? loginClient;
 
   final Debouncer homeserverUpdateDebouncer =
       Debouncer(delay: const Duration(seconds: 1));
@@ -51,10 +52,12 @@ class LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     var internalId = RandomUtils.getRandomString(20);
-    loginClient = MatrixClient(identifier: internalId);
+    MatrixClient.create(internalId).then((client) {
+      loginClient = client;
 
-    progressSubscription = loginClient.connectionStatusChanged.stream
-        .listen(onLoginProgressChanged);
+      progressSubscription = loginClient!.connectionStatusChanged.stream
+          .listen(onLoginProgressChanged);
+    });
 
     super.initState();
   }
@@ -85,6 +88,7 @@ class LoginPageState extends State<LoginPage> {
   }
 
   Future<void> doLogin(Future<LoginResult> Function() login) async {
+    if (loginClient == null) return;
     if (isServerValid == false) {
       return;
     }
@@ -122,21 +126,23 @@ class LoginPageState extends State<LoginPage> {
     }
 
     if (result == LoginResult.success) {
-      clientManager?.addClient(loginClient);
-      widget.onSuccess?.call(loginClient);
+      clientManager?.addClient(loginClient!);
+      widget.onSuccess?.call(loginClient!);
     }
   }
 
   Future<void> doSsoLogin(SsoLoginFlow flow) async {
-    await doLogin(() => loginClient.executeLoginFlow(flow));
+    if (loginClient == null) return;
+    await doLogin(() => loginClient!.executeLoginFlow(flow));
   }
 
   Future<void> doPasswordLogin(
       PasswordLoginFlow flow, String username, String password) async {
+    if (loginClient == null) return;
     flow.username = username;
     flow.password = password;
 
-    await doLogin(() => loginClient.executeLoginFlow(flow));
+    await doLogin(() => loginClient!.executeLoginFlow(flow));
   }
 
   void onLoginProgressChanged(ClientConnectionStatusUpdate event) {
@@ -146,6 +152,8 @@ class LoginPageState extends State<LoginPage> {
   }
 
   Future<void> updateHomeserver(String input) async {
+    if (loginClient == null) return;
+
     setState(() {
       loginFlows = null;
       loadingServerInfo = true;
@@ -153,7 +161,7 @@ class LoginPageState extends State<LoginPage> {
     });
 
     var uri = Uri.https(input);
-    var result = await loginClient.setHomeserver(uri);
+    var result = await loginClient!.setHomeserver(uri);
 
     setState(() {
       loadingServerInfo = false;
