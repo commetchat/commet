@@ -520,10 +520,10 @@ packages:
     description:
       path: flutter_local_notifications
       ref: HEAD
-      resolved-ref: aa7b3adce37af540d058906493e91371e8a28dae
+      resolved-ref: "78a9fe5132f720bc9e501fb26a1962a14915f69d"
       url: "https://github.com/commetchat/flutter_local_notifications.git"
     source: git
-    version: "19.2.1"
+    version: "19.4.1"
   flutter_local_notifications_linux:
     dependency: transitive
     description:
@@ -536,18 +536,18 @@ packages:
     dependency: transitive
     description:
       name: flutter_local_notifications_platform_interface
-      sha256: "2569b973fc9d1f63a37410a9f7c1c552081226c597190cb359ef5d5762d1631c"
+      sha256: "277d25d960c15674ce78ca97f57d0bae2ee401c844b6ac80fcd972a9c99d09fe"
       url: "https://pub.dev"
     source: hosted
-    version: "9.0.0"
+    version: "9.1.0"
   flutter_local_notifications_windows:
     dependency: transitive
     description:
       name: flutter_local_notifications_windows
-      sha256: f8fc0652a601f83419d623c85723a3e82ad81f92b33eaa9bcc21ea1b94773e6e
+      sha256: ed46d7ae4ec9d19e4c8fa2badac5fe27ba87a3fe387343ce726f927af074ec98
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.0"
+    version: "1.0.2"
   flutter_localizations:
     dependency: "direct main"
     description: flutter
@@ -2010,10 +2010,10 @@ packages:
     dependency: "direct main"
     description:
       name: win_toast
-      sha256: "7d0976d321ee034f3dfc79ec5b9ee7b8d8669413eea3559298e12c40ccea29d1"
+      sha256: "1e0dc6e1094bc882ed87133e80c12cbe805d72f6faa7ed98795c7ffe7f7ea900"
       url: "https://pub.dev"
     source: hosted
-    version: "0.3.1"
+    version: "0.4.0"
   window_manager:
     dependency: "direct main"
     description:
