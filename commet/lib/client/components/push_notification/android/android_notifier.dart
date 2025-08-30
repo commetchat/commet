@@ -142,9 +142,10 @@ class AndroidNotifier implements Notifier {
         shortcutId: content.roomId,
         silent: content.priority == NotificationPriority.low,
         ticker: content.content,
-        bubbleActivity:
-            bubblesEnabled ? "chat.commet.commetapp.BubbleActivity" : null,
-        bubbleExtra: bubblesEnabled ? payload : null,
+        bubble: bubblesEnabled
+            ? BubbleMetadata("chat.commet.commetapp.BubbleActivity",
+                extra: payload)
+            : null,
         color: const Color.fromARGB(0xff, 0x53, 0x4c, 0xdd));
 
     await flutterLocalNotificationsPlugin?.show(

@@ -5,7 +5,7 @@ import 'package:matrix/src/utils/space_child.dart';
 
 @Reflector()
 class ReflectableMatrixClient extends matrix.Client {
-  ReflectableMatrixClient(super.clientName);
+  ReflectableMatrixClient(super.clientName, {required super.database});
 }
 
 @Reflector()

@@ -115,6 +115,7 @@ Future<ProcessResult> buildRunner() async {
       "run",
       "build_runner",
       "build",
+      "--delete-conflicting-outputs",
     ],
     runInShell: true,
   );
