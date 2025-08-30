@@ -332,7 +332,7 @@ class MatrixClient extends Client {
   Future<void> _updateOwnProfile() async {
     final id = _matrixClient.userID;
     if (id != null) {
-      var data = await _matrixClient.database!.getUserProfile(id);
+      var data = await _matrixClient.database.getUserProfile(id);
       if (data != null) {
         self = MatrixProfile(
             _matrixClient,

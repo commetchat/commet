@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:commet/client/auth.dart';
 import 'package:commet/client/client.dart';
-import 'package:commet/client/matrix/database/matrix_database.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/login/login_page_view.dart';
