@@ -2010,10 +2010,10 @@ packages:
     dependency: "direct main"
     description:
       name: win_toast
-      sha256: "7d0976d321ee034f3dfc79ec5b9ee7b8d8669413eea3559298e12c40ccea29d1"
+      sha256: "1e0dc6e1094bc882ed87133e80c12cbe805d72f6faa7ed98795c7ffe7f7ea900"
       url: "https://pub.dev"
     source: hosted
-    version: "0.3.1"
+    version: "0.4.0"
   window_manager:
     dependency: "direct main"
     description:
