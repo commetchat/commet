@@ -5,18 +5,18 @@ packages:
     dependency: transitive
     description:
       name: _fe_analyzer_shared
-      sha256: "0b2f2bd91ba804e53a61d757b986f89f1f9eaed5b11e4b2f5a2468d86d6c9fc7"
+      sha256: da0d9209ca76bde579f2da330aeb9df62b6319c834fa7baae052021b0462401f
       url: "https://pub.dev"
     source: hosted
-    version: "67.0.0"
+    version: "85.0.0"
   analyzer:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       name: analyzer
-      sha256: "37577842a27e4338429a1cbc32679d508836510b056f1eedf0c8d20e39c1383d"
+      sha256: "974859dc0ff5f37bc4313244b3218c791810d03ab3470a579580279ba971a48d"
       url: "https://pub.dev"
     source: hosted
-    version: "6.4.1"
+    version: "7.7.1"
   archive:
     dependency: "direct main"
     description:
@@ -69,10 +69,10 @@ packages:
     dependency: "direct main"
     description:
       name: build
-      sha256: "80184af8b6cb3e5c1c4ec6d8544d27711700bc3e6d2efad04238c7b5290889f0"
+      sha256: cef23f1eda9b57566c81e2133d196f8e3df48f244b317368d65c5943d91148f0
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.1"
+    version: "2.4.2"
   build_cli_annotations:
     dependency: transitive
     description:
@@ -101,10 +101,10 @@ packages:
     dependency: transitive
     description:
       name: build_resolvers
-      sha256: "339086358431fa15d7eca8b6a36e5d783728cf025e559b834f4609a1fcfb7b0a"
+      sha256: b9e4fda21d846e192628e7a4f6deda6888c36b5b69ba02ff291a01fd529140f0
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.2"
+    version: "2.4.4"
   build_runner:
     dependency: "direct dev"
     description:
@@ -277,10 +277,10 @@ packages:
     dependency: transitive
     description:
       name: dart_style
-      sha256: "99e066ce75c89d6b29903d788a7bb9369cf754f7b24bf70bf4b6d6d6b26853b9"
+      sha256: "7306ab8a2359a48d22310ad823521d723acfed60ee1f7e37388e8986853b6820"
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.6"
+    version: "2.3.8"
   dart_webrtc:
     dependency: transitive
     description:
@@ -345,6 +345,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.28.1"
+  drift_dev:
+    dependency: "direct dev"
+    description:
+      name: drift_dev
+      sha256: "68c138e884527d2bd61df2ade276c3a144df84d1adeb0ab8f3196b5afe021bd4"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.28.0"
   dropdown_button2:
     dependency: transitive
     description:
@@ -1266,6 +1274,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.1"
+  recase:
+    dependency: transitive
+    description:
+      name: recase
+      sha256: e4eb4ec2dcdee52dcf99cb4ceabaffc631d7424ee55e56f280bc039737f89213
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.1.0"
   receive_intent:
     dependency: "direct main"
     description:
@@ -1275,14 +1291,6 @@ packages:
       url: "https://github.com/daadu/receive_intent"
     source: git
     version: "0.2.7"
-  reflectable:
-    dependency: "direct main"
-    description:
-      name: reflectable
-      sha256: cdc1a278a2e9769abafaf9ba54ce1fd3432b2a38360e14b87ea6344f715340de
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.0.6"
   safe_local_storage:
     dependency: transitive
     description:
@@ -1441,6 +1449,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.0"
+  source_gen:
+    dependency: transitive
+    description:
+      name: source_gen
+      sha256: "35c8150ece9e8c8d263337a265153c3329667640850b9304861faea59fc98f6b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0"
   source_map_stack_trace:
     dependency: transitive
     description:
@@ -1537,6 +1553,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.5.39"
+  sqlparser:
+    dependency: transitive
+    description:
+      name: sqlparser
+      sha256: "57090342af1ce32bb499aa641f4ecdd2d6231b9403cea537ac059e803cc20d67"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.41.2"
   stack_trace:
     dependency: transitive
     description:

@@ -23,7 +23,6 @@ dependencies:
   http: ^1.1.0
   implicitly_animated_list: ^2.2.0
   intl: any
-  intl_translation: ^0.20.0
   intl_utils: any
   just_the_tooltip: ^0.0.12
   media_kit: ^1.2.0
@@ -81,7 +80,6 @@ dependencies:
   archive: ^3.6.1
   exif: ^3.3.0
   image: ^4.2.0
-  reflectable: ^4.0.6
   flutter_webrtc: ^0.14.1
   file_picker: ^10.2.0
   flutter_web_auth_2: ^4.1.0
@@ -92,6 +90,7 @@ dependencies:
   flutter_shortcuts_new: ^2.0.0
   flutter_vodozemac: ^0.2.2
   vodozemac: ^0.2.0
+  intl_translation: ^0.20.1
 
 
   ## ---- Putting some extra lines in here to help git with the diff
@@ -102,8 +101,11 @@ dependencies:
   ## End Google Services Dependencies
   ## ----
   ## ----
+dependency_overrides:
+  analyzer: ^7.3.0
 
 dev_dependencies: 
+  drift_dev: ^2.28.0
   build_runner: ^2.4.11
   flutter_launcher_icons: ^0.13.1
   flutter_lints: ^6.0.0
