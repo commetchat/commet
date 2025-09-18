@@ -375,6 +375,9 @@ jobs:
         run: |
           cd $PROJECT_PATH
           dart run scripts/codegen.dart
+          
+      - name: Prepare web
+        run: ./scripts/prepare-web.sh
 
       - name: Build Web
         run: |
