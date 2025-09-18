@@ -22,7 +22,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2.8.0
         with:
-          flutter-version: '3.32.4'
+          flutter-version: '3.35.4'
           channel: 'stable'
 
       - name: Configure Flutter
@@ -72,7 +72,7 @@ jobs:
       - name: Setup Flutter 
         uses: subosito/flutter-action@v2.8.0
         with:
-          flutter-version: '3.32.4'
+          flutter-version: '3.35.4'
           channel: 'stable'
 
       - name: Setup Java
@@ -129,7 +129,7 @@ jobs:
       - name: Setup Flutter 
         uses: subosito/flutter-action@v2.8.0
         with:
-          flutter-version: '3.32.4'
+          flutter-version: '3.35.4'
           channel: 'stable'
 
       - name: Setup Java
@@ -191,7 +191,7 @@ jobs:
       - name: Setup Flutter 
         uses: subosito/flutter-action@v2.8.0
         with:
-          flutter-version: '3.32.4'
+          flutter-version: '3.35.4'
           channel: 'stable'
 
       - name: Setup Tools
@@ -249,7 +249,7 @@ jobs:
       - name: Setup Flutter 
         uses: subosito/flutter-action@v2.8.0
         with:
-          flutter-version: '3.32.4'
+          flutter-version: '3.35.4'
           channel: 'stable'
 
       - name: Setup Tools
@@ -310,7 +310,7 @@ jobs:
       - name: Setup Flutter 
         uses: subosito/flutter-action@v2.8.0
         with:
-          flutter-version: '3.32.4'
+          flutter-version: '3.35.4'
           channel: 'stable'
 
       - name: Setup Tools
@@ -363,7 +363,7 @@ jobs:
       - name: Setup Flutter 
         uses: subosito/flutter-action@v2.8.0
         with:
-          flutter-version: '3.32.4'
+          flutter-version: '3.35.4'
           channel: 'stable'
 
       - name: Setup Tools
