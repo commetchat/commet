@@ -36,7 +36,8 @@ class MatrixRTCDataChannelComponent
     return MatrixRtcDataChannel(sesh, channel, purpose: purpose);
   }
 
-  void dataChannelOpenedCallback(MatrixVoipSession session, RTCDataChannel channel) {
+  void dataChannelOpenedCallback(
+      MatrixVoipSession session, RTCDataChannel channel) {
     var newChannel = MatrixRtcDataChannel(session, channel);
 
     if (newChannel.purpose ==
