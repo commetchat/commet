@@ -51,7 +51,7 @@ class _TimelineEventViewReactionsState extends State<TimelineEventViewReactions>
         }).toList());
   }
 
-  onReactionTapped(Emoticon emote) {
+  void onReactionTapped(Emoticon emote) {
     if (reactions[emote]?.contains(currentUserIdentifier) == true) {
       widget.timeline.room.removeReaction(event, emote);
     } else {

@@ -23,7 +23,7 @@ void extractStrings(List<File> files) async {
   print(process.stderr);
 }
 
-main() async {
+Future<void> main() async {
   var files = await codegen.generateFileLists();
   extractStrings(files);
 }

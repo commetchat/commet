@@ -6,16 +6,11 @@ class ScaledSafeArea extends SafeArea {
   const ScaledSafeArea({
     super.key,
     required super.child,
-    bool bottom = true,
-    bool top = true,
-    bool left = true,
-    bool right = true,
-  }) : super(
-          bottom: bottom,
-          top: top,
-          right: right,
-          left: left,
-        );
+    super.bottom,
+    super.top,
+    super.left,
+    super.right,
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -44,7 +44,7 @@ String getFlutterPlatformName(String platform) {
   return platform;
 }
 
-main(List<String> args) async {
+Future<void> main(List<String> args) async {
   String version = getVersionTag(args);
   String platform = getPlatform(args);
   String hash = getHash(args);

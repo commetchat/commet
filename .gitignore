@@ -4,3 +4,5 @@ commet/assets/js/package/olm.js
 commet/assets/js/package/olm.wasm
 commet/assets/js/package/olm_legacy.js
 commet/.vodozemac/
+commet/assets/vodozemac/vodozemac_bindings_dart_bg.wasm
+commet/assets/vodozemac/vodozemac_bindings_dart.js

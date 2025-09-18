@@ -6,7 +6,7 @@ import 'package:markdown/markdown.dart' as md;
 import 'package:tiamat/config/config.dart';
 
 class RichTextEditingController extends TextEditingController {
-  RichTextEditingController({String? text}) : super(text: text);
+  RichTextEditingController({super.text});
 
   @override
   TextSpan buildTextSpan(

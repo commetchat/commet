@@ -9,3 +9,4 @@ analyzer:
     - lib/generated/l10n/*.dart
     - lib/main.widgetbook.dart
     - integration_test/**
+    - lib/generated/**

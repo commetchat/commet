@@ -93,7 +93,7 @@ class _SetupPageState extends State<SetupPage> {
     );
   }
 
-  goNextMenu() {
+  void goNextMenu() {
     currentMenu.submit();
     var newIndex = currentMenuIndex + 1;
     setState(() {

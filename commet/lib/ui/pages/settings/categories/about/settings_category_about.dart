@@ -164,7 +164,7 @@ class _AppInfoState extends State<_AppInfo> {
     }
   }
 
-  copySystemInfo() {
+  void copySystemInfo() {
     var data = """
 <details open>
 <summary>Device Information</summary>

@@ -6,7 +6,7 @@ abstract class SpaceComponent<R extends Client, T extends Space>
   late T _space;
   T get space => _space;
 
-  SpaceComponent(R client, T space) : super(client) {
+  SpaceComponent(super.client, T space) {
     _space = space;
   }
 }

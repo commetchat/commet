@@ -83,11 +83,11 @@ class _SpaceSummaryState extends State<SpaceSummary> {
     NavigationUtils.navigateTo(context, SpaceSettingsPage(space: widget.space));
   }
 
-  openRoomSettings(Room room) {
+  void openRoomSettings(Room room) {
     NavigationUtils.navigateTo(context, RoomSettingsPage(room: room));
   }
 
-  onAddRoomButtonTap() {
+  void onAddRoomButtonTap() {
     AdaptiveDialog.show(context,
         builder: (dialogContext) => AddSpaceOrRoom.askCreateOrExistingRoom(
               client: widget.space.client,

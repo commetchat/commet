@@ -101,6 +101,10 @@ dependencies:
   ## End Google Services Dependencies
   ## ----
   ## ----
+  markdown: any
+  collection: any
+  webrtc_interface: any
+  uuid: any
 dependency_overrides:
   analyzer: ^7.3.0
 
@@ -108,14 +112,14 @@ dev_dependencies:
   drift_dev: ^2.28.0
   build_runner: ^2.4.11
   flutter_launcher_icons: ^0.13.1
-  flutter_lints: ^6.0.0
   msix: ^3.7.0
   pubspec_dependency_sorter: ^1.0.4
   flutter_test: 
     sdk: flutter
   integration_test: 
     sdk: flutter
-
+  file: any
+  
 flutter_intl: 
   class_name: T
   main_locale: en

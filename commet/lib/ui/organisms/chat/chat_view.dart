@@ -78,7 +78,7 @@ class ChatView extends StatelessWidget {
     state.room.timeline!.markAsRead(event);
   }
 
-  clearNotifications(Room room) {
+  void clearNotifications(Room room) {
     // if we clear notifications when opening bubble, the bubble disappears
     if (state.isBubble) {
       return;
