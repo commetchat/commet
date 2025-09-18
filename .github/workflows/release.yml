@@ -375,6 +375,8 @@ jobs:
         run: |
           cd $PROJECT_PATH
           dart run scripts/codegen.dart
+      
+      - uses: moonrepo/setup-rust@v1
 
       - name: Prepare web
         run: |
