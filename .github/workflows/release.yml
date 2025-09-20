@@ -377,7 +377,8 @@ jobs:
           dart run scripts/codegen.dart
       
       - uses: moonrepo/setup-rust@v1
-
+      - run: rustup component add rust-src --toolchain nightly-x86_64-unknown-linux-gnu
+      
       - name: Prepare web
         run: |
           cd $PROJECT_PATH
