@@ -106,7 +106,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
     );
   }
 
-  onPushGatewaySelected() async {
+  Future<void> onPushGatewaySelected() async {
     var value = (pushGatewayKey.currentState as DropdownTextFieldState).value;
     preferences.setPushGateway(value);
 

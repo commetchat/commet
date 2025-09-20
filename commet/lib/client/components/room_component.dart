@@ -6,7 +6,7 @@ abstract class RoomComponent<R extends Client, T extends Room>
   late T _room;
   T get room => _room;
 
-  RoomComponent(R client, T room) : super(client) {
+  RoomComponent(super.client, T room) {
     _room = room;
   }
 }

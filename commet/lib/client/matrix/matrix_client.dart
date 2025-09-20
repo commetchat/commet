@@ -18,7 +18,6 @@ import 'package:commet/debug/log.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
-import 'package:commet/ui/pages/developer/app_inspector/value_reflector_widget.dart';
 import 'package:commet/ui/pages/matrix/authentication/matrix_uia_request.dart';
 import 'package:commet/utils/list_extension.dart';
 import 'package:commet/utils/notifying_list.dart';
@@ -31,14 +30,14 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:matrix/matrix.dart' as matrix;
 import 'package:matrix/encryption.dart';
+import 'package:flutter_vodozemac/flutter_vodozemac.dart' as vodozemac;
 
 import '../../ui/atoms/code_block.dart';
 import '../../ui/pages/matrix/verification/matrix_verification_page.dart';
 import 'matrix_room.dart';
 import 'matrix_space.dart';
-import 'package:olm/olm.dart' as olm;
+import 'package:vodozemac/vodozemac.dart' as vod;
 
-@Reflector()
 class MatrixClient extends Client {
   late matrix.Client _matrixClient;
   late final List<Component<MatrixClient>> componentsInternal;
@@ -70,7 +69,8 @@ class MatrixClient extends Client {
       ? const matrix.NativeImplementationsDummy()
       : matrix.NativeImplementationsIsolate(compute);
 
-  MatrixClient({required String identifier}) {
+  MatrixClient(
+      {required String identifier, required matrix.DatabaseApi database}) {
     if (preferences.developerMode) {
       matrix.Logs().level = matrix.Level.verbose;
     } else {
@@ -78,10 +78,15 @@ class MatrixClient extends Client {
     }
 
     _id = identifier;
-    _matrixClient = _createMatrixClient(identifier);
+    _matrixClient = _createMatrixClient(identifier, database);
 
     _matrixClient.onSync.stream.listen(onMatrixClientSync);
     componentsInternal = ComponentRegistry.getMatrixComponents(this);
+  }
+
+  static Future<MatrixClient> create(String identifier) async {
+    final database = await getMatrixDatabase(identifier);
+    return MatrixClient(identifier: identifier, database: database);
   }
 
   static String hash(String name) {
@@ -140,6 +145,13 @@ class MatrixClient extends Client {
             "Text that explains to the user that libolm dependency is not found",
       );
 
+  static String get matrixClientVodozemacMissingMessage => Intl.message(
+        "vodozemac is not installed or was not found. End to End Encryption will not be available until this is resolved",
+        name: "matrixClientVodozemacMissingMessage",
+        desc:
+            "Text that explains to the user that vodozemac dependency is not found",
+      );
+
   static String get matrixClientEncryptionWarningTitle => Intl.message(
         "Encryption Warning",
         name: "matrixClientEncryptionWarningTitle",
@@ -157,7 +169,7 @@ class MatrixClient extends Client {
 
       if (clients != null) {
         for (var clientName in clients) {
-          var client = MatrixClient(identifier: clientName);
+          var client = await MatrixClient.create(clientName);
           manager.addClient(client);
           futures.add(Diagnostics.general
               .timeAsync("Initializing client $clientName", () async {
@@ -183,13 +195,15 @@ class MatrixClient extends Client {
 
   static Future<void> _checkSystem(ClientManager clientManager) async {
     try {
-      await olm.init();
-      olm.get_library_version();
+      await vod.init(wasmPath: './assets/assets/vodozemac/');
+      if (!vod.isInitialized()) {
+        throw Exception("Vodozemac failed to initialize!");
+      }
     } catch (exception) {
       clientManager.alertManager.addAlert(Alert(
         AlertType.warning,
         titleGetter: () => matrixClientEncryptionWarningTitle,
-        messageGetter: () => matrixClientOlmMissingMessage,
+        messageGetter: () => matrixClientVodozemacMissingMessage,
       ));
     }
   }
@@ -197,7 +211,8 @@ class MatrixClient extends Client {
   static matrix.NativeImplementations get nativeImplementations =>
       BuildConfig.WEB
           ? const matrix.NativeImplementationsDummy()
-          : matrix.NativeImplementationsIsolate(compute);
+          : matrix.NativeImplementationsIsolate(compute,
+              vodozemacInit: vodozemac.init);
   @override
   Future<void> init(bool loadingFromCache,
       {bool isBackgroundService = false}) async {
@@ -267,7 +282,7 @@ class MatrixClient extends Client {
   @override
   bool isLoggedIn() => _matrixClient.isLogged();
 
-  matrix.Client _createMatrixClient(String name) {
+  matrix.Client _createMatrixClient(String name, matrix.DatabaseApi database) {
     var client = matrix.Client(
       name,
       verificationMethods: {
@@ -284,7 +299,7 @@ class MatrixClient extends Client {
         matrix.AuthenticationTypes.sso
       },
       nativeImplementations: nativeImplementations,
-      databaseBuilder: (client) => getMatrixDatabase(client.clientName),
+      database: database,
       logLevel: matrix.Level.verbose,
     );
 
@@ -315,7 +330,7 @@ class MatrixClient extends Client {
   Future<void> _updateOwnProfile() async {
     final id = _matrixClient.userID;
     if (id != null) {
-      var data = await _matrixClient.database!.getUserProfile(id);
+      var data = await _matrixClient.database.getUserProfile(id);
       if (data != null) {
         self = MatrixProfile(
             _matrixClient,

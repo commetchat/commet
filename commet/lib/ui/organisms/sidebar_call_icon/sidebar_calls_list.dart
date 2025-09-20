@@ -80,7 +80,7 @@ class _SidebarCallsListState extends State<SidebarCallsList> {
     );
   }
 
-  addOverlay() {
+  void addOverlay() {
     overlay = OverlayEntry(builder: buildOverlay);
     Overlay.of(context).insert(overlay!);
   }
@@ -144,7 +144,7 @@ class _SidebarCallsListState extends State<SidebarCallsList> {
     updateHover(false);
   }
 
-  onSelectionUpdate(
+  void onSelectionUpdate(
       LayerLink link, VoipSession session, bool showWhileUnhovered) {
     setState(() {
       this.link = link;

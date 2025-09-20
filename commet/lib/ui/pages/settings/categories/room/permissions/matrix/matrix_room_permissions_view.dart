@@ -299,7 +299,7 @@ class _MatrixRoomPermissionsViewState extends State<MatrixRoomPermissionsView> {
     }
   }
 
-  applySettings() async {
+  Future<void> applySettings() async {
     setState(() {
       isLoading = true;
     });

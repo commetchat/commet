@@ -126,7 +126,7 @@ class CallManager {
     player = null;
   }
 
-  onCallStateChanged(VoipSession event) {
+  void onCallStateChanged(VoipSession event) {
     if (event.state == VoipState.connected ||
         event.state == VoipState.connecting) {
       stopRingtone();

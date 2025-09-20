@@ -27,11 +27,11 @@ class _SpaceAppearanceSettingsPageState
     );
   }
 
-  onAvatarPicked(Uint8List bytes, String? mimeType) {
+  void onAvatarPicked(Uint8List bytes, String? mimeType) {
     widget.space.changeAvatar(bytes, mimeType);
   }
 
-  setName(String name) {
+  void setName(String name) {
     widget.space.setDisplayName(name);
   }
 }

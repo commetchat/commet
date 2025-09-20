@@ -42,7 +42,7 @@ Help translate Commet to your language on [Weblate](https://hosted.weblate.org/p
 </a>
 
 # Development
-Commet is built using [Flutter](https://flutter.dev), currently v3.32.4 
+Commet is built using [Flutter](https://flutter.dev), currently v3.35.4 
 
 This repo currently has a monorepo structure, containing two flutter projects: Commet and Tiamat. Commet is the main client, and Tiamat is a sort of wrapper around Material with some extra goodies, which is used to maintain a consistent style across the app. Tiamat may eventually be moved to its own repo, but for now it is maintained here for ease of development.
 ## Building
@@ -52,7 +52,7 @@ This repo currently has a monorepo structure, containing two flutter projects: C
 ### 2. Install Libraries
 Commet requires some additional libraries to be built 
 ```bash
-sudo apt-get install -y ninja-build libgtk-3-dev libolm3 libmpv-dev mpv ffmpeg libmimalloc-dev
+sudo apt-get install -y ninja-build libgtk-3-dev libmpv-dev mpv ffmpeg libmimalloc-dev
 ```
 
 ### 3. Fetch Dependencies

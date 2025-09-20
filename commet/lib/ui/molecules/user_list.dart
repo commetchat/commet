@@ -114,11 +114,6 @@ class _RoomMemberListState extends State<RoomMemberList> {
       return null;
     }
 
-    if (index == 0) {
-      return importantMembers?[index].$2 ??
-          widget.room.getMemberRole(roomMembers[index].identifier);
-    }
-
     if (index == importantMembers?.length) {
       var user = getDisplayUser(index);
       return widget.room.getMemberRole(user.identifier);
@@ -126,6 +121,11 @@ class _RoomMemberListState extends State<RoomMemberList> {
 
     if (importantMembers != null && index < importantMembers!.length) {
       var role = importantMembers![index].$2;
+
+      if (index == 0) {
+        return role;
+      }
+
       var prevRole = importantMembers![index - 1].$2;
 
       if (prevRole != role) {

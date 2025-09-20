@@ -17,17 +17,18 @@ class BenchmarkTimelineViewer extends StatefulWidget {
 }
 
 class _BenchmarkTimelineViewerState extends State<BenchmarkTimelineViewer> {
-  late Timeline timeline;
+  Timeline? timeline;
 
   @override
   void initState() {
-    var client = MatrixClient(identifier: "benchmark");
-    client.mockComponents();
-    client.self = MatrixProfile(client.getMatrixClient(),
-        matrix.Profile(userId: '@benchy:matrix.org', displayName: 'benchy'));
+    MatrixClient.create("benchmark").then((client) {
+      client.mockComponents();
+      client.self = MatrixProfile(client.getMatrixClient(),
+          matrix.Profile(userId: '@benchy:matrix.org', displayName: 'benchy'));
 
-    var room = client.createRoomWithData();
-    timeline = room.getBenchmarkTimeline();
+      var room = client.createRoomWithData();
+      timeline = room.getBenchmarkTimeline();
+    });
     super.initState();
   }
 
@@ -38,11 +39,13 @@ class _BenchmarkTimelineViewerState extends State<BenchmarkTimelineViewer> {
         onPressed: () => Navigator.of(context).pop(),
         child: const Icon(Icons.chevron_left),
       ),
-      body: RoomTimelineWidgetView(
-        key: const ValueKey("timeline-viewer-benchmark"),
-        timeline: timeline,
-        // doMessageOverlayMenu: false,
-      ),
+      body: timeline != null
+          ? RoomTimelineWidgetView(
+              key: const ValueKey("timeline-viewer-benchmark"),
+              timeline: timeline!,
+              // doMessageOverlayMenu: false,
+            )
+          : Container(),
     );
   }
 }

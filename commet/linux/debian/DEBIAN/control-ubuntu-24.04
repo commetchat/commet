@@ -3,6 +3,6 @@ Version: {{VERSION_TAG}}
 Architecture: all
 Essential: no
 Priority: optional
-Depends: libmpv2, libolm3
+Depends: libmpv2
 Maintainer: Airyz
 Description: Your space to connect!
