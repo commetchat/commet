@@ -29,10 +29,7 @@ class MatrixSpace extends Space {
   final NotifyingList<RoomPreview> _previews =
       NotifyingList.empty(growable: true);
 
-  @override
-  List<Space> get subspaces => List.from(_matrixRoom.spaceChildren
-      .map((child) => _client.getSpace(child.roomId!))
-      .where((e) => e != null));
+  NotifyingList<Space> _subspaces = NotifyingList.empty(growable: true);
 
   final StreamController<Room> _onChildUpdated = StreamController.broadcast();
 
@@ -114,6 +111,15 @@ class MatrixSpace extends Space {
   Stream<void> get onChildRoomsUpdated => _rooms.onListUpdated;
 
   @override
+  List<Space> get subspaces => _subspaces;
+
+  @override
+  Stream<int> get onChildSpaceAdded => _subspaces.onAdd;
+
+  @override
+  Stream<int> get onChildSpaceRemoved => _subspaces.onRemove;
+
+  @override
   Stream<int> get onRoomAdded => _rooms.onAdd;
 
   @override
@@ -149,22 +155,19 @@ class MatrixSpace extends Space {
     _matrixClient = matrixClient;
     _client = client;
     _displayName = room.getLocalizedDisplayname();
+    _permissions = MatrixRoomPermissions(_matrixRoom);
+    refresh();
 
     _matrixRoom.postLoad();
     _components = ComponentRegistry.getMatrixSpaceComponents(client, this);
 
     _subscriptions = List.from([
-      client.onSync.listen((event) {
-        refresh();
-      }),
+      client.onRoomAdded.listen((_) => updateRoomsList()),
       client.onRoomRemoved.listen(onClientRoomRemoved),
 
       // Subscribe to all child update events
       _rooms.onAdd.listen(_onRoomAdded),
     ], growable: true);
-
-    _permissions = MatrixRoomPermissions(_matrixRoom);
-    refresh();
   }
 
   void refresh() {
@@ -208,15 +211,41 @@ class MatrixSpace extends Space {
     _avatar = avatar;
   }
 
+  void onClientRoomRemoved(int index) {
+    var leftRoom = client.rooms[index];
+    if (containsRoom(leftRoom.identifier)) {
+      _rooms.remove(leftRoom);
+    }
+  }
+
   void updateRoomsList() {
     for (var child in _matrixRoom.spaceChildren) {
-      var room = client.getRoom(child.roomId!);
-      if (room != null) {
-        _previews.removeWhere((element) => element.roomId == room.identifier);
+      var space = client.getSpace(child.roomId!);
 
-        if (!containsRoom(room.identifier) &&
-            !client.hasSpace(room.identifier)) {
-          _rooms.add(room);
+      if (space == null) {
+        subspaces.removeWhere((e) => e.identifier == child.roomId);
+      }
+
+      if (space != null) {
+        if (!subspaces.any((s) => s.identifier == child.roomId)) {
+          subspaces.add(space);
+
+          _previews.removeWhere((p) => p.roomId == child.roomId);
+        }
+      } else {
+        var room = client.getRoom(child.roomId!);
+
+        if (room == null) {
+          _rooms.removeWhere((e) => e.identifier == child.roomId);
+        }
+
+        if (room != null) {
+          if (!containsRoom(room.identifier) &&
+              !client.hasSpace(room.identifier)) {
+            _rooms.add(room);
+            _previews
+                .removeWhere((element) => element.roomId == room.identifier);
+          }
         }
       }
     }
@@ -283,7 +312,7 @@ class MatrixSpace extends Space {
   @override
   Future<void> loadExtra() async {
     var response =
-        await _matrixClient.getSpaceHierarchy(identifier, maxDepth: 5);
+        await _matrixClient.getSpaceHierarchy(identifier, maxDepth: 1);
 
     // read child rooms
     response.rooms
@@ -321,12 +350,5 @@ class MatrixSpace extends Space {
     }
 
     return null;
-  }
-
-  void onClientRoomRemoved(int index) {
-    var leftRoom = client.rooms[index];
-    if (containsRoom(leftRoom.identifier)) {
-      _rooms.remove(leftRoom);
-    }
   }
 }

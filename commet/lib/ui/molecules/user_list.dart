@@ -141,6 +141,7 @@ class _RoomMemberListState extends State<RoomMemberList> {
     var itemCount = getLimitedDisplayListCount();
 
     return ListView.builder(
+      padding: EdgeInsets.all(0),
       itemBuilder: (context, index) {
         if (index < itemCount) {
           var member = getDisplayUser(index);

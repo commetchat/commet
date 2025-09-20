@@ -2,13 +2,14 @@ import 'dart:async';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/room_preview.dart';
-import 'package:commet/client/stale_info.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/atoms/room_panel.dart';
-import 'package:commet/utils/common_animation.dart';
+import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/utils/common_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:implicitly_animated_list/implicitly_animated_list.dart';
 import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -16,19 +17,12 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 class SpaceSummaryView extends StatefulWidget {
   const SpaceSummaryView(
       {super.key,
+      required this.space,
       required this.displayName,
       this.topic,
       this.joinRoom,
-      this.rooms,
-      this.spaces,
       this.avatar,
-      this.childPreviews,
-      this.onChildPreviewAdded,
-      this.onChildPreviewRemoved,
-      this.onChildPreviewsUpdated,
       this.onSpaceUpdated,
-      this.onRoomAdded,
-      this.onRoomRemoved,
       this.visibility,
       this.spaceColor,
       this.showSpaceSettingsButton = false,
@@ -37,22 +31,17 @@ class SpaceSummaryView extends StatefulWidget {
       this.onRoomTap,
       this.canAddRoom = false,
       this.onSpaceTap,
+      this.colorScheme,
       this.onRoomSettingsButtonTap});
+
+  final Space space;
   final String displayName;
   final String? topic;
   final Future<void> Function(String roomId)? joinRoom;
-  final List<RoomPreview>? childPreviews;
   final Stream<void>? onSpaceUpdated;
-  final Stream<int>? onChildPreviewAdded;
-  final Stream<int>? onChildPreviewRemoved;
-  final Stream<int>? onChildPreviewsUpdated;
-  final Stream<int>? onRoomAdded;
-  final Stream<int>? onRoomRemoved;
   final RoomVisibility? visibility;
   final ImageProvider? avatar;
   final Color? spaceColor;
-  final List<Room>? rooms;
-  final List<Space>? spaces;
   final Function? openSpaceSettings;
   final Function(Room room)? onRoomSettingsButtonTap;
   final Function(Room room)? onRoomTap;
@@ -60,26 +49,14 @@ class SpaceSummaryView extends StatefulWidget {
   final Function()? onAddRoomButtonTap;
   final bool showSpaceSettingsButton;
   final bool canAddRoom;
+  final ColorScheme? colorScheme;
   @override
   State<SpaceSummaryView> createState() => SpaceSummaryViewState();
 }
 
 class SpaceSummaryViewState extends State<SpaceSummaryView> {
-  int childPreviewCount = 0;
-  int childCount = 0;
-
-  final GlobalKey<AnimatedListState> _previewListKey =
-      GlobalKey<AnimatedListState>();
-  final GlobalKey<AnimatedListState> _roomListKey =
-      GlobalKey<AnimatedListState>();
-
   static ValueKey spaceSettingsButtonKey =
       const ValueKey("SPACE_SUMMARY_SPACE_SETTINGS_BUTTON");
-
-  StreamSubscription? previewAddedSubscription;
-  StreamSubscription? previewRemovedSubscription;
-  StreamSubscription? roomAddedSubscription;
-  StreamSubscription? roomRemovedSubscription;
 
   String get tooltipSpaceSettings => Intl.message("Space settings",
       desc: "Tooltip for the button that opens space settings",
@@ -116,32 +93,57 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
           desc: "Greeting to the space, supports markdown formatting",
           name: "labelSpaceGettingText");
 
+  late List<Space> subspaces;
+  late List<Room> rooms;
+  late List<RoomPreview> previews;
+
+  late List<StreamSubscription> subs;
+
   @override
   void initState() {
-    setState(() {
-      childPreviewCount = widget.childPreviews?.length ?? 0;
-      childCount = widget.rooms?.length ?? 0;
-    });
+    subspaces = widget.space.subspaces;
+    rooms = widget.space.rooms;
+    previews = widget.space.childPreviews;
 
-    previewAddedSubscription =
-        widget.onChildPreviewAdded?.listen(onPreviewAdded);
-
-    previewRemovedSubscription =
-        widget.onChildPreviewRemoved?.listen(onPreviewRemoved);
-
-    roomAddedSubscription = widget.onRoomAdded?.listen(onRoomAdded);
-
-    roomRemovedSubscription = widget.onRoomRemoved?.listen(onRoomRemoved);
-
+    subs = [
+      widget.space.onChildRoomPreviewAdded
+          .listen((_) => onPreviewListChanged()),
+      widget.space.onChildRoomPreviewsUpdated
+          .listen((_) => onPreviewListChanged()),
+      widget.space.onChildRoomPreviewRemoved
+          .listen((_) => onPreviewListChanged()),
+      widget.space.onRoomAdded.listen((_) => onRoomListChanged()),
+      widget.space.onRoomRemoved.listen((_) => onRoomListChanged()),
+      widget.space.onChildSpaceAdded.listen((_) => onSpaceListChanged()),
+      widget.space.onChildSpaceRemoved.listen((_) => onSpaceListChanged()),
+    ];
     super.initState();
+  }
+
+  void onPreviewListChanged() {
+    setState(() {
+      previews = widget.space.childPreviews;
+    });
+  }
+
+  void onRoomListChanged() {
+    setState(() {
+      rooms = widget.space.rooms;
+    });
+  }
+
+  void onSpaceListChanged() {
+    setState(() {
+      subspaces = widget.space.subspaces;
+    });
   }
 
   @override
   void dispose() {
-    previewAddedSubscription?.cancel();
-    previewRemovedSubscription?.cancel();
-    roomAddedSubscription?.cancel();
-    roomRemovedSubscription?.cancel();
+    for (var sub in subs) {
+      sub.cancel();
+    }
+
     super.dispose();
   }
 
@@ -149,44 +151,52 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
   Widget build(BuildContext context) {
     var pad = const EdgeInsets.fromLTRB(0, 4, 0, 4);
 
-    return Padding(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          avatar(),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.end,
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.max,
+      children: [
+        avatarAndBanner(),
+        Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
             children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  buildHeader(),
-                  spaceVisibility(),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      buildHeader(),
+                      spaceVisibility(),
+                    ],
+                  ),
+                  if (widget.showSpaceSettingsButton) buildSettingsButton()
                 ],
               ),
-              if (widget.showSpaceSettingsButton) buildSettingsButton()
+              if (previews.isNotEmpty)
+                Padding(
+                  padding: pad,
+                  child: buildPreviewList(),
+                ),
+              if (subspaces.isNotEmpty == true)
+                Padding(
+                  padding: pad,
+                  child: buildSpaceList(),
+                ),
+              Padding(
+                padding: pad,
+                child: buildRoomList(),
+              ),
             ],
           ),
-          if (childPreviewCount > 0)
-            Padding(
-              padding: pad,
-              child: buildPreviewList(),
-            ),
-          if (widget.spaces?.isNotEmpty == true)
-            Padding(
-              padding: pad,
-              child: buildSpaceList(),
-            ),
-          Padding(
-            padding: pad,
-            child: buildRoomList(),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -206,14 +216,50 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
     );
   }
 
-  Widget avatar() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Avatar.extraLarge(
-        image: widget.avatar,
-        placeholderText: widget.displayName,
-        placeholderColor: widget.spaceColor,
-      ),
+  Widget avatarAndBanner() {
+    var colorScheme = widget.colorScheme ?? Theme.of(context).colorScheme;
+
+    return Stack(
+      children: [
+        Padding(
+          padding: Layout.desktop
+              ? EdgeInsetsGeometry.only(left: 8, right: 8)
+              : EdgeInsetsGeometry.zero,
+          child: DecoratedBox(
+              decoration: BoxDecoration(
+                  color: colorScheme.secondary,
+                  borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(15),
+                      bottomRight: Radius.circular(15))),
+              child: ScaledSafeArea(
+                bottom: false,
+                left: false,
+                right: false,
+                top: true,
+                child: SizedBox(
+                  height: 150,
+                  width: double.infinity,
+                ),
+              )),
+        ),
+        Align(
+          alignment: AlignmentGeometry.center,
+          child: Padding(
+              padding: const EdgeInsets.fromLTRB(0, 50, 0, 0),
+              child: ScaledSafeArea(
+                child: Avatar.extraLarge(
+                  border: BoxBorder.all(
+                      color: Theme.of(context).colorScheme.surface,
+                      width: 10,
+                      style: BorderStyle.solid,
+                      strokeAlign: 0.5),
+                  image: widget.avatar,
+                  placeholderText: widget.displayName,
+                  placeholderColor: widget.spaceColor,
+                ),
+              )),
+        ),
+      ],
     );
   }
 
@@ -224,16 +270,16 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          AnimatedList(
-            initialItemCount: childCount,
-            key: _roomListKey,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemBuilder: (context, index, animation) {
-              var room = widget.rooms![index];
-              return buildRoomPanel(animation, room);
-            },
-          ),
+          if (rooms.isNotEmpty)
+            ImplicitlyAnimatedList(
+              key: ValueKey("animated-list-rooms-${widget.space.identifier}"),
+              initialAnimation: false,
+              shrinkWrap: true,
+              itemData: rooms,
+              itemBuilder: (context, data) {
+                return buildRoomPanel(data);
+              },
+            ),
           tiamat.Tooltip(
             text: tooltipAddRoom,
             preferredDirection: AxisDirection.left,
@@ -258,12 +304,13 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          ListView.builder(
+          ImplicitlyAnimatedList(
+            key: ValueKey(
+                "animated-list-child-spaces-${widget.space.identifier}"),
+            itemData: subspaces,
+            initialAnimation: false,
             shrinkWrap: true,
-            itemCount: widget.spaces!.length,
-            physics: const NeverScrollableScrollPhysics(),
-            itemBuilder: (context, index) {
-              var space = widget.spaces![index];
+            itemBuilder: (context, space) {
               return RoomPanel(
                 displayName: space.displayName,
                 color: space.color,
@@ -278,54 +325,53 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
     );
   }
 
-  SizeTransition buildRoomPanel(Animation<double> animation, Room room) {
-    return SizeTransition(
-        sizeFactor: CommonAnimations.easeOut(animation),
-        child: RoomPanel(
-          displayName: room.displayName,
-          avatar: room.avatar,
-          color: room.defaultColor,
-          onTap: widget.onRoomTap != null
-              ? () {
-                  widget.onRoomTap?.call(room);
-                }
-              : null,
-          body: room.lastEvent?.plainTextBody,
-          recentEventSender: room.lastEvent != null
-              ? room.getMemberOrFallback(room.lastEvent!.senderId).displayName
-              : null,
-          recentEventSenderColor: room.lastEvent != null
-              ? room.getColorOfUser(room.lastEvent!.senderId)
-              : null,
-        ));
+  Widget buildRoomPanel(Room room) {
+    return RoomPanel(
+      displayName: room.displayName,
+      avatar: room.avatar,
+      color: room.defaultColor,
+      onTap: widget.onRoomTap != null
+          ? () {
+              widget.onRoomTap?.call(room);
+            }
+          : null,
+      body: room.lastEvent?.plainTextBody,
+      recentEventSender: room.lastEvent != null
+          ? room.getMemberOrFallback(room.lastEvent!.senderId).displayName
+          : null,
+      recentEventSenderColor: room.lastEvent != null
+          ? room.getColorOfUser(room.lastEvent!.senderId)
+          : null,
+    );
   }
 
   Widget buildPreviewList() {
     return Panel(
-      header: labelSpaceAvailableRoomsList,
-      mode: TileType.surfaceContainer,
-      child: AnimatedList(
-        initialItemCount: childPreviewCount,
-        key: _previewListKey,
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemBuilder: (context, index, animation) {
-          var preview = widget.childPreviews![index];
-          return SizeTransition(
-              sizeFactor: CommonAnimations.easeOut(animation),
-              child: RoomPanel(
-                displayName: preview.displayName,
-                avatar: preview.avatar,
-                primaryButtonLabel: CommonStrings.promptJoin,
-                body: preview.topic,
-                color: preview.color,
-                onPrimaryButtonPressed: () {
-                  widget.joinRoom?.call(preview.roomId);
-                },
-              ));
-        },
-      ),
-    );
+        header: labelSpaceAvailableRoomsList,
+        mode: TileType.surfaceContainer,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            ImplicitlyAnimatedList(
+                key: ValueKey(
+                    "animated-list-child-previews-${widget.space.identifier}"),
+                initialAnimation: false,
+                itemData: previews,
+                shrinkWrap: true,
+                itemBuilder: (context, preview) {
+                  return RoomPanel(
+                    displayName: preview.displayName,
+                    avatar: preview.avatar,
+                    primaryButtonLabel: CommonStrings.promptJoin,
+                    body: preview.topic,
+                    color: preview.color,
+                    onPrimaryButtonPressed: () async {
+                      await widget.joinRoom?.call(preview.roomId);
+                    },
+                  );
+                }),
+          ],
+        ));
   }
 
   Widget buildHeader() {
@@ -350,51 +396,5 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
         )
       ],
     );
-  }
-
-  void onPreviewAdded(int index) {
-    _previewListKey.currentState?.insertItem(index);
-    setState(() {
-      childPreviewCount++;
-    });
-  }
-
-  void onPreviewRemoved(int index) {
-    childPreviewCount--;
-    var toBeRemoved = widget.childPreviews![index];
-
-    var info = StaleRoomInfo(
-        name: toBeRemoved.displayName,
-        avatar: toBeRemoved.avatar,
-        topic: toBeRemoved.topic);
-
-    _previewListKey.currentState?.removeItem(
-        index,
-        (context, animation) => SizeTransition(
-            sizeFactor: CommonAnimations.easeIn(animation),
-            child: RoomPanel(
-              displayName: info.name!,
-              avatar: info.avatar,
-              body: info.topic,
-              primaryButtonLabel: CommonStrings.promptJoin,
-              onPrimaryButtonPressed: () => null,
-            )));
-  }
-
-  void onRoomAdded(int event) {
-    setState(() {
-      _roomListKey.currentState?.insertItem(event);
-      childCount++;
-    });
-  }
-
-  void onRoomRemoved(int event) {
-    var room = widget.rooms![event];
-    if (mounted)
-      setState(() {
-        _roomListKey.currentState?.removeItem(
-            event, (context, animation) => buildRoomPanel(animation, room));
-        childCount--;
-      });
   }
 }

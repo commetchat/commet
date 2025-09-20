@@ -8,10 +8,8 @@ class RoomPanel extends StatefulWidget {
       this.avatar,
       this.onPrimaryButtonPressed,
       this.primaryButtonLabel,
-      this.primaryButtonLoading = false,
       this.onSecondaryButtonPressed,
       this.secondaryButtonLabel,
-      this.secondaryButtonLoading = false,
       this.userColor,
       this.onTap,
       this.color,
@@ -32,12 +30,10 @@ class RoomPanel extends StatefulWidget {
   final String? recentEventSender;
   final Color? recentEventSenderColor;
   final String? primaryButtonLabel;
-  final bool primaryButtonLoading;
-  final Function()? onPrimaryButtonPressed;
+  final Future<void> Function()? onPrimaryButtonPressed;
   final Function()? onTap;
   final String? secondaryButtonLabel;
-  final bool secondaryButtonLoading;
-  final Function()? onSecondaryButtonPressed;
+  final Future<void> Function()? onSecondaryButtonPressed;
   final bool showUserAvatar;
   @override
   State<RoomPanel> createState() => _RoomPanelState();
@@ -55,6 +51,9 @@ class _RoomPanelState extends State<RoomPanel> {
   bool get showOnlyPrimaryButton => showPrimaryButton && !showSecondaryButton;
 
   bool get showAnyButton => showPrimaryButton || showSecondaryButton;
+
+  bool primaryButtonLoading = false;
+  bool secondaryButtonLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -164,9 +163,18 @@ class _RoomPanelState extends State<RoomPanel> {
             padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
             child: Button(
               text: widget.primaryButtonLabel!,
-              isLoading: widget.primaryButtonLoading,
-              onTap: () {
-                widget.onPrimaryButtonPressed?.call();
+              isLoading: primaryButtonLoading,
+              onTap: () async {
+                setState(() {
+                  primaryButtonLoading = true;
+                });
+                await widget.onPrimaryButtonPressed?.call();
+
+                if (mounted) {
+                  setState(() {
+                    primaryButtonLoading = false;
+                  });
+                }
               },
             ),
           ),
@@ -175,9 +183,18 @@ class _RoomPanelState extends State<RoomPanel> {
             padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
             child: Button.secondary(
               text: widget.secondaryButtonLabel!,
-              isLoading: widget.secondaryButtonLoading,
-              onTap: () {
-                widget.onSecondaryButtonPressed?.call();
+              isLoading: secondaryButtonLoading,
+              onTap: () async {
+                setState(() {
+                  secondaryButtonLoading = true;
+                });
+
+                await widget.onSecondaryButtonPressed?.call();
+                if (mounted) {
+                  setState(() {
+                    secondaryButtonLoading = false;
+                  });
+                }
               },
             ),
           ),
