@@ -272,6 +272,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
         children: [
           if (rooms.isNotEmpty)
             ImplicitlyAnimatedList(
+              padding: EdgeInsets.all(0),
               key: ValueKey("animated-list-rooms-${widget.space.identifier}"),
               initialAnimation: false,
               shrinkWrap: true,
@@ -305,6 +306,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           ImplicitlyAnimatedList(
+            padding: EdgeInsets.all(0),
             key: ValueKey(
                 "animated-list-child-spaces-${widget.space.identifier}"),
             itemData: subspaces,
@@ -353,6 +355,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             ImplicitlyAnimatedList(
+                padding: EdgeInsets.all(0),
                 key: ValueKey(
                     "animated-list-child-previews-${widget.space.identifier}"),
                 initialAnimation: false,

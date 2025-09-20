@@ -26,7 +26,7 @@ class MatrixSpaceColorSchemeComponent
     if (space.avatar != null) {
       ColorScheme.fromImageProvider(
               provider: space.avatar!,
-              dynamicSchemeVariant: DynamicSchemeVariant.fidelity)
+              dynamicSchemeVariant: DynamicSchemeVariant.tonalSpot)
           .then((result) {
         _scheme = result;
       });
