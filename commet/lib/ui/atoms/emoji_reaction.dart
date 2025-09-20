@@ -12,9 +12,11 @@ class EmojiReaction extends StatelessWidget {
       required this.numReactions,
       this.highlighted = false,
       this.onTapped,
+      this.onLongPressed,
       super.key});
 
   final Function(Emoticon emote)? onTapped;
+  final Function(Emoticon emote)? onLongPressed;
   final Emoticon emoji;
   final int numReactions;
   final bool highlighted;
@@ -31,6 +33,7 @@ class EmojiReaction extends StatelessWidget {
 
     return material.InkWell(
       onTap: () => onTapped?.call(emoji),
+      onLongPress: () => onLongPressed?.call(emoji),
       borderRadius: borderRadius,
       child: DecoratedBox(
         decoration: BoxDecoration(
