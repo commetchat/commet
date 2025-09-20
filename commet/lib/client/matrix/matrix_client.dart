@@ -195,7 +195,7 @@ class MatrixClient extends Client {
 
   static Future<void> _checkSystem(ClientManager clientManager) async {
     try {
-      await vod.init();
+      await vod.init(wasmPath: './assets/assets/vodozemac/');
       if (!vod.isInitialized()) {
         throw Exception("Vodozemac failed to initialize!");
       }
