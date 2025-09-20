@@ -272,6 +272,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
         children: [
           if (rooms.isNotEmpty)
             ImplicitlyAnimatedList(
+              physics: NeverScrollableScrollPhysics(),
               padding: EdgeInsets.all(0),
               key: ValueKey("animated-list-rooms-${widget.space.identifier}"),
               initialAnimation: false,
@@ -307,6 +308,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
         children: [
           ImplicitlyAnimatedList(
             padding: EdgeInsets.all(0),
+            physics: NeverScrollableScrollPhysics(),
             key: ValueKey(
                 "animated-list-child-spaces-${widget.space.identifier}"),
             itemData: subspaces,
@@ -359,6 +361,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
                 key: ValueKey(
                     "animated-list-child-previews-${widget.space.identifier}"),
                 initialAnimation: false,
+                physics: NeverScrollableScrollPhysics(),
                 itemData: previews,
                 shrinkWrap: true,
                 itemBuilder: (context, preview) {
