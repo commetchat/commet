@@ -53,8 +53,10 @@ class _TimelineEventViewReactionsState extends State<TimelineEventViewReactions>
               onLongPressed: (emote) {
                 AdaptiveDialog.show(
                   context,
-                  builder: (context) => ConstrainedBox(
-                    constraints: BoxConstraints(maxHeight: 400),
+                  scrollable: false,
+                  builder: (context) => SizedBox(
+                    height: 400,
+                    width: 400,
                     child: Column(
                       children: [
                         Padding(
