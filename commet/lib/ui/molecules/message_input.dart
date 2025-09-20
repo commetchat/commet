@@ -315,6 +315,15 @@ class MessageInputState extends State<MessageInput> {
       }
 
       if (HardwareKeyboard.instance.isShiftPressed) {
+        String text = controller.text;
+        TextSelection textSelection = controller.selection;
+        String newText =
+            text.replaceRange(textSelection.start, textSelection.end, "\n");
+        controller.text = newText;
+        controller.selection = textSelection.copyWith(
+          baseOffset: textSelection.start + 1,
+          extentOffset: textSelection.start + 1,
+        );
         return KeyEventResult.ignored;
       }
 
