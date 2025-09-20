@@ -49,6 +49,7 @@ class _RoomPinnedMessagesWidgetState extends State<RoomPinnedMessagesWidget> {
         children: [
           Flexible(
             child: ListView.builder(
+              padding: EdgeInsets.all(0),
               itemCount: events!.length,
               itemBuilder: (context, index) {
                 var data = events![index];

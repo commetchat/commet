@@ -57,7 +57,7 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
 
   @override
   Widget build(BuildContext context) {
-    bool showBackButton = state == SidePanelState.thread;
+    bool showBackButton = false; // state == SidePanelState.thread;
 
     Widget result = Stack(
       alignment: Alignment.topRight,
@@ -156,6 +156,7 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
       caulkClipBottomLeft: true,
       caulkPadBottom: true,
       child: KeyboardAdaptor(
+        safeAreaTop: false,
         Column(
           children: [
             Flexible(
@@ -167,16 +168,14 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
                     key: ValueKey(
                         "room-timeline-key-${widget.state.currentRoom!.localId}_thread_$currentThreadId"),
                   ),
-                  ScaledSafeArea(
-                    child: Align(
-                      alignment: Alignment.topRight,
-                      child: Padding(
-                        padding: const EdgeInsets.all(24.0),
-                        child: tiamat.CircleButton(
-                          icon: Icons.close,
-                          radius: 24,
-                          onPressed: () => EventBus.closeThread.add(null),
-                        ),
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: tiamat.CircleButton(
+                        icon: Icons.close,
+                        radius: 24,
+                        onPressed: () => EventBus.closeThread.add(null),
                       ),
                     ),
                   ),

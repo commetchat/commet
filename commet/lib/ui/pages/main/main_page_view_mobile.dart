@@ -111,22 +111,27 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
 
   Widget? rightPanel(BuildContext context) {
     if (widget.state.currentRoom != null) {
-      return Tile.surfaceContainer(
+      return Tile(
         caulkPadLeft: true,
         caulkClipTopLeft: true,
         caulkClipBottomLeft: true,
-        child: ScaledSafeArea(
-          bottom: false,
-          child: Column(
-            children: [
-              Expanded(
-                child: RoomSidePanel(
-                    key: ValueKey(
-                        "room-side-panel-${widget.state.currentRoom!.localId}"),
-                    state: widget.state),
-              )
-            ],
-          ),
+        child: Column(
+          children: [
+            Tile.low(
+              child: ScaledSafeArea(
+                  child: Container(),
+                  bottom: false,
+                  top: true,
+                  left: false,
+                  right: false),
+            ),
+            Expanded(
+              child: RoomSidePanel(
+                  key: ValueKey(
+                      "room-side-panel-${widget.state.currentRoom!.localId}"),
+                  state: widget.state),
+            )
+          ],
         ),
       );
     }
@@ -210,21 +215,27 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
       }
       return Tile(
         child: KeyboardAdaptor(
+          safeAreaTop: false,
           Column(
             children: [
               Tile.low(
                 caulkClipBottomRight: true,
                 caulkClipBottomLeft: true,
                 caulkBorderBottom: true,
-                child: SizedBox(
-                  height: 50,
-                  child: RoomHeader(
-                    widget.state.currentRoom!,
-                    onTap:
-                        widget.state.currentRoom?.permissions.canEditAnything ==
-                                true
-                            ? () => widget.state.navigateRoomSettings()
-                            : null,
+                child: ScaledSafeArea(
+                  bottom: false,
+                  left: false,
+                  right: false,
+                  child: SizedBox(
+                    height: 50,
+                    child: RoomHeader(
+                      widget.state.currentRoom!,
+                      onTap: widget.state.currentRoom?.permissions
+                                  .canEditAnything ==
+                              true
+                          ? () => widget.state.navigateRoomSettings()
+                          : null,
+                    ),
                   ),
                 ),
               ),
