@@ -32,10 +32,6 @@ class _SpaceSummaryState extends State<SpaceSummary> {
       setState(() {});
     });
 
-    if (widget.space.avatar is LODImageProvider) {
-      (widget.space.avatar as LODImageProvider).fetchFullRes();
-    }
-
     super.initState();
   }
 
@@ -54,15 +50,9 @@ class _SpaceSummaryState extends State<SpaceSummary> {
       colorScheme = comp.scheme;
     }
     return SpaceSummaryView(
+      space: widget.space,
       displayName: widget.space.displayName,
-      childPreviews: widget.space.childPreviews,
-      onChildPreviewAdded: widget.space.onChildRoomPreviewAdded,
-      onChildPreviewRemoved: widget.space.onChildRoomPreviewRemoved,
-      onRoomRemoved: widget.space.onRoomRemoved,
-      onRoomAdded: widget.space.onRoomAdded,
       avatar: widget.space.avatar,
-      rooms: widget.space.rooms,
-      spaces: widget.space.subspaces,
       visibility: widget.space.visibility,
       joinRoom: joinRoom,
       openSpaceSettings: openSpaceSettings,

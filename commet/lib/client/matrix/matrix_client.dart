@@ -359,15 +359,25 @@ class MatrixClient extends Client {
       if (hasRoom(room.id)) continue;
       rooms.add(MatrixRoom(this, room, _matrixClient));
     }
+
+    rooms.removeWhere((e) => !joinedRooms.any((r) => r.id == e.identifier));
   }
 
   void _updateSpacesList() {
     var allSpaces = _matrixClient.rooms.where((element) =>
         element.isSpace && element.membership == matrix.Membership.join);
 
+    bool didChange = false;
     for (var space in allSpaces) {
       if (hasSpace(space.id)) continue;
       spaces.add(MatrixSpace(this, space, _matrixClient));
+      didChange = true;
+    }
+
+    if (didChange) {
+      for (var space in spaces) {
+        (space as MatrixSpace).updateRoomsList();
+      }
     }
   }
 

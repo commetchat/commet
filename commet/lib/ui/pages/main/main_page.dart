@@ -14,6 +14,7 @@ import 'package:commet/ui/pages/main/main_page_view_desktop.dart';
 import 'package:commet/ui/pages/main/main_page_view_mobile.dart';
 import 'package:commet/ui/pages/settings/room_settings_page.dart';
 import 'package:commet/utils/first_time_setup.dart';
+import 'package:commet/utils/image/lod_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
@@ -134,6 +135,10 @@ class MainPageState extends State<MainPage> {
 
     if (space != null && !space.fullyLoaded) space.loadExtra();
     clearRoomSelection();
+
+    if (space?.avatar is LODImageProvider) {
+      (space!.avatar as LODImageProvider).fetchFullRes();
+    }
 
     onSpaceUpdateSubscription?.cancel();
     setState(() {

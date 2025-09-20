@@ -343,10 +343,6 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
                 widget.state.currentSpace!,
                 key: ValueKey(
                     "space-view-key-${widget.state.currentSpace!.localId}"),
-                onChildAdded: widget.state.clientManager.onSpaceAdded,
-                onChildRemoved: widget.state.clientManager.onSpaceRemoved,
-                onChildUpdated:
-                    widget.state.clientManager.onSpaceUpdated.stream,
                 onRoomSelected: (room) async {
                   selectRoom(room);
                 },

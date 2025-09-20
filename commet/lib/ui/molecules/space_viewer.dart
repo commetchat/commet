@@ -10,14 +10,8 @@ class SpaceViewer extends StatefulWidget {
     this.space, {
     super.key,
     this.onRoomSelected,
-    this.onChildAdded,
-    this.onChildRemoved,
-    this.onChildUpdated,
   });
   final Space space;
-  final Stream<void>? onChildAdded;
-  final Stream<void>? onChildRemoved;
-  final Stream<void>? onChildUpdated;
   final void Function(Room)? onRoomSelected;
 
   @override
@@ -34,9 +28,6 @@ class _SpaceViewerState extends State<SpaceViewer> {
           child: SpaceList(
             widget.space,
             onRoomSelected: widget.onRoomSelected,
-            onChildAdded: widget.onChildAdded,
-            onChildRemoved: widget.onChildRemoved,
-            onChildUpdated: widget.onChildUpdated,
           )),
     );
   }
