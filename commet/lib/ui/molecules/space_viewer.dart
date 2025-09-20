@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:commet/ui/atoms/space_list.dart';
 import 'package:flutter/material.dart';
 
