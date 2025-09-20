@@ -4,7 +4,9 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/client/stale_info.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/atoms/room_panel.dart';
+import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/utils/common_animation.dart';
 import 'package:commet/utils/common_strings.dart';
 import 'package:flutter/material.dart';
@@ -37,6 +39,7 @@ class SpaceSummaryView extends StatefulWidget {
       this.onRoomTap,
       this.canAddRoom = false,
       this.onSpaceTap,
+      this.colorScheme,
       this.onRoomSettingsButtonTap});
   final String displayName;
   final String? topic;
@@ -60,6 +63,7 @@ class SpaceSummaryView extends StatefulWidget {
   final Function()? onAddRoomButtonTap;
   final bool showSpaceSettingsButton;
   final bool canAddRoom;
+  final ColorScheme? colorScheme;
   @override
   State<SpaceSummaryView> createState() => SpaceSummaryViewState();
 }
@@ -149,44 +153,52 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
   Widget build(BuildContext context) {
     var pad = const EdgeInsets.fromLTRB(0, 4, 0, 4);
 
-    return Padding(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          avatar(),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.end,
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.max,
+      children: [
+        avatarAndBanner(),
+        Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
             children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  buildHeader(),
-                  spaceVisibility(),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      buildHeader(),
+                      spaceVisibility(),
+                    ],
+                  ),
+                  if (widget.showSpaceSettingsButton) buildSettingsButton()
                 ],
               ),
-              if (widget.showSpaceSettingsButton) buildSettingsButton()
+              if (childPreviewCount > 0)
+                Padding(
+                  padding: pad,
+                  child: buildPreviewList(),
+                ),
+              if (widget.spaces?.isNotEmpty == true)
+                Padding(
+                  padding: pad,
+                  child: buildSpaceList(),
+                ),
+              Padding(
+                padding: pad,
+                child: buildRoomList(),
+              ),
             ],
           ),
-          if (childPreviewCount > 0)
-            Padding(
-              padding: pad,
-              child: buildPreviewList(),
-            ),
-          if (widget.spaces?.isNotEmpty == true)
-            Padding(
-              padding: pad,
-              child: buildSpaceList(),
-            ),
-          Padding(
-            padding: pad,
-            child: buildRoomList(),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -206,14 +218,50 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
     );
   }
 
-  Widget avatar() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Avatar.extraLarge(
-        image: widget.avatar,
-        placeholderText: widget.displayName,
-        placeholderColor: widget.spaceColor,
-      ),
+  Widget avatarAndBanner() {
+    var colorScheme = widget.colorScheme ?? Theme.of(context).colorScheme;
+
+    return Stack(
+      children: [
+        Padding(
+          padding: Layout.desktop
+              ? EdgeInsetsGeometry.only(left: 8, right: 8)
+              : EdgeInsetsGeometry.zero,
+          child: DecoratedBox(
+              decoration: BoxDecoration(
+                  color: colorScheme.secondary,
+                  borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(15),
+                      bottomRight: Radius.circular(15))),
+              child: ScaledSafeArea(
+                bottom: false,
+                left: false,
+                right: false,
+                top: true,
+                child: SizedBox(
+                  height: 150,
+                  width: double.infinity,
+                ),
+              )),
+        ),
+        Align(
+          alignment: AlignmentGeometry.center,
+          child: Padding(
+              padding: const EdgeInsets.fromLTRB(0, 50, 0, 0),
+              child: ScaledSafeArea(
+                child: Avatar.extraLarge(
+                  border: BoxBorder.all(
+                      color: Theme.of(context).colorScheme.surface,
+                      width: 10,
+                      style: BorderStyle.solid,
+                      strokeAlign: 0.5),
+                  image: widget.avatar,
+                  placeholderText: widget.displayName,
+                  placeholderColor: widget.spaceColor,
+                ),
+              )),
+        ),
+      ],
     );
   }
 
@@ -228,6 +276,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
             initialItemCount: childCount,
             key: _roomListKey,
             shrinkWrap: true,
+            padding: EdgeInsets.all(0),
             physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, index, animation) {
               var room = widget.rooms![index];
@@ -262,6 +311,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
             shrinkWrap: true,
             itemCount: widget.spaces!.length,
             physics: const NeverScrollableScrollPhysics(),
+            padding: EdgeInsets.all(0),
             itemBuilder: (context, index) {
               var space = widget.spaces![index];
               return RoomPanel(
@@ -308,6 +358,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
         initialItemCount: childPreviewCount,
         key: _previewListKey,
         shrinkWrap: true,
+        padding: EdgeInsets.all(0),
         physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (context, index, animation) {
           var preview = widget.childPreviews![index];

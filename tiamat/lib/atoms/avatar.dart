@@ -122,9 +122,9 @@ class Avatar extends StatelessWidget {
       child: placeholderText != null
           ? DecoratedBox(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(radius / 1.25),
-                color: placeholderColor ?? Colors.transparent,
-              ),
+                  borderRadius: BorderRadius.circular(radius / 1.25),
+                  color: placeholderColor ?? Colors.transparent,
+                  border: border),
               child: Align(
                   alignment: Alignment.center,
                   child: placeholderText != null

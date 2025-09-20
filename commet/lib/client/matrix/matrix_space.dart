@@ -149,6 +149,8 @@ class MatrixSpace extends Space {
     _matrixClient = matrixClient;
     _client = client;
     _displayName = room.getLocalizedDisplayname();
+    _permissions = MatrixRoomPermissions(_matrixRoom);
+    refresh();
 
     _matrixRoom.postLoad();
     _components = ComponentRegistry.getMatrixSpaceComponents(client, this);
@@ -162,9 +164,6 @@ class MatrixSpace extends Space {
       // Subscribe to all child update events
       _rooms.onAdd.listen(_onRoomAdded),
     ], growable: true);
-
-    _permissions = MatrixRoomPermissions(_matrixRoom);
-    refresh();
   }
 
   void refresh() {

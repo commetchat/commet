@@ -192,8 +192,9 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
     if (widget.state.currentSpace != null && widget.state.currentRoom == null) {
       return Tile(
         child: ScaledSafeArea(
-          child: ListView(children: [
-            SpaceSummary(
+          top: false,
+          child: SingleChildScrollView(
+            child: SpaceSummary(
               key: ValueKey(
                   "space-summary-key-${widget.state.currentSpace!.localId}"),
               space: widget.state.currentSpace!,
@@ -202,7 +203,7 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
               },
               onSpaceTap: (space) => widget.state.selectSpace(space),
             ),
-          ]),
+          ),
         ),
       );
     }

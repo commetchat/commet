@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/atoms/keyboard_adaptor.dart';
-import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/organisms/chat/chat.dart';
 import 'package:commet/ui/organisms/room_event_search/room_event_search_widget.dart';
 import 'package:commet/ui/organisms/room_members_list/room_members_list.dart';
@@ -57,25 +56,10 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
 
   @override
   Widget build(BuildContext context) {
-    bool showBackButton = false; // state == SidePanelState.thread;
-
     Widget result = Stack(
       alignment: Alignment.topRight,
       children: [
         buildPanelContent(context),
-        if (showBackButton)
-          Align(
-            alignment: Alignment.topRight,
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: tiamat.CircleButton(
-                  icon: Icons.close,
-                  radius: 24,
-                  onPressed: () => setState(() {
-                        state = SidePanelState.defaultView;
-                      })),
-            ),
-          ),
       ],
     );
 

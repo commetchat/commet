@@ -1,12 +1,14 @@
 import 'dart:async';
 
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/space_color_scheme/space_color_scheme_component.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/organisms/space_summary/space_summary_view.dart';
 import 'package:commet/ui/pages/add_space_or_room/add_space_or_room.dart';
 import 'package:commet/ui/pages/settings/room_settings_page.dart';
 import 'package:commet/ui/pages/settings/space_settings_page.dart';
 import 'package:commet/utils/image/lod_image.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 import '../../navigation/navigation_utils.dart';
@@ -45,6 +47,12 @@ class _SpaceSummaryState extends State<SpaceSummary> {
 
   @override
   Widget build(BuildContext context) {
+    var colorScheme = Theme.of(context).colorScheme;
+
+    var comp = widget.space.getComponent<SpaceColorSchemeComponent>();
+    if (comp != null) {
+      colorScheme = comp.scheme;
+    }
     return SpaceSummaryView(
       displayName: widget.space.displayName,
       childPreviews: widget.space.childPreviews,
@@ -65,6 +73,7 @@ class _SpaceSummaryState extends State<SpaceSummary> {
       onAddRoomButtonTap: onAddRoomButtonTap,
       canAddRoom: widget.space.permissions.canEditChildren,
       onSpaceTap: widget.onSpaceTap,
+      colorScheme: colorScheme,
     );
   }
 
