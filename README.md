@@ -12,6 +12,10 @@
     <a href="https://fosstodon.org/@commetchat">
         <img alt="Mastodon" src="https://img.shields.io/mastodon/follow/109894490854601533?domain=https%3A%2F%2Ffosstodon.org">
     </a>
+    <a href="https://bsky.app/profile/commet.chat">
+        <img alt="Bluesky" src="https://img.shields.io/badge/follow-@commet.chat-whitesmoke?style=social&logo=bluesky">
+    </a>
+
 </p>
 
 <img src="https://raw.githubusercontent.com/commetchat/.github/main/assets/banner.png">
