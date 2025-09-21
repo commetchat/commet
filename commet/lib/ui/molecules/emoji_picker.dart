@@ -196,6 +196,7 @@ class EmojiPicker extends StatelessWidget {
             mainAxisSpacing: 3,
             maxCrossAxisExtent: size,
             shrinkWrap: true,
+            padding: EdgeInsets.all(0),
             itemCount: list.length,
             itemBuilder: (context, index) {
               return InkWell(
