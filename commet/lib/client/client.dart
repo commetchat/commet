@@ -7,6 +7,7 @@ import 'package:commet/client/profile.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/client/space.dart';
+import 'package:commet/ui/pages/add_space_or_room/add_space_or_room.dart';
 import 'package:commet/utils/stored_stream_controller.dart';
 import 'package:flutter/material.dart';
 
@@ -121,11 +122,10 @@ abstract class Client {
   Future<Profile?> getProfile(String identifier);
 
   /// Create a new room
-  Future<Room> createRoom(String name, RoomVisibility visibility,
-      {bool enableE2EE = true});
+  Future<Room> createRoom(CreateRoomArgs args);
 
   /// Create a new space
-  Future<Space> createSpace(String name, RoomVisibility visibility);
+  Future<Space> createSpace(CreateRoomArgs args);
 
   /// Join an existing space by address
   Future<Space> joinSpace(String address);

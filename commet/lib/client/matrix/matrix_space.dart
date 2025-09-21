@@ -11,6 +11,7 @@ import 'package:commet/client/matrix/matrix_room_permissions.dart';
 import 'package:commet/client/matrix/matrix_room_preview.dart';
 import 'package:commet/client/permissions.dart';
 import 'package:commet/client/room_preview.dart';
+import 'package:commet/ui/pages/add_space_or_room/add_space_or_room.dart';
 import 'package:commet/ui/pages/developer/app_inspector/value_reflector_widget.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:flutter/material.dart';
@@ -232,8 +233,8 @@ class MatrixSpace extends Space {
   }
 
   @override
-  Future<Room> createRoom(String name, RoomVisibility visibility) async {
-    var room = await client.createRoom(name, visibility);
+  Future<Room> createRoom(String name, CreateRoomArgs args) async {
+    var room = await client.createRoom(args);
     _matrixRoom.setSpaceChild(room.identifier);
     return room;
   }

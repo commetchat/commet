@@ -72,10 +72,8 @@ class _SpaceSummaryState extends State<SpaceSummary> {
     return widget.space.client.joinRoom(roomId);
   }
 
-  Future<void> createRoom(Client client, String name, RoomVisibility visibility,
-      bool enableE2EE) async {
-    var room =
-        await client.createRoom(name, visibility, enableE2EE: enableE2EE);
+  Future<void> createRoom(Client client, CreateRoomArgs args) async {
+    var room = await client.createRoom(args);
     await widget.space.setSpaceChildRoom(room);
   }
 

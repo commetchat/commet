@@ -9,6 +9,18 @@ enum AddSpaceOrRoomMode {
   createOrExistingRoom,
 }
 
+class CreateRoomArgs {
+  String name;
+  RoomVisibility visibility;
+  bool enableE2EE;
+
+  CreateRoomArgs({
+    required this.name,
+    required this.visibility,
+    required this.enableE2EE,
+  });
+}
+
 class AddSpaceOrRoom extends StatefulWidget {
   const AddSpaceOrRoom({
     super.key,
@@ -27,11 +39,9 @@ class AddSpaceOrRoom extends StatefulWidget {
   final AddSpaceOrRoomMode mode;
   final List<Room>? eligibleRooms;
   final Function(Iterable<Room> rooms)? onRoomsSelected;
-  final Future<void> Function(Client client, String name,
-      RoomVisibility visibility, bool enableE2EE)? createRoom;
+  final Future<void> Function(Client client, CreateRoomArgs args)? createRoom;
 
-  final Future<void> Function(Client client, String name,
-      RoomVisibility visibility, bool enableE2EE)? createSpace;
+  final Future<void> Function(Client client, CreateRoomArgs)? createSpace;
 
   final Function(Client client, String address)? joinRoom;
   final Function(Client client, String address)? joinSpace;
@@ -56,18 +66,17 @@ class AddSpaceOrRoom extends StatefulWidget {
 class AddSpaceOrRoomState extends State<AddSpaceOrRoom> {
   bool loading = false;
 
-  Future<void> create(Client client, String name, RoomVisibility visibility,
-      bool enableE2EE) async {
+  Future<void> create(Client client, CreateRoomArgs args) async {
     setState(() {
       loading = true;
     });
     switch (widget.mode) {
       case AddSpaceOrRoomMode.createOrJoinSpace:
-        await widget.createSpace?.call(client, name, visibility, enableE2EE);
+        await widget.createSpace?.call(client, args);
         break;
       case AddSpaceOrRoomMode.createOrJoinRoom:
       case AddSpaceOrRoomMode.createOrExistingRoom:
-        await widget.createRoom?.call(client, name, visibility, enableE2EE);
+        await widget.createRoom?.call(client, args);
         break;
     }
 

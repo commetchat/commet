@@ -19,6 +19,7 @@ import 'package:commet/debug/log.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
+import 'package:commet/ui/pages/add_space_or_room/add_space_or_room.dart';
 import 'package:commet/ui/pages/developer/app_inspector/value_reflector_widget.dart';
 import 'package:commet/ui/pages/matrix/authentication/matrix_uia_request.dart';
 import 'package:commet/utils/list_extension.dart';
@@ -358,15 +359,15 @@ class MatrixClient extends Client {
   }
 
   @override
-  Future<Room> createRoom(String name, RoomVisibility visibility,
-      {bool enableE2EE = true}) async {
+  Future<Room> createRoom(CreateRoomArgs args) async {
     var id = await _matrixClient.createRoom(
-        name: name,
-        visibility: visibility == RoomVisibility.private
+        // creationContent: {"type": "chat.commet.photo_album"},
+        name: args.name,
+        visibility: args.visibility == RoomVisibility.private
             ? matrix.Visibility.private
             : matrix.Visibility.public);
     var matrixRoom = _matrixClient.getRoomById(id)!;
-    if (enableE2EE) {
+    if (args.enableE2EE) {
       await matrixRoom.enableEncryption();
     }
 
@@ -377,11 +378,11 @@ class MatrixClient extends Client {
   }
 
   @override
-  Future<Space> createSpace(String name, RoomVisibility visibility) async {
+  Future<Space> createSpace(CreateRoomArgs args) async {
     var id = await _matrixClient.createSpace(
-        name: name,
+        name: args.name,
         waitForSync: true,
-        visibility: visibility == RoomVisibility.private
+        visibility: args.visibility == RoomVisibility.private
             ? matrix.Visibility.private
             : matrix.Visibility.public);
 
