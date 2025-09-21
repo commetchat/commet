@@ -7,7 +7,6 @@ import 'package:commet/client/profile.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/client/space.dart';
-import 'package:commet/ui/pages/add_space_or_room/add_space_or_room.dart';
 import 'package:commet/utils/stored_stream_controller.dart';
 import 'package:flutter/material.dart';
 
@@ -35,6 +34,24 @@ enum ClientConnectionStatus {
   connected,
   connecting,
   disconnected,
+}
+
+enum RoomType {
+  defaultRoom,
+  photoAlbum,
+}
+
+class CreateRoomArgs {
+  String name;
+  RoomVisibility visibility;
+  bool enableE2EE;
+  RoomType roomType;
+
+  CreateRoomArgs(
+      {required this.name,
+      required this.visibility,
+      required this.enableE2EE,
+      this.roomType = RoomType.defaultRoom});
 }
 
 enum LoginResult { success, failed, error, alreadyLoggedIn, cancelled }

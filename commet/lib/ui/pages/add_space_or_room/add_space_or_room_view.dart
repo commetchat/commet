@@ -1,8 +1,9 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/client/room_preview.dart';
+import 'package:commet/config/experiments.dart';
+import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/room_panel.dart';
 import 'package:commet/ui/atoms/room_preview.dart';
-import 'package:commet/ui/pages/add_space_or_room/add_space_or_room.dart';
 import 'package:commet/utils/debounce.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -51,6 +52,7 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
   AddSpaceOrRoomPhase phase = AddSpaceOrRoomPhase.askJoinOrCreate;
   late Client selectedClient;
   RoomVisibility visibility = RoomVisibility.private;
+  RoomType type = RoomType.defaultRoom;
   TextEditingController nameController = TextEditingController();
   TextEditingController topicController = TextEditingController();
   TextEditingController spaceAddressController = TextEditingController();
@@ -245,6 +247,11 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
   }
 
   Widget createSpace(BuildContext context) {
+    var roomModes = [
+      RoomType.defaultRoom,
+      if (Experiments.photoAlbumRooms && widget.roomMode) RoomType.photoAlbum,
+    ];
+
     return SizedBox(
       height: 450,
       child: Padding(
@@ -270,6 +277,19 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
                 ),
               ),
             ),
+            if (roomModes.length > 1)
+              tiamat.DropdownSelector<RoomType>(
+                items: roomModes,
+                itemHeight: 40,
+                value: type,
+                onItemSelected: (item) => setState(() {
+                  type = item;
+                }),
+                itemBuilder: (item) => tiamat.Text(switch (item) {
+                  RoomType.defaultRoom => "Chat Room",
+                  RoomType.photoAlbum => "Photo Album Room",
+                }),
+              ),
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
               child: tiamat.DropdownSelector<RoomVisibility>(
@@ -369,10 +389,10 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
                 onTap: () => widget.onCreate?.call(
                     selectedClient,
                     CreateRoomArgs(
-                      name: nameController.text,
-                      visibility: visibility,
-                      enableE2EE: enableE2EE,
-                    )),
+                        name: nameController.text,
+                        visibility: visibility,
+                        enableE2EE: enableE2EE,
+                        roomType: type)),
               ),
             )
           ],

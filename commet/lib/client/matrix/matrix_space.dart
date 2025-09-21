@@ -11,7 +11,6 @@ import 'package:commet/client/matrix/matrix_room_permissions.dart';
 import 'package:commet/client/matrix/matrix_room_preview.dart';
 import 'package:commet/client/permissions.dart';
 import 'package:commet/client/room_preview.dart';
-import 'package:commet/ui/pages/add_space_or_room/add_space_or_room.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart' as matrix;

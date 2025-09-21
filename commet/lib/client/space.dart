@@ -3,7 +3,6 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/components/space_component.dart';
 import 'package:commet/client/permissions.dart';
 import 'package:commet/client/room_preview.dart';
-import 'package:commet/ui/pages/add_space_or_room/add_space_or_room.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 

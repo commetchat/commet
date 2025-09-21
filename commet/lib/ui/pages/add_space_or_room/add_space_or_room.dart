@@ -9,18 +9,6 @@ enum AddSpaceOrRoomMode {
   createOrExistingRoom,
 }
 
-class CreateRoomArgs {
-  String name;
-  RoomVisibility visibility;
-  bool enableE2EE;
-
-  CreateRoomArgs({
-    required this.name,
-    required this.visibility,
-    required this.enableE2EE,
-  });
-}
-
 class AddSpaceOrRoom extends StatefulWidget {
   const AddSpaceOrRoom({
     super.key,

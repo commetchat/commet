@@ -19,7 +19,6 @@ import 'package:commet/debug/log.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
-import 'package:commet/ui/pages/add_space_or_room/add_space_or_room.dart';
 import 'package:commet/ui/pages/matrix/authentication/matrix_uia_request.dart';
 import 'package:commet/utils/list_extension.dart';
 import 'package:commet/utils/notifying_list.dart';
@@ -385,8 +384,14 @@ class MatrixClient extends Client {
 
   @override
   Future<Room> createRoom(CreateRoomArgs args) async {
+    var creationContent = null;
+
+    if (args.roomType == RoomType.photoAlbum) {
+      creationContent = {"type": "chat.commet.photo_album"};
+    }
+
     var id = await _matrixClient.createRoom(
-        // creationContent: {"type": "chat.commet.photo_album"},
+        creationContent: creationContent,
         name: args.name,
         visibility: args.visibility == RoomVisibility.private
             ? matrix.Visibility.private

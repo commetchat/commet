@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/ui/organisms/invitation_view/incoming_invitations_view.dart';
-import 'package:commet/ui/pages/add_space_or_room/add_space_or_room.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:commet/ui/organisms/home_screen/home_screen_view.dart';
 import 'package:flutter/foundation.dart';
