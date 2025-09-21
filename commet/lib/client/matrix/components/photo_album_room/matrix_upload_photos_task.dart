@@ -1,14 +1,7 @@
 import 'dart:async';
-import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:commet/client/attachment.dart';
 import 'package:commet/client/components/photo_album_room/photo_album_room_component.dart';
-import 'package:commet/client/matrix/matrix_client.dart';
-import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
-import 'package:commet/debug/log.dart';
-import 'package:commet/main.dart';
 import 'package:commet/utils/background_tasks/background_task_manager.dart';
 import 'package:exif/exif.dart';
 import 'package:flutter/foundation.dart';
@@ -106,7 +99,6 @@ class MatrixUploadPhotosTask implements BackgroundTaskWithIntegerProgress {
           var decoder = img.findDecoderForData(bytes);
           var image = decoder!.decode(bytes)!;
           image.exif.clear();
-          Uint8List? processedData;
           print("Reencoding image");
           return img.encodeJpg(image, quality: 90);
         }, imageData);
@@ -119,7 +111,7 @@ class MatrixUploadPhotosTask implements BackgroundTaskWithIntegerProgress {
       var processed = await room.processAttachment(
           PendingFileAttachment(name: name, data: imageData));
 
-      var event = await room.sendMessage(
+      await room.sendMessage(
           processedAttachments: [processed!], fileExtraContent: extraInfo);
       current += 1;
       progressStream.add(current);

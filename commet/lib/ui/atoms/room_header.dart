@@ -1,7 +1,5 @@
 import 'dart:async'; // For StreamSubscription
 
-import 'package:commet/client/components/direct_messages/direct_message_component.dart';
-import 'package:commet/client/components/voip_room/voip_room_component.dart';
 import 'package:commet/main.dart'; // For preferences
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' as m;

@@ -1,7 +1,6 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/config/experiments.dart';
-import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/room_panel.dart';
 import 'package:commet/ui/atoms/room_preview.dart';
 import 'package:commet/utils/debounce.dart';

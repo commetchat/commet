@@ -1,4 +1,3 @@
-import 'package:commet/client/attachment.dart';
 import 'package:commet/client/components/photo_album_room/photo.dart';
 import 'package:commet/client/components/photo_album_room/photo_album_timeline.dart';
 import 'package:commet/client/matrix/components/photo_album_room/matrix_photo.dart';

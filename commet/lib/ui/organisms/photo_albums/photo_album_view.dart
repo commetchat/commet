@@ -7,18 +7,14 @@ import 'package:commet/client/components/photo_album_room/photo_album_timeline.d
 import 'package:commet/client/matrix/components/photo_album_room/matrix_photo.dart';
 import 'package:commet/client/matrix/components/photo_album_room/matrix_photo_album_room_component.dart';
 import 'package:commet/client/matrix/components/photo_album_room/matrix_photo_album_timeline.dart';
-import 'package:commet/client/matrix/components/photo_album_room/matrix_upload_photos_task.dart';
-import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/timeline.dart';
 import 'package:commet/config/layout_config.dart';
-import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/lightbox.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_menu.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_menu_dialog.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/organisms/photo_albums/photos_upload_view.dart';
-import 'package:commet/utils/background_tasks/background_task_manager.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/text_utils.dart';
 import 'package:desktop_drop/src/drop_target.dart';
@@ -310,7 +306,7 @@ class _PhotoAlbumViewState extends State<PhotoAlbumView> {
                     icon: e.icon,
                     onPressed: () => e.action?.call(context)))
                 .toList(),
-            child: result!,
+            child: result,
           );
         }
       }

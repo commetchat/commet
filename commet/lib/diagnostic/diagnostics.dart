@@ -1,4 +1,3 @@
-import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 
 class CumulativeMeasurement {

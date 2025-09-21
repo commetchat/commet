@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:commet/client/components/direct_messages/direct_message_component.dart';
-import 'package:commet/client/components/voip_room/voip_room_component.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/dot_indicator.dart';
