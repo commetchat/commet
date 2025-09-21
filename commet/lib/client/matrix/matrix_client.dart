@@ -15,6 +15,7 @@ import 'package:commet/client/matrix/matrix_profile.dart';
 import 'package:commet/client/profile.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/config/experiments.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
 import 'package:commet/main.dart';
@@ -386,8 +387,10 @@ class MatrixClient extends Client {
   Future<Room> createRoom(CreateRoomArgs args) async {
     var creationContent = null;
 
-    if (args.roomType == RoomType.photoAlbum) {
-      creationContent = {"type": "chat.commet.photo_album"};
+    if (Experiments.photoAlbumRooms) {
+      if (args.roomType == RoomType.photoAlbum) {
+        creationContent = {"type": "chat.commet.photo_album"};
+      }
     }
 
     var id = await _matrixClient.createRoom(
