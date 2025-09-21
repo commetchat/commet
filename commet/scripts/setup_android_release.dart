@@ -14,7 +14,7 @@ void writeEncodedKeyfile(String file) {
   File("$file.b64").writeAsString(b64);
 }
 
-decodeAndWriteKeyFile(String keyB64) {
+void decodeAndWriteKeyFile(String keyB64) {
   var bytes = base64Decode(keyB64);
   var file = File("android/key.jks");
   if (!file.existsSync()) {
@@ -24,7 +24,7 @@ decodeAndWriteKeyFile(String keyB64) {
   file.writeAsBytesSync(bytes);
 }
 
-writeKeyProperties(String password) {
+void writeKeyProperties(String password) {
   var file = File("android/key.properties");
   if (!file.existsSync()) {
     file.createSync(recursive: true);
@@ -38,7 +38,7 @@ storeFile=../key.jks
 """);
 }
 
-main(List<String> args) {
+void main(List<String> args) {
   //Utility to encode a keyfile to base64, not needed for setup
   String? keyFile = getArg(args, "--key_file");
 

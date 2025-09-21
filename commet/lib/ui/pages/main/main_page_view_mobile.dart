@@ -112,22 +112,27 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
 
   Widget? rightPanel(BuildContext context) {
     if (widget.state.currentRoom != null) {
-      return Tile.surfaceContainer(
+      return Tile(
         caulkPadLeft: true,
         caulkClipTopLeft: true,
         caulkClipBottomLeft: true,
-        child: ScaledSafeArea(
-          bottom: false,
-          child: Column(
-            children: [
-              Expanded(
-                child: RoomSidePanel(
-                    key: ValueKey(
-                        "room-side-panel-${widget.state.currentRoom!.localId}"),
-                    state: widget.state),
-              )
-            ],
-          ),
+        child: Column(
+          children: [
+            Tile.low(
+              child: ScaledSafeArea(
+                  child: Container(),
+                  bottom: false,
+                  top: true,
+                  left: false,
+                  right: false),
+            ),
+            Expanded(
+              child: RoomSidePanel(
+                  key: ValueKey(
+                      "room-side-panel-${widget.state.currentRoom!.localId}"),
+                  state: widget.state),
+            )
+          ],
         ),
       );
     }
@@ -188,8 +193,9 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
     if (widget.state.currentSpace != null && widget.state.currentRoom == null) {
       return Tile(
         child: ScaledSafeArea(
-          child: ListView(children: [
-            SpaceSummary(
+          top: false,
+          child: SingleChildScrollView(
+            child: SpaceSummary(
               key: ValueKey(
                   "space-summary-key-${widget.state.currentSpace!.localId}"),
               space: widget.state.currentSpace!,
@@ -198,7 +204,7 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
               },
               onSpaceTap: (space) => widget.state.selectSpace(space),
             ),
-          ]),
+          ),
         ),
       );
     }
@@ -211,21 +217,27 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
       }
       return Tile(
         child: KeyboardAdaptor(
+          safeAreaTop: false,
           Column(
             children: [
               Tile.low(
                 caulkClipBottomRight: true,
                 caulkClipBottomLeft: true,
                 caulkBorderBottom: true,
-                child: SizedBox(
-                  height: 50,
-                  child: RoomHeader(
-                    widget.state.currentRoom!,
-                    onTap:
-                        widget.state.currentRoom?.permissions.canEditAnything ==
-                                true
-                            ? () => widget.state.navigateRoomSettings()
-                            : null,
+                child: ScaledSafeArea(
+                  bottom: false,
+                  left: false,
+                  right: false,
+                  child: SizedBox(
+                    height: 50,
+                    child: RoomHeader(
+                      widget.state.currentRoom!,
+                      onTap: widget.state.currentRoom?.permissions
+                                  .canEditAnything ==
+                              true
+                          ? () => widget.state.navigateRoomSettings()
+                          : null,
+                    ),
                   ),
                 ),
               ),
@@ -330,10 +342,6 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
                 widget.state.currentSpace!,
                 key: ValueKey(
                     "space-view-key-${widget.state.currentSpace!.localId}"),
-                onChildAdded: widget.state.clientManager.onSpaceAdded,
-                onChildRemoved: widget.state.clientManager.onSpaceRemoved,
-                onChildUpdated:
-                    widget.state.clientManager.onSpaceUpdated.stream,
                 onRoomSelected: (room) async {
                   selectRoom(room);
                 },

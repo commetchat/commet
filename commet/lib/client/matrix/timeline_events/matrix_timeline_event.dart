@@ -34,7 +34,6 @@ abstract class MatrixTimelineEvent implements TimelineEvent {
         matrix.EventStatus.sending => TimelineEventStatus.sending,
         matrix.EventStatus.sent => TimelineEventStatus.sent,
         matrix.EventStatus.synced => TimelineEventStatus.synced,
-        matrix.EventStatus.roomState => TimelineEventStatus.roomState,
       };
 
   @override

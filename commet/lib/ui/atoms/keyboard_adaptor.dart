@@ -5,9 +5,17 @@ import 'package:commet/utils/scaled_app.dart';
 import 'package:flutter/material.dart';
 
 class KeyboardAdaptor extends StatelessWidget {
-  const KeyboardAdaptor(Widget this.child, {super.key, this.ignore = false});
+  const KeyboardAdaptor(Widget this.child,
+      {super.key,
+      this.ignore = false,
+      this.safeAreaTop = true,
+      this.safeAreaLeft = true,
+      this.safeAreaRight = true});
   final Widget? child;
   final bool ignore;
+  final bool safeAreaTop;
+  final bool safeAreaLeft;
+  final bool safeAreaRight;
 
   @override
   Widget build(BuildContext context) {
@@ -16,6 +24,9 @@ class KeyboardAdaptor extends StatelessWidget {
 
     return ScaledSafeArea(
         bottom: false,
+        top: safeAreaTop,
+        left: safeAreaLeft,
+        right: safeAreaRight,
         child: Padding(
             padding: EdgeInsets.fromLTRB(0, 0, 0, offset), child: child));
   }

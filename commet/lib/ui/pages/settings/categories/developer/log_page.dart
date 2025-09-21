@@ -196,7 +196,7 @@ class _LogPageState extends State<LogPage> {
     });
   }
 
-  reportIssue(LogEntryException entry) async {
+  Future<void> reportIssue(LogEntryException entry) async {
     var data = await getErrorData(entry);
     var uri = Uri.https("github.com", "/commetchat/commet/issues/new", {
       "title": entry.content.split("\n").first,

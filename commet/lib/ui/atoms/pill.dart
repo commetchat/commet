@@ -9,14 +9,14 @@ class Pill extends StatelessWidget {
   final ImageProvider? image;
 
   const Pill({
-    Key? key,
+    super.key,
     required this.identifier,
     required this.url,
     required this.displayText,
     this.future,
     this.onTap,
     this.image,
-  }) : super(key: key);
+  });
 
   @override
   build(BuildContext context) {

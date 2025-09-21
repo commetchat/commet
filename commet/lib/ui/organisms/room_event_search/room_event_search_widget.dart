@@ -45,9 +45,10 @@ class _RoomEventSearchWidgetState extends State<RoomEventSearchWidget> {
 
   @override
   Widget build(BuildContext context) {
+    var color = Theme.of(context).colorScheme.surfaceContainer;
     return Column(
       children: [
-        tiamat.Tile(
+        tiamat.Tile.low(
           child: Row(
             children: [
               Flexible(
@@ -92,12 +93,14 @@ class _RoomEventSearchWidgetState extends State<RoomEventSearchWidget> {
               child: ImplicitlyAnimatedList(
                 itemEquality: (a, b) => a.eventId == b.eventId,
                 itemData: currentResults!,
+                padding: EdgeInsets.all(0),
                 itemBuilder: (context, data) {
                   return Padding(
                     padding: const EdgeInsets.fromLTRB(4, 2, 4, 2),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(8),
                       child: Material(
+                          color: color,
                           borderRadius: BorderRadius.circular(8),
                           child: InkWell(
                             onTap: () =>

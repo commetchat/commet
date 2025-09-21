@@ -12,8 +12,8 @@ import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart' as m;
 import 'package:tiamat/tiamat.dart' as tiamat;
-// ignore: depend_on_referenced_packages
-import 'package:olm/olm.dart' as olm;
+
+import 'package:vodozemac/vodozemac.dart' as vod;
 
 class SettingsCategoryAbout implements SettingsCategory {
   String get labelSettingsAppLogs => Intl.message("Logs",
@@ -117,7 +117,7 @@ class _AppInfoState extends State<_AppInfo> {
                           ],
                         ),
                       if (preferences.developerMode)
-                        tiamat.Text.labelLow(getOlmVersion()),
+                        tiamat.Text.labelLow(getEncryptionInfo()),
                     ],
                   ),
                   Padding(
@@ -145,16 +145,26 @@ class _AppInfoState extends State<_AppInfo> {
     );
   }
 
-  String getOlmVersion() {
+  String getEncryptionInfo() {
+    var info = getVodozemacVersion();
+    info ??= "No encryption library found";
+    return info;
+  }
+
+  String? getVodozemacVersion() {
     try {
-      var version = olm.get_library_version();
-      return "Olm: ${version.join(".")}";
+      var initialized = vod.isInitialized();
+      if (initialized) {
+        return "Vodozemac Initialized";
+      }
+
+      return null;
     } catch (exception) {
-      return "No Olm version found";
+      return null;
     }
   }
 
-  copySystemInfo() {
+  void copySystemInfo() {
     var data = """
 <details open>
 <summary>Device Information</summary>

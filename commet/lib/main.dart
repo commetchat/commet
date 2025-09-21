@@ -11,8 +11,8 @@ import 'package:commet/config/platform_utils.dart';
 import 'package:commet/config/preferences.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
+import 'package:commet/generated/intl/messages_all.dart';
 import 'package:commet/generated/l10n.dart';
-import 'package:commet/generated/l10n/messages_all_locales.dart';
 import 'package:commet/ui/pages/bubble/bubble_page.dart';
 import 'package:commet/ui/pages/fatal_error/fatal_error_page.dart';
 import 'package:commet/ui/pages/login/login_page.dart';
@@ -246,12 +246,11 @@ void enableEdgeToEdge() async {
 
 class App extends StatelessWidget {
   const App(
-      {Key? key,
+      {super.key,
       required this.clientManager,
       this.initialTheme,
       this.initialRoom,
-      this.initialClientId})
-      : super(key: key);
+      this.initialClientId});
   final ThemeData? initialTheme;
   final ClientManager clientManager;
 

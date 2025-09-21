@@ -1,14 +1,13 @@
 import 'dart:async';
 
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/space_color_scheme/space_color_scheme_component.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/organisms/space_summary/space_summary_view.dart';
 import 'package:commet/ui/pages/add_space_or_room/add_space_or_room.dart';
 import 'package:commet/ui/pages/settings/room_settings_page.dart';
 import 'package:commet/ui/pages/settings/space_settings_page.dart';
-import 'package:commet/utils/image/lod_image.dart';
-import 'package:flutter/widgets.dart';
-
+import 'package:flutter/material.dart';
 import '../../navigation/navigation_utils.dart';
 
 class SpaceSummary extends StatefulWidget {
@@ -30,10 +29,6 @@ class _SpaceSummaryState extends State<SpaceSummary> {
       setState(() {});
     });
 
-    if (widget.space.avatar is LODImageProvider) {
-      (widget.space.avatar as LODImageProvider).fetchFullRes();
-    }
-
     super.initState();
   }
 
@@ -45,16 +40,16 @@ class _SpaceSummaryState extends State<SpaceSummary> {
 
   @override
   Widget build(BuildContext context) {
+    var colorScheme = Theme.of(context).colorScheme;
+
+    var comp = widget.space.getComponent<SpaceColorSchemeComponent>();
+    if (comp != null) {
+      colorScheme = comp.scheme;
+    }
     return SpaceSummaryView(
+      space: widget.space,
       displayName: widget.space.displayName,
-      childPreviews: widget.space.childPreviews,
-      onChildPreviewAdded: widget.space.onChildRoomPreviewAdded,
-      onChildPreviewRemoved: widget.space.onChildRoomPreviewRemoved,
-      onRoomRemoved: widget.space.onRoomRemoved,
-      onRoomAdded: widget.space.onRoomAdded,
       avatar: widget.space.avatar,
-      rooms: widget.space.rooms,
-      spaces: widget.space.subspaces,
       visibility: widget.space.visibility,
       joinRoom: joinRoom,
       openSpaceSettings: openSpaceSettings,
@@ -65,6 +60,7 @@ class _SpaceSummaryState extends State<SpaceSummary> {
       onAddRoomButtonTap: onAddRoomButtonTap,
       canAddRoom: widget.space.permissions.canEditChildren,
       onSpaceTap: widget.onSpaceTap,
+      colorScheme: colorScheme,
     );
   }
 
@@ -81,11 +77,11 @@ class _SpaceSummaryState extends State<SpaceSummary> {
     NavigationUtils.navigateTo(context, SpaceSettingsPage(space: widget.space));
   }
 
-  openRoomSettings(Room room) {
+  void openRoomSettings(Room room) {
     NavigationUtils.navigateTo(context, RoomSettingsPage(room: room));
   }
 
-  onAddRoomButtonTap() {
+  void onAddRoomButtonTap() {
     AdaptiveDialog.show(context,
         builder: (dialogContext) => AddSpaceOrRoom.askCreateOrExistingRoom(
               client: widget.space.client,

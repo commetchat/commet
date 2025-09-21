@@ -11,17 +11,9 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 
 class SpaceList extends StatefulWidget {
   const SpaceList(this.space,
-      {this.onRoomSelected,
-      this.onChildAdded,
-      this.onChildRemoved,
-      this.onChildUpdated,
-      this.isTopLevel = true,
-      super.key});
+      {this.onRoomSelected, this.isTopLevel = true, super.key});
   final Function(Room room)? onRoomSelected;
 
-  final Stream<void>? onChildAdded;
-  final Stream<void>? onChildRemoved;
-  final Stream<void>? onChildUpdated;
   final bool isTopLevel;
 
   final Space space;
@@ -32,6 +24,7 @@ class SpaceList extends StatefulWidget {
 
 class _SpaceListState extends State<SpaceList> {
   late List<Space> subSpaces;
+  late List<Room> rooms;
 
   late List<StreamSubscription> subs;
 
@@ -42,16 +35,15 @@ class _SpaceListState extends State<SpaceList> {
   @override
   void initState() {
     subSpaces = widget.space.subspaces;
-    EventBus.onSelectedRoomChanged.stream.listen(onRoomSelected);
+    rooms = widget.space.rooms;
 
     subs = [
+      EventBus.onSelectedRoomChanged.stream.listen(onRoomSelected),
       widget.space.onUpdate.listen(onSpaceUpdated),
-      if (widget.onChildAdded != null)
-        widget.onChildAdded!.listen(onSpaceUpdated),
-      if (widget.onChildRemoved != null)
-        widget.onChildRemoved!.listen(onSpaceUpdated),
-      if (widget.onChildUpdated != null)
-        widget.onChildUpdated!.listen(onSpaceUpdated),
+      widget.space.onChildSpaceAdded.listen(onSpaceUpdated),
+      widget.space.onChildSpaceRemoved.listen(onSpaceUpdated),
+      widget.space.onRoomAdded.listen(onRoomUpdated),
+      widget.space.onRoomRemoved.listen(onRoomUpdated),
       for (var room in widget.space.rooms) room.onUpdate.listen(onRoomUpdated),
       preferences.onSettingChanged.listen((_) => setState(() {})),
     ];
@@ -66,7 +58,9 @@ class _SpaceListState extends State<SpaceList> {
   }
 
   void onRoomUpdated(void event) {
-    setState(() {});
+    setState(() {
+      rooms = widget.space.rooms;
+    });
   }
 
   @override

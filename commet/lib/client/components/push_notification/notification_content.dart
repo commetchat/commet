@@ -29,7 +29,7 @@ class MessageNotificationContent extends NotificationContent {
     required String senderName,
     required this.senderId,
     required this.roomName,
-    required String content,
+    required super.content,
     required this.eventId,
     required this.roomId,
     required this.clientId,
@@ -37,7 +37,7 @@ class MessageNotificationContent extends NotificationContent {
     this.roomImage,
     this.senderImage,
     this.attachedImage,
-  }) : super(title: senderName, content: content);
+  }) : super(title: senderName);
 }
 
 class CallNotificationContent extends NotificationContent {

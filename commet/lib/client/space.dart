@@ -50,6 +50,10 @@ abstract class Space {
 
   Stream<int> get onChildRoomPreviewRemoved;
 
+  Stream<int> get onChildSpaceAdded;
+
+  Stream<int> get onChildSpaceRemoved;
+
   Stream<void> get onChildRoomPreviewsUpdated;
 
   List<RoomPreview> get childPreviews;

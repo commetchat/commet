@@ -2,7 +2,6 @@
 
 To run unit tests, there are a few prerequisites.
 
- - Make sure you have `libolm3` installed `sudo apt install libolm3`
  - Run Code Generation [scripts/codegen.dart](../scripts/codegen.dart)
  - Configure environment variables [. scripts/setup-env.sh](../scripts/setup-env.sh)
  - Start the synapse docker server [scripts/integration-server-synapse.sh](../scripts/integration-server-synapse.sh)

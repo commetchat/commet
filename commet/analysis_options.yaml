@@ -1,5 +1,3 @@
-include: package:flutter_lints/flutter.yaml
-
 analyzer:
   errors:
     curly_braces_in_flow_control_structures: ignore
@@ -9,3 +7,4 @@ analyzer:
     - lib/generated/l10n/*.dart
     - lib/main.widgetbook.dart
     - integration_test/**
+    - lib/generated/**

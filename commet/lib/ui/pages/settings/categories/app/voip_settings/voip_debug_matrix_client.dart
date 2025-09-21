@@ -174,7 +174,7 @@ class _VoipDebugMatrixClientState extends State<VoipDebugMatrixClient> {
     );
   }
 
-  testTurn() async {
+  Future<void> testTurn() async {
     foundCandidates = List.empty(growable: true);
 
     var servers = credentials == null
@@ -223,13 +223,13 @@ class _VoipDebugMatrixClientState extends State<VoipDebugMatrixClient> {
     await connection!.setLocalDescription(offer);
   }
 
-  onIceCandidate(webrtc.RTCIceCandidate candidate) {
+  void onIceCandidate(webrtc.RTCIceCandidate candidate) {
     setState(() {
       foundCandidates.add(candidate);
     });
   }
 
-  onIceGatheringState(webrtc.RTCIceGatheringState state) {
+  void onIceGatheringState(webrtc.RTCIceGatheringState state) {
     setState(() {
       gatheringState = state;
     });

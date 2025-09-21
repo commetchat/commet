@@ -12,6 +12,7 @@ import 'package:universal_html/html.dart' as html;
 import 'package:matrix/matrix.dart' as matrix;
 
 class MatrixSSOLoginFlow implements SsoLoginFlow {
+  @override
   String? id;
   String? brand;
 

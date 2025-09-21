@@ -1,4 +1,4 @@
-library config;
+library;
 
 import 'package:commet/config/build_config.dart';
 import 'package:path/path.dart';

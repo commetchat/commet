@@ -122,6 +122,5 @@ class AutofillSearchResult {
 class AutofillSearchResultEmoticon extends AutofillSearchResult {
   Emoticon emoticon;
 
-  AutofillSearchResultEmoticon(String result, String slug, this.emoticon)
-      : super(result, slug);
+  AutofillSearchResultEmoticon(super.result, super.slug, this.emoticon);
 }

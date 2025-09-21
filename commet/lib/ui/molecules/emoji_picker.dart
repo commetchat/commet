@@ -55,6 +55,7 @@ class EmojiPicker extends StatelessWidget {
                     ScrollConfiguration.of(context).copyWith(scrollbars: false),
                 child: ListView.builder(
                   itemCount: packs.length,
+                  padding: EdgeInsets.all(0),
                   itemBuilder: (context, index) {
                     return Padding(
                       padding: const EdgeInsets.fromLTRB(0, 2, 0, 2),
@@ -88,6 +89,7 @@ class EmojiPicker extends StatelessWidget {
                 behavior:
                     ScrollConfiguration.of(context).copyWith(scrollbars: false),
                 child: ListView.builder(
+                  padding: EdgeInsets.all(0),
                   scrollDirection: Axis.horizontal,
                   itemCount: packs.length,
                   itemBuilder: (context, index) {
@@ -132,6 +134,7 @@ class EmojiPicker extends StatelessWidget {
       child: ScrollablePositionedList.builder(
         itemScrollController: itemScrollController,
         itemCount: packs.length,
+        padding: EdgeInsets.all(0),
         itemBuilder: (BuildContext context, int packIndex) {
           return staggered
               ? buildListItemStaggered(packIndex)
@@ -193,6 +196,7 @@ class EmojiPicker extends StatelessWidget {
             mainAxisSpacing: 3,
             maxCrossAxisExtent: size,
             shrinkWrap: true,
+            padding: EdgeInsets.all(0),
             itemCount: list.length,
             itemBuilder: (context, index) {
               return InkWell(

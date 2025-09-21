@@ -44,7 +44,7 @@ String getFlutterPlatformName(String platform) {
   return platform;
 }
 
-main(List<String> args) async {
+Future<void> main(List<String> args) async {
   String version = getVersionTag(args);
   String platform = getPlatform(args);
   String hash = getHash(args);
@@ -81,8 +81,8 @@ main(List<String> args) async {
       "ENABLE_GOOGLE_SERVICES=$enableGoogleServices",
       if (buildDetail != null) "--dart-define",
       if (buildDetail != null) "BUILD_DETAIL=$buildDetail",
-      if (platform == "web") "--web-renderer",
-      if (platform == "web") "html",
+      if (platform == "web") "--dart-define",
+      if (platform == "web") "FLUTTER_WEB_CANVASKIT_URL=canvaskit/",
       if (platform == "web") "--source-maps"
     ],
     runInShell: true,

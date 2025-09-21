@@ -49,7 +49,7 @@ class AddSpaceOrRoom extends StatefulWidget {
   State<AddSpaceOrRoom> createState() => AddSpaceOrRoomState();
 
   const AddSpaceOrRoom.askCreateOrExistingRoom(
-      {Key? key,
+      {super.key,
       List<Room>? rooms,
       this.client,
       this.clients,
@@ -59,8 +59,7 @@ class AddSpaceOrRoom extends StatefulWidget {
         eligibleRooms = rooms,
         createSpace = null,
         joinRoom = null,
-        joinSpace = null,
-        super(key: key);
+        joinSpace = null;
 }
 
 class AddSpaceOrRoomState extends State<AddSpaceOrRoom> {

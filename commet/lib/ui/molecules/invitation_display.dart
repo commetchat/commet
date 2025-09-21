@@ -23,9 +23,6 @@ class _InvitationDisplayState extends State<InvitationDisplay> {
       args: [user],
       name: "labelInvitationBodyWithSender");
 
-  bool acceptLoading = false;
-  bool rejectLoading = false;
-
   @override
   Widget build(BuildContext context) {
     return RoomPanel(
@@ -39,32 +36,14 @@ class _InvitationDisplayState extends State<InvitationDisplay> {
       onPrimaryButtonPressed: acceptInvitation,
       secondaryButtonLabel: CommonStrings.promptReject,
       onSecondaryButtonPressed: rejectInvitation,
-      primaryButtonLoading: acceptLoading,
-      secondaryButtonLoading: rejectLoading,
     );
   }
 
   Future<void> acceptInvitation() async {
-    setState(() {
-      acceptLoading = true;
-    });
-
     await widget.acceptInvitation?.call(widget.invitation);
-
-    setState(() {
-      acceptLoading = false;
-    });
   }
 
   Future<void> rejectInvitation() async {
-    setState(() {
-      rejectLoading = true;
-    });
-
     await widget.rejectInvitation?.call(widget.invitation);
-
-    setState(() {
-      rejectLoading = false;
-    });
   }
 }
