@@ -10,10 +10,12 @@ import 'package:commet/client/matrix/auth/matrix_username_password_login_flow.da
 import 'package:commet/client/matrix/components/matrix_sync_listener.dart';
 import 'package:commet/client/matrix/database/matrix_database.dart';
 import 'package:commet/client/matrix/extensions/matrix_client_extensions.dart';
+import 'package:commet/client/matrix/matrix_native_implementations.dart';
 import 'package:commet/client/matrix/matrix_profile.dart';
 import 'package:commet/client/profile.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/config/experiments.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
 import 'package:commet/main.dart';
@@ -67,7 +69,7 @@ class MatrixClient extends Client {
 
   matrix.NativeImplementations get nativeImplentations => BuildConfig.WEB
       ? const matrix.NativeImplementationsDummy()
-      : matrix.NativeImplementationsIsolate(compute);
+      : NativeImplementationsCustom(compute);
 
   MatrixClient(
       {required String identifier, required matrix.DatabaseApi database}) {
@@ -382,15 +384,23 @@ class MatrixClient extends Client {
   }
 
   @override
-  Future<Room> createRoom(String name, RoomVisibility visibility,
-      {bool enableE2EE = true}) async {
+  Future<Room> createRoom(CreateRoomArgs args) async {
+    var creationContent = null;
+
+    if (Experiments.photoAlbumRooms) {
+      if (args.roomType == RoomType.photoAlbum) {
+        creationContent = {"type": "chat.commet.photo_album"};
+      }
+    }
+
     var id = await _matrixClient.createRoom(
-        name: name,
-        visibility: visibility == RoomVisibility.private
+        creationContent: creationContent,
+        name: args.name,
+        visibility: args.visibility == RoomVisibility.private
             ? matrix.Visibility.private
             : matrix.Visibility.public);
     var matrixRoom = _matrixClient.getRoomById(id)!;
-    if (enableE2EE) {
+    if (args.enableE2EE) {
       await matrixRoom.enableEncryption();
     }
 
@@ -401,11 +411,11 @@ class MatrixClient extends Client {
   }
 
   @override
-  Future<Space> createSpace(String name, RoomVisibility visibility) async {
+  Future<Space> createSpace(CreateRoomArgs args) async {
     var id = await _matrixClient.createSpace(
-        name: name,
+        name: args.name,
         waitForSync: true,
-        visibility: visibility == RoomVisibility.private
+        visibility: args.visibility == RoomVisibility.private
             ? matrix.Visibility.private
             : matrix.Visibility.public);
 

@@ -72,9 +72,10 @@ class _SpaceListState extends State<SpaceList> {
   }
 
   void onRoomSelected(Room? event) {
-    setState(() {
-      selectedRoom = event;
-    });
+    if (mounted)
+      setState(() {
+        selectedRoom = event;
+      });
   }
 
   @override

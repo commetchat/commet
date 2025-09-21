@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:commet/client/components/direct_messages/direct_message_component.dart';
-import 'package:commet/client/components/voip_room/voip_room_component.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/dot_indicator.dart';
@@ -41,18 +39,7 @@ class _RoomTextButtonState extends State<RoomTextButton> {
 
   @override
   Widget build(BuildContext context) {
-    var isDm = widget.room.client
-            .getComponent<DirectMessagesComponent>()
-            ?.isRoomDirectMessage(widget.room) ??
-        false;
-
-    var voip = widget.room.getComponent<VoipRoomComponent>();
-
-    IconData defaultIcon = isDm ? Icons.alternate_email : Icons.tag;
-
-    if (voip?.isVoipRoom == true) {
-      defaultIcon = Icons.volume_up_rounded;
-    }
+    IconData defaultIcon = widget.room.icon;
 
     var color = Theme.of(context).colorScheme.secondary;
 

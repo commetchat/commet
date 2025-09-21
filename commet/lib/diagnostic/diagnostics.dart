@@ -35,7 +35,6 @@ class CumulativeDiagnostics {
     var result = await func();
 
     s.stop();
-
     addResult(name, s.elapsed);
     return result;
   }

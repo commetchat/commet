@@ -56,7 +56,7 @@ class MatrixMxcImage extends LODImageProvider {
     if (matrixEvent != null) {
       var data =
           await matrixEvent.downloadAndDecryptAttachment(getThumbnail: true);
-      if (Mime.imageTypes.contains(data.mimeType)) {
+      if (Mime.imageTypes.contains(matrixEvent.thumbnailMimetype)) {
         bytes = data.bytes;
       }
     } else {
@@ -109,12 +109,6 @@ class MatrixMxcImage extends LODImageProvider {
     }
 
     return null;
-  }
-
-  @override
-  Future<bool> hasCachedFullres() async {
-    var id = getIdentifier(identifier);
-    return await fileCache?.hasFile(id) == true;
   }
 
   @override

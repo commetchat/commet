@@ -36,6 +36,24 @@ enum ClientConnectionStatus {
   disconnected,
 }
 
+enum RoomType {
+  defaultRoom,
+  photoAlbum,
+}
+
+class CreateRoomArgs {
+  String name;
+  RoomVisibility visibility;
+  bool enableE2EE;
+  RoomType roomType;
+
+  CreateRoomArgs(
+      {required this.name,
+      required this.visibility,
+      required this.enableE2EE,
+      this.roomType = RoomType.defaultRoom});
+}
+
 enum LoginResult { success, failed, error, alreadyLoggedIn, cancelled }
 
 abstract class Client {
@@ -121,11 +139,10 @@ abstract class Client {
   Future<Profile?> getProfile(String identifier);
 
   /// Create a new room
-  Future<Room> createRoom(String name, RoomVisibility visibility,
-      {bool enableE2EE = true});
+  Future<Room> createRoom(CreateRoomArgs args);
 
   /// Create a new space
-  Future<Space> createSpace(String name, RoomVisibility visibility);
+  Future<Space> createSpace(CreateRoomArgs args);
 
   /// Join an existing space by address
   Future<Space> joinSpace(String address);

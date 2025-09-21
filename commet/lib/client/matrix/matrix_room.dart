@@ -352,6 +352,7 @@ class MatrixRoom extends Room {
       TimelineEvent? replaceEvent,
       String? threadRootEventId,
       String? threadLastEventId,
+      Map<String, dynamic>? fileExtraContent,
       List<ProcessedAttachment>? processedAttachments}) async {
     matrix.Event? replyingTo;
 
@@ -365,6 +366,7 @@ class MatrixRoom extends Room {
         return _matrixRoom.sendFileEvent(e.file,
             threadLastEventId: threadLastEventId,
             threadRootEventId: threadRootEventId,
+            extraContent: fileExtraContent,
             thumbnail: e.thumbnailFile);
       }));
     }

@@ -50,6 +50,10 @@ class MatrixTimeline extends Timeline {
         onRemove: onEventRemoved,
         eventContextId: contextEventId);
 
+    if (_matrixTimeline?.events.isEmpty == true) {
+      await _matrixTimeline?.requestHistory();
+    }
+
     _matrixRoom.postLoad();
 
     // This could maybe make load times realllly slow if we have a ton of stuff in the cache?

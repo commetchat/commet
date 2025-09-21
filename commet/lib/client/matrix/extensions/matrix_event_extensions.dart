@@ -6,7 +6,9 @@ extension MatrixExtensions on Event {
   Uri? get videoThumbnailUrl => _getVideoThumbnailUrl();
 
   double? get attachmentWidth => _attachmentWidth();
+  Duration? get attachmentDuration => _attachmentDuration();
   double? get attachmentHeight => _attachmentHeight();
+  double? get thumbnailHeight => _thumbnailHeight();
 
   String? _getBlurhash() {
     var info = content.tryGet("info") as Map<String, dynamic>?;
@@ -50,8 +52,27 @@ extension MatrixExtensions on Event {
     return width.toDouble();
   }
 
+  Duration? _attachmentDuration() {
+    var info = content.tryGet("info") as Map<String, dynamic>?;
+    if (info == null) return null;
+
+    int? duration = info.tryGet("duration");
+    if (duration == null) return null;
+
+    return Duration(milliseconds: duration);
+  }
+
   double? _attachmentHeight() {
     var info = content.tryGet("info") as Map<String, dynamic>?;
+    if (info == null) return null;
+    dynamic height = info.tryGet("h");
+    if (height == null) return null;
+
+    return height.toDouble();
+  }
+
+  double? _thumbnailHeight() {
+    var info = content.tryGet("thumbnail_info") as Map<String, dynamic>?;
     if (info == null) return null;
     dynamic height = info.tryGet("h");
     if (height == null) return null;

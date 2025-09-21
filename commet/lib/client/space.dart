@@ -83,7 +83,7 @@ abstract class Space {
 
   Future<List<RoomPreview>> fetchChildren();
 
-  Future<Room> createRoom(String name, RoomVisibility visibility);
+  Future<Room> createRoom(String name, CreateRoomArgs args);
 
   /// Adds an existing room as a child of a space
   Future<void> setSpaceChildRoom(Room room);

@@ -259,8 +259,8 @@ class MatrixSpace extends Space {
   }
 
   @override
-  Future<Room> createRoom(String name, RoomVisibility visibility) async {
-    var room = await client.createRoom(name, visibility);
+  Future<Room> createRoom(String name, CreateRoomArgs args) async {
+    var room = await client.createRoom(args);
     _matrixRoom.setSpaceChild(room.identifier);
     return room;
   }

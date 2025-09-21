@@ -22,8 +22,7 @@ class HomeScreenView extends StatelessWidget {
   final Future<void> Function(Invitation invite)? acceptInvite;
   final Future<void> Function(Invitation invite)? rejectInvite;
   final Future<void> Function(Client client, String address)? joinRoom;
-  final Future<void> Function(Client client, String name,
-      RoomVisibility visibility, bool enableE2EE)? createRoom;
+  final Future<void> Function(Client client, CreateRoomArgs args)? createRoom;
 
   const HomeScreenView(
       {super.key,

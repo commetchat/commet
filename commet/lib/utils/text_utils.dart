@@ -167,6 +167,17 @@ class TextUtils {
     return intl.DateFormat().format(time.toLocal());
   }
 
+  static String formatDuration(Duration duration) {
+    if (duration.inSeconds < 60) {
+      return "${duration.inSeconds}s";
+    }
+
+    if (duration.inMinutes < 60) {
+      return "${duration.inMinutes.remainder(60)}:${(duration.inSeconds.remainder(60))}";
+    }
+    return "${duration.inHours}:${duration.inMinutes.remainder(60)}:${(duration.inSeconds.remainder(60))}";
+  }
+
   static String readableFileSize(num number, {bool base1024 = true}) {
     const List<String> affixes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
     const useBase1024 = true;

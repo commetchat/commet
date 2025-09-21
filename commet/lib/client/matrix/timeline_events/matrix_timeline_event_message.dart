@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:commet/client/attachment.dart';
 import 'package:commet/client/matrix/components/threads/matrix_thread_timeline.dart';
 import 'package:commet/client/matrix/extensions/matrix_event_extensions.dart';
@@ -9,6 +11,7 @@ import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_mixin
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_mixin_related.dart';
 import 'package:commet/client/timeline.dart';
 import 'package:commet/client/timeline_events/timeline_event_message.dart';
+import 'package:commet/config/platform_utils.dart';
 import 'package:commet/ui/atoms/rich_text/matrix_html_parser.dart';
 import 'package:commet/utils/mime.dart';
 import 'package:commet/utils/text_utils.dart';
@@ -117,6 +120,17 @@ class MatrixTimelineEventMessage extends MatrixTimelineEvent
             MatrixMxcImage(event.attachmentMxcUrl!, mx,
                 blurhash: event.attachmentBlurhash,
                 doThumbnail: true,
+                doFullres: true,
+                thumbnailHeight: event.thumbnailHeight != null
+                    ? min(700, event.thumbnailHeight!.toInt())
+                    : 700,
+                // I noticed on linux, decoding really high res images would cause a flicker, so we will limit it to 1440p
+                fullResHeight: PlatformUtils.isLinux
+                    ? (event.attachmentHeight != null
+                        ? min(1440, event.attachmentHeight!.toInt())
+                        : 1440)
+                    : null,
+                autoLoadFullRes: !event.hasThumbnail,
                 matrixEvent: event),
             MxcFileProvider(mx, event.attachmentMxcUrl!, event: event),
             mimeType: event.attachmentMimetype,
@@ -140,6 +154,7 @@ class MatrixTimelineEventMessage extends MatrixTimelineEvent
                   : null,
               name: filename,
               mimeType: event.attachmentMimetype,
+              duration: event.attachmentDuration,
               width: width,
               fileSize: event.infoMap['size'] as int?,
               height: height);

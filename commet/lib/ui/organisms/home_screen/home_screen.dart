@@ -80,8 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
     await client.joinRoom(address);
   }
 
-  Future<void> createRoom(Client client, String name, RoomVisibility visibility,
-      bool enableE2EE) async {
-    await client.createRoom(name, visibility, enableE2EE: enableE2EE);
+  Future<void> createRoom(Client client, CreateRoomArgs args) async {
+    await client.createRoom(args);
   }
 }
