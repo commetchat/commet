@@ -123,6 +123,7 @@ class _PhotoAlbumViewState extends State<PhotoAlbumView> {
           ClipRRect(
             borderRadius: BorderRadiusGeometry.circular(8),
             child: MasonryGridView.extent(
+              padding: EdgeInsets.all(0),
               crossAxisSpacing: 8,
               controller: controller,
               mainAxisSpacing: 8,
