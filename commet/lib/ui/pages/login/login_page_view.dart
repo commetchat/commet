@@ -1,16 +1,12 @@
 import 'dart:ui';
 
 import 'package:commet/client/auth.dart';
-import 'package:commet/config/build_config.dart';
 import 'package:commet/config/global_config.dart';
 import 'package:commet/ui/atoms/shader/star_trails.dart';
 import 'package:commet/ui/navigation/navigation_utils.dart';
 import 'package:commet/ui/pages/settings/app_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/about/settings_category_about.dart';
-import 'package:commet/ui/pages/settings/categories/account/settings_category_account.dart';
 import 'package:commet/utils/common_strings.dart';
-import 'package:commet/utils/link_utils.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
