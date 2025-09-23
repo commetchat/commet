@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:commet/cache/file_provider.dart';
@@ -22,4 +23,14 @@ class CacheFileProvider implements FileProvider {
 
   @override
   Stream<DownloadProgress>? get onProgressChanged => null;
+
+  @override
+  Future<Uint8List?> getFileData() async {
+    final path = await fileCache?.fetchFile(fileIdentifier, getter);
+    if (path != null) {
+      return File(path.toString()).readAsBytes();
+    }
+
+    return null;
+  }
 }

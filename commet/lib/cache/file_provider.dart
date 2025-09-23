@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 class DownloadProgress {
   int downloaded;
@@ -13,6 +14,8 @@ abstract class FileProvider {
   Future<void> save(String filepath);
 
   Stream<DownloadProgress>? get onProgressChanged;
+
+  Future<Uint8List?> getFileData();
 
   String get fileIdentifier;
 }
@@ -37,4 +40,9 @@ class SystemFileProvider implements FileProvider {
 
   @override
   Stream<DownloadProgress>? get onProgressChanged => null;
+
+  @override
+  Future<Uint8List?> getFileData() {
+    return file.readAsBytes();
+  }
 }
