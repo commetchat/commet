@@ -294,18 +294,20 @@ class MatrixRoom extends Room {
       attachment.mimeType = "image/png";
     }
 
+    var fileExtension = attachment.mimeType != null
+        ? Mime.extensionFromMime(attachment.mimeType!)
+        : null;
+    if (fileExtension == null) {
+      fileExtension = "";
+    } else {
+      fileExtension = ".${fileExtension}";
+    }
+
     try {
       if (Mime.imageTypes.contains(attachment.mimeType)) {
         await decodeImageFromList(attachment.data!);
 
-        var extension = Mime.extensionFromMime(attachment.mimeType!);
-        if (extension == null) {
-          extension = "";
-        } else {
-          extension = ".${extension}";
-        }
-
-        final name = attachment.name ?? "unknown${extension}";
+        final name = attachment.name ?? "unknown${fileExtension}";
 
         return MatrixProcessedAttachment(await matrix.MatrixImageFile.create(
             bytes: attachment.data!,
@@ -333,14 +335,7 @@ class MatrixRoom extends Room {
           name: "thumbnail");
     }
 
-    var extension = Mime.extensionFromMime(attachment.mimeType!);
-    if (extension == null) {
-      extension = "";
-    } else {
-      extension = ".${extension}";
-    }
-
-    final name = attachment.name ?? "Unknown${extension}";
+    final name = attachment.name ?? "Unknown${fileExtension}";
 
     if (Mime.videoTypes.contains(attachment.mimeType)) {
       return MatrixProcessedAttachment(
