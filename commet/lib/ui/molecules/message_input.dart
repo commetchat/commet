@@ -122,6 +122,8 @@ class MessageInputState extends State<MessageInput> {
     controller.text = newText;
     controller.selection =
         TextSelection(baseOffset: newText.length, extentOffset: newText.length);
+
+    onTextfieldUpdated(newText);
   }
 
   @override
@@ -164,6 +166,16 @@ class MessageInputState extends State<MessageInput> {
     }
 
     if (text == lastSearchText) {
+      return;
+    }
+
+    if (text.isEmpty) {
+      setState(() {
+        autoFillResults = [];
+        autoFillSelection = null;
+        updateAutofillScroll();
+      });
+
       return;
     }
 
@@ -575,23 +587,32 @@ class MessageInputState extends State<MessageInput> {
     return Expanded(
       child: Stack(
         children: [
-          TextField(
-            onChanged: onTextfieldUpdated,
-            controller: controller,
+          KeyboardListener(
             focusNode: textFocus,
-            readOnly: !widget.enabled,
-            textAlignVertical: TextAlignVertical.center,
-            style: Theme.of(context).textTheme.bodyMedium!,
-            maxLines: null,
-            contextMenuBuilder: contextMenuBuilder,
-            keyboardType: TextInputType.multiline,
-            textCapitalization: TextCapitalization.sentences,
-            decoration: InputDecoration(
-                contentPadding:
-                    EdgeInsets.fromLTRB(8, padding / 2, 4, padding / 2),
-                border: InputBorder.none,
-                isDense: true,
-                hintText: widget.hintText),
+            onKeyEvent: (value) {
+              if (value.logicalKey == LogicalKeyboardKey.keyV) {
+                if (HardwareKeyboard.instance.isControlPressed) {
+                  readImageFromClipboard();
+                }
+              }
+            },
+            child: TextField(
+              onChanged: onTextfieldUpdated,
+              controller: controller,
+              readOnly: !widget.enabled,
+              textAlignVertical: TextAlignVertical.center,
+              style: Theme.of(context).textTheme.bodyMedium!,
+              maxLines: null,
+              contextMenuBuilder: contextMenuBuilder,
+              keyboardType: TextInputType.multiline,
+              textCapitalization: TextCapitalization.sentences,
+              decoration: InputDecoration(
+                  contentPadding:
+                      EdgeInsets.fromLTRB(8, padding / 2, 4, padding / 2),
+                  border: InputBorder.none,
+                  isDense: true,
+                  hintText: widget.hintText),
+            ),
           ),
         ],
       ),
@@ -788,7 +809,7 @@ class MessageInputState extends State<MessageInput> {
   }
 
   Widget contextMenuBuilder(
-      BuildContext context, EditableTextState editableTextState) {
+      BuildContext buildContext, EditableTextState editableTextState) {
     return AdaptiveTextSelectionToolbar.editable(
       anchors: editableTextState.contextMenuAnchors,
       clipboardStatus: ClipboardStatus.pasteable,
@@ -809,11 +830,7 @@ class MessageInputState extends State<MessageInput> {
         editableTextState.hideToolbar();
 
         if (BuildConfig.DESKTOP) {
-          var image = await Pasteboard.image;
-          if (image != null) {
-            widget.addAttachment
-                ?.call(PendingFileAttachment(data: image, size: image.length));
-          }
+          await readImageFromClipboard();
         }
       },
       // to apply the normal behavior when click on select all
@@ -822,5 +839,26 @@ class MessageInputState extends State<MessageInput> {
       onLiveTextInput: null, onLookUp: null, onSearchWeb: null,
       onShare: null,
     );
+  }
+
+  Future<void> readImageFromClipboard() async {
+    var image = await Pasteboard.image;
+    if (image == null) {
+      return;
+    }
+
+    var processedAttachment =
+        await AdaptiveDialog.show<PendingFileAttachment>(context,
+            scrollable: false,
+            builder: (context) => AttachmentProcessor(
+                  attachment:
+                      PendingFileAttachment(data: image, size: image.length),
+                ));
+
+    if (processedAttachment != null) {
+      setState(() {
+        widget.addAttachment?.call(processedAttachment);
+      });
+    }
   }
 }

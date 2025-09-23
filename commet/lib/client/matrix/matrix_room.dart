@@ -294,12 +294,24 @@ class MatrixRoom extends Room {
       attachment.mimeType = "image/png";
     }
 
+    var fileExtension = attachment.mimeType != null
+        ? Mime.extensionFromMime(attachment.mimeType!)
+        : null;
+    if (fileExtension == null) {
+      fileExtension = "";
+    } else {
+      fileExtension = ".${fileExtension}";
+    }
+
     try {
       if (Mime.imageTypes.contains(attachment.mimeType)) {
         await decodeImageFromList(attachment.data!);
+
+        final name = attachment.name ?? "unknown${fileExtension}";
+
         return MatrixProcessedAttachment(await matrix.MatrixImageFile.create(
             bytes: attachment.data!,
-            name: attachment.name ?? "unknown",
+            name: name,
             mimeType: attachment.mimeType,
             nativeImplementations:
                 (client as MatrixClient).nativeImplentations));
@@ -323,11 +335,13 @@ class MatrixRoom extends Room {
           name: "thumbnail");
     }
 
+    final name = attachment.name ?? "Unknown${fileExtension}";
+
     if (Mime.videoTypes.contains(attachment.mimeType)) {
       return MatrixProcessedAttachment(
         matrix.MatrixVideoFile(
           bytes: attachment.data!,
-          name: attachment.name ?? "Unknown",
+          name: name,
           mimeType: attachment.mimeType,
           width: attachment.dimensions?.width.toInt(),
           height: attachment.dimensions?.height.toInt(),
@@ -339,9 +353,7 @@ class MatrixRoom extends Room {
 
     return MatrixProcessedAttachment(
         matrix.MatrixFile(
-            bytes: attachment.data!,
-            name: attachment.name ?? "Unknown",
-            mimeType: attachment.mimeType),
+            bytes: attachment.data!, name: name, mimeType: attachment.mimeType),
         thumbnailFile: thumbnailImageFile);
   }
 
