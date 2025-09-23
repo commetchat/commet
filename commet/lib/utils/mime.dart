@@ -38,16 +38,27 @@ class Mime {
     "application/gzip"
   };
 
+  static const extensionToMime = {
+    "jpeg": "image/jpeg",
+    "jpg": "image/jpeg",
+    "png": "image/png",
+    "gif": "image/gif",
+    "webp": "image/webp",
+    "bmp": "image/bmp"
+  };
+
   static String? fromExtenstion(String extension) {
-    var types = {
-      "jpeg": "image/jpeg",
-      "jpg": "image/jpeg",
-      "png": "image/png",
-      "gif": "image/gif",
-      "webp": "image/webp",
-      "bmp": "image/bmp"
-    };
-    return types.tryGet(extension);
+    return extensionToMime.tryGet(extension);
+  }
+
+  static String? extensionFromMime(String mimeType) {
+    for (var pair in extensionToMime.entries) {
+      if (pair.value == mimeType) {
+        return pair.key;
+      }
+    }
+
+    return null;
   }
 
   static IconData toIcon(String? mimeType) {
