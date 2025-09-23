@@ -46,6 +46,7 @@ class SettingsCategoryAbout implements SettingsCategory {
   static Widget info(BuildContext context) {
     return SizedBox(
       child: Wrap(
+        alignment: WrapAlignment.center,
         children: [
           const tiamat.Text.label(BuildConfig.VERSION_TAG),
           const tiamat.Text.label(" · "),
