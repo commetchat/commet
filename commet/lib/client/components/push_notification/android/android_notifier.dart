@@ -143,8 +143,11 @@ class AndroidNotifier implements Notifier {
         silent: content.priority == NotificationPriority.low,
         ticker: content.content,
         bubble: bubblesEnabled
-            ? BubbleMetadata("chat.commet.commetapp.BubbleActivity",
-                extra: payload)
+            ? BubbleMetadata(
+                "chat.commet.commetapp.BubbleActivity",
+                extra: payload,
+                desiredHeight: 600,
+              )
             : null,
         color: const Color.fromARGB(0xff, 0x53, 0x4c, 0xdd));
 
