@@ -1,14 +1,12 @@
 import 'dart:ui';
 
 import 'package:commet/client/auth.dart';
-import 'package:commet/config/build_config.dart';
 import 'package:commet/config/global_config.dart';
 import 'package:commet/ui/atoms/shader/star_trails.dart';
 import 'package:commet/ui/navigation/navigation_utils.dart';
 import 'package:commet/ui/pages/settings/app_settings_page.dart';
+import 'package:commet/ui/pages/settings/categories/about/settings_category_about.dart';
 import 'package:commet/utils/common_strings.dart';
-import 'package:commet/utils/link_utils.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
@@ -142,39 +140,8 @@ class _LoginPageViewState extends State<LoginPageView> {
             child: Padding(
               padding: EdgeInsets.fromLTRB(
                   0, 0, 0, MediaQuery.of(context).padding.bottom),
-              child: info(),
+              child: SettingsCategoryAbout.info(context),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget info() {
-    return SizedBox(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const tiamat.Text.label(BuildConfig.VERSION_TAG),
-          const tiamat.Text.label(" · "),
-          tiamat.Text.label(BuildConfig.GIT_HASH.substring(0, 7)),
-          const tiamat.Text.label(" · "),
-          Text.rich(
-            TextSpan(
-                style: const TextStyle(decoration: TextDecoration.underline),
-                text: "Source Code",
-                recognizer: TapGestureRecognizer()
-                  ..onTap = () => LinkUtils.open(
-                      Uri.parse("https://github.com/commetchat/commet"))),
-          ),
-          const tiamat.Text.label(" · "),
-          Text.rich(
-            TextSpan(
-                style: const TextStyle(decoration: TextDecoration.underline),
-                text: "License",
-                recognizer: TapGestureRecognizer()
-                  ..onTap = () => LinkUtils.open(Uri.parse(
-                      "https://github.com/commetchat/commet/blob/main/LICENSE"))),
           ),
         ],
       ),

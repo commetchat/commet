@@ -4,7 +4,9 @@ import 'package:commet/main.dart';
 import 'package:commet/ui/pages/settings/categories/developer/log_page.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
 import 'package:commet/ui/pages/settings/settings_tab.dart';
+import 'package:commet/utils/link_utils.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -26,6 +28,7 @@ class SettingsCategoryAbout implements SettingsCategory {
         SettingsTab(
             label: "About",
             icon: Icons.info_outline,
+            makeScrollable: false,
             pageBuilder: (context) {
               return const _AppInfo();
             }),
@@ -39,6 +42,47 @@ class SettingsCategoryAbout implements SettingsCategory {
             },
           )
       ]);
+
+  static Widget info(BuildContext context) {
+    return SizedBox(
+      child: Wrap(
+        alignment: WrapAlignment.center,
+        children: [
+          const tiamat.Text.label(BuildConfig.VERSION_TAG),
+          const tiamat.Text.label(" · "),
+          tiamat.Text.label(BuildConfig.GIT_HASH.substring(0, 7)),
+          const tiamat.Text.label(" · "),
+          Text.rich(
+            TextSpan(
+                style: const TextStyle(decoration: TextDecoration.underline),
+                text: "Source Code",
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () => LinkUtils.open(
+                      Uri.parse("https://github.com/commetchat/commet"))),
+          ),
+          const tiamat.Text.label(" · "),
+          Text.rich(
+            TextSpan(
+                style: const TextStyle(decoration: TextDecoration.underline),
+                text: "License",
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () => LinkUtils.open(Uri.parse(
+                      "https://github.com/commetchat/commet/blob/main/LICENSE"))),
+          ),
+          const tiamat.Text.label(" · "),
+          Text.rich(
+            TextSpan(
+                style: const TextStyle(decoration: TextDecoration.underline),
+                text: "Open Source Licenses",
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () {
+                    showLicensePage(context: context);
+                  }),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   String? get title => null;
@@ -69,7 +113,8 @@ class _AppInfoState extends State<_AppInfo> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisSize: MainAxisSize.min,
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Row(
           children: [
@@ -132,15 +177,7 @@ class _AppInfoState extends State<_AppInfo> {
             ),
           ],
         ),
-        ExpansionTile(
-          title: const tiamat.Text.labelEmphasised("Licenses"),
-          children: [
-            SizedBox(
-              height: MediaQuery.of(context).size.height,
-              child: const LicensePage(),
-            )
-          ],
-        ),
+        SettingsCategoryAbout.info(context)
       ],
     );
   }
