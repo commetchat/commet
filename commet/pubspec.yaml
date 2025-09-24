@@ -108,6 +108,13 @@ dependencies:
 dependency_overrides:
   analyzer: ^7.3.0
 
+  ## fixes: https://github.com/dart-lang/tools/issues/2169
+  markdown:
+    git:
+      url: https://github.com/Airyzz/dart-lang-tools
+      ref: main
+      path: pkgs/markdown
+
 dev_dependencies: 
   drift_dev: ^2.28.0
   build_runner: ^2.4.11
