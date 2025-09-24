@@ -107,6 +107,8 @@ dependencies:
   uuid: any
 dependency_overrides:
   analyzer: ^7.3.0
+
+  ## fixes: https://github.com/dart-lang/tools/issues/2169
   markdown:
     git:
       url: https://github.com/Airyzz/dart-lang-tools
