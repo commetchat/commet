@@ -107,6 +107,11 @@ dependencies:
   uuid: any
 dependency_overrides:
   analyzer: ^7.3.0
+  markdown:
+    git:
+      url: https://github.com/Airyzz/dart-lang-tools
+      ref: main
+      path: pkgs/markdown
 
 dev_dependencies: 
   drift_dev: ^2.28.0

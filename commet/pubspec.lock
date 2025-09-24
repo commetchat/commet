@@ -867,11 +867,12 @@ packages:
   markdown:
     dependency: "direct main"
     description:
-      name: markdown
-      sha256: "935e23e1ff3bc02d390bad4d4be001208ee92cc217cb5b5a6c19bc14aaa318c1"
-      url: "https://pub.dev"
-    source: hosted
-    version: "7.3.0"
+      path: "pkgs/markdown"
+      ref: main
+      resolved-ref: "5978dd83f263574a05db478bc1be6ce705517aac"
+      url: "https://github.com/Airyzz/dart-lang-tools"
+    source: git
+    version: "7.3.1-wip"
   matcher:
     dependency: transitive
     description:
