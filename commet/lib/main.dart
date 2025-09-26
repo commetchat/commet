@@ -274,12 +274,10 @@ class App extends StatelessWidget {
             theme: theme,
             debugShowCheckedModeBanner: false,
             navigatorKey: navigator,
-            localizationsDelegates: const [T.delegate],
             builder: (context, child) => Provider<ClientManager>(
               create: (context) => clientManager,
               child: child,
             ),
-            supportedLocales: T.delegate.supportedLocales,
             home: AppView(
               clientManager: clientManager,
               initialClientId: initialClientId,
