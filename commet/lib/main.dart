@@ -173,9 +173,9 @@ Future<void> initNecessary() async {
 Future<void> initGuiRequirements() async {
   isHeadless = false;
 
-  var locale = PlatformDispatcher.instance.locale;
-
   MediaKit.ensureInitialized();
+
+  var locale = PlatformDispatcher.instance.locale;
 
   Future.wait([
     WindowManagement.init(),
