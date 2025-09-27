@@ -294,6 +294,14 @@ class MessageInputState extends State<MessageInput> {
   KeyEventResult onKey(FocusNode node, KeyEvent event) {
     if (BuildConfig.MOBILE) return KeyEventResult.ignored;
 
+    if (HardwareKeyboard.instance
+        .isLogicalKeyPressed(LogicalKeyboardKey.keyV)) {
+      if (HardwareKeyboard.instance.isControlPressed) {
+        readImageFromClipboard();
+        return KeyEventResult.handled;
+      }
+    }
+
     if (HardwareKeyboard.instance.isLogicalKeyPressed(LogicalKeyboardKey.tab)) {
       if (autoFillResults == null || autoFillResults!.isEmpty) {
         autoFillSelection = null;
@@ -587,32 +595,23 @@ class MessageInputState extends State<MessageInput> {
     return Expanded(
       child: Stack(
         children: [
-          KeyboardListener(
+          TextField(
             focusNode: textFocus,
-            onKeyEvent: (value) {
-              if (value.logicalKey == LogicalKeyboardKey.keyV) {
-                if (HardwareKeyboard.instance.isControlPressed) {
-                  readImageFromClipboard();
-                }
-              }
-            },
-            child: TextField(
-              onChanged: onTextfieldUpdated,
-              controller: controller,
-              readOnly: !widget.enabled,
-              textAlignVertical: TextAlignVertical.center,
-              style: Theme.of(context).textTheme.bodyMedium!,
-              maxLines: null,
-              contextMenuBuilder: contextMenuBuilder,
-              keyboardType: TextInputType.multiline,
-              textCapitalization: TextCapitalization.sentences,
-              decoration: InputDecoration(
-                  contentPadding:
-                      EdgeInsets.fromLTRB(8, padding / 2, 4, padding / 2),
-                  border: InputBorder.none,
-                  isDense: true,
-                  hintText: widget.hintText),
-            ),
+            onChanged: onTextfieldUpdated,
+            controller: controller,
+            readOnly: !widget.enabled,
+            textAlignVertical: TextAlignVertical.center,
+            style: Theme.of(context).textTheme.bodyMedium!,
+            maxLines: null,
+            contextMenuBuilder: contextMenuBuilder,
+            keyboardType: TextInputType.multiline,
+            textCapitalization: TextCapitalization.sentences,
+            decoration: InputDecoration(
+                contentPadding:
+                    EdgeInsets.fromLTRB(8, padding / 2, 4, padding / 2),
+                border: InputBorder.none,
+                isDense: true,
+                hintText: widget.hintText),
           ),
         ],
       ),
