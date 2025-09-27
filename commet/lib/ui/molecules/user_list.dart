@@ -145,10 +145,11 @@ class _RoomMemberListState extends State<RoomMemberList> {
       itemBuilder: (context, index) {
         if (index < itemCount) {
           var member = getDisplayUser(index);
-          Widget result = MemberPanel(
+          Widget result = UserPanel(
             client: widget.room.client,
-            member: member,
-            userColor: member.defaultColor,
+            initialMember: member,
+            contextRoom: widget.room,
+            userId: member.identifier,
           );
 
           var role = getDisplayRole(index);

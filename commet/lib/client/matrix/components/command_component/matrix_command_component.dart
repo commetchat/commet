@@ -9,6 +9,7 @@ import 'package:commet/client/room.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/ui/organisms/chat/chat.dart';
 import 'package:matrix/matrix.dart' as matrix;
+import 'package:matrix/matrix_api_lite/generated/model.dart';
 
 class MatrixCommandComponent extends CommandComponent<MatrixClient> {
   @override
@@ -16,6 +17,7 @@ class MatrixCommandComponent extends CommandComponent<MatrixClient> {
 
   MatrixCommandComponent(this.client) {
     client.getMatrixClient().addCommand("sendjson", sendJson);
+    client.getMatrixClient().addCommand("status", setStatus);
   }
 
   @override
@@ -58,6 +60,15 @@ class MatrixCommandComponent extends CommandComponent<MatrixClient> {
     client
         .getMatrixClient()
         .sendMessage(args.room!.id, json["type"], tx, json['content']);
+
+    return null;
+  }
+
+  FutureOr<String?> setStatus(
+      matrix.CommandArgs args, StringBuffer? out) async {
+    await client.getMatrixClient().setPresence(
+        client.getMatrixClient().userID!, PresenceType.online,
+        statusMsg: args.msg);
 
     return null;
   }

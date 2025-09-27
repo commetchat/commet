@@ -71,10 +71,9 @@ class _TimelineEventViewReactionsState extends State<TimelineEventViewReactions>
                             itemCount: value.length,
                             itemBuilder: (context, index) {
                               final id = value.elementAt(index % value.length);
-                              var member =
-                                  widget.timeline.room.getMemberOrFallback(id);
-                              return MemberPanel(
-                                  member: member,
+                              return UserPanel(
+                                  userId: id,
+                                  contextRoom: widget.timeline.room,
                                   client: widget.timeline.client);
                             },
                           ),
