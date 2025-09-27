@@ -12,7 +12,6 @@ import 'package:commet/config/preferences.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
 import 'package:commet/generated/intl/messages_all.dart';
-import 'package:commet/generated/l10n.dart';
 import 'package:commet/ui/pages/bubble/bubble_page.dart';
 import 'package:commet/ui/pages/fatal_error/fatal_error_page.dart';
 import 'package:commet/ui/pages/login/login_page.dart';
@@ -174,9 +173,9 @@ Future<void> initNecessary() async {
 Future<void> initGuiRequirements() async {
   isHeadless = false;
 
-  var locale = PlatformDispatcher.instance.locale;
-
   MediaKit.ensureInitialized();
+
+  var locale = PlatformDispatcher.instance.locale;
 
   Future.wait([
     WindowManagement.init(),
@@ -274,12 +273,10 @@ class App extends StatelessWidget {
             theme: theme,
             debugShowCheckedModeBanner: false,
             navigatorKey: navigator,
-            localizationsDelegates: const [T.delegate],
             builder: (context, child) => Provider<ClientManager>(
               create: (context) => clientManager,
               child: child,
             ),
-            supportedLocales: T.delegate.supportedLocales,
             home: AppView(
               clientManager: clientManager,
               initialClientId: initialClientId,
