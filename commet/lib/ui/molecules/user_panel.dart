@@ -47,7 +47,10 @@ class _UserPanelState extends material.State<UserPanel> {
 
     super.initState();
     initPresence();
+    getInfoFromMember();
+  }
 
+  void getInfoFromMember() {
     if (widget.isDirectMessage) {
       displayName = widget.contextRoom.displayName;
       color = widget.contextRoom.defaultColor;
@@ -61,6 +64,12 @@ class _UserPanelState extends material.State<UserPanel> {
     color = member.defaultColor;
     avatar = member.avatar;
     detail = member.detail;
+  }
+
+  @override
+  void didUpdateWidget(covariant UserPanel oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    getInfoFromMember();
   }
 
   @override
@@ -103,10 +112,8 @@ class _UserPanelState extends material.State<UserPanel> {
       );
     } else {
       style = style?.copyWith(
-          fontSize: 8,
-          color: Theme.of(context).colorScheme.secondary,
-          fontFamily: "code",
-          fontWeight: FontWeight.w100);
+        color: Theme.of(context).colorScheme.secondary,
+      );
     }
 
     return UserPanelView(
@@ -118,6 +125,7 @@ class _UserPanelState extends material.State<UserPanel> {
       avatarColor: color,
       nameColor: widget.isDirectMessage ? null : color,
       avatarSize: widget.isDirectMessage ? 20 : 15,
+      detailIcon: presence.message != null ? Icons.chat_bubble : null,
       presenceStatus: presence.status,
       onClicked: widget.onTap ?? onUserPanelClicked,
     );
@@ -155,6 +163,7 @@ class UserPanelView extends material.StatelessWidget {
       this.shimmer = false,
       this.random = 0,
       this.detailStringStyle,
+      this.detailIcon,
       this.presenceStatus,
       this.avatarSize = 15,
       this.onClicked});
@@ -170,6 +179,7 @@ class UserPanelView extends material.StatelessWidget {
   final bool shimmer;
   final TextStyle? detailStringStyle;
   final double random;
+  final IconData? detailIcon;
   final void Function()? onClicked;
 
   @override
@@ -236,7 +246,28 @@ class UserPanelView extends material.StatelessWidget {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
-                          if (detail != null) buildDetailString(),
+                          if (detail != null)
+                            material.Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                if (detailIcon != null)
+                                  material.Padding(
+                                    padding:
+                                        const EdgeInsets.fromLTRB(0, 0, 4, 0),
+                                    child: Icon(
+                                      detailIcon,
+                                      size: 10,
+                                    ),
+                                  ),
+                                Flexible(
+                                  child: material.Padding(
+                                    padding:
+                                        const EdgeInsets.fromLTRB(0, 0, 0, 2),
+                                    child: buildDetailString(),
+                                  ),
+                                ),
+                              ],
+                            ),
                         ],
                       ),
                     ),
@@ -286,11 +317,13 @@ class UserPanelView extends material.StatelessWidget {
 
   Widget buildDetailString() {
     if (detailStringStyle == null) {
-      return tiamat.Text.tiny(detail!);
+      return tiamat.Text.labelLow(detail!);
     }
 
     return material.Text(
       detail!,
+      overflow: TextOverflow.ellipsis,
+      maxLines: 1,
       style: detailStringStyle,
     );
   }

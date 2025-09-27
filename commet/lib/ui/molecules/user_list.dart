@@ -146,6 +146,7 @@ class _RoomMemberListState extends State<RoomMemberList> {
         if (index < itemCount) {
           var member = getDisplayUser(index);
           Widget result = UserPanel(
+            key: ValueKey("room-user-list-user-${member.identifier}"),
             client: widget.room.client,
             initialMember: member,
             contextRoom: widget.room,
