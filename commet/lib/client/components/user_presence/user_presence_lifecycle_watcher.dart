@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:commet/client/components/user_presence/user_presence_component.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:flutter/widgets.dart';
 
@@ -14,11 +17,21 @@ class UserPresenceLifecycleWatcher {
 
   bool isInit = false;
   DateTime? lastUpdatedStatus = null;
+  Timer? inactivityTimer;
 
   void init() {
     if (!isInit) {
       AppLifecycleListener(
-        onResume: () => setState(UserPresenceStatus.online),
+        onResume: () {
+          inactivityTimer?.cancel();
+          inactivityTimer = null;
+          setState(UserPresenceStatus.online);
+        },
+        onInactive: () {
+          inactivityTimer = Timer(Duration(seconds: 15), () {
+            setState(UserPresenceStatus.unavailable);
+          });
+        },
       );
     }
 
@@ -38,7 +51,7 @@ class UserPresenceLifecycleWatcher {
       for (var client in clientManager!.clients) {
         final component = client.getComponent<UserPresenceComponent>();
         if (component != null) {
-          component.setStatus(UserPresenceStatus.online);
+          component.setStatus(state);
         }
       }
     }
