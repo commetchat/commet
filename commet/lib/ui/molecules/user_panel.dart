@@ -91,7 +91,7 @@ class _UserPanelState extends material.State<UserPanel> {
         .listen(onChanged);
 
     final p = await presenceComponent.getUserPresence(widget.userId);
-    print("Got presence: ${p}");
+
     if (mounted) {
       setState(() {
         presence = p;
@@ -248,6 +248,7 @@ class UserPanelView extends material.StatelessWidget {
                             ),
                           if (detail != null)
                             material.Row(
+                              mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 if (detailIcon != null)
