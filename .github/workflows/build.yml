@@ -40,6 +40,7 @@ jobs:
   build-android:
     runs-on: ubuntu-latest
     steps:
+      # we were having issues running out of disk space on workers, so...
       - name: Aggressive cleanup
         run: |
           # Remove .NET SDKs
@@ -101,6 +102,7 @@ jobs:
   build-android-google-services:
     runs-on: ubuntu-latest
     steps:
+      # we were having issues running out of disk space on workers, so...
       - name: Aggressive cleanup
         run: |
           # Remove .NET SDKs
