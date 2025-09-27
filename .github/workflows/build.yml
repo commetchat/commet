@@ -40,6 +40,33 @@ jobs:
   build-android:
     runs-on: ubuntu-latest
     steps:
+      - name: Aggressive cleanup
+        run: |
+          # Remove .NET SDKs
+          sudo rm -rf /usr/share/dotnet
+
+          # Remove Haskell (GHC)
+          sudo rm -rf /usr/local/.ghcup
+
+          # Remove Julia
+          sudo rm -rf /usr/local/julia*
+
+          # Remove Chromium (optional if not using for browser tests)
+          sudo rm -rf /usr/local/share/chromium
+
+          # Remove Microsoft/Edge and Google Chrome builds
+          sudo rm -rf /opt/microsoft /opt/google
+
+          # Remove Azure CLI
+          sudo rm -rf /opt/az
+
+          # Remove CodeQL and other toolcaches
+          sudo rm -rf /opt/hostedtoolcache
+
+          docker system prune -af || true
+          docker builder prune -af || true
+          df -h
+
       - name: Checkout
         uses: actions/checkout@v2
         with:
@@ -69,11 +96,38 @@ jobs:
       - name: Build APK
         run: |
           cd $PROJECT_PATH
-          flutter build apk --release --dart-define PLATFORM=android
+          flutter build apk --debug --dart-define PLATFORM=android
 
   build-android-google-services:
     runs-on: ubuntu-latest
     steps:
+      - name: Aggressive cleanup
+        run: |
+          # Remove .NET SDKs
+          sudo rm -rf /usr/share/dotnet
+  
+          # Remove Haskell (GHC)
+          sudo rm -rf /usr/local/.ghcup
+  
+          # Remove Julia
+          sudo rm -rf /usr/local/julia*
+  
+          # Remove Chromium (optional if not using for browser tests)
+          sudo rm -rf /usr/local/share/chromium
+  
+          # Remove Microsoft/Edge and Google Chrome builds
+          sudo rm -rf /opt/microsoft /opt/google
+  
+          # Remove Azure CLI
+          sudo rm -rf /opt/az
+  
+          # Remove CodeQL and other toolcaches
+          sudo rm -rf /opt/hostedtoolcache
+  
+          docker system prune -af || true
+          docker builder prune -af || true
+          df -h
+
       - name: Checkout
         uses: actions/checkout@v2
         with:
@@ -104,7 +158,7 @@ jobs:
       - name: Build APK
         run: |
           cd $PROJECT_PATH
-          flutter build apk --release --dart-define ENABLE_GOOGLE_SERVICES=true --dart-define PLATFORM=android
+          flutter build apk --debug --dart-define ENABLE_GOOGLE_SERVICES=true --dart-define PLATFORM=android
 
   build-linux:
     runs-on: ubuntu-latest
