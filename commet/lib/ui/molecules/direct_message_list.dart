@@ -80,6 +80,7 @@ class _DirectMessageListState extends State<DirectMessageList> {
                 Expanded(
                   child: UserPanel(
                     userId: id,
+                    key: ValueKey("home-screen-direct-message-entry-${id}"),
                     client: room.client,
                     contextRoom: room,
                     isDirectMessage: true,
