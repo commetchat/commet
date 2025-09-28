@@ -51,7 +51,7 @@ class MatrixLivekitBackend {
       "device_id": room.matrixRoom.client.deviceID!,
       "room": room.matrixRoom.id,
       "openid_token": {
-        "matrix_server_name": room.matrixRoom.client.homeserver!.host,
+        "matrix_server_name": token.matrixServerName,
         "access_token": token.accessToken,
         "expires_in": token.expiresIn,
       }
@@ -59,6 +59,7 @@ class MatrixLivekitBackend {
 
     var result = await http.post(uri, body: jsonEncode(body));
     if (result.statusCode != 200) {
+      Log.e("Failed to get sfu!");
       return null;
     }
 
