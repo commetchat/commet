@@ -1,5 +1,6 @@
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip_room/voip_room_component.dart';
+import 'package:commet/ui/organisms/call_view/call.dart';
 import 'package:commet/ui/organisms/call_view/call_view.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -33,7 +34,7 @@ class _VoipRoomViewState extends State<VoipRoomView> {
         ],
       );
 
-    return CallView(currentSession!);
+    return CallWidget(currentSession!);
   }
 
   joinRoomCall() async {

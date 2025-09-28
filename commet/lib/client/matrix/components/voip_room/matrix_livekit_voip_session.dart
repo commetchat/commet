@@ -3,9 +3,15 @@ import 'dart:async';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
+import 'package:commet/client/components/voip/webrtc_screencapture_source.dart';
 import 'package:commet/client/matrix/components/voip_room/matrix_livekit_voip_stream.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
+import 'package:commet/config/platform_utils.dart';
+import 'package:commet/ui/organisms/call_view/screen_capture_source_dialog.dart';
+import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:flutter_webrtc/src/desktop_capturer.dart';
+import 'package:tiamat/atoms/popup_dialog.dart';
 import 'package:webrtc_interface/src/mediadevices.dart';
 import 'package:livekit_client/livekit_client.dart' as lk;
 
@@ -89,9 +95,15 @@ class MatrixLivekitVoipSession implements VoipSession {
   }
 
   @override
-  Future<void> setScreenShare(DesktopCapturerSource source) {
-    // TODO: implement setScreenShare
-    throw UnimplementedError();
+  Future<void> setScreenShare(ScreenCaptureSource source) async {
+    final src = (source as WebrtcScreencaptureSource).source;
+    var track = await lk.LocalVideoTrack.createScreenShareTrack(
+      lk.ScreenShareCaptureOptions(
+          sourceId: src.id,
+          maxFrameRate: 30.0,
+          params: lk.VideoParametersPresets.screenShareH1080FPS30),
+    );
+    await livekitRoom.localParticipant?.publishVideoTrack(track);
   }
 
   @override
@@ -140,8 +152,13 @@ class MatrixLivekitVoipSession implements VoipSession {
 
   @override
   // TODO: implement supportsScreenshare
-  bool get supportsScreenshare => false;
+  bool get supportsScreenshare => true;
 
   @override
   Future<void> updateStats() async {}
+
+  @override
+  Future<ScreenCaptureSource?> pickScreenCapture(BuildContext context) async {
+    return WebrtcScreencaptureSource.showSelectSourcePrompt(context);
+  }
 }

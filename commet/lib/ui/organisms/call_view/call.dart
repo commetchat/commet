@@ -30,19 +30,9 @@ class _CallWidgetState extends State<CallWidget> {
   }
 
   Future<void> pickScreenShareSource() async {
-    var sources = await desktopCapturer
-        .getSources(types: [SourceType.Window, SourceType.Screen]);
-
-    if (context.mounted) {
-      var result = await PopupDialog.show<DesktopCapturerSource>(
-          // ignore: use_build_context_synchronously
-          context,
-          content: ScreenCaptureSourceDialog(sources),
-          title: "Screen Share");
-      if (result != null) {
-        await widget.session.setScreenShare(result);
-        setState(() {});
-      }
+    final source = await widget.session.pickScreenCapture(context);
+    if (source != null) {
+      widget.session.setScreenShare(source);
     }
   }
 

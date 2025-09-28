@@ -42,7 +42,7 @@ class MatrixLivekitVoipStream implements VoipStream {
 
   @override
   Widget? buildVideoRenderer(BoxFit fit, Key key) {
-    if (publication.track is RemoteVideoTrack) {
+    if (publication.track is VideoTrack) {
       return VideoTrackRenderer(publication.track as VideoTrack);
     }
 

@@ -3,11 +3,16 @@ import 'dart:async';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
+import 'package:commet/client/components/voip/webrtc_screencapture_source.dart';
 import 'package:commet/client/matrix/components/rtc_data_channel/matrix_rtc_data_channel_component.dart';
 import 'package:commet/client/matrix/components/voip/matrix_voip_stream.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
+import 'package:commet/config/platform_utils.dart';
+import 'package:commet/ui/organisms/call_view/screen_capture_source_dialog.dart';
+import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:matrix/matrix.dart' as matrix;
+import 'package:tiamat/atoms/popup_dialog.dart';
 
 class MatrixVoipSession implements VoipSession {
   matrix.CallSession session;
@@ -132,15 +137,21 @@ class MatrixVoipSession implements VoipSession {
   }
 
   @override
-  Future<void> setScreenShare(DesktopCapturerSource source) async {
+  Future<void> setScreenShare(ScreenCaptureSource source) async {
+    if (source is! WebrtcScreencaptureSource) {
+      return;
+    }
+
+    final src = source.source;
+
     var stream = await navigator.mediaDevices.getDisplayMedia({
       'video': {
-        'deviceId': {'exact': source.id},
+        'deviceId': {'exact': source.source},
         'mandatory': {'frameRate': 30.0}
       }
     });
 
-    currentScreenshare = source;
+    currentScreenshare = src;
 
     await stopScreenshare();
     session.addLocalStream(stream, matrix.SDPStreamMetadataPurpose.Screenshare);
@@ -217,5 +228,10 @@ class MatrixVoipSession implements VoipSession {
   void onStreamRemoved(matrix.WrappedMediaStream event) {
     streams.removeWhere((e) => e.streamId == event.stream?.id);
     _onStateChanged.add(null);
+  }
+
+  @override
+  Future<ScreenCaptureSource?> pickScreenCapture(BuildContext context) async {
+    return WebrtcScreencaptureSource.showSelectSourcePrompt(context);
   }
 }
