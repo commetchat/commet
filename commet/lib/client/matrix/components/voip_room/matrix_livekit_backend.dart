@@ -65,8 +65,8 @@ class MatrixLivekitBackend {
 
     var data = jsonDecode(result.body) as Map<String, dynamic>;
 
-    Log.d("Got sfu: ${data}");
     final sfuUrl = data["url"];
+    Log.d("Got sfu: ${sfuUrl}");
     final jwt = data["jwt"];
 
     final roomOptions = lk.RoomOptions(
