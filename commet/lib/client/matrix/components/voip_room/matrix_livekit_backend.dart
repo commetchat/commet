@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/matrix/components/voip_room/matrix_livekit_voip_session.dart';
+import 'package:commet/client/matrix/components/voip_room/matrix_voip_room_component.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/debug/log.dart';
 import 'package:http/http.dart' as http;
@@ -76,6 +77,30 @@ class MatrixLivekitBackend {
 
     final lkRoom = lk.Room(roomOptions: roomOptions);
     await lkRoom.prepareConnection(sfuUrl, jwt);
+
+    final stateKey =
+        "_${room.client.self!.identifier}_${room.matrixRoom.client.deviceID!}_m.call";
+
+    await room.matrixRoom.client.setRoomStateWithKey(room.matrixRoom.id,
+        MatrixVoipRoomComponent.callMemberStateEvent, stateKey, {
+      "application": "m.call",
+      "call_id": "",
+      "device_id": room.matrixRoom.client.deviceID!,
+      "expires": 14400000,
+      "foci_preferred": [
+        {
+          "type": "livekit",
+          "livekit_alias": room.identifier,
+          "livekit_service_url": fociUrl.toString()
+        }
+      ],
+      "focus_active": {
+        "focus_selection": "oldest_membership",
+        "type": "livekit"
+      },
+      "scope": "m.room"
+    });
+
     await lkRoom.connect(sfuUrl, jwt);
 
     await lkRoom.localParticipant?.setMicrophoneEnabled(true);
