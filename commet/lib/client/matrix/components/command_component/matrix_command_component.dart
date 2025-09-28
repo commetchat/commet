@@ -61,4 +61,9 @@ class MatrixCommandComponent extends CommandComponent<MatrixClient> {
 
     return null;
   }
+
+  @override
+  bool isPossiblyCommand(String string) {
+    return string.startsWith("/");
+  }
 }
