@@ -101,11 +101,12 @@ class _VoipStreamViewState extends State<VoipStreamView>
           child: Center(
               child: tiamat.Avatar(
                   border: Border.all(
-                      strokeAlign: BorderSide.strokeAlignOutside,
+                      strokeAlign: 0.5,
                       color: getBorderColor(context),
                       width: clampDouble(audioLevel.value * 15, 0, 5)),
                   radius: 50,
                   image: user.avatar,
+                  placeholderColor: user.defaultColor,
                   placeholderText: user.displayName)),
         );
 

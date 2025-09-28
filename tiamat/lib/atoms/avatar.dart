@@ -127,7 +127,7 @@ class Avatar extends StatelessWidget {
                   border: border),
               child: Align(
                   alignment: Alignment.center,
-                  child: placeholderText != null
+                  child: placeholderText != null && placeholderText!.isNotEmpty
                       ? Text(
                           placeholderText!.substring(0, 1).toUpperCase(),
                           style: Theme.of(context)

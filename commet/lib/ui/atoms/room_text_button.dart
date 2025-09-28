@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:commet/client/components/voip_room/voip_room_component.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/dot_indicator.dart';
@@ -19,17 +20,27 @@ class RoomTextButton extends StatefulWidget {
 }
 
 class _RoomTextButtonState extends State<RoomTextButton> {
-  StreamSubscription? sub;
+  late List<StreamSubscription> subs;
+  VoipRoomComponent? voipRoom;
+  List<String>? voipRoomParticipants;
 
   @override
   void initState() {
-    sub = widget.room.onUpdate.listen(onRoomUpdate);
+    voipRoom = widget.room.getComponent<VoipRoomComponent>();
+    subs = [
+      widget.room.onUpdate.listen(onRoomUpdate),
+      if (voipRoom?.isVoipRoom == true)
+        voipRoom!.onParticipantsChanged.listen(onVoipParticipantsChanged),
+    ];
+    voipRoomParticipants = voipRoom?.getCurrentParticipants();
     super.initState();
   }
 
   @override
   void dispose() {
-    sub?.cancel();
+    for (var sub in subs) {
+      sub.cancel();
+    }
     super.dispose();
   }
 
@@ -55,39 +66,63 @@ class _RoomTextButtonState extends State<RoomTextButton> {
     bool shouldShowDefaultIcon = (!showRoomIcons && !useGenericIcons) ||
         (showRoomIcons && !useGenericIcons && widget.room.avatar == null);
 
-    return SizedBox(
-      height: 30,
-      child: tiamat.TextButton(
-        highlighted: widget.highlight,
-        widget.room.displayName,
-        icon: shouldShowDefaultIcon ? defaultIcon : null,
-        avatar: showRoomIcons && widget.room.avatar != null
-            ? widget.room.avatar
-            : null,
-        avatarRadius: 12,
-        avatarPlaceholderColor:
-            (showRoomIcons && useGenericIcons && widget.room.avatar == null) ||
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          height: 30,
+          child: tiamat.TextButton(
+            highlighted: widget.highlight,
+            widget.room.displayName,
+            icon: shouldShowDefaultIcon ? defaultIcon : null,
+            avatar: showRoomIcons && widget.room.avatar != null
+                ? widget.room.avatar
+                : null,
+            avatarRadius: 12,
+            avatarPlaceholderColor: (showRoomIcons &&
+                        useGenericIcons &&
+                        widget.room.avatar == null) ||
                     (!showRoomIcons && useGenericIcons)
                 ? widget.room.defaultColor
                 : null,
-        avatarPlaceholderText:
-            (showRoomIcons && useGenericIcons && widget.room.avatar == null) ||
+            avatarPlaceholderText: (showRoomIcons &&
+                        useGenericIcons &&
+                        widget.room.avatar == null) ||
                     (!showRoomIcons && useGenericIcons)
                 ? widget.room.displayName
                 : null,
-        iconColor: color,
-        textColor: color,
-        softwrap: false,
-        onTap: () => widget.onTap?.call(widget.room),
-        footer: widget.room.displayHighlightedNotificationCount > 0
-            ? NotificationBadge(widget.room.displayHighlightedNotificationCount)
-            : widget.room.displayNotificationCount > 0
-                ? const Padding(
-                    padding: EdgeInsets.all(2.0),
-                    child: DotIndicator(),
-                  )
-                : null,
-      ),
+            iconColor: color,
+            textColor: color,
+            softwrap: false,
+            onTap: () => widget.onTap?.call(widget.room),
+            footer: widget.room.displayHighlightedNotificationCount > 0
+                ? NotificationBadge(
+                    widget.room.displayHighlightedNotificationCount)
+                : widget.room.displayNotificationCount > 0
+                    ? const Padding(
+                        padding: EdgeInsets.all(2.0),
+                        child: DotIndicator(),
+                      )
+                    : null,
+          ),
+        ),
+        if (voipRoomParticipants?.isNotEmpty == true)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 0, 0, 16),
+            child: Column(
+              children: [
+                for (var participant in voipRoomParticipants!)
+                  tiamat.Text.labelLow(participant),
+              ],
+            ),
+          )
+      ],
     );
+  }
+
+  void onVoipParticipantsChanged(void event) {
+    setState(() {
+      voipRoomParticipants = voipRoom?.getCurrentParticipants();
+    });
   }
 }

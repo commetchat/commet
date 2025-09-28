@@ -135,13 +135,11 @@ class _SpaceListState extends State<SpaceList> {
       padding: const EdgeInsets.all(0),
       initialAnimation: false,
       itemBuilder: (context, data) {
-        return SizedBox(
-            height: 37,
-            child: RoomTextButton(
-              data,
-              onTap: widget.onRoomSelected,
-              highlight: selectedRoom == data,
-            ));
+        return RoomTextButton(
+          data,
+          onTap: widget.onRoomSelected,
+          highlight: selectedRoom == data,
+        );
       },
     );
   }

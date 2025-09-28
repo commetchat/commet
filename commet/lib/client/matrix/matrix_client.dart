@@ -8,6 +8,7 @@ import 'package:commet/client/error_profile.dart';
 import 'package:commet/client/matrix/auth/matrix_sso_login_flow.dart';
 import 'package:commet/client/matrix/auth/matrix_username_password_login_flow.dart';
 import 'package:commet/client/matrix/components/matrix_sync_listener.dart';
+import 'package:commet/client/matrix/components/voip_room/matrix_voip_room_component.dart';
 import 'package:commet/client/matrix/database/matrix_database.dart';
 import 'package:commet/client/matrix/extensions/matrix_client_extensions.dart';
 import 'package:commet/client/matrix/matrix_native_implementations.dart';
@@ -294,7 +295,8 @@ class MatrixClient extends Client {
       importantStateEvents: {
         "im.ponies.room_emotes",
         "m.room.power_levels",
-        "m.room.join_rules"
+        "m.room.join_rules",
+        MatrixVoipRoomComponent.callMemberStateEvent,
       },
       supportedLoginTypes: {
         matrix.AuthenticationTypes.password,
