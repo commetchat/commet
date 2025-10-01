@@ -25,12 +25,6 @@ finish-args:
 - "--talk-name=org.freedesktop.Notifications"
 - "--env=LD_LIBRARY_PATH=/app/lib"
 modules:
-- name: olm
-  buildsystem: cmake
-  sources:
-  - type: git
-    url: https://gitlab.matrix.org/matrix-org/olm.git
-    tag: 3.2.15
 - name: libmpv
   cleanup:
   - "/include"
