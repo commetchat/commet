@@ -12,6 +12,7 @@ import 'package:commet/utils/shortcuts_manager.dart';
 import 'package:desktop_notifications/desktop_notifications.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_local_notifications_linux/src/model/hint.dart' as notif;
 import 'package:window_manager/window_manager.dart';
 import 'dart:ui' as ui;
 
@@ -36,6 +37,8 @@ class LinuxNotifier implements Notifier {
   static const callAccept = "call.accept";
   static const callDecline = "call.decline";
   static const openRoom = "room.open";
+
+  static int notificationId = 0;
 
   static void notificationResponse(NotificationResponse details) {
     final payload = jsonDecode(details.payload!) as Map<String, dynamic>;
@@ -113,6 +116,11 @@ class LinuxNotifier implements Notifier {
     var details = LinuxNotificationDetails(
       icon: avatar == null ? null : FilePathLinuxIcon(avatar.toFilePath()),
       defaultActionName: openRoom,
+      actions: [],
+      customHints: [
+        notif.LinuxNotificationCustomHint('desktop-entry',
+            notif.LinuxHintStringValue("chat.commet.commetapp")),
+      ],
       category: LinuxNotificationCategory.imReceived,
     );
 
@@ -125,8 +133,8 @@ class LinuxNotifier implements Notifier {
       "room_id": content.roomId,
     };
 
-    flutterLocalNotificationsPlugin?.show(
-        0, title, content.content, NotificationDetails(linux: details),
+    flutterLocalNotificationsPlugin?.show(notificationId++, title,
+        content.content, NotificationDetails(linux: details),
         payload: jsonEncode(payload));
   }
 
