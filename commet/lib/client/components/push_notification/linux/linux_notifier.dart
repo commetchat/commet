@@ -85,12 +85,11 @@ class LinuxNotifier implements Notifier {
 
   @override
   Future<void> notify(NotificationContent notification) async {
-    switch (notification.runtimeType) {
+    switch (notification) {
       case MessageNotificationContent _:
-        return displayMessageNotification(
-            notification as MessageNotificationContent);
+        return displayMessageNotification(notification);
       case CallNotificationContent _:
-        return displayCallNotification(notification as CallNotificationContent);
+        return displayCallNotification(notification);
       default:
     }
   }
