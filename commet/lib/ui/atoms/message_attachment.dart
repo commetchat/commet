@@ -60,17 +60,15 @@ class _MessageAttachmentState extends State<MessageAttachment> {
           borderRadius: BorderRadius.circular(10),
           child: Material(
               color: Colors.transparent,
-              child: SizedBox(
-                height: 200,
-                child: AspectRatio(
-                  aspectRatio: attachment.aspectRatio,
-                  child: InkWell(
-                    onTap: fullscreenAttachment,
-                    child: Image(
-                      image: attachment.image,
-                      filterQuality: FilterQuality.medium,
-                      fit: BoxFit.cover,
-                    ),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                    maxHeight: 200, minHeight: 80, maxWidth: 500),
+                child: InkWell(
+                  onTap: fullscreenAttachment,
+                  child: Image(
+                    image: attachment.image,
+                    filterQuality: FilterQuality.medium,
+                    fit: BoxFit.fitWidth,
                   ),
                 ),
               ))),
