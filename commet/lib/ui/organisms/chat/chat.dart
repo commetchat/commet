@@ -329,6 +329,11 @@ class ChatState extends State<Chat> {
       return;
     }
 
+    var component = room.client.getComponent<CommandComponent>();
+    if (component?.isPossiblyCommand(currentText) == true) {
+      return;
+    }
+
     if (currentText.isEmpty) {
       stopTyping();
       typingStatusDebouncer.cancel();

@@ -25,7 +25,7 @@ class TimelineEventViewReactions extends StatefulWidget {
 
 class _TimelineEventViewReactionsState extends State<TimelineEventViewReactions>
     implements TimelineEventViewWidget {
-  late Map<Emoticon, Set<String>> reactions;
+  Map<Emoticon, Set<String>>? reactions;
 
   late final String? currentUserIdentifier;
   late final TimelineEvent event;
@@ -40,12 +40,16 @@ class _TimelineEventViewReactionsState extends State<TimelineEventViewReactions>
 
   @override
   Widget build(BuildContext context) {
+    if (reactions == null) {
+      return Container();
+    }
+
     return Wrap(
         spacing: 3,
         runSpacing: 3,
         direction: material.Axis.horizontal,
-        children: reactions.keys.map((key) {
-          var value = reactions[key]!;
+        children: reactions!.keys.map((key) {
+          var value = reactions![key]!;
 
           return EmojiReaction(
               emoji: key,
@@ -89,7 +93,11 @@ class _TimelineEventViewReactionsState extends State<TimelineEventViewReactions>
   }
 
   void onReactionTapped(Emoticon emote) {
-    if (reactions[emote]?.contains(currentUserIdentifier) == true) {
+    if (reactions == null) {
+      return;
+    }
+
+    if (reactions![emote]?.contains(currentUserIdentifier) == true) {
       widget.timeline.room.removeReaction(event, emote);
     } else {
       widget.timeline.room.addReaction(event, emote);

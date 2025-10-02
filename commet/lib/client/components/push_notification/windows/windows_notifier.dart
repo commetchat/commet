@@ -92,10 +92,9 @@ class WindowsNotifier implements Notifier {
 
   @override
   Future<void> notify(NotificationContent notification) async {
-    switch (notification.runtimeType) {
-      case MessageNotificationContent:
-        return displayMessageNotification(
-            notification as MessageNotificationContent);
+    switch (notification) {
+      case MessageNotificationContent _:
+        return displayMessageNotification(notification);
       default:
     }
   }

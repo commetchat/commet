@@ -64,6 +64,11 @@ class MatrixCommandComponent extends CommandComponent<MatrixClient> {
     return null;
   }
 
+  @override
+  bool isPossiblyCommand(String string) {
+    return string.startsWith("/");
+  }
+
   FutureOr<String?> setStatus(
       matrix.CommandArgs args, StringBuffer? out) async {
     await client.getMatrixClient().setPresence(
