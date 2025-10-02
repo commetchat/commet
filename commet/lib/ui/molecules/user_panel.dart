@@ -207,7 +207,8 @@ class UserPanelView extends material.StatelessWidget {
                       placeholderText: shimmer ? " " : displayName,
                       placeholderColor: shimmer ? shimmerColor : avatarColor,
                     ),
-                    if (presenceStatus != null) createPresenceIcon(context),
+                    if (presenceStatus != null)
+                      createPresenceIcon(context, presenceStatus!),
                   ],
                 ),
                 Flexible(
@@ -288,12 +289,13 @@ class UserPanelView extends material.StatelessWidget {
     return widget;
   }
 
-  material.DecoratedBox createPresenceIcon(BuildContext context) {
+  static material.DecoratedBox createPresenceIcon(
+      BuildContext context, UserPresenceStatus status) {
     var scheme = Theme.of(context).colorScheme;
 
     var backgroundColor = scheme.surfaceContainer;
 
-    var color = switch (presenceStatus!) {
+    var color = switch (status) {
       UserPresenceStatus.offline => Colors.grey,
       UserPresenceStatus.online => Colors.lightGreen,
       UserPresenceStatus.unavailable => Colors.amber,
