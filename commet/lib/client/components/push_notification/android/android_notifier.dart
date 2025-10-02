@@ -83,12 +83,14 @@ class AndroidNotifier implements Notifier {
         placeholderColor: room.getColorOfUser(content.senderId),
         placeholderText: content.senderName,
         identifier: content.senderId,
+        format: ShortcutIconFormat.png,
         shouldZoomOut: false,
         imageProvider: content.senderImage);
 
     Uri? roomAvatar = await ShortcutsManager.getCachedAvatarImage(
         placeholderColor: room.defaultColor,
         placeholderText: room.displayName,
+        format: ShortcutIconFormat.png,
         identifier: room.identifier,
         imageProvider: await room.getShortcutImage());
 

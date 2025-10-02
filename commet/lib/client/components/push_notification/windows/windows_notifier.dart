@@ -114,6 +114,7 @@ class WindowsNotifier implements Notifier {
         placeholderColor: room.getColorOfUser(content.senderId),
         placeholderText: content.senderName,
         identifier: content.senderId,
+        format: ShortcutIconFormat.png,
         shouldZoomOut: false,
         imageProvider: content.senderImage);
 

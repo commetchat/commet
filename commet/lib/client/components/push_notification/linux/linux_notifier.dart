@@ -106,15 +106,23 @@ class LinuxNotifier implements Notifier {
       return;
     }
 
-    var avatar = await ShortcutsManager.getCachedAvatarImage(
+    var image = await ShortcutsManager.createAvatarImage(
         placeholderColor: room.getColorOfUser(content.senderId),
         placeholderText: content.senderName,
-        identifier: content.senderId,
-        shouldZoomOut: false,
-        imageProvider: content.senderImage);
+        imageProvider: content.senderImage,
+        doCircleMask: true,
+        shouldZoomOut: false);
+
+    var bytes = await image.toByteData(format: ui.ImageByteFormat.rawRgba);
+    final data = bytes!.buffer.asUint8List();
 
     var details = LinuxNotificationDetails(
-      icon: avatar == null ? null : FilePathLinuxIcon(avatar.toFilePath()),
+      icon: ByteDataLinuxIcon(LinuxRawIconData(
+          data: data,
+          width: image.width,
+          height: image.height,
+          hasAlpha: true,
+          channels: 4)),
       defaultActionName: openRoom,
       actions: [],
       customHints: [
@@ -146,15 +154,23 @@ class LinuxNotifier implements Notifier {
       return;
     }
 
-    var avatar = await ShortcutsManager.getCachedAvatarImage(
+    var image = await ShortcutsManager.createAvatarImage(
         placeholderColor: room.getColorOfUser(content.senderId),
         placeholderText: content.roomName,
-        identifier: content.senderId,
-        shouldZoomOut: false,
-        imageProvider: content.senderImage);
+        imageProvider: content.senderImage,
+        doCircleMask: true,
+        shouldZoomOut: false);
+
+    var bytes = await image.toByteData(format: ui.ImageByteFormat.rawRgba);
+    final data = bytes!.buffer.asUint8List();
 
     var details = LinuxNotificationDetails(
-        icon: avatar == null ? null : FilePathLinuxIcon(avatar.toFilePath()),
+        icon: ByteDataLinuxIcon(LinuxRawIconData(
+            data: data,
+            width: image.width,
+            height: image.height,
+            hasAlpha: true,
+            channels: 4)),
         defaultActionName: openRoom,
         category: LinuxNotificationCategory.imReceived,
         timeout: const LinuxNotificationTimeout.expiresNever(),
