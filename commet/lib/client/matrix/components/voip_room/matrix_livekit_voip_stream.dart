@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:livekit_client/livekit_client.dart';
@@ -7,6 +9,11 @@ class MatrixLivekitVoipStream implements VoipStream {
   String userId;
 
   AudioVisualizer? visualizer;
+
+  StreamController _onChanged = StreamController.broadcast();
+
+  @override
+  Stream<void> get onStreamChanged => _onChanged.stream;
 
   MatrixLivekitVoipStream(this.publication, this.userId) {
     if (publication.track is AudioTrack) {
@@ -21,6 +28,10 @@ class MatrixLivekitVoipStream implements VoipStream {
 
       visualizer!.start();
     }
+  }
+
+  void onStreamUpdatedEvent(TrackStreamStateUpdatedEvent event) {
+    _onChanged.add(());
   }
 
   @override

@@ -18,14 +18,81 @@ class MatrixLivekitVoipSession implements VoipSession {
   lk.Room livekitRoom;
   MatrixLivekitVoipSession(this.room, this.livekitRoom) {
     clientManager?.callManager.onClientSessionStarted(this);
+    addInitialStreams();
+
+    final listener = livekitRoom.createListener();
+    listener.on(onTrackPublished);
+    listener.on(onTrackUnpublished);
+    listener.on(onTrackStreamEvent);
   }
 
   StreamController _stateChanged = StreamController.broadcast();
+
+  void addInitialStreams() {
+    if (livekitRoom.localParticipant != null) {
+      for (var entry
+          in livekitRoom.localParticipant!.trackPublications.entries) {
+        if (entry.value.muted && entry.value.kind == lk.TrackType.VIDEO) {
+          continue;
+        }
+
+        streams.add(
+            MatrixLivekitVoipStream(entry.value, room.client.self!.identifier));
+      }
+    }
+
+    for (var entry in livekitRoom.remoteParticipants.entries) {
+      for (var stream in entry.value.trackPublications.entries) {
+        if (stream.value.kind == lk.TrackType.VIDEO && stream.value.muted) {
+          continue;
+        }
+
+        String userId = entry.key;
+        userId = userId.split(":").getRange(0, 2).join(":");
+
+        streams.add(MatrixLivekitVoipStream(stream.value, userId));
+      }
+    }
+  }
 
   @override
   Future<void> acceptCall(
       {bool withMicrophone = false, bool withCamera = false}) {
     throw UnimplementedError();
+  }
+
+  void onTrackStreamEvent(lk.TrackStreamStateUpdatedEvent event) {
+    for (var track in streams) {
+      final t = track as MatrixLivekitVoipStream;
+      if (t.publication.sid == event.publication.sid) {
+        t.onStreamUpdatedEvent(event);
+      }
+    }
+    print("Received track event: ${event}");
+  }
+
+  void onTrackPublished(lk.TrackPublishedEvent event) {
+    print("Received new track: ${event}");
+
+    final participant =
+        event.participant.identity.split(":").getRange(0, 2).join(":");
+
+    print("From peer: ${participant}");
+
+    streams.add(MatrixLivekitVoipStream(event.publication, participant));
+    _stateChanged.add(());
+  }
+
+  void onTrackUnpublished(lk.TrackUnpublishedEvent event) {
+    print(
+      "Track unpublished: $event",
+    );
+
+    streams.removeWhere((e) =>
+        (e as MatrixLivekitVoipStream).publication.sid ==
+        event.publication.sid);
+
+    _stateChanged.add(());
   }
 
   @override
@@ -121,36 +188,15 @@ class MatrixLivekitVoipSession implements VoipSession {
   }
 
   @override
-  List<VoipStream> get streams {
-    var streams = List<VoipStream>.empty(growable: true);
+  List<VoipStream> streams = List<VoipStream>.empty(growable: true);
 
-    if (livekitRoom.localParticipant != null) {
-      for (var entry
-          in livekitRoom.localParticipant!.trackPublications.entries) {
-        if (entry.value.muted && entry.value.kind == lk.TrackType.VIDEO) {
-          continue;
-        }
+  /*{
+    var streams = 
 
-        streams.add(
-            MatrixLivekitVoipStream(entry.value, room.client.self!.identifier));
-      }
-    }
 
-    for (var entry in livekitRoom.remoteParticipants.entries) {
-      for (var stream in entry.value.trackPublications.entries) {
-        if (stream.value.kind == lk.TrackType.VIDEO && stream.value.muted) {
-          continue;
-        }
-
-        String userId = entry.key;
-        userId = userId.split(":").getRange(0, 2).join(":");
-
-        streams.add(MatrixLivekitVoipStream(stream.value, userId));
-      }
-    }
 
     return streams;
-  }
+  }*/
 
   @override
   bool get supportsScreenshare => true;

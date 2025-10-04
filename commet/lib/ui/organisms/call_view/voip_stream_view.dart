@@ -32,6 +32,7 @@ class _VoipStreamViewState extends State<VoipStreamView>
   late Member user;
 
   late AnimationController audioLevel;
+  StreamSubscription? sub;
 
   late GlobalKey rendererKey = GlobalKey();
 
@@ -40,6 +41,7 @@ class _VoipStreamViewState extends State<VoipStreamView>
     Log.d("Initializing stream view!");
     Timer.periodic(const Duration(milliseconds: 200), timer);
     var room = widget.session.client.getRoom(widget.session.roomId)!;
+    sub = widget.stream.onStreamChanged.listen(onStreamChanged);
     user = room.getMemberOrFallback(widget.stream.streamUserId);
     audioLevel = AnimationController(vsync: this);
     super.initState();
@@ -48,6 +50,7 @@ class _VoipStreamViewState extends State<VoipStreamView>
   @override
   void dispose() {
     audioLevel.stop();
+    sub?.cancel();
     super.dispose();
   }
 
@@ -112,13 +115,19 @@ class _VoipStreamViewState extends State<VoipStreamView>
 
       case VoipStreamType.video:
       case VoipStreamType.screenshare:
-        return widget.stream.buildVideoRenderer(widget.fit, rendererKey) ??
-            const Placeholder();
+        return Center(
+          child: widget.stream.buildVideoRenderer(widget.fit, rendererKey) ??
+              const CircularProgressIndicator(),
+        );
     }
   }
 
   Color getBorderColor(BuildContext context) {
     return Color.lerp(Theme.of(context).primaryColor,
         Theme.of(context).colorScheme.primary, audioLevel.value)!;
+  }
+
+  void onStreamChanged(void event) {
+    setState(() {});
   }
 }
