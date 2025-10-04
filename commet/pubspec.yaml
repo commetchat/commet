@@ -108,6 +108,7 @@ dependencies:
   collection: any
   webrtc_interface: any
   uuid: any
+  flutter_background: ^1.3.0+1
 dependency_overrides:
   analyzer: ^7.3.0
 

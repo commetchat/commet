@@ -1,9 +1,12 @@
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/config/platform_utils.dart';
+import 'package:commet/debug/log.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/organisms/call_view/screen_capture_source_dialog.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:tiamat/atoms/popup_dialog.dart';
+import 'package:flutter_background/flutter_background.dart';
 
 class WebrtcScreencaptureSource implements ScreenCaptureSource {
   DesktopCapturerSource source;
@@ -13,6 +16,7 @@ class WebrtcScreencaptureSource implements ScreenCaptureSource {
   static Future<ScreenCaptureSource?> showSelectSourcePrompt(
       BuildContext context) async {
     bool isWayland = PlatformUtils.displayServer == "wayland";
+
     var sources = await desktopCapturer.getSources(
         types: [if (!isWayland) SourceType.Window, SourceType.Screen]);
 

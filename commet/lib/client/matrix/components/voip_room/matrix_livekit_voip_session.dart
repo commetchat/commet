@@ -1,14 +1,19 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:commet/client/components/voip/webrtc_screencapture_source.dart';
+import 'package:commet/client/matrix/components/voip_room/matrix_livekit_android_screencapture_source.dart';
 import 'package:commet/client/matrix/components/voip_room/matrix_livekit_voip_stream.dart';
 import 'package:commet/client/matrix/components/voip_room/matrix_voip_room_component.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
+import 'package:commet/config/platform_utils.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_background/flutter_background.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:webrtc_interface/src/mediadevices.dart';
 import 'package:livekit_client/livekit_client.dart' as lk;
@@ -167,6 +172,12 @@ class MatrixLivekitVoipSession implements VoipSession {
 
   @override
   Future<void> setScreenShare(ScreenCaptureSource source) async {
+    if (source is MatrixLivekitAndroidScreencaptureSource) {
+      livekitRoom.localParticipant?.setScreenShareEnabled(true);
+      Log.i("Got android screen capture source!");
+      return;
+    }
+
     final src = (source as WebrtcScreencaptureSource).source;
     var track = await lk.LocalVideoTrack.createScreenShareTrack(
       lk.ScreenShareCaptureOptions(
@@ -174,6 +185,7 @@ class MatrixLivekitVoipSession implements VoipSession {
           maxFrameRate: 30.0,
           params: lk.VideoParametersPresets.screenShareH1080FPS30),
     );
+
     await livekitRoom.localParticipant?.publishVideoTrack(track);
   }
 
@@ -183,20 +195,20 @@ class MatrixLivekitVoipSession implements VoipSession {
   }
 
   @override
-  Future<void> stopScreenshare() {
-    throw UnimplementedError();
+  Future<void> stopScreenshare() async {
+    await livekitRoom.localParticipant?.setScreenShareEnabled(false);
+
+    if (PlatformUtils.isAndroid) {
+      try {
+        await FlutterBackground.disableBackgroundExecution();
+      } catch (error) {
+        print('error disabling screen share: $error');
+      }
+    }
   }
 
   @override
   List<VoipStream> streams = List<VoipStream>.empty(growable: true);
-
-  /*{
-    var streams = 
-
-
-
-    return streams;
-  }*/
 
   @override
   bool get supportsScreenshare => true;
@@ -206,6 +218,9 @@ class MatrixLivekitVoipSession implements VoipSession {
 
   @override
   Future<ScreenCaptureSource?> pickScreenCapture(BuildContext context) async {
+    if (Platform.isAndroid) {
+      return MatrixLivekitAndroidScreencaptureSource.getCaptureSource(context);
+    }
     return WebrtcScreencaptureSource.showSelectSourcePrompt(context);
   }
 }
