@@ -1,9 +1,6 @@
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/ui/organisms/call_view/call_view.dart';
-import 'package:commet/ui/organisms/call_view/screen_capture_source_dialog.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_webrtc/flutter_webrtc.dart';
-import 'package:tiamat/atoms/popup_dialog.dart';
 
 class CallWidget extends StatefulWidget {
   const CallWidget(this.session, {super.key});

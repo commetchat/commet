@@ -7,12 +7,9 @@ import 'package:commet/client/components/voip/webrtc_screencapture_source.dart';
 import 'package:commet/client/matrix/components/rtc_data_channel/matrix_rtc_data_channel_component.dart';
 import 'package:commet/client/matrix/components/voip/matrix_voip_stream.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
-import 'package:commet/config/platform_utils.dart';
-import 'package:commet/ui/organisms/call_view/screen_capture_source_dialog.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:matrix/matrix.dart' as matrix;
-import 'package:tiamat/atoms/popup_dialog.dart';
 
 class MatrixVoipSession implements VoipSession {
   matrix.CallSession session;

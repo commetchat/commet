@@ -1,10 +1,5 @@
-import 'dart:math';
-
 import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/painting/box_fit.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:livekit_client/livekit_client.dart';
 
 class MatrixLivekitVoipStream implements VoipStream {
@@ -50,22 +45,18 @@ class MatrixLivekitVoipStream implements VoipStream {
   }
 
   @override
-  // TODO: implement direction
   VoipStreamDirection get direction => VoipStreamDirection.incoming;
 
   @override
   String get label => "label";
 
   @override
-  // TODO: implement streamId
   String get streamId => publication.sid;
 
   @override
-  // TODO: implement streamUserId
   String get streamUserId => userId;
 
   @override
-  // TODO: implement type
   VoipStreamType get type {
     if (publication.track is AudioTrack) {
       return VoipStreamType.audio;

@@ -3,7 +3,6 @@ import 'package:commet/client/components/voip_room/voip_room_component.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/organisms/call_view/call.dart';
-import 'package:commet/ui/organisms/call_view/call_view.dart';
 import 'package:commet/ui/organisms/chat/chat.dart';
 import 'package:commet/ui/organisms/photo_albums/photo_album_view.dart';
 import 'package:commet/ui/organisms/voip_room_view/voip_room_view.dart';

@@ -144,25 +144,6 @@ class _RoomTextButtonState extends State<RoomTextButton> {
           avatarPlaceholderColor: member.defaultColor,
           avatarPlaceholderText: member.displayName,
         ));
-
-    return Row(
-      children: [
-        tiamat.Avatar(
-          radius: 10,
-          image: member.avatar,
-          placeholderText: member.displayName,
-          placeholderColor: member.defaultColor,
-        ),
-        SizedBox(
-          width: 8,
-        ),
-        tiamat.Text(
-          member.displayName,
-          autoAdjustBrightness: true,
-          color: member.defaultColor,
-        )
-      ],
-    );
   }
 
   void onVoipParticipantsChanged(void event) {

@@ -6,7 +6,6 @@ import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/atoms/shimmer_loading.dart';
 import 'package:commet/ui/layout/bento.dart';
 import 'package:commet/ui/organisms/call_view/call.dart';
-import 'package:commet/ui/organisms/call_view/call_view.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
