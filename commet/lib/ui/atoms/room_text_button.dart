@@ -48,6 +48,8 @@ class _RoomTextButtonState extends State<RoomTextButton> {
     setState(() {});
   }
 
+  static const double height = 37;
+
   @override
   Widget build(BuildContext context) {
     IconData defaultIcon = widget.room.icon;
@@ -73,7 +75,7 @@ class _RoomTextButtonState extends State<RoomTextButton> {
     }
 
     return SizedBox(
-      height: customBuilder == null ? 30 : null,
+      height: customBuilder == null ? height : null,
       child: tiamat.TextButton(
         customBuilder: customBuilder,
         highlighted: widget.highlight,
@@ -113,7 +115,7 @@ class _RoomTextButtonState extends State<RoomTextButton> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: 30, child: child),
+        SizedBox(height: height, child: child),
         Padding(
           padding: const EdgeInsets.fromLTRB(12, 4, 0, 4),
           child: Column(
@@ -136,7 +138,7 @@ class _RoomTextButtonState extends State<RoomTextButton> {
     }
 
     return SizedBox(
-        height: 30,
+        height: height,
         child: tiamat.TextButton(
           member.displayName,
           textColor: color,
