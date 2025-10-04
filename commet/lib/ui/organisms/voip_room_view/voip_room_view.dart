@@ -28,19 +28,27 @@ class _VoipRoomViewState extends State<VoipRoomView> {
   void initState() {
     currentSession = widget.voip.currentSession;
     participants = widget.voip.getCurrentParticipants();
+
     sub = widget.voip.onParticipantsChanged.listen((_) {
+      // when the participant list changes, the resolved focus may change
+      updateCallUrl();
+
       setState(() {
         participants = widget.voip.getCurrentParticipants();
       });
     });
 
+    updateCallUrl();
+    super.initState();
+  }
+
+  void updateCallUrl() {
     widget.voip.getCallServerUrl().then((url) {
       if (mounted) print("Call url: ${url}");
       setState(() {
         callServerUrl = url;
       });
     });
-    super.initState();
   }
 
   @override

@@ -87,7 +87,7 @@ class MatrixVoipRoomComponent
   @override
   Future<String?> getCallServerUrl() async {
     final url = await backend.getFociUrl();
-    return url?.toString();
+    return url.firstOrNull?.authority.toString();
   }
 
   void onStateChanged(void event) {
