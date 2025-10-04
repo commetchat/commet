@@ -22,7 +22,7 @@ class _VoipRoomViewState extends State<VoipRoomView> {
   VoipSession? currentSession;
   String? callServerUrl;
   late List<String> participants;
-
+  bool joining = false;
   StreamSubscription? sub;
 
   @override
@@ -165,6 +165,7 @@ class _VoipRoomViewState extends State<VoipRoomView> {
         if (widget.voip.canJoinCall)
           Center(
             child: tiamat.Button(
+              isLoading: joining,
               text: CommonStrings.promptJoin,
               onTap: joinRoomCall,
             ),
@@ -178,6 +179,10 @@ class _VoipRoomViewState extends State<VoipRoomView> {
   }
 
   joinRoomCall() async {
+    setState(() {
+      joining = true;
+    });
+
     final session = await widget.voip.joinCall();
     if (session != null) {
       setState(() {

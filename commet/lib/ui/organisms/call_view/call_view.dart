@@ -111,6 +111,7 @@ class _CallViewState extends State<CallView> {
       bool canHangUp = false,
       bool canToggleCamera = false,
       required Widget child}) {
+    final buttonRadius = Layout.mobile ? 24.0 : 18.0;
     return MouseRegion(
       onEnter: (event) {
         setState(() {
@@ -132,19 +133,22 @@ class _CallViewState extends State<CallView> {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Wrap(
-                spacing: 5,
+                spacing: 12,
                 children: [
                   if (canScreenshare)
                     tiamat.CircleButton(
+                        radius: buttonRadius,
                         icon: Icons.screen_share_outlined,
                         onPressed: widget.pickScreenshareSource),
                   if (widget.currentSession.isSharingScreen && canScreenshare)
                     tiamat.CircleButton(
+                      radius: buttonRadius,
                       icon: Icons.stop_screen_share,
                       onPressed: widget.stopScreenshare,
                     ),
                   if (canMute)
                     tiamat.CircleButton(
+                      radius: buttonRadius,
                       icon: widget.currentSession.isMicrophoneMuted
                           ? Icons.mic_off
                           : Icons.mic,
@@ -156,8 +160,9 @@ class _CallViewState extends State<CallView> {
                     ),
                   if (canToggleCamera)
                     tiamat.CircleButton(
+                      radius: buttonRadius,
                       icon: widget.currentSession.isCameraEnabled
-                          ? Icons.camera_alt
+                          ? Icons.no_photography
                           : Icons.camera_alt_outlined,
                       onPressed: widget.currentSession.isCameraEnabled
                           ? widget.disableCamera
@@ -165,6 +170,8 @@ class _CallViewState extends State<CallView> {
                     ),
                   if (canHangUp)
                     tiamat.CircleButton(
+                      color: Theme.of(context).colorScheme.errorContainer,
+                      radius: buttonRadius,
                       icon: Icons.call_end,
                       onPressed: () async {
                         await widget.hangUp?.call();
