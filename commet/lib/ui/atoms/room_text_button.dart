@@ -117,7 +117,7 @@ class _RoomTextButtonState extends State<RoomTextButton> {
       children: [
         SizedBox(height: height, child: child),
         Padding(
-          padding: const EdgeInsets.fromLTRB(12, 4, 0, 4),
+          padding: const EdgeInsets.fromLTRB(12, 0, 0, 4),
           child: Column(
             children: [
               for (var participant in voipRoomParticipants!)
