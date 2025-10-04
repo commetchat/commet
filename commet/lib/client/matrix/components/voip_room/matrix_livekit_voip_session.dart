@@ -180,6 +180,7 @@ class MatrixLivekitVoipSession implements VoipSession {
     if (source is MatrixLivekitAndroidScreencaptureSource) {
       livekitRoom.localParticipant?.setScreenShareEnabled(true);
       Log.i("Got android screen capture source!");
+      _stateChanged.add(());
       return;
     }
 
