@@ -66,56 +66,101 @@ class _RoomTextButtonState extends State<RoomTextButton> {
     bool shouldShowDefaultIcon = (!showRoomIcons && !useGenericIcons) ||
         (showRoomIcons && !useGenericIcons && widget.room.avatar == null);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          height: 30,
-          child: tiamat.TextButton(
-            highlighted: widget.highlight,
-            widget.room.displayName,
-            icon: shouldShowDefaultIcon ? defaultIcon : null,
-            avatar: showRoomIcons && widget.room.avatar != null
-                ? widget.room.avatar
-                : null,
-            avatarRadius: 12,
-            avatarPlaceholderColor: (showRoomIcons &&
-                        useGenericIcons &&
-                        widget.room.avatar == null) ||
+    var customBuilder = null;
+
+    if (voipRoomParticipants?.isNotEmpty == true) {
+      customBuilder = buildCallParticipants;
+    }
+
+    return SizedBox(
+      height: customBuilder == null ? 30 : null,
+      child: tiamat.TextButton(
+        customBuilder: customBuilder,
+        highlighted: widget.highlight,
+        widget.room.displayName,
+        icon: shouldShowDefaultIcon ? defaultIcon : null,
+        avatar: showRoomIcons && widget.room.avatar != null
+            ? widget.room.avatar
+            : null,
+        avatarRadius: 12,
+        avatarPlaceholderColor:
+            (showRoomIcons && useGenericIcons && widget.room.avatar == null) ||
                     (!showRoomIcons && useGenericIcons)
                 ? widget.room.defaultColor
                 : null,
-            avatarPlaceholderText: (showRoomIcons &&
-                        useGenericIcons &&
-                        widget.room.avatar == null) ||
+        avatarPlaceholderText:
+            (showRoomIcons && useGenericIcons && widget.room.avatar == null) ||
                     (!showRoomIcons && useGenericIcons)
                 ? widget.room.displayName
                 : null,
-            iconColor: color,
-            textColor: color,
-            softwrap: false,
-            onTap: () => widget.onTap?.call(widget.room),
-            footer: widget.room.displayHighlightedNotificationCount > 0
-                ? NotificationBadge(
-                    widget.room.displayHighlightedNotificationCount)
-                : widget.room.displayNotificationCount > 0
-                    ? const Padding(
-                        padding: EdgeInsets.all(2.0),
-                        child: DotIndicator(),
-                      )
-                    : null,
+        iconColor: color,
+        textColor: color,
+        softwrap: false,
+        onTap: () => widget.onTap?.call(widget.room),
+        footer: widget.room.displayHighlightedNotificationCount > 0
+            ? NotificationBadge(widget.room.displayHighlightedNotificationCount)
+            : widget.room.displayNotificationCount > 0
+                ? const Padding(
+                    padding: EdgeInsets.all(2.0),
+                    child: DotIndicator(),
+                  )
+                : null,
+      ),
+    );
+  }
+
+  Widget buildCallParticipants(Widget child, BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(height: 30, child: child),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(12, 4, 0, 4),
+          child: Column(
+            children: [
+              for (var participant in voipRoomParticipants!)
+                buildCallMember(participant),
+            ],
           ),
+        )
+      ],
+    );
+  }
+
+  Widget buildCallMember(String identifier) {
+    var color = Theme.of(context).colorScheme.secondary;
+
+    final member = voipRoom?.room.getMemberOrFallback(identifier);
+    if (member == null) {
+      return Placeholder();
+    }
+
+    return SizedBox(
+        height: 30,
+        child: tiamat.TextButton(
+          member.displayName,
+          textColor: color,
+          avatar: member.avatar,
+          avatarPlaceholderColor: member.defaultColor,
+          avatarPlaceholderText: member.displayName,
+        ));
+
+    return Row(
+      children: [
+        tiamat.Avatar(
+          radius: 10,
+          image: member.avatar,
+          placeholderText: member.displayName,
+          placeholderColor: member.defaultColor,
         ),
-        if (voipRoomParticipants?.isNotEmpty == true)
-          Padding(
-            padding: const EdgeInsets.fromLTRB(24, 0, 0, 16),
-            child: Column(
-              children: [
-                for (var participant in voipRoomParticipants!)
-                  tiamat.Text.labelLow(participant),
-              ],
-            ),
-          )
+        SizedBox(
+          width: 8,
+        ),
+        tiamat.Text(
+          member.displayName,
+          autoAdjustBrightness: true,
+          color: member.defaultColor,
+        )
       ],
     );
   }

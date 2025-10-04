@@ -8,6 +8,7 @@ import 'package:commet/client/matrix/components/voip_room/matrix_livekit_voip_st
 import 'package:commet/client/matrix/components/voip_room/matrix_voip_room_component.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/config/platform_utils.dart';
+import 'package:commet/main.dart';
 import 'package:commet/ui/organisms/call_view/screen_capture_source_dialog.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
@@ -20,7 +21,9 @@ import 'package:livekit_client/livekit_client.dart' as lk;
 class MatrixLivekitVoipSession implements VoipSession {
   MatrixRoom room;
   lk.Room livekitRoom;
-  MatrixLivekitVoipSession(this.room, this.livekitRoom);
+  MatrixLivekitVoipSession(this.room, this.livekitRoom) {
+    clientManager?.callManager.onClientSessionStarted(this);
+  }
 
   StreamController _stateChanged = StreamController.broadcast();
 
@@ -33,6 +36,9 @@ class MatrixLivekitVoipSession implements VoipSession {
 
   @override
   Client get client => room.client;
+
+  @override
+  VoipState state = VoipState.connected;
 
   @override
   Future<void> declineCall() {
@@ -49,6 +55,11 @@ class MatrixLivekitVoipSession implements VoipSession {
       room.matrixRoom.client.setRoomStateWithKey(room.matrixRoom.id,
           MatrixVoipRoomComponent.callMemberStateEvent, stateKey, {})
     ]);
+
+    state = VoipState.ended;
+    _stateChanged.add(());
+
+    clientManager?.callManager.onSessionEnded(this);
   }
 
   @override
@@ -112,10 +123,6 @@ class MatrixLivekitVoipSession implements VoipSession {
     );
     await livekitRoom.localParticipant?.publishVideoTrack(track);
   }
-
-  @override
-  // TODO: implement state
-  VoipState get state => VoipState.connected;
 
   @override
   Future<void> stopCamera() async {

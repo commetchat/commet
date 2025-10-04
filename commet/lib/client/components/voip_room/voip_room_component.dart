@@ -13,4 +13,6 @@ abstract class VoipRoomComponent<R extends Client, T extends Room>
   VoipSession? get currentSession;
 
   Future<VoipSession?> joinCall();
+
+  Future<String?> getCallServerUrl();
 }

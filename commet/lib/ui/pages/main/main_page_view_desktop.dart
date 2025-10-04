@@ -219,8 +219,6 @@ class MainPageViewDesktop extends StatelessWidget {
               ),
             ),
           ),
-          if (state.currentCall != null)
-            Flexible(child: CallWidget(state.currentCall!)),
           Expanded(
             child: Flex(
               direction: Axis.horizontal,

@@ -80,6 +80,24 @@ class MatrixVoipRoomComponent
   @override
   Future<VoipSession?> joinCall() async {
     currentSession = await backend.join();
+    currentSession!.onStateChanged.listen(onStateChanged);
     return currentSession;
+  }
+
+  @override
+  Future<String?> getCallServerUrl() async {
+    final url = await backend.getFociUrl();
+    return url?.toString();
+  }
+
+  void onStateChanged(void event) {
+    final state = currentSession?.state;
+    print(
+      "Got call state: ${state}",
+    );
+
+    if (state == VoipState.ended) {
+      currentSession = null;
+    }
   }
 }

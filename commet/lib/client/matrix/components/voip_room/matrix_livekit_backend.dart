@@ -13,7 +13,7 @@ class MatrixLivekitBackend {
   lk.Room? livekitRoom;
   MatrixLivekitBackend(this.room);
 
-  Future<VoipSession?> join() async {
+  Future<Uri?> getFociUrl() async {
     var wellKnown = await room.matrixRoom.client.getWellknown();
     final foci = wellKnown.additionalProperties["org.matrix.msc4143.rtc_foci"]
         as List<dynamic>?;
@@ -32,8 +32,14 @@ class MatrixLivekitBackend {
 
       final url = data["livekit_service_url"] as String;
       fociUrl = Uri.parse(url);
-      break;
+      return fociUrl;
     }
+
+    return null;
+  }
+
+  Future<VoipSession?> join() async {
+    final fociUrl = await getFociUrl();
 
     if (fociUrl == null) {
       Log.e("Failed to find a valid LiveKit Foci");

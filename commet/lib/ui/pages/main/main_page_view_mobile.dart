@@ -240,9 +240,7 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
                   ),
                 ),
               ),
-              if (widget.state.currentCall != null)
-                Flexible(child: CallWidget(widget.state.currentCall!)),
-              Flexible(
+              Expanded(
                 child: RoomPrimaryView(
                   widget.state.currentRoom!,
                 ),
