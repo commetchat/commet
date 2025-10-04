@@ -28,6 +28,8 @@ class MatrixLivekitVoipSession implements VoipSession {
     final listener = livekitRoom.createListener();
     listener.on(onTrackPublished);
     listener.on(onTrackUnpublished);
+    listener.on(onLocalTrackPublished);
+    listener.on(onLocalTrackUnpublished);
     listener.on(onTrackStreamEvent);
   }
 
@@ -73,26 +75,33 @@ class MatrixLivekitVoipSession implements VoipSession {
         t.onStreamUpdatedEvent(event);
       }
     }
-    print("Received track event: ${event}");
   }
 
   void onTrackPublished(lk.TrackPublishedEvent event) {
-    print("Received new track: ${event}");
-
     final participant =
         event.participant.identity.split(":").getRange(0, 2).join(":");
-
-    print("From peer: ${participant}");
 
     streams.add(MatrixLivekitVoipStream(event.publication, participant));
     _stateChanged.add(());
   }
 
-  void onTrackUnpublished(lk.TrackUnpublishedEvent event) {
-    print(
-      "Track unpublished: $event",
-    );
+  void onLocalTrackPublished(lk.LocalTrackPublishedEvent event) {
+    final participant =
+        event.participant.identity.split(":").getRange(0, 2).join(":");
 
+    streams.add(MatrixLivekitVoipStream(event.publication, participant));
+    _stateChanged.add(());
+  }
+
+  void onLocalTrackUnpublished(lk.LocalTrackUnpublishedEvent event) {
+    streams.removeWhere((e) =>
+        (e as MatrixLivekitVoipStream).publication.sid ==
+        event.publication.sid);
+
+    _stateChanged.add(());
+  }
+
+  void onTrackUnpublished(lk.TrackUnpublishedEvent event) {
     streams.removeWhere((e) =>
         (e as MatrixLivekitVoipStream).publication.sid ==
         event.publication.sid);
@@ -161,13 +170,9 @@ class MatrixLivekitVoipSession implements VoipSession {
   String get sessionId => "";
 
   @override
-  Future<void> setCamera(MediaDeviceInfo? device) async {
-    await livekitRoom.localParticipant?.setCameraEnabled(true);
-  }
-
-  @override
   Future<void> setMicrophoneMute(bool state) async {
     await livekitRoom.localParticipant?.setMicrophoneEnabled(!state);
+    _stateChanged.add(());
   }
 
   @override
@@ -187,11 +192,25 @@ class MatrixLivekitVoipSession implements VoipSession {
     );
 
     await livekitRoom.localParticipant?.publishVideoTrack(track);
+    _stateChanged.add(());
+  }
+
+  @override
+  Future<void> setCamera(MediaDeviceInfo? device) async {
+    if (isCameraEnabled) {
+      Log.e("Tried to enable camera when camera already enabled!");
+      return;
+    }
+
+    await livekitRoom.localParticipant?.setCameraEnabled(true);
+    _stateChanged.add(());
   }
 
   @override
   Future<void> stopCamera() async {
     await livekitRoom.localParticipant?.setCameraEnabled(false);
+
+    _stateChanged.add(());
   }
 
   @override
@@ -202,9 +221,11 @@ class MatrixLivekitVoipSession implements VoipSession {
       try {
         await FlutterBackground.disableBackgroundExecution();
       } catch (error) {
-        print('error disabling screen share: $error');
+        Log.e('error disabling screen share: $error');
       }
     }
+
+    _stateChanged.add(());
   }
 
   @override
