@@ -1,5 +1,6 @@
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/config/platform_utils.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_background/flutter_background.dart';
@@ -41,7 +42,7 @@ class MatrixLivekitAndroidScreencaptureSource implements ScreenCaptureSource {
             return await Future<void>.delayed(const Duration(seconds: 1),
                 () => requestBackgroundPermission(true));
           }
-          print('could not publish video: $e');
+          Log.e('could not publish video: $e');
         }
       }
 
