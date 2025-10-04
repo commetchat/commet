@@ -100,4 +100,8 @@ class MatrixVoipRoomComponent
       currentSession = null;
     }
   }
+
+  @override
+  bool get canJoinCall => room.matrixRoom
+      .canSendEvent(MatrixVoipRoomComponent.callMemberStateEvent);
 }

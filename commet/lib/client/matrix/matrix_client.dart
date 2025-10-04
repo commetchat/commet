@@ -395,6 +395,12 @@ class MatrixClient extends Client {
       }
     }
 
+    if (Experiments.elementCall) {
+      if (args.roomType == RoomType.voipRoom) {
+        creationContent = {"type": "org.matrix.msc3417.call"};
+      }
+    }
+
     var id = await _matrixClient.createRoom(
         creationContent: creationContent,
         name: args.name,

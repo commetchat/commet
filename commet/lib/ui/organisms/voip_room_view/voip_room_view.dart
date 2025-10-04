@@ -6,6 +6,7 @@ import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/atoms/shimmer_loading.dart';
 import 'package:commet/ui/layout/bento.dart';
 import 'package:commet/ui/organisms/call_view/call.dart';
+import 'package:commet/utils/common_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
@@ -161,12 +162,17 @@ class _VoipRoomViewState extends State<VoipRoomView> {
                           child: tiamat.Text.labelLow("No one's here...")))),
             ),
           ),
-        Center(
-          child: tiamat.Button(
-            text: "Join",
-            onTap: joinRoomCall,
+        if (widget.voip.canJoinCall)
+          Center(
+            child: tiamat.Button(
+              text: CommonStrings.promptJoin,
+              onTap: joinRoomCall,
+            ),
           ),
-        )
+        if (!widget.voip.canJoinCall)
+          Center(
+              child: tiamat.Text.labelLow(
+                  "You do not have permission to join this call"))
       ],
     );
   }
