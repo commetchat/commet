@@ -1,7 +1,6 @@
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/debug/log.dart';
-import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_background/flutter_background.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
@@ -12,7 +11,6 @@ class MatrixLivekitAndroidScreencaptureSource implements ScreenCaptureSource {
     if (PlatformUtils.isAndroid) {
       final permission = await Helper.requestCapturePermission();
       if (permission == false) {
-        AdaptiveDialog.show(context, builder: (context) => Placeholder());
         return null;
       }
 
@@ -26,7 +24,7 @@ class MatrixLivekitAndroidScreencaptureSource implements ScreenCaptureSource {
             notificationText: 'Commet is sharing the screen.',
             notificationImportance: AndroidNotificationImportance.normal,
             notificationIcon:
-                AndroidResource(name: 'ic_launcher', defType: 'mipmap'),
+                AndroidResource(name: 'notification_icon', defType: 'mipmap'),
           );
 
           if (!isRetry) {
