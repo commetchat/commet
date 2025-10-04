@@ -50,13 +50,13 @@ class CallManager {
       return;
     }
 
-    voip.onSessionStarted.listen(_onClientSessionStarted);
-    voip.onSessionEnded.listen(_onSessionEnded);
+    voip.onSessionStarted.listen(onClientSessionStarted);
+    voip.onSessionEnded.listen(onSessionEnded);
   }
 
   void _onClientRemoved(StalePeerInfo event) {}
 
-  void _onClientSessionStarted(VoipSession event) {
+  void onClientSessionStarted(VoipSession event) {
     var room = event.client.getRoom(event.roomId);
     currentSessions.add(event);
 
@@ -78,14 +78,16 @@ class CallManager {
                   .getComponent<DirectMessagesComponent>()
                   ?.isRoomDirectMessage(room!) ==
               true));
-    } else {
+    }
+
+    if (event.state == VoipState.outgoing) {
       startOutgoingTone();
     }
 
     event.onStateChanged.listen((_) => onCallStateChanged(event));
   }
 
-  void _onSessionEnded(VoipSession event) {
+  void onSessionEnded(VoipSession event) {
     currentSessions
         .removeWhere((element) => element.sessionId == event.sessionId);
 
