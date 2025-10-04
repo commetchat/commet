@@ -1,6 +1,9 @@
 import 'dart:async'; // For StreamSubscription
 
+import 'package:commet/client/components/direct_messages/direct_message_component.dart';
+import 'package:commet/client/components/user_presence/user_presence_component.dart';
 import 'package:commet/main.dart'; // For preferences
+import 'package:commet/ui/molecules/user_panel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' as m;
 import 'package:flutter/widgets.dart';
@@ -19,22 +22,60 @@ class RoomHeader extends StatefulWidget {
 }
 
 class _RoomHeaderState extends State<RoomHeader> {
-  StreamSubscription? _settingsSubscription;
+  late List<StreamSubscription> _subs;
+  UserPresenceStatus? status;
+  String? directMessagePartner;
+
+  UserPresenceComponent? presence;
 
   @override
   void initState() {
     super.initState();
-    _settingsSubscription = preferences.onSettingChanged.listen((_) {
-      if (mounted) {
-        setState(() {});
-      }
-    });
+
+    final comp = widget.room.client.getComponent<DirectMessagesComponent>();
+    bool isDm = comp?.isRoomDirectMessage(widget.room) == true;
+
+    if (isDm) {
+      status = UserPresenceStatus.unknown;
+      presence = widget.room.client.getComponent<UserPresenceComponent>();
+      directMessagePartner = comp!.getDirectMessagePartnerId(widget.room);
+    }
+
+    if (presence != null && directMessagePartner != null) {
+      presence!.getUserPresence(directMessagePartner!).then((presence) {
+        if (mounted) {
+          setState(() {
+            status = presence.status;
+          });
+        }
+      });
+    }
+
+    _subs = [
+      preferences.onSettingChanged.listen((_) {
+        if (mounted) {
+          setState(() {});
+        }
+      }),
+      if (presence != null)
+        presence!.onPresenceChanged.listen(onUserPresenceChanged),
+    ];
   }
 
   @override
   void dispose() {
-    _settingsSubscription?.cancel();
+    for (var sub in _subs) {
+      sub.cancel();
+    }
     super.dispose();
+  }
+
+  void onUserPresenceChanged((String, UserPresence) event) {
+    if (event.$1 == directMessagePartner) {
+      setState(() {
+        status = event.$2.status;
+      });
+    }
   }
 
   @override
@@ -86,7 +127,14 @@ class _RoomHeaderState extends State<RoomHeader> {
                   SizedBox(
                     width: 30,
                     height: 30,
-                    child: iconWidget,
+                    child: Stack(
+                      alignment: AlignmentGeometry.bottomRight,
+                      children: [
+                        iconWidget,
+                        if (status != null)
+                          UserPanelView.createPresenceIcon(context, status!),
+                      ],
+                    ),
                   ),
                   const SizedBox(
                     width: 10,

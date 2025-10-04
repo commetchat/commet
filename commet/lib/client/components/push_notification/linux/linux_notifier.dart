@@ -12,6 +12,7 @@ import 'package:commet/utils/shortcuts_manager.dart';
 import 'package:desktop_notifications/desktop_notifications.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_local_notifications_linux/src/model/hint.dart' as notif;
 import 'package:window_manager/window_manager.dart';
 import 'dart:ui' as ui;
 
@@ -36,6 +37,8 @@ class LinuxNotifier implements Notifier {
   static const callAccept = "call.accept";
   static const callDecline = "call.decline";
   static const openRoom = "room.open";
+
+  static int notificationId = 0;
 
   static void notificationResponse(NotificationResponse details) {
     final payload = jsonDecode(details.payload!) as Map<String, dynamic>;
@@ -85,12 +88,11 @@ class LinuxNotifier implements Notifier {
 
   @override
   Future<void> notify(NotificationContent notification) async {
-    switch (notification.runtimeType) {
+    switch (notification) {
       case MessageNotificationContent _:
-        return displayMessageNotification(
-            notification as MessageNotificationContent);
+        return displayMessageNotification(notification);
       case CallNotificationContent _:
-        return displayCallNotification(notification as CallNotificationContent);
+        return displayCallNotification(notification);
       default:
     }
   }
@@ -104,16 +106,29 @@ class LinuxNotifier implements Notifier {
       return;
     }
 
-    var avatar = await ShortcutsManager.getCachedAvatarImage(
+    var image = await ShortcutsManager.createAvatarImage(
         placeholderColor: room.getColorOfUser(content.senderId),
         placeholderText: content.senderName,
-        identifier: content.senderId,
-        shouldZoomOut: false,
-        imageProvider: content.senderImage);
+        imageProvider: content.senderImage,
+        doCircleMask: true,
+        shouldZoomOut: false);
+
+    var bytes = await image.toByteData(format: ui.ImageByteFormat.rawRgba);
+    final data = bytes!.buffer.asUint8List();
 
     var details = LinuxNotificationDetails(
-      icon: avatar == null ? null : FilePathLinuxIcon(avatar.toFilePath()),
+      icon: ByteDataLinuxIcon(LinuxRawIconData(
+          data: data,
+          width: image.width,
+          height: image.height,
+          hasAlpha: true,
+          channels: 4)),
       defaultActionName: openRoom,
+      actions: [],
+      customHints: [
+        notif.LinuxNotificationCustomHint('desktop-entry',
+            notif.LinuxHintStringValue("chat.commet.commetapp")),
+      ],
       category: LinuxNotificationCategory.imReceived,
     );
 
@@ -126,8 +141,8 @@ class LinuxNotifier implements Notifier {
       "room_id": content.roomId,
     };
 
-    flutterLocalNotificationsPlugin?.show(
-        0, title, content.content, NotificationDetails(linux: details),
+    flutterLocalNotificationsPlugin?.show(notificationId++, title,
+        content.content, NotificationDetails(linux: details),
         payload: jsonEncode(payload));
   }
 
@@ -139,15 +154,23 @@ class LinuxNotifier implements Notifier {
       return;
     }
 
-    var avatar = await ShortcutsManager.getCachedAvatarImage(
+    var image = await ShortcutsManager.createAvatarImage(
         placeholderColor: room.getColorOfUser(content.senderId),
         placeholderText: content.roomName,
-        identifier: content.senderId,
-        shouldZoomOut: false,
-        imageProvider: content.senderImage);
+        imageProvider: content.senderImage,
+        doCircleMask: true,
+        shouldZoomOut: false);
+
+    var bytes = await image.toByteData(format: ui.ImageByteFormat.rawRgba);
+    final data = bytes!.buffer.asUint8List();
 
     var details = LinuxNotificationDetails(
-        icon: avatar == null ? null : FilePathLinuxIcon(avatar.toFilePath()),
+        icon: ByteDataLinuxIcon(LinuxRawIconData(
+            data: data,
+            width: image.width,
+            height: image.height,
+            hasAlpha: true,
+            channels: 4)),
         defaultActionName: openRoom,
         category: LinuxNotificationCategory.imReceived,
         timeout: const LinuxNotificationTimeout.expiresNever(),

@@ -92,10 +92,9 @@ class WindowsNotifier implements Notifier {
 
   @override
   Future<void> notify(NotificationContent notification) async {
-    switch (notification.runtimeType) {
-      case MessageNotificationContent:
-        return displayMessageNotification(
-            notification as MessageNotificationContent);
+    switch (notification) {
+      case MessageNotificationContent _:
+        return displayMessageNotification(notification);
       default:
     }
   }
@@ -115,6 +114,7 @@ class WindowsNotifier implements Notifier {
         placeholderColor: room.getColorOfUser(content.senderId),
         placeholderText: content.senderName,
         identifier: content.senderId,
+        format: ShortcutIconFormat.png,
         shouldZoomOut: false,
         imageProvider: content.senderImage);
 

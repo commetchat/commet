@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:math';
+import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
@@ -15,6 +16,12 @@ import 'dart:ui' as ui;
 
 import 'package:flutter_shortcuts_new/flutter_shortcuts_new.dart';
 import 'package:image/image.dart' as img;
+
+enum ShortcutIconFormat {
+  jpeg,
+  png,
+  rawRgba,
+}
 
 class ShortcutsManager {
   FlutterShortcuts? shortcuts;
@@ -35,7 +42,7 @@ class ShortcutsManager {
         identifier: room.identifier,
         placeholderColor: room.defaultColor,
         placeholderText: room.displayName,
-        asJpeg: true,
+        format: ShortcutIconFormat.jpeg,
         doCircleMask: false,
         imageProvider: await room.getShortcutImage());
 
@@ -75,9 +82,9 @@ class ShortcutsManager {
       {required Color placeholderColor,
       required String placeholderText,
       required String identifier,
+      required ShortcutIconFormat format,
       ImageProvider? imageProvider,
       bool shouldZoomOut = true,
-      bool asJpeg = false,
       bool doCircleMask = true}) async {
     String avatarId = "shortcutAvatar_$identifier";
 
@@ -97,9 +104,11 @@ class ShortcutsManager {
       avatarId += "_circle";
     }
 
-    if (asJpeg) {
-      avatarId += ".jpg";
-    }
+    avatarId += switch (format) {
+      ShortcutIconFormat.jpeg => ".jpg",
+      ShortcutIconFormat.png => ".png",
+      ShortcutIconFormat.rawRgba => ".bin",
+    };
 
     Uri? cachedAvatar = await fileCache?.getFile(avatarId);
 
@@ -114,24 +123,31 @@ class ShortcutsManager {
         doCircleMask: doCircleMask,
         shouldZoomOut: shouldZoomOut);
 
-    if (asJpeg) {
-      var bytes = await image.toByteData(format: ImageByteFormat.rawRgba);
-      var finalImage = img.Image.fromBytes(
-          width: image.width,
-          height: image.height,
-          bytes: bytes!.buffer,
-          format: img.Format.uint8,
-          numChannels: 4,
-          order: img.ChannelOrder.rgba);
-      var jpg = img.encodeJpg(finalImage);
+    late Uint8List data;
 
-      cachedAvatar = await fileCache?.putFile(avatarId, jpg);
-    } else {
-      var bytes = (await image.toByteData(format: ImageByteFormat.png))!
-          .buffer
-          .asUint8List();
-      cachedAvatar = await fileCache?.putFile(avatarId, bytes);
+    switch (format) {
+      case ShortcutIconFormat.jpeg:
+        var bytes = await image.toByteData(format: ImageByteFormat.rawRgba);
+        var finalImage = img.Image.fromBytes(
+            width: image.width,
+            height: image.height,
+            bytes: bytes!.buffer,
+            format: img.Format.uint8,
+            numChannels: 4,
+            order: img.ChannelOrder.rgba);
+        data = img.encodeJpg(finalImage);
+        break;
+      case ShortcutIconFormat.png:
+        data = (await image.toByteData(format: ImageByteFormat.png))!
+            .buffer
+            .asUint8List();
+        break;
+      case ShortcutIconFormat.rawRgba:
+        final bytes = await image.toByteData(format: ImageByteFormat.rawRgba);
+        data = bytes!.buffer.asUint8List();
     }
+
+    await fileCache?.putFile(avatarId, data);
 
     return cachedAvatar;
   }

@@ -9,4 +9,4 @@ Categories=Utility;Amusement;
 Icon=chat.commet.commetapp
 Exec=commet
 Terminal=false
-StartupWMClass=commet
+StartupWMClass=chat.commet.commetapp
