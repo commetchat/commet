@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/user_presence/user_presence_component.dart';
 import 'package:commet/client/member.dart';
 import 'package:commet/ui/atoms/shimmer_loading.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
@@ -8,35 +11,122 @@ import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
-class MemberPanel extends material.StatefulWidget {
-  const MemberPanel(
+class UserPanel extends material.StatefulWidget {
+  const UserPanel(
       {super.key,
-      required this.member,
+      required this.userId,
       required this.client,
-      this.userColor,
-      this.showFullId = false,
+      required this.contextRoom,
+      this.initialMember,
+      this.isDirectMessage = false,
       this.onTap});
-  final Member member;
+  final String userId;
   final Client client;
-  final Color? userColor;
-  final bool showFullId;
+  final Member? initialMember;
+  final Room contextRoom;
+  final bool isDirectMessage;
   final void Function()? onTap;
 
   @override
-  State<MemberPanel> createState() => _MemberPanelState();
+  State<UserPanel> createState() => _UserPanelState();
 }
 
-class _MemberPanelState extends material.State<MemberPanel> {
+class _UserPanelState extends material.State<UserPanel> {
+  late String displayName;
+  late Color color;
+  ImageProvider? avatar;
+  String? detail;
+  TextStyle? detailStringStyle;
+  late UserPresence presence;
+
+  StreamSubscription? sub;
+
+  @override
+  initState() {
+    presence = UserPresence(UserPresenceStatus.unknown);
+
+    super.initState();
+    initPresence();
+    getInfoFromMember();
+  }
+
+  void getInfoFromMember() {
+    if (widget.isDirectMessage) {
+      displayName = widget.contextRoom.displayName;
+      color = widget.contextRoom.defaultColor;
+      avatar = widget.contextRoom.avatar;
+      return;
+    }
+
+    final member = widget.initialMember ??
+        widget.contextRoom.getMemberOrFallback(widget.userId);
+    displayName = member.displayName;
+    color = member.defaultColor;
+    avatar = member.avatar;
+    detail = member.detail;
+  }
+
+  @override
+  void didUpdateWidget(covariant UserPanel oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    getInfoFromMember();
+  }
+
+  @override
+  dispose() {
+    super.dispose();
+    sub?.cancel();
+  }
+
+  initPresence() async {
+    final presenceComponent =
+        widget.client.getComponent<UserPresenceComponent>();
+
+    if (presenceComponent == null) {
+      return;
+    }
+
+    sub = presenceComponent.onPresenceChanged
+        .where((tuple) => tuple.$1 == widget.userId)
+        .listen(onChanged);
+
+    final p = await presenceComponent.getUserPresence(widget.userId);
+
+    if (mounted) {
+      setState(() {
+        presence = p;
+      });
+    }
+  }
+
   @override
   material.Widget build(material.BuildContext context) {
+    TextStyle? style;
+
+    var currentStyle = material.Theme.of(context).textTheme.bodyMedium;
+    style = currentStyle?.copyWith(fontSize: 10);
+
+    if (presence.message != null) {
+      style = style?.copyWith(
+        fontWeight: FontWeight.w500,
+      );
+    } else {
+      style = style?.copyWith(
+        color: Theme.of(context).colorScheme.secondary,
+      );
+    }
+
     return UserPanelView(
-      displayName: widget.member.displayName,
-      avatar: widget.member.avatar,
-      detail:
-          widget.showFullId ? widget.member.identifier : widget.member.detail,
-      color: widget.userColor,
-      avatarColor: widget.userColor,
-      nameColor: widget.userColor,
+      displayName: displayName,
+      avatar: avatar,
+      detail: presence.message != null ? presence.message!.message : detail,
+      detailStringStyle: style,
+      color: color,
+      avatarColor: color,
+      nameColor: widget.isDirectMessage ? null : color,
+      avatarSize: widget.isDirectMessage ? 20 : 15,
+      detailIcon: presence.message != null ? Icons.chat_bubble : null,
+      presenceStatus: presence.status,
       onClicked: widget.onTap ?? onUserPanelClicked,
     );
   }
@@ -44,11 +134,19 @@ class _MemberPanelState extends material.State<MemberPanel> {
   void onUserPanelClicked() {
     AdaptiveDialog.show(context,
         builder: (_) => UserProfile(
-              userId: widget.member.identifier,
+              userId: widget.userId,
               client: widget.client,
               dismiss: () => Navigator.pop(context),
             ),
         title: "User");
+  }
+
+  void onChanged((String, UserPresence) event) {
+    if (mounted) {
+      setState(() {
+        presence = event.$2;
+      });
+    }
   }
 }
 
@@ -64,16 +162,24 @@ class UserPanelView extends material.StatelessWidget {
       this.padding,
       this.shimmer = false,
       this.random = 0,
+      this.detailStringStyle,
+      this.detailIcon,
+      this.presenceStatus,
+      this.avatarSize = 15,
       this.onClicked});
   final ImageProvider? avatar;
   final String displayName;
+  final double avatarSize;
   final Color? color;
   final Color? avatarColor;
   final Color? nameColor;
   final String? detail;
   final EdgeInsets? padding;
+  final UserPresenceStatus? presenceStatus;
   final bool shimmer;
+  final TextStyle? detailStringStyle;
   final double random;
+  final IconData? detailIcon;
   final void Function()? onClicked;
 
   @override
@@ -88,14 +194,22 @@ class UserPanelView extends material.StatelessWidget {
           splashColor: material.Theme.of(context).highlightColor,
           onTap: onClicked,
           child: Padding(
-            padding: padding ?? const EdgeInsets.fromLTRB(0, 0, 0, 0),
+            padding: padding ?? const EdgeInsets.fromLTRB(4, 2, 4, 2),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Avatar.small(
-                  image: shimmer ? null : avatar,
-                  placeholderText: shimmer ? " " : displayName,
-                  placeholderColor: shimmer ? shimmerColor : avatarColor,
+                material.Stack(
+                  alignment: AlignmentGeometry.bottomRight,
+                  children: [
+                    Avatar(
+                      radius: avatarSize,
+                      image: shimmer ? null : avatar,
+                      placeholderText: shimmer ? " " : displayName,
+                      placeholderColor: shimmer ? shimmerColor : avatarColor,
+                    ),
+                    if (presenceStatus != null)
+                      createPresenceIcon(context, presenceStatus!),
+                  ],
                 ),
                 Flexible(
                   child: Padding(
@@ -133,7 +247,29 @@ class UserPanelView extends material.StatelessWidget {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
-                          if (detail != null) tiamat.Text.tiny(detail!),
+                          if (detail != null)
+                            material.Row(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                if (detailIcon != null)
+                                  material.Padding(
+                                    padding:
+                                        const EdgeInsets.fromLTRB(0, 0, 4, 0),
+                                    child: Icon(
+                                      detailIcon,
+                                      size: 10,
+                                    ),
+                                  ),
+                                Flexible(
+                                  child: material.Padding(
+                                    padding:
+                                        const EdgeInsets.fromLTRB(0, 0, 0, 2),
+                                    child: buildDetailString(),
+                                  ),
+                                ),
+                              ],
+                            ),
                         ],
                       ),
                     ),
@@ -151,5 +287,47 @@ class UserPanelView extends material.StatelessWidget {
     }
 
     return widget;
+  }
+
+  static material.DecoratedBox createPresenceIcon(
+      BuildContext context, UserPresenceStatus status) {
+    var scheme = Theme.of(context).colorScheme;
+
+    var backgroundColor = scheme.surfaceContainer;
+
+    var color = switch (status) {
+      UserPresenceStatus.offline => Colors.grey,
+      UserPresenceStatus.online => Colors.lightGreen,
+      UserPresenceStatus.unavailable => Colors.amber,
+      UserPresenceStatus.unknown => Colors.grey,
+    };
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: color,
+        shape: BoxShape.circle,
+        border: Border.all(
+            width: 2,
+            strokeAlign: BorderSide.strokeAlignOutside,
+            color: backgroundColor),
+      ),
+      child: SizedBox(
+        width: 8,
+        height: 8,
+      ),
+    );
+  }
+
+  Widget buildDetailString() {
+    if (detailStringStyle == null) {
+      return tiamat.Text.labelLow(detail!);
+    }
+
+    return material.Text(
+      detail!,
+      overflow: TextOverflow.ellipsis,
+      maxLines: 1,
+      style: detailStringStyle,
+    );
   }
 }
