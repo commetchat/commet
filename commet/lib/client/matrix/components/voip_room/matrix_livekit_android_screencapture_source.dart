@@ -49,5 +49,7 @@ class MatrixLivekitAndroidScreencaptureSource implements ScreenCaptureSource {
 
       return MatrixLivekitAndroidScreencaptureSource();
     }
+
+    return null;
   }
 }
