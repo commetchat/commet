@@ -17,7 +17,6 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_background/flutter_background.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:matrix/matrix_api_lite.dart';
-import 'package:webrtc_interface/src/mediadevices.dart';
 import 'package:livekit_client/livekit_client.dart' as lk;
 
 class MatrixLivekitVoipSession implements VoipSession {
