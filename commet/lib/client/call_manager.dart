@@ -8,6 +8,7 @@ import 'package:commet/client/components/push_notification/notification_manager.
 import 'package:commet/client/components/voip/voip_component.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/stale_info.dart';
+import 'package:commet/config/platform_utils.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:intl/intl.dart';
 import 'package:media_kit/media_kit.dart';
@@ -84,6 +85,10 @@ class CallManager {
       startOutgoingTone();
     }
 
+    if (event.state == VoipState.connected) {
+      joinCallSound();
+    }
+
     event.onStateChanged.listen((_) => onCallStateChanged(event));
   }
 
@@ -94,6 +99,8 @@ class CallManager {
     if (currentSessions.where((e) => e.state == VoipState.incoming).isEmpty) {
       stopRingtone();
     }
+
+    endCallSound();
   }
 
   VoipSession? getCallInRoom(Client client, String roomId) {
@@ -108,7 +115,7 @@ class CallManager {
       return;
     }
 
-    player ??= Player();
+    player = getSoundPlayer();
     player?.open(Media("asset:///assets/sound/ringtone_in.ogg"));
   }
 
@@ -117,9 +124,21 @@ class CallManager {
       return;
     }
 
-    player ??= Player();
+    player = getSoundPlayer();
     player?.open(Media("asset:///assets/sound/ringtone_out.ogg"));
     player?.setPlaylistMode(PlaylistMode.loop);
+  }
+
+  void joinCallSound() {
+    player = getSoundPlayer();
+    player?.open(Media("asset:///assets/sound/joined_call.ogg"));
+    player?.setPlaylistMode(PlaylistMode.none);
+  }
+
+  void endCallSound() {
+    player = getSoundPlayer();
+    player?.open(Media("asset:///assets/sound/left_call.ogg"));
+    player?.setPlaylistMode(PlaylistMode.none);
   }
 
   void stopRingtone() {
@@ -133,5 +152,15 @@ class CallManager {
         event.state == VoipState.connecting) {
       stopRingtone();
     }
+
+    if (event.state == VoipState.connected) {
+      joinCallSound();
+    }
+  }
+
+  Player getSoundPlayer() {
+    player ??= Player();
+    player!.setVolume(90);
+    return player!;
   }
 }
