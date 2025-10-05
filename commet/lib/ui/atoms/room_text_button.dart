@@ -33,6 +33,17 @@ class _RoomTextButtonState extends State<RoomTextButton> {
         voipRoom!.onParticipantsChanged.listen(onVoipParticipantsChanged),
     ];
     voipRoomParticipants = voipRoom?.getCurrentParticipants();
+
+    if (voipRoomParticipants?.isNotEmpty == true) {
+      for (var participant in voipRoomParticipants!) {
+        widget.room.fetchMember(participant).then((_) {
+          if (mounted) {
+            setState(() {});
+          }
+        });
+      }
+    }
+
     super.initState();
   }
 
