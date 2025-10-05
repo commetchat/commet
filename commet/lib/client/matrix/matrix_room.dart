@@ -18,6 +18,7 @@ import 'package:commet/client/matrix/matrix_room_permissions.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_add_reaction.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event.dart';
+import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_call.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_edit.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_emote.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_encrypted.dart';
@@ -451,6 +452,14 @@ class MatrixRoom extends Room {
           MatrixTimelineEventMembership(event, client: c),
         matrix.EventTypes.Redaction =>
           MatrixTimelineEventRedaction(event, client: c),
+        matrix.EventTypes.CallInvite =>
+          MatrixTimelineEventCall(event, client: c),
+        matrix.EventTypes.CallAnswer =>
+          MatrixTimelineEventCall(event, client: c),
+        matrix.EventTypes.CallHangup =>
+          MatrixTimelineEventCall(event, client: c),
+        matrix.EventTypes.CallReject =>
+          MatrixTimelineEventCall(event, client: c),
         matrix.EventTypes.RoomPinnedEvents =>
           MatrixTimelineEventPinnedMessages(event, client: c),
         _ => null
