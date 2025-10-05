@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:commet/client/client.dart';
@@ -15,12 +16,16 @@ import 'package:commet/main.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_background/flutter_background.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:matrix/matrix_api_lite.dart';
 import 'package:webrtc_interface/src/mediadevices.dart';
 import 'package:livekit_client/livekit_client.dart' as lk;
 
 class MatrixLivekitVoipSession implements VoipSession {
   MatrixRoom room;
   lk.Room livekitRoom;
+  Timer? heartbeatTimer;
+  String? heartbeatDelayId;
+
   MatrixLivekitVoipSession(this.room, this.livekitRoom) {
     clientManager?.callManager.onClientSessionStarted(this);
     addInitialStreams();
@@ -33,6 +38,8 @@ class MatrixLivekitVoipSession implements VoipSession {
     listener.on(onTrackStreamEvent);
     listener.on(onTrackMutedEvent);
     listener.on(onTrackUnmutedEvent);
+
+    startHeartbeat();
   }
 
   StreamController _stateChanged = StreamController.broadcast();
@@ -158,7 +165,8 @@ class MatrixLivekitVoipSession implements VoipSession {
     await Future.wait([
       livekitRoom.disconnect(),
       room.matrixRoom.client.setRoomStateWithKey(room.matrixRoom.id,
-          MatrixVoipRoomComponent.callMemberStateEvent, stateKey, {})
+          MatrixVoipRoomComponent.callMemberStateEvent, stateKey, {}),
+      stopHeartbeat(),
     ]);
 
     state = VoipState.ended;
@@ -276,5 +284,55 @@ class MatrixLivekitVoipSession implements VoipSession {
       return MatrixLivekitAndroidScreencaptureSource.getCaptureSource(context);
     }
     return WebrtcScreencaptureSource.showSelectSourcePrompt(context);
+  }
+
+  Future<void> stopHeartbeat() async {
+    heartbeatTimer?.cancel();
+
+    if (heartbeatDelayId == null) {
+      return;
+    }
+
+    heartbeatTimer = null;
+    heartbeatDelayId = null;
+
+    await room.matrixRoom.client.request(RequestType.POST,
+        "/client/unstable/org.matrix.msc4140/delayed_events/${Uri.encodeComponent(heartbeatDelayId!)}",
+        contentType: "application/json",
+        data: jsonEncode({"action": "cancel"}));
+  }
+
+  Future<void> startHeartbeat() async {
+    final capabilities = await room.matrixRoom.client.getVersions();
+    if (capabilities.unstableFeatures?["org.matrix.msc4140"] != true) {
+      Log.e("Homeserver does not support delayed events");
+      return;
+    }
+
+    final stateKey =
+        "_${room.client.self!.identifier}_${room.matrixRoom.client.deviceID!}_m.call";
+
+    final timerLength = Duration(seconds: 30);
+
+    final result = await room.matrixRoom.client.request(RequestType.PUT,
+        "/client/v3/rooms/${Uri.encodeComponent(room.matrixRoom.id)}/state/${Uri.encodeComponent(MatrixVoipRoomComponent.callMemberStateEvent)}/${Uri.encodeComponent(stateKey)}",
+        contentType: "application/json",
+        data: "{}",
+        query: {
+          "org.matrix.msc4140.delay": timerLength.inMilliseconds.toString()
+        });
+
+    final delayId = result["delay_id"] as String;
+    heartbeatDelayId = delayId;
+
+    heartbeatTimer =
+        Timer.periodic(timerLength - Duration(seconds: 5), (timer) async {
+      print("Sending heartbeat");
+      final result = await room.matrixRoom.client.request(RequestType.POST,
+          "/client/unstable/org.matrix.msc4140/delayed_events/${Uri.encodeComponent(delayId)}",
+          contentType: "application/json",
+          data: jsonEncode({"action": "restart"}));
+      print(result);
+    });
   }
 }
