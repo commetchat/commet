@@ -23,7 +23,7 @@ class MatrixVoipSession implements VoipSession {
 
   RTCDataChannel? channel;
 
-  DesktopCapturerSource? currentScreenshare;
+  ScreenCaptureSource? currentScreenshare;
 
   MatrixVoipSession(this.session, MatrixClient this.client) {
     session.onCallStateChanged.stream.listen((event) {
@@ -135,23 +135,26 @@ class MatrixVoipSession implements VoipSession {
 
   @override
   Future<void> setScreenShare(ScreenCaptureSource source) async {
-    if (source is! WebrtcScreencaptureSource) {
-      return;
+    MediaStream? stream;
+
+    if (source is WebrtcScreencaptureSource) {
+      stream = await navigator.mediaDevices.getDisplayMedia({
+        'video': {
+          'width': 1280,
+          'height': 720,
+          'deviceId': {'exact': source.source.id},
+          'mandatory': {'frameRate': 30.0}
+        }
+      });
     }
 
-    final src = source.source;
+    if (stream != null) {
+      currentScreenshare = source;
 
-    var stream = await navigator.mediaDevices.getDisplayMedia({
-      'video': {
-        'deviceId': {'exact': source.source},
-        'mandatory': {'frameRate': 30.0}
-      }
-    });
-
-    currentScreenshare = src;
-
-    await stopScreenshare();
-    session.addLocalStream(stream, matrix.SDPStreamMetadataPurpose.Screenshare);
+      await stopScreenshare();
+      session.addLocalStream(
+          stream, matrix.SDPStreamMetadataPurpose.Screenshare);
+    }
   }
 
   @override

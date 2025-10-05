@@ -15,7 +15,8 @@ class WebrtcScreencaptureSource implements ScreenCaptureSource {
     bool isWayland = PlatformUtils.displayServer == "wayland";
 
     var sources = await desktopCapturer.getSources(
-        types: [if (!isWayland) SourceType.Window, SourceType.Screen]);
+      types: [if (!isWayland) SourceType.Window, SourceType.Screen],
+    );
 
     if (isWayland && sources.isNotEmpty) {
       return WebrtcScreencaptureSource(sources.first);
@@ -23,7 +24,9 @@ class WebrtcScreencaptureSource implements ScreenCaptureSource {
 
     if (context.mounted) {
       var result = await PopupDialog.show<DesktopCapturerSource>(context,
-          content: ScreenCaptureSourceDialog(sources), title: "Screen Share");
+          content: ScreenCaptureSourceDialog(
+              sources, desktopCapturer.onThumbnailChanged.stream),
+          title: "Screen Share");
 
       if (result != null) {
         return WebrtcScreencaptureSource(result);

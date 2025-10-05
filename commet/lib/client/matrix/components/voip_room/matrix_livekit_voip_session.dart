@@ -185,12 +185,13 @@ class MatrixLivekitVoipSession implements VoipSession {
     }
 
     final src = (source as WebrtcScreencaptureSource).source;
+
     var track = await lk.LocalVideoTrack.createScreenShareTrack(
-      lk.ScreenShareCaptureOptions(
-          sourceId: src.id,
-          maxFrameRate: 30.0,
-          params: lk.VideoParametersPresets.screenShareH1080FPS30),
-    );
+        lk.ScreenShareCaptureOptions(
+      sourceId: src.id,
+      maxFrameRate: 30,
+      params: lk.VideoParametersPresets.h1080_169,
+    ));
 
     await livekitRoom.localParticipant?.publishVideoTrack(track);
     _stateChanged.add(());

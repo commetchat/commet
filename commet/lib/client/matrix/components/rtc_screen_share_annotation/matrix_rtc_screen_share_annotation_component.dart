@@ -4,6 +4,7 @@ import 'package:commet/client/components/rtc_data_channel/rtc_data_channel_compo
 import 'package:commet/client/components/rtc_screen_share_annotation/rtc_screen_share_annotation_component.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
+import 'package:commet/client/components/voip/webrtc_screencapture_source.dart';
 import 'package:commet/client/matrix/components/voip/matrix_voip_session.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 
@@ -134,7 +135,10 @@ class MatrixRTCScreenShareAnnotationSession
         final share = session.currentScreenshare as DesktopCapturerSourceNative;
         final id = share.id;
         if (id != lastSetTargetId) {
-          lastSetTargetId = session.currentScreenshare?.id;
+          lastSetTargetId =
+              (session.currentScreenshare as WebrtcScreencaptureSource?)
+                  ?.source
+                  .id;
 
           switch (share.type) {
             case SourceType.Screen:

@@ -5,8 +5,11 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 class ScreenCaptureSourceDialog extends StatelessWidget {
-  const ScreenCaptureSourceDialog(this.sources, {super.key});
+  const ScreenCaptureSourceDialog(this.sources, this.onThumbnailChanged,
+      {super.key});
   final List<DesktopCapturerSource> sources;
+  final Stream<DesktopCapturerSource> onThumbnailChanged;
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -24,6 +27,7 @@ class ScreenCaptureSourceDialog extends StatelessWidget {
           itemBuilder: (context, index) {
             return ScreenCaptureSourceWidget(
               sources[index],
+              onThumbnailChanged,
               onTap: () => Navigator.of(context).pop(sources[index]),
             );
           },
