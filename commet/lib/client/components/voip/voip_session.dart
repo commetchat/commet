@@ -50,6 +50,8 @@ abstract class VoipSession {
 
   Future<void> hangUpCall();
 
+  Stream<VoipState> get onConnectionStateChanged;
+
   Stream<void> get onStateChanged;
 
   Future<void> setMicrophoneMute(bool state);

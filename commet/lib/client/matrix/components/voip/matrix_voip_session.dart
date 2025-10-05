@@ -25,9 +25,16 @@ class MatrixVoipSession implements VoipSession {
 
   ScreenCaptureSource? currentScreenshare;
 
+  final StreamController<VoipState> _onConnectionChanged =
+      StreamController.broadcast();
+
+  @override
+  Stream<VoipState> get onConnectionStateChanged => _onConnectionChanged.stream;
+
   MatrixVoipSession(this.session, MatrixClient this.client) {
     session.onCallStateChanged.stream.listen((event) {
       _onStateChanged.add(null);
+      _onConnectionChanged.add(state);
     });
 
     initStreams();

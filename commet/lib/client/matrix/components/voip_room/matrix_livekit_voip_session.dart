@@ -36,6 +36,11 @@ class MatrixLivekitVoipSession implements VoipSession {
   }
 
   StreamController _stateChanged = StreamController.broadcast();
+  final StreamController<VoipState> _onConnectionChanged =
+      StreamController.broadcast();
+
+  @override
+  Stream<VoipState> get onConnectionStateChanged => _onConnectionChanged.stream;
 
   void addInitialStreams() {
     if (livekitRoom.localParticipant != null) {
@@ -158,6 +163,7 @@ class MatrixLivekitVoipSession implements VoipSession {
 
     state = VoipState.ended;
     _stateChanged.add(());
+    _onConnectionChanged.add(state);
 
     clientManager?.callManager.onSessionEnded(this);
   }

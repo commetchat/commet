@@ -89,7 +89,7 @@ class CallManager {
       joinCallSound();
     }
 
-    event.onStateChanged.listen((_) => onCallStateChanged(event));
+    event.onConnectionStateChanged.listen((_) => onCallStateChanged(event));
   }
 
   void onSessionEnded(VoipSession event) {
