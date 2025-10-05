@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:commet/client/matrix/components/voip/matrix_voip_session.dart';
 import 'package:commet/utils/list_extension.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:matrix/matrix.dart';
 
@@ -13,17 +13,24 @@ class MatrixVoipStream implements VoipStream {
 
   RTCVideoRenderer? renderer;
 
+  StreamController _onChanged = StreamController.broadcast();
+
+  @override
+  Stream<void> get onStreamChanged => _onChanged.stream;
+
   MatrixVoipStream(this.stream, this.session) {
     initRenderer();
-    stream.onStreamChanged.stream.listen(onStreamChanged);
+    stream.onStreamChanged.stream.listen(_onStreamChanged);
   }
 
-  void onStreamChanged(MediaStream event) {
+  void _onStreamChanged(MediaStream event) {
     if (renderer != null) {
       renderer!.srcObject = event;
     } else {
       initRenderer();
     }
+
+    _onChanged.add(());
   }
 
   Future<void> initRenderer() async {
@@ -116,7 +123,7 @@ class MatrixVoipStream implements VoipStream {
   @override
   Widget? buildVideoRenderer(BoxFit fit, Key key) {
     if (renderer == null) {
-      return const Placeholder();
+      return CircularProgressIndicator();
     }
 
     if (fit == BoxFit.contain) {

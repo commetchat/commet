@@ -39,6 +39,7 @@ enum ClientConnectionStatus {
 enum RoomType {
   defaultRoom,
   photoAlbum,
+  voipRoom,
 }
 
 class CreateRoomArgs {

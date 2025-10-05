@@ -50,13 +50,13 @@ class CallManager {
       return;
     }
 
-    voip.onSessionStarted.listen(_onClientSessionStarted);
-    voip.onSessionEnded.listen(_onSessionEnded);
+    voip.onSessionStarted.listen(onClientSessionStarted);
+    voip.onSessionEnded.listen(onSessionEnded);
   }
 
   void _onClientRemoved(StalePeerInfo event) {}
 
-  void _onClientSessionStarted(VoipSession event) {
+  void onClientSessionStarted(VoipSession event) {
     var room = event.client.getRoom(event.roomId);
     currentSessions.add(event);
 
@@ -78,20 +78,28 @@ class CallManager {
                   .getComponent<DirectMessagesComponent>()
                   ?.isRoomDirectMessage(room!) ==
               true));
-    } else {
+    }
+
+    if (event.state == VoipState.outgoing) {
       startOutgoingTone();
     }
 
-    event.onStateChanged.listen((_) => onCallStateChanged(event));
+    if (event.state == VoipState.connected) {
+      joinCallSound();
+    }
+
+    event.onConnectionStateChanged.listen((_) => onCallStateChanged(event));
   }
 
-  void _onSessionEnded(VoipSession event) {
+  void onSessionEnded(VoipSession event) {
     currentSessions
         .removeWhere((element) => element.sessionId == event.sessionId);
 
     if (currentSessions.where((e) => e.state == VoipState.incoming).isEmpty) {
       stopRingtone();
     }
+
+    endCallSound();
   }
 
   VoipSession? getCallInRoom(Client client, String roomId) {
@@ -106,7 +114,7 @@ class CallManager {
       return;
     }
 
-    player ??= Player();
+    player = getSoundPlayer();
     player?.open(Media("asset:///assets/sound/ringtone_in.ogg"));
   }
 
@@ -115,9 +123,21 @@ class CallManager {
       return;
     }
 
-    player ??= Player();
+    player = getSoundPlayer();
     player?.open(Media("asset:///assets/sound/ringtone_out.ogg"));
     player?.setPlaylistMode(PlaylistMode.loop);
+  }
+
+  void joinCallSound() {
+    player = getSoundPlayer();
+    player?.open(Media("asset:///assets/sound/joined_call.ogg"));
+    player?.setPlaylistMode(PlaylistMode.none);
+  }
+
+  void endCallSound() {
+    player = getSoundPlayer();
+    player?.open(Media("asset:///assets/sound/left_call.ogg"));
+    player?.setPlaylistMode(PlaylistMode.none);
   }
 
   void stopRingtone() {
@@ -131,5 +151,15 @@ class CallManager {
         event.state == VoipState.connecting) {
       stopRingtone();
     }
+
+    if (event.state == VoipState.connected) {
+      joinCallSound();
+    }
+  }
+
+  Player getSoundPlayer() {
+    player ??= Player();
+    player!.setVolume(90);
+    return player!;
   }
 }

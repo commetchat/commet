@@ -11,6 +11,8 @@ abstract class VoipStream {
 
   Widget? buildVideoRenderer(BoxFit fit, Key key);
 
+  Stream<void> get onStreamChanged;
+
   String get streamUserId;
 
   String get label;

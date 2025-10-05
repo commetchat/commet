@@ -249,6 +249,7 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
     var roomModes = [
       RoomType.defaultRoom,
       if (Experiments.photoAlbumRooms && widget.roomMode) RoomType.photoAlbum,
+      if (Experiments.elementCall && widget.roomMode) RoomType.voipRoom,
     ];
 
     return SizedBox(
@@ -287,6 +288,7 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
                 itemBuilder: (item) => tiamat.Text(switch (item) {
                   RoomType.defaultRoom => "Chat Room",
                   RoomType.photoAlbum => "Photo Album Room",
+                  RoomType.voipRoom => "Voice Room",
                 }),
               ),
             Padding(

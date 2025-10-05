@@ -19,10 +19,10 @@ class VoipFullscreenStreamView extends StatefulWidget {
 
 class _VoipFullscreenStreamViewState extends State<VoipFullscreenStreamView> {
   RTCScreenShareAnnotationSession? annotationSession;
-
+  RTCScreenShareAnnotationComponent? component;
   @override
   void initState() {
-    var component =
+    component =
         widget.session.client.getComponent<RTCScreenShareAnnotationComponent>();
 
     annotationSession = component?.getExistingSession(widget.session);
@@ -59,18 +59,17 @@ class _VoipFullscreenStreamViewState extends State<VoipFullscreenStreamView> {
         Padding(
           padding: const EdgeInsets.all(8),
           child: Wrap(spacing: 5, children: [
-            tiamat.CircleButton(
-              icon: Icons.mouse,
-              onPressed: () async {
-                var component = widget.session.client
-                    .getComponent<RTCScreenShareAnnotationComponent>();
-                var session =
-                    await component?.getOrCreateSession(widget.session);
-                setState(() {
-                  annotationSession = session;
-                });
-              },
-            )
+            if (component != null)
+              tiamat.CircleButton(
+                icon: Icons.mouse,
+                onPressed: () async {
+                  var session =
+                      await component?.getOrCreateSession(widget.session);
+                  setState(() {
+                    annotationSession = session;
+                  });
+                },
+              )
           ]),
         )
       ],
