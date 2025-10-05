@@ -31,6 +31,8 @@ class MatrixLivekitVoipSession implements VoipSession {
     listener.on(onLocalTrackPublished);
     listener.on(onLocalTrackUnpublished);
     listener.on(onTrackStreamEvent);
+    listener.on(onTrackMutedEvent);
+    listener.on(onTrackUnmutedEvent);
   }
 
   StreamController _stateChanged = StreamController.broadcast();
@@ -75,6 +77,29 @@ class MatrixLivekitVoipSession implements VoipSession {
         t.onStreamUpdatedEvent(event);
       }
     }
+  }
+
+  void onTrackMutedEvent(lk.TrackMutedEvent event) {
+    if (event.publication.track?.mediaType ==
+        RTCRtpMediaType.RTCRtpMediaTypeVideo) {
+      streams.removeWhere((e) =>
+          (e as MatrixLivekitVoipStream).publication.sid ==
+          event.publication.sid);
+    }
+
+    _stateChanged.add(());
+  }
+
+  void onTrackUnmutedEvent(lk.TrackUnmutedEvent event) {
+    final participant =
+        event.participant.identity.split(":").getRange(0, 2).join(":");
+
+    if (streams.any((e) => e.streamId == event.publication.sid)) {
+      return;
+    }
+
+    streams.add(MatrixLivekitVoipStream(event.publication, participant));
+    _stateChanged.add(());
   }
 
   void onTrackPublished(lk.TrackPublishedEvent event) {
