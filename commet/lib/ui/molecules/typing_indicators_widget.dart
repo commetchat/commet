@@ -55,6 +55,7 @@ class _TypingIndicatorsWidgetState extends State<TypingIndicatorsWidget> {
   @override
   void dispose() {
     timer?.cancel();
+    sub?.cancel();
     super.dispose();
   }
 
