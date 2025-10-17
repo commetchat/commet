@@ -298,7 +298,7 @@ class MessageInputState extends State<MessageInput> {
         .isLogicalKeyPressed(LogicalKeyboardKey.keyV)) {
       if (HardwareKeyboard.instance.isControlPressed) {
         readImageFromClipboard();
-        return KeyEventResult.handled;
+        return KeyEventResult.ignored;
       }
     }
 
