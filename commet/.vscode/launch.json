@@ -46,8 +46,10 @@
                 "PLATFORM=web",
                 "--dart-define",
                 "BUILD_MODE=debug",
-                "--web-renderer",
-                "html"
+                "--web-port",
+                "36347",
+                "--web-header=Cross-Origin-Opener-Policy=same-origin",
+                "--web-header=Cross-Origin-Embedder-Policy=require-corp"
             ],
         },
         {
@@ -58,7 +60,11 @@
                 "--dart-define",
                 "PLATFORM=web",
                 "--dart-define",
-                "BUILD_MODE=release"
+                "BUILD_MODE=release",
+                "--web-port",
+                "36347",
+                "--web-header=Cross-Origin-Opener-Policy=same-origin",
+                "--web-header=Cross-Origin-Embedder-Policy=require-corp"
             ],
             "flutterMode": "release"
         },
