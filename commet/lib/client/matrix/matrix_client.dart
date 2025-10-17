@@ -202,7 +202,8 @@ class MatrixClient extends Client {
       if (!vod.isInitialized()) {
         throw Exception("Vodozemac failed to initialize!");
       }
-    } catch (exception) {
+    } catch (exception, trace) {
+      Log.onError(exception, trace, content: "Failed to initialize vodozemac");
       clientManager.alertManager.addAlert(Alert(
         AlertType.warning,
         titleGetter: () => matrixClientEncryptionWarningTitle,
