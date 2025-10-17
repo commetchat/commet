@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -74,6 +75,14 @@
             android:name="id.flutter.flutter_background_service.BackgroundService"
             android:foregroundServiceType="dataSync"
         />
+
+        <service
+            android:name="de.julianassmann.flutter_background.IsolateHolderService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="mediaProjection" 
+        />
+        
         <receiver android:exported="false"  android:enabled="true"  android:name=".UnifiedPushReceiver">
             <intent-filter>
                 <action android:name="org.unifiedpush.flutter.connector.MESSAGE"/>

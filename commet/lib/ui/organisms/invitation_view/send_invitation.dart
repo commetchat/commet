@@ -57,7 +57,7 @@ class _SendInvitationWidgetState extends State<SendInvitationWidget> {
               maxLines: 1,
               onChanged: onSearchTextChanged,
             ),
-            if (isSearching || searchResults != null)
+            if (isSearching || searchResults?.isNotEmpty == true)
               SizedBox(
                   height: 300,
                   child: isSearching
@@ -75,6 +75,16 @@ class _SendInvitationWidgetState extends State<SendInvitationWidget> {
                             );
                           },
                         )),
+            if (!isSearching && searchResults?.isEmpty == true)
+              Column(
+                children: [
+                  tiamat.Text("Could not find any users"),
+                  tiamat.Button(
+                    text: "Send invite",
+                    onTap: () => invitePeer(controller.text),
+                  )
+                ],
+              ),
             if (showRecommendations && recommended.isNotEmpty)
               Column(
                 children: [

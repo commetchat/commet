@@ -57,7 +57,7 @@ class ComponentRegistry {
       MatrixReadReceiptComponent(client, room),
       MatrixTypingIndicatorsComponent(client, room),
       MatrixPinnedMessagesComponent(client, room),
-      MatrixVoipRoomComponent(client, room),
+      if (Experiments.elementCall) MatrixVoipRoomComponent(client, room),
       if (Experiments.photoAlbumRooms)
         MatrixPhotoAlbumRoomComponent(client, room)
     ];

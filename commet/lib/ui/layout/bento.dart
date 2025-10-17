@@ -11,6 +11,10 @@ class BentoLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
+        if (children.length == 0) {
+          return Container();
+        }
+
         var gridSize = sqrt(children.length).ceil();
         var aspect = constraints.maxWidth / constraints.maxHeight;
 
