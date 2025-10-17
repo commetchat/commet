@@ -32,7 +32,10 @@ class _RoomTextButtonState extends State<RoomTextButton> {
       if (voipRoom?.isVoipRoom == true)
         voipRoom!.onParticipantsChanged.listen(onVoipParticipantsChanged),
     ];
-    voipRoomParticipants = voipRoom?.getCurrentParticipants();
+
+    if (voipRoom?.isVoipRoom == true) {
+      voipRoomParticipants = voipRoom?.getCurrentParticipants();
+    }
 
     if (voipRoomParticipants?.isNotEmpty == true) {
       for (var participant in voipRoomParticipants!) {
