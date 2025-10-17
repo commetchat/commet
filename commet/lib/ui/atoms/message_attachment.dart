@@ -62,13 +62,24 @@ class _MessageAttachmentState extends State<MessageAttachment> {
               color: Colors.transparent,
               child: ConstrainedBox(
                 constraints: BoxConstraints(
-                    maxHeight: 200, minHeight: 80, maxWidth: 500),
+                    maxHeight: 200, minHeight: 40, maxWidth: 500, minWidth: 40),
                 child: InkWell(
                   onTap: fullscreenAttachment,
-                  child: Image(
-                    image: attachment.image,
-                    filterQuality: FilterQuality.medium,
+                  child: FittedBox(
                     fit: BoxFit.fitWidth,
+                    child: SizedBox(
+                      width: attachment.width ?? 500,
+                      height: attachment.height ?? 500,
+                      child: Image(
+                        image: attachment.image,
+                        filterQuality: FilterQuality.medium,
+                        // if we know the height, its safe to fill as it wont appear stretched
+                        fit: attachment.width != null &&
+                                attachment.height != null
+                            ? BoxFit.fill
+                            : BoxFit.fitWidth,
+                      ),
+                    ),
                   ),
                 ),
               ))),

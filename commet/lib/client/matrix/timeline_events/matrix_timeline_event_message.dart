@@ -119,7 +119,7 @@ class MatrixTimelineEventMessage extends MatrixTimelineEvent
         attachment = ImageAttachment(
             MatrixMxcImage(event.attachmentMxcUrl!, mx,
                 blurhash: event.attachmentBlurhash,
-                doThumbnail: true,
+                doThumbnail: event.hasThumbnail,
                 doFullres: true,
                 thumbnailHeight: event.thumbnailHeight != null
                     ? min(700, event.thumbnailHeight!.toInt())
