@@ -1,6 +1,7 @@
 import 'package:commet/client/components/component.dart';
 import 'package:commet/client/components/room_component.dart';
 import 'package:commet/client/components/space_component.dart';
+import 'package:commet/client/matrix/components/account_switch_prefix/matrix_account_switch_prefix.dart';
 import 'package:commet/client/matrix/components/command_component/matrix_command_component.dart';
 import 'package:commet/client/matrix/components/direct_messages/matrix_direct_messages_component.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_emoticon_component.dart';
@@ -46,6 +47,7 @@ class ComponentRegistry {
       MatrixEventSearchComponent(client),
       MatrixMessageEffectsComponent(client),
       MatrixUserPresenceComponent(client),
+      MatrixAccountSwitchComponent(client),
     ];
   }
 
