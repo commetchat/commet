@@ -57,11 +57,10 @@ class _AdaptiveTextDialogWidgetState extends State<AdaptiveTextDialogWidget> {
           children: [
             if (widget.description != null)
               SizedBox(
-                width: 200,
-                child: Flexible(
-                    child: tiamat.Text.labelLow(
+                width: 400,
+                child: tiamat.Text.labelLow(
                   widget.description!,
-                )),
+                ),
               ),
             SizedBox(
               height: 10,
@@ -73,11 +72,9 @@ class _AdaptiveTextDialogWidgetState extends State<AdaptiveTextDialogWidget> {
             SizedBox(
               height: 10,
             ),
-            Flexible(
-              child: tiamat.Button(
-                text: "Submit",
-                onTap: () => Navigator.of(context).pop(controller.text),
-              ),
+            tiamat.Button(
+              text: "Submit",
+              onTap: () => Navigator.of(context).pop(controller.text),
             )
           ],
         ),
