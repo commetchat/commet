@@ -284,12 +284,18 @@ class MatrixThreadTimeline implements Timeline {
   void onMainTimelineEventChanged(int index) {
     var event = mainRoomTimeline.events[index];
     if (isEventInThisThread(event)) {
-      var index =
+      var originalIndex =
           events.indexWhere((element) => element.eventId == event.eventId);
 
-      events[index] = event;
-      if (index != -1) {
-        onChange.add(index);
+      var finalIndex = originalIndex;
+
+      if (finalIndex == -1) {
+        finalIndex = 0;
+      }
+
+      events[finalIndex] = event;
+      if (originalIndex != -1) {
+        onChange.add(finalIndex);
       }
     }
   }

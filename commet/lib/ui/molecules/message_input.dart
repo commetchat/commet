@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:commet/client/client.dart';
 import 'package:commet/client/components/gif/gif_component.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/platform_utils.dart';
@@ -54,6 +55,8 @@ class MessageInput extends StatefulWidget {
       this.availibleStickers,
       this.gifComponent,
       this.onReadReceiptsClicked,
+      this.findOverrideClient,
+      this.onTapOverrideClient,
       this.sendGif,
       this.size = 35,
       this.iconScale = 0.5,
@@ -64,7 +67,8 @@ class MessageInput extends StatefulWidget {
   final double size;
   final double iconScale;
   final bool isRoomE2EE;
-  final MessageInputSendResult Function(String message)? onSendMessage;
+  final MessageInputSendResult Function(String message,
+      {Client? overrideClient})? onSendMessage;
   final Widget? readIndicator;
   final String? relatedEventBody;
   final String? relatedEventSenderName;
@@ -87,6 +91,8 @@ class MessageInput extends StatefulWidget {
   final Function(String currentText)? onTextUpdated;
   final void Function()? cancelReply;
   final void Function()? editLastMessage;
+  final Client? Function(String input)? findOverrideClient;
+  final void Function(Client overrideClient)? onTapOverrideClient;
   final void Function(PendingFileAttachment attachment)? addAttachment;
   final void Function(PendingFileAttachment attachment)? removeAttachment;
   final List<AutofillSearchResult> Function(String text)? processAutofill;
@@ -106,6 +112,8 @@ class MessageInputState extends State<MessageInput> {
   bool showEmotePicker = false;
   bool hasEmotePickerOpened = false;
   List<AutofillSearchResult>? autoFillResults;
+  Client? senderOverride;
+
   int? autoFillSelection;
   (int, int)? autoFillRange;
   ScrollController autofillScrollController = ScrollController();
@@ -150,6 +158,10 @@ class MessageInputState extends State<MessageInput> {
   void onTextfieldUpdated(String value) {
     widget.onTextUpdated?.call(controller.text);
     var range = getAutofillTextRange();
+
+    setState(() {
+      senderOverride = widget.findOverrideClient?.call(controller.text);
+    });
 
     if (range.$1 == -1 || range.$2 == -1) {
       return;
@@ -240,7 +252,8 @@ class MessageInputState extends State<MessageInput> {
       showEmotePicker = false;
     });
 
-    widget.onSendMessage?.call(controller.text.trim());
+    widget.onSendMessage
+        ?.call(controller.text.trim(), overrideClient: senderOverride);
   }
 
   void toggleEmojiOverlay() {
@@ -431,17 +444,22 @@ class MessageInputState extends State<MessageInput> {
                 ),
               ),
               SizedBox(
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const SizedBox(height: 30),
-                      if (autoFillResults != null) autofillResultsList(),
-                      if (autoFillResults == null)
-                        const Expanded(child: SizedBox()),
-                      if (widget.readIndicator != null &&
-                          autoFillResults?.isEmpty != false)
-                        readReceipts()
-                    ]),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 2, 0, 0),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const SizedBox(height: 30),
+                        if (senderOverride != null) senderOverrideView(),
+                        if (autoFillResults != null) autofillResultsList(),
+                        if (autoFillResults == null)
+                          const Expanded(child: SizedBox()),
+                        if (widget.readIndicator != null &&
+                            autoFillResults?.isEmpty != false)
+                          readReceipts()
+                      ]),
+                ),
               ),
               if (widget.availibleEmoticons != null &&
                   widget.availibleStickers != null)
@@ -452,6 +470,55 @@ class MessageInputState extends State<MessageInput> {
                   child: ClipRect(child: buildEmojiPicker()),
                 )
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget senderOverrideView() {
+    final profile = senderOverride?.self;
+    if (profile == null) {
+      return Container();
+    }
+
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: SizedBox(
+        height: 30,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(8, 2, 2, 2),
+          child: Material(
+            borderRadius: BorderRadius.circular(8),
+            clipBehavior: Clip.hardEdge,
+            color: Theme.of(context).colorScheme.secondaryContainer,
+            child: InkWell(
+              onTap: () {
+                widget.onTapOverrideClient?.call(senderOverride!);
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(2),
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 5,
+                    ),
+                    tiamat.Avatar(
+                        radius: 10,
+                        image: profile.avatar,
+                        placeholderColor: profile.defaultColor,
+                        placeholderText: profile.displayName),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    tiamat.Text.labelLow("Sending as: ${profile.displayName}"),
+                    SizedBox(
+                      width: 5,
+                    )
+                  ],
+                ),
+              ),
+            ),
           ),
         ),
       ),

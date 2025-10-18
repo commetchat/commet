@@ -1,3 +1,4 @@
+import 'package:commet/client/components/account_switch_prefix/account_switch_prefix.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
@@ -9,6 +10,7 @@ import 'package:commet/ui/molecules/typing_indicators_widget.dart';
 import 'package:commet/ui/organisms/chat/chat.dart';
 import 'package:commet/ui/organisms/particle_player/particle_player.dart';
 import 'package:commet/utils/autofill_utils.dart';
+import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -95,8 +97,17 @@ class ChatView extends StatelessWidget {
         attachments: state.attachments,
         interactionType: state.interactionType,
         gifComponent: state.gifs,
-        onSendMessage: (message) {
-          state.sendMessage(message);
+        onSendMessage: (message, {overrideClient}) {
+          if (overrideClient != null) {
+            final processedText = state.room.client
+                .getComponent<AccountSwitchPrefix>()
+                ?.removePrefix(message, state.room);
+
+            if (processedText != null) {
+              message = processedText;
+            }
+          }
+          state.sendMessage(message, overrideClient: overrideClient);
           return MessageInputSendResult.success;
         },
         onTextUpdated: state.onInputTextUpdated,
@@ -114,6 +125,24 @@ class ChatView extends StatelessWidget {
         availibleStickers: state.emoticons?.availableStickers,
         sendSticker: state.sendSticker,
         sendGif: state.sendGif,
+        findOverrideClient: (input) => state.room.client
+            .getComponent<AccountSwitchPrefix>()
+            ?.getPrefixedAccount(input, state.room)
+            ?.$1,
+        onTapOverrideClient: (overrideClient) {
+          EventBus.openRoom
+              .add((state.room.identifier, overrideClient.identifier));
+
+          if (state.isThread) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              EventBus.openThread.add((
+                overrideClient.identifier,
+                state.room.identifier,
+                state.threadId!
+              ));
+            });
+          }
+        },
         editLastMessage: state.editLastMessage,
         hintText: state.room.permissions.canSendMessage
             ? state.room.isE2EE

@@ -85,6 +85,8 @@ class ChatState extends State<Chat> {
 
   bool get isThread => widget.threadId != null;
 
+  String? get threadId => widget.threadId;
+
   bool get isBubble => widget.isBubble;
 
   @override
@@ -172,7 +174,7 @@ class ChatState extends State<Chat> {
     });
   }
 
-  void sendMessage(String message) async {
+  void sendMessage(String message, {Client? overrideClient}) async {
     setState(() {
       processing = true;
     });
@@ -200,20 +202,37 @@ class ChatState extends State<Chat> {
       }
     }
 
-    var processedAttachments = await room.processAttachments(attachments);
+    var targetRoom = room;
+    var targetThread = threadsComponent;
 
     setState(() {
       processing = false;
     });
 
-    var component = room.client.getComponent<CommandComponent>();
+    if (overrideClient != null) {
+      var newRoom = overrideClient.getRoom(targetRoom.identifier);
+      if (newRoom != null) {
+        targetRoom = newRoom;
+        targetThread = targetRoom.client.getComponent<ThreadsComponent>();
+        Log.d("Overriding room for client: ${overrideClient}");
+      } else {
+        Log.e(
+            "Failed to find correct room to send event for override client. Cancelling");
+
+        return;
+      }
+    }
+
+    var processedAttachments = await targetRoom.processAttachments(attachments);
+
+    var component = targetRoom.client.getComponent<CommandComponent>();
 
     if (component?.isExecutable(message) == true) {
       doCommand(component, message);
     } else if (isThread) {
-      threadsComponent!.sendMessage(
+      targetThread!.sendMessage(
           threadRootEventId: widget.threadId!,
-          room: room,
+          room: targetRoom,
           message: message,
           inReplyTo: interactionType == EventInteractionType.reply
               ? interactingEvent
@@ -223,7 +242,7 @@ class ChatState extends State<Chat> {
               : null,
           processedAttachments: processedAttachments);
     } else {
-      room.sendMessage(
+      targetRoom.sendMessage(
           message: message,
           inReplyTo: interactionType == EventInteractionType.reply
               ? interactingEvent
