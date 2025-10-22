@@ -1,9 +1,12 @@
 import 'dart:async';
 
+import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
+import 'package:commet/client/components/account_switch_prefix/account_switch_prefix.dart';
 import 'package:commet/client/stale_info.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/molecules/user_panel.dart';
+import 'package:commet/ui/navigation/adaptive_text_dialog.dart';
 import 'package:commet/ui/pages/login/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -119,6 +122,7 @@ class _AccountManagementSettingsTabState
         return SizeTransition(
           sizeFactor: animation,
           child: accountListItem(
+              client: clients[index],
               displayName: clients[index].self!.displayName,
               avatar: clients[index].self!.avatar,
               detail: clients[index].self!.identifier,
@@ -132,6 +136,7 @@ class _AccountManagementSettingsTabState
 
   Widget accountListItem(
       {required String displayName,
+      Client? client,
       ImageProvider? avatar,
       String? detail,
       String? internalId,
@@ -144,27 +149,66 @@ class _AccountManagementSettingsTabState
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(8.0, 4, 12, 4),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
+      child: Material(
+        color: Colors.transparent,
+        clipBehavior: Clip.hardEdge,
+        borderRadius: BorderRadius.circular(8),
+        child: tiamat.ContextMenu(
+          modal: true,
+          items: client == null
+              ? []
+              : [
+                  if (_numClients > 1)
+                    tiamat.ContextMenuItem(
+                        text: "Set Prefix",
+                        onPressed: () {
+                          setPrefixDialog(client);
+                        })
+                ],
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              UserPanelView(
-                displayName: displayName,
-                avatar: avatar,
-                detail: detailString,
+              Column(
+                children: [
+                  UserPanelView(
+                    displayName: displayName,
+                    avatar: avatar,
+                    detail: detailString,
+                  ),
+                ],
               ),
+              tiamat.Button.danger(
+                text: promptLogoutSingleAccount,
+                onTap: () {
+                  onLogoutClicked?.call();
+                },
+              )
             ],
           ),
-          tiamat.Button.danger(
-            text: promptLogoutSingleAccount,
-            onTap: () {
-              onLogoutClicked?.call();
-            },
-          )
-        ],
+        ),
       ),
     );
+  }
+
+  Future<void> setPrefixDialog(Client client) async {
+    final component = client.getComponent<AccountSwitchPrefix>();
+
+    if (component == null) {
+      return;
+    }
+
+    final newPrefix = await AdaptiveTextDialog.show(
+        title: "Set Prefix",
+        placeholder: "Enter Prefix",
+        description:
+            "When more than one of your logged in accounts share the same room, you can type this prefix to quickly send messages from this account",
+        context,
+        defaultText: component.clientPrefix);
+    if (newPrefix == null) {
+      return;
+    }
+
+    component.setClientPrefix(newPrefix);
   }
 
   Padding addAccountButton(BuildContext context) {
