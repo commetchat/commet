@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:commet/client/attachment.dart';
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/account_switch_prefix/account_switch_prefix.dart';
 import 'package:commet/client/components/command/command_component.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/components/emoticon/emoticon_component.dart';
@@ -350,6 +351,11 @@ class ChatState extends State<Chat> {
 
     var component = room.client.getComponent<CommandComponent>();
     if (component?.isPossiblyCommand(currentText) == true) {
+      return;
+    }
+
+    var prefixComp = room.client.getComponent<AccountSwitchPrefix>();
+    if (prefixComp?.isPossiblyUsingPrefix(currentText) == true) {
       return;
     }
 

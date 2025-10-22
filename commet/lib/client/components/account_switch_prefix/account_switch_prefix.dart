@@ -9,4 +9,6 @@ abstract class AccountSwitchPrefix<T extends Client> implements Component<T> {
   String removePrefix(String string, Room currentRoom);
 
   Future<void> setClientPrefix(String? prefix);
+
+  bool isPossiblyUsingPrefix(String currentText);
 }

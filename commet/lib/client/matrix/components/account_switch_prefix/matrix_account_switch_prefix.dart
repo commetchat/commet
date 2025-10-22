@@ -81,4 +81,28 @@ class MatrixAccountSwitchComponent extends AccountSwitchPrefix<MatrixClient> {
     await client.matrixClient
         .setAccountData(client.matrixClient.userID!, accountDataKey, content);
   }
+
+  @override
+  bool isPossiblyUsingPrefix(String currentText) {
+    for (var otherClient in clientManager!.clients) {
+      if (otherClient is! MatrixClient) continue;
+
+      var component = otherClient.getComponent<AccountSwitchPrefix>();
+      if (component == null) continue;
+
+      if (component.clientPrefix == null) continue;
+
+      if (currentText.length >= component.clientPrefix!.length) {
+        if (currentText.startsWith(component.clientPrefix!)) {
+          return true;
+        }
+      } else {
+        if (component.clientPrefix!.startsWith(currentText)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
 }
