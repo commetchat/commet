@@ -18,6 +18,7 @@ import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_t
 import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_url_previews.dart';
 import 'package:commet/ui/molecules/timeline_events/layouts/timeline_event_layout_message.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_layout.dart';
+import 'package:commet/utils/text_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -251,20 +252,11 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
   }
 
   String timestampToString(DateTime time) {
-    var use24 = MediaQuery.of(context).alwaysUse24HourFormat;
-
     if (widget.detailed) {
-      if (use24) {
-        return intl.DateFormat.yMMMMd().add_Hms().format(time.toLocal());
-      } else {
-        return intl.DateFormat.yMMMMd().add_jms().format(time.toLocal());
-      }
+      return TextUtils.timestampToLocalizedTimeSpecific(time, context);
     } else {
-      if (use24) {
-        return intl.DateFormat.Hm().format(time.toLocal());
-      } else {
-        return intl.DateFormat.jm().format(time.toLocal());
-      }
+      return MaterialLocalizations.of(context)
+          .formatTimeOfDay(TimeOfDay.fromDateTime(time));
     }
   }
 
