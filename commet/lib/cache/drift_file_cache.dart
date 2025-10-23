@@ -142,6 +142,11 @@ class DriftFileCache implements FileCache {
 
     isInit = true;
 
+    var tempDir = await getTemporaryDirectory();
+    var temp = p.join(tempDir.path, "chat.commet.app", "file_cache");
+
+    Log.i("Cache: $temp");
+
     final dir = p.join(await AppConfig.getDatabasePath(), "app");
     var directory = Directory(dir);
     if (!await directory.exists()) {
