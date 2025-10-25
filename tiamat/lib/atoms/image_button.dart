@@ -265,6 +265,7 @@ class ImageButton extends StatefulWidget {
       this.placeholderColor,
       this.placeholderText,
       this.backgroundColor,
+      this.border,
       required this.size,
       this.icon});
   final void Function()? onTap;
@@ -274,6 +275,7 @@ class ImageButton extends StatefulWidget {
   final Color? backgroundColor;
   final String? placeholderText;
   final Color? placeholderColor;
+  final BoxBorder? border;
   final IconData? icon;
   final bool doShadow;
 
@@ -321,24 +323,32 @@ class _ImageButtonState extends State<ImageButton> {
       builder: (context, value, child) {
         return Container(
           decoration: widget.doShadow
-              ? BoxDecoration(borderRadius: value, boxShadow: [
-                  BoxShadow(
-                      color: Theme.of(context).colorScheme.shadow,
-                      blurRadius: 10)
-                ])
+              ? BoxDecoration(
+                  borderRadius: value,
+                  border: widget.border,
+                  boxShadow: [
+                      BoxShadow(
+                          color: Theme.of(context).colorScheme.shadow,
+                          blurRadius: 10)
+                    ])
               : widget.icon != null && widget.image == null
                   ? BoxDecoration(
                       borderRadius: value.add(BorderRadius.circular(2)),
-                      border: Border.all(
-                          color: Theme.of(context).colorScheme.outline,
-                          width: 1.5),
+                      border: widget.border ??
+                          Border.all(
+                              color: Theme.of(context).colorScheme.outline,
+                              width: 1.5),
                     )
                   : null,
-          child: ClipRRect(
-            borderRadius: value,
-            child: Material(
-              child: child,
-              color: widget.backgroundColor,
+          child: DecoratedBox(
+            decoration:
+                BoxDecoration(border: widget.border, borderRadius: value),
+            child: ClipRRect(
+              borderRadius: value,
+              child: Material(
+                color: widget.backgroundColor,
+                child: child,
+              ),
             ),
           ),
         );

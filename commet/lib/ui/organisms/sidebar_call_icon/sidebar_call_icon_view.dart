@@ -27,17 +27,37 @@ class SidebarCallIconView extends StatelessWidget {
       child: AspectRatio(
         aspectRatio: 1,
         child: pickAnimation(
-          child: ImageButton(
-            size: width,
-            placeholderColor: color,
-            placeholderText: roomName,
-            onTap: onTap,
-            image: avatar,
-            // TODO: REIMPLEMENT BORDER
-            // boxBorder: Border.all(
-            // color: getBorderColor(context),
-            // width: 3,
-            // strokeAlign: BorderSide.strokeAlignCenter),
+          child: Stack(
+            alignment: AlignmentGeometry.bottomRight,
+            children: [
+              ImageButton(
+                size: width,
+                placeholderColor: color,
+                placeholderText: roomName,
+                onTap: onTap,
+                image: avatar,
+                border: Border.all(
+                    color: getBorderColor(context),
+                    width: 8,
+                    strokeAlign: BorderSide.strokeAlignCenter),
+              ),
+              MouseRegion(
+                opaque: false,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Theme.of(context).colorScheme.secondaryContainer),
+                  child: Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: Icon(
+                      Icons.call,
+                      color: Theme.of(context).colorScheme.onSecondaryContainer,
+                      size: 12,
+                    ),
+                  ),
+                ),
+              )
+            ],
           ),
         ),
       ),

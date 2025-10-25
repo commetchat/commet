@@ -1,12 +1,16 @@
+import 'dart:async';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class ScreenCaptureSourceWidget extends StatefulWidget {
-  const ScreenCaptureSourceWidget(this.source, {this.onTap, super.key});
+  const ScreenCaptureSourceWidget(this.source, this.onThumbnailChanged,
+      {this.onTap, super.key});
   final DesktopCapturerSource source;
-
+  final Stream<DesktopCapturerSource> onThumbnailChanged;
   final Function()? onTap;
 
   @override
@@ -15,13 +19,35 @@ class ScreenCaptureSourceWidget extends StatefulWidget {
 }
 
 class _ScreenCaptureSourceWidgetState extends State<ScreenCaptureSourceWidget> {
+  late List<StreamSubscription> subs;
+  Uint8List? thumbnailData = null;
+
   @override
   void initState() {
     super.initState();
 
-    widget.source.onThumbnailChanged.stream.listen((event) {
-      setState(() {});
-    });
+    subs = [
+      widget.source.onThumbnailChanged.stream.listen((event) {
+        setState(() {
+          thumbnailData = event;
+        });
+      }),
+      widget.onThumbnailChanged.listen((source) {
+        if (source.id == widget.source.id) {
+          setState(() {
+            thumbnailData ??= source.thumbnail;
+          });
+        }
+      })
+    ];
+  }
+
+  @override
+  void dispose() {
+    for (var sub in subs) {
+      sub.cancel();
+    }
+    super.dispose();
   }
 
   @override
@@ -54,8 +80,8 @@ class _ScreenCaptureSourceWidgetState extends State<ScreenCaptureSourceWidget> {
   }
 
   Widget buildImage() {
-    if (widget.source.thumbnail != null) {
-      return Image.memory(widget.source.thumbnail!);
+    if (thumbnailData != null) {
+      return Image.memory(thumbnailData!);
     } else {
       return const SizedBox(
         width: 200,

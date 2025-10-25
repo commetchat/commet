@@ -173,6 +173,16 @@ class _MatrixRoomPermissionsPageState extends State<MatrixRoomPermissionsPage> {
       name: "labelMatrixPermissionsBanUserDescription",
       desc: "Description for the permission to ban other users from the room");
 
+  String get labelMatrixPermissionsJoinCallTitle => Intl.message("Join Call",
+      name: "labelMatrixPermissionsJoinCallTitle",
+      desc: "Title for the permission to allow users to join a call in a room");
+
+  String get labelMatrixPermissionsJoinCallDescription => Intl.message(
+      "Allow users to join an ongoing call in this room",
+      name: "labelMatrixPermissionsJoinCallDescription",
+      desc:
+          "Description for the permission to allow users to join a call in a room");
+
   void initPermissions() {
     roles = [
       // MatrixRoomRoleEntry(
@@ -276,6 +286,20 @@ class _MatrixRoomPermissionsPageState extends State<MatrixRoomPermissionsPage> {
           powerLevel: 100,
           icon: Icons.gavel),
     ]);
+    bool isVoipRoom =
+        widget.room.getState(matrix.EventTypes.RoomCreate)?.content['type'] ==
+            "org.matrix.msc3417.call";
+    if (isVoipRoom) {
+      permissions.addAll([
+        MatrixRoomPermissionEntry(
+            key: "org.matrix.msc3401.call.member",
+            keyParent: "events",
+            title: labelMatrixPermissionsJoinCallTitle,
+            description: labelMatrixPermissionsJoinCallDescription,
+            icon: Icons.call,
+            powerLevel: 0),
+      ]);
+    }
   }
 
   @override

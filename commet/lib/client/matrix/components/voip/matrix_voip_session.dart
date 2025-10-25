@@ -3,9 +3,11 @@ import 'dart:async';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
+import 'package:commet/client/components/voip/webrtc_screencapture_source.dart';
 import 'package:commet/client/matrix/components/rtc_data_channel/matrix_rtc_data_channel_component.dart';
 import 'package:commet/client/matrix/components/voip/matrix_voip_stream.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
+import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
@@ -16,16 +18,29 @@ class MatrixVoipSession implements VoipSession {
   late Client client;
 
   final StreamController<void> _onStateChanged = StreamController.broadcast();
+  final StreamController<void> _onVolumeChanged = StreamController.broadcast();
 
   List<StatsReport>? stats;
 
   RTCDataChannel? channel;
 
-  DesktopCapturerSource? currentScreenshare;
+  ScreenCaptureSource? currentScreenshare;
+
+  final StreamController<VoipState> _onConnectionChanged =
+      StreamController.broadcast();
+
+  @override
+  Stream<VoipState> get onConnectionStateChanged => _onConnectionChanged.stream;
 
   MatrixVoipSession(this.session, MatrixClient this.client) {
     session.onCallStateChanged.stream.listen((event) {
       _onStateChanged.add(null);
+      _onConnectionChanged.add(state);
+    });
+
+    Timer.periodic(Duration(milliseconds: 200), (timer) {
+      if (state == VoipState.ended) timer.cancel();
+      _onVolumeChanged.add(());
     });
 
     initStreams();
@@ -126,24 +141,42 @@ class MatrixVoipSession implements VoipSession {
     return session.setLocalVideoMuted(!state);
   }
 
+  DateTime _lastUpdatedStats = DateTime.fromMicrosecondsSinceEpoch(0);
   @override
   Future<void> updateStats() async {
+    var now = DateTime.now();
+    var diff = now.difference(_lastUpdatedStats).inMilliseconds;
+    print(diff);
+    if (diff < 200) {
+      return;
+    }
+
     stats = await session.pc?.getStats();
+    _lastUpdatedStats = now;
   }
 
   @override
-  Future<void> setScreenShare(DesktopCapturerSource source) async {
-    var stream = await navigator.mediaDevices.getDisplayMedia({
-      'video': {
-        'deviceId': {'exact': source.id},
-        'mandatory': {'frameRate': 30.0}
-      }
-    });
+  Future<void> setScreenShare(ScreenCaptureSource source) async {
+    MediaStream? stream;
 
-    currentScreenshare = source;
+    if (source is WebrtcScreencaptureSource) {
+      stream = await navigator.mediaDevices.getDisplayMedia({
+        'video': {
+          'width': 1280,
+          'height': 720,
+          'deviceId': {'exact': source.source.id},
+          'mandatory': {'frameRate': 30.0}
+        }
+      });
+    }
 
-    await stopScreenshare();
-    session.addLocalStream(stream, matrix.SDPStreamMetadataPurpose.Screenshare);
+    if (stream != null) {
+      currentScreenshare = source;
+
+      await stopScreenshare();
+      session.addLocalStream(
+          stream, matrix.SDPStreamMetadataPurpose.Screenshare);
+    }
   }
 
   @override
@@ -218,4 +251,15 @@ class MatrixVoipSession implements VoipSession {
     streams.removeWhere((e) => e.streamId == event.stream?.id);
     _onStateChanged.add(null);
   }
+
+  @override
+  Future<ScreenCaptureSource?> pickScreenCapture(BuildContext context) async {
+    return WebrtcScreencaptureSource.showSelectSourcePrompt(context);
+  }
+
+  @override
+  double get generalAudioLevel => (remoteUserMediaStream?.audiolevel ?? 0);
+
+  @override
+  Stream<void> get onUpdateVolumeVisualizers => _onVolumeChanged.stream;
 }

@@ -1,10 +1,13 @@
 import 'dart:async';
 
+import 'package:commet/client/components/voip_room/voip_room_component.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/main.dart';
+import 'package:commet/ui/atoms/adaptive_context_menu.dart';
 import 'package:commet/ui/atoms/dot_indicator.dart';
 import 'package:commet/ui/atoms/notification_badge.dart';
 import 'package:flutter/material.dart';
+import 'package:tiamat/atoms/context_menu.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class RoomTextButton extends StatefulWidget {
@@ -19,23 +22,49 @@ class RoomTextButton extends StatefulWidget {
 }
 
 class _RoomTextButtonState extends State<RoomTextButton> {
-  StreamSubscription? sub;
+  late List<StreamSubscription> subs;
+  VoipRoomComponent? voipRoom;
+  List<String>? voipRoomParticipants;
 
   @override
   void initState() {
-    sub = widget.room.onUpdate.listen(onRoomUpdate);
+    voipRoom = widget.room.getComponent<VoipRoomComponent>();
+    subs = [
+      widget.room.onUpdate.listen(onRoomUpdate),
+      if (voipRoom?.isVoipRoom == true)
+        voipRoom!.onParticipantsChanged.listen(onVoipParticipantsChanged),
+    ];
+
+    if (voipRoom?.isVoipRoom == true) {
+      voipRoomParticipants = voipRoom?.getCurrentParticipants();
+    }
+
+    if (voipRoomParticipants?.isNotEmpty == true) {
+      for (var participant in voipRoomParticipants!) {
+        widget.room.fetchMember(participant).then((_) {
+          if (mounted) {
+            setState(() {});
+          }
+        });
+      }
+    }
+
     super.initState();
   }
 
   @override
   void dispose() {
-    sub?.cancel();
+    for (var sub in subs) {
+      sub.cancel();
+    }
     super.dispose();
   }
 
   void onRoomUpdate(void event) {
     setState(() {});
   }
+
+  static const double height = 37;
 
   @override
   Widget build(BuildContext context) {
@@ -55,9 +84,16 @@ class _RoomTextButtonState extends State<RoomTextButton> {
     bool shouldShowDefaultIcon = (!showRoomIcons && !useGenericIcons) ||
         (showRoomIcons && !useGenericIcons && widget.room.avatar == null);
 
-    return SizedBox(
-      height: 30,
+    var customBuilder = null;
+
+    if (voipRoomParticipants?.isNotEmpty == true) {
+      customBuilder = buildCallParticipants;
+    }
+
+    Widget result = SizedBox(
+      height: customBuilder == null ? height : null,
       child: tiamat.TextButton(
+        customBuilder: customBuilder,
         highlighted: widget.highlight,
         widget.room.displayName,
         icon: shouldShowDefaultIcon ? defaultIcon : null,
@@ -89,5 +125,60 @@ class _RoomTextButtonState extends State<RoomTextButton> {
                 : null,
       ),
     );
+
+    if (voipRoom?.isVoipRoom == true) {
+      result = AdaptiveContextMenu(items: [
+        if (preferences.developerMode)
+          ContextMenuItem(
+              text: "Clear Membership Status",
+              icon: Icons.call_end,
+              onPressed: () => voipRoom?.clearAllCallMembershipStatus())
+      ], child: result);
+    }
+
+    return result;
+  }
+
+  Widget buildCallParticipants(Widget child, BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(height: height, child: child),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(12, 0, 0, 4),
+          child: Column(
+            children: [
+              for (var participant in voipRoomParticipants!)
+                buildCallMember(participant),
+            ],
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget buildCallMember(String identifier) {
+    var color = Theme.of(context).colorScheme.secondary;
+
+    final member = voipRoom?.room.getMemberOrFallback(identifier);
+    if (member == null) {
+      return Placeholder();
+    }
+
+    return SizedBox(
+        height: height,
+        child: tiamat.TextButton(
+          member.displayName,
+          textColor: color,
+          avatar: member.avatar,
+          avatarPlaceholderColor: member.defaultColor,
+          avatarPlaceholderText: member.displayName,
+        ));
+  }
+
+  void onVoipParticipantsChanged(void event) {
+    setState(() {
+      voipRoomParticipants = voipRoom?.getCurrentParticipants();
+    });
   }
 }

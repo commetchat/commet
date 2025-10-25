@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 enum VoipState {
@@ -12,6 +13,8 @@ enum VoipState {
   outgoing,
   ended,
 }
+
+abstract class ScreenCaptureSource {}
 
 abstract class VoipSession {
   Client get client;
@@ -36,6 +39,8 @@ abstract class VoipSession {
 
   bool get isCameraEnabled;
 
+  double get generalAudioLevel;
+
   VoipStream? get remoteUserMediaStream;
 
   List<VoipStream> get streams;
@@ -47,13 +52,19 @@ abstract class VoipSession {
 
   Future<void> hangUpCall();
 
+  Stream<VoipState> get onConnectionStateChanged;
+
   Stream<void> get onStateChanged;
+
+  Stream<void> get onUpdateVolumeVisualizers;
 
   Future<void> setMicrophoneMute(bool state);
 
   Future<void> updateStats();
 
-  Future<void> setScreenShare(DesktopCapturerSource source);
+  Future<ScreenCaptureSource?> pickScreenCapture(BuildContext context);
+
+  Future<void> setScreenShare(ScreenCaptureSource source);
 
   Future<void> stopScreenshare();
 

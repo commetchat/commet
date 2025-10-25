@@ -165,6 +165,7 @@ class TextButton extends StatelessWidget {
       this.avatarRadius = 12,
       this.avatarPlaceholderColor,
       this.avatarPlaceholderText,
+      this.customBuilder,
       this.softwrap,
       this.footer});
   final String text;
@@ -177,6 +178,7 @@ class TextButton extends StatelessWidget {
   final double iconSize;
   final double avatarRadius;
   final void Function()? onTap;
+  final Widget Function(Widget child, BuildContext context)? customBuilder;
   final Widget? footer;
   final Color? textColor;
   final Color? iconColor;
@@ -186,17 +188,9 @@ class TextButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return material.TextButton(
-        clipBehavior: Clip.antiAlias,
-        style: ButtonStyle(
-          padding: MaterialStatePropertyAll(
-              material.EdgeInsets.fromLTRB(8, 0, 8, 0)),
-          backgroundColor: MaterialStatePropertyAll(highlighted
-              ? Theme.of(context).colorScheme.secondaryContainer
-              : null),
-        ),
-        child: material
-            .Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+    Widget content = material.Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
           Flexible(
               child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -250,7 +244,22 @@ class TextButton extends StatelessWidget {
             ],
           )),
           if (footer != null) footer!,
-        ]),
-        onPressed: () => onTap?.call());
+        ]);
+
+    if (customBuilder != null) {
+      content = customBuilder!(content, context);
+    }
+
+    return material.TextButton(
+        clipBehavior: Clip.antiAlias,
+        style: ButtonStyle(
+          padding: MaterialStatePropertyAll(
+              material.EdgeInsets.fromLTRB(8, 0, 8, 0)),
+          backgroundColor: MaterialStatePropertyAll(highlighted
+              ? Theme.of(context).colorScheme.secondaryContainer
+              : null),
+        ),
+        child: content,
+        onPressed: onTap);
   }
 }

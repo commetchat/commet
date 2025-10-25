@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
-import 'package:commet/client/components/voip/voip_stream.dart';
+import 'package:commet/ui/organisms/call_view/call_view.dart';
 import 'package:commet/ui/organisms/sidebar_call_icon/sidebar_call_icon_view.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
@@ -26,39 +26,40 @@ class _SidebarCallIconEntryState extends State<SidebarCallIconEntry>
     with TickerProviderStateMixin {
   Room? room;
   final LayerLink link = LayerLink();
-  StreamSubscription? stateChangeSub;
-  VoipStream? stream;
+  late List<StreamSubscription> subs;
   Timer? statUpdateTimer;
   late AnimationController audioLevel;
 
   @override
   void initState() {
     room = widget.session.client.getRoom(widget.session.roomId);
-    stream = widget.session.remoteUserMediaStream;
+
     audioLevel = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 500));
-    statUpdateTimer =
-        Timer.periodic(const Duration(milliseconds: 500), (timer) async {
-      await widget.session.updateStats();
-      audioLevel.animateTo(stream?.audiolevel ?? 0,
-          duration: const Duration(milliseconds: 500));
-    });
+        vsync: this, duration: CallView.volumeAnimationDuration);
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       widget.updateSelection?.call(
           link, widget.session, widget.session.state == VoipState.incoming);
     });
 
-    stateChangeSub = widget.session.onStateChanged.listen((event) {
-      setState(() {});
-    });
+    subs = [
+      widget.session.onStateChanged.listen((event) {
+        setState(() {});
+      }),
+      widget.session.onUpdateVolumeVisualizers.listen((_) async {
+        await widget.session.updateStats();
+        audioLevel.animateTo(widget.session.generalAudioLevel);
+      })
+    ];
 
     super.initState();
   }
 
   @override
   void dispose() {
-    stateChangeSub?.cancel();
+    for (var sub in subs) {
+      sub.cancel();
+    }
     statUpdateTimer?.cancel();
     super.dispose();
   }

@@ -70,7 +70,7 @@ class _SidebarCallsListState extends State<SidebarCallsList> {
 
   Widget buildItem(VoipSession data) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
+      padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
       child: SidebarCallIconEntry(
         data,
         widget.width,

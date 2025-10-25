@@ -23,6 +23,7 @@ finish-args:
 - "--device=all"
 - "--filesystem=xdg-download"
 - "--talk-name=org.freedesktop.Notifications"
+- "--system-talk-name=org.freedesktop.NetworkManager"
 - "--env=LD_LIBRARY_PATH=/app/lib"
 modules:
 - name: libmpv

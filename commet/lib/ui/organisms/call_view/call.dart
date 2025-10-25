@@ -1,9 +1,8 @@
+import 'dart:async';
+
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/ui/organisms/call_view/call_view.dart';
-import 'package:commet/ui/organisms/call_view/screen_capture_source_dialog.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_webrtc/flutter_webrtc.dart';
-import 'package:tiamat/atoms/popup_dialog.dart';
 
 class CallWidget extends StatefulWidget {
   const CallWidget(this.session, {super.key});
@@ -30,19 +29,9 @@ class _CallWidgetState extends State<CallWidget> {
   }
 
   Future<void> pickScreenShareSource() async {
-    var sources = await desktopCapturer
-        .getSources(types: [SourceType.Window, SourceType.Screen]);
-
-    if (context.mounted) {
-      var result = await PopupDialog.show<DesktopCapturerSource>(
-          // ignore: use_build_context_synchronously
-          context,
-          content: ScreenCaptureSourceDialog(sources),
-          title: "Screen Share");
-      if (result != null) {
-        await widget.session.setScreenShare(result);
-        setState(() {});
-      }
+    final source = await widget.session.pickScreenCapture(context);
+    if (source != null) {
+      widget.session.setScreenShare(source);
     }
   }
 
