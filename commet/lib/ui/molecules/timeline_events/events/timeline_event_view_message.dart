@@ -9,6 +9,7 @@ import 'package:commet/client/timeline_events/timeline_event_message.dart';
 import 'package:commet/client/timeline_events/timeline_event_feature_related.dart';
 import 'package:commet/client/timeline_events/timeline_event_sticker.dart';
 import 'package:commet/client/timeline_events/timeline_event_unknown.dart';
+import 'package:commet/config/platform_utils.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_attachments.dart';
 import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_reactions.dart';
@@ -18,11 +19,10 @@ import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_t
 import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_url_previews.dart';
 import 'package:commet/ui/molecules/timeline_events/layouts/timeline_event_layout_message.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_layout.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:commet/utils/text_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-
 import 'package:intl/intl.dart' as intl;
+
 import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
@@ -251,20 +251,31 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
   }
 
   String timestampToString(DateTime time) {
-    var use24 = MediaQuery.of(context).alwaysUse24HourFormat;
+    if (PlatformUtils.isAndroid) {
+      // I think this only works properly on android and ios, there is no documented
+      // Behaviour for other platforms
+      var use24 = MediaQuery.of(context).alwaysUse24HourFormat;
+
+      if (widget.detailed) {
+        if (use24) {
+          return intl.DateFormat.yMMMMd().add_Hms().format(time.toLocal());
+        } else {
+          return intl.DateFormat.yMMMMd().add_jms().format(time.toLocal());
+        }
+      } else {
+        if (use24) {
+          return intl.DateFormat.Hm().format(time.toLocal());
+        } else {
+          return intl.DateFormat.jm().format(time.toLocal());
+        }
+      }
+    }
 
     if (widget.detailed) {
-      if (use24) {
-        return intl.DateFormat.yMMMMd().add_Hms().format(time.toLocal());
-      } else {
-        return intl.DateFormat.yMMMMd().add_jms().format(time.toLocal());
-      }
+      return TextUtils.timestampToLocalizedTimeSpecific(time, context);
     } else {
-      if (use24) {
-        return intl.DateFormat.Hm().format(time.toLocal());
-      } else {
-        return intl.DateFormat.jm().format(time.toLocal());
-      }
+      return MaterialLocalizations.of(context)
+          .formatTimeOfDay(TimeOfDay.fromDateTime(time));
     }
   }
 

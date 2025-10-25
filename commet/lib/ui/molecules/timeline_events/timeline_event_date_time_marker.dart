@@ -23,8 +23,7 @@ class TimelineEventDateTimeMarker extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
             child: tiamat.Text.labelLow(
-              TextUtils.timestampToLocalizedTime(
-                  time, MediaQuery.of(context).alwaysUse24HourFormat),
+              TextUtils.timestampToLocalizedTime(time, context),
               color: color,
             ),
           ),
