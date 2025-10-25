@@ -4,6 +4,7 @@ import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:commet/client/member.dart';
 import 'package:commet/debug/log.dart';
+import 'package:commet/ui/organisms/call_view/call_view.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -32,31 +33,34 @@ class _VoipStreamViewState extends State<VoipStreamView>
   late Member user;
 
   late AnimationController audioLevel;
-  StreamSubscription? sub;
+  late List<StreamSubscription> subs;
 
   late GlobalKey rendererKey = GlobalKey();
 
   @override
   void initState() {
     Log.d("Initializing stream view!");
-    Timer.periodic(const Duration(milliseconds: 200), timer);
     var room = widget.session.client.getRoom(widget.session.roomId)!;
-    sub = widget.stream.onStreamChanged.listen(onStreamChanged);
+    subs = [
+      widget.stream.onStreamChanged.listen(onStreamChanged),
+      widget.session.onUpdateVolumeVisualizers.listen((_) => timer()),
+    ];
     user = room.getMemberOrFallback(widget.stream.streamUserId);
-    audioLevel = AnimationController(vsync: this);
+
+    audioLevel = AnimationController(
+        vsync: this, duration: CallView.volumeAnimationDuration);
     super.initState();
   }
 
   @override
   void dispose() {
     audioLevel.stop();
-    sub?.cancel();
+    for (var sub in subs) sub.cancel();
     super.dispose();
   }
 
-  void timer(Timer timer) async {
-    audioLevel.animateTo(widget.stream.audiolevel,
-        duration: const Duration(milliseconds: 200));
+  void timer() {
+    audioLevel.animateTo(widget.stream.audiolevel);
   }
 
   @override

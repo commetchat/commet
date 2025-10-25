@@ -23,11 +23,18 @@ class MatrixLivekitVoipStream implements VoipStream {
 
       var _listener = visualizer!.createListener();
       _listener.on<AudioVisualizerEvent>((e) {
-        audiolevel = (e.event[0] as double) * 4;
+        setAudioLevel(e);
       });
 
       visualizer!.start();
     }
+  }
+
+  @override
+  double audiolevel = 0.0;
+
+  void setAudioLevel(AudioVisualizerEvent e) {
+    audiolevel = (e.event[0] as double) > 0.5 ? 1 : 0;
   }
 
   void onStreamUpdatedEvent(TrackStreamStateUpdatedEvent event) {
@@ -42,9 +49,6 @@ class MatrixLivekitVoipStream implements VoipStream {
     return publication.dimensions!.width.toDouble() /
         publication.dimensions!.height.toDouble();
   }
-
-  @override
-  double audiolevel = 0.0;
 
   @override
   Widget? buildVideoRenderer(BoxFit fit, Key key) {

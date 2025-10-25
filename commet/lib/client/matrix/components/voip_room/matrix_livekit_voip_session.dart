@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
@@ -25,6 +26,8 @@ class MatrixLivekitVoipSession implements VoipSession {
   Timer? heartbeatTimer;
   String? heartbeatDelayId;
 
+  final StreamController<void> _onVolumeChanged = StreamController.broadcast();
+
   MatrixLivekitVoipSession(this.room, this.livekitRoom) {
     clientManager?.callManager.onClientSessionStarted(this);
     addInitialStreams();
@@ -37,6 +40,11 @@ class MatrixLivekitVoipSession implements VoipSession {
     listener.on(onTrackStreamEvent);
     listener.on(onTrackMutedEvent);
     listener.on(onTrackUnmutedEvent);
+
+    Timer.periodic(Duration(milliseconds: 200), (timer) {
+      if (state == VoipState.ended) timer.cancel();
+      _onVolumeChanged.add(());
+    });
 
     startHeartbeat();
   }
@@ -334,4 +342,14 @@ class MatrixLivekitVoipSession implements VoipSession {
       print(result);
     });
   }
+
+  @override
+  double get generalAudioLevel {
+    double result =
+        streams.fold(0.0, (value, stream) => max(value, stream.audiolevel));
+    return result;
+  }
+
+  @override
+  Stream<void> get onUpdateVolumeVisualizers => _onVolumeChanged.stream;
 }

@@ -104,4 +104,21 @@ class MatrixVoipRoomComponent
   @override
   bool get canJoinCall => room.matrixRoom
       .canSendEvent(MatrixVoipRoomComponent.callMemberStateEvent);
+
+  @override
+  Future<void> clearAllCallMembershipStatus() async {
+    final state = room.matrixRoom.states[callMemberStateEvent];
+    if (state == null) {
+      return;
+    }
+
+    var futures = [
+      for (var entry in state.entries)
+        if (entry.value.senderId == client.matrixClient.userID)
+          client.matrixClient.setRoomStateWithKey(room.identifier,
+              MatrixVoipRoomComponent.callMemberStateEvent, entry.key, {})
+    ];
+
+    await Future.wait(futures);
+  }
 }

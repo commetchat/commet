@@ -91,7 +91,7 @@ class MatrixVoipStream implements VoipStream {
 
     if (stat == null) return 0;
 
-    return stat.values["audioLevel"];
+    return stat.values["audioLevel"] > 0.4 ? 1.0 : 0;
   }
 
   @override

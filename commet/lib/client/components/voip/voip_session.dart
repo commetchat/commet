@@ -39,6 +39,8 @@ abstract class VoipSession {
 
   bool get isCameraEnabled;
 
+  double get generalAudioLevel;
+
   VoipStream? get remoteUserMediaStream;
 
   List<VoipStream> get streams;
@@ -53,6 +55,8 @@ abstract class VoipSession {
   Stream<VoipState> get onConnectionStateChanged;
 
   Stream<void> get onStateChanged;
+
+  Stream<void> get onUpdateVolumeVisualizers;
 
   Future<void> setMicrophoneMute(bool state);
 

@@ -28,6 +28,8 @@ class CallView extends StatefulWidget {
   });
   final VoipSession currentSession;
 
+  static const Duration volumeAnimationDuration = Duration(milliseconds: 500);
+
   final Future<void> Function(bool)? setMicrophoneMute;
   final Future<void> Function()? pickScreenshareSource;
   final Future<void> Function()? stopScreenshare;
@@ -56,9 +58,6 @@ class _CallViewState extends State<CallView> {
     });
 
     room = widget.currentSession.client.getRoom(widget.currentSession.roomId)!;
-
-    //mainStream = widget.currentSession.remoteUserMediaStream;
-
     statTimer = Timer.periodic(const Duration(milliseconds: 200), timer);
   }
 

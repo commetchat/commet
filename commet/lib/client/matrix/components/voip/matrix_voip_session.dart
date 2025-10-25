@@ -18,6 +18,7 @@ class MatrixVoipSession implements VoipSession {
   late Client client;
 
   final StreamController<void> _onStateChanged = StreamController.broadcast();
+  final StreamController<void> _onVolumeChanged = StreamController.broadcast();
 
   List<StatsReport>? stats;
 
@@ -35,6 +36,11 @@ class MatrixVoipSession implements VoipSession {
     session.onCallStateChanged.stream.listen((event) {
       _onStateChanged.add(null);
       _onConnectionChanged.add(state);
+    });
+
+    Timer.periodic(Duration(milliseconds: 200), (timer) {
+      if (state == VoipState.ended) timer.cancel();
+      _onVolumeChanged.add(());
     });
 
     initStreams();
@@ -135,9 +141,18 @@ class MatrixVoipSession implements VoipSession {
     return session.setLocalVideoMuted(!state);
   }
 
+  DateTime _lastUpdatedStats = DateTime.fromMicrosecondsSinceEpoch(0);
   @override
   Future<void> updateStats() async {
+    var now = DateTime.now();
+    var diff = now.difference(_lastUpdatedStats).inMilliseconds;
+    print(diff);
+    if (diff < 200) {
+      return;
+    }
+
     stats = await session.pc?.getStats();
+    _lastUpdatedStats = now;
   }
 
   @override
@@ -241,4 +256,10 @@ class MatrixVoipSession implements VoipSession {
   Future<ScreenCaptureSource?> pickScreenCapture(BuildContext context) async {
     return WebrtcScreencaptureSource.showSelectSourcePrompt(context);
   }
+
+  @override
+  double get generalAudioLevel => (remoteUserMediaStream?.audiolevel ?? 0);
+
+  @override
+  Stream<void> get onUpdateVolumeVisualizers => _onVolumeChanged.stream;
 }

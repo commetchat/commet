@@ -3,9 +3,11 @@ import 'dart:async';
 import 'package:commet/client/components/voip_room/voip_room_component.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/main.dart';
+import 'package:commet/ui/atoms/adaptive_context_menu.dart';
 import 'package:commet/ui/atoms/dot_indicator.dart';
 import 'package:commet/ui/atoms/notification_badge.dart';
 import 'package:flutter/material.dart';
+import 'package:tiamat/atoms/context_menu.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class RoomTextButton extends StatefulWidget {
@@ -88,7 +90,7 @@ class _RoomTextButtonState extends State<RoomTextButton> {
       customBuilder = buildCallParticipants;
     }
 
-    return SizedBox(
+    Widget result = SizedBox(
       height: customBuilder == null ? height : null,
       child: tiamat.TextButton(
         customBuilder: customBuilder,
@@ -123,6 +125,18 @@ class _RoomTextButtonState extends State<RoomTextButton> {
                 : null,
       ),
     );
+
+    if (voipRoom?.isVoipRoom == true) {
+      result = AdaptiveContextMenu(items: [
+        if (preferences.developerMode)
+          ContextMenuItem(
+              text: "Clear Membership Status",
+              icon: Icons.call_end,
+              onPressed: () => voipRoom?.clearAllCallMembershipStatus())
+      ], child: result);
+    }
+
+    return result;
   }
 
   Widget buildCallParticipants(Widget child, BuildContext context) {

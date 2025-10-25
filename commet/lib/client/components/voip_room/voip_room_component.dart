@@ -17,4 +17,6 @@ abstract class VoipRoomComponent<R extends Client, T extends Room>
   Future<VoipSession?> joinCall();
 
   Future<String?> getCallServerUrl();
+
+  Future<void> clearAllCallMembershipStatus();
 }
