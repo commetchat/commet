@@ -107,6 +107,8 @@ modules:
   buildsystem: simple
   only-arches:
   - x86_64
+  post-install:
+  - install -Dm755 commet-wrapper ${FLATPAK_DEST}/bin/commet
   build-commands:
   - mkdir -p /app/commet
   - mkdir -p /app/lib/ffmpeg
@@ -118,7 +120,6 @@ modules:
   - mkdir -p /app/bin
   - ls /app/lib64
   - cp -a /app/lib64/. /app/lib/
-  - ln -s /app/commet/bundle/commet /app/bin/commet
   sources:
   - type: dir
     path: commet
@@ -128,3 +129,8 @@ modules:
     path: chat.commet.commetapp.metainfo.xml
   - type: file
     path: icon.png
+  - type: script
+    dest-filename: commet-wrapper
+    commands:
+      - export TMPDIR=$XDG_RUNTIME_DIR/app/$FLATPAK_ID
+      - exec /app/commet/bundle/commet "$@"
