@@ -566,15 +566,15 @@ class MessageInputState extends State<MessageInput> {
           padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
           child: SizedBox(
             height: 30,
-            child: ImplicitlyAnimatedList(
+            child: ListView.builder(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.fromLTRB(0, 0, 300, 0),
-              itemData: autoFillResults!,
+              itemCount: autoFillResults!.length,
               controller: autofillScrollController,
               shrinkWrap: true,
-              itemBuilder: (context, data) {
+              itemBuilder: (context, index) {
                 bool selected = false;
-
+                var data = autoFillResults![index];
                 if (autoFillSelection != null) {
                   selected = data == autoFillResults![autoFillSelection!];
                 }
