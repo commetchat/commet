@@ -44,7 +44,8 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
   int numBuilds = 0;
 
   int recentItemsCount = 0;
-  int historyItemsCount = 0;
+  int get historyItemsCount => timeline.events.length - recentItemsCount;
+
   bool firstFrame = true;
   bool animatingToBottom = false;
 
@@ -104,7 +105,6 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
 
     this.timeline = timeline;
     recentItemsCount = timeline.events.length;
-    historyItemsCount = timeline.events.length - recentItemsCount;
 
     subscriptions = [
       timeline.onEventAdded.stream.listen(onEventAdded),
@@ -136,8 +136,6 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
 
     if (index == 0 || index < recentItemsCount) {
       recentItemsCount += 1;
-    } else {
-      historyItemsCount = timeline.events.length - recentItemsCount;
     }
 
     if (index == 0) {
@@ -182,9 +180,8 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
   void onEventRemoved(int index) {
     if (index < recentItemsCount) {
       recentItemsCount -= 1;
-    } else {
-      historyItemsCount = timeline.events.length - recentItemsCount;
     }
+
     var removed = eventKeys.removeAt(index);
 
     assert(timeline.events[index].eventId == removed.$2);
@@ -262,18 +259,19 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
 
     animatingToBottom = true;
 
-    int lastEvent = recentItemsCount;
-
     controller
         .animateTo(controller.position.minScrollExtent,
             duration: const Duration(milliseconds: 500),
             curve: Curves.easeOutExpo)
-        .then((value) {
-      if (recentItemsCount == lastEvent) {
-        controller.jumpTo(controller.position.minScrollExtent);
-
+        .then((_) {
+      setState(() {
+        controller.jumpTo(0);
         animatingToBottom = false;
-      }
+      });
+    });
+
+    setState(() {
+      recentItemsCount = 0;
     });
   }
 
@@ -554,7 +552,6 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
 
     setState(() {
       recentItemsCount = index;
-      historyItemsCount = timeline.events.length - recentItemsCount;
       highlightedEventId = timeline.events[index].eventId;
       highlightedEventOffstageIndex = index;
       highlightedEventOffstageKey = GlobalKey();
