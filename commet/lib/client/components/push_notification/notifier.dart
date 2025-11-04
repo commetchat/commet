@@ -1,8 +1,12 @@
+import 'package:commet/client/client.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/room.dart';
 
 abstract class Notifier {
   Future<void> notify(NotificationContent notification);
+
+  Future<String?> convertFormattedContent(
+      String formattedContent, String format, Room room);
 
   bool get hasPermission;
 

@@ -3,7 +3,9 @@ import 'package:commet/client/components/push_notification/notification_manager.
 import 'package:commet/client/components/push_notification/notifier.dart';
 import 'package:commet/client/components/push_notification/push_notification_component.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/config/platform_utils.dart';
 import 'package:commet/main.dart';
+import 'package:commet/ui/pages/settings/categories/app/general_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/app/notification_settings/notifier_debug_view.dart';
 import 'package:commet/ui/pages/setup/menus/unified_push_setup.dart';
 import 'package:commet/utils/common_strings.dart';
@@ -55,11 +57,12 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
               const SizedBox(
                 height: 10,
               ),
-              Panel(
-                mode: tiamat.TileType.surfaceContainerLow,
-                header: "Push Gateway",
-                child: pushGatewaySelector(),
-              ),
+              if (notifier is UnifiedPushNotifier)
+                Panel(
+                  mode: tiamat.TileType.surfaceContainerLow,
+                  header: "Push Gateway",
+                  child: pushGatewaySelector(),
+                ),
               const SizedBox(
                 height: 10,
               ),
@@ -78,6 +81,44 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
   Widget buildNotificationSettings() {
     if (notifier is UnifiedPushNotifier) {
       return const UnifiedPushSetupView();
+    }
+
+    if (PlatformUtils.isLinux) {
+      return Column(
+        children: [
+          GeneralSettingsPageState.settingToggle(
+            preferences.formatNotificationBody,
+            title: "Message Body Formatting",
+            description: "Apply user formatting in message notifications",
+            onChanged: (value) async {
+              setState(() {
+                preferences.setFormatNotificationBody(value);
+              });
+            },
+          ),
+          GeneralSettingsPageState.settingToggle(
+            preferences.showMediaInNotifications,
+            title: "Show Images",
+            description: "Show images in notifications",
+            onChanged: (value) async {
+              setState(() {
+                preferences.setShowMediaInNotifications(value);
+              });
+            },
+          ),
+          GeneralSettingsPageState.settingToggle(
+            preferences.previewUrlsInNotifications,
+            title: "Preview Urls",
+            description:
+                "Fetch URL previews to show extra information about links in notifications",
+            onChanged: (value) async {
+              setState(() {
+                preferences.setPreviewUrlsInNotifications(value);
+              });
+            },
+          ),
+        ],
+      );
     }
 
     return tiamat.Text(notificationSettingsNotSupported);

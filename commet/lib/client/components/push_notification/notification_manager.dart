@@ -95,6 +95,11 @@ class NotificationManager {
     await notifier?.clearNotifications(room);
   }
 
+  static Future<String?> convertFormattedContent(
+      String formattedContent, String format, Room room) async {
+    return notifier?.convertFormattedContent(formattedContent, format, room);
+  }
+
   static Future<void> notify(NotificationContent notification,
       {bool bypassModifiers = false}) async {
     if (_notifier == null) return;

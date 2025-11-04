@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:commet/client/client.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notifier.dart';
 import 'package:commet/client/room.dart';
@@ -159,4 +160,10 @@ class WindowsNotifier implements Notifier {
 
   @override
   Future<void> clearNotifications(Room room) async {}
+
+  @override
+  Future<String?> convertFormattedContent(
+      String formattedContent, String format, Room room) async {
+    return null;
+  }
 }

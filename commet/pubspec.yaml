@@ -112,6 +112,12 @@ dependencies:
 dependency_overrides:
   analyzer: ^7.3.0
 
+  ## For inline-reply 
+  flutter_local_notifications_linux: 
+    git: 
+      url: https://github.com/commetchat/flutter_local_notifications.git
+      path: ./flutter_local_notifications_linux
+
   ## fixes: https://github.com/dart-lang/tools/issues/2169
   markdown:
     git:

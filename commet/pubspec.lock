@@ -531,17 +531,18 @@ packages:
     description:
       path: flutter_local_notifications
       ref: HEAD
-      resolved-ref: "78a9fe5132f720bc9e501fb26a1962a14915f69d"
+      resolved-ref: "93f906985388835d24eea13ae6ccd8ee656f2cf1"
       url: "https://github.com/commetchat/flutter_local_notifications.git"
     source: git
     version: "19.4.1"
   flutter_local_notifications_linux:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: flutter_local_notifications_linux
-      sha256: e3c277b2daab8e36ac5a6820536668d07e83851aeeb79c446e525a70710770a5
-      url: "https://pub.dev"
-    source: hosted
+      path: flutter_local_notifications_linux
+      ref: HEAD
+      resolved-ref: "93f906985388835d24eea13ae6ccd8ee656f2cf1"
+      url: "https://github.com/commetchat/flutter_local_notifications.git"
+    source: git
     version: "6.0.0"
   flutter_local_notifications_platform_interface:
     dependency: transitive

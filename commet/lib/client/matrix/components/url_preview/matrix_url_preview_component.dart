@@ -2,6 +2,7 @@ import 'package:commet/client/components/url_preview/url_preview_component.dart'
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
+import 'package:commet/client/room.dart';
 import 'package:commet/client/timeline.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/client/timeline_events/timeline_event_message.dart';
@@ -80,18 +81,28 @@ class MatrixUrlPreviewComponent implements UrlPreviewComponent<MatrixClient> {
   }
 
   @override
-  bool shouldGetPreviewData(Timeline timeline, TimelineEvent event) {
+  bool shouldGetPreviewsInRoom(Room room) {
+    if (room.isE2EE && preferences.urlPreviewInE2EEChat == false) {
+      return false;
+    }
+
+    if (serverSupportsUrlPreview == false) {
+      return false;
+    }
+
+    return true;
+  }
+
+  @override
+  bool shouldGetPreviewDataForTimelineEvent(
+      Timeline timeline, TimelineEvent event) {
     if (event is! TimelineEventMessage) {
       return false;
     }
 
     final room = timeline.room;
 
-    if (room.isE2EE && preferences.urlPreviewInE2EEChat == false) {
-      return false;
-    }
-
-    if (serverSupportsUrlPreview == false) {
+    if (!shouldGetPreviewsInRoom(room)) {
       return false;
     }
 
@@ -106,6 +117,32 @@ class MatrixUrlPreviewComponent implements UrlPreviewComponent<MatrixClient> {
     } else {
       return '/media/v3/preview_url';
     }
+  }
+
+  @override
+  Future<UrlPreviewData?> getPreviewForUrl(Room room, Uri uri) async {
+    if (shouldGetPreviewsInRoom(room) == false) {
+      return null;
+    }
+
+    if (cache.containsKey(uri.toString())) {
+      return cache[uri.toString()];
+    }
+
+    var data = null;
+
+    try {
+      data =
+          await fetchPreviewData((room as MatrixRoom).matrixRoom.client, uri);
+    } catch (_) {
+      return null;
+    }
+
+    if (data != null) {
+      cache[uri.toString()] = data;
+    }
+
+    return data;
   }
 
   Future<UrlPreviewData?> fetchPreviewData(

@@ -282,6 +282,16 @@ class TimelineEventMenu {
             action: (BuildContext context) async {
               var room = timeline.room;
               var user = await room.fetchMember(event.senderId);
+
+              String? formattedContent;
+              String? format;
+
+              if (event is TimelineEventMessage) {
+                final msg = event as TimelineEventMessage;
+                formattedContent = msg.formattedBody;
+                format = msg.bodyFormat;
+              }
+
               var content = MessageNotificationContent(
                 senderName: user.displayName,
                 senderImage: user.avatar,
@@ -293,6 +303,8 @@ class TimelineEventMenu {
                     (event as TimelineEventMessage).body ?? "Sent a message",
                 clientId: room.client.identifier,
                 eventId: event.eventId,
+                formatType: format,
+                formattedContent: formattedContent,
                 isDirectMessage: room.client
                         .getComponent<DirectMessagesComponent>()
                         ?.isRoomDirectMessage(room) ??
