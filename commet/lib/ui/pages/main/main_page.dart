@@ -146,6 +146,8 @@ class MainPageState extends State<MainPage> {
       _currentSpace = space;
       _currentView = MainPageSubView.space;
     });
+
+    EventBus.onSelectedSpaceChanged.add(space);
   }
 
   void selectRoom(Room room) {
@@ -159,6 +161,7 @@ class MainPageState extends State<MainPage> {
     });
 
     EventBus.onSelectedRoomChanged.add(room);
+    EventBus.onSelectedSpaceChanged.add(currentSpace);
   }
 
   void clearRoomSelection() {
@@ -184,6 +187,8 @@ class MainPageState extends State<MainPage> {
       _currentSpace = null;
       _currentView = MainPageSubView.home;
     });
+
+    EventBus.onSelectedSpaceChanged.add(null);
   }
 
   void callRoom(Room room) {

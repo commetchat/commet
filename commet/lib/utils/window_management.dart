@@ -1,5 +1,10 @@
+import 'package:collection/collection.dart';
+import 'package:commet/client/room.dart';
+import 'package:commet/client/space.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/config/platform_utils.dart';
 import 'package:commet/main.dart';
+import 'package:commet/utils/event_bus.dart';
 import 'package:window_manager/window_manager.dart';
 
 class WindowManagement {
@@ -11,6 +16,35 @@ class WindowManagement {
 
     windowManager.setPreventClose(preferences.minimizeOnClose);
     windowManager.addListener(listener);
+
+    if (PlatformUtils.isLinux || PlatformUtils.isWindows) {
+      EventBus.onSelectedRoomChanged.stream.listen(_onSelectedRoomChanged);
+      EventBus.onSelectedSpaceChanged.stream.listen(_onSelectedSpaceChanged);
+
+      if (commandLineArgs.contains("--minimize")) {
+        windowManager.minimize();
+      }
+    }
+  }
+
+  static String? _currentSpaceName;
+  static String? _currentRoomName;
+
+  static void _onSelectedRoomChanged(Room? event) {
+    _currentRoomName = event?.displayName;
+    _updateTitle();
+  }
+
+  static void _onSelectedSpaceChanged(Space? event) {
+    _currentSpaceName = event?.displayName;
+    _updateTitle();
+  }
+
+  static void _updateTitle() {
+    final result = [_currentRoomName, _currentSpaceName, "commet"]
+        .whereNot((a) => a == null)
+        .join(" | ");
+    windowManager.setTitle(result);
   }
 }
 
