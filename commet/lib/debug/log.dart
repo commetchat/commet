@@ -97,7 +97,7 @@ class Log {
         break;
     }
 
-    return '[Commet] $logsStr';
+    return '[Commet (${Log.prefix})] $logsStr';
   }
 
   static void _print(LogEntry entry) {

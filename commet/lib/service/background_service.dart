@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'dart:isolate';
-import 'dart:ui';
-
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/service/background_service_notifications/background_service_task_notification.dart';

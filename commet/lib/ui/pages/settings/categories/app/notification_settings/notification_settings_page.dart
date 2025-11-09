@@ -133,8 +133,6 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
         if (notifier is UnifiedPushNotifier) UnifiedPushSetupView(),
       ],
     );
-
-    return tiamat.Text(notificationSettingsNotSupported);
   }
 
   Widget pushGatewaySelector() {

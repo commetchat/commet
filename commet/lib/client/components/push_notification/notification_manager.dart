@@ -110,15 +110,20 @@ class NotificationManager {
     NotificationContent? content = notification;
 
     for (var modifier in _modifiers) {
+      Log.d("Processing modifier: $modifier");
       if (forceShow) {
         if (modifier is NotificationModifierSuppressActiveRoom) continue;
         if (modifier is NotificationModifierSuppressOtherActiveDevice) continue;
       }
 
       content = await modifier.process(content!);
-      if (content == null) return;
+      if (content == null) {
+        Log.d("Modifier returned null notification, returning");
+        return;
+      }
     }
 
-    await _notifier!.notify(notification);
+    Log.i("Displaying notification content: $content");
+    await _notifier!.notify(content!);
   }
 }

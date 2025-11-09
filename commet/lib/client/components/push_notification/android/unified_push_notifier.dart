@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
@@ -72,9 +71,8 @@ class UnifiedPushNotifier implements Notifier {
         onNewEndpoint: onNewEndpoint,
         onUnregistered: onUnregistered,
         onRegistrationFailed: onRegistrationFailed);
-    if (result) {
-      await UnifiedPush.register();
-    }
+
+    await UnifiedPush.register();
 
     Log.i("Registered unified push: $result");
     var distributor = await UnifiedPush.getDistributor();
