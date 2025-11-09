@@ -185,7 +185,7 @@ flutter:
       family: EmojiFont
       fonts: 
         - 
-          asset: assets/font/emoji-font/NotoColorEmoji.ttf
+          asset: assets/font/emoji-font/TwemojiCOLR.otf
     - 
       family: RobotoCustom
       fonts: 
