@@ -53,14 +53,28 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
                 header: "Push Notifications",
                 child: buildNotificationSettings(),
               ),
-              const SizedBox(
-                height: 10,
-              ),
               if (notifier is UnifiedPushNotifier)
-                Panel(
-                  mode: tiamat.TileType.surfaceContainerLow,
-                  header: "Push Gateway",
-                  child: pushGatewaySelector(),
+                Column(
+                  children: [
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Panel(
+                        mode: tiamat.TileType.surfaceContainerLow,
+                        header: "Unified Push",
+                        child: Column(
+                          children: [
+                            UnifiedPushSetupView(
+                              onToggled: (_) => setState(() {}),
+                            ),
+                            if (preferences.unifiedPushEnabled == true)
+                              pushGatewaySelector(),
+                          ],
+                        )),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                  ],
                 ),
             ],
           ),
@@ -137,7 +151,6 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
               )
             ],
           ),
-        if (notifier is UnifiedPushNotifier) UnifiedPushSetupView(),
       ],
     );
   }

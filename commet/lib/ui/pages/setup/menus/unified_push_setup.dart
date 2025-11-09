@@ -139,12 +139,12 @@ If you already have a Unified Push compatible distributor app installed, you can
       return const CircularProgressIndicator();
     }
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.fromLTRB(0, 8.0, 0, 8.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          tiamat.Text.labelEmphasised(labelEnableUnifiedPushEndpoint),
+          tiamat.Text.label(labelEnableUnifiedPushEndpoint + ":"),
           tiamat.Text.labelLow(
               endpoint == null ? labelUnifiedPushNoEndpointFound : endpoint!),
         ],
