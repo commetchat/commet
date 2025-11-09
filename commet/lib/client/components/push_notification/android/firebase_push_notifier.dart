@@ -131,10 +131,4 @@ class FirebasePushNotifier implements Notifier {
   Future<void> clearNotifications(Room room) {
     return notifier.clearNotifications(room);
   }
-
-  @override
-  Future<String?> convertFormattedContent(
-      String formattedContent, String format, Room room) async {
-    return null;
-  }
 }

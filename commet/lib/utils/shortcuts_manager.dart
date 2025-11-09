@@ -244,4 +244,50 @@ class ShortcutsManager {
 
     return img;
   }
+
+  static Future<ui.Image> combineRoomAndUserImages(
+      ui.Image roomImage, ui.Image userImage) async {
+    var recorder = ui.PictureRecorder();
+    Canvas c = Canvas(recorder);
+
+    var size = const Size(128, 128);
+
+    var circleSize = size.height / 1.5;
+
+    var roomSize = circleSize * 0.8;
+
+    var targetRect = Rect.fromLTWH(
+        size.width - roomSize, size.height - roomSize, roomSize, roomSize);
+    var path = Path();
+    path.addArc(targetRect, 0, 90);
+    c.drawShadow(path.shift(Offset(-5, -5)), Color(0xff000000), 6, true);
+
+    var userSize = circleSize * 1.2;
+    var userRect = Rect.fromLTWH(0, 0, userSize, userSize);
+
+    c.drawImageRect(
+        roomImage,
+        Rect.fromLTWH(
+            0, 0, roomImage.width.toDouble(), roomImage.height.toDouble()),
+        targetRect,
+        Paint());
+
+    var userPath = Path();
+    userPath.addArc(userRect, 0, 360);
+
+    c.drawShadow(userPath, Color(0xff000000), 5, true);
+    c.drawShadow(userPath.shift(Offset(5, 5)), Color(0xff000000), 5, true);
+
+    c.drawImageRect(
+        userImage,
+        Rect.fromLTWH(
+            0, 0, userImage.width.toDouble(), userImage.height.toDouble()),
+        userRect,
+        Paint());
+
+    var pic = recorder.endRecording();
+    var img = await pic.toImage(size.width.round(), size.height.round());
+
+    return img;
+  }
 }
