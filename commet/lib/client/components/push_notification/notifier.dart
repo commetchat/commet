@@ -5,9 +5,6 @@ import 'package:commet/client/room.dart';
 abstract class Notifier {
   Future<void> notify(NotificationContent notification);
 
-  Future<String?> convertFormattedContent(
-      String formattedContent, String format, Room room);
-
   bool get hasPermission;
 
   bool get needsToken;

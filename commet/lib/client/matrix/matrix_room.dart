@@ -33,6 +33,7 @@ import 'package:commet/client/permissions.dart';
 import 'package:commet/client/role.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/client/timeline_events/timeline_event_message.dart';
+import 'package:commet/client/timeline_events/timeline_event_sticker.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
@@ -45,6 +46,7 @@ import 'package:matrix/matrix_api_lite/model/stripped_state_event.dart';
 
 // ignore: implementation_imports
 import 'package:matrix/src/utils/markdown.dart' as mx_markdown;
+import 'package:media_kit_video/media_kit_video.dart';
 
 import '../attachment.dart';
 import '../client.dart';
@@ -228,29 +230,12 @@ class MatrixRoom extends Room {
       return;
     }
 
-    var sender = await fetchMember(event.senderId);
-
-    bool isDirectMessage = client
-            .getComponent<DirectMessagesComponent>()
-            ?.isRoomDirectMessage(this) ??
-        false;
-
-    if (event is TimelineEventMessage) {
-      var notification = MessageNotificationContent(
-          senderName: sender.displayName,
-          senderId: sender.identifier,
-          roomName: displayName,
-          senderImage: sender.avatar,
-          roomImage: avatar,
-          formattedContent: event.body,
-          formatType: 'org.matrix.custom.html',
-          content: event.body ?? "Received a message",
-          eventId: event.eventId,
-          roomId: identifier,
-          clientId: client.identifier,
-          isDirectMessage: isDirectMessage);
-
-      NotificationManager.notify(notification);
+    if (event is TimelineEventMessage || event is TimelineEventSticker) {
+      var notification =
+          await MessageNotificationContent.fromEvent(event, this);
+      if (notification != null) {
+        NotificationManager.notify(notification);
+      }
     }
   }
 

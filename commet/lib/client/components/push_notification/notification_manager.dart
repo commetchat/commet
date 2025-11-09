@@ -4,6 +4,7 @@ import 'package:commet/client/components/push_notification/android/android_notif
 import 'package:commet/client/components/push_notification/android/firebase_push_notifier.dart';
 import 'package:commet/client/components/push_notification/android/unified_push_notifier.dart';
 import 'package:commet/client/components/push_notification/linux/linux_notifier.dart';
+import 'package:commet/client/components/push_notification/modifiers/linux_notification_formatting.dart';
 import 'package:commet/client/components/push_notification/modifiers/notification_modifiers.dart';
 import 'package:commet/client/components/push_notification/modifiers/suppress_active_room.dart';
 import 'package:commet/client/components/push_notification/modifiers/suppress_other_device_active.dart';
@@ -54,6 +55,10 @@ class NotificationManager {
       }
     }
 
+    if (PlatformUtils.isLinux) {
+      addModifier(NotificationModifierLinuxFormatting());
+    }
+
     notifierLoading = _notifier?.init();
   }
 
@@ -95,22 +100,20 @@ class NotificationManager {
     await notifier?.clearNotifications(room);
   }
 
-  static Future<String?> convertFormattedContent(
-      String formattedContent, String format, Room room) async {
-    return notifier?.convertFormattedContent(formattedContent, format, room);
-  }
-
   static Future<void> notify(NotificationContent notification,
-      {bool bypassModifiers = false}) async {
+      {bool forceShow = false}) async {
     if (_notifier == null) return;
 
     NotificationContent? content = notification;
 
-    if (!bypassModifiers) {
-      for (var modifier in _modifiers) {
-        content = await modifier.process(content!);
-        if (content == null) return;
+    for (var modifier in _modifiers) {
+      if (forceShow) {
+        if (modifier is NotificationModifierSuppressActiveRoom) continue;
+        if (modifier is NotificationModifierSuppressOtherActiveDevice) continue;
       }
+
+      content = await modifier.process(content!);
+      if (content == null) return;
     }
 
     await _notifier!.notify(notification);
