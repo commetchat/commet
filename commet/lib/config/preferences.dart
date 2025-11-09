@@ -50,6 +50,13 @@ class Preferences {
 
   static const String _optedInExperiments = "opted_in_experiments";
 
+  static const String _showMediaInNotifications = "show_media_in_notifications";
+
+  static const String _formatNotificationBody = "format_notification_body";
+
+  static const String _previewUrlsInNotification =
+      "preview_urls_in_notification";
+
   final StreamController _onSettingChanged = StreamController.broadcast();
   Stream get onSettingChanged => _onSettingChanged.stream;
   bool isInit = false;
@@ -343,5 +350,29 @@ class Preferences {
             ?.getStringList(_optedInExperiments)
             ?.contains(experiment) ==
         true;
+  }
+
+  bool get showMediaInNotifications =>
+      _preferences!.getBool(_showMediaInNotifications) ?? true;
+
+  Future<void> setShowMediaInNotifications(bool value) async {
+    await _preferences!.setBool(_showMediaInNotifications, value);
+    _onSettingChanged.add(null);
+  }
+
+  bool get formatNotificationBody =>
+      _preferences!.getBool(_formatNotificationBody) ?? true;
+
+  Future<void> setFormatNotificationBody(bool value) async {
+    await _preferences!.setBool(_formatNotificationBody, value);
+    _onSettingChanged.add(null);
+  }
+
+  bool get previewUrlsInNotifications =>
+      _preferences!.getBool(_previewUrlsInNotification) ?? true;
+
+  Future<void> setPreviewUrlsInNotifications(bool value) async {
+    await _preferences!.setBool(_previewUrlsInNotification, value);
+    _onSettingChanged.add(null);
   }
 }

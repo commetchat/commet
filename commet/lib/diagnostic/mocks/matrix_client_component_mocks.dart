@@ -41,12 +41,23 @@ class MockMatrixUrlPreviewComponent
   }
 
   @override
-  bool shouldGetPreviewData(Timeline timeline, TimelineEvent event) {
+  bool shouldGetPreviewDataForTimelineEvent(
+      Timeline timeline, TimelineEvent event) {
     return true;
   }
 
   @override
   UrlPreviewData? getCachedPreview(Timeline timeline, TimelineEvent event) {
     return null;
+  }
+
+  @override
+  Future<UrlPreviewData?> getPreviewForUrl(Room room, Uri url) async {
+    return null;
+  }
+
+  @override
+  bool shouldGetPreviewsInRoom(Room room) {
+    return true;
   }
 }

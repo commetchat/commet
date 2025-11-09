@@ -47,6 +47,8 @@ class MatrixClient extends Client {
 
   Future? firstSync;
 
+  bool firstSyncComplete = false;
+
   matrix.MediaConfig? config;
 
   matrix.Client get matrixClient => _matrixClient;
@@ -232,7 +234,9 @@ class MatrixClient extends Client {
       await _updateOwnProfile();
 
       if (!isBackgroundService) {
-        firstSync = _matrixClient.oneShotSync();
+        firstSync = _matrixClient.oneShotSync().then((_) {
+          firstSyncComplete = true;
+        });
       }
     }
 

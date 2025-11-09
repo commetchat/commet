@@ -36,6 +36,14 @@ class MatrixTimelineEventMessage extends MatrixTimelineEvent
   @override
   String? get body => event.plaintextBody;
 
+  String get formattedBody =>
+      event.formattedText != "" ? event.formattedText : event.plaintextBody;
+
+  @override
+  String? get bodyFormat =>
+      event.content.tryGet<String>("format") ??
+      "chat.commet.custom.matrix_plain";
+
   @override
   String get plainTextBody => event.plaintextBody;
 

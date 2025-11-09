@@ -242,6 +242,8 @@ class MatrixRoom extends Room {
           roomName: displayName,
           senderImage: sender.avatar,
           roomImage: avatar,
+          formattedContent: event.body,
+          formatType: 'org.matrix.custom.html',
           content: event.body ?? "Received a message",
           eventId: event.eventId,
           roomId: identifier,
@@ -254,6 +256,10 @@ class MatrixRoom extends Room {
 
   @override
   bool shouldNotify(TimelineEvent event) {
+    if ((client as MatrixClient).firstSyncComplete == false) {
+      return false;
+    }
+
     // never notify for a message that came from an account we are logged in to!
     if (clientManager?.clients
             .any((element) => element.self?.identifier == event.senderId) ==

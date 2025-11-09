@@ -245,7 +245,8 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
     attachments = event.attachments;
 
     doUrlPreview = widget.timeline != null &&
-        previewComponent?.shouldGetPreviewData(widget.timeline!, event) ==
+        previewComponent?.shouldGetPreviewDataForTimelineEvent(
+                widget.timeline!, event) ==
             true &&
         event.getLinks(timeline: widget.timeline!)?.isEmpty == false;
   }

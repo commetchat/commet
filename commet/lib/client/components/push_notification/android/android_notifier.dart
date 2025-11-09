@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:commet/client/client.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notifier.dart';
 import 'package:commet/client/room.dart';
@@ -212,5 +213,11 @@ class AndroidNotifier implements Notifier {
         flutterLocalNotificationsPlugin?.cancel(noti.id!);
       }
     }
+  }
+
+  @override
+  Future<String?> convertFormattedContent(
+      String formattedContent, String format, Room room) async {
+    return null;
   }
 }

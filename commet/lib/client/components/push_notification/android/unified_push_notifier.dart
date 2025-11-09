@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:commet/client/client.dart';
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/components/push_notification/android/android_notifier.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
@@ -179,5 +180,11 @@ class UnifiedPushNotifier implements Notifier {
   @override
   Future<void> clearNotifications(Room room) {
     return notifier.clearNotifications(room);
+  }
+
+  @override
+  Future<String?> convertFormattedContent(
+      String formattedContent, String format, Room room) async {
+    return null;
   }
 }
