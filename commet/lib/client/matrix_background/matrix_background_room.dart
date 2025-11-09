@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:collection/collection.dart';
 import 'package:commet/client/attachment.dart';
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/components/room_component.dart';
 import 'package:commet/client/matrix/matrix_peer.dart';
@@ -51,6 +52,26 @@ class MatrixBackgroundRoom implements Room {
   }
 
   Future<void> init() async {
+    var event = _stateEvents
+        .firstWhereOrNull((e) => e.type == matrix.EventTypes.RoomName);
+
+    if (event != null) {
+      displayName = event.content["name"] as String;
+    }
+
+    var dms = client.getComponent<DirectMessagesComponent>();
+    if (dms?.isRoomDirectMessage(this) == true) {
+      var partnerId = dms?.getDirectMessagePartnerId(this);
+      if (partnerId != null) {
+        var partner = await fetchMember(partnerId);
+        displayName = partner.displayName;
+      }
+    }
+
+    if (displayName == "") {
+      displayName = identifier;
+    }
+
     if (avatarId != null) {
       avatar = await MatrixBackgroundMember.uriToCachedMxcImageProvider(
           Uri.parse(avatarId!));
@@ -94,16 +115,7 @@ class MatrixBackgroundRoom implements Room {
   int get displayHighlightedNotificationCount => throw UnimplementedError();
 
   @override
-  String get displayName {
-    var event = _stateEvents
-        .firstWhereOrNull((e) => e.type == matrix.EventTypes.RoomName);
-
-    if (event != null) {
-      return event.content["name"] as String;
-    }
-
-    return roomId;
-  }
+  String displayName = "";
 
   @override
   int get displayNotificationCount => throw UnimplementedError();

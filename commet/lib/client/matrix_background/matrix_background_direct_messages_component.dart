@@ -22,7 +22,25 @@ class MatrixBackgroundClientDirectMessagesComponent
 
   @override
   String? getDirectMessagePartnerId(Room room) {
-    throw UnimplementedError();
+    for (var accountData in client.accountData) {
+      if (accountData.type == "m.direct") {
+        Log.i("${accountData.type}");
+        Log.i("account data: ${accountData.content}");
+
+        var content = jsonDecode(accountData.content) as Map<String, dynamic>;
+        for (var pair in content.entries) {
+          var key = pair.key;
+          var item = pair.value;
+          Log.i(item);
+          var list = item as List<dynamic>;
+          if (list.contains(room.identifier)) {
+            return key;
+          }
+        }
+      }
+    }
+
+    return null;
   }
 
   @override
