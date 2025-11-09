@@ -85,6 +85,7 @@ class BackgroundNotificationsManager {
       Log.onError(e, s);
     }
 
+    Log.i("Stopping background service");
     instance.stopSelf();
   }
 

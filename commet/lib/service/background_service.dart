@@ -37,11 +37,6 @@ Future<void> doBackgroundServiceTask(BackgroundServiceTask task) async {
     Log.i("Service already existed, reusing");
     handleTask(task, _service!);
   }
-
-  // if (_service == null || (await _service!.isRunning() == false)) {
-  //   Log.i("Could not start background service task!");
-  //   return;
-  // }
 }
 
 void handleTask(BackgroundServiceTask task, FlutterBackgroundService service) {
