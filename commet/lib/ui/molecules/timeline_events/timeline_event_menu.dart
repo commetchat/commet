@@ -1,4 +1,3 @@
-import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/client/components/message_effects/message_effect_component.dart';
 import 'package:commet/client/components/photo_album_room/photo_album_room_component.dart';
@@ -275,43 +274,20 @@ class TimelineEventMenu {
               },
             );
           }),
-      if (preferences.developerMode && event is TimelineEventMessage)
+      if (preferences.developerMode &&
+          (event is TimelineEventMessage || event is TimelineEventSticker))
         TimelineEventMenuEntry(
             name: "Show Notification",
             icon: Icons.notification_add,
             action: (BuildContext context) async {
               var room = timeline.room;
-              var user = await room.fetchMember(event.senderId);
 
-              String? formattedContent;
-              String? format;
-
-              if (event is TimelineEventMessage) {
-                final msg = event as TimelineEventMessage;
-                formattedContent = msg.formattedBody;
-                format = msg.bodyFormat;
+              var content =
+                  await MessageNotificationContent.fromEvent(event, room);
+              if (content != null) {
+                NotificationManager.notify(content, forceShow: true);
               }
 
-              var content = MessageNotificationContent(
-                senderName: user.displayName,
-                senderImage: user.avatar,
-                senderId: user.identifier,
-                roomName: room.displayName,
-                roomId: room.identifier,
-                roomImage: await room.getShortcutImage(),
-                content:
-                    (event as TimelineEventMessage).body ?? "Sent a message",
-                clientId: room.client.identifier,
-                eventId: event.eventId,
-                formatType: format,
-                formattedContent: formattedContent,
-                isDirectMessage: room.client
-                        .getComponent<DirectMessagesComponent>()
-                        ?.isRoomDirectMessage(room) ??
-                    false,
-              );
-
-              NotificationManager.notify(content, bypassModifiers: true);
               onActionFinished?.call();
             }),
     ];

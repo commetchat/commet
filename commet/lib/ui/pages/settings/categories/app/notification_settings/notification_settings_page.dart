@@ -9,6 +9,7 @@ import 'package:commet/ui/pages/settings/categories/app/general_settings_page.da
 import 'package:commet/ui/pages/settings/categories/app/notification_settings/notifier_debug_view.dart';
 import 'package:commet/ui/pages/setup/menus/unified_push_setup.dart';
 import 'package:commet/utils/common_strings.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
@@ -94,32 +95,46 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
                   });
                 },
               ),
-              GeneralSettingsPageState.settingToggle(
-                preferences.showMediaInNotifications,
-                title: "Show Images",
-                description: "Show images in notifications",
-                onChanged: (value) async {
-                  setState(() {
-                    preferences.setShowMediaInNotifications(value);
-                  });
-                },
-              ),
-              GeneralSettingsPageState.settingToggle(
-                preferences.previewUrlsInNotifications,
-                title: "Preview Urls",
-                description:
-                    "Fetch URL previews to show extra information about links in notifications",
-                onChanged: (value) async {
-                  setState(() {
-                    preferences.setPreviewUrlsInNotifications(value);
-                  });
-                },
-              ),
+              AnimatedOpacity(
+                opacity: preferences.formatNotificationBody ? 1 : 0.3,
+                duration: Durations.short4,
+                child: IgnorePointer(
+                  ignoring: preferences.formatNotificationBody == false,
+                  child: Column(
+                    children: [
+                      GeneralSettingsPageState.settingToggle(
+                        preferences.showMediaInNotifications,
+                        title: "Show Images",
+                        description:
+                            "Show images in notifications, if allowed by 'General > Media Preview' settings",
+                        onChanged: (value) async {
+                          setState(() {
+                            preferences.setShowMediaInNotifications(value);
+                          });
+                        },
+                      ),
+                      GeneralSettingsPageState.settingToggle(
+                        preferences.previewUrlsInNotifications,
+                        title: "Preview Urls",
+                        description:
+                            "Fetch URL previews to show extra information about links in notifications",
+                        onChanged: (value) async {
+                          setState(() {
+                            preferences.setPreviewUrlsInNotifications(value);
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              )
             ],
           ),
         if (notifier is UnifiedPushNotifier) UnifiedPushSetupView(),
       ],
     );
+
+    return tiamat.Text(notificationSettingsNotSupported);
   }
 
   Widget pushGatewaySelector() {
