@@ -73,6 +73,8 @@ class MatrixBackgroundClient implements Client {
   @override
   List<Room> get rooms => [];
 
+  String? deviceId;
+
   @override
   StoredStreamController<ClientConnectionStatusUpdate>
       get connectionStatusChanged =>
@@ -91,6 +93,7 @@ class MatrixBackgroundClient implements Client {
 
     var homeserver = Uri.parse(account!['homeserver_url']);
     var accessToken = account['token'];
+    deviceId = account['device_id'];
 
     api = matrix.MatrixApi(
       httpClient: http.Client(),
