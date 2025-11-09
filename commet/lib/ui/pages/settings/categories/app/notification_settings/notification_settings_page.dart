@@ -2,7 +2,6 @@ import 'package:commet/client/components/push_notification/android/unified_push_
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/components/push_notification/notifier.dart';
 import 'package:commet/client/components/push_notification/push_notification_component.dart';
-import 'package:commet/config/build_config.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/settings/categories/app/general_settings_page.dart';
@@ -10,7 +9,6 @@ import 'package:commet/ui/pages/settings/categories/app/notification_settings/no
 import 'package:commet/ui/pages/setup/menus/unified_push_setup.dart';
 import 'package:commet/utils/common_strings.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -41,7 +39,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
   }
 
   bool get canConfigureNotifications =>
-      BuildConfig.ENABLE_GOOGLE_SERVICES == false;
+      PlatformUtils.isAndroid || PlatformUtils.isLinux;
 
   @override
   Widget build(BuildContext context) {
@@ -64,9 +62,6 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
                   header: "Push Gateway",
                   child: pushGatewaySelector(),
                 ),
-              const SizedBox(
-                height: 10,
-              ),
             ],
           ),
         if (preferences.developerMode)
@@ -82,6 +77,18 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
   Widget buildNotificationSettings() {
     return Column(
       children: [
+        if (PlatformUtils.isAndroid)
+          GeneralSettingsPageState.settingToggle(
+            preferences.silenceNotifications,
+            title: "Silence Notifications",
+            description:
+                "When another device or client is active, silence notifications on this device",
+            onChanged: (value) async {
+              setState(() {
+                preferences.setSilenceNotifications(value);
+              });
+            },
+          ),
         if (PlatformUtils.isLinux)
           Column(
             children: [

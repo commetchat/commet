@@ -10,6 +10,10 @@ class NotificationModifierSuppressOtherActiveDevice
     implements NotificationModifier {
   @override
   Future<NotificationContent?> process(NotificationContent content) async {
+    if (!preferences.silenceNotifications) {
+      return content;
+    }
+
     if (content is! MessageNotificationContent) {
       return content;
     }
