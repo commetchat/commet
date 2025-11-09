@@ -135,6 +135,8 @@ class UnifiedPushNotifier implements Notifier {
         roomName: room.displayName,
         content: event.plainTextBody,
         eventId: eventId,
+        senderImageId: user.avatarId,
+        roomImageId: room.avatarId,
         roomId: room.identifier,
         clientId: client.identifier,
         senderImage: user.avatar,

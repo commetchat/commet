@@ -30,7 +30,9 @@ class MessageNotificationContent extends NotificationContent {
   String? formatType;
   bool isDirectMessage;
   ImageProvider? roomImage;
+  String? roomImageId;
   ImageProvider? senderImage;
+  String? senderImageId;
   ImageProvider? attachedImage;
 
   MessageNotificationContent({
@@ -45,7 +47,9 @@ class MessageNotificationContent extends NotificationContent {
     this.formattedContent,
     this.formatType,
     this.roomImage,
+    this.roomImageId,
     this.senderImage,
+    this.senderImageId,
     this.attachedImage,
   }) : super(title: senderName);
 

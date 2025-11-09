@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:collection';
 
+import 'package:commet/cache/file_cache.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/matrix_background/matrix_background_client.dart';
+import 'package:commet/client/matrix_background/matrix_background_room.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/database/database_server.dart';
@@ -22,6 +24,14 @@ class BackgroundNotificationsManager2 {
 
   Future<void> init() async {
     await initDatabaseServer();
+
+    if (fileCache == null) {
+      fileCache = FileCache.getFileCacheInstance();
+
+      if (fileCache != null) {
+        await fileCache?.init();
+      }
+    }
 
     clientManager = ClientManager();
 
@@ -99,6 +109,11 @@ class BackgroundNotificationsManager2 {
     Log.i("Got direct messages component: ${directMessages}");
     Log.i("Found client: ${client.identifier}");
     var room = client.getRoom(roomId);
+
+    if (room is MatrixBackgroundRoom) {
+      await room.init();
+    }
+
     Log.i("Found room: ${room?.displayName}");
 
     final isDirectMessage = directMessages?.isRoomDirectMessage(room!) == true;
@@ -126,8 +141,12 @@ class BackgroundNotificationsManager2 {
         roomId: roomId,
         clientId: clientId,
         senderImage: member.avatar,
-        roomImage: null,
+        roomImageId: room.avatarId,
+        senderImageId: member.avatarId,
+        roomImage: room.avatar,
         isDirectMessage: isDirectMessage);
+
+    Log.i("Sender image: ${member.avatar}");
 
     await NotificationManager.notify(content);
   }

@@ -6,6 +6,7 @@ import 'dart:ui';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/config/platform_utils.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/custom_uri.dart';
 import 'package:commet/utils/event_bus.dart';
@@ -83,6 +84,7 @@ class ShortcutsManager {
       required String placeholderText,
       required String identifier,
       required ShortcutIconFormat format,
+      String? imageId,
       ImageProvider? imageProvider,
       bool shouldZoomOut = true,
       bool doCircleMask = true}) async {
@@ -92,8 +94,8 @@ class ShortcutsManager {
       avatarId += "_placeholder";
     }
 
-    if (imageProvider is MatrixMxcImage) {
-      avatarId += "_${imageProvider.identifier.toString()}";
+    if (imageId != null) {
+      avatarId += "_${imageId}";
     }
 
     if (shouldZoomOut) {
@@ -110,11 +112,16 @@ class ShortcutsManager {
       ShortcutIconFormat.rawRgba => ".bin",
     };
 
+    Log.i("Getting cached avatar image for id: ${avatarId}");
+
     Uri? cachedAvatar = await fileCache?.getFile(avatarId);
 
     if (cachedAvatar != null) {
+      Log.i("Cache hit");
       return cachedAvatar;
     }
+
+    Log.i("Cache miss, generating image");
 
     var image = await createAvatarImage(
         placeholderColor: placeholderColor,

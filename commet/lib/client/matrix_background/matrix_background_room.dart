@@ -50,6 +50,18 @@ class MatrixBackgroundRoom implements Room {
     }
   }
 
+  Future<void> init() async {
+    if (avatarId != null) {
+      avatar = await MatrixBackgroundMember.uriToCachedMxcImageProvider(
+          Uri.parse(avatarId!));
+    }
+  }
+
+  @override
+  String? get avatarId => _stateEvents
+      .firstWhereOrNull((e) => e.type == matrix.EventTypes.RoomAvatar)
+      ?.content["url"] as String?;
+
   @override
   Future<TimelineEvent<Client>?> addReaction(
       TimelineEvent<Client> reactingTo, Emoticon reaction) {
@@ -57,7 +69,7 @@ class MatrixBackgroundRoom implements Room {
   }
 
   @override
-  ImageProvider<Object>? get avatar => null;
+  ImageProvider<Object>? avatar;
 
   @override
   Future<void> cancelSend(TimelineEvent<Client> event) {
@@ -109,14 +121,13 @@ class MatrixBackgroundRoom implements Room {
               (tbl) => tbl.roomId.equals(identifier) & tbl.userId.equals(id)))
         .getSingleOrNull();
 
-    if (data == null) {
-      Log.e("We dont have any membership info for this user!");
-      return MatrixBackgroundMember(id);
-    } else {
-      Log.e("Got membership info for this user!");
+    MatrixBackgroundMember result = MatrixBackgroundMember(id);
+    if (data != null) {
+      result = MatrixBackgroundMember(id, data: data);
     }
 
-    return MatrixBackgroundMember(id, data: data);
+    await result.init();
+    return result;
   }
 
   @override
