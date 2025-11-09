@@ -11,8 +11,7 @@ import 'package:commet/client/components/push_notification/push_notification_com
 import 'package:commet/client/room.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
-import 'package:commet/service/background_service.dart';
-import 'package:commet/service/background_service_notifications/background_service_task_notification.dart';
+import 'package:commet/service/background_service_notifications/background_service_task_notification2.dart';
 import 'package:commet/ui/pages/setup/menus/unified_push_setup.dart';
 import 'package:commet/utils/first_time_setup.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +20,7 @@ import 'package:unifiedpush/unifiedpush.dart';
 @pragma('vm:entry-point')
 void unifiedPushEntry() async {
   isHeadless = true;
+  Log.prefix = "unified-push";
   await WidgetsFlutterBinding.ensureInitialized();
   await preferences.init();
   await UnifiedPushNotifier().init();
@@ -46,10 +46,6 @@ class UnifiedPushNotifier implements Notifier {
 
   StreamController<String> onEndpointChanged = StreamController.broadcast();
 
-  String? _distributor;
-
-  String? get distributor => _distributor;
-
   String? get endpoint => preferences.unifiedPushEndpoint;
 
   @override
@@ -58,9 +54,11 @@ class UnifiedPushNotifier implements Notifier {
   @override
   bool get hasPermission => notifier.hasPermission;
 
+  String get instance => isHeadless ? "background_task" : "default";
+
   @override
   Future<void> init() async {
-    //if (isInit) return;
+    if (isInit) return;
     if (preferences.unifiedPushEnabled != true) return;
 
     await notifier.init();
@@ -72,11 +70,11 @@ class UnifiedPushNotifier implements Notifier {
         onUnregistered: onUnregistered,
         onRegistrationFailed: onRegistrationFailed);
 
-    await UnifiedPush.register();
+    if (!result) {
+      await UnifiedPush.register(instance: instance);
+    }
 
-    Log.i("Registered unified push: $result");
-    var distributor = await UnifiedPush.getDistributor();
-    _distributor = distributor;
+    Log.i("Registered unified push ($instance): $result");
 
     isInit = true;
   }
@@ -145,11 +143,16 @@ class UnifiedPushNotifier implements Notifier {
   }
 
   Future<void> onBackgroundMessage(Map<String, dynamic> message) async {
-    doBackgroundServiceTask(BackgroundServiceTaskNotification(
-        message["room_id"], message["event_id"]));
+    var notificationManager = BackgroundNotificationsManager2(null);
+
+    await notificationManager.init();
+
+    notificationManager.handleMessage(
+        {"event_id": message["event_id"], "room_id": message["room_id"]});
   }
 
   void onMessage(PushMessage message, String instance) async {
+    Log.i("Received unified push message!");
     var data = utf8.decode(message.content);
     var json = jsonDecode(data) as Map<String, dynamic>;
 

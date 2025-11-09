@@ -14,7 +14,7 @@ import 'package:commet/utils/database/database_server.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 
 class BackgroundNotificationsManager2 {
-  ServiceInstance instance;
+  ServiceInstance? instance;
 
   BackgroundNotificationsManager2(this.instance);
 
@@ -83,8 +83,10 @@ class BackgroundNotificationsManager2 {
       Log.onError(e, s);
     }
 
-    Log.i("Stopping background service");
-    instance.stopSelf();
+    if (instance != null) {
+      Log.i("Stopping background service");
+      instance?.stopSelf();
+    }
   }
 
   Future<void> handleMessage(Map<String, dynamic> data) async {

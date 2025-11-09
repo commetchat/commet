@@ -29,6 +29,7 @@ Future<void> doBackgroundServiceTask(BackgroundServiceTask task) async {
   }
 
   Log.i("Running: $isRunning");
+
   if (isRunning == false) {
     _taskQueue.add(task);
     Log.i("Creating new service");
@@ -42,12 +43,14 @@ Future<void> doBackgroundServiceTask(BackgroundServiceTask task) async {
 void handleTask(BackgroundServiceTask task, FlutterBackgroundService service) {
   if (task is BackgroundServiceTaskNotification) {
     Log.i("Handling task: ${task.eventId} ${task.hashCode}");
+
     FlutterBackgroundService().invoke("on_message_received",
         {"event_id": task.eventId, "room_id": task.roomId});
   }
 }
 
 Future<bool> initBackgroundService() async {
+  Log.w("Init background service");
   _service = FlutterBackgroundService();
 
   var id = 888;
@@ -66,12 +69,17 @@ Future<bool> initBackgroundService() async {
         androidConfiguration: AndroidConfiguration(
             onStart: onServiceStarted,
             isForegroundMode: true,
+            autoStart: false,
+            autoStartOnBoot: false,
             initialNotificationTitle: "Updating Notifications",
             initialNotificationContent: "Updating Notifications",
             notificationChannelId: channel.id,
             foregroundServiceNotificationId: id));
 
     await _service!.startService();
+
+    FlutterBackgroundService().invoke("init");
+    Log.i("Invoking background service init");
 
     _service!.on("ready").listen((event) {
       var num = _taskQueue.length;
@@ -99,12 +107,8 @@ Future<bool> initBackgroundService() async {
   }
 }
 
-@pragma('vm:entry-point')
-void onServiceStarted(ServiceInstance service) async {
-  Log.prefix = "background-service";
-  Log.i("Hello from background service, ${Isolate.current.debugName}");
-  isHeadless = true;
-
+ServiceInstance? instance;
+void onServiceInit(Map<String, dynamic>? data) async {
   if (!preferences.isInit) {
     await preferences.init();
   }
@@ -112,8 +116,8 @@ void onServiceStarted(ServiceInstance service) async {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
-  if (service is AndroidServiceInstance) {
-    if (await service.isForegroundService()) {
+  if (instance is AndroidServiceInstance) {
+    if (await (instance as AndroidServiceInstance).isForegroundService()) {
       flutterLocalNotificationsPlugin.show(
         888,
         "Updating Notifications",
@@ -132,28 +136,36 @@ void onServiceStarted(ServiceInstance service) async {
     }
   }
 
-  preferences.setLastForegroundServiceRunSucceeded(true);
-
   if (preferences.useLegacyNotificationHandler) {
     Log.i("Using legacy background notification handler");
-    var notificationManager = BackgroundNotificationsManager(service);
+    var notificationManager = BackgroundNotificationsManager(instance!);
+
+    instance!.on("on_message_received").listen(notificationManager.onReceived);
     await notificationManager.init();
-
-    service.on("on_message_received").listen(notificationManager.onReceived);
-
-    service.invoke("ready");
 
     await Future.delayed(const Duration(milliseconds: 200));
     notificationManager.flushQueueLoop();
   } else {
     Log.i("Using new background handler");
-    var notificationManager = BackgroundNotificationsManager2(service);
-    await notificationManager.init();
+    var notificationManager = BackgroundNotificationsManager2(instance!);
+    instance!.on("on_message_received").listen(notificationManager.onReceived);
 
-    service.on("on_message_received").listen(notificationManager.onReceived);
-    service.invoke("ready");
+    await notificationManager.init();
 
     await Future.delayed(const Duration(milliseconds: 200));
     notificationManager.flushQueueLoop();
   }
+
+  preferences.setLastForegroundServiceRunSucceeded(true);
+  instance?.invoke("ready");
+}
+
+@pragma('vm:entry-point')
+void onServiceStarted(ServiceInstance service) async {
+  Log.prefix = "background-service";
+  Log.i("Hello from background service, ${Isolate.current.debugName}");
+  isHeadless = true;
+  instance = service;
+
+  service.on("init").listen(onServiceInit);
 }
