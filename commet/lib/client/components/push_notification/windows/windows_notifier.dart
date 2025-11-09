@@ -160,10 +160,4 @@ class WindowsNotifier implements Notifier {
 
   @override
   Future<void> clearNotifications(Room room) async {}
-
-  @override
-  Future<String?> convertFormattedContent(
-      String formattedContent, String format, Room room) async {
-    return null;
-  }
 }

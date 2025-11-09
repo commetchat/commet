@@ -214,10 +214,4 @@ class AndroidNotifier implements Notifier {
       }
     }
   }
-
-  @override
-  Future<String?> convertFormattedContent(
-      String formattedContent, String format, Room room) async {
-    return null;
-  }
 }
