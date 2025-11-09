@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:commet/cache/file_cache.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/component.dart';
+import 'package:commet/client/components/push_notification/android/unified_push_notifier.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/global_config.dart';
@@ -100,6 +101,12 @@ void bubble() async {
 
 void main(List<String> args) async {
   commandLineArgs = args;
+
+  if (commandLineArgs.contains("--unifiedpush-bg")) {
+    Log.i("Received unified push in background");
+    unifiedPushEntry();
+    return;
+  }
 
   if (BuildConfig.RELEASE) {
     runZonedGuarded(appMain, Log.onError, zoneSpecification: Log.spec);

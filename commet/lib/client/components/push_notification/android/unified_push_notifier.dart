@@ -20,7 +20,12 @@ import 'package:flutter/material.dart';
 import 'package:unifiedpush/unifiedpush.dart';
 
 @pragma('vm:entry-point')
-void unifiedPushEntry() async {}
+void unifiedPushEntry() async {
+  isHeadless = true;
+  await WidgetsFlutterBinding.ensureInitialized();
+  await preferences.init();
+  await UnifiedPushNotifier().init();
+}
 
 class UnifiedPushNotifier implements Notifier {
   late AndroidNotifier notifier;
@@ -62,12 +67,24 @@ class UnifiedPushNotifier implements Notifier {
     await notifier.init();
 
     Log.i("Initializing unified push");
-    UnifiedPush.initialize(onMessage: onMessage, onNewEndpoint: onNewEndpoint);
+    var result = await UnifiedPush.initialize(
+        onMessage: onMessage,
+        onNewEndpoint: onNewEndpoint,
+        onUnregistered: onUnregistered,
+        onRegistrationFailed: onRegistrationFailed);
+    if (result) {
+      await UnifiedPush.register();
+    }
 
+    Log.i("Registered unified push: $result");
     var distributor = await UnifiedPush.getDistributor();
     _distributor = distributor;
 
     isInit = true;
+  }
+
+  void onRegistrationFailed(FailedReason reason, String instance) {
+    Log.e("UnifiedPush registration failed: ${instance} - ${reason.name} ");
   }
 
   @override
@@ -89,10 +106,11 @@ class UnifiedPushNotifier implements Notifier {
     return notifier.requestPermission();
   }
 
-  void onNewEndpoint(String endpoint, String instance) async {
-    await preferences.setUnifiedPushEndpoint(endpoint);
+  void onNewEndpoint(PushEndpoint endpoint, String instance) async {
+    Log.i("New endpoint ($instance): ${endpoint}");
+    await preferences.setUnifiedPushEndpoint(endpoint.url);
     await PushNotificationComponent.updateAllPushers();
-    onEndpointChanged.add(endpoint);
+    onEndpointChanged.add(endpoint.url);
   }
 
   Future<void> onForegroundMessage(Map<String, dynamic> message) async {
@@ -131,39 +149,25 @@ class UnifiedPushNotifier implements Notifier {
         message["room_id"], message["event_id"]));
   }
 
-  void onMessage(Uint8List message, String instance) async {
-    var data = utf8.decode(message);
+  void onMessage(PushMessage message, String instance) async {
+    var data = utf8.decode(message.content);
     var json = jsonDecode(data) as Map<String, dynamic>;
 
     var notifData = json['notification'] as Map<String, dynamic>;
     Log.i("Received message from unified push: $json");
 
-    var eventId = notifData['event_id'] as String;
-
-    // Workaround for notifications being displayed twice sometimes. Not sure where its coming from...
-    if (notifiedEvents.contains(eventId)) {
-      return;
-    }
-    notifiedEvents.add(eventId);
-
-    switch (WidgetsBinding.instance.lifecycleState) {
-      case null:
-      case AppLifecycleState.detached:
-      case AppLifecycleState.inactive:
-      case AppLifecycleState.hidden:
-      case AppLifecycleState.paused:
-        onBackgroundMessage(notifData);
-        break;
-      case AppLifecycleState.resumed:
-        onForegroundMessage(notifData);
+    if (commandLineArgs.contains("--unifiedpush-bg")) {
+      onBackgroundMessage(notifData);
+    } else {
+      onForegroundMessage(notifData);
     }
 
     Log.i("${WidgetsBinding.instance.lifecycleState}");
   }
 
-  void onRegistrationFailed(String instance) {}
-
-  void onUnregistered(String instance) {}
+  void onUnregistered(String instance) {
+    Log.i("Unified push unregistered: $instance");
+  }
 
   Future<void> unregister() async {
     await UnifiedPush.unregister();

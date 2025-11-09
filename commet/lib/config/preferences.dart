@@ -57,6 +57,9 @@ class Preferences {
   static const String _previewUrlsInNotification =
       "preview_urls_in_notification";
 
+  static const String _legacyNotificationHandler =
+      "use_legacy_notification_handler";
+
   final StreamController _onSettingChanged = StreamController.broadcast();
   Stream get onSettingChanged => _onSettingChanged.stream;
   bool isInit = false;
@@ -373,6 +376,14 @@ class Preferences {
 
   Future<void> setPreviewUrlsInNotifications(bool value) async {
     await _preferences!.setBool(_previewUrlsInNotification, value);
+    _onSettingChanged.add(null);
+  }
+
+  bool get useLegacyNotificationHandler =>
+      _preferences!.getBool(_legacyNotificationHandler) ?? false;
+
+  Future<void> setuseLegacyNotificationHandler(bool value) async {
+    await _preferences!.setBool(_legacyNotificationHandler, value);
     _onSettingChanged.add(null);
   }
 }

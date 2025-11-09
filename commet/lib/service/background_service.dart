@@ -5,6 +5,7 @@ import 'dart:ui';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/service/background_service_notifications/background_service_task_notification.dart';
+import 'package:commet/service/background_service_notifications/background_service_task_notification2.dart';
 import 'package:commet/service/background_service_task.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
@@ -107,9 +108,10 @@ Future<bool> initBackgroundService() async {
 
 @pragma('vm:entry-point')
 void onServiceStarted(ServiceInstance service) async {
-  DartPluginRegistrant.ensureInitialized();
   Log.prefix = "background-service";
   Log.i("Hello from background service, ${Isolate.current.debugName}");
+  isHeadless = true;
+
   if (!preferences.isInit) {
     await preferences.init();
   }
@@ -139,13 +141,26 @@ void onServiceStarted(ServiceInstance service) async {
 
   preferences.setLastForegroundServiceRunSucceeded(true);
 
-  var notificationManager = BackgroundNotificationsManager(service);
-  await notificationManager.init();
+  if (preferences.useLegacyNotificationHandler) {
+    Log.i("Using legacy background notification handler");
+    var notificationManager = BackgroundNotificationsManager(service);
+    await notificationManager.init();
 
-  service.on("on_message_received").listen(notificationManager.onReceived);
+    service.on("on_message_received").listen(notificationManager.onReceived);
 
-  service.invoke("ready");
+    service.invoke("ready");
 
-  await Future.delayed(const Duration(milliseconds: 200));
-  notificationManager.flushQueueLoop();
+    await Future.delayed(const Duration(milliseconds: 200));
+    notificationManager.flushQueueLoop();
+  } else {
+    Log.i("Using new background handler");
+    var notificationManager = BackgroundNotificationsManager2(service);
+    await notificationManager.init();
+
+    service.on("on_message_received").listen(notificationManager.onReceived);
+    service.invoke("ready");
+
+    await Future.delayed(const Duration(milliseconds: 200));
+    notificationManager.flushQueueLoop();
+  }
 }

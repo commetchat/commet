@@ -102,7 +102,10 @@ class NotificationManager {
 
   static Future<void> notify(NotificationContent notification,
       {bool bypassModifiers = false}) async {
-    if (_notifier == null) return;
+    if (_notifier == null) {
+      Log.e("Failed to show notification, notifier has not been initialzied");
+      return;
+    }
 
     NotificationContent? content = notification;
 

@@ -39,11 +39,12 @@ dependencies:
   sqflite: ^2.3.0
   sqflite_common_ffi: ^2.3.0+4
   test: ^1.24.3
-  unifiedpush: ^5.0.1
+  unifiedpush: ^6.2.0
+  unifiedpush_ui: ^0.2.0
   universal_html: ^2.2.4
   url_launcher: ^6.1.11
   win_toast: ^0.4.0
-  window_manager: ^0.3.4
+  window_manager: ^0.5.1
   flutter: 
     sdk: flutter
   flutter_highlighter: 

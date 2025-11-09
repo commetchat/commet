@@ -32,6 +32,8 @@ class BackgroundNotificationsManager {
   List<Map<String, dynamic>> queue = List.empty(growable: true);
 
   Future<void> init() async {
+    Log.i("Initializing Background Notifications Manager!");
+
     isHeadless = true;
     await NotificationManager.init(isBackgroundService: true);
 

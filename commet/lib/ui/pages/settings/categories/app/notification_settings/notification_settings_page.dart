@@ -79,49 +79,47 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
   }
 
   Widget buildNotificationSettings() {
-    if (notifier is UnifiedPushNotifier) {
-      return const UnifiedPushSetupView();
-    }
-
-    if (PlatformUtils.isLinux) {
-      return Column(
-        children: [
-          GeneralSettingsPageState.settingToggle(
-            preferences.formatNotificationBody,
-            title: "Message Body Formatting",
-            description: "Apply user formatting in message notifications",
-            onChanged: (value) async {
-              setState(() {
-                preferences.setFormatNotificationBody(value);
-              });
-            },
+    return Column(
+      children: [
+        if (PlatformUtils.isLinux)
+          Column(
+            children: [
+              GeneralSettingsPageState.settingToggle(
+                preferences.formatNotificationBody,
+                title: "Message Body Formatting",
+                description: "Apply user formatting in message notifications",
+                onChanged: (value) async {
+                  setState(() {
+                    preferences.setFormatNotificationBody(value);
+                  });
+                },
+              ),
+              GeneralSettingsPageState.settingToggle(
+                preferences.showMediaInNotifications,
+                title: "Show Images",
+                description: "Show images in notifications",
+                onChanged: (value) async {
+                  setState(() {
+                    preferences.setShowMediaInNotifications(value);
+                  });
+                },
+              ),
+              GeneralSettingsPageState.settingToggle(
+                preferences.previewUrlsInNotifications,
+                title: "Preview Urls",
+                description:
+                    "Fetch URL previews to show extra information about links in notifications",
+                onChanged: (value) async {
+                  setState(() {
+                    preferences.setPreviewUrlsInNotifications(value);
+                  });
+                },
+              ),
+            ],
           ),
-          GeneralSettingsPageState.settingToggle(
-            preferences.showMediaInNotifications,
-            title: "Show Images",
-            description: "Show images in notifications",
-            onChanged: (value) async {
-              setState(() {
-                preferences.setShowMediaInNotifications(value);
-              });
-            },
-          ),
-          GeneralSettingsPageState.settingToggle(
-            preferences.previewUrlsInNotifications,
-            title: "Preview Urls",
-            description:
-                "Fetch URL previews to show extra information about links in notifications",
-            onChanged: (value) async {
-              setState(() {
-                preferences.setPreviewUrlsInNotifications(value);
-              });
-            },
-          ),
-        ],
-      );
-    }
-
-    return tiamat.Text(notificationSettingsNotSupported);
+        if (notifier is UnifiedPushNotifier) UnifiedPushSetupView(),
+      ],
+    );
   }
 
   Widget pushGatewaySelector() {

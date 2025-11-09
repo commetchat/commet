@@ -12,6 +12,12 @@ class NotificationModifierSuppressOtherActiveDevice
       return content;
     }
 
+    if (clientManager == null) {
+      Log.w(
+          "Suppressing notifications for background client is not currently supported");
+      return content;
+    }
+
     var clients = clientManager!.clients
         .where((element) => element.hasRoom(content.roomId));
 

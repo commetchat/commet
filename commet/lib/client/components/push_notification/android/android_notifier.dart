@@ -30,6 +30,8 @@ class AndroidNotifier implements Notifier {
 
   @override
   Future<void> init() async {
+    Log.i("Initializing notifier! is headless: $isHeadless");
+
     flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
     const settings = AndroidInitializationSettings("notification_icon");
