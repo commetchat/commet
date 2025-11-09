@@ -46,7 +46,6 @@ import 'package:matrix/matrix_api_lite/model/stripped_state_event.dart';
 
 // ignore: implementation_imports
 import 'package:matrix/src/utils/markdown.dart' as mx_markdown;
-import 'package:media_kit_video/media_kit_video.dart';
 
 import '../attachment.dart';
 import '../client.dart';

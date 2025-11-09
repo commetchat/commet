@@ -1,5 +1,3 @@
-import 'package:commet/client/attachment.dart';
-import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/client/components/message_effects/message_effect_component.dart';
 import 'package:commet/client/components/photo_album_room/photo_album_room_component.dart';

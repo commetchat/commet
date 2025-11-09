@@ -1,17 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:math';
-
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notifier.dart';
-import 'package:commet/client/components/url_preview/url_preview_component.dart';
-import 'package:commet/client/matrix/matrix_client.dart';
-import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
-import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/main.dart';
-import 'package:commet/ui/atoms/rich_text/matrix_html_parser.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/image/lod_image.dart';
 import 'package:commet/utils/image_utils.dart';
@@ -20,10 +13,6 @@ import 'package:desktop_notifications/desktop_notifications.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_local_notifications_linux/src/model/hint.dart' as notif;
-import 'package:html/dom.dart' as html;
-import 'package:html/parser.dart';
-import 'package:markdown/markdown.dart';
-import 'package:vector_math/vector_math.dart';
 import 'package:window_manager/window_manager.dart';
 import 'dart:ui' as ui;
 

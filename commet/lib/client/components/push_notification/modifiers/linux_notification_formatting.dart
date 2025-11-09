@@ -2,7 +2,6 @@ import 'package:commet/client/components/push_notification/linux/linux_notifier.
 import 'package:commet/client/components/push_notification/modifiers/notification_modifiers.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'dart:async';
-import 'dart:math';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
