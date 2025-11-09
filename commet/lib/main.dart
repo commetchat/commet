@@ -50,6 +50,8 @@ bool isHeadless = false;
 
 Future<void>? loading;
 
+List<String> commandLineArgs = [];
+
 @pragma('vm:entry-point')
 void bubble() async {
   Log.prefix = "bubble";
@@ -96,7 +98,9 @@ void bubble() async {
       )));
 }
 
-void main() async {
+void main(List<String> args) async {
+  commandLineArgs = args;
+
   if (BuildConfig.RELEASE) {
     runZonedGuarded(appMain, Log.onError, zoneSpecification: Log.spec);
   } else {

@@ -163,6 +163,8 @@ class _AppInfoState extends State<_AppInfo> {
                         ),
                       if (preferences.developerMode)
                         tiamat.Text.labelLow(getEncryptionInfo()),
+                      if (preferences.developerMode)
+                        tiamat.Text.labelLow(commandLineArgs.join(" "))
                     ],
                   ),
                   Padding(
