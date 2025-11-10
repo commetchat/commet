@@ -146,7 +146,7 @@ class BackgroundNotificationsManager2 {
       var content = MessageNotificationContent(
           senderName: member.displayName,
           senderId: event.senderId,
-          roomName: roomId,
+          roomName: room.displayName,
           content: event.plainTextBody,
           eventId: eventId,
           roomId: roomId,

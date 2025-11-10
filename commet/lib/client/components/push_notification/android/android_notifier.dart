@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notifier.dart';
+import 'package:commet/client/matrix_background/matrix_background_room.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
@@ -75,6 +76,10 @@ class AndroidNotifier implements Notifier {
       return;
     }
 
+    if (room is MatrixBackgroundRoom) {
+      await room.init();
+    }
+
     if (flutterLocalNotificationsPlugin == null) {
       Log.i(
           "Flutter local notifications plugin was null. Something went wrong");
@@ -99,7 +104,7 @@ class AndroidNotifier implements Notifier {
 
     Uri? roomAvatar = await ShortcutsManager.getCachedAvatarImage(
         placeholderColor: room.defaultColor,
-        placeholderText: room.displayName,
+        placeholderText: content.roomName,
         imageId: content.roomImageId,
         format: ShortcutIconFormat.png,
         identifier: room.identifier,
