@@ -70,8 +70,6 @@ class BackgroundNotificationsManager2 {
           }
         }
 
-        throw Exception("fake error!");
-
         var entry = queue.firstOrNull;
         if (entry != null) {
           Log.i("Processing entry: $entry");
@@ -88,7 +86,7 @@ class BackgroundNotificationsManager2 {
         NotificationManager.notify(ErrorNotificationContent(
             title: "An error occurred while processing notifications",
             content: "${e} \n\n ${s}"));
-      } catch (e1, s2) {}
+      } catch (_) {}
     }
 
     if (instance != null) {
