@@ -14,7 +14,6 @@ import 'package:commet/utils/shortcuts_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:media_kit/generated/libmpv/bindings.dart';
 
 class AndroidNotifier implements Notifier {
   @override
@@ -238,7 +237,7 @@ class AndroidNotifier implements Notifier {
     );
 
     await flutterLocalNotificationsPlugin?.show(
-      Random().nextInt(INT32_MAX),
+      Random().nextInt(1000000),
       notification.title,
       notification.content,
       NotificationDetails(android: details),
