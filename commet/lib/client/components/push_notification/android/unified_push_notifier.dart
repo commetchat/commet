@@ -143,12 +143,21 @@ class UnifiedPushNotifier implements Notifier {
   }
 
   Future<void> onBackgroundMessage(Map<String, dynamic> message) async {
-    var notificationManager = BackgroundNotificationsManager2(null);
+    try {
+      var notificationManager = BackgroundNotificationsManager2(null);
 
-    await notificationManager.init();
+      await notificationManager.init();
 
-    notificationManager.handleMessage(
-        {"event_id": message["event_id"], "room_id": message["room_id"]});
+      notificationManager.handleMessage(
+          {"event_id": message["event_id"], "room_id": message["room_id"]});
+    } catch (e, s) {
+      Log.e(
+          "An error occured while processing unified push background message");
+      Log.onError(e, s);
+      NotificationManager.notify(ErrorNotificationContent(
+          title: "An error occurred while processing notifications",
+          content: "${e} \n\n ${s}"));
+    }
   }
 
   void onMessage(PushMessage message, String instance) async {

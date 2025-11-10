@@ -19,7 +19,7 @@ class UnifiedPushSetup implements SetupMenu {
   GlobalKey key = GlobalKey();
   @override
   Widget builder(BuildContext context) {
-    return NotificationSettingsPage(key: key);
+    return UnifiedPushSetupView(key: key);
   }
 
   @override

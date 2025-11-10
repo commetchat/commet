@@ -70,6 +70,8 @@ class BackgroundNotificationsManager2 {
           }
         }
 
+        throw Exception("fake error!");
+
         var entry = queue.firstOrNull;
         if (entry != null) {
           Log.i("Processing entry: $entry");
@@ -81,6 +83,12 @@ class BackgroundNotificationsManager2 {
     } catch (e, s) {
       Log.e("An error occured while processing the notification service loop");
       Log.onError(e, s);
+
+      try {
+        NotificationManager.notify(ErrorNotificationContent(
+            title: "An error occurred while processing notifications",
+            content: "${e} \n\n ${s}"));
+      } catch (e1, s2) {}
     }
 
     if (instance != null) {
@@ -90,67 +98,77 @@ class BackgroundNotificationsManager2 {
   }
 
   Future<void> handleMessage(Map<String, dynamic> data) async {
-    var roomId = data["room_id"] as String;
-    var eventId = data["event_id"] as String;
+    try {
+      var roomId = data["room_id"] as String;
+      var eventId = data["event_id"] as String;
 
-    String? clientId;
-    Log.i("Finding which client should handle this notification");
-    for (var client in clientManager!.clients) {
-      Log.i("Client: ${client.identifier}");
+      String? clientId;
+      Log.i("Finding which client should handle this notification");
+      for (var client in clientManager!.clients) {
+        Log.i("Client: ${client.identifier}");
 
-      if (client.hasRoom(roomId)) {
-        Log.i("Found correct client!");
-        clientId = client.identifier;
+        if (client.hasRoom(roomId)) {
+          Log.i("Found correct client!");
+          clientId = client.identifier;
+        }
       }
+
+      var client = clientManager!.clients
+          .firstWhere((element) => element.hasRoom(roomId));
+
+      var directMessages = client.getComponent<DirectMessagesComponent>();
+
+      Log.i("Got direct messages component: ${directMessages}");
+      Log.i("Found client: ${client.identifier}");
+      var room = client.getRoom(roomId);
+
+      if (room is MatrixBackgroundRoom) {
+        await room.init();
+      }
+
+      Log.i("Found room: ${room?.displayName}");
+
+      final isDirectMessage =
+          directMessages?.isRoomDirectMessage(room!) == true;
+      Log.i("Is direct message: $isDirectMessage");
+
+      var event = await room!.getEvent(eventId);
+
+      Log.e("got event: ${event}");
+
+      if (clientId == null) {
+        Log.e("Could not find a client to handle this notification");
+        return;
+      }
+
+      if (event == null) return;
+
+      var member = await room.fetchMember(event.senderId);
+
+      var content = MessageNotificationContent(
+          senderName: member.displayName,
+          senderId: event.senderId,
+          roomName: roomId,
+          content: event.plainTextBody,
+          eventId: eventId,
+          roomId: roomId,
+          clientId: clientId,
+          senderImage: member.avatar,
+          roomImageId: room.avatarId,
+          senderImageId: member.avatarId,
+          roomImage: room.avatar,
+          isDirectMessage: isDirectMessage);
+
+      Log.i("Sender image: ${member.avatar}");
+
+      await NotificationManager.notify(content);
+    } catch (e, s) {
+      Log.e("An error occured while processing the notification service loop");
+      Log.onError(e, s);
+
+      NotificationManager.notify(ErrorNotificationContent(
+          title: "An error occurred while processing notifications",
+          content: "${e} \n\n ${s}"));
     }
-
-    var client =
-        clientManager!.clients.firstWhere((element) => element.hasRoom(roomId));
-
-    var directMessages = client.getComponent<DirectMessagesComponent>();
-
-    Log.i("Got direct messages component: ${directMessages}");
-    Log.i("Found client: ${client.identifier}");
-    var room = client.getRoom(roomId);
-
-    if (room is MatrixBackgroundRoom) {
-      await room.init();
-    }
-
-    Log.i("Found room: ${room?.displayName}");
-
-    final isDirectMessage = directMessages?.isRoomDirectMessage(room!) == true;
-    Log.i("Is direct message: $isDirectMessage");
-
-    var event = await room!.getEvent(eventId);
-
-    Log.e("got event: ${event}");
-
-    if (clientId == null) {
-      Log.e("Could not find a client to handle this notification");
-      return;
-    }
-
-    if (event == null) return;
-
-    var member = await room.fetchMember(event.senderId);
-
-    var content = MessageNotificationContent(
-        senderName: member.displayName,
-        senderId: event.senderId,
-        roomName: roomId,
-        content: event.plainTextBody,
-        eventId: eventId,
-        roomId: roomId,
-        clientId: clientId,
-        senderImage: member.avatar,
-        roomImageId: room.avatarId,
-        senderImageId: member.avatarId,
-        roomImage: room.avatar,
-        isDirectMessage: isDirectMessage);
-
-    Log.i("Sender image: ${member.avatar}");
-
-    await NotificationManager.notify(content);
   }
 }

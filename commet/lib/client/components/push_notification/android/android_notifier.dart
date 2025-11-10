@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:commet/client/client.dart';
@@ -13,6 +14,7 @@ import 'package:commet/utils/shortcuts_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:media_kit/generated/libmpv/bindings.dart';
 
 class AndroidNotifier implements Notifier {
   @override
@@ -59,6 +61,8 @@ class AndroidNotifier implements Notifier {
     switch (notification) {
       case MessageNotificationContent _:
         return displayMessageNotification(notification);
+      case ErrorNotificationContent _:
+        return displayErrorNotification(notification);
       default:
     }
   }
@@ -81,6 +85,9 @@ class AndroidNotifier implements Notifier {
     if (shortcutsManager.loading != null) {
       await shortcutsManager.loading;
     }
+
+    Log.i("Sender name: '${content.senderName}'");
+    Log.i("Room Name: '${room.displayName}'");
 
     Uri? userAvatar = await ShortcutsManager.getCachedAvatarImage(
         placeholderColor: room.getColorOfUser(content.senderId),
@@ -217,5 +224,24 @@ class AndroidNotifier implements Notifier {
         flutterLocalNotificationsPlugin?.cancel(noti.id!);
       }
     }
+  }
+
+  Future<void> displayErrorNotification(
+      ErrorNotificationContent notification) async {
+    var details = AndroidNotificationDetails(
+      "errors",
+      "Error Messages",
+      importance: Importance.high,
+      priority: Priority.high,
+      icon: "notification_icon",
+      styleInformation: BigTextStyleInformation(notification.content),
+    );
+
+    await flutterLocalNotificationsPlugin?.show(
+      Random().nextInt(INT32_MAX),
+      notification.title,
+      notification.content,
+      NotificationDetails(android: details),
+    );
   }
 }

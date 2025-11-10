@@ -19,6 +19,10 @@ class NotificationContent {
       this.priority = NotificationPriority.normal});
 }
 
+class ErrorNotificationContent extends NotificationContent {
+  ErrorNotificationContent({required super.title, required super.content});
+}
+
 class MessageNotificationContent extends NotificationContent {
   String get senderName => title;
   String senderId;
