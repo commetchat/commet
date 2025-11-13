@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:collection';
+import 'dart:convert';
 
 import 'package:commet/cache/file_cache.dart';
 import 'package:commet/client/client_manager.dart';
@@ -97,6 +98,13 @@ class BackgroundNotificationsManager2 {
 
   Future<void> handleMessage(Map<String, dynamic> data) async {
     try {
+      if (!data.containsKey("room_id") || !data.containsKey("event_id")) {
+        NotificationManager.notify(ErrorNotificationContent(
+          title: "Unknown Notification Data",
+          content: jsonEncode(data),
+        ));
+      }
+
       var roomId = data["room_id"] as String;
       var eventId = data["event_id"] as String;
 
