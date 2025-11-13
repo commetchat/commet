@@ -66,6 +66,9 @@ class MatrixRoom extends Room {
 
   ImageProvider? _avatar;
 
+  @override
+  String? get avatarId => _matrixRoom.avatar?.toString();
+
   late MatrixClient _client;
 
   MatrixTimeline? _timeline;

@@ -3,6 +3,7 @@ import 'package:commet/cache/file_cache.dart';
 import 'package:commet/config/app_config.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/debug/log.dart';
+import 'package:commet/main.dart';
 import 'package:commet/utils/database/multiple_database_server.dart';
 import 'package:commet/utils/rng.dart';
 import 'package:drift/drift.dart';
@@ -158,7 +159,9 @@ class DriftFileCache implements FileCache {
     var connection = await DatabaseIsolate.connect(file.absolute.path);
     db = DriftFileCacheDatabase(connection);
 
-    clean();
+    if (!isHeadless) {
+      clean();
+    }
   }
 
   @override

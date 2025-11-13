@@ -11,6 +11,10 @@ abstract class PushNotificationComponent<T extends Client>
   Future<void> updatePushers();
 
   static Future<void> updateAllPushers() async {
+    if (clientManager == null) {
+      return;
+    }
+
     for (var client in clientManager!.clients) {
       var notifier = client.getComponent<PushNotificationComponent>();
       await notifier?.updatePushers();

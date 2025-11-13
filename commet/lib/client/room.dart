@@ -29,6 +29,8 @@ abstract class Room {
   /// Gets the room's avatar
   ImageProvider? get avatar;
 
+  String? get avatarId;
+
   /// Returns a list of member IDs
   Iterable<String> get memberIds;
 

@@ -57,6 +57,12 @@ class Preferences {
   static const String _previewUrlsInNotification =
       "preview_urls_in_notification";
 
+  static const String _legacyNotificationHandler =
+      "use_legacy_notification_handler";
+
+  static const String _silenceNotifications =
+      "silence_notifications_when_other_device_active";
+
   final StreamController _onSettingChanged = StreamController.broadcast();
   Stream get onSettingChanged => _onSettingChanged.stream;
   bool isInit = false;
@@ -373,6 +379,22 @@ class Preferences {
 
   Future<void> setPreviewUrlsInNotifications(bool value) async {
     await _preferences!.setBool(_previewUrlsInNotification, value);
+    _onSettingChanged.add(null);
+  }
+
+  bool get useLegacyNotificationHandler =>
+      _preferences!.getBool(_legacyNotificationHandler) ?? false;
+
+  Future<void> setuseLegacyNotificationHandler(bool value) async {
+    await _preferences!.setBool(_legacyNotificationHandler, value);
+    _onSettingChanged.add(null);
+  }
+
+  bool get silenceNotifications =>
+      _preferences!.getBool(_silenceNotifications) ?? true;
+
+  Future<void> setSilenceNotifications(bool value) async {
+    await _preferences!.setBool(_silenceNotifications, value);
     _onSettingChanged.add(null);
   }
 }

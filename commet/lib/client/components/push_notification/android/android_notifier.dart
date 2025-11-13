@@ -1,8 +1,10 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notifier.dart';
+import 'package:commet/client/matrix_background/matrix_background_room.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
@@ -30,6 +32,8 @@ class AndroidNotifier implements Notifier {
 
   @override
   Future<void> init() async {
+    Log.i("Initializing notifier! is headless: $isHeadless");
+
     flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
     const settings = AndroidInitializationSettings("notification_icon");
@@ -57,6 +61,8 @@ class AndroidNotifier implements Notifier {
     switch (notification) {
       case MessageNotificationContent _:
         return displayMessageNotification(notification);
+      case ErrorNotificationContent _:
+        return displayErrorNotification(notification);
       default:
     }
   }
@@ -70,6 +76,10 @@ class AndroidNotifier implements Notifier {
       return;
     }
 
+    if (room is MatrixBackgroundRoom) {
+      await room.init();
+    }
+
     if (flutterLocalNotificationsPlugin == null) {
       Log.i(
           "Flutter local notifications plugin was null. Something went wrong");
@@ -80,9 +90,13 @@ class AndroidNotifier implements Notifier {
       await shortcutsManager.loading;
     }
 
+    Log.i("Sender name: '${content.senderName}'");
+    Log.i("Room Name: '${room.displayName}'");
+
     Uri? userAvatar = await ShortcutsManager.getCachedAvatarImage(
         placeholderColor: room.getColorOfUser(content.senderId),
         placeholderText: content.senderName,
+        imageId: content.senderImageId,
         identifier: content.senderId,
         format: ShortcutIconFormat.png,
         shouldZoomOut: false,
@@ -90,7 +104,8 @@ class AndroidNotifier implements Notifier {
 
     Uri? roomAvatar = await ShortcutsManager.getCachedAvatarImage(
         placeholderColor: room.defaultColor,
-        placeholderText: room.displayName,
+        placeholderText: content.roomName,
+        imageId: content.roomImageId,
         format: ShortcutIconFormat.png,
         identifier: room.identifier,
         imageProvider: await room.getShortcutImage());
@@ -213,5 +228,24 @@ class AndroidNotifier implements Notifier {
         flutterLocalNotificationsPlugin?.cancel(noti.id!);
       }
     }
+  }
+
+  Future<void> displayErrorNotification(
+      ErrorNotificationContent notification) async {
+    var details = AndroidNotificationDetails(
+      "errors",
+      "Error Messages",
+      importance: Importance.high,
+      priority: Priority.high,
+      icon: "notification_icon",
+      styleInformation: BigTextStyleInformation(notification.content),
+    );
+
+    await flutterLocalNotificationsPlugin?.show(
+      Random().nextInt(1000000),
+      notification.title,
+      notification.content,
+      NotificationDetails(android: details),
+    );
   }
 }
