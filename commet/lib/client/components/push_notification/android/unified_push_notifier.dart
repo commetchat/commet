@@ -148,6 +148,13 @@ class UnifiedPushNotifier implements Notifier {
 
       await notificationManager.init();
 
+      if (!message.containsKey("room_id") || !message.containsKey("event_id")) {
+        NotificationManager.notify(ErrorNotificationContent(
+          title: "Unknown Notification Data",
+          content: jsonEncode(message),
+        ));
+      }
+
       notificationManager.handleMessage(
           {"event_id": message["event_id"], "room_id": message["room_id"]});
     } catch (e, s) {
