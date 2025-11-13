@@ -153,6 +153,8 @@ class UnifiedPushNotifier implements Notifier {
           title: "Unknown Notification Data",
           content: jsonEncode(message),
         ));
+
+        return;
       }
 
       notificationManager.handleMessage(
