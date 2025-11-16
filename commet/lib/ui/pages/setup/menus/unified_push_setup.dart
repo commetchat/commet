@@ -11,7 +11,6 @@ import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:unifiedpush/unifiedpush.dart';
-import 'package:unifiedpush_ui/unifiedpush_ui.dart';
 
 class UnifiedPushSetup implements SetupMenu {
   StreamController<SetupMenuState> controller = StreamController();
@@ -162,13 +161,7 @@ If you already have a Unified Push compatible distributor app installed, you can
     await notifier?.init();
 
     if (mounted) {
-      await UnifiedPushUi(
-        context: context,
-        instances: ["default"],
-        unifiedPushFunctions: UPFunctions(),
-        showNoDistribDialog: false,
-        onNoDistribDialogDismissed: () {},
-      ).registerAppWithDialog();
+      UnifiedPush.registerAppWithDialog(context);
     }
 
     setState(() {
@@ -183,31 +176,5 @@ If you already have a Unified Push compatible distributor app installed, you can
       loading = false;
       endpoint = null;
     });
-  }
-}
-
-class UPFunctions extends UnifiedPushFunctions {
-  final List<String> features = [
-    /*list of features*/
-  ];
-
-  @override
-  Future<String?> getDistributor() async {
-    return await UnifiedPush.getDistributor();
-  }
-
-  @override
-  Future<List<String>> getDistributors() async {
-    return await UnifiedPush.getDistributors(features);
-  }
-
-  @override
-  Future<void> registerApp(String instance) async {
-    await UnifiedPush.register(instance: instance, features: features);
-  }
-
-  @override
-  Future<void> saveDistributor(String distributor) async {
-    await UnifiedPush.saveDistributor(distributor);
   }
 }

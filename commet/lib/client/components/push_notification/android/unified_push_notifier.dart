@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
@@ -64,23 +65,10 @@ class UnifiedPushNotifier implements Notifier {
     await notifier.init();
 
     Log.i("Initializing unified push");
-    var result = await UnifiedPush.initialize(
-        onMessage: onMessage,
-        onNewEndpoint: onNewEndpoint,
-        onUnregistered: onUnregistered,
-        onRegistrationFailed: onRegistrationFailed);
-
-    if (!result) {
-      await UnifiedPush.register(instance: instance);
-    }
-
-    Log.i("Registered unified push ($instance): $result");
+    Log.i("Initializing unified push");
+    UnifiedPush.initialize(onMessage: onMessage, onNewEndpoint: onNewEndpoint);
 
     isInit = true;
-  }
-
-  void onRegistrationFailed(FailedReason reason, String instance) {
-    Log.e("UnifiedPush registration failed: ${instance} - ${reason.name} ");
   }
 
   @override
@@ -102,11 +90,10 @@ class UnifiedPushNotifier implements Notifier {
     return notifier.requestPermission();
   }
 
-  void onNewEndpoint(PushEndpoint endpoint, String instance) async {
-    Log.i("New endpoint ($instance): ${endpoint}");
-    await preferences.setUnifiedPushEndpoint(endpoint.url);
+  void onNewEndpoint(String endpoint, String instance) async {
+    await preferences.setUnifiedPushEndpoint(endpoint);
     await PushNotificationComponent.updateAllPushers();
-    onEndpointChanged.add(endpoint.url);
+    onEndpointChanged.add(endpoint);
   }
 
   Future<void> onForegroundMessage(Map<String, dynamic> message) async {
@@ -169,19 +156,15 @@ class UnifiedPushNotifier implements Notifier {
     }
   }
 
-  void onMessage(PushMessage message, String instance) async {
+  void onMessage(Uint8List message, String instance) async {
     Log.i("Received unified push message!");
-    var data = utf8.decode(message.content);
+    var data = utf8.decode(message);
     var json = jsonDecode(data) as Map<String, dynamic>;
 
     var notifData = json['notification'] as Map<String, dynamic>;
     Log.i("Received message from unified push: $json");
 
-    if (commandLineArgs.contains("--unifiedpush-bg")) {
-      onBackgroundMessage(notifData);
-    } else {
-      onForegroundMessage(notifData);
-    }
+    onForegroundMessage(notifData);
 
     Log.i("${WidgetsBinding.instance.lifecycleState}");
   }

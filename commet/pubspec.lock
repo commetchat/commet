@@ -1759,50 +1759,26 @@ packages:
     dependency: "direct main"
     description:
       name: unifiedpush
-      sha256: "8ed9767f750a1dc6159a77e2171641d0cb825dc87682d1ce1b8618689b79f58e"
+      sha256: "6dbed5a6305ca33f1865c7a3d814ae39476b79a2d23ca76a5708f023f405730f"
       url: "https://pub.dev"
     source: hosted
-    version: "6.2.0"
+    version: "5.0.2"
   unifiedpush_android:
     dependency: transitive
     description:
       name: unifiedpush_android
-      sha256: "556796c81e8151ee8e4275baea2f7191119e8b1412ec35523cc2ac1c44c348bf"
+      sha256: "7443dece0a850ae956514f809983eb2b39fc518c2c7d24dbfe817198bec89134"
       url: "https://pub.dev"
     source: hosted
-    version: "3.4.0"
-  unifiedpush_linux:
-    dependency: transitive
-    description:
-      name: unifiedpush_linux
-      sha256: c062d5eedd1cec70bcd33270cc4e01ae0ff6501f33d471167c06b34a968adfeb
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.0"
+    version: "2.3.0"
   unifiedpush_platform_interface:
     dependency: transitive
     description:
       name: unifiedpush_platform_interface
-      sha256: "83372bc8d794b8b12ef6993b518d7be907dcfc2191bdf6de0ece5c4445d89880"
+      sha256: dd588d78a8b2bfc10430e30035526e98caa543d0b7364a6344b5eb4815721c6d
       url: "https://pub.dev"
     source: hosted
-    version: "4.0.0"
-  unifiedpush_storage_interface:
-    dependency: transitive
-    description:
-      name: unifiedpush_storage_interface
-      sha256: b8d423a4695efc616aa21d8ab48fb5ef99d6288c68b56282b8faac1579ceabd9
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.0"
-  unifiedpush_ui:
-    dependency: "direct main"
-    description:
-      name: unifiedpush_ui
-      sha256: "1b36b2aa0bc6b61577e2661c1183bd3442969ecf77b4c78174796d324f66dd1d"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.2.0"
+    version: "2.0.2"
   universal_html:
     dependency: "direct main"
     description:
@@ -2027,14 +2003,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.3"
-  webcrypto:
-    dependency: transitive
-    description:
-      name: webcrypto
-      sha256: e393b3d0b01694a8f81efecf278ed7392877130e6e7b29f578863e4f2d0b2ebd
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.5.8"
   webdriver:
     dependency: transitive
     description:
@@ -2051,14 +2019,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.1"
-  webpush_encryption:
-    dependency: transitive
-    description:
-      name: webpush_encryption
-      sha256: "63046b7d6909f4a72ce3c153fa574726e257aaf21b1995ba063dc241a1b1520b"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.0"
   webrtc_interface:
     dependency: "direct main"
     description:
