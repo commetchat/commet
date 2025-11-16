@@ -32,7 +32,7 @@ class NotificationManager {
     Log.i("Existing notifier: $_notifier");
     _notifier ??= _getNotifier(isBackgroundService: isBackgroundService);
 
-    _modifiers.clear;
+    _modifiers.clear();
     addModifier(NotificationModifierSuppressActiveRoom());
     if (BuildConfig.ANDROID) {
       addModifier(NotificationModifierSuppressOtherActiveDevice());

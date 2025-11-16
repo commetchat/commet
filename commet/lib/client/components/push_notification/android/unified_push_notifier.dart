@@ -18,15 +18,6 @@ import 'package:commet/utils/first_time_setup.dart';
 import 'package:flutter/material.dart';
 import 'package:unifiedpush/unifiedpush.dart';
 
-@pragma('vm:entry-point')
-void unifiedPushEntry() async {
-  isHeadless = true;
-  Log.prefix = "unified-push";
-  await WidgetsFlutterBinding.ensureInitialized();
-  await preferences.init();
-  await UnifiedPushNotifier().init();
-}
-
 class UnifiedPushNotifier implements Notifier {
   late AndroidNotifier notifier;
 
@@ -65,7 +56,6 @@ class UnifiedPushNotifier implements Notifier {
     await notifier.init();
 
     Log.i("Initializing unified push");
-    Log.i("Initializing unified push");
     UnifiedPush.initialize(onMessage: onMessage, onNewEndpoint: onNewEndpoint);
 
     isInit = true;
@@ -99,8 +89,6 @@ class UnifiedPushNotifier implements Notifier {
   Future<void> onForegroundMessage(Map<String, dynamic> message) async {
     var roomId = message['room_id'] as String;
     var eventId = message['event_id'] as String;
-
-    notifiedEvents.add(eventId);
 
     var client =
         clientManager!.clients.firstWhere((element) => element.hasRoom(roomId));
@@ -157,14 +145,32 @@ class UnifiedPushNotifier implements Notifier {
   }
 
   void onMessage(Uint8List message, String instance) async {
-    Log.i("Received unified push message!");
+    Log.i("Received unified push message! $instance");
     var data = utf8.decode(message);
     var json = jsonDecode(data) as Map<String, dynamic>;
 
     var notifData = json['notification'] as Map<String, dynamic>;
     Log.i("Received message from unified push: $json");
 
-    onForegroundMessage(notifData);
+    // Workaround for notifications being displayed twice sometimes. Not sure where its coming from...
+    if (notifData.containsKey("event_id")) {
+      var eventId = notifData['event_id'] as String;
+
+      if (notifiedEvents.contains(eventId)) {
+        return;
+      }
+      notifiedEvents.add(eventId);
+
+      Timer(Duration(seconds: 5), () {
+        notifiedEvents.removeWhere((e) => e == eventId);
+      });
+    }
+
+    if (isHeadless) {
+      onBackgroundMessage(notifData);
+    } else {
+      onForegroundMessage(notifData);
+    }
 
     Log.i("${WidgetsBinding.instance.lifecycleState}");
   }
