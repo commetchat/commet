@@ -1,8 +1,12 @@
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:collection/collection.dart';
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/direct_messages/direct_message_component.dart';
+import 'package:commet/client/components/invitation/invitation_component.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
+import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/components/push_notification/notifier.dart';
 import 'package:commet/client/matrix_background/matrix_background_room.dart';
 import 'package:commet/client/room.dart';
@@ -48,6 +52,67 @@ class AndroidNotifier implements Notifier {
     }
   }
 
+  static Future<void> onForegroundMessage(Map<String, dynamic> message) async {
+    var roomId = message['room_id'] as String;
+    var eventId = message['event_id'] as String;
+
+    var client = clientManager!.clients
+        .firstWhereOrNull((element) => element.hasRoom(roomId));
+
+    if (client == null) {
+      client = clientManager!.clients.firstWhereOrNull((client) =>
+          client
+              .getComponent<InvitationComponent>()
+              ?.invitations
+              .any((i) => i.roomId == roomId) ==
+          true);
+
+      for (client in clientManager!.clients) {
+        final comp = client.getComponent<InvitationComponent>();
+
+        var invite =
+            comp?.invitations.firstWhereOrNull((i) => i.roomId == roomId);
+
+        if (invite != null) {
+          var content = GenericRoomInviteNotificationContent(
+            content: "You received an invitation to chat!",
+            title: "Room Invite",
+          );
+
+          await NotificationManager.notify(content);
+
+          return;
+        }
+      }
+
+      return;
+    }
+
+    var room = client.getRoom(roomId);
+    var event = await room!.getEvent(eventId);
+
+    var user = await room.fetchMember(event!.senderId);
+
+    bool isDirectMessage = client
+            .getComponent<DirectMessagesComponent>()
+            ?.isRoomDirectMessage(room) ??
+        false;
+
+    NotificationManager.notify(MessageNotificationContent(
+        senderName: user.displayName,
+        senderId: user.identifier,
+        roomName: room.displayName,
+        content: event.plainTextBody,
+        eventId: eventId,
+        senderImageId: user.avatarId,
+        roomImageId: room.avatarId,
+        roomId: room.identifier,
+        clientId: client.identifier,
+        senderImage: user.avatar,
+        roomImage: await room.getShortcutImage(),
+        isDirectMessage: isDirectMessage));
+  }
+
   Future<void> checkPermission() async {
     var android = flutterLocalNotificationsPlugin!
         .resolvePlatformSpecificImplementation<
@@ -63,6 +128,8 @@ class AndroidNotifier implements Notifier {
         return displayMessageNotification(notification);
       case ErrorNotificationContent _:
         return displayErrorNotification(notification);
+      case GenericRoomInviteNotificationContent _:
+        return displayGenericInviteNotification(notification);
       default:
     }
   }
@@ -239,6 +306,24 @@ class AndroidNotifier implements Notifier {
       priority: Priority.high,
       icon: "notification_icon",
       styleInformation: BigTextStyleInformation(notification.content),
+    );
+
+    await flutterLocalNotificationsPlugin?.show(
+      Random().nextInt(1000000),
+      notification.title,
+      notification.content,
+      NotificationDetails(android: details),
+    );
+  }
+
+  Future<void> displayGenericInviteNotification(
+      GenericRoomInviteNotificationContent notification) async {
+    var details = AndroidNotificationDetails(
+      "chat_invites",
+      "Chat Invitations",
+      importance: Importance.high,
+      priority: Priority.high,
+      icon: "notification_icon",
     );
 
     await flutterLocalNotificationsPlugin?.show(

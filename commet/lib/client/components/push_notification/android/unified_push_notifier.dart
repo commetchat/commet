@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:commet/client/client.dart';
-import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/components/push_notification/android/android_notifier.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
@@ -86,37 +85,6 @@ class UnifiedPushNotifier implements Notifier {
     onEndpointChanged.add(endpoint);
   }
 
-  Future<void> onForegroundMessage(Map<String, dynamic> message) async {
-    var roomId = message['room_id'] as String;
-    var eventId = message['event_id'] as String;
-
-    var client =
-        clientManager!.clients.firstWhere((element) => element.hasRoom(roomId));
-    var room = client.getRoom(roomId);
-    var event = await room!.getEvent(eventId);
-
-    var user = await room.fetchMember(event!.senderId);
-
-    bool isDirectMessage = client
-            .getComponent<DirectMessagesComponent>()
-            ?.isRoomDirectMessage(room) ??
-        false;
-
-    NotificationManager.notify(MessageNotificationContent(
-        senderName: user.displayName,
-        senderId: user.identifier,
-        roomName: room.displayName,
-        content: event.plainTextBody,
-        eventId: eventId,
-        senderImageId: user.avatarId,
-        roomImageId: room.avatarId,
-        roomId: room.identifier,
-        clientId: client.identifier,
-        senderImage: user.avatar,
-        roomImage: await room.getShortcutImage(),
-        isDirectMessage: isDirectMessage));
-  }
-
   Future<void> onBackgroundMessage(Map<String, dynamic> message) async {
     try {
       var notificationManager = BackgroundNotificationsManager2(null);
@@ -124,16 +92,16 @@ class UnifiedPushNotifier implements Notifier {
       await notificationManager.init();
 
       if (!message.containsKey("room_id") || !message.containsKey("event_id")) {
-        NotificationManager.notify(ErrorNotificationContent(
-          title: "Unknown Notification Data",
-          content: jsonEncode(message),
-        ));
+        if (preferences.developerMode)
+          NotificationManager.notify(ErrorNotificationContent(
+            title: "Unknown Notification Data",
+            content: jsonEncode(message),
+          ));
 
         return;
       }
 
-      notificationManager.handleMessage(
-          {"event_id": message["event_id"], "room_id": message["room_id"]});
+      notificationManager.handleMessage(message);
     } catch (e, s) {
       Log.e(
           "An error occured while processing unified push background message");
@@ -169,7 +137,7 @@ class UnifiedPushNotifier implements Notifier {
     if (isHeadless) {
       onBackgroundMessage(notifData);
     } else {
-      onForegroundMessage(notifData);
+      AndroidNotifier.onForegroundMessage(notifData);
     }
 
     Log.i("${WidgetsBinding.instance.lifecycleState}");

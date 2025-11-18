@@ -32,6 +32,9 @@ class ShortcutsManager {
       shortcuts = FlutterShortcuts();
       loading = shortcuts!.initialize(debug: true);
       EventBus.onSelectedRoomChanged.stream.listen(onRoomOpenedInUI);
+
+      shortcuts!
+          .listenAction((action) => Log.i("Received shortcut action: $action"));
     }
   }
 
@@ -118,6 +121,12 @@ class ShortcutsManager {
     if (cachedAvatar != null) {
       Log.i("Cache hit");
       return cachedAvatar;
+    }
+
+    if (isHeadless) {
+      Log.i(
+          "Failed to find cached image, we are headless so continuing with no image");
+      return null;
     }
 
     Log.i("Cache miss, generating image");

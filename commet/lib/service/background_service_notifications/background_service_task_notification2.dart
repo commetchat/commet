@@ -1,6 +1,5 @@
 import 'dart:async';
-import 'dart:collection';
-
+import 'package:collection/collection.dart';
 import 'package:commet/cache/file_cache.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
@@ -97,22 +96,30 @@ class BackgroundNotificationsManager2 {
 
   Future<void> handleMessage(Map<String, dynamic> data) async {
     try {
-      var roomId = data["room_id"] as String;
-      var eventId = data["event_id"] as String;
+      var roomId = data["room_id"] as String?;
+      var eventId = data["event_id"] as String?;
+      var counts = data["counts"] as String?;
 
-      String? clientId;
-      Log.i("Finding which client should handle this notification");
-      for (var client in clientManager!.clients) {
-        Log.i("Client: ${client.identifier}");
-
-        if (client.hasRoom(roomId)) {
-          Log.i("Found correct client!");
-          clientId = client.identifier;
-        }
+      if (roomId == null || eventId == null) {
+        Log.w("TODO: Handle counts: $counts");
+        return;
       }
 
       var client = clientManager!.clients
-          .firstWhere((element) => element.hasRoom(roomId));
+          .firstWhereOrNull((element) => element.hasRoom(roomId));
+
+      // If the room does not already belong to any of our clients, it must be an invite
+      // I couldn't figure out a good way to determine which client received the invite
+      // So we will just display a generic notification
+      if (client == null) {
+        var content = GenericRoomInviteNotificationContent(
+          content: "You received an invitation to chat!",
+          title: "Room Invite",
+        );
+
+        await NotificationManager.notify(content);
+        return;
+      }
 
       var directMessages = client.getComponent<DirectMessagesComponent>();
 
@@ -134,11 +141,6 @@ class BackgroundNotificationsManager2 {
 
       Log.e("got event: ${event}");
 
-      if (clientId == null) {
-        Log.e("Could not find a client to handle this notification");
-        return;
-      }
-
       if (event == null) return;
 
       var member = await room.fetchMember(event.senderId);
@@ -150,7 +152,7 @@ class BackgroundNotificationsManager2 {
           content: event.plainTextBody,
           eventId: eventId,
           roomId: roomId,
-          clientId: clientId,
+          clientId: client.identifier,
           senderImage: member.avatar,
           roomImageId: room.avatarId,
           senderImageId: member.avatarId,

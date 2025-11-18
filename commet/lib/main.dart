@@ -215,11 +215,14 @@ Future<void> startGui() async {
 
     var initialIntent = await ReceiveIntent.getInitialIntent();
     ReceiveIntent.receivedIntentStream.listen((event) {
+      Log.i("Received intent: ${initialIntent}");
       var uri = AndroidIntentHelper.getUriFromIntent(event);
       if (uri is OpenRoomURI) {
         EventBus.openRoom.add((uri.roomId, uri.clientId));
       }
     });
+
+    Log.i("Initial intent: ${initialIntent}");
 
     var uri = AndroidIntentHelper.getUriFromIntent(initialIntent);
 

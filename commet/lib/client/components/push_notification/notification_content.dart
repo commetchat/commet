@@ -23,6 +23,11 @@ class ErrorNotificationContent extends NotificationContent {
   ErrorNotificationContent({required super.title, required super.content});
 }
 
+class GenericRoomInviteNotificationContent extends NotificationContent {
+  GenericRoomInviteNotificationContent(
+      {required super.title, required super.content});
+}
+
 class MessageNotificationContent extends NotificationContent {
   String get senderName => title;
   String senderId;
