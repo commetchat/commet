@@ -423,7 +423,7 @@ class _EmoticonCreatorState extends State<EmoticonCreator> {
                       SizedBox(
                         width: 50,
                         height: 50,
-                        child: ImagePicker(
+                        child: ImagePickerButton(
                           size: 50,
                           icon: Icons.add_a_photo,
                           withData: true,

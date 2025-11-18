@@ -7,6 +7,26 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:flutter/material.dart' as m;
 
 class AdaptiveDialog {
+  static Future<T?> pickOne<T extends Object?>(
+    BuildContext context, {
+    required List<T> items,
+    required Widget Function(BuildContext context, T item, Function() callback)
+        itemBuilder,
+    String? title,
+    bool scrollable = true,
+    bool dismissible = true,
+    double initialHeightMobile = 0.5,
+  }) {
+    return AdaptiveDialog.show<T>(context, builder: (context) {
+      return Column(
+        children: items
+            .map((i) =>
+                itemBuilder(context, i, () => Navigator.of(context).pop(i)))
+            .toList(),
+      );
+    });
+  }
+
   static Future<T?> show<T extends Object?>(
     BuildContext context, {
     required Widget Function(BuildContext context) builder,
