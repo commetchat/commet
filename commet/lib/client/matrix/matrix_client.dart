@@ -439,7 +439,7 @@ class MatrixClient extends Client {
     if (Experiments.calendarRooms) {
       if (args.roomType == RoomType.calendar) {
         const widgetId = "chat.commet.room_calendar";
-        const widgetHost = "matrix-calendar-widget.lagmachinery.workers.dev";
+        const widgetHost = "calendar-widget.commet.chat";
         creationContent = {"type": "chat.commet.calendar"};
         initialState = [
           matrix.StateEvent(
