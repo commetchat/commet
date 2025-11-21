@@ -17,10 +17,7 @@ export 'package:commet/client/space.dart';
 export 'package:commet/client/peer.dart';
 export 'package:commet/client/timeline.dart';
 
-enum LoginType {
-  loginPassword,
-  token,
-}
+enum LoginType { loginPassword, token }
 
 class ClientConnectionStatusUpdate {
   ClientConnectionStatus status;
@@ -29,18 +26,9 @@ class ClientConnectionStatusUpdate {
   ClientConnectionStatusUpdate(this.status);
 }
 
-enum ClientConnectionStatus {
-  unknown,
-  connected,
-  connecting,
-  disconnected,
-}
+enum ClientConnectionStatus { unknown, connected, connecting, disconnected }
 
-enum RoomType {
-  defaultRoom,
-  photoAlbum,
-  voipRoom,
-}
+enum RoomType { defaultRoom, photoAlbum, voipRoom, calendar }
 
 class CreateRoomArgs {
   String name;
@@ -48,11 +36,12 @@ class CreateRoomArgs {
   bool enableE2EE;
   RoomType roomType;
 
-  CreateRoomArgs(
-      {required this.name,
-      required this.visibility,
-      required this.enableE2EE,
-      this.roomType = RoomType.defaultRoom});
+  CreateRoomArgs({
+    required this.name,
+    required this.visibility,
+    required this.enableE2EE,
+    this.roomType = RoomType.defaultRoom,
+  });
 }
 
 enum LoginResult { success, failed, error, alreadyLoggedIn, cancelled }
@@ -103,15 +92,11 @@ abstract class Client {
   Stream<void> get onSync;
 
   StoredStreamController<ClientConnectionStatusUpdate>
-      get connectionStatusChanged;
+  get connectionStatusChanged;
 
   Future<void> init(bool loadingFromCache, {bool isBackgroundService = false});
 
-  Future<
-      (
-        bool,
-        List<LoginFlow>?,
-      )> setHomeserver(Uri uri);
+  Future<(bool, List<LoginFlow>?)> setHomeserver(Uri uri);
 
   Future<LoginResult> executeLoginFlow(LoginFlow flow);
 

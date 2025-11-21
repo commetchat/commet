@@ -13,17 +13,18 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 import '../../molecules/account_selector.dart';
 
 class AddSpaceOrRoomView extends StatefulWidget {
-  const AddSpaceOrRoomView(
-      {super.key,
-      this.client,
-      this.clients,
-      this.onCreate,
-      this.onJoin,
-      this.roomMode = false,
-      this.rooms,
-      this.loading = false,
-      this.onRoomsSelected,
-      this.initialPhase});
+  const AddSpaceOrRoomView({
+    super.key,
+    this.client,
+    this.clients,
+    this.onCreate,
+    this.onJoin,
+    this.roomMode = false,
+    this.rooms,
+    this.loading = false,
+    this.onRoomsSelected,
+    this.initialPhase,
+  });
   final List<Client>? clients;
   final Client? client;
   final Function(Client client, CreateRoomArgs args)? onCreate;
@@ -44,7 +45,7 @@ enum AddSpaceOrRoomPhase {
   create,
   join,
   pickExisting,
-  askCreateOrExisting
+  askCreateOrExisting,
 }
 
 class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
@@ -61,122 +62,172 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
   bool loadingSpacePreview = false;
   bool enableE2EE = true;
 
-  Debouncer spacePreviewDebounce =
-      Debouncer(delay: const Duration(milliseconds: 500));
+  Debouncer spacePreviewDebounce = Debouncer(
+    delay: const Duration(milliseconds: 500),
+  );
 
-  String get promptRoomName => Intl.message("Room Name",
-      name: "promptRoomName",
-      desc: "Prompt to enter a room name, placeholder text for text input");
+  String get promptRoomName => Intl.message(
+    "Room Name",
+    name: "promptRoomName",
+    desc: "Prompt to enter a room name, placeholder text for text input",
+  );
 
-  String get promptSpaceName => Intl.message("Space Name",
-      name: "promptSpaceName",
-      desc: "Prompt to enter a space name, placeholder text for text input");
+  String get promptSpaceName => Intl.message(
+    "Space Name",
+    name: "promptSpaceName",
+    desc: "Prompt to enter a space name, placeholder text for text input",
+  );
 
-  String get promptTopic => Intl.message("Topic (Optional)",
-      name: "promptTopic",
-      desc:
-          "Prompt to enter a topic for room or space, specifying that doing so is optional");
+  String get promptTopic => Intl.message(
+    "Topic (Optional)",
+    name: "promptTopic",
+    desc:
+        "Prompt to enter a topic for room or space, specifying that doing so is optional",
+  );
 
-  String get roomVisibilityPrivateExplanation =>
-      Intl.message("This room will only be accessible by invitation",
-          name: "roomVisibilityPrivateExplanation",
-          desc: "Explains what 'private' room visibility means");
+  String get roomVisibilityPrivateExplanation => Intl.message(
+    "This room will only be accessible by invitation",
+    name: "roomVisibilityPrivateExplanation",
+    desc: "Explains what 'private' room visibility means",
+  );
 
   String get roomVisibilityPublicExplanation => Intl.message(
-      "This room will be publically accessible by anyone on the internet",
-      name: "roomVisibilityPublicExplanation",
-      desc: "Explains what 'public' visibility means");
+    "This room will be publically accessible by anyone on the internet",
+    name: "roomVisibilityPublicExplanation",
+    desc: "Explains what 'public' visibility means",
+  );
 
-  String get spaceVisibilityPrivateExplanation =>
-      Intl.message("This room will only be accessible by invitation",
-          name: "spaceVisibilityPrivateExplanation",
-          desc: "Explains what 'private' space visibility means");
+  String get spaceVisibilityPrivateExplanation => Intl.message(
+    "This room will only be accessible by invitation",
+    name: "spaceVisibilityPrivateExplanation",
+    desc: "Explains what 'private' space visibility means",
+  );
 
   String get spaceVisibilityPublicExplanation => Intl.message(
-      "This room will be publically accessible by anyone on the internet",
-      name: "spaceVisibilityPublicExplanation",
-      desc: "Explains what 'public' space visibility means");
+    "This room will be publically accessible by anyone on the internet",
+    name: "spaceVisibilityPublicExplanation",
+    desc: "Explains what 'public' space visibility means",
+  );
 
-  String get labelVisibilityPrivate => Intl.message("Private",
-      name: "labelVisibilityPrivate",
-      desc: "Short label for room visibility private");
+  String get labelVisibilityPrivate => Intl.message(
+    "Private",
+    name: "labelVisibilityPrivate",
+    desc: "Short label for room visibility private",
+  );
 
-  String get labelVisibilityPublic => Intl.message("Public",
-      name: "labelVisibilityPublic",
-      desc: "Short label for room visibility public");
+  String get labelVisibilityPublic => Intl.message(
+    "Public",
+    name: "labelVisibilityPublic",
+    desc: "Short label for room visibility public",
+  );
 
-  String get promptEnableEncryption => Intl.message("Enable Encryption",
-      name: "promptEnableEncryption",
-      desc: "Short prompt to enable encryption for a room");
+  String get promptEnableEncryption => Intl.message(
+    "Enable Encryption",
+    name: "promptEnableEncryption",
+    desc: "Short prompt to enable encryption for a room",
+  );
 
-  String get encryptionCannotBeDisabledExplanation =>
-      Intl.message("If enabled, encryption cannot be disabled later",
-          name: "encryptionCannotBeDisabledExplanation",
-          desc: "Explains that encryption cannot be disabled once enabled");
+  String get encryptionCannotBeDisabledExplanation => Intl.message(
+    "If enabled, encryption cannot be disabled later",
+    name: "encryptionCannotBeDisabledExplanation",
+    desc: "Explains that encryption cannot be disabled once enabled",
+  );
 
-  String get promptConfirmRoomCreation => Intl.message("Create Room!",
-      name: "promptConfirmRoomCreation",
-      desc: "Label for a button which confirms the creation of a room");
+  String get promptConfirmRoomCreation => Intl.message(
+    "Create Room!",
+    name: "promptConfirmRoomCreation",
+    desc: "Label for a button which confirms the creation of a room",
+  );
 
-  String get promptConfirmSpaceCreation => Intl.message("Create Space!",
-      name: "promptConfirmSpaceCreation",
-      desc: "Label for a button which confirms the creation of a space");
+  String get promptConfirmSpaceCreation => Intl.message(
+    "Create Space!",
+    name: "promptConfirmSpaceCreation",
+    desc: "Label for a button which confirms the creation of a space",
+  );
 
-  String get promptConfirmRoomJoin => Intl.message("Join Room!",
-      name: "promptConfirmRoomJoin",
-      desc: "Label for a button which confirms the joining of a room");
+  String get promptConfirmRoomJoin => Intl.message(
+    "Join Room!",
+    name: "promptConfirmRoomJoin",
+    desc: "Label for a button which confirms the joining of a room",
+  );
 
-  String get promptConfirmSpaceJoin => Intl.message("Join Space!",
-      name: "promptConfirmSpaceJoin",
-      desc: "Label for a button which confirms the joining of a space");
+  String get promptConfirmSpaceJoin => Intl.message(
+    "Join Space!",
+    name: "promptConfirmSpaceJoin",
+    desc: "Label for a button which confirms the joining of a space",
+  );
 
-  String get promptRoomAddress => Intl.message("Room Address:",
-      name: "promptRoomAddress",
-      desc: "Short label to prompt for the input of a room address");
+  String get promptRoomAddress => Intl.message(
+    "Room Address:",
+    name: "promptRoomAddress",
+    desc: "Short label to prompt for the input of a room address",
+  );
 
-  String get promptSpaceAddress => Intl.message("Space Address:",
-      name: "promptSpaceAddress",
-      desc: "Short label to prompt for the input of a space address");
+  String get promptSpaceAddress => Intl.message(
+    "Space Address:",
+    name: "promptSpaceAddress",
+    desc: "Short label to prompt for the input of a space address",
+  );
 
-  String get placeholderRoomAlias => Intl.message("#awesome-room",
-      name: "placeholderRoomAlias",
-      desc: "Placeholder / Example for a room alias.");
+  String get placeholderRoomAlias => Intl.message(
+    "#awesome-room",
+    name: "placeholderRoomAlias",
+    desc: "Placeholder / Example for a room alias.",
+  );
 
-  String get placeholderSpaceAlias => Intl.message("#awesome-space",
-      name: "placeholderSpaceAlias",
-      desc: "Placeholder / Example for a space alias.");
+  String get placeholderSpaceAlias => Intl.message(
+    "#awesome-space",
+    name: "placeholderSpaceAlias",
+    desc: "Placeholder / Example for a space alias.",
+  );
 
   String get labelCouldNotLoadRoomPreview => Intl.message(
-      "Could not load a preview of the room",
-      name: "labelCouldNotLoadRoomPreview",
-      desc: "Error message for when a room preview was not able to be loaded");
+    "Could not load a preview of the room",
+    name: "labelCouldNotLoadRoomPreview",
+    desc: "Error message for when a room preview was not able to be loaded",
+  );
 
-  String get promptAddSelectedRooms => Intl.message("Add selected rooms",
-      name: "promptAddSelectedRooms",
-      desc: "Prompt to add the selected rooms to a space");
+  String get promptAddSelectedRooms => Intl.message(
+    "Add selected rooms",
+    name: "promptAddSelectedRooms",
+    desc: "Prompt to add the selected rooms to a space",
+  );
 
-  String get promptCreateNewSpace => Intl.message("Create new space",
-      name: "promptCreateNewSpace", desc: "Prompt to create a new space");
+  String get promptCreateNewSpace => Intl.message(
+    "Create new space",
+    name: "promptCreateNewSpace",
+    desc: "Prompt to create a new space",
+  );
 
-  String get promptJoinExistingSpace => Intl.message("Join existing space",
-      name: "promptJoinExistingSpace",
-      desc: "Prompt to join a space which already exists");
+  String get promptJoinExistingSpace => Intl.message(
+    "Join existing space",
+    name: "promptJoinExistingSpace",
+    desc: "Prompt to join a space which already exists",
+  );
 
-  String get promptCreateNewRoom => Intl.message("Create new room",
-      name: "promptCreateNewRoom", desc: "Prompt to create a new room");
+  String get promptCreateNewRoom => Intl.message(
+    "Create new room",
+    name: "promptCreateNewRoom",
+    desc: "Prompt to create a new room",
+  );
 
-  String get promptJoinExistingRoom => Intl.message("Join existing room",
-      name: "promptJoinExistingRoom",
-      desc: "Prompt to join a room which already exists");
+  String get promptJoinExistingRoom => Intl.message(
+    "Join existing room",
+    name: "promptJoinExistingRoom",
+    desc: "Prompt to join a room which already exists",
+  );
 
-  String get promptUseExistingRoom => Intl.message("Use existing room",
-      name: "promptUseExistingRoom",
-      desc:
-          "Button text to choose to use an existing room when adding a room to a space");
+  String get promptUseExistingRoom => Intl.message(
+    "Use existing room",
+    name: "promptUseExistingRoom",
+    desc:
+        "Button text to choose to use an existing room when adding a room to a space",
+  );
 
   void getSpacePreview() async {
-    var preview =
-        await selectedClient.getSpacePreview(spaceAddressController.text);
+    var preview = await selectedClient.getSpacePreview(
+      spaceAddressController.text,
+    );
 
     setState(() {
       spacePreview = preview;
@@ -234,15 +285,16 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
 
   Widget userSelector() {
     return Padding(
-        padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
-        child: AccountSelector(
-          widget.clients!,
-          onClientSelected: (client) {
-            setState(() {
-              selectedClient = client;
-            });
-          },
-        ));
+      padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+      child: AccountSelector(
+        widget.clients!,
+        onClientSelected: (client) {
+          setState(() {
+            selectedClient = client;
+          });
+        },
+      ),
+    );
   }
 
   Widget createSpace(BuildContext context) {
@@ -250,6 +302,7 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
       RoomType.defaultRoom,
       if (Experiments.photoAlbumRooms && widget.roomMode) RoomType.photoAlbum,
       if (Experiments.elementCall && widget.roomMode) RoomType.voipRoom,
+      if (Experiments.calendarRooms && widget.roomMode) RoomType.calendar,
     ];
 
     return SizedBox(
@@ -289,6 +342,7 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
                   RoomType.defaultRoom => "Chat Room",
                   RoomType.photoAlbum => "Photo Album Room",
                   RoomType.voipRoom => "Voice Room",
+                  RoomType.calendar => "Calendar",
                 }),
               ),
             Padding(
@@ -365,7 +419,8 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
                         children: [
                           tiamat.Text.labelEmphasised(promptEnableEncryption),
                           tiamat.Text.labelLow(
-                              encryptionCannotBeDisabledExplanation)
+                            encryptionCannotBeDisabledExplanation,
+                          ),
                         ],
                       ),
                     ),
@@ -376,7 +431,7 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
                           enableE2EE = value;
                         });
                       },
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -388,14 +443,16 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
                     ? promptConfirmRoomCreation
                     : promptConfirmSpaceCreation,
                 onTap: () => widget.onCreate?.call(
-                    selectedClient,
-                    CreateRoomArgs(
-                        name: nameController.text,
-                        visibility: visibility,
-                        enableE2EE: enableE2EE,
-                        roomType: type)),
+                  selectedClient,
+                  CreateRoomArgs(
+                    name: nameController.text,
+                    visibility: visibility,
+                    enableE2EE: enableE2EE,
+                    roomType: type,
+                  ),
+                ),
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -418,7 +475,8 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 tiamat.Text.label(
-                    widget.roomMode ? promptRoomAddress : promptSpaceAddress),
+                  widget.roomMode ? promptRoomAddress : promptSpaceAddress,
+                ),
                 TextInput(
                   controller: spaceAddressController,
                   placeholder: widget.roomMode
@@ -434,15 +492,13 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
                       mainAxisSize: MainAxisSize.min,
-                      children: [
-                        CircularProgressIndicator(),
-                      ],
+                      children: [CircularProgressIndicator()],
                     )
                   : spacePreview != null
-                      ? RoomPreviewView(previewData: spacePreview!)
-                      : Center(
-                          child:
-                              tiamat.Text.label(labelCouldNotLoadRoomPreview)),
+                  ? RoomPreviewView(previewData: spacePreview!)
+                  : Center(
+                      child: tiamat.Text.label(labelCouldNotLoadRoomPreview),
+                    ),
             ),
             tiamat.Button.success(
               isLoading: widget.loading,
@@ -450,8 +506,10 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
                   ? promptConfirmRoomJoin
                   : promptConfirmSpaceJoin,
               onTap: () {
-                widget.onJoin
-                    ?.call(selectedClient, spaceAddressController.text);
+                widget.onJoin?.call(
+                  selectedClient,
+                  spaceAddressController.text,
+                );
               },
             ),
           ],
@@ -488,64 +546,80 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
             isLoading: widget.loading,
             onTap: () {
               if (selectedRoomsState.currentState != null) {
-                widget.onRoomsSelected?.call(selectedRoomsState
-                    .currentState!.selectedIndicies
-                    .map((i) => widget.rooms![i]));
+                widget.onRoomsSelected?.call(
+                  selectedRoomsState.currentState!.selectedIndicies.map(
+                    (i) => widget.rooms![i],
+                  ),
+                );
               }
             },
           ),
-        )
+        ),
       ],
     );
   }
 
   Widget promptJoinOrCreateSpace(BuildContext context) {
-    return buildTwoChoicePrompt(context,
-        option1: promptCreateNewSpace,
-        option2: promptJoinExistingSpace, onOption1Tap: () {
-      setState(() {
-        phase = AddSpaceOrRoomPhase.create;
-      });
-    }, onOption2Tap: () {
-      setState(() {
-        phase = AddSpaceOrRoomPhase.join;
-      });
-    });
+    return buildTwoChoicePrompt(
+      context,
+      option1: promptCreateNewSpace,
+      option2: promptJoinExistingSpace,
+      onOption1Tap: () {
+        setState(() {
+          phase = AddSpaceOrRoomPhase.create;
+        });
+      },
+      onOption2Tap: () {
+        setState(() {
+          phase = AddSpaceOrRoomPhase.join;
+        });
+      },
+    );
   }
 
   Widget promptJoinOrCreateRoom(BuildContext context) {
-    return buildTwoChoicePrompt(context,
-        option1: promptCreateNewRoom,
-        option2: promptJoinExistingRoom, onOption1Tap: () {
-      setState(() {
-        phase = AddSpaceOrRoomPhase.create;
-      });
-    }, onOption2Tap: () {
-      setState(() {
-        phase = AddSpaceOrRoomPhase.join;
-      });
-    });
+    return buildTwoChoicePrompt(
+      context,
+      option1: promptCreateNewRoom,
+      option2: promptJoinExistingRoom,
+      onOption1Tap: () {
+        setState(() {
+          phase = AddSpaceOrRoomPhase.create;
+        });
+      },
+      onOption2Tap: () {
+        setState(() {
+          phase = AddSpaceOrRoomPhase.join;
+        });
+      },
+    );
   }
 
   Widget promptCreateOrUseExisting(BuildContext context) {
-    return buildTwoChoicePrompt(context,
-        option1: promptCreateNewRoom,
-        option2: promptUseExistingRoom, onOption1Tap: () {
-      setState(() {
-        phase = AddSpaceOrRoomPhase.create;
-      });
-    }, onOption2Tap: () {
-      setState(() {
-        phase = AddSpaceOrRoomPhase.pickExisting;
-      });
-    });
+    return buildTwoChoicePrompt(
+      context,
+      option1: promptCreateNewRoom,
+      option2: promptUseExistingRoom,
+      onOption1Tap: () {
+        setState(() {
+          phase = AddSpaceOrRoomPhase.create;
+        });
+      },
+      onOption2Tap: () {
+        setState(() {
+          phase = AddSpaceOrRoomPhase.pickExisting;
+        });
+      },
+    );
   }
 
-  Widget buildTwoChoicePrompt(BuildContext context,
-      {required String option1,
-      required String option2,
-      required Function() onOption1Tap,
-      required Function() onOption2Tap}) {
+  Widget buildTwoChoicePrompt(
+    BuildContext context, {
+    required String option1,
+    required String option2,
+    required Function() onOption1Tap,
+    required Function() onOption2Tap,
+  }) {
     return SizedBox(
       height: 200,
       child: Column(
@@ -557,9 +631,7 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
               onTap: onOption1Tap,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Center(
-                  child: tiamat.Text.labelEmphasised(option1),
-                ),
+                child: Center(child: tiamat.Text.labelEmphasised(option1)),
               ),
             ),
           ),
@@ -572,7 +644,7 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
                 child: Center(child: tiamat.Text.labelEmphasised(option2)),
               ),
             ),
-          )
+          ),
         ],
       ),
     );

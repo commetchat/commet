@@ -13,28 +13,38 @@ Widget wbiconUseCase(BuildContext context) {
         material.Padding(
           padding: EdgeInsets.all(8.0),
           child: material.SizedBox(
-              height: 30, child: TextButton("Height: 30", icon: Icons.tag)),
+            height: 30,
+            child: TextButton("Height: 30", icon: Icons.tag),
+          ),
         ),
         material.Padding(
           padding: EdgeInsets.all(8.0),
           child: material.SizedBox(
-              height: 35, child: TextButton("Height: 35", icon: Icons.tag)),
+            height: 35,
+            child: TextButton("Height: 35", icon: Icons.tag),
+          ),
         ),
         material.Padding(
           padding: EdgeInsets.all(8.0),
           child: material.SizedBox(
-              height: 40, child: TextButton("Height: 40", icon: Icons.tag)),
+            height: 40,
+            child: TextButton("Height: 40", icon: Icons.tag),
+          ),
         ),
         material.Padding(
           padding: EdgeInsets.all(8.0),
           child: material.SizedBox(
-              height: 45, child: TextButton("Height: 45", icon: Icons.tag)),
+            height: 45,
+            child: TextButton("Height: 45", icon: Icons.tag),
+          ),
         ),
         material.Padding(
           padding: EdgeInsets.all(8.0),
           child: material.SizedBox(
-              height: 50, child: TextButton("Height: 50", icon: Icons.tag)),
-        )
+            height: 50,
+            child: TextButton("Height: 50", icon: Icons.tag),
+          ),
+        ),
       ],
     ),
   );
@@ -49,48 +59,68 @@ Widget wbiconUseCaseWithImage(BuildContext context) {
         material.Padding(
           padding: EdgeInsets.all(8.0),
           child: material.SizedBox(
-              height: 30,
-              child: TextButton("Height: 30",
-                  avatar: AssetImage(
-                      "assets/images/placeholder/generic/checker_purple.png"),
-                  icon: Icons.tag)),
+            height: 30,
+            child: TextButton(
+              "Height: 30",
+              avatar: AssetImage(
+                "assets/images/placeholder/generic/checker_purple.png",
+              ),
+              icon: Icons.tag,
+            ),
+          ),
         ),
         material.Padding(
           padding: EdgeInsets.all(8.0),
           child: material.SizedBox(
-              height: 35,
-              child: TextButton("Height: 35",
-                  avatar: AssetImage(
-                      "assets/images/placeholder/generic/checker_purple.png"),
-                  icon: Icons.tag)),
+            height: 35,
+            child: TextButton(
+              "Height: 35",
+              avatar: AssetImage(
+                "assets/images/placeholder/generic/checker_purple.png",
+              ),
+              icon: Icons.tag,
+            ),
+          ),
         ),
         material.Padding(
           padding: EdgeInsets.all(8.0),
           child: material.SizedBox(
-              height: 40,
-              child: TextButton("Height: 40",
-                  avatar: AssetImage(
-                      "assets/images/placeholder/generic/checker_purple.png"),
-                  icon: Icons.tag)),
+            height: 40,
+            child: TextButton(
+              "Height: 40",
+              avatar: AssetImage(
+                "assets/images/placeholder/generic/checker_purple.png",
+              ),
+              icon: Icons.tag,
+            ),
+          ),
         ),
         material.Padding(
           padding: EdgeInsets.all(8.0),
           child: material.SizedBox(
-              height: 45,
-              child: TextButton("Height: 45",
-                  avatar: AssetImage(
-                      "assets/images/placeholder/generic/checker_purple.png"),
-                  icon: Icons.tag)),
+            height: 45,
+            child: TextButton(
+              "Height: 45",
+              avatar: AssetImage(
+                "assets/images/placeholder/generic/checker_purple.png",
+              ),
+              icon: Icons.tag,
+            ),
+          ),
         ),
         material.Padding(
           padding: EdgeInsets.all(8.0),
           child: material.SizedBox(
-              height: 50,
-              child: TextButton("Height: 50",
-                  avatar: AssetImage(
-                      "assets/images/placeholder/generic/checker_purple.png"),
-                  icon: Icons.tag)),
-        )
+            height: 50,
+            child: TextButton(
+              "Height: 50",
+              avatar: AssetImage(
+                "assets/images/placeholder/generic/checker_purple.png",
+              ),
+              icon: Icons.tag,
+            ),
+          ),
+        ),
       ],
     ),
   );
@@ -105,69 +135,86 @@ Widget wbiconUseCaseWithAvatarPlaceholder(BuildContext context) {
         material.Padding(
           padding: EdgeInsets.all(8.0),
           child: material.SizedBox(
-              height: 30,
-              child: TextButton("Height: 30",
-                  avatarPlaceholderText: "A",
-                  avatarPlaceholderColor: Colors.amber,
-                  icon: Icons.tag)),
+            height: 30,
+            child: TextButton(
+              "Height: 30",
+              avatarPlaceholderText: "A",
+              avatarPlaceholderColor: Colors.amber,
+              icon: Icons.tag,
+            ),
+          ),
         ),
         material.Padding(
           padding: EdgeInsets.all(8.0),
           child: material.SizedBox(
-              height: 35,
-              child: TextButton("Height: 35",
-                  avatarPlaceholderText: "A",
-                  avatarPlaceholderColor: Colors.amber,
-                  icon: Icons.tag)),
+            height: 35,
+            child: TextButton(
+              "Height: 35",
+              avatarPlaceholderText: "A",
+              avatarPlaceholderColor: Colors.amber,
+              icon: Icons.tag,
+            ),
+          ),
         ),
         material.Padding(
           padding: EdgeInsets.all(8.0),
           child: material.SizedBox(
-              height: 40,
-              child: TextButton("Height: 40",
-                  avatarPlaceholderText: "A",
-                  avatarPlaceholderColor: Colors.amber,
-                  icon: Icons.tag)),
+            height: 40,
+            child: TextButton(
+              "Height: 40",
+              avatarPlaceholderText: "A",
+              avatarPlaceholderColor: Colors.amber,
+              icon: Icons.tag,
+            ),
+          ),
         ),
         material.Padding(
           padding: EdgeInsets.all(8.0),
           child: material.SizedBox(
-              height: 45,
-              child: TextButton("Height: 45",
-                  avatarPlaceholderText: "A",
-                  avatarPlaceholderColor: Colors.amber,
-                  icon: Icons.tag)),
+            height: 45,
+            child: TextButton(
+              "Height: 45",
+              avatarPlaceholderText: "A",
+              avatarPlaceholderColor: Colors.amber,
+              icon: Icons.tag,
+            ),
+          ),
         ),
         material.Padding(
           padding: EdgeInsets.all(8.0),
           child: material.SizedBox(
-              height: 50,
-              child: TextButton("Height: 50",
-                  avatarPlaceholderText: "A",
-                  avatarPlaceholderColor: Colors.amber,
-                  icon: Icons.tag)),
-        )
+            height: 50,
+            child: TextButton(
+              "Height: 50",
+              avatarPlaceholderText: "A",
+              avatarPlaceholderColor: Colors.amber,
+              icon: Icons.tag,
+            ),
+          ),
+        ),
       ],
     ),
   );
 }
 
 class TextButton extends StatelessWidget {
-  const TextButton(this.text,
-      {super.key,
-      this.icon,
-      this.onTap,
-      this.highlighted = false,
-      this.textColor,
-      this.iconColor,
-      this.avatar,
-      this.iconSize = 20,
-      this.avatarRadius = 12,
-      this.avatarPlaceholderColor,
-      this.avatarPlaceholderText,
-      this.customBuilder,
-      this.softwrap,
-      this.footer});
+  const TextButton(
+    this.text, {
+    super.key,
+    this.icon,
+    this.onTap,
+    this.highlighted = false,
+    this.textColor,
+    this.iconColor,
+    this.avatar,
+    this.iconSize = 20,
+    this.avatarRadius = 12,
+    this.avatarPlaceholderColor,
+    this.avatarPlaceholderText,
+    this.customBuilder,
+    this.softwrap,
+    this.footer,
+  });
   final String text;
 
   final IconData? icon;
@@ -189,10 +236,10 @@ class TextButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget content = material.Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Flexible(
-              child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Flexible(
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -216,11 +263,11 @@ class TextButton extends StatelessWidget {
                               icon!,
                               weight: 0.5,
                               color: highlighted
-                                  ? Theme.of(context)
-                                      .colorScheme
-                                      .onSecondaryContainer
+                                  ? Theme.of(
+                                      context,
+                                    ).colorScheme.onSecondaryContainer
                                   : iconColor ??
-                                      Theme.of(context).colorScheme.onSurface,
+                                        Theme.of(context).colorScheme.onSurface,
                             ),
                     ),
                   ),
@@ -229,37 +276,42 @@ class TextButton extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
                   child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: tiamat.Text.labelEmphasised(
-                        text,
-                        maxLines: 1,
-                        softwrap: softwrap,
-                        overflow: TextOverflow.fade,
-                        color: highlighted
-                            ? Theme.of(context).colorScheme.onSecondaryContainer
-                            : textColor,
-                      )),
+                    alignment: Alignment.centerLeft,
+                    child: tiamat.Text.labelEmphasised(
+                      text,
+                      maxLines: 1,
+                      softwrap: softwrap,
+                      overflow: TextOverflow.fade,
+                      color: highlighted
+                          ? Theme.of(context).colorScheme.onSecondaryContainer
+                          : textColor,
+                    ),
+                  ),
                 ),
               ),
             ],
-          )),
-          if (footer != null) footer!,
-        ]);
+          ),
+        ),
+        if (footer != null) footer!,
+      ],
+    );
 
     if (customBuilder != null) {
       content = customBuilder!(content, context);
     }
 
     return material.TextButton(
-        clipBehavior: Clip.antiAlias,
-        style: ButtonStyle(
-          padding: MaterialStatePropertyAll(
-              material.EdgeInsets.fromLTRB(8, 0, 8, 0)),
-          backgroundColor: MaterialStatePropertyAll(highlighted
-              ? Theme.of(context).colorScheme.secondaryContainer
-              : null),
+      clipBehavior: Clip.antiAlias,
+      style: ButtonStyle(
+        padding: MaterialStatePropertyAll(
+          material.EdgeInsets.fromLTRB(8, 0, 8, 0),
         ),
-        child: content,
-        onPressed: onTap);
+        backgroundColor: MaterialStatePropertyAll(
+          highlighted ? Theme.of(context).colorScheme.secondaryContainer : null,
+        ),
+      ),
+      child: content,
+      onPressed: onTap,
+    );
   }
 }

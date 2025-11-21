@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/calendar_room/calendar_room_component.dart';
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/components/photo_album_room/photo_album_room_component.dart';
@@ -57,6 +58,11 @@ abstract class Room {
       return Icons.photo;
     }
 
+    var calendar = getComponent<CalendarRoom>();
+    if (calendar?.isCalendar == true) {
+      return Icons.calendar_month;
+    }
+
     return Icons.tag;
   }
 
@@ -105,14 +111,17 @@ abstract class Room {
 
   /// Add an emoticon reaction to a message
   Future<TimelineEvent?> addReaction(
-      TimelineEvent reactingTo, Emoticon reaction);
+    TimelineEvent reactingTo,
+    Emoticon reaction,
+  );
 
   /// Remove an emoticon reaction to a message
   Future<void> removeReaction(TimelineEvent reactingTo, Emoticon reaction);
 
   /// Processes files before sending as attachment
   Future<List<ProcessedAttachment>> processAttachments(
-      List<PendingFileAttachment> attachments);
+    List<PendingFileAttachment> attachments,
+  );
 
   List<Member> membersList();
 

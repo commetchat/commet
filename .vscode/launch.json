@@ -7,6 +7,7 @@
         {
             "name": "commet (debug desktop)",
             "request": "launch",
+            "program": "commet/lib/main.dart",
             "type": "dart",
             "toolArgs": [
                 "--dart-define",
@@ -19,6 +20,7 @@
             "name": "commet (debug windows)",
             "request": "launch",
             "type": "dart",
+            "program": "commet/lib/main.dart",
             "toolArgs": [
                 "--dart-define",
                 "PLATFORM=windows",
@@ -30,6 +32,7 @@
             "name": "commet (debug mobile)",
             "request": "launch",
             "type": "dart",
+            "program": "commet/lib/main.dart",
             "toolArgs": [
                 "--dart-define",
                 "PLATFORM=mobile",
@@ -41,6 +44,7 @@
             "name": "commet (debug web)",
             "request": "launch",
             "type": "dart",
+            "program": "commet/lib/main.dart",
             "toolArgs": [
                 "--dart-define",
                 "PLATFORM=web",
@@ -56,6 +60,7 @@
             "name": "commet (release web)",
             "request": "launch",
             "type": "dart",
+            "program": "commet/lib/main.dart",
             "toolArgs": [
                 "--dart-define",
                 "PLATFORM=web",
@@ -72,6 +77,7 @@
             "name": "commet (debug android)",
             "request": "launch",
             "type": "dart",
+            "program": "commet/lib/main.dart",
             "toolArgs": [
                 "--dart-define",
                 "PLATFORM=android",
@@ -80,15 +86,10 @@
             ],
         },
         {
-            "name": "commet (profile mode)",
-            "request": "launch",
-            "type": "dart",
-            "flutterMode": "profile"
-        },
-        {
             "name": "commet (release desktop)",
             "request": "launch",
             "type": "dart",
+            "program": "commet/lib/main.dart",
             "toolArgs": [
                 "--dart-define",
                 "PLATFORM=desktop",
@@ -100,6 +101,7 @@
         {
             "name": "commet (release android)",
             "request": "launch",
+            "program": "commet/lib/main.dart",
             "type": "dart",
             "toolArgs": [
                 "--dart-define",
@@ -132,6 +134,64 @@
             "request": "launch",
             "type": "dart",
             "program": "../tiamat/lib/tiamat.widgetbook.dart"
+        },
+        {
+            "name": "example-widget",
+            "request": "launch",
+            "type": "dart",
+            "program": "widgets/example_widget/lib/main.dart",
+            "toolArgs": [
+                "--web-port",
+                "36347",
+                "--web-header=Cross-Origin-Opener-Policy=same-origin",
+                "--web-header=Cross-Origin-Embedder-Policy=require-corp",
+                "--web-tls-cert-path=../../widgets/localhost.crt",
+                "--web-tls-cert-key-path=../../widgets/localhost.key"
+            ],
+        },
+        {
+            "name": "example-widget (release)",
+            "request": "launch",
+            "type": "dart",
+            "program": "widgets/example_widget/lib/main.dart",
+            "flutterMode": "release",
+            "toolArgs": [
+                "--web-port",
+                "36347",
+                "--web-header=Cross-Origin-Opener-Policy=same-origin",
+                "--web-header=Cross-Origin-Embedder-Policy=require-corp",
+                "--web-tls-cert-path=../../widgets/localhost.crt",
+                "--web-tls-cert-key-path=../../widgets/localhost.key"
+            ],
+        },
+        {
+            "name": "calendar-widget",
+            "request": "launch",
+            "type": "dart",
+            "program": "widgets/calendar/lib/main.dart",
+            "toolArgs": [
+                "--web-port",
+                "36347",
+                "--web-header=Cross-Origin-Opener-Policy=same-origin",
+                "--web-header=Cross-Origin-Embedder-Policy=require-corp",
+                "--web-tls-cert-path=../../widgets/localhost.crt",
+                "--web-tls-cert-key-path=../../widgets/localhost.key"
+            ],
+        },
+        {
+            "name": "calendar-widget (release)",
+            "request": "launch",
+            "type": "dart",
+            "program": "widgets/calendar/lib/main.dart",
+            "flutterMode": "release",
+            "toolArgs": [
+                "--web-port",
+                "36347",
+                "--web-header=Cross-Origin-Opener-Policy=same-origin",
+                "--web-header=Cross-Origin-Embedder-Policy=require-corp",
+                "--web-tls-cert-path=../../widgets/localhost.crt",
+                "--web-tls-cert-key-path=../../widgets/localhost.key"
+            ],
         },
     ]
 }

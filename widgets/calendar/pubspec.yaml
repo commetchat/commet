@@ -1,0 +1,35 @@
+name: commet_calendar_widget
+description: "A new Flutter project."
+# The following line prevents the package from being accidentally published to
+# pub.dev using `flutter pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: '^3.9.2'
+resolution: workspace
+
+
+dependencies:
+  flutter:
+    sdk: flutter
+  calendar_view: ^1.4.0
+  matrix_widget_api:
+    path: ../matrix_widget_api
+  tiamat:
+    path: ../../tiamat
+  iso_duration: ^0.1.1
+  intl: ^0.20.2
+  flutter_svg: ^2.2.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  json_serializable: ^6.9.5
+
+flutter:
+  uses-material-design: true
+
+  assets: 
+    - assets/app_icon/

@@ -1,0 +1,18 @@
+name: matrix_widget_api
+description: A sample command-line application.
+version: 1.0.0
+# repository: https://github.com/my_org/my_repo
+
+environment:
+  sdk: ^3.9.2
+resolution: workspace
+# Add regular dependencies here.
+dependencies:
+  path: ^1.9.0
+  js_interop: ^0.0.1
+  js_interop_utils: ^1.0.9
+  web: ^1.1.1
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.25.6

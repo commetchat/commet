@@ -1,0 +1,6 @@
+name = "matrix-calendar-widget"
+compatibility_date = "2025-11-19"
+
+[assets]
+directory = "./build/web"
+not_found_handling = "single-page-application"

@@ -1,7 +1,9 @@
+import 'package:commet/client/components/calendar_room/calendar_room_component.dart';
 import 'package:commet/client/components/photo_album_room/photo_album_room_component.dart';
 import 'package:commet/client/components/voip_room/voip_room_component.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/main.dart';
+import 'package:commet/ui/organisms/calendar_view/calendar_room_view.dart';
 import 'package:commet/ui/organisms/call_view/call.dart';
 import 'package:commet/ui/organisms/chat/chat.dart';
 import 'package:commet/ui/organisms/photo_albums/photo_album_view.dart';
@@ -16,6 +18,7 @@ class RoomPrimaryView extends StatelessWidget {
   Widget build(BuildContext context) {
     var photos = room.getComponent<PhotoAlbumRoom>();
     var voip = room.getComponent<VoipRoomComponent>();
+    var calendar = room.getComponent<CalendarRoom>();
 
     if (voip?.isVoipRoom == true) {
       return VoipRoomView(voip!);
@@ -25,17 +28,20 @@ class RoomPrimaryView extends StatelessWidget {
       return PhotoAlbumView(photos!);
     }
 
-    final call =
-        clientManager?.callManager.getCallInRoom(room.client, room.identifier);
+    if (calendar?.isCalendar == true) {
+      return CalendarRoomView(calendar!);
+    }
+
+    final call = clientManager?.callManager.getCallInRoom(
+      room.client,
+      room.identifier,
+    );
 
     return Column(
       children: [
         if (call != null) Flexible(child: CallWidget(call)),
         Flexible(
-          child: Chat(
-            room,
-            key: ValueKey("room-timeline-key-${room.localId}"),
-          ),
+          child: Chat(room, key: ValueKey("room-timeline-key-${room.localId}")),
         ),
       ],
     );
