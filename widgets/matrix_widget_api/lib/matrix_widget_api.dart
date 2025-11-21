@@ -4,12 +4,13 @@ export 'matrix_widget_api_stub.dart'
 abstract class MatrixWidgetApi {
   String get userId;
 
-  @override
   Future<void> requestCapabilities(List<String> capabilities);
 
   void start();
 
   void stop();
+
+  Stream<void> get onReady;
 
   Future<Map<String, dynamic>> sendAction(
     String fromWidgetAction,

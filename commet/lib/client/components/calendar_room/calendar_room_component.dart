@@ -7,4 +7,8 @@ abstract class CalendarRoom<R extends Client, T extends Room>
   bool get isCalendar;
 
   MatrixCalendar get calendar;
+
+  Stream<void> get onEventsChanged;
+
+  List<MatrixCalendarEventState> getEventsOnDay(DateTime date);
 }

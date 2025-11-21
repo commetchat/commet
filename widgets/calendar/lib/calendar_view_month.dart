@@ -41,9 +41,7 @@ class _CalendarViewMonthState extends State<CalendarViewMonth> {
         key: key,
         weekDayBuilder: (day) {
           return DecoratedBox(
-            decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerLowest,
-            ),
+            decoration: BoxDecoration(color: colorScheme.surfaceContainerLow),
             child: SizedBox(
               height: 30,
               child: Center(

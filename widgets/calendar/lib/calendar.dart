@@ -6,6 +6,7 @@ import 'package:calendar_view/calendar_view.dart';
 import 'package:commet_calendar_widget/rfc8984.dart';
 import 'package:commet_calendar_widget/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:matrix_widget_api/capabilities.dart';
 import 'package:matrix_widget_api/matrix_widget_api.dart';
 import 'package:matrix_widget_api/types.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -51,7 +52,12 @@ class MatrixCalendarConfig {
     required BuildContext context,
     required Widget Function(BuildContext) builder,
   }) {
-    return showDialog<T>(context: context, builder: builder);
+    return showDialog<T>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(content: builder(context));
+      },
+    );
   }
 
   const MatrixCalendarConfig();
@@ -69,26 +75,22 @@ class MatrixCalendar {
   MatrixCalendar(this.widgetApi, {this.config = const MatrixCalendarConfig()}) {
     this.controller = EventController();
 
-    print("Reading calendar events");
-    widgetApi.onAction(ToWidgetAction.msc2764UpdateState, (data) {
-      print("Received room state: ${data}");
-    });
+    widgetApi.onReady.listen(onWidgetReady);
 
     widgetApi.onAction(
       ToWidgetAction.updateState,
       preventDefaultHandler: true,
       (update) {
-        print("Received update room state: $update");
         var states = Map<String, dynamic>.from(update);
         var data = states['data'];
         var stateEvents = data['state'];
-        print(stateEvents);
 
         for (var stateEvent in stateEvents) {
           var event = Map<String, dynamic>.from(stateEvent);
-          print(event);
 
           var type = event['type'];
+
+          print("CalendarWidget: received ${type} state event");
           var stateKey = event['state_key'] ?? "";
           if (!roomState.containsKey(type)) {
             roomState[type] = {};
@@ -97,12 +99,23 @@ class MatrixCalendar {
           roomState[type]![stateKey] = event;
         }
 
-        print(JsonEncoder.withIndent("  ").convert(roomState));
-
         updateFromRoomState();
         return null;
       },
     );
+  }
+
+  void onWidgetReady(void event) {
+    widgetApi.requestCapabilities([
+      MatrixCapability.getRoomState(
+        "chat.commet.calendar_event",
+        //stateKey: userId,
+      ),
+      MatrixCapability.setRoomState(
+        "chat.commet.calendar_event",
+        stateKey: widgetApi.userId,
+      ),
+    ]);
   }
 
   void updateFromRoomState() {
@@ -114,7 +127,6 @@ class MatrixCalendar {
       try {
         var events = entry.value["content"]["events"];
         var sender = entry.value["sender"];
-        print(events);
         for (var event in events) {
           var data = Map<String, dynamic>.from(event);
           try {
@@ -137,12 +149,12 @@ class MatrixCalendar {
     }
   }
 
-  List<RFC8984CalendarEvent> getEventsOnDay(DateTime date) {
+  List<MatrixCalendarEventState> getEventsOnDay(DateTime date) {
     return controller
         .getEventsOnDay(date)
         .map((e) => e.event)
         .nonNulls
-        .map((e) => e.data)
+        .map((e) => e)
         .toList();
   }
 
@@ -184,16 +196,12 @@ class MatrixCalendar {
 
     controller.add(calendarEvent);
 
-    print("Got Events");
-    print(controller.allEvents.toList());
-
     var events = controller.allEvents
         .where((e) => e.event?.senderId == widgetApi.userId)
         .map((e) => e.event)
         .nonNulls
         .toList();
 
-    print(events);
     events.sort((a, b) => a.data.uid.compareTo(b.data.uid));
 
     var json = events.map((e) => e.data.toJson()).toList();

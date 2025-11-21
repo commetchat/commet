@@ -1,7 +1,5 @@
 import 'package:commet/client/components/calendar_room/calendar_room_component.dart';
 import 'package:commet/config/layout_config.dart';
-import 'package:commet/ui/navigation/adaptive_dialog.dart';
-import 'package:commet_calendar_widget/calendar.dart';
 import 'package:commet_calendar_widget/main.dart';
 import 'package:flutter/material.dart';
 

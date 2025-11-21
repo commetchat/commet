@@ -44,28 +44,34 @@ class CalendarViewHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          IconButton(onPressed: prevPage, icon: Icon(Icons.chevron_left)),
-          Text(getHeaderText()),
-          Row(
-            children: [
-              if (mode != CalendarViewMode.month)
+    return Container(
+      color: Theme.of(context).colorScheme.surfaceContainerLow,
+      child: SizedBox(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            IconButton(onPressed: prevPage, icon: Icon(Icons.chevron_left)),
+            Text(getHeaderText()),
+            Row(
+              children: [
+                if (mode != CalendarViewMode.month)
+                  IconButton(
+                    onPressed: () => setViewMode?.call(CalendarViewMode.month),
+                    icon: Icon(Icons.calendar_view_month),
+                  ),
+                if (mode != CalendarViewMode.week)
+                  IconButton(
+                    onPressed: () => setViewMode?.call(CalendarViewMode.week),
+                    icon: Icon(Icons.calendar_view_week),
+                  ),
                 IconButton(
-                  onPressed: () => setViewMode?.call(CalendarViewMode.month),
-                  icon: Icon(Icons.calendar_view_month),
+                  onPressed: nextPage,
+                  icon: Icon(Icons.chevron_right),
                 ),
-              if (mode != CalendarViewMode.week)
-                IconButton(
-                  onPressed: () => setViewMode?.call(CalendarViewMode.week),
-                  icon: Icon(Icons.calendar_view_week),
-                ),
-              IconButton(onPressed: nextPage, icon: Icon(Icons.chevron_right)),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

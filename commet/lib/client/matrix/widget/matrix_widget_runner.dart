@@ -13,6 +13,8 @@ class MatrixWidgetRunner implements MatrixWidgetApi {
   matrix.Client client;
   matrix.Room room;
 
+  bool started = false;
+
   MatrixWidgetRunner(this.client, this.room);
 
   List<String> grantedCapabilities = List.empty(growable: true);
@@ -70,8 +72,6 @@ class MatrixWidgetRunner implements MatrixWidgetApi {
 
     Function(Map<String, dynamic>)? callback = actionListeners["update_state"];
 
-    Log.i(actionListeners);
-    Log.i("Calling callback: $callback  with data: $result");
     callback?.call(result);
   }
 
@@ -80,9 +80,7 @@ class MatrixWidgetRunner implements MatrixWidgetApi {
     String fromWidgetAction,
     Map<String, dynamic> data,
   ) async {
-    print("Action requested: $fromWidgetAction");
-    print("data: ");
-    print(data);
+    Log.i("[${room.id}] Action requested: $fromWidgetAction");
 
     if (fromWidgetAction == FromWidgetAction.sendEvent) {
       return handleSendEvent(data);
@@ -93,8 +91,14 @@ class MatrixWidgetRunner implements MatrixWidgetApi {
 
   @override
   void start() {
-    Log.i("Starting Widget Runner");
+    if (started) {
+      return;
+    }
+
+    Log.i("Starting Widget Runner: ${room.id}");
     syncStreamSub = client.onSync.stream.listen(onSync);
+    started = true;
+    _onReady.add(());
   }
 
   @override
@@ -109,31 +113,20 @@ class MatrixWidgetRunner implements MatrixWidgetApi {
   Future<Map<String, dynamic>> handleSendEvent(
     Map<String, dynamic> data,
   ) async {
-    Log.i("Handling send event");
-    Log.i("Data: ${data}");
-
     var type = data["type"];
     var state_key = data["state_key"];
     var content = data["content"];
 
-    var result = await client.setRoomStateWithKey(
-      room.id,
-      type,
-      state_key,
-      content,
-    );
-    Log.i(result);
+    await client.setRoomStateWithKey(room.id, type, state_key, content);
     return {};
   }
 
   void onSync(matrix.SyncUpdate event) {
-    Log.i("Received sync");
     var thisRoom = event.rooms?.join?[room.id];
     if (thisRoom == null) {
       return;
     }
-
-    Log.i(thisRoom.toJson());
+    Log.i("[${room.id}] Received Sync");
 
     var events = thisRoom.timeline?.events;
     if (events == null) {
@@ -144,7 +137,12 @@ class MatrixWidgetRunner implements MatrixWidgetApi {
         .where((i) => i.stateKey != null && canWidgetReadStateEventType(i.type))
         .toList();
 
-    Log.i("Sending readable events: $readableEvents");
+    if (readableEvents.isEmpty) {
+      Log.i("[${room.id}] No events to send");
+      return;
+    }
+
+    Log.i("[${room.id}] Sending ${readableEvents.length} events");
 
     var result = {
       "data": {"state": readableEvents.map((i) => i.toJson())},
@@ -157,4 +155,9 @@ class MatrixWidgetRunner implements MatrixWidgetApi {
   bool canWidgetReadStateEventType(String type) {
     return grantedCapabilities.contains(MatrixCapability.getRoomState(type));
   }
+
+  StreamController _onReady = StreamController.broadcast();
+
+  @override
+  Stream<void> get onReady => _onReady.stream;
 }

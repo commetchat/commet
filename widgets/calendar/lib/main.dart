@@ -5,8 +5,8 @@ import 'package:commet_calendar_widget/event_editor.dart';
 import 'package:commet_calendar_widget/rfc8984.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:matrix_widget_api/capabilities.dart';
 import 'package:matrix_widget_api/matrix_widget_api.dart';
+import 'package:tiamat/config/config.dart';
 
 void main() {
   runApp(const CalendarWidgetApp());
@@ -31,13 +31,9 @@ class CalendarWidgetApp extends StatelessWidget {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Color.fromARGB(255, 120, 120, 255),
-          dynamicSchemeVariant: themeVariant,
-          brightness: themeBrightness ?? Brightness.dark,
-        ),
-      ),
+      theme: themeBrightness == Brightness.dark
+          ? ThemeDark.theme
+          : ThemeLight.theme,
       home: IframeCalendarWidgetView(parameters: parameters),
     );
   }
@@ -100,17 +96,6 @@ class _CalendarWidgetViewState extends State<CalendarWidgetView> {
   @override
   void initState() {
     widget.calendar.widgetApi.start();
-
-    widget.calendar.widgetApi.requestCapabilities([
-      MatrixCapability.getRoomState(
-        "chat.commet.calendar_event",
-        //stateKey: userId,
-      ),
-      MatrixCapability.setRoomState(
-        "chat.commet.calendar_event",
-        stateKey: widget.calendar.widgetApi.userId,
-      ),
-    ]);
 
     super.initState();
   }

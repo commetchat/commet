@@ -49,4 +49,8 @@ class MatrixWidgetApiWeb implements MatrixWidgetApi {
   void stop() {
     throw UnimplementedError();
   }
+
+  @override
+  // TODO: implement onReady
+  Stream<void> get onReady => throw UnimplementedError();
 }

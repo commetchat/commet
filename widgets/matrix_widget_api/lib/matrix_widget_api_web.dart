@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:matrix_widget_api/matrix_widget_api.dart';
 import 'package:js_interop_utils/js_interop_utils.dart';
 import 'package:matrix_widget_api/types.dart';
@@ -32,6 +34,11 @@ class MatrixWidgetApiWeb implements MatrixWidgetApi {
   @override
   String userId;
 
+  StreamController _onReady = StreamController.broadcast();
+
+  @override
+  Stream<void> get onReady => _onReady.stream;
+
   MatrixWidgetApiWeb(
     String widgetId, {
     required this.userId,
@@ -43,7 +50,7 @@ class MatrixWidgetApiWeb implements MatrixWidgetApi {
 
   @override
   Future<void> requestCapabilities(List<String> capabilities) async {
-    var result = await w.transport
+    await w.transport
         .send(
           FromWidgetAction.renegotiateCapabilities,
           {"capabilities": capabilities}.toJSDeep,
@@ -89,6 +96,8 @@ class MatrixWidgetApiWeb implements MatrixWidgetApi {
   @override
   void start() {
     w.start();
+
+    _onReady.add(());
   }
 
   @override

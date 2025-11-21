@@ -88,7 +88,7 @@ class _CalendarViewWeekState extends State<CalendarViewWeek> {
               var format = DateFormat('EEEE').format(date);
 
               return Container(
-                color: colorScheme.surfaceContainerLowest,
+                color: colorScheme.surfaceContainerLow,
                 child: Padding(
                   padding: const EdgeInsets.all(4.0),
                   child: DecoratedBox(
@@ -166,31 +166,50 @@ class _CalendarViewWeekState extends State<CalendarViewWeek> {
             timeLineWidth: 80,
             onDateTap: (date) => widget.createEvent?.call(date),
             weekNumberBuilder: (firstDayOfWeek) =>
-                Container(color: colorScheme.surfaceContainerLowest),
-            eventTileBuilder:
-                (date, events, boundary, startDuration, endDuration) {
-                  return Padding(
-                    padding: const EdgeInsets.fromLTRB(2, 1, 2, 1),
-                    child: Opacity(
-                      opacity: events.first.event?.loaded != true ? 0.3 : 1.0,
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: widget.calendar.config.processEventColor(
-                            events.first.color,
-                            context,
-                          ),
-                        ),
+                Container(color: colorScheme.surfaceContainerLow),
+            eventTileBuilder: (date, events, boundary, startDuration, endDuration) {
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(2, 1, 2, 0),
+                child: Opacity(
+                  opacity: events.first.event?.loaded != true ? 0.3 : 1.0,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      color: widget.calendar.config.processEventColor(
+                        events.first.color,
+                        context,
+                      ),
+                    ),
 
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(8, 8, 4, 4),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(8, 4, 4, 0),
+                      child: ClipRect(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              events.first.title,
+                              maxLines:
+                                  ((boundary.height - 11).toInt() /
+                                          (12 +
+                                              1)) // 11 calculated as sum of all top and bottom padding,  then divide by font size + 1
+                                      .toInt(),
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(
+                                    fontSize: 12,
+                                    color: widget.calendar.config
+                                        .processEventTextColor(
+                                          events.first.color,
+                                          context,
+                                        ),
+                                  ),
+                            ),
+                            if (events.first.description != null &&
+                                boundary.height > 70)
                               Text(
-                                events.first.title,
-                                maxLines: 2,
-                                overflow: TextOverflow.fade,
+                                maxLines: 3,
+                                events.first.description!,
                                 style: Theme.of(context).textTheme.bodySmall
                                     ?.copyWith(
                                       color: widget.calendar.config
@@ -198,30 +217,17 @@ class _CalendarViewWeekState extends State<CalendarViewWeek> {
                                             events.first.color,
                                             context,
                                           ),
+                                      overflow: TextOverflow.ellipsis,
                                     ),
                               ),
-                              if (events.first.description != null &&
-                                  boundary.height > 70)
-                                Text(
-                                  maxLines: 3,
-                                  events.first.description!,
-                                  style: Theme.of(context).textTheme.bodySmall
-                                      ?.copyWith(
-                                        color: widget.calendar.config
-                                            .processEventTextColor(
-                                              events.first.color,
-                                              context,
-                                            ),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                ),
-                            ],
-                          ),
+                          ],
                         ),
                       ),
                     ),
-                  );
-                },
+                  ),
+                ),
+              );
+            },
 
             backgroundColor: Theme.of(context).colorScheme.surface,
             onPageChange: (date, pageIndex) => print("$date, $pageIndex"),
