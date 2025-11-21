@@ -64,6 +64,33 @@ jobs:
   release-android:
     runs-on: ubuntu-latest
     steps:
+      # we were having issues running out of disk space on workers, so...
+      - name: Aggressive cleanup
+        run: |
+          # Remove .NET SDKs
+          sudo rm -rf /usr/share/dotnet
+  
+          # Remove Haskell (GHC)
+          sudo rm -rf /usr/local/.ghcup
+  
+          # Remove Julia
+          sudo rm -rf /usr/local/julia*
+  
+          # Remove Chromium (optional if not using for browser tests)
+          sudo rm -rf /usr/local/share/chromium
+  
+          # Remove Microsoft/Edge and Google Chrome builds
+          sudo rm -rf /opt/microsoft /opt/google
+  
+          # Remove Azure CLI
+          sudo rm -rf /opt/az
+  
+          # Remove CodeQL and other toolcaches
+          sudo rm -rf /opt/hostedtoolcache
+  
+          docker system prune -af || true
+          docker builder prune -af || true
+          df -h
       - name: Checkout
         uses: actions/checkout@v2
         with:
@@ -121,6 +148,34 @@ jobs:
   release-android-google-services:
     runs-on: ubuntu-latest
     steps:
+      # we were having issues running out of disk space on workers, so...
+      - name: Aggressive cleanup
+        run: |
+          # Remove .NET SDKs
+          sudo rm -rf /usr/share/dotnet
+  
+          # Remove Haskell (GHC)
+          sudo rm -rf /usr/local/.ghcup
+  
+          # Remove Julia
+          sudo rm -rf /usr/local/julia*
+  
+          # Remove Chromium (optional if not using for browser tests)
+          sudo rm -rf /usr/local/share/chromium
+  
+          # Remove Microsoft/Edge and Google Chrome builds
+          sudo rm -rf /opt/microsoft /opt/google
+  
+          # Remove Azure CLI
+          sudo rm -rf /opt/az
+  
+          # Remove CodeQL and other toolcaches
+          sudo rm -rf /opt/hostedtoolcache
+  
+          docker system prune -af || true
+          docker builder prune -af || true
+          df -h
+      
       - name: Checkout
         uses: actions/checkout@v2
         with:
@@ -178,11 +233,40 @@ jobs:
           path: commet/build/app/outputs/flutter-apk/app-release.apk
 
   release-linux-debian:
+  
     strategy:
       matrix:
         os: [ubuntu-22.04, ubuntu-24.04]
     runs-on: ${{ matrix.os }}
     steps:
+      # we were having issues running out of disk space on workers, so...
+      - name: Aggressive cleanup
+        run: |
+          # Remove .NET SDKs
+          sudo rm -rf /usr/share/dotnet
+  
+          # Remove Haskell (GHC)
+          sudo rm -rf /usr/local/.ghcup
+  
+          # Remove Julia
+          sudo rm -rf /usr/local/julia*
+  
+          # Remove Chromium (optional if not using for browser tests)
+          sudo rm -rf /usr/local/share/chromium
+  
+          # Remove Microsoft/Edge and Google Chrome builds
+          sudo rm -rf /opt/microsoft /opt/google
+  
+          # Remove Azure CLI
+          sudo rm -rf /opt/az
+  
+          # Remove CodeQL and other toolcaches
+          sudo rm -rf /opt/hostedtoolcache
+  
+          docker system prune -af || true
+          docker builder prune -af || true
+          df -h
+
       - name: Checkout
         uses: actions/checkout@v2
         with:
@@ -241,6 +325,34 @@ jobs:
   release-linux-flatpak:
     runs-on: ubuntu-latest
     steps:
+      # we were having issues running out of disk space on workers, so...
+      - name: Aggressive cleanup
+        run: |
+          # Remove .NET SDKs
+          sudo rm -rf /usr/share/dotnet
+  
+          # Remove Haskell (GHC)
+          sudo rm -rf /usr/local/.ghcup
+  
+          # Remove Julia
+          sudo rm -rf /usr/local/julia*
+  
+          # Remove Chromium (optional if not using for browser tests)
+          sudo rm -rf /usr/local/share/chromium
+  
+          # Remove Microsoft/Edge and Google Chrome builds
+          sudo rm -rf /opt/microsoft /opt/google
+  
+          # Remove Azure CLI
+          sudo rm -rf /opt/az
+  
+          # Remove CodeQL and other toolcaches
+          sudo rm -rf /opt/hostedtoolcache
+  
+          docker system prune -af || true
+          docker builder prune -af || true
+          df -h
+      
       - name: Checkout
         uses: actions/checkout@v2
         with:
@@ -302,6 +414,34 @@ jobs:
   release-linux-portable:
     runs-on: ubuntu-latest
     steps:
+      # we were having issues running out of disk space on workers, so...
+      - name: Aggressive cleanup
+        run: |
+          # Remove .NET SDKs
+          sudo rm -rf /usr/share/dotnet
+  
+          # Remove Haskell (GHC)
+          sudo rm -rf /usr/local/.ghcup
+  
+          # Remove Julia
+          sudo rm -rf /usr/local/julia*
+  
+          # Remove Chromium (optional if not using for browser tests)
+          sudo rm -rf /usr/local/share/chromium
+  
+          # Remove Microsoft/Edge and Google Chrome builds
+          sudo rm -rf /opt/microsoft /opt/google
+  
+          # Remove Azure CLI
+          sudo rm -rf /opt/az
+  
+          # Remove CodeQL and other toolcaches
+          sudo rm -rf /opt/hostedtoolcache
+  
+          docker system prune -af || true
+          docker builder prune -af || true
+          df -h
+  
       - name: Checkout
         uses: actions/checkout@v2
         with:
