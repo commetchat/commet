@@ -39,6 +39,13 @@ class _CalendarViewMonthState extends State<CalendarViewMonth> {
     return Material(
       child: MonthView(
         key: key,
+        pageViewPhysics: NeverScrollableScrollPhysics(),
+        safeAreaOption: SafeAreaOption(
+          left: false,
+          right: false,
+          top: false,
+          bottom: false,
+        ),
         weekDayBuilder: (day) {
           return DecoratedBox(
             decoration: BoxDecoration(color: colorScheme.surfaceContainerLow),

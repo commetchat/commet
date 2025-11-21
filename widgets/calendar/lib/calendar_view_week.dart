@@ -56,6 +56,13 @@ class _CalendarViewWeekState extends State<CalendarViewWeek> {
             key: key,
             headerStyle: headerStyle,
             heightPerMinute: heightPerMinute,
+            pageViewPhysics: NeverScrollableScrollPhysics(),
+            safeAreaOption: SafeAreaOption(
+              left: false,
+              top: false,
+              right: false,
+              bottom: false,
+            ),
             weekPageHeaderBuilder: (startDate, endDate) => CalendarViewHeader(
               date: startDate,
               secondaryDate: endDate,
@@ -90,16 +97,16 @@ class _CalendarViewWeekState extends State<CalendarViewWeek> {
               return Container(
                 color: colorScheme.surfaceContainerLow,
                 child: Padding(
-                  padding: const EdgeInsets.all(4.0),
+                  padding: const EdgeInsets.all(0.0),
                   child: DecoratedBox(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(15),
                       color: isToday ? colorScheme.primary : Colors.transparent,
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.all(5.0),
+                      padding: const EdgeInsets.all(0.0),
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Center(
                             child: Center(
