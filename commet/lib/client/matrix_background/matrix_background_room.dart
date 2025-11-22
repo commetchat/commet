@@ -78,7 +78,6 @@ class MatrixBackgroundRoom implements Room {
     }
   }
 
-  @override
   String? get avatarId => _stateEvents
       .firstWhereOrNull((e) => e.type == matrix.EventTypes.RoomAvatar)
       ?.content["url"] as String?;

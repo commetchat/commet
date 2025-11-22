@@ -26,7 +26,7 @@ class MatrixBackgroundMember implements Member {
   }
 
   Future<void> init() async {
-    var url = (event!.content["avatar_url"]);
+    var url = event?.content["avatar_url"];
 
     if (url is String) {
       var uri = Uri.parse(url);
@@ -84,7 +84,5 @@ class MatrixBackgroundMember implements Member {
   @override
   String get userName => identifier;
 
-  @override
-  // TODO: implement avatarId
-  String? get avatarId => event!.content["avatar_url"] as String;
+  String? get avatarId => event?.content["avatar_url"] as String;
 }
