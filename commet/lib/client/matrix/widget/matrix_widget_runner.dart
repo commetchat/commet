@@ -126,7 +126,6 @@ class MatrixWidgetRunner implements MatrixWidgetApi {
     if (thisRoom == null) {
       return;
     }
-    Log.i("[${room.id}] Received Sync");
 
     var events = thisRoom.timeline?.events;
     if (events == null) {
@@ -138,7 +137,6 @@ class MatrixWidgetRunner implements MatrixWidgetApi {
         .toList();
 
     if (readableEvents.isEmpty) {
-      Log.i("[${room.id}] No events to send");
       return;
     }
 

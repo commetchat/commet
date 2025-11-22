@@ -191,41 +191,69 @@ class _CalendarViewWeekState extends State<CalendarViewWeek> {
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(8, 4, 4, 0),
                       child: ClipRect(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        child: Stack(
                           children: [
-                            Text(
-                              events.first.title,
-                              maxLines:
-                                  ((boundary.height - 11).toInt() /
-                                          (12 +
-                                              1)) // 11 calculated as sum of all top and bottom padding,  then divide by font size + 1
-                                      .toInt(),
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.bodySmall
-                                  ?.copyWith(
-                                    fontSize: 12,
-                                    color: widget.calendar.config
-                                        .processEventTextColor(
-                                          events.first.color,
-                                          context,
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  events.first.title,
+                                  maxLines:
+                                      ((boundary.height - 11).toInt() /
+                                              (12 +
+                                                  1)) // 11 calculated as sum of all top and bottom padding,  then divide by font size + 1
+                                          .toInt(),
+                                  overflow: TextOverflow.ellipsis,
+                                  style: Theme.of(context).textTheme.bodySmall
+                                      ?.copyWith(
+                                        fontSize: 12,
+                                        color: widget.calendar.config
+                                            .processEventTextColor(
+                                              events.first.color,
+                                              context,
+                                            ),
+                                      ),
+                                ),
+
+                                if (events.first.description != null &&
+                                    boundary.height > 70)
+                                  Text(
+                                    maxLines: 3,
+                                    events.first.description!,
+                                    style: Theme.of(context).textTheme.bodySmall
+                                        ?.copyWith(
+                                          color: widget.calendar.config
+                                              .processEventTextColor(
+                                                events.first.color,
+                                                context,
+                                              ),
+                                          overflow: TextOverflow.ellipsis,
                                         ),
                                   ),
+                              ],
                             ),
-                            if (events.first.description != null &&
-                                boundary.height > 70)
-                              Text(
-                                maxLines: 3,
-                                events.first.description!,
-                                style: Theme.of(context).textTheme.bodySmall
-                                    ?.copyWith(
+                            if (events.first.event?.remoteSourceId != null)
+                              Align(
+                                alignment: AlignmentGeometry.bottomRight,
+                                child: Container(
+                                  color: widget.calendar.config
+                                      .processEventColor(
+                                        events.first.color,
+                                        context,
+                                      ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(2.0),
+                                    child: Icon(
+                                      size: 10,
+                                      Icons.satellite_alt,
                                       color: widget.calendar.config
                                           .processEventTextColor(
                                             events.first.color,
                                             context,
                                           ),
-                                      overflow: TextOverflow.ellipsis,
                                     ),
+                                  ),
+                                ),
                               ),
                           ],
                         ),

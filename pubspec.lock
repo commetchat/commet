@@ -780,6 +780,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.2"
+  icalendar_parser:
+    dependency: transitive
+    description:
+      name: icalendar_parser
+      sha256: "107f936d286723346660df88191888562fc44c2def46ed8858a301a4777ad821"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.0"
   image:
     dependency: transitive
     description:

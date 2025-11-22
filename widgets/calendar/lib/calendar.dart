@@ -15,6 +15,7 @@ class MatrixCalendarEventState {
   RFC8984CalendarEvent data;
   bool loaded = false;
   String? senderId;
+  String? remoteSourceId;
 
   MatrixCalendarEventState({this.senderId, required this.data});
 }
@@ -130,17 +131,22 @@ class MatrixCalendar {
         for (var event in events) {
           var data = Map<String, dynamic>.from(event);
           try {
-            var mxCalendarEvent = RFC8984CalendarEvent.fromJson(data);
+            var rfc8984Event = data["event"];
+            var remoteSource = data["remote_source"];
+            var mxCalendarEvent = RFC8984CalendarEvent.fromJson(rfc8984Event);
 
             var color = config.getColorFromUser(sender);
-            var calendarEvent = fromRfcEvent(mxCalendarEvent);
-            calendarEvent.event?.senderId = sender;
-            calendarEvent = calendarEvent.copyWith(color: color);
-            calendarEvent.event?.loaded = true;
+            var calendarEvents = fromRfcEvent(mxCalendarEvent);
+            for (var calendarEvent in calendarEvents) {
+              calendarEvent = calendarEvent.copyWith(color: color);
+              calendarEvent.event!.senderId = sender;
+              calendarEvent.event!.loaded = true;
+              calendarEvent.event!.remoteSourceId = remoteSource;
 
-            controller.add(calendarEvent);
-          } catch (_) {
-            print("Failed to parse event item: ${data}");
+              controller.add(calendarEvent);
+            }
+          } catch (error) {
+            print("Failed to parse event item: ${data}, $error");
           }
         }
       } catch (_) {
@@ -158,17 +164,75 @@ class MatrixCalendar {
         .toList();
   }
 
-  CalendarEventData<MatrixCalendarEventState> fromRfcEvent(
+  // Converts an RFC8984 Calendar events to a events which can be displayed by the calendar widget
+  // If an event spans multiple days, it gets split in to one event per day
+  List<CalendarEventData<MatrixCalendarEventState>> fromRfcEvent(
     RFC8984CalendarEvent event,
   ) {
     var localTime = event.start.toLocal();
-    return CalendarEventData(
+
+    bool oneOffAllDayEvent =
+        (event.duration.inMinutes == 24 * 60 &&
+        localTime.hour == 0 &&
+        localTime.minute == 0);
+
+    var endTime = localTime.add(event.duration);
+
+    var clippedEndTime = clipToValidEndTime(localTime, endTime);
+
+    List<CalendarEventData<MatrixCalendarEventState>> events = List.empty(
+      growable: true,
+    );
+
+    var finalEvent = CalendarEventData(
       title: event.title,
       date: localTime,
       startTime: localTime,
-      endTime: localTime.add(event.duration),
+      endTime: clippedEndTime,
       event: MatrixCalendarEventState(data: event),
     );
+
+    events.add(finalEvent);
+
+    if (oneOffAllDayEvent) {
+      return events;
+    }
+
+    if (clippedEndTime != endTime) {
+      while (endTime.isAfter(clippedEndTime)) {
+        var startTime = clippedEndTime;
+
+        var newClippedEndTime = clipToValidEndTime(startTime, endTime);
+
+        events.add(
+          CalendarEventData(
+            title: event.title,
+            date: startTime,
+            startTime: startTime,
+            endTime: newClippedEndTime.subtract(
+              Duration(minutes: 1),
+            ), // to prevent the calendar view from considering this as 'all day event'
+            event: MatrixCalendarEventState(data: event),
+          ),
+        );
+
+        if (clippedEndTime == newClippedEndTime) {
+          break;
+        }
+
+        clippedEndTime = newClippedEndTime;
+      }
+    }
+
+    return events;
+  }
+
+  DateTime clipToValidEndTime(DateTime startTime, DateTime endTime) {
+    if (endTime.withoutTime != startTime.withoutTime) {
+      return startTime.copyWith(hour: 23, minute: 59).add(Duration(minutes: 1));
+    }
+
+    return endTime;
   }
 
   String _generateId() {
@@ -184,18 +248,63 @@ class MatrixCalendar {
     );
   }
 
+  Future<void> syncEvents(
+    Map<String, List<RFC8984CalendarEvent>> events,
+  ) async {
+    for (var entry in events.entries) {
+      var eventsToSync = entry.value;
+      var remoteSourceId = entry.key;
+
+      var existing = controller.allEvents.toList();
+      for (var existingEvent in existing) {
+        if (existingEvent.event?.remoteSourceId == remoteSourceId) {
+          controller.remove(existingEvent);
+        }
+      }
+
+      for (var event in eventsToSync) {
+        var calendarEvents = fromRfcEvent(event);
+        for (var calendarEvent in calendarEvents) {
+          var color = config.getColorFromUser(widgetApi.userId);
+
+          calendarEvent = calendarEvent.copyWith(color: color);
+          calendarEvent.event!.senderId = widgetApi.userId;
+          calendarEvent.event!.remoteSourceId = remoteSourceId;
+
+          controller.add(calendarEvent);
+        }
+      }
+    }
+
+    await _syncControllerEventsToRoomState();
+
+    updateFromRoomState();
+  }
+
+  Future<void> removeAllEventsFromRemoteCalendar(String id) async {
+    controller.removeWhere((i) => i.event?.remoteSourceId == id);
+    await _syncControllerEventsToRoomState();
+  }
+
   Future<void> createEvent(RFC8984CalendarEvent event) async {
-    event.uid = _generateId();
+    if (event.uid == "") {
+      event.uid = _generateId();
+    }
 
-    var calendarEvent = fromRfcEvent(event);
+    var calendarEvents = fromRfcEvent(event);
+    for (var calendarEvent in calendarEvents) {
+      var color = config.getColorFromUser(widgetApi.userId);
 
-    var color = config.getColorFromUser(widgetApi.userId);
+      calendarEvent = calendarEvent.copyWith(color: color);
+      calendarEvent.event!.senderId = widgetApi.userId;
 
-    calendarEvent = calendarEvent.copyWith(color: color);
-    calendarEvent.event?.senderId = widgetApi.userId;
+      controller.add(calendarEvent);
+    }
 
-    controller.add(calendarEvent);
+    _syncControllerEventsToRoomState();
+  }
 
+  Future<void> _syncControllerEventsToRoomState() async {
     var events = controller.allEvents
         .where((e) => e.event?.senderId == widgetApi.userId)
         .map((e) => e.event)
@@ -204,9 +313,27 @@ class MatrixCalendar {
 
     events.sort((a, b) => a.data.uid.compareTo(b.data.uid));
 
-    var json = events.map((e) => e.data.toJson()).toList();
+    List<MatrixCalendarEventState> uniqueEvents = List.empty(growable: true);
 
-    widgetApi.sendAction(FromWidgetAction.sendEvent, {
+    for (var event in events) {
+      if (uniqueEvents.any((i) => i.data.uid == event.data.uid)) {
+        continue;
+      }
+
+      uniqueEvents.add(event);
+    }
+
+    var json = uniqueEvents
+        .map(
+          (e) => {
+            "type": "chat.commet.calendar.event.rfc8984",
+            if (e.remoteSourceId != null) "remote_source": e.remoteSourceId,
+            "event": e.data.toJson(),
+          },
+        )
+        .toList();
+
+    await widgetApi.sendAction(FromWidgetAction.sendEvent, {
       "type": "chat.commet.calendar_event",
       "state_key": widgetApi.userId,
       "content": {"events": json},

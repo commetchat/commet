@@ -17,6 +17,7 @@ import 'package:commet/client/profile.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/experiments.dart';
+import 'package:commet/config/global_config.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
 import 'package:commet/main.dart';
@@ -439,7 +440,7 @@ class MatrixClient extends Client {
     if (Experiments.calendarRooms) {
       if (args.roomType == RoomType.calendar) {
         const widgetId = "chat.commet.room_calendar";
-        const widgetHost = "calendar-widget.commet.chat";
+        var widgetHost = GlobalConfig.calendarWidgetHost;
         creationContent = {"type": "chat.commet.calendar"};
         initialState = [
           matrix.StateEvent(
