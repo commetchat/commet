@@ -10,26 +10,40 @@ import '../../utils/image/lod_image.dart';
 
 class MatrixMxcImage extends LODImageProvider {
   Uri identifier;
-  MatrixMxcImage(this.identifier, Client matrixClient,
-      {super.blurhash,
-      bool? doThumbnail,
-      bool? doFullres,
-      bool cache = true,
-      super.autoLoadFullRes,
-      super.thumbnailHeight,
-      super.fullResHeight,
-      Event? matrixEvent})
-      : super(
-            id:
-                "$identifier-$doThumbnail-$doFullres-$thumbnailHeight-$fullResHeight",
-            loadThumbnail: (doThumbnail == null || doThumbnail == true)
-                ? () => loadMatrixThumbnail(
-                    matrixClient, identifier, matrixEvent, cache: cache)
-                : null,
-            loadFullRes: (doFullres == null || doFullres == true)
-                ? () => loadMatrixFullRes(matrixClient, identifier, matrixEvent,
-                    cache: cache)
-                : null);
+  MatrixMxcImage(
+    this.identifier,
+    Client matrixClient, {
+    super.blurhash,
+    bool? doThumbnail,
+    bool? doFullres,
+    bool cache = true,
+    super.autoLoadFullRes,
+    super.thumbnailHeight,
+    super.fullResHeight,
+    Event? matrixEvent,
+  }) : super(
+          id: "$identifier-$doThumbnail-$doFullres-$thumbnailHeight-$fullResHeight",
+          loadThumbnail: (doThumbnail == null || doThumbnail == true)
+              ? () => retryUntilOnline<Uint8List?>(
+                  matrixClient,
+                  () => loadMatrixThumbnail(
+                        matrixClient,
+                        identifier,
+                        matrixEvent,
+                        cache: cache,
+                      ))
+              : null,
+          loadFullRes: (doFullres == null || doFullres == true)
+              ? () => retryUntilOnline<Uint8List?>(
+                  matrixClient,
+                  () => loadMatrixFullRes(
+                        matrixClient,
+                        identifier,
+                        matrixEvent,
+                        cache: cache,
+                      ))
+              : null,
+        );
 
   static String getThumbnailIdentifier(Uri uri) {
     return "matrix_thumbnail-$uri";
@@ -39,9 +53,40 @@ class MatrixMxcImage extends LODImageProvider {
     return "matrix-$uri";
   }
 
+  static Future<T> retryUntilOnline<T>(
+      Client client, Future<T> callback()) async {
+    try {
+      var value = await callback();
+      return value;
+    } catch (error) {
+      Log.i("Caught error: ${error}");
+
+      if (error is SocketException) {
+        Log.i("Is Socket Exception");
+
+        while (true) {
+          var result = await client.onSyncStatus.stream.first;
+
+          if (result.status == SyncStatus.finished) {
+            Log.i("Looks like we are back online, try it again!");
+            var result = await callback();
+            return result;
+          } else {
+            Log.i("Waiting to reconnect...");
+          }
+        }
+      }
+
+      throw UnimplementedError();
+    }
+  }
+
   static Future<Uint8List?> loadMatrixThumbnail(
-      Client client, Uri uri, Event? matrixEvent,
-      {bool cache = false}) async {
+    Client client,
+    Uri uri,
+    Event? matrixEvent, {
+    bool cache = true,
+  }) async {
     var identifier = getThumbnailIdentifier(uri);
 
     if (await fileCache?.hasFile(identifier) == true) {
@@ -54,8 +99,9 @@ class MatrixMxcImage extends LODImageProvider {
 
     Uint8List? bytes;
     if (matrixEvent != null) {
-      var data =
-          await matrixEvent.downloadAndDecryptAttachment(getThumbnail: true);
+      var data = await matrixEvent.downloadAndDecryptAttachment(
+        getThumbnail: true,
+      );
 
       String mime = matrixEvent.thumbnailMimetype;
 
@@ -69,12 +115,8 @@ class MatrixMxcImage extends LODImageProvider {
         Log.w("Attachment thumbnail had unknown mime type: '${mime}'");
       }
     } else {
-      try {
-        var response = await client.getContentThumbnailFromUri(uri, 90, 90);
-        bytes = response.data;
-      } catch (e, t) {
-        Log.onError(e, t, content: "Failed to get content thumbnail");
-      }
+      var response = await client.getContentThumbnailFromUri(uri, 90, 90);
+      bytes = response.data;
     }
 
     if (bytes != null && cache) {
@@ -86,8 +128,11 @@ class MatrixMxcImage extends LODImageProvider {
   }
 
   static Future<Uint8List?> loadMatrixFullRes(
-      Client client, Uri uri, Event? matrixEvent,
-      {bool cache = true}) async {
+    Client client,
+    Uri uri,
+    Event? matrixEvent, {
+    bool cache = true,
+  }) async {
     var identifier = getIdentifier(uri);
 
     if (await fileCache?.hasFile(identifier) == true) {
@@ -104,15 +149,11 @@ class MatrixMxcImage extends LODImageProvider {
 
       bytes = data.bytes;
     } else {
-      try {
-        var response = await client.getContentFromUri(uri);
-        bytes = response.data;
-      } catch (e, t) {
-        Log.onError(e, t, content: "Failed to get content");
-      }
+      var response = await client.getContentFromUri(uri);
+      bytes = response.data;
     }
 
-    if (bytes != null && cache) {
+    if (cache) {
       fileCache?.putFile(identifier, bytes);
       return bytes;
     }
