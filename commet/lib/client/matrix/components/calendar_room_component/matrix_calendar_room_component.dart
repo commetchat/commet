@@ -131,6 +131,8 @@ class MatrixCalendarRoomComponent
 
   @override
   Future<void> runCalendarSync() async {
+    if (!isCalendar) return;
+
     var urls = syncedCalendars.value;
     if (urls == null) {
       return;
@@ -199,6 +201,7 @@ class MatrixCalendarRoomComponent
 
   @override
   Future<void> removeSyncedCalendar(String id) async {
+    if (!isCalendar) return;
     if (syncedCalendars.value == null) {
       return;
     }
