@@ -58,26 +58,20 @@ class MatrixMxcImage extends LODImageProvider {
     try {
       var value = await callback();
       return value;
-    } catch (error) {
-      Log.i("Caught error: ${error}");
-
+    } catch (error, trace) {
       if (error is SocketException) {
-        Log.i("Is Socket Exception");
-
         while (true) {
           var result = await client.onSyncStatus.stream.first;
 
           if (result.status == SyncStatus.finished) {
-            Log.i("Looks like we are back online, try it again!");
             var result = await callback();
             return result;
-          } else {
-            Log.i("Waiting to reconnect...");
           }
         }
+      } else {
+        Log.onError(error, trace);
+        throw UnimplementedError();
       }
-
-      throw UnimplementedError();
     }
   }
 
