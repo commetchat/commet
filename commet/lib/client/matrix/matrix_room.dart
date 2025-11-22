@@ -179,13 +179,14 @@ class MatrixRoom extends Room {
     _permissions = MatrixRoomPermissions(_matrixRoom);
   }
 
-  Future<void> updateAvatar() async {
+  Future<void> updateAvatar({bool fromCache = true}) async {
     if (_matrixRoom.avatar != null) {
       _avatar = MatrixMxcImage(_matrixRoom.avatar!, _matrixRoom.client,
           thumbnailHeight: 64, fullResHeight: 128, autoLoadFullRes: false);
     } else if (_matrixRoom.isDirectChat) {
-      var url = await _matrixRoom.client
-          .getAvatarUrl(_matrixRoom.directChatMatrixID!);
+      var user = _matrixRoom
+          .unsafeGetUserFromMemoryOrFallback(_matrixRoom.directChatMatrixID!);
+      var url = user.avatarUrl;
       if (url != null) {
         _avatar = MatrixMxcImage(url, _matrixRoom.client,
             thumbnailHeight: 64, fullResHeight: 128, autoLoadFullRes: false);
