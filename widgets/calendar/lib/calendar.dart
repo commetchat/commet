@@ -133,7 +133,7 @@ class MatrixCalendar {
           var data = Map<String, dynamic>.from(event);
           try {
             var rfc8984Event = data["event"];
-            var remoteSource = data["remote_source"];
+            var remoteSource = data["remote_source_id"];
             var eventType = data["type"];
             var mxCalendarEvent = RFC8984CalendarEvent.fromJson(rfc8984Event);
 
@@ -331,7 +331,7 @@ class MatrixCalendar {
         .map(
           (e) => {
             "format": "chat.commet.calendar.event.rfc8984",
-            if (e.remoteSourceId != null) "remote_source": e.remoteSourceId,
+            if (e.remoteSourceId != null) "remote_source_id": e.remoteSourceId,
             if (e.type != null) "type": e.type!,
             "event": e.data.toJson(),
           },
