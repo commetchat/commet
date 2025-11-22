@@ -19,6 +19,7 @@ import 'package:file_picker/file_picker.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
 import 'package:pasteboard/pasteboard.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -26,6 +27,16 @@ import '../../client/attachment.dart';
 import '../../client/components/emoticon/emoticon.dart';
 
 enum MessageInputSendResult { success, unhandled }
+
+class AttachmentPicker {
+  IconData icon;
+  String label;
+
+  Function() execute;
+
+  AttachmentPicker(
+      {required this.icon, required this.label, required this.execute});
+}
 
 class MessageInput extends StatefulWidget {
   const MessageInput(
@@ -732,33 +743,109 @@ class MessageInputState extends State<MessageInput> {
                 }));
   }
 
-  void addAttachment() async {
-    FilePickerResult? result =
-        await FilePicker.platform.pickFiles(type: FileType.any, withData: true);
-
-    if (result != null) {
-      for (var file in result.files) {
-        var attachment = PendingFileAttachment(
-            name: file.name,
-            path: PlatformUtils.isWeb ? null : file.path,
-            data: file.bytes,
-            size: file.bytes?.length);
-        if (mounted) {
-          var processedFile = await AdaptiveDialog.show<PendingFileAttachment>(
-            scrollable: false,
-            context,
-            builder: (context) {
-              return AttachmentProcessor(
-                attachment: attachment,
-              );
-            },
+  Future<void> handlePickedAttachment(PendingFileAttachment attachment) async {
+    if (mounted) {
+      var processedFile = await AdaptiveDialog.show<PendingFileAttachment>(
+        scrollable: false,
+        context,
+        builder: (context) {
+          return AttachmentProcessor(
+            attachment: attachment,
           );
+        },
+      );
 
-          if (processedFile != null) {
-            widget.addAttachment?.call(processedFile);
-          }
-        }
+      if (processedFile != null) {
+        widget.addAttachment?.call(processedFile);
       }
+    }
+  }
+
+  void addAttachment() async {
+    var pickers = [
+      if (PlatformUtils.isAndroid)
+        AttachmentPicker(
+            icon: Icons.photo,
+            label: "Gallery",
+            execute: () async {
+              var picker = ImagePicker();
+              var result = await picker.pickMultiImage();
+              for (var file in result) {
+                var data = await file.readAsBytes();
+                await handlePickedAttachment(PendingFileAttachment(
+                    name: file.name,
+                    mimeType: file.mimeType,
+                    size: data.lengthInBytes,
+                    data: data));
+              }
+            }),
+      AttachmentPicker(
+          icon: Icons.attach_file,
+          label: "File",
+          execute: () async {
+            FilePickerResult? result = await FilePicker.platform.pickFiles(
+                type: FileType.any, withData: true, allowMultiple: true);
+            if (result == null) return;
+
+            for (var file in result.files) {
+              var attachment = PendingFileAttachment(
+                  name: file.name,
+                  path: PlatformUtils.isWeb ? null : file.path,
+                  data: file.bytes,
+                  size: file.bytes?.length);
+
+              await handlePickedAttachment(attachment);
+            }
+          }),
+      if (PlatformUtils.isAndroid && preferences.developerMode)
+        AttachmentPicker(
+            icon: Icons.perm_media,
+            label: "Media",
+            execute: () async {
+              var picker = ImagePicker();
+              var result = await picker.pickMultipleMedia();
+              for (var file in result) {
+                var data = await file.readAsBytes();
+                await handlePickedAttachment(PendingFileAttachment(
+                    name: file.name,
+                    mimeType: file.mimeType,
+                    size: data.lengthInBytes,
+                    data: data));
+              }
+            }),
+      if (PlatformUtils.isAndroid)
+        AttachmentPicker(
+            icon: Icons.camera_alt,
+            label: "Take a photo",
+            execute: () async {
+              var picker = ImagePicker();
+              var file = await picker.pickImage(source: ImageSource.camera);
+              if (file == null) return;
+
+              var data = await file.readAsBytes();
+              await handlePickedAttachment(PendingFileAttachment(
+                  name: file.name,
+                  mimeType: file.mimeType,
+                  size: data.lengthInBytes,
+                  data: data));
+            }),
+    ];
+
+    if (pickers.length == 1) {
+      pickers.first.execute();
+    } else {
+      final picker = await AdaptiveDialog.pickOne(context,
+          items: pickers,
+          itemBuilder: (context, item, onTapped) => SizedBox(
+                height: 50,
+                child: tiamat.TextButton(
+                  item.label,
+                  icon: item.icon,
+                  onTap: onTapped,
+                ),
+              ));
+
+      picker?.execute();
     }
   }
 

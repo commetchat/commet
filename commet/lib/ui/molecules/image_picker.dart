@@ -7,8 +7,8 @@ import '../../utils/mime.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;
 
-class ImagePicker extends StatefulWidget {
-  const ImagePicker(
+class ImagePickerButton extends StatefulWidget {
+  const ImagePickerButton(
       {super.key,
       this.currentImage,
       this.onImagePicked,
@@ -27,10 +27,10 @@ class ImagePicker extends StatefulWidget {
       onImageRead;
 
   @override
-  State<ImagePicker> createState() => _ImagePickerState();
+  State<ImagePickerButton> createState() => _ImagePickerButtonState();
 }
 
-class _ImagePickerState extends State<ImagePicker> {
+class _ImagePickerButtonState extends State<ImagePickerButton> {
   ImageProvider? image;
 
   @override

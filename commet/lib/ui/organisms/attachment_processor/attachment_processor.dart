@@ -102,7 +102,13 @@ class _AttachmentProcessorState extends State<AttachmentProcessor> {
                     Row(
                       children: [
                         Icon(icon),
-                        tiamat.Text.labelLow(widget.attachment.name!),
+                        Flexible(
+                          child: tiamat.Text.labelLow(
+                            widget.attachment.name!,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
                       ],
                     ),
                   Flexible(

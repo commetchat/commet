@@ -7,6 +7,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   desktop_drop
   desktop_webview_window
   dynamic_color
+  file_selector_windows
   flutter_webrtc
   livekit_client
   media_kit_libs_windows_video
