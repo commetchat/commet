@@ -9,6 +9,7 @@ import 'package:commet/client/matrix/components/photo_album_room/matrix_photo_al
 import 'package:commet/client/matrix/components/photo_album_room/matrix_photo_album_timeline.dart';
 import 'package:commet/client/timeline.dart';
 import 'package:commet/config/layout_config.dart';
+import 'package:commet/config/platform_utils.dart';
 import 'package:commet/ui/atoms/lightbox.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_menu.dart';
@@ -23,6 +24,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class PhotoAlbumView extends StatefulWidget {
@@ -324,30 +326,66 @@ class _PhotoAlbumViewState extends State<PhotoAlbumView> {
   }
 
   void uploadImages() async {
-    var files = await FilePicker.platform
-        .pickFiles(allowMultiple: true, withReadStream: true);
-    if (files == null) return;
+    late List<PickedPhoto> photos;
 
-    var f = files.files
-        .map((e) => PickedPhoto(
-              filepath: e.path,
-              name: e.name,
-              getBytes: () async {
-                var result = List<int>.empty(growable: true);
-                await for (final data in e.readStream!) {
-                  print("Read ${data.length} bytes from file");
-                  result.addAll(data);
-                }
+    if (PlatformUtils.isAndroid) {
+      final usePhotoPicker = await AdaptiveDialog.pickOne(context,
+          items: [true, false],
+          itemBuilder: (context, item, onTapped) => SizedBox(
+                height: 50,
+                child: tiamat.TextButton(
+                  item ? "Photos" : "Browse Files",
+                  icon: item ? Icons.add_to_photos : Icons.file_open,
+                  onTap: onTapped,
+                ),
+              ));
+      if (usePhotoPicker == null) {
+        return;
+      }
 
-                print("Read all ${result.length} bytes");
+      var picker = ImagePicker();
+      late List<XFile> files;
 
-                return Uint8List.fromList(result);
-              },
-            ))
-        .toList();
+      if (usePhotoPicker) {
+        files = await picker.pickMultiImage();
+      } else {
+        files = await picker.pickMultipleMedia();
+      }
+
+      photos = files
+          .map((f) => PickedPhoto(
+              name: f.name,
+              filepath: f.path,
+              getBytes: () {
+                return f.readAsBytes();
+              }))
+          .toList();
+    } else {
+      var files = await FilePicker.platform
+          .pickFiles(allowMultiple: true, withReadStream: true);
+      if (files == null) return;
+
+      photos = files.files
+          .map((e) => PickedPhoto(
+                filepath: e.path,
+                name: e.name,
+                getBytes: () async {
+                  var result = List<int>.empty(growable: true);
+                  await for (final data in e.readStream!) {
+                    print("Read ${data.length} bytes from file");
+                    result.addAll(data);
+                  }
+
+                  print("Read all ${result.length} bytes");
+
+                  return Uint8List.fromList(result);
+                },
+              ))
+          .toList();
+    }
 
     AdaptiveDialog.show(context,
-        builder: (_) => PhotosAlbumUploadView(f, widget.component));
+        builder: (_) => PhotosAlbumUploadView(photos, widget.component));
   }
 
   void onFileDropped(DropDoneDetails event) {
