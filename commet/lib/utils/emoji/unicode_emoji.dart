@@ -15,9 +15,13 @@ class UnicodeEmojis {
   static Future<List<UnicodeEmoticonPack>> load() async {
     packs = List.from([
       UnicodeEmoticonPack(
-          dataPacks: [UnicodeEmojiGroups.GROUP_0, UnicodeEmojiGroups.GROUP_1],
-          getLocalisedName: () => "Smileys & People",
+          dataPacks: [UnicodeEmojiGroups.GROUP_0],
+          getLocalisedName: () => "Smileys",
           icon: Icons.emoji_emotions),
+      UnicodeEmoticonPack(
+          dataPacks: [UnicodeEmojiGroups.GROUP_1],
+          getLocalisedName: () => "People",
+          icon: Icons.emoji_people),
       UnicodeEmoticonPack(
           dataPacks: [UnicodeEmojiGroups.GROUP_3],
           getLocalisedName: () => "Animals & Nature",
