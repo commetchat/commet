@@ -69,7 +69,7 @@ class _ProfileEditViewState extends State<ProfileEditView> {
 
   Widget avatarEditor() {
     if (widget.canEditAvatar) {
-      return ImagePicker(
+      return ImagePickerButton(
         currentImage: widget.avatar,
         withData: true,
         onImageRead: (bytes, mimeType, path) =>
