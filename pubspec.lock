@@ -454,10 +454,10 @@ packages:
     dependency: transitive
     description:
       name: file_picker
-      sha256: f8f4ea435f791ab1f817b4e338ed958cb3d04ba43d6736ffc39958d950754967
+      sha256: "7872545770c277236fd32b022767576c562ba28366204ff1a5628853cf8f2200"
       url: "https://pub.dev"
     source: hosted
-    version: "10.3.3"
+    version: "10.3.7"
   file_selector_linux:
     dependency: transitive
     description:
@@ -829,7 +829,7 @@ packages:
     source: hosted
     version: "4.3.0"
   image_picker:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: image_picker
       sha256: "784210112be18ea55f69d7076e2c656a4e24949fa9e76429fe53af0c0f4fa320"
