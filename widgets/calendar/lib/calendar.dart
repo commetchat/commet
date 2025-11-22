@@ -16,6 +16,7 @@ class MatrixCalendarEventState {
   bool loaded = false;
   String? senderId;
   String? remoteSourceId;
+  String? type;
 
   MatrixCalendarEventState({this.senderId, required this.data});
 }
@@ -133,6 +134,7 @@ class MatrixCalendar {
           try {
             var rfc8984Event = data["event"];
             var remoteSource = data["remote_source"];
+            var eventType = data["type"];
             var mxCalendarEvent = RFC8984CalendarEvent.fromJson(rfc8984Event);
 
             var color = config.getColorFromUser(sender);
@@ -142,6 +144,7 @@ class MatrixCalendar {
               calendarEvent.event!.senderId = sender;
               calendarEvent.event!.loaded = true;
               calendarEvent.event!.remoteSourceId = remoteSource;
+              calendarEvent.event!.type = eventType;
 
               controller.add(calendarEvent);
             }
@@ -270,6 +273,7 @@ class MatrixCalendar {
           calendarEvent = calendarEvent.copyWith(color: color);
           calendarEvent.event!.senderId = widgetApi.userId;
           calendarEvent.event!.remoteSourceId = remoteSourceId;
+          calendarEvent.event!.type = "event";
 
           controller.add(calendarEvent);
         }
@@ -326,8 +330,9 @@ class MatrixCalendar {
     var json = uniqueEvents
         .map(
           (e) => {
-            "type": "chat.commet.calendar.event.rfc8984",
+            "format": "chat.commet.calendar.event.rfc8984",
             if (e.remoteSourceId != null) "remote_source": e.remoteSourceId,
+            if (e.type != null) "type": e.type!,
             "event": e.data.toJson(),
           },
         )
