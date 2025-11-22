@@ -101,15 +101,21 @@ class _TimelineEventViewReplyState extends State<TimelineEventViewReply> {
                     text: TextSpan(children: [
                       TextSpan(
                           text: "${senderName ?? "Loading"} ",
-                          style: TextStyle(
-                              color: tiamat.Text.adjustColor(
-                                  context, senderColor ?? Colors.white))),
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.copyWith(
+                                  color: tiamat.Text.adjustColor(
+                                      context, senderColor ?? Colors.white))),
                       TextSpan(
                           text: body ?? "Unknown",
-                          style: TextStyle(
-                              color: material.Theme.of(context)
-                                  .colorScheme
-                                  .secondary)),
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.copyWith(
+                                  color: material.Theme.of(context)
+                                      .colorScheme
+                                      .secondary)),
                     ])),
               )
               // Column(
