@@ -117,8 +117,13 @@ class MatrixWidgetRunner implements MatrixWidgetApi {
     var state_key = data["state_key"];
     var content = data["content"];
 
-    await client.setRoomStateWithKey(room.id, type, state_key, content);
-    return {};
+    var result = await client.setRoomStateWithKey(
+      room.id,
+      type,
+      state_key,
+      content,
+    );
+    return {"room_id": room.id, "event_id": result};
   }
 
   void onSync(matrix.SyncUpdate event) {

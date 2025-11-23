@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:math';
 import 'dart:ui';
 
@@ -10,6 +9,7 @@ import 'package:matrix_widget_api/capabilities.dart';
 import 'package:matrix_widget_api/matrix_widget_api.dart';
 import 'package:matrix_widget_api/types.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
+import 'package:uuid/uuid.dart';
 
 class MatrixCalendarEventState {
   RFC8984CalendarEvent data;
@@ -127,12 +127,15 @@ class MatrixCalendar {
 
     for (var entry in states!.entries) {
       try {
-        var events = entry.value["content"]["events"];
+        var events = Map<String, dynamic>.from(
+          entry.value["content"]["events"],
+        );
         var sender = entry.value["sender"];
-        for (var event in events) {
+        for (var key in events.keys) {
+          var event = events[key];
           var data = Map<String, dynamic>.from(event);
           try {
-            var rfc8984Event = data["event"];
+            var rfc8984Event = Map<String, dynamic>.from(data["event"]);
             var remoteSource = data["remote_source_id"];
             var eventType = data["type"];
             var mxCalendarEvent = RFC8984CalendarEvent.fromJson(rfc8984Event);
@@ -148,8 +151,9 @@ class MatrixCalendar {
 
               controller.add(calendarEvent);
             }
-          } catch (error) {
+          } catch (error, stack) {
             print("Failed to parse event item: ${data}, $error");
+            print(stack);
           }
         }
       } catch (_) {
@@ -239,16 +243,10 @@ class MatrixCalendar {
   }
 
   String _generateId() {
-    const _chars =
-        'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
-    Random _rnd = Random();
+    var uuid = const Uuid();
+    var label = uuid.v4();
 
-    return String.fromCharCodes(
-      Iterable.generate(
-        20,
-        (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length)),
-      ),
-    );
+    return label;
   }
 
   Future<void> syncEvents(
@@ -290,7 +288,7 @@ class MatrixCalendar {
     await _syncControllerEventsToRoomState();
   }
 
-  Future<void> createEvent(RFC8984CalendarEvent event) async {
+  Future<bool> createEvent(RFC8984CalendarEvent event) async {
     if (event.uid == "") {
       event.uid = _generateId();
     }
@@ -305,10 +303,10 @@ class MatrixCalendar {
       controller.add(calendarEvent);
     }
 
-    _syncControllerEventsToRoomState();
+    return _syncControllerEventsToRoomState();
   }
 
-  Future<void> _syncControllerEventsToRoomState() async {
+  Future<bool> _syncControllerEventsToRoomState() async {
     var events = controller.allEvents
         .where((e) => e.event?.senderId == widgetApi.userId)
         .map((e) => e.event)
@@ -327,21 +325,29 @@ class MatrixCalendar {
       uniqueEvents.add(event);
     }
 
-    var json = uniqueEvents
-        .map(
-          (e) => {
-            "format": "chat.commet.calendar.event.rfc8984",
-            if (e.remoteSourceId != null) "remote_source_id": e.remoteSourceId,
-            if (e.type != null) "type": e.type!,
-            "event": e.data.toJson(),
-          },
-        )
-        .toList();
+    var json = {};
 
-    await widgetApi.sendAction(FromWidgetAction.sendEvent, {
+    for (var e in uniqueEvents) {
+      var event = {
+        "format": "chat.commet.calendar.event.rfc8984",
+        if (e.remoteSourceId != null) "remote_source_id": e.remoteSourceId,
+        if (e.type != null) "type": e.type!,
+        "event": e.data.toJson(),
+      };
+
+      json[e.data.uid] = event;
+    }
+
+    var result = await widgetApi.sendAction(FromWidgetAction.sendEvent, {
       "type": "chat.commet.calendar_event",
       "state_key": widgetApi.userId,
       "content": {"events": json},
     });
+
+    if (result.containsKey("event_id")) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }

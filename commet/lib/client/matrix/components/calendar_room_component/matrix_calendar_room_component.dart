@@ -9,15 +9,16 @@ import 'package:commet/client/matrix/widget/matrix_widget_runner.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
-import 'package:commet/utils/rng.dart';
 import 'package:commet/utils/stored_stream_controller.dart';
 import 'package:commet_calendar_widget/rfc8984.dart';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:icalendar_parser/icalendar_parser.dart';
 import 'package:icalendar_parser/icalendar_parser.dart' as ical;
 import 'package:matrix/matrix.dart';
 import 'package:commet_calendar_widget/calendar.dart';
 import 'package:http/http.dart' as http;
+import 'package:uuid/uuid.dart';
 
 class CustomMatrixCalendarConfig extends MatrixCalendarConfig {
   @override
@@ -115,7 +116,8 @@ class MatrixCalendarRoomComponent
   @override
   Future<void> addSyncedCalendar(String url) {
     var urls = syncedCalendars.value ?? {};
-    var id = RandomUtils.getRandomString(20);
+    var uuid = const Uuid();
+    var id = uuid.v4();
     urls = {};
     urls[id] = url.toString();
     var c = room.matrixRoom.client;
@@ -186,13 +188,14 @@ class MatrixCalendarRoomComponent
     var updated =
         (data["lastModified"] as ical.IcsDateTime?)?.toDateTime() ??
         DateTime.now();
-    var uid = "$calendarId/${data["uid"].hashCode.toString()}";
+
+    var uid = sha1.convert("$calendarId/${data["uid"]}".codeUnits);
 
     var duration = end.difference(start);
 
     return RFC8984CalendarEvent(
-      uid: uid,
-      updated: updated,
+      uid: uid.toString(),
+      updated: updated.toUtc(),
       title: title,
       start: start,
       duration: duration,

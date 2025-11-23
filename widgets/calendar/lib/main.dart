@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:matrix_widget_api/matrix_widget_api.dart';
 import 'package:tiamat/config/config.dart';
+import 'package:uuid/v4.dart';
 
 void main() {
   runApp(const CalendarWidgetApp());
@@ -107,12 +108,19 @@ class _CalendarWidgetViewState extends State<CalendarWidgetView> {
   }
 
   Future<void> createEvent(DateTime time) async {
-    var result = await widget.calendar.config.dialog<RFC8984CalendarEvent?>(
+    var result = await widget.calendar.config.dialog<bool?>(
       context: context,
       builder: (context) => CalendarEventEditor(
+        createEvent: (event) async {
+          try {
+            return widget.calendar.createEvent(event);
+          } catch (_, _) {
+            return false;
+          }
+        },
         initialEvent: RFC8984CalendarEvent(
           uid: "",
-          updated: DateTime.now(),
+          updated: DateTime.now().toUtc(),
           title: "",
           start: time,
           duration: Duration(hours: 1),
@@ -120,8 +128,8 @@ class _CalendarWidgetViewState extends State<CalendarWidgetView> {
       ),
     );
 
-    if (result != null) {
-      widget.calendar.createEvent(result);
+    if (result != true) {
+      widget.calendar.updateFromRoomState();
     }
   }
 

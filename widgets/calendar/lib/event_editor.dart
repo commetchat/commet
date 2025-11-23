@@ -4,8 +4,13 @@ import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class CalendarEventEditor extends StatefulWidget {
-  const CalendarEventEditor({this.initialEvent, super.key});
+  const CalendarEventEditor({
+    this.initialEvent,
+    required this.createEvent,
+    super.key,
+  });
   final RFC8984CalendarEvent? initialEvent;
+  final Future<bool> Function(RFC8984CalendarEvent event) createEvent;
 
   @override
   State<CalendarEventEditor> createState() => _CalendarEventEditorState();
@@ -16,6 +21,8 @@ class _CalendarEventEditorState extends State<CalendarEventEditor> {
   late TimeOfDay pickedTime;
 
   String eventName = "";
+
+  bool submitting = false;
 
   @override
   void initState() {
@@ -102,29 +109,52 @@ class _CalendarEventEditorState extends State<CalendarEventEditor> {
                 Expanded(
                   child: tiamat.Button(
                     text: "Submit",
-                    onTap: () {
-                      print(
-                        "Event name: '${eventName}' is empty: ${eventName.isEmpty}",
+                    isLoading: submitting,
+                    onTap: () async {
+                      var event = RFC8984CalendarEvent(
+                        uid: widget.initialEvent?.uid ?? "",
+                        updated: DateTime.now().toUtc(),
+                        title: eventName,
+                        start: DateTime(
+                          pickedDate.year,
+                          pickedDate.month,
+                          pickedDate.day,
+                          pickedTime.hour,
+                          pickedTime.minute,
+                        ).toUtc(),
+                        duration: Duration(hours: 1),
                       );
-                      if (eventName.isEmpty) {
-                        return;
-                      }
 
-                      Navigator.of(context).pop(
-                        RFC8984CalendarEvent(
-                          uid: widget.initialEvent?.uid ?? "",
-                          updated: DateTime.now(),
-                          title: eventName,
-                          start: DateTime(
-                            pickedDate.year,
-                            pickedDate.month,
-                            pickedDate.day,
-                            pickedTime.hour,
-                            pickedTime.minute,
-                          ).toUtc(),
-                          duration: Duration(hours: 1),
-                        ),
-                      );
+                      setState(() {
+                        submitting = true;
+                      });
+
+                      try {
+                        var succeeded = await widget
+                            .createEvent(event)
+                            .timeout(
+                              Duration(seconds: 10),
+                              onTimeout: () async {
+                                setState(() {
+                                  submitting = false;
+                                });
+
+                                return false;
+                              },
+                            );
+
+                        if (succeeded == true) {
+                          Navigator.of(context).pop(true);
+                        } else {
+                          setState(() {
+                            submitting = false;
+                          });
+                        }
+                      } catch (_) {
+                        setState(() {
+                          submitting = false;
+                        });
+                      }
                     },
                   ),
                 ),
