@@ -240,7 +240,7 @@ class _LoginPageViewState extends State<LoginPageView> {
                 ),
               if (defaultSso != null)
                 tiamat.Button.secondary(
-                  text: "Login with " + defaultSso!.name,
+                  text: "Login with " + defaultSso.name,
                   onTap: () => {widget.doSsoLogin?.call(defaultSso!)},
                 ),
               if (ssoFlows != null)
