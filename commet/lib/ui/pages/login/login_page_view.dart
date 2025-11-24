@@ -211,6 +211,63 @@ class _LoginPageViewState extends State<LoginPageView> {
       homeserverEntry(),
       const SizedBox(height: 16),
       if (widget.hasPasswordSupport) usenamePasswordLoginInputs(),
+      if (widget.hasSsoSupport)
+        Flexible(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (widget.hasPasswordSupport)
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const SizedBox(
+                        width: 100,
+                        height: 10,
+                        child: tiamat.Seperator(),
+                      ),
+                      tiamat.Text.labelLow(CommonStrings.labelOr),
+                      const SizedBox(
+                        width: 100,
+                        height: 10,
+                        child: tiamat.Seperator(),
+                      ),
+                    ],
+                  ),
+                ),
+              if (defaultSso != null)
+                tiamat.Button.secondary(
+                  text: "Login with " + defaultSso!.name,
+                  onTap: () => {widget.doSsoLogin?.call(defaultSso!)},
+                ),
+              if (ssoFlows != null)
+                Flexible(
+                    child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    spacing: 10,
+                    children: ssoFlows
+                        .whereType<SsoLoginFlow>()
+                        .where((e) => e != defaultSso)
+                        .map((e) => ElevatedButton.icon(
+                              icon: SizedBox(
+                                  width: e.icon == null ? 0 : 32,
+                                  height: 48,
+                                  child: e.icon != null
+                                      ? Image(image: e.icon!)
+                                      : null),
+                              label: Text("Continue with ${e.name}"),
+                              onPressed: () => widget.doSsoLogin?.call(e),
+                            ))
+                        .toList(),
+                  ),
+                ))
+            ],
+          ),
+        ),
       SizedBox(
         height: 15,
         child: Center(
@@ -224,56 +281,6 @@ class _LoginPageViewState extends State<LoginPageView> {
           ),
         ),
       ),
-      if (widget.hasSsoSupport)
-        Column(
-          children: [
-            if (widget.hasPasswordSupport)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const SizedBox(
-                    width: 100,
-                    height: 10,
-                    child: tiamat.Seperator(),
-                  ),
-                  tiamat.Text.labelLow(CommonStrings.labelOr),
-                  const SizedBox(
-                    width: 100,
-                    height: 10,
-                    child: tiamat.Seperator(),
-                  ),
-                ],
-              ),
-            if (defaultSso != null)
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: tiamat.Button.secondary(
-                  text: "Continue",
-                  onTap: () => {widget.doSsoLogin?.call(defaultSso!)},
-                ),
-              ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Wrap(
-                spacing: 10,
-                runSpacing: 10,
-                alignment: WrapAlignment.spaceBetween,
-                children: widget.flows!
-                    .whereType<SsoLoginFlow>()
-                    .where((e) => e != defaultSso)
-                    .map((e) => tiamat.ImageButton(
-                          placeholderText: e.name,
-                          image: e.icon,
-                          size: 40,
-                          backgroundColor: Colors.white,
-                          onTap: () => widget.doSsoLogin?.call(e),
-                        ))
-                    .toList(),
-              ),
-            )
-          ],
-        ),
     ]);
   }
 
