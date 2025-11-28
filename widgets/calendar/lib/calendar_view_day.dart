@@ -60,6 +60,13 @@ class _CalendarViewMonthState extends State<CalendarViewDay> {
                 backgroundColor: Theme.of(context).colorScheme.surface,
                 heightPerMinute: heightPerMinute,
                 headerStyle: headerStyle,
+                safeAreaOption: SafeAreaOption(
+                  left: false,
+                  right: false,
+                  top: false,
+                  bottom: false,
+                ),
+                onDateTap: (date) => widget.createEvent?.call(date),
                 fullDayEventBuilder: (events, date) {
                   var colorScheme = Theme.of(context).colorScheme;
                   return Padding(
@@ -196,6 +203,7 @@ class _CalendarViewMonthState extends State<CalendarViewDay> {
                 ),
                 dayTitleBuilder: (date) => CalendarViewHeader(
                   date: date,
+                  useMobileLayout: widget.useMobileLayout,
                   mode: CalendarViewMode.day,
                   nextPage: () => key.currentState?.nextPage(),
                   prevPage: () => key.currentState?.previousPage(),

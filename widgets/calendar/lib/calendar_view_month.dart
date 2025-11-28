@@ -72,6 +72,7 @@ class _CalendarViewMonthState extends State<CalendarViewMonth> {
               borderColor: colorScheme.surfaceContainer,
               headerStyle: headerStyle,
               headerBuilder: (date) => CalendarViewHeader(
+                useMobileLayout: widget.useMobileLayout,
                 mode: CalendarViewMode.month,
                 date: date,
                 nextPage: () => key.currentState?.nextPage(),

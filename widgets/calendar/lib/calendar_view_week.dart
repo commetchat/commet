@@ -75,6 +75,7 @@ class _CalendarViewWeekState extends State<CalendarViewWeek> {
                   weekPageHeaderBuilder: (startDate, endDate) =>
                       CalendarViewHeader(
                     date: startDate,
+                    useMobileLayout: widget.useMobileLayout,
                     secondaryDate: endDate,
                     mode: CalendarViewMode.week,
                     nextPage: () => key.currentState?.nextPage(),
@@ -195,7 +196,7 @@ class _CalendarViewWeekState extends State<CalendarViewWeek> {
 
                     bool rotate = aspectRatio < 0.7 && boundary.width < 50;
                     return Padding(
-                      padding: const EdgeInsets.fromLTRB(2, 1, 2, 0),
+                      padding: const EdgeInsets.fromLTRB(2, 2, 2, 0),
                       child: Opacity(
                         opacity: events.first.event?.loaded != true ? 0.3 : 1.0,
                         child: DecoratedBox(
@@ -213,7 +214,7 @@ class _CalendarViewWeekState extends State<CalendarViewWeek> {
                                   quarterTurns: rotate ? 1 : 0,
                                   child: Padding(
                                     padding:
-                                        const EdgeInsets.fromLTRB(8, 4, 4, 0),
+                                        const EdgeInsets.fromLTRB(8, 1, 4, 0),
                                     child: Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
