@@ -66,7 +66,6 @@ class _CalendarViewWeekState extends State<CalendarViewWeek> {
                   key: key,
                   headerStyle: headerStyle,
                   heightPerMinute: heightPerMinute,
-                  pageViewPhysics: NeverScrollableScrollPhysics(),
                   safeAreaOption: SafeAreaOption(
                     left: false,
                     top: false,

@@ -46,7 +46,6 @@ class _CalendarViewMonthState extends State<CalendarViewMonth> {
                 EdgeInsets.fromLTRB(0, 0, 0, widget.useMobileLayout ? 80 : 0),
             child: MonthView(
               key: key,
-              pageViewPhysics: NeverScrollableScrollPhysics(),
               safeAreaOption: SafeAreaOption(
                 left: false,
                 right: false,
