@@ -44,6 +44,11 @@ class MatrixCalendarRoomComponent
 
   late StoredStreamController<Map<String, String>> syncedCalendars;
 
+  static bool isCalendarRoom(MatrixRoom room) {
+    return room.matrixRoom.getState(EventTypes.RoomCreate)?.content['type'] ==
+        "chat.commet.calendar";
+  }
+
   MatrixCalendarRoomComponent(this.client, this.room) {
     var api = MatrixWidgetRunner(client.matrixClient, room.matrixRoom);
     _calendar = MatrixCalendar(api, config: CustomMatrixCalendarConfig());
@@ -64,11 +69,6 @@ class MatrixCalendarRoomComponent
 
   @override
   MatrixClient client;
-
-  @override
-  bool get isCalendar =>
-      room.matrixRoom.getState(EventTypes.RoomCreate)?.content['type'] ==
-      "chat.commet.calendar";
 
   @override
   MatrixRoom room;
@@ -133,8 +133,6 @@ class MatrixCalendarRoomComponent
 
   @override
   Future<void> runCalendarSync() async {
-    if (!isCalendar) return;
-
     var urls = syncedCalendars.value;
     if (urls == null) {
       return;
@@ -158,10 +156,8 @@ class MatrixCalendarRoomComponent
       var content = result.body;
       final iCal = ICalendar.fromString(content);
 
-      var results = iCal.data
-          .map((e) => fromIcal(entry.key, e))
-          .nonNulls
-          .toList();
+      var results =
+          iCal.data.map((e) => fromIcal(entry.key, e)).nonNulls.toList();
 
       Log.i("Found ${results.length} events to sync to calendar");
 
@@ -185,8 +181,7 @@ class MatrixCalendarRoomComponent
 
     final title = (data["summary"] as String?) ?? "(No title)";
 
-    var updated =
-        (data["lastModified"] as ical.IcsDateTime?)?.toDateTime() ??
+    var updated = (data["lastModified"] as ical.IcsDateTime?)?.toDateTime() ??
         DateTime.now();
 
     var uid = sha1.convert("$calendarId/${data["uid"]}".codeUnits);
@@ -204,7 +199,6 @@ class MatrixCalendarRoomComponent
 
   @override
   Future<void> removeSyncedCalendar(String id) async {
-    if (!isCalendar) return;
     if (syncedCalendars.value == null) {
       return;
     }

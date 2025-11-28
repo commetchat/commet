@@ -141,23 +141,24 @@ class MatrixClient extends Client {
       StoredStreamController<ClientConnectionStatusUpdate>();
 
   static String get matrixClientOlmMissingMessage => Intl.message(
-    "libolm is not installed or was not found. End to End Encryption will not be available until this is resolved",
-    name: "matrixClientOlmMissingMessage",
-    desc: "Text that explains to the user that libolm dependency is not found",
-  );
+        "libolm is not installed or was not found. End to End Encryption will not be available until this is resolved",
+        name: "matrixClientOlmMissingMessage",
+        desc:
+            "Text that explains to the user that libolm dependency is not found",
+      );
 
   static String get matrixClientVodozemacMissingMessage => Intl.message(
-    "vodozemac is not installed or was not found. End to End Encryption will not be available until this is resolved",
-    name: "matrixClientVodozemacMissingMessage",
-    desc:
-        "Text that explains to the user that vodozemac dependency is not found",
-  );
+        "vodozemac is not installed or was not found. End to End Encryption will not be available until this is resolved",
+        name: "matrixClientVodozemacMissingMessage",
+        desc:
+            "Text that explains to the user that vodozemac dependency is not found",
+      );
 
   static String get matrixClientEncryptionWarningTitle => Intl.message(
-    "Encryption Warning",
-    name: "matrixClientEncryptionWarningTitle",
-    desc: "Title of a warning about encryption",
-  );
+        "Encryption Warning",
+        name: "matrixClientEncryptionWarningTitle",
+        desc: "Title of a warning about encryption",
+      );
 
   static Future<void> loadFromDB(
     ClientManager manager, {
@@ -230,11 +231,11 @@ class MatrixClient extends Client {
 
   static matrix.NativeImplementations get nativeImplementations =>
       BuildConfig.WEB
-      ? const matrix.NativeImplementationsDummy()
-      : matrix.NativeImplementationsIsolate(
-          compute,
-          vodozemacInit: vodozemac.init,
-        );
+          ? const matrix.NativeImplementationsDummy()
+          : matrix.NativeImplementationsIsolate(
+              compute,
+              vodozemacInit: vodozemac.init,
+            );
   @override
   Future<void> init(
     bool loadingFromCache, {
@@ -687,8 +688,7 @@ class MatrixClient extends Client {
   void onSyncStatusChanged(matrix.SyncStatusUpdate event) {
     ClientConnectionStatus value = ClientConnectionStatus.unknown;
 
-    var connected =
-        _matrixClient.onSync.value != null &&
+    var connected = _matrixClient.onSync.value != null &&
         event.status != matrix.SyncStatus.error &&
         _matrixClient.prevBatch != null;
 

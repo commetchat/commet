@@ -67,162 +67,162 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
   );
 
   String get promptRoomName => Intl.message(
-    "Room Name",
-    name: "promptRoomName",
-    desc: "Prompt to enter a room name, placeholder text for text input",
-  );
+        "Room Name",
+        name: "promptRoomName",
+        desc: "Prompt to enter a room name, placeholder text for text input",
+      );
 
   String get promptSpaceName => Intl.message(
-    "Space Name",
-    name: "promptSpaceName",
-    desc: "Prompt to enter a space name, placeholder text for text input",
-  );
+        "Space Name",
+        name: "promptSpaceName",
+        desc: "Prompt to enter a space name, placeholder text for text input",
+      );
 
   String get promptTopic => Intl.message(
-    "Topic (Optional)",
-    name: "promptTopic",
-    desc:
-        "Prompt to enter a topic for room or space, specifying that doing so is optional",
-  );
+        "Topic (Optional)",
+        name: "promptTopic",
+        desc:
+            "Prompt to enter a topic for room or space, specifying that doing so is optional",
+      );
 
   String get roomVisibilityPrivateExplanation => Intl.message(
-    "This room will only be accessible by invitation",
-    name: "roomVisibilityPrivateExplanation",
-    desc: "Explains what 'private' room visibility means",
-  );
+        "This room will only be accessible by invitation",
+        name: "roomVisibilityPrivateExplanation",
+        desc: "Explains what 'private' room visibility means",
+      );
 
   String get roomVisibilityPublicExplanation => Intl.message(
-    "This room will be publically accessible by anyone on the internet",
-    name: "roomVisibilityPublicExplanation",
-    desc: "Explains what 'public' visibility means",
-  );
+        "This room will be publically accessible by anyone on the internet",
+        name: "roomVisibilityPublicExplanation",
+        desc: "Explains what 'public' visibility means",
+      );
 
   String get spaceVisibilityPrivateExplanation => Intl.message(
-    "This room will only be accessible by invitation",
-    name: "spaceVisibilityPrivateExplanation",
-    desc: "Explains what 'private' space visibility means",
-  );
+        "This room will only be accessible by invitation",
+        name: "spaceVisibilityPrivateExplanation",
+        desc: "Explains what 'private' space visibility means",
+      );
 
   String get spaceVisibilityPublicExplanation => Intl.message(
-    "This room will be publically accessible by anyone on the internet",
-    name: "spaceVisibilityPublicExplanation",
-    desc: "Explains what 'public' space visibility means",
-  );
+        "This room will be publically accessible by anyone on the internet",
+        name: "spaceVisibilityPublicExplanation",
+        desc: "Explains what 'public' space visibility means",
+      );
 
   String get labelVisibilityPrivate => Intl.message(
-    "Private",
-    name: "labelVisibilityPrivate",
-    desc: "Short label for room visibility private",
-  );
+        "Private",
+        name: "labelVisibilityPrivate",
+        desc: "Short label for room visibility private",
+      );
 
   String get labelVisibilityPublic => Intl.message(
-    "Public",
-    name: "labelVisibilityPublic",
-    desc: "Short label for room visibility public",
-  );
+        "Public",
+        name: "labelVisibilityPublic",
+        desc: "Short label for room visibility public",
+      );
 
   String get promptEnableEncryption => Intl.message(
-    "Enable Encryption",
-    name: "promptEnableEncryption",
-    desc: "Short prompt to enable encryption for a room",
-  );
+        "Enable Encryption",
+        name: "promptEnableEncryption",
+        desc: "Short prompt to enable encryption for a room",
+      );
 
   String get encryptionCannotBeDisabledExplanation => Intl.message(
-    "If enabled, encryption cannot be disabled later",
-    name: "encryptionCannotBeDisabledExplanation",
-    desc: "Explains that encryption cannot be disabled once enabled",
-  );
+        "If enabled, encryption cannot be disabled later",
+        name: "encryptionCannotBeDisabledExplanation",
+        desc: "Explains that encryption cannot be disabled once enabled",
+      );
 
   String get promptConfirmRoomCreation => Intl.message(
-    "Create Room!",
-    name: "promptConfirmRoomCreation",
-    desc: "Label for a button which confirms the creation of a room",
-  );
+        "Create Room!",
+        name: "promptConfirmRoomCreation",
+        desc: "Label for a button which confirms the creation of a room",
+      );
 
   String get promptConfirmSpaceCreation => Intl.message(
-    "Create Space!",
-    name: "promptConfirmSpaceCreation",
-    desc: "Label for a button which confirms the creation of a space",
-  );
+        "Create Space!",
+        name: "promptConfirmSpaceCreation",
+        desc: "Label for a button which confirms the creation of a space",
+      );
 
   String get promptConfirmRoomJoin => Intl.message(
-    "Join Room!",
-    name: "promptConfirmRoomJoin",
-    desc: "Label for a button which confirms the joining of a room",
-  );
+        "Join Room!",
+        name: "promptConfirmRoomJoin",
+        desc: "Label for a button which confirms the joining of a room",
+      );
 
   String get promptConfirmSpaceJoin => Intl.message(
-    "Join Space!",
-    name: "promptConfirmSpaceJoin",
-    desc: "Label for a button which confirms the joining of a space",
-  );
+        "Join Space!",
+        name: "promptConfirmSpaceJoin",
+        desc: "Label for a button which confirms the joining of a space",
+      );
 
   String get promptRoomAddress => Intl.message(
-    "Room Address:",
-    name: "promptRoomAddress",
-    desc: "Short label to prompt for the input of a room address",
-  );
+        "Room Address:",
+        name: "promptRoomAddress",
+        desc: "Short label to prompt for the input of a room address",
+      );
 
   String get promptSpaceAddress => Intl.message(
-    "Space Address:",
-    name: "promptSpaceAddress",
-    desc: "Short label to prompt for the input of a space address",
-  );
+        "Space Address:",
+        name: "promptSpaceAddress",
+        desc: "Short label to prompt for the input of a space address",
+      );
 
   String get placeholderRoomAlias => Intl.message(
-    "#awesome-room",
-    name: "placeholderRoomAlias",
-    desc: "Placeholder / Example for a room alias.",
-  );
+        "#awesome-room",
+        name: "placeholderRoomAlias",
+        desc: "Placeholder / Example for a room alias.",
+      );
 
   String get placeholderSpaceAlias => Intl.message(
-    "#awesome-space",
-    name: "placeholderSpaceAlias",
-    desc: "Placeholder / Example for a space alias.",
-  );
+        "#awesome-space",
+        name: "placeholderSpaceAlias",
+        desc: "Placeholder / Example for a space alias.",
+      );
 
   String get labelCouldNotLoadRoomPreview => Intl.message(
-    "Could not load a preview of the room",
-    name: "labelCouldNotLoadRoomPreview",
-    desc: "Error message for when a room preview was not able to be loaded",
-  );
+        "Could not load a preview of the room",
+        name: "labelCouldNotLoadRoomPreview",
+        desc: "Error message for when a room preview was not able to be loaded",
+      );
 
   String get promptAddSelectedRooms => Intl.message(
-    "Add selected rooms",
-    name: "promptAddSelectedRooms",
-    desc: "Prompt to add the selected rooms to a space",
-  );
+        "Add selected rooms",
+        name: "promptAddSelectedRooms",
+        desc: "Prompt to add the selected rooms to a space",
+      );
 
   String get promptCreateNewSpace => Intl.message(
-    "Create new space",
-    name: "promptCreateNewSpace",
-    desc: "Prompt to create a new space",
-  );
+        "Create new space",
+        name: "promptCreateNewSpace",
+        desc: "Prompt to create a new space",
+      );
 
   String get promptJoinExistingSpace => Intl.message(
-    "Join existing space",
-    name: "promptJoinExistingSpace",
-    desc: "Prompt to join a space which already exists",
-  );
+        "Join existing space",
+        name: "promptJoinExistingSpace",
+        desc: "Prompt to join a space which already exists",
+      );
 
   String get promptCreateNewRoom => Intl.message(
-    "Create new room",
-    name: "promptCreateNewRoom",
-    desc: "Prompt to create a new room",
-  );
+        "Create new room",
+        name: "promptCreateNewRoom",
+        desc: "Prompt to create a new room",
+      );
 
   String get promptJoinExistingRoom => Intl.message(
-    "Join existing room",
-    name: "promptJoinExistingRoom",
-    desc: "Prompt to join a room which already exists",
-  );
+        "Join existing room",
+        name: "promptJoinExistingRoom",
+        desc: "Prompt to join a room which already exists",
+      );
 
   String get promptUseExistingRoom => Intl.message(
-    "Use existing room",
-    name: "promptUseExistingRoom",
-    desc:
-        "Button text to choose to use an existing room when adding a room to a space",
-  );
+        "Use existing room",
+        name: "promptUseExistingRoom",
+        desc:
+            "Button text to choose to use an existing room when adding a room to a space",
+      );
 
   void getSpacePreview() async {
     var preview = await selectedClient.getSpacePreview(
@@ -495,10 +495,11 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
                       children: [CircularProgressIndicator()],
                     )
                   : spacePreview != null
-                  ? RoomPreviewView(previewData: spacePreview!)
-                  : Center(
-                      child: tiamat.Text.label(labelCouldNotLoadRoomPreview),
-                    ),
+                      ? RoomPreviewView(previewData: spacePreview!)
+                      : Center(
+                          child:
+                              tiamat.Text.label(labelCouldNotLoadRoomPreview),
+                        ),
             ),
             tiamat.Button.success(
               isLoading: widget.loading,

@@ -65,15 +65,19 @@ class ComponentRegistry {
       MatrixReadReceiptComponent(client, room),
       MatrixTypingIndicatorsComponent(client, room),
       MatrixPinnedMessagesComponent(client, room),
-      if (Experiments.elementCall) MatrixVoipRoomComponent(client, room),
-      if (Experiments.photoAlbumRooms)
+      if (Experiments.elementCall && MatrixVoipRoomComponent.isVoipRoom(room))
+        MatrixVoipRoomComponent(client, room),
+      if (Experiments.photoAlbumRooms &&
+          MatrixPhotoAlbumRoomComponent.isPhotoAlbumRoom(room))
         MatrixPhotoAlbumRoomComponent(client, room),
-      if (Experiments.calendarRooms) MatrixCalendarRoomComponent(client, room),
+      if (Experiments.calendarRooms &&
+          MatrixCalendarRoomComponent.isCalendarRoom(room))
+        MatrixCalendarRoomComponent(client, room),
     ];
   }
 
   static List<SpaceComponent<MatrixClient, MatrixSpace>>
-  getMatrixSpaceComponents(MatrixClient client, MatrixSpace space) {
+      getMatrixSpaceComponents(MatrixClient client, MatrixSpace space) {
     return [
       MatrixSpaceEmoticonComponent(client, space),
       MatrixSpaceColorSchemeComponent(client, space),

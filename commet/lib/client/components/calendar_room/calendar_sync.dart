@@ -51,8 +51,7 @@ class CalendarSync {
     for (var room in client.rooms) {
       var calendar = room.getComponent<CalendarRoom>();
 
-      if (calendar?.isCalendar == true &&
-          calendar?.syncedCalendars.value?.isNotEmpty == true) {
+      if (calendar?.syncedCalendars.value?.isNotEmpty == true) {
         Log.i(
           "Syncing room calendar from external sources: ${room.identifier}",
         );

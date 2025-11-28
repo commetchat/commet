@@ -1,7 +1,12 @@
+import 'dart:io';
+
 import 'package:commet_calendar_widget/rfc8984.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
+
+import 'package:intl/intl.dart' as intl;
 
 class CalendarEventEditor extends StatefulWidget {
   const CalendarEventEditor({
@@ -17,8 +22,27 @@ class CalendarEventEditor extends StatefulWidget {
 }
 
 class _CalendarEventEditorState extends State<CalendarEventEditor> {
-  late DateTime pickedDate;
-  late TimeOfDay pickedTime;
+  late DateTime pickedStartDate;
+  late TimeOfDay pickedStartTime;
+
+  late DateTime pickedEndDate;
+  late TimeOfDay pickedEndTime;
+
+  DateTime get startTime => DateTime(
+        pickedStartDate.year,
+        pickedStartDate.month,
+        pickedStartDate.day,
+        pickedStartTime.hour,
+        pickedStartTime.minute,
+      );
+
+  DateTime get endTime => DateTime(
+        pickedEndDate.year,
+        pickedEndDate.month,
+        pickedEndDate.day,
+        pickedEndTime.hour,
+        pickedEndTime.minute,
+      );
 
   String eventName = "";
 
@@ -28,18 +52,39 @@ class _CalendarEventEditorState extends State<CalendarEventEditor> {
   void initState() {
     var time = widget.initialEvent?.start ?? DateTime.now();
     eventName = widget.initialEvent?.title ?? "";
-    pickedDate = time;
-    pickedTime = TimeOfDay.fromDateTime(time);
+    pickedStartDate = time;
+    pickedStartTime = TimeOfDay.fromDateTime(time);
+
+    var end = time.add(Duration(hours: 1));
+    pickedEndDate = end;
+    pickedEndTime = TimeOfDay.fromDateTime(end);
 
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    bool use24h = false;
+    if (kIsWeb == false) {
+      if (Platform.isAndroid || Platform.isIOS) {
+        use24h = MediaQuery.of(context).alwaysUse24HourFormat;
+      }
+    }
+
+    var formatter = switch (use24h) {
+      true => intl.DateFormat.Hm(),
+      false => intl.DateFormat.jm()
+    };
+
+    bool hasValidName = eventName.trim().isNotEmpty;
+
+    bool isValidInput = endTime.isAfter(startTime) && hasValidName;
+
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -54,85 +99,136 @@ class _CalendarEventEditorState extends State<CalendarEventEditor> {
               }),
             ),
           ),
-
+          // Start Time
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              SizedBox(width: 50, child: Text("From:")),
               TextButton.icon(
-                onPressed: () =>
-                    showDatePicker(
-                      context: context,
-                      firstDate: DateTime.fromMicrosecondsSinceEpoch(0),
-                      lastDate: DateTime(2100),
-                      initialDate: pickedDate,
-                    ).then(
-                      (v) => setState(() {
-                        pickedDate = v ?? pickedDate;
-                      }),
-                    ),
+                onPressed: () => showDatePicker(
+                  context: context,
+                  firstDate: DateTime.fromMicrosecondsSinceEpoch(0),
+                  lastDate: DateTime(2100),
+                  initialDate: pickedStartDate,
+                ).then(
+                  (v) => setState(() {
+                    pickedStartDate = v ?? pickedStartDate;
+                  }),
+                ),
                 label: Text(
                   DateFormat(
                     DateFormat.YEAR_MONTH_WEEKDAY_DAY,
-                  ).format(pickedDate),
+                  ).format(pickedStartDate),
                 ),
               ),
               TextButton.icon(
-                onPressed: () =>
-                    showTimePicker(
-                      context: context,
-                      initialTime: pickedTime,
-                    ).then(
-                      (result) => setState(() {
-                        pickedTime = result ?? pickedTime;
-                      }),
-                    ),
-                label: Text(pickedTime.format(context)),
+                onPressed: () => showTimePicker(
+                  context: context,
+                  builder: (context, child) {
+                    return MediaQuery(
+                      data: MediaQuery.of(context)
+                          .copyWith(alwaysUse24HourFormat: use24h),
+                      child: child!,
+                    );
+                  },
+                  initialTime: pickedStartTime,
+                ).then(
+                  (result) => setState(() {
+                    pickedStartTime = result ?? pickedStartTime;
+                  }),
+                ),
+                label: Text(formatter.format(startTime)),
+              ),
+            ],
+          ),
+          // End Time
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              SizedBox(width: 50, child: Text("To:")),
+              TextButton.icon(
+                onPressed: () => showDatePicker(
+                  context: context,
+                  firstDate: DateTime.fromMicrosecondsSinceEpoch(0),
+                  lastDate: DateTime(2100),
+                  initialDate: pickedEndDate,
+                ).then(
+                  (v) => setState(() {
+                    pickedEndDate = v ?? pickedEndDate;
+                  }),
+                ),
+                label: Text(
+                  DateFormat(
+                    DateFormat.YEAR_MONTH_WEEKDAY_DAY,
+                  ).format(pickedEndDate),
+                ),
+              ),
+              TextButton.icon(
+                onPressed: () => showTimePicker(
+                  context: context,
+                  builder: (context, child) {
+                    return MediaQuery(
+                      data: MediaQuery.of(context)
+                          .copyWith(alwaysUse24HourFormat: use24h),
+                      child: child!,
+                    );
+                  },
+                  initialTime: pickedEndTime,
+                ).then(
+                  (result) => setState(() {
+                    pickedEndTime = result ?? pickedEndTime;
+                  }),
+                ),
+                label: Text(formatter.format(endTime)),
               ),
             ],
           ),
 
-          Padding(
-            padding: const EdgeInsets.fromLTRB(0, 12, 0, 0),
-            child: Row(
-              spacing: 8,
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Expanded(
-                  child: tiamat.Button.secondary(
-                    text: "Cancel",
-                    onTap: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ),
-                Expanded(
-                  child: tiamat.Button(
-                    text: "Submit",
-                    isLoading: submitting,
-                    onTap: () async {
-                      var event = RFC8984CalendarEvent(
-                        uid: widget.initialEvent?.uid ?? "",
-                        updated: DateTime.now().toUtc(),
-                        title: eventName,
-                        start: DateTime(
-                          pickedDate.year,
-                          pickedDate.month,
-                          pickedDate.day,
-                          pickedTime.hour,
-                          pickedTime.minute,
-                        ).toUtc(),
-                        duration: Duration(hours: 1),
-                      );
+          if (startTime.isAfter(endTime))
+            tiamat.Text.error("End time must be after start time"),
 
-                      setState(() {
-                        submitting = true;
-                      });
+          if (!hasValidName) tiamat.Text.error("Event must have a name"),
+          IgnorePointer(
+            ignoring: !isValidInput,
+            child: Opacity(
+              opacity: isValidInput ? 1.0 : 0.3,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(0, 12, 0, 0),
+                child: Row(
+                  spacing: 8,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Expanded(
+                      child: tiamat.Button.secondary(
+                        text: "Cancel",
+                        onTap: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ),
+                    Expanded(
+                      child: tiamat.Button(
+                        text: "Submit",
+                        isLoading: submitting,
+                        onTap: () async {
+                          var duration = endTime.difference(startTime);
 
-                      try {
-                        var succeeded = await widget
-                            .createEvent(event)
-                            .timeout(
+                          var event = RFC8984CalendarEvent(
+                            uid: widget.initialEvent?.uid ?? "",
+                            updated: DateTime.now().toUtc(),
+                            title: eventName,
+                            start: startTime.toUtc(),
+                            duration: duration,
+                          );
+
+                          setState(() {
+                            submitting = true;
+                          });
+
+                          try {
+                            var succeeded =
+                                await widget.createEvent(event).timeout(
                               Duration(seconds: 10),
                               onTimeout: () async {
                                 setState(() {
@@ -143,22 +239,24 @@ class _CalendarEventEditorState extends State<CalendarEventEditor> {
                               },
                             );
 
-                        if (succeeded == true) {
-                          Navigator.of(context).pop(true);
-                        } else {
-                          setState(() {
-                            submitting = false;
-                          });
-                        }
-                      } catch (_) {
-                        setState(() {
-                          submitting = false;
-                        });
-                      }
-                    },
-                  ),
+                            if (succeeded == true) {
+                              Navigator.of(context).pop(true);
+                            } else {
+                              setState(() {
+                                submitting = false;
+                              });
+                            }
+                          } catch (_) {
+                            setState(() {
+                              submitting = false;
+                            });
+                          }
+                        },
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ],

@@ -123,6 +123,24 @@ class MatrixWidgetRunner implements MatrixWidgetApi {
       state_key,
       content,
     );
+
+    var stateResult = {
+      "data": {
+        "state": [
+          {
+            "type": type,
+            "content": content,
+            "sender": client.userID!,
+            "state_key": state_key,
+            "event_id": result,
+          }
+        ]
+      },
+    };
+
+    Function(Map<String, dynamic>)? callback = actionListeners["update_state"];
+    callback?.call(stateResult);
+
     return {"room_id": room.id, "event_id": result};
   }
 
@@ -148,7 +166,7 @@ class MatrixWidgetRunner implements MatrixWidgetApi {
     Log.i("[${room.id}] Sending ${readableEvents.length} events");
 
     var result = {
-      "data": {"state": readableEvents.map((i) => i.toJson())},
+      "data": {"state": readableEvents.map((i) => i.toJson()).toList()},
     };
 
     Function(Map<String, dynamic>)? callback = actionListeners["update_state"];

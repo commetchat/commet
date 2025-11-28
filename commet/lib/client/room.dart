@@ -49,17 +49,17 @@ abstract class Room {
     }
 
     var voip = getComponent<VoipRoomComponent>();
-    if (voip?.isVoipRoom == true) {
+    if (voip != null) {
       return Icons.volume_up;
     }
 
     var photos = getComponent<PhotoAlbumRoom>();
-    if (photos?.isPhotoAlbum == true) {
+    if (photos != null) {
       return Icons.photo;
     }
 
     var calendar = getComponent<CalendarRoom>();
-    if (calendar?.isCalendar == true) {
+    if (calendar != null) {
       return Icons.calendar_month;
     }
 

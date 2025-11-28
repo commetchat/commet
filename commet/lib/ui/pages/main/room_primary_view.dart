@@ -20,16 +20,16 @@ class RoomPrimaryView extends StatelessWidget {
     var voip = room.getComponent<VoipRoomComponent>();
     var calendar = room.getComponent<CalendarRoom>();
 
-    if (voip?.isVoipRoom == true) {
-      return VoipRoomView(voip!);
+    if (voip != null) {
+      return VoipRoomView(voip);
     }
 
-    if (photos?.isPhotoAlbum == true) {
-      return PhotoAlbumView(photos!);
+    if (photos != null) {
+      return PhotoAlbumView(photos);
     }
 
-    if (calendar?.isCalendar == true) {
-      return CalendarRoomView(calendar!);
+    if (calendar != null) {
+      return CalendarRoomView(calendar);
     }
 
     final call = clientManager?.callManager.getCallInRoom(

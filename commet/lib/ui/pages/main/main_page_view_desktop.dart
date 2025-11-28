@@ -25,10 +25,10 @@ class MainPageViewDesktop extends StatelessWidget {
   final MainPageState state;
 
   String get directMessagesListHeaderDesktop => Intl.message(
-    "Direct Messages",
-    desc: "The header for the direct messages list on desktop",
-    name: "directMessagesListHeaderDesktop",
-  );
+        "Direct Messages",
+        desc: "The header for the direct messages list on desktop",
+        name: "directMessagesListHeaderDesktop",
+      );
 
   @override
   Widget build(BuildContext context) {

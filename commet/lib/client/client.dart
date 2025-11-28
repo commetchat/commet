@@ -92,7 +92,7 @@ abstract class Client {
   Stream<void> get onSync;
 
   StoredStreamController<ClientConnectionStatusUpdate>
-  get connectionStatusChanged;
+      get connectionStatusChanged;
 
   Future<void> init(bool loadingFromCache, {bool isBackgroundService = false});
 

@@ -37,6 +37,7 @@ class _CalendarRoomViewState extends State<CalendarRoomView> {
             data: newQuery,
             child: CalendarWidgetView(
               calendar: widget.calendar.calendar,
+              useMobileLayout: Layout.mobile,
               watermark: false,
             ),
           ),

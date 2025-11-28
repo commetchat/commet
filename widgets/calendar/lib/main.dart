@@ -1,4 +1,5 @@
 import 'package:commet_calendar_widget/calendar.dart';
+import 'package:commet_calendar_widget/calendar_view_day.dart';
 import 'package:commet_calendar_widget/calendar_view_month.dart';
 import 'package:commet_calendar_widget/calendar_view_week.dart';
 import 'package:commet_calendar_widget/event_editor.dart';
@@ -72,21 +73,27 @@ class _IframeCalendarWidgetViewState extends State<IframeCalendarWidgetView> {
   @override
   Widget build(BuildContext context) {
     var hideWatermark = widget.parameters["hideWatermark"] == "1";
-    return CalendarWidgetView(calendar: calendar, watermark: !hideWatermark);
+    return CalendarWidgetView(
+      calendar: calendar,
+      watermark: !hideWatermark,
+      useMobileLayout: false,
+    );
   }
 }
 
-enum CalendarViewMode { month, week }
+enum CalendarViewMode { month, week, day }
 
 class CalendarWidgetView extends StatefulWidget {
   const CalendarWidgetView({
     required this.calendar,
     super.key,
     this.watermark = true,
+    this.useMobileLayout = true,
   });
   final MatrixCalendar calendar;
 
   final bool watermark;
+  final bool useMobileLayout;
   @override
   State<CalendarWidgetView> createState() => _CalendarWidgetViewState();
 }
@@ -114,7 +121,7 @@ class _CalendarWidgetViewState extends State<CalendarWidgetView> {
         createEvent: (event) async {
           try {
             return widget.calendar.createEvent(event);
-          } catch (_, _) {
+          } catch (e, s) {
             return false;
           }
         },
@@ -149,12 +156,21 @@ class _CalendarWidgetViewState extends State<CalendarWidgetView> {
           if (mode == CalendarViewMode.month)
             CalendarViewMonth(
               calendar: widget.calendar,
+              useMobileLayout: widget.useMobileLayout,
               createEvent: createEvent,
               setViewMode: setViewMode,
             ),
           if (mode == CalendarViewMode.week)
             CalendarViewWeek(
               calendar: widget.calendar,
+              useMobileLayout: widget.useMobileLayout,
+              createEvent: createEvent,
+              setViewMode: setViewMode,
+            ),
+          if (mode == CalendarViewMode.day)
+            CalendarViewDay(
+              calendar: widget.calendar,
+              useMobileLayout: widget.useMobileLayout,
               createEvent: createEvent,
               setViewMode: setViewMode,
             ),

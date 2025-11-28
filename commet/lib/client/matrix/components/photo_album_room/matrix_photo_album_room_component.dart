@@ -23,10 +23,10 @@ class MatrixPhotoAlbumRoomComponent
   @override
   onSync(JoinedRoomUpdate update) {}
 
-  @override
-  bool get isPhotoAlbum =>
-      room.matrixRoom.getState(EventTypes.RoomCreate)?.content['type'] ==
-      "chat.commet.photo_album";
+  static bool isPhotoAlbumRoom(MatrixRoom room) {
+    return room.matrixRoom.getState(EventTypes.RoomCreate)?.content['type'] ==
+        "chat.commet.photo_album";
+  }
 
   @override
   bool get canUpload => room.permissions.canSendMessage;
@@ -39,10 +39,17 @@ class MatrixPhotoAlbumRoomComponent
   }
 
   @override
-  Future<void> uploadPhotos(List<PickedPhoto> photos,
-      {bool sendOriginal = false, bool extractMetadata = true}) async {
-    var task = MatrixUploadPhotosTask(photos, room,
-        sendOriginal: sendOriginal, extractMetadata: extractMetadata);
+  Future<void> uploadPhotos(
+    List<PickedPhoto> photos, {
+    bool sendOriginal = false,
+    bool extractMetadata = true,
+  }) async {
+    var task = MatrixUploadPhotosTask(
+      photos,
+      room,
+      sendOriginal: sendOriginal,
+      extractMetadata: extractMetadata,
+    );
     backgroundTaskManager.addTask(task);
     await task.uploadImages();
   }

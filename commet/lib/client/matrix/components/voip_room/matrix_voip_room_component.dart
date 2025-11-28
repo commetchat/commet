@@ -28,10 +28,10 @@ class MatrixVoipRoomComponent
     backend = MatrixLivekitBackend(room);
   }
 
-  @override
-  bool get isVoipRoom =>
-      room.matrixRoom.getState(EventTypes.RoomCreate)?.content['type'] ==
-      "org.matrix.msc3417.call";
+  static bool isVoipRoom(MatrixRoom room) {
+    return room.matrixRoom.getState(EventTypes.RoomCreate)?.content['type'] ==
+        "org.matrix.msc3417.call";
+  }
 
   StreamController _onParticipantsChanged = StreamController.broadcast();
 
@@ -99,8 +99,8 @@ class MatrixVoipRoomComponent
 
   @override
   bool get canJoinCall => room.matrixRoom.canSendEvent(
-    MatrixVoipRoomComponent.callMemberStateEvent,
-  );
+        MatrixVoipRoomComponent.callMemberStateEvent,
+      );
 
   @override
   Future<void> clearAllCallMembershipStatus() async {

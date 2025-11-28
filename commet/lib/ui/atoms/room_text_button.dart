@@ -42,17 +42,17 @@ class _RoomTextButtonState extends State<RoomTextButton> {
 
     subs = [
       widget.room.onUpdate.listen(onRoomUpdate),
-      if (voipRoom?.isVoipRoom == true)
+      if (voipRoom != null)
         voipRoom!.onParticipantsChanged.listen(onVoipParticipantsChanged),
-      if (calendarRoom?.isCalendar == true)
+      if (calendarRoom != null)
         calendarRoom!.onEventsChanged.listen(onCalendarEventsChanged),
     ];
 
-    if (voipRoom?.isVoipRoom == true) {
+    if (voipRoom != null) {
       voipRoomParticipants = voipRoom?.getCurrentParticipants();
     }
 
-    if (calendarRoom?.isCalendar == true) {
+    if (calendarRoom != null) {
       calendarEvents = calendarRoom!.getEventsOnDay(DateTime.now());
     }
 
@@ -104,8 +104,7 @@ class _RoomTextButtonState extends State<RoomTextButton> {
     bool showRoomIcons = preferences.showRoomAvatars;
     bool useGenericIcons = preferences.usePlaceholderRoomAvatars;
 
-    bool shouldShowDefaultIcon =
-        (!showRoomIcons && !useGenericIcons) ||
+    bool shouldShowDefaultIcon = (!showRoomIcons && !useGenericIcons) ||
         (showRoomIcons && !useGenericIcons && widget.room.avatar == null);
 
     var customBuilder = null;
@@ -131,14 +130,14 @@ class _RoomTextButtonState extends State<RoomTextButton> {
         avatarRadius: 12,
         avatarPlaceholderColor:
             (showRoomIcons && useGenericIcons && widget.room.avatar == null) ||
-                (!showRoomIcons && useGenericIcons)
-            ? widget.room.defaultColor
-            : null,
+                    (!showRoomIcons && useGenericIcons)
+                ? widget.room.defaultColor
+                : null,
         avatarPlaceholderText:
             (showRoomIcons && useGenericIcons && widget.room.avatar == null) ||
-                (!showRoomIcons && useGenericIcons)
-            ? widget.room.displayName
-            : null,
+                    (!showRoomIcons && useGenericIcons)
+                ? widget.room.displayName
+                : null,
         iconColor: color,
         textColor: color,
         softwrap: false,
@@ -146,12 +145,13 @@ class _RoomTextButtonState extends State<RoomTextButton> {
         footer: widget.room.displayHighlightedNotificationCount > 0
             ? NotificationBadge(widget.room.displayHighlightedNotificationCount)
             : widget.room.displayNotificationCount > 0
-            ? const Padding(padding: EdgeInsets.all(2.0), child: DotIndicator())
-            : null,
+                ? const Padding(
+                    padding: EdgeInsets.all(2.0), child: DotIndicator())
+                : null,
       ),
     );
 
-    if (voipRoom?.isVoipRoom == true) {
+    if (voipRoom != null) {
       result = AdaptiveContextMenu(
         items: [
           if (preferences.developerMode)

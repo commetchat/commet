@@ -185,8 +185,7 @@ class NotificationModifierLinuxFormatting implements NotificationModifier {
 
     final preview = room.client.getComponent<UrlPreviewComponent>();
 
-    bool shouldGetPreview =
-        preview?.shouldGetPreviewsInRoom(room) == true &&
+    bool shouldGetPreview = preview?.shouldGetPreviewsInRoom(room) == true &&
         preferences.previewUrlsInNotifications;
 
     if (!shouldGetPreview) {
