@@ -137,48 +137,51 @@ class _CalendarEventEditorState extends State<CalendarEventEditor> {
           ),
           // Start Time
           SizedBox(
-            width: 400,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 if (allDayEvent) SizedBox(width: 50, child: Text("Date:")),
                 if (!allDayEvent) SizedBox(width: 50, child: Text("From:")),
-                TextButton.icon(
-                  onPressed: () => showDatePicker(
-                    context: context,
-                    firstDate: DateTime.fromMicrosecondsSinceEpoch(0),
-                    lastDate: DateTime(2100),
-                    initialDate: pickedStartDate,
-                  ).then(
-                    (v) => setState(() {
-                      pickedStartDate = v ?? pickedStartDate;
-                    }),
-                  ),
-                  label: Text(
-                    DateFormat(
-                      DateFormat.YEAR_MONTH_WEEKDAY_DAY,
-                    ).format(pickedStartDate),
-                  ),
-                ),
-                if (!allDayEvent)
-                  TextButton.icon(
-                    onPressed: () => showTimePicker(
-                      context: context,
-                      builder: (context, child) {
-                        return MediaQuery(
-                          data: MediaQuery.of(context)
-                              .copyWith(alwaysUse24HourFormat: use24h),
-                          child: child!,
-                        );
-                      },
-                      initialTime: pickedStartTime,
-                    ).then(
-                      (result) => setState(() {
-                        pickedStartTime = result ?? pickedStartTime;
-                      }),
+                Row(
+                  children: [
+                    TextButton.icon(
+                      onPressed: () => showDatePicker(
+                        context: context,
+                        firstDate: DateTime.fromMicrosecondsSinceEpoch(0),
+                        lastDate: DateTime(2100),
+                        initialDate: pickedStartDate,
+                      ).then(
+                        (v) => setState(() {
+                          pickedStartDate = v ?? pickedStartDate;
+                        }),
+                      ),
+                      label: Text(
+                        DateFormat(
+                          DateFormat.YEAR_MONTH_WEEKDAY_DAY,
+                        ).format(pickedStartDate),
+                      ),
                     ),
-                    label: Text(formatter.format(startTime)),
-                  ),
+                    if (!allDayEvent)
+                      TextButton.icon(
+                        onPressed: () => showTimePicker(
+                          context: context,
+                          builder: (context, child) {
+                            return MediaQuery(
+                              data: MediaQuery.of(context)
+                                  .copyWith(alwaysUse24HourFormat: use24h),
+                              child: child!,
+                            );
+                          },
+                          initialTime: pickedStartTime,
+                        ).then(
+                          (result) => setState(() {
+                            pickedStartTime = result ?? pickedStartTime;
+                          }),
+                        ),
+                        label: Text(formatter.format(startTime)),
+                      ),
+                  ],
+                )
               ],
             ),
           ),
@@ -188,40 +191,44 @@ class _CalendarEventEditorState extends State<CalendarEventEditor> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 SizedBox(width: 50, child: Text("To:")),
-                TextButton.icon(
-                  onPressed: () => showDatePicker(
-                    context: context,
-                    firstDate: DateTime.fromMicrosecondsSinceEpoch(0),
-                    lastDate: DateTime(2100),
-                    initialDate: pickedEndDate,
-                  ).then(
-                    (v) => setState(() {
-                      pickedEndDate = v ?? pickedEndDate;
-                    }),
-                  ),
-                  label: Text(
-                    DateFormat(
-                      DateFormat.YEAR_MONTH_WEEKDAY_DAY,
-                    ).format(pickedEndDate),
-                  ),
-                ),
-                TextButton.icon(
-                  onPressed: () => showTimePicker(
-                    context: context,
-                    builder: (context, child) {
-                      return MediaQuery(
-                        data: MediaQuery.of(context)
-                            .copyWith(alwaysUse24HourFormat: use24h),
-                        child: child!,
-                      );
-                    },
-                    initialTime: pickedEndTime,
-                  ).then(
-                    (result) => setState(() {
-                      pickedEndTime = result ?? pickedEndTime;
-                    }),
-                  ),
-                  label: Text(formatter.format(endTime)),
+                Row(
+                  children: [
+                    TextButton.icon(
+                      onPressed: () => showDatePicker(
+                        context: context,
+                        firstDate: DateTime.fromMicrosecondsSinceEpoch(0),
+                        lastDate: DateTime(2100),
+                        initialDate: pickedEndDate,
+                      ).then(
+                        (v) => setState(() {
+                          pickedEndDate = v ?? pickedEndDate;
+                        }),
+                      ),
+                      label: Text(
+                        DateFormat(
+                          DateFormat.YEAR_MONTH_WEEKDAY_DAY,
+                        ).format(pickedEndDate),
+                      ),
+                    ),
+                    TextButton.icon(
+                      onPressed: () => showTimePicker(
+                        context: context,
+                        builder: (context, child) {
+                          return MediaQuery(
+                            data: MediaQuery.of(context)
+                                .copyWith(alwaysUse24HourFormat: use24h),
+                            child: child!,
+                          );
+                        },
+                        initialTime: pickedEndTime,
+                      ).then(
+                        (result) => setState(() {
+                          pickedEndTime = result ?? pickedEndTime;
+                        }),
+                      ),
+                      label: Text(formatter.format(endTime)),
+                    ),
+                  ],
                 ),
               ],
             ),
