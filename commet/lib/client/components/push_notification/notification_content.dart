@@ -19,6 +19,15 @@ class NotificationContent {
       this.priority = NotificationPriority.normal});
 }
 
+class ErrorNotificationContent extends NotificationContent {
+  ErrorNotificationContent({required super.title, required super.content});
+}
+
+class GenericRoomInviteNotificationContent extends NotificationContent {
+  GenericRoomInviteNotificationContent(
+      {required super.title, required super.content});
+}
+
 class MessageNotificationContent extends NotificationContent {
   String get senderName => title;
   String senderId;
@@ -30,7 +39,9 @@ class MessageNotificationContent extends NotificationContent {
   String? formatType;
   bool isDirectMessage;
   ImageProvider? roomImage;
+  String? roomImageId;
   ImageProvider? senderImage;
+  String? senderImageId;
   ImageProvider? attachedImage;
 
   MessageNotificationContent({
@@ -45,7 +56,9 @@ class MessageNotificationContent extends NotificationContent {
     this.formattedContent,
     this.formatType,
     this.roomImage,
+    this.roomImageId,
     this.senderImage,
+    this.senderImageId,
     this.attachedImage,
   }) : super(title: senderName);
 

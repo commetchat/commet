@@ -3,10 +3,8 @@
 import 'dart:async';
 
 import 'package:commet/client/client.dart';
-import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/components/push_notification/android/android_notifier.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
-import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/components/push_notification/notifier.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/debug/log.dart';
@@ -24,39 +22,7 @@ dynamic DefaultFirebaseOptions;
 // --------
 
 Future<void> onForegroundMessage(dynamic message) async {
-  String? eventId = message.data['event_id'];
-  String? roomId = message.data['room_id'];
-  if (eventId == null || roomId == null) {
-    return;
-  }
-
-  Log.i("Got firebase message: $message");
-
-  var client =
-      clientManager!.clients.firstWhere((element) => element.hasRoom(roomId));
-  var room = client.getRoom(roomId);
-  var event = await room!.getEvent(eventId);
-
-  var user = await room.fetchMember(event!.senderId);
-
-  Log.i("Dispatching notification");
-
-  bool isDirectMessage = client
-          .getComponent<DirectMessagesComponent>()
-          ?.isRoomDirectMessage(room) ??
-      false;
-
-  NotificationManager.notify(MessageNotificationContent(
-      senderName: user.displayName,
-      senderId: user.identifier,
-      roomName: room.displayName,
-      content: event.plainTextBody,
-      eventId: eventId,
-      roomId: room.identifier,
-      clientId: client.identifier,
-      senderImage: user.avatar,
-      roomImage: await room.getShortcutImage(),
-      isDirectMessage: isDirectMessage));
+  return AndroidNotifier.onForegroundMessage(message);
 }
 
 @pragma('vm:entry-point')

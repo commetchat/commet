@@ -1,14 +1,26 @@
 import 'package:commet/client/components/push_notification/modifiers/notification_modifiers.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
+import 'package:commet/client/matrix_background/matrix_background_client.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
+import 'package:matrix/matrix_api_lite/generated/model.dart' show Device;
 
 class NotificationModifierSuppressOtherActiveDevice
     implements NotificationModifier {
   @override
   Future<NotificationContent?> process(NotificationContent content) async {
+    if (!preferences.silenceNotifications) {
+      return content;
+    }
+
     if (content is! MessageNotificationContent) {
+      return content;
+    }
+
+    if (clientManager == null) {
+      Log.w(
+          "Suppressing notifications for background client is not currently supported");
       return content;
     }
 
@@ -16,15 +28,23 @@ class NotificationModifierSuppressOtherActiveDevice
         .where((element) => element.hasRoom(content.roomId));
 
     for (var client in clients) {
-      if (client is! MatrixClient) continue;
+      List<Device>? devices;
+      String? thisDeviceId;
+      if (client is MatrixClient) {
+        devices = await client.getMatrixClient().getDevices();
+        thisDeviceId = client.getMatrixClient().deviceID;
+      }
 
-      var mxClient = client.getMatrixClient();
-      var devices = await mxClient.getDevices();
+      if (client is MatrixBackgroundClient) {
+        devices = await client.api.getDevices();
+        thisDeviceId = client.deviceId;
+      }
+
       if (devices == null) continue;
 
       for (var device in devices) {
         if (device.lastSeenTs == null) continue;
-        if (device.deviceId == mxClient.deviceID) {
+        if (device.deviceId == thisDeviceId) {
           continue;
         }
 

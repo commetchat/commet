@@ -99,31 +99,33 @@ class ClientManager {
   }
 
   void addClient(Client client) {
-    _clients[client.identifier] = client;
+    try {
+      _clients[client.identifier] = client;
 
-    _clientsList.add(client);
+      _clientsList.add(client);
 
-    for (int i = 0; i < client.rooms.length; i++) {
-      _onClientAddedRoom(client, i);
-    }
+      for (int i = 0; i < client.rooms.length; i++) {
+        _onClientAddedRoom(client, i);
+      }
 
-    for (int i = 0; i < client.spaces.length; i++) {
-      _addSpace(client, i);
-    }
+      for (int i = 0; i < client.spaces.length; i++) {
+        _addSpace(client, i);
+      }
 
-    _clientSubscriptions[client] = [
-      client.onSync.listen((_) => _synced()),
-      client.onRoomAdded.listen((index) => _onClientAddedRoom(client, index)),
-      client.onRoomRemoved
-          .listen((index) => _onClientRemovedRoom(client, index)),
-      client.onSpaceAdded.listen((index) => _addSpace(client, index)),
-      client.onSpaceRemoved
-          .listen((index) => _onClientRemovedSpace(client, index)),
-      client.connectionStatusChanged.stream
-          .listen((event) => _onClientConnectionStatusChanged(client, event)),
-    ];
+      _clientSubscriptions[client] = [
+        client.onSync.listen((_) => _synced()),
+        client.onRoomAdded.listen((index) => _onClientAddedRoom(client, index)),
+        client.onRoomRemoved
+            .listen((index) => _onClientRemovedRoom(client, index)),
+        client.onSpaceAdded.listen((index) => _addSpace(client, index)),
+        client.onSpaceRemoved
+            .listen((index) => _onClientRemovedSpace(client, index)),
+        client.connectionStatusChanged.stream
+            .listen((event) => _onClientConnectionStatusChanged(client, event)),
+      ];
 
-    onClientAdded.add(_clients.length - 1);
+      onClientAdded.add(_clients.length - 1);
+    } catch (error) {}
   }
 
   void _onClientConnectionStatusChanged(

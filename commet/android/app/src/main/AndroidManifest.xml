@@ -83,7 +83,7 @@
             android:foregroundServiceType="mediaProjection" 
         />
         
-        <receiver android:exported="false"  android:enabled="true"  android:name=".UnifiedPushReceiver">
+        <receiver android:exported="false"  android:enabled="true"  android:name=".CustomUnifiedPushReceiver">
             <intent-filter>
                 <action android:name="org.unifiedpush.flutter.connector.MESSAGE"/>
                 <action android:name="org.unifiedpush.flutter.connector.UNREGISTERED"/>

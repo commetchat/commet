@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:commet/client/components/push_notification/android/unified_push_notifier.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/main.dart';
-import 'package:commet/ui/pages/settings/categories/app/notification_settings/notification_settings_page.dart';
 import 'package:commet/ui/pages/setup/setup_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -18,7 +17,7 @@ class UnifiedPushSetup implements SetupMenu {
   GlobalKey key = GlobalKey();
   @override
   Widget builder(BuildContext context) {
-    return NotificationSettingsPage(key: key);
+    return UnifiedPushSetupView(key: key);
   }
 
   @override
@@ -138,12 +137,12 @@ If you already have a Unified Push compatible distributor app installed, you can
       return const CircularProgressIndicator();
     }
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.fromLTRB(0, 8.0, 0, 8.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          tiamat.Text.labelEmphasised(labelEnableUnifiedPushEndpoint),
+          tiamat.Text.label(labelEnableUnifiedPushEndpoint + ":"),
           tiamat.Text.labelLow(
               endpoint == null ? labelUnifiedPushNoEndpointFound : endpoint!),
         ],
@@ -162,7 +161,7 @@ If you already have a Unified Push compatible distributor app installed, you can
     await notifier?.init();
 
     if (mounted) {
-      await UnifiedPush.registerAppWithDialog(context);
+      UnifiedPush.registerAppWithDialog(context);
     }
 
     setState(() {

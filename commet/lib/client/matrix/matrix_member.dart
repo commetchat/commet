@@ -28,6 +28,9 @@ class MatrixMember implements Member {
   @override
   String get userName => matrixUser.id;
 
+  @override
+  String? get avatarId => matrixUser.avatarUrl?.toString();
+
   MatrixMember(this.client, this.matrixUser);
 
   // Matching color calculation that other clients use. Element, Cinny, Etc.
