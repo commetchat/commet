@@ -11,6 +11,8 @@ import 'package:matrix_widget_api/types.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:uuid/uuid.dart';
 
+import 'package:timezone/standalone.dart' as tz;
+
 class MatrixCalendarEventState {
   RFC8984CalendarEvent data;
   bool loaded = false;
@@ -60,6 +62,34 @@ class MatrixCalendarConfig {
         return AlertDialog(content: builder(context));
       },
     );
+  }
+
+  DateTime convertToLocalTime(DateTime time, String? timezone) {
+    var localTimezone = DateTime.now().timeZoneName;
+
+    if (time.isUtc) {
+      return time.toLocal();
+    }
+
+    if (timezone == null || timezone == localTimezone) {
+      return time;
+    }
+
+    var tztime = tz.TZDateTime(
+      tz.getLocation(timezone),
+      time.year,
+      time.month,
+      time.day,
+      time.hour,
+      time.minute,
+      time.second,
+      time.millisecond,
+      time.microsecond,
+    );
+    var utc = tztime.toUtc();
+
+    var local = utc.native.toLocal();
+    return local;
   }
 
   const MatrixCalendarConfig();
@@ -176,7 +206,8 @@ class MatrixCalendar {
   List<CalendarEventData<MatrixCalendarEventState>> fromRfcEvent(
     RFC8984CalendarEvent event,
   ) {
-    var localTime = event.start.toLocal();
+    var eventTimezone = event.timeZone;
+    var localTime = config.convertToLocalTime(event.start, eventTimezone);
 
     bool oneOffAllDayEvent = (event.duration.inMinutes == 24 * 60 &&
         localTime.hour == 0 &&

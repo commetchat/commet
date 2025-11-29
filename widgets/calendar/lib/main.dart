@@ -8,9 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:matrix_widget_api/matrix_widget_api.dart';
 import 'package:tiamat/config/config.dart';
-import 'package:uuid/v4.dart';
+import 'package:timezone/data/latest.dart' as tzData;
 
 void main() {
+  tzData.initializeTimeZones();
   runApp(const CalendarWidgetApp());
 }
 
@@ -118,6 +119,7 @@ class _CalendarWidgetViewState extends State<CalendarWidgetView> {
     var result = await widget.calendar.config.dialog<bool?>(
       context: context,
       builder: (context) => CalendarEventEditor(
+        config: widget.calendar.config,
         createEvent: (event) async {
           try {
             return widget.calendar.createEvent(event);

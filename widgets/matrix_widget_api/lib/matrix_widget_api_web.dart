@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:matrix_widget_api/matrix_widget_api.dart';
 import 'package:js_interop_utils/js_interop_utils.dart';
@@ -65,7 +66,7 @@ class MatrixWidgetApiWeb implements MatrixWidgetApi {
   }) {
     print("Listening to event: $event");
     void result(web.CustomEvent result) {
-      var data = result.detail.asJSObject?.toMap();
+      var data = jsonDecode(jsonEncode(result.detail.asJSObject?.toMap()));
       var reply = callback(data ?? {});
 
       if (reply != null || preventDefaultHandler) {

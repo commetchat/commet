@@ -57,6 +57,7 @@ class _CalendarViewMonthState extends State<CalendarViewDay> {
                   EdgeInsets.fromLTRB(0, 0, 0, widget.useMobileLayout ? 80 : 0),
               child: DayView(
                 key: key,
+                showVerticalLine: false,
                 backgroundColor: Theme.of(context).colorScheme.surface,
                 heightPerMinute: heightPerMinute,
                 headerStyle: headerStyle,

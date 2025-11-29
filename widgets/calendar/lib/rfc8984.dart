@@ -218,4 +218,39 @@ class RFC8984RecurrenceRule {
     data["@type"] = type;
     return data;
   }
+
+  @override
+  String toString() {
+    if (frequency == "monthly") {
+      return "Repeats Monthly";
+    }
+
+    if (frequency == "daily") {
+      return "Repeats Daily";
+    }
+
+    if (frequency == "weekly") {
+      if (byDay == null) {
+        return "Repeats Weekly";
+      }
+      var days = [
+        if (byDay!.any((i) => i.day == "mo") == true) "Mon",
+        if (byDay!.any((i) => i.day == "tu") == true) "Tue",
+        if (byDay!.any((i) => i.day == "we") == true) "Wed",
+        if (byDay!.any((i) => i.day == "th") == true) "Thur",
+        if (byDay!.any((i) => i.day == "fr") == true) "Fri",
+        if (byDay!.any((i) => i.day == "sa") == true) "Sat",
+        if (byDay!.any((i) => i.day == "su") == true) "Sun",
+      ];
+      var weekdays = days.join(", ");
+
+      return "Repeats Weekly on ${weekdays}";
+    }
+
+    if (frequency == "yearly") {
+      return "Repeats Yearly";
+    }
+
+    return "Unknown Repeat Rule";
+  }
 }

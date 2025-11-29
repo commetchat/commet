@@ -10,6 +10,7 @@ import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/utils/stored_stream_controller.dart';
+import 'package:commet/utils/timezone_utils.dart';
 import 'package:commet_calendar_widget/rfc8984.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
@@ -62,8 +63,10 @@ class MatrixCalendarRoomComponent
   @override
   void postLoginInit() {
     if (!isHeadless) {
-      _calendar.widgetApi.start();
-      CalendarSync.instance.startSyncing();
+      TimezoneUtils.instance.init().then((_) {
+        _calendar.widgetApi.start();
+        CalendarSync.instance.startSyncing();
+      });
     }
   }
 

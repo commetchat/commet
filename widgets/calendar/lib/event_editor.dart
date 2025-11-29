@@ -1,8 +1,11 @@
 import 'dart:io';
 
+import 'package:commet_calendar_widget/calendar.dart';
+import 'package:commet_calendar_widget/recurrence_editor.dart';
 import 'package:commet_calendar_widget/rfc8984.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
@@ -12,9 +15,11 @@ class CalendarEventEditor extends StatefulWidget {
   const CalendarEventEditor({
     this.initialEvent,
     required this.createEvent,
+    required this.config,
     super.key,
   });
   final RFC8984CalendarEvent? initialEvent;
+  final MatrixCalendarConfig config;
   final Future<bool> Function(RFC8984CalendarEvent event) createEvent;
 
   @override
@@ -28,7 +33,15 @@ class _CalendarEventEditorState extends State<CalendarEventEditor> {
   late DateTime pickedEndDate;
   late TimeOfDay pickedEndTime;
 
+  String? timezone;
+
+  RFC8984RecurrenceRule? recurrenceRule;
+
   late bool allDayEvent;
+
+  bool get requiresTimezone =>
+      !allDayEvent &&
+      (recurrenceRule != null && recurrenceRule?.frequency != "yearly");
 
   DateTime get startTime => allDayEvent
       ? DateTime(
@@ -62,6 +75,14 @@ class _CalendarEventEditorState extends State<CalendarEventEditor> {
     eventName = widget.initialEvent?.title ?? "";
     pickedStartDate = time;
     pickedStartTime = TimeOfDay.fromDateTime(time);
+    timezone = widget.initialEvent?.timeZone;
+    recurrenceRule = widget.initialEvent?.recurrenceRules?.firstOrNull;
+
+    if (timezone == null) {
+      FlutterTimezone.getLocalTimezone().then((info) => setState(() {
+            timezone = info.identifier;
+          }));
+    }
 
     allDayEvent = widget.initialEvent?.duration == Duration(hours: 24) &&
         widget.initialEvent?.start.isUtc == false;
@@ -89,10 +110,11 @@ class _CalendarEventEditorState extends State<CalendarEventEditor> {
 
     bool hasValidName = eventName.trim().isNotEmpty;
 
-    bool isValidInput = switch (allDayEvent) {
-      true => true,
-      false => endTime.isAfter(startTime) && hasValidName,
-    };
+    bool isValidInput = hasValidName;
+
+    if (!allDayEvent) {
+      isValidInput &= endTime.isAfter(startTime);
+    }
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -203,7 +225,35 @@ class _CalendarEventEditorState extends State<CalendarEventEditor> {
                 ),
               ],
             ),
-
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SizedBox(width: 50, child: Text("Repeat:")),
+                TextButton.icon(
+                    onPressed: () {
+                      widget.config
+                          .dialog<RecurrenceRuleEditorResult?>(
+                        context: context,
+                        builder: (context) => RecurrenceRuleEditor(
+                          initialRule: recurrenceRule,
+                        ),
+                      )
+                          .then((result) {
+                        if (result != null) {
+                          setState(() {
+                            recurrenceRule = result.rule;
+                          });
+                        }
+                      });
+                    },
+                    label: Text(recurrenceRule == null
+                        ? "Never Repeats"
+                        : recurrenceRule!.toString())),
+              ],
+            ),
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -216,6 +266,13 @@ class _CalendarEventEditorState extends State<CalendarEventEditor> {
               )
             ],
           ),
+
+          if (requiresTimezone && timezone != null)
+            tiamat.Tooltip(
+              child: tiamat.Text.labelLow(timezone!),
+              text:
+                  "A timezone is required when an event repeats more than once a year, and is not an all-day event",
+            ),
 
           if (startTime.isAfter(endTime))
             tiamat.Text.error("End time must be after start time"),
@@ -251,15 +308,24 @@ class _CalendarEventEditorState extends State<CalendarEventEditor> {
                           };
 
                           var start = switch (allDayEvent) {
-                            true => startTime.toLocal(),
-                            false => startTime.toUtc(),
+                            true => DateTime(
+                                startTime.year, startTime.month, startTime.day),
+                            false => requiresTimezone
+                                ? startTime.toLocal()
+                                : startTime.toUtc(),
                           };
+
+                          var tz = requiresTimezone ? timezone : null;
 
                           var event = RFC8984CalendarEvent(
                             uid: widget.initialEvent?.uid ?? "",
                             updated: DateTime.now().toUtc(),
                             title: eventName,
-                            start: start.toUtc(),
+                            timeZone: tz,
+                            recurrenceRules: recurrenceRule != null
+                                ? [recurrenceRule!]
+                                : null,
+                            start: start,
                             duration: duration,
                           );
 
