@@ -292,6 +292,25 @@ class MatrixClient extends Client {
     _onSync.add(null);
     _updateRoomslist();
     _updateSpacesList();
+    _handleSpaceChildren(update);
+  }
+
+  void _handleSpaceChildren(matrix.SyncUpdate update) {
+    if (update.rooms?.join?.isNotEmpty == true) {
+      for (var pair in update.rooms!.join!.entries) {
+        var id = pair.key;
+        var update = pair.value;
+
+        if (update.timeline?.events?.isNotEmpty == true) {
+          for (var event in update.timeline!.events!) {
+            if (event.type == matrix.EventTypes.SpaceChild) {
+              var space = getSpace(id);
+              (space as MatrixSpace?)?.updateRoomsList();
+            }
+          }
+        }
+      }
+    }
   }
 
   void _handleComponentSync(matrix.SyncUpdate update) {

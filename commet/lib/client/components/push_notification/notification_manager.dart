@@ -32,7 +32,7 @@ class NotificationManager {
     Log.i("Existing notifier: $_notifier");
     _notifier ??= _getNotifier(isBackgroundService: isBackgroundService);
 
-    _modifiers.clear;
+    _modifiers.clear();
     addModifier(NotificationModifierSuppressActiveRoom());
     if (BuildConfig.ANDROID) {
       addModifier(NotificationModifierSuppressOtherActiveDevice());
@@ -102,20 +102,28 @@ class NotificationManager {
 
   static Future<void> notify(NotificationContent notification,
       {bool forceShow = false}) async {
-    if (_notifier == null) return;
+    if (_notifier == null) {
+      Log.e("Failed to show notification, notifier has not been initialzied");
+      return;
+    }
 
     NotificationContent? content = notification;
 
     for (var modifier in _modifiers) {
+      Log.d("Processing modifier: $modifier");
       if (forceShow) {
         if (modifier is NotificationModifierSuppressActiveRoom) continue;
         if (modifier is NotificationModifierSuppressOtherActiveDevice) continue;
       }
 
       content = await modifier.process(content!);
-      if (content == null) return;
+      if (content == null) {
+        Log.d("Modifier returned null notification, returning");
+        return;
+      }
     }
 
-    await _notifier!.notify(notification);
+    Log.i("Displaying notification content: $content");
+    await _notifier!.notify(content!);
   }
 }

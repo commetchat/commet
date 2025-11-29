@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:commet/cache/file_cache.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/component.dart';
+import 'package:commet/client/components/push_notification/android/unified_push_notifier.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/global_config.dart';
@@ -53,6 +54,15 @@ Future<void>? loading;
 List<String> commandLineArgs = [];
 
 @pragma('vm:entry-point')
+void unifiedPushEntry() async {
+  isHeadless = true;
+  Log.prefix = "unified-push";
+  await WidgetsFlutterBinding.ensureInitialized();
+  await preferences.init();
+  await UnifiedPushNotifier().init();
+}
+
+@pragma('vm:entry-point')
 void bubble() async {
   Log.prefix = "bubble";
   ensureBindingInit();
@@ -100,6 +110,7 @@ void bubble() async {
 
 void main(List<String> args) async {
   commandLineArgs = args;
+  print(args);
 
   if (BuildConfig.RELEASE) {
     runZonedGuarded(appMain, Log.onError, zoneSpecification: Log.spec);
@@ -204,11 +215,14 @@ Future<void> startGui() async {
 
     var initialIntent = await ReceiveIntent.getInitialIntent();
     ReceiveIntent.receivedIntentStream.listen((event) {
+      Log.i("Received intent: ${initialIntent}");
       var uri = AndroidIntentHelper.getUriFromIntent(event);
       if (uri is OpenRoomURI) {
         EventBus.openRoom.add((uri.roomId, uri.clientId));
       }
     });
+
+    Log.i("Initial intent: ${initialIntent}");
 
     var uri = AndroidIntentHelper.getUriFromIntent(initialIntent);
 

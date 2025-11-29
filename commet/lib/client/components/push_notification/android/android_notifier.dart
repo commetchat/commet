@@ -1,8 +1,14 @@
+import 'dart:math';
 import 'dart:ui';
 
+import 'package:collection/collection.dart';
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/direct_messages/direct_message_component.dart';
+import 'package:commet/client/components/invitation/invitation_component.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
+import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/components/push_notification/notifier.dart';
+import 'package:commet/client/matrix_background/matrix_background_room.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
@@ -30,6 +36,8 @@ class AndroidNotifier implements Notifier {
 
   @override
   Future<void> init() async {
+    Log.i("Initializing notifier! is headless: $isHeadless");
+
     flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
     const settings = AndroidInitializationSettings("notification_icon");
@@ -42,6 +50,67 @@ class AndroidNotifier implements Notifier {
     if (!isHeadless) {
       checkPermission();
     }
+  }
+
+  static Future<void> onForegroundMessage(Map<String, dynamic> message) async {
+    var roomId = message['room_id'] as String;
+    var eventId = message['event_id'] as String;
+
+    var client = clientManager!.clients
+        .firstWhereOrNull((element) => element.hasRoom(roomId));
+
+    if (client == null) {
+      client = clientManager!.clients.firstWhereOrNull((client) =>
+          client
+              .getComponent<InvitationComponent>()
+              ?.invitations
+              .any((i) => i.roomId == roomId) ==
+          true);
+
+      for (client in clientManager!.clients) {
+        final comp = client.getComponent<InvitationComponent>();
+
+        var invite =
+            comp?.invitations.firstWhereOrNull((i) => i.roomId == roomId);
+
+        if (invite != null) {
+          var content = GenericRoomInviteNotificationContent(
+            content: "You received an invitation to chat!",
+            title: "Room Invite",
+          );
+
+          await NotificationManager.notify(content);
+
+          return;
+        }
+      }
+
+      return;
+    }
+
+    var room = client.getRoom(roomId);
+    var event = await room!.getEvent(eventId);
+
+    var user = await room.fetchMember(event!.senderId);
+
+    bool isDirectMessage = client
+            .getComponent<DirectMessagesComponent>()
+            ?.isRoomDirectMessage(room) ??
+        false;
+
+    NotificationManager.notify(MessageNotificationContent(
+        senderName: user.displayName,
+        senderId: user.identifier,
+        roomName: room.displayName,
+        content: event.plainTextBody,
+        eventId: eventId,
+        senderImageId: user.avatarId,
+        roomImageId: room.avatarId,
+        roomId: room.identifier,
+        clientId: client.identifier,
+        senderImage: user.avatar,
+        roomImage: await room.getShortcutImage(),
+        isDirectMessage: isDirectMessage));
   }
 
   Future<void> checkPermission() async {
@@ -57,6 +126,10 @@ class AndroidNotifier implements Notifier {
     switch (notification) {
       case MessageNotificationContent _:
         return displayMessageNotification(notification);
+      case ErrorNotificationContent _:
+        return displayErrorNotification(notification);
+      case GenericRoomInviteNotificationContent _:
+        return displayGenericInviteNotification(notification);
       default:
     }
   }
@@ -70,6 +143,10 @@ class AndroidNotifier implements Notifier {
       return;
     }
 
+    if (room is MatrixBackgroundRoom) {
+      await room.init();
+    }
+
     if (flutterLocalNotificationsPlugin == null) {
       Log.i(
           "Flutter local notifications plugin was null. Something went wrong");
@@ -80,9 +157,13 @@ class AndroidNotifier implements Notifier {
       await shortcutsManager.loading;
     }
 
+    Log.i("Sender name: '${content.senderName}'");
+    Log.i("Room Name: '${room.displayName}'");
+
     Uri? userAvatar = await ShortcutsManager.getCachedAvatarImage(
         placeholderColor: room.getColorOfUser(content.senderId),
         placeholderText: content.senderName,
+        imageId: content.senderImageId,
         identifier: content.senderId,
         format: ShortcutIconFormat.png,
         shouldZoomOut: false,
@@ -90,7 +171,8 @@ class AndroidNotifier implements Notifier {
 
     Uri? roomAvatar = await ShortcutsManager.getCachedAvatarImage(
         placeholderColor: room.defaultColor,
-        placeholderText: room.displayName,
+        placeholderText: content.roomName,
+        imageId: content.roomImageId,
         format: ShortcutIconFormat.png,
         identifier: room.identifier,
         imageProvider: await room.getShortcutImage());
@@ -213,5 +295,42 @@ class AndroidNotifier implements Notifier {
         flutterLocalNotificationsPlugin?.cancel(noti.id!);
       }
     }
+  }
+
+  Future<void> displayErrorNotification(
+      ErrorNotificationContent notification) async {
+    var details = AndroidNotificationDetails(
+      "errors",
+      "Error Messages",
+      importance: Importance.high,
+      priority: Priority.high,
+      icon: "notification_icon",
+      styleInformation: BigTextStyleInformation(notification.content),
+    );
+
+    await flutterLocalNotificationsPlugin?.show(
+      Random().nextInt(1000000),
+      notification.title,
+      notification.content,
+      NotificationDetails(android: details),
+    );
+  }
+
+  Future<void> displayGenericInviteNotification(
+      GenericRoomInviteNotificationContent notification) async {
+    var details = AndroidNotificationDetails(
+      "chat_invites",
+      "Chat Invitations",
+      importance: Importance.high,
+      priority: Priority.high,
+      icon: "notification_icon",
+    );
+
+    await flutterLocalNotificationsPlugin?.show(
+      Random().nextInt(1000000),
+      notification.title,
+      notification.content,
+      NotificationDetails(android: details),
+    );
   }
 }

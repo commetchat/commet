@@ -3,7 +3,7 @@ import 'package:receive_intent/receive_intent.dart';
 
 class AndroidIntentHelper {
   static CustomURI? getUriFromIntent(Intent? intent) {
-    var key = "flutter_shortcuts";
+    var key = "flutter_shortcuts_new";
 
     if (intent?.action == "SELECT_NOTIFICATION") {
       key = "payload";

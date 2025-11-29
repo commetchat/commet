@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:commet/client/client.dart';
-import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/components/push_notification/android/android_notifier.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
@@ -12,15 +11,11 @@ import 'package:commet/client/components/push_notification/push_notification_com
 import 'package:commet/client/room.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
-import 'package:commet/service/background_service.dart';
-import 'package:commet/service/background_service_notifications/background_service_task_notification.dart';
+import 'package:commet/service/background_service_notifications/background_service_task_notification2.dart';
 import 'package:commet/ui/pages/setup/menus/unified_push_setup.dart';
 import 'package:commet/utils/first_time_setup.dart';
 import 'package:flutter/material.dart';
 import 'package:unifiedpush/unifiedpush.dart';
-
-@pragma('vm:entry-point')
-void unifiedPushEntry() async {}
 
 class UnifiedPushNotifier implements Notifier {
   late AndroidNotifier notifier;
@@ -42,10 +37,6 @@ class UnifiedPushNotifier implements Notifier {
 
   StreamController<String> onEndpointChanged = StreamController.broadcast();
 
-  String? _distributor;
-
-  String? get distributor => _distributor;
-
   String? get endpoint => preferences.unifiedPushEndpoint;
 
   @override
@@ -54,18 +45,17 @@ class UnifiedPushNotifier implements Notifier {
   @override
   bool get hasPermission => notifier.hasPermission;
 
+  String get instance => isHeadless ? "background_task" : "default";
+
   @override
   Future<void> init() async {
-    //if (isInit) return;
+    if (isInit) return;
     if (preferences.unifiedPushEnabled != true) return;
 
     await notifier.init();
 
     Log.i("Initializing unified push");
     UnifiedPush.initialize(onMessage: onMessage, onNewEndpoint: onNewEndpoint);
-
-    var distributor = await UnifiedPush.getDistributor();
-    _distributor = distributor;
 
     isInit = true;
   }
@@ -95,75 +85,67 @@ class UnifiedPushNotifier implements Notifier {
     onEndpointChanged.add(endpoint);
   }
 
-  Future<void> onForegroundMessage(Map<String, dynamic> message) async {
-    var roomId = message['room_id'] as String;
-    var eventId = message['event_id'] as String;
-
-    notifiedEvents.add(eventId);
-
-    var client =
-        clientManager!.clients.firstWhere((element) => element.hasRoom(roomId));
-    var room = client.getRoom(roomId);
-    var event = await room!.getEvent(eventId);
-
-    var user = await room.fetchMember(event!.senderId);
-
-    bool isDirectMessage = client
-            .getComponent<DirectMessagesComponent>()
-            ?.isRoomDirectMessage(room) ??
-        false;
-
-    NotificationManager.notify(MessageNotificationContent(
-        senderName: user.displayName,
-        senderId: user.identifier,
-        roomName: room.displayName,
-        content: event.plainTextBody,
-        eventId: eventId,
-        roomId: room.identifier,
-        clientId: client.identifier,
-        senderImage: user.avatar,
-        roomImage: await room.getShortcutImage(),
-        isDirectMessage: isDirectMessage));
-  }
-
   Future<void> onBackgroundMessage(Map<String, dynamic> message) async {
-    doBackgroundServiceTask(BackgroundServiceTaskNotification(
-        message["room_id"], message["event_id"]));
+    try {
+      var notificationManager = BackgroundNotificationsManager2(null);
+
+      await notificationManager.init();
+
+      if (!message.containsKey("room_id") || !message.containsKey("event_id")) {
+        if (preferences.developerMode)
+          NotificationManager.notify(ErrorNotificationContent(
+            title: "Unknown Notification Data",
+            content: jsonEncode(message),
+          ));
+
+        return;
+      }
+
+      notificationManager.handleMessage(message);
+    } catch (e, s) {
+      Log.e(
+          "An error occured while processing unified push background message");
+      Log.onError(e, s);
+      NotificationManager.notify(ErrorNotificationContent(
+          title: "An error occurred while processing notifications",
+          content: "${e} \n\n ${s}"));
+    }
   }
 
   void onMessage(Uint8List message, String instance) async {
+    Log.i("Received unified push message! $instance");
     var data = utf8.decode(message);
     var json = jsonDecode(data) as Map<String, dynamic>;
 
     var notifData = json['notification'] as Map<String, dynamic>;
     Log.i("Received message from unified push: $json");
 
-    var eventId = notifData['event_id'] as String;
-
     // Workaround for notifications being displayed twice sometimes. Not sure where its coming from...
-    if (notifiedEvents.contains(eventId)) {
-      return;
-    }
-    notifiedEvents.add(eventId);
+    if (notifData.containsKey("event_id")) {
+      var eventId = notifData['event_id'] as String;
 
-    switch (WidgetsBinding.instance.lifecycleState) {
-      case null:
-      case AppLifecycleState.detached:
-      case AppLifecycleState.inactive:
-      case AppLifecycleState.hidden:
-      case AppLifecycleState.paused:
-        onBackgroundMessage(notifData);
-        break;
-      case AppLifecycleState.resumed:
-        onForegroundMessage(notifData);
+      if (notifiedEvents.contains(eventId)) {
+        return;
+      }
+      notifiedEvents.add(eventId);
+
+      Timer(Duration(seconds: 5), () {
+        notifiedEvents.removeWhere((e) => e == eventId);
+      });
+    }
+
+    if (isHeadless) {
+      onBackgroundMessage(notifData);
+    } else {
+      AndroidNotifier.onForegroundMessage(notifData);
     }
 
     Log.i("${WidgetsBinding.instance.lifecycleState}");
   }
 
-  void onRegistrationFailed(String instance) {}
-
-  void onUnregistered(String instance) {}
+  void onUnregistered(String instance) {
+    Log.i("Unified push unregistered: $instance");
+  }
 
   Future<void> unregister() async {
     await UnifiedPush.unregister();
