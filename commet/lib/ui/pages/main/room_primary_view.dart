@@ -20,16 +20,27 @@ class RoomPrimaryView extends StatelessWidget {
     var voip = room.getComponent<VoipRoomComponent>();
     var calendar = room.getComponent<CalendarRoom>();
 
+    var key = ValueKey("room-primary-view-${room.localId}");
+
     if (voip != null) {
-      return VoipRoomView(voip);
+      return VoipRoomView(
+        voip,
+        key: key,
+      );
     }
 
     if (photos != null) {
-      return PhotoAlbumView(photos);
+      return PhotoAlbumView(
+        photos,
+        key: key,
+      );
     }
 
     if (calendar != null) {
-      return CalendarRoomView(calendar);
+      return CalendarRoomView(
+        calendar,
+        key: key,
+      );
     }
 
     final call = clientManager?.callManager.getCallInRoom(
@@ -41,7 +52,7 @@ class RoomPrimaryView extends StatelessWidget {
       children: [
         if (call != null) Flexible(child: CallWidget(call)),
         Flexible(
-          child: Chat(room, key: ValueKey("room-timeline-key-${room.localId}")),
+          child: Chat(room, key: key),
         ),
       ],
     );

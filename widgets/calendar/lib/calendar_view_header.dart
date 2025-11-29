@@ -53,7 +53,9 @@ class CalendarViewHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var result = useMobileLayout ? buildMobileLayout() : buildDesktopLayout();
+    var result = useMobileLayout
+        ? buildMobileLayout(context)
+        : buildDesktopLayout(context);
     return Container(
       color: Theme.of(context).colorScheme.surfaceContainerLow,
       child: SizedBox(
@@ -62,7 +64,7 @@ class CalendarViewHeader extends StatelessWidget {
     );
   }
 
-  Widget buildMobileLayout() {
+  Widget buildMobileLayout(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -73,12 +75,12 @@ class CalendarViewHeader extends StatelessWidget {
         ),
         Align(
             alignment: AlignmentGeometry.centerRight,
-            child: createLayoutButtons()),
+            child: createLayoutButtons(context)),
       ],
     );
   }
 
-  Widget buildDesktopLayout() {
+  Widget buildDesktopLayout(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -102,7 +104,7 @@ class CalendarViewHeader extends StatelessWidget {
         Text(getHeaderText()),
         Row(
           children: [
-            createLayoutButtons(),
+            createLayoutButtons(context),
             IconButton(
               onPressed: nextPage,
               icon: Icon(Icons.chevron_right),
@@ -113,40 +115,43 @@ class CalendarViewHeader extends StatelessWidget {
     );
   }
 
-  Widget createLayoutButtons() {
+  Widget createLayoutButtons(BuildContext context) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         tiamat.Tooltip(
           text: "Day View",
           preferredDirection: AxisDirection.down,
-          child: Opacity(
-            opacity: mode == CalendarViewMode.day ? 0.5 : 1,
-            child: IconButton(
-                onPressed: () => setViewMode?.call(CalendarViewMode.day),
-                icon: Icon(Icons.calendar_view_day)),
-          ),
+          child: IconButton(
+              onPressed: () => setViewMode?.call(CalendarViewMode.day),
+              icon: Icon(
+                  color: mode == CalendarViewMode.day
+                      ? Theme.of(context).colorScheme.primary
+                      : null,
+                  Icons.calendar_view_day)),
         ),
         tiamat.Tooltip(
           text: "Week View",
           preferredDirection: AxisDirection.down,
-          child: Opacity(
-            opacity: mode == CalendarViewMode.week ? 0.5 : 1,
-            child: IconButton(
-              onPressed: () => setViewMode?.call(CalendarViewMode.week),
-              icon: Icon(Icons.calendar_view_week),
-            ),
+          child: IconButton(
+            onPressed: () => setViewMode?.call(CalendarViewMode.week),
+            icon: Icon(
+                color: mode == CalendarViewMode.week
+                    ? Theme.of(context).colorScheme.primary
+                    : null,
+                Icons.calendar_view_week),
           ),
         ),
         tiamat.Tooltip(
           text: "Month View",
           preferredDirection: AxisDirection.down,
-          child: Opacity(
-            opacity: mode == CalendarViewMode.month ? 0.5 : 1,
-            child: IconButton(
-              onPressed: () => setViewMode?.call(CalendarViewMode.month),
-              icon: Icon(Icons.calendar_view_month),
-            ),
+          child: IconButton(
+            onPressed: () => setViewMode?.call(CalendarViewMode.month),
+            icon: Icon(
+                color: mode == CalendarViewMode.month
+                    ? Theme.of(context).colorScheme.primary
+                    : null,
+                Icons.calendar_view_month),
           ),
         ),
       ],
