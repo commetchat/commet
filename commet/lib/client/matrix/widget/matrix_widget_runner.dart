@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:commet/debug/log.dart';
 import 'package:matrix_widget_api/capabilities.dart';
@@ -115,7 +116,7 @@ class MatrixWidgetRunner implements MatrixWidgetApi {
   ) async {
     var type = data["type"];
     var state_key = data["state_key"];
-    var content = data["content"];
+    var content = jsonDecode(jsonEncode(data["content"]));
 
     var result = await client.setRoomStateWithKey(
       room.id,

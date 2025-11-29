@@ -221,26 +221,26 @@ class _CalendarEventEditorState extends State<CalendarEventEditor> {
             tiamat.Text.error("End time must be after start time"),
 
           if (!hasValidName) tiamat.Text.error("Event must have a name"),
-          IgnorePointer(
-            ignoring: !isValidInput,
-            child: Opacity(
-              opacity: isValidInput ? 1.0 : 0.3,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(0, 12, 0, 0),
-                child: Row(
-                  spacing: 8,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Expanded(
-                      child: tiamat.Button.secondary(
-                        text: "Cancel",
-                        onTap: () {
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                    ),
-                    Expanded(
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 12, 0, 0),
+            child: Row(
+              spacing: 8,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Expanded(
+                  child: tiamat.Button.secondary(
+                    text: "Cancel",
+                    onTap: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ),
+                Expanded(
+                  child: IgnorePointer(
+                    ignoring: !isValidInput,
+                    child: Opacity(
+                      opacity: isValidInput ? 1.0 : 0.3,
                       child: tiamat.Button(
                         text: "Submit",
                         isLoading: submitting,
@@ -295,9 +295,9 @@ class _CalendarEventEditorState extends State<CalendarEventEditor> {
                         },
                       ),
                     ),
-                  ],
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
         ],

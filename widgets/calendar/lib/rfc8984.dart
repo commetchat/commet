@@ -143,15 +143,72 @@ class RFC8984VirtualLocation {
 }
 
 @JsonSerializable(includeIfNull: false)
+class Rfc8984NDay {
+  static const String type = "NDay";
+  String day;
+  int? nthOfPeriod;
+
+  Rfc8984NDay(this.day, {this.nthOfPeriod});
+
+  factory Rfc8984NDay.fromJson(Map<String, dynamic> json) =>
+      _$Rfc8984NDayFromJson(json);
+
+  Map<String, dynamic> toJson() {
+    var data = _$Rfc8984NDayToJson(this);
+    data["@type"] = type;
+    return data;
+  }
+}
+
+@JsonSerializable(
+  includeIfNull: false,
+)
 class RFC8984RecurrenceRule {
   static const String type = "RecurrenceRule";
 
   String frequency;
 
+  int? interval;
+
+  String? rscale;
+
+  String? skip;
+
+  String? firstDayOfWeek;
+
+  List<Rfc8984NDay>? byDay;
+  List<int>? byMonthDay;
+  List<String>? byMonth;
+  List<int>? byYearDay;
+  List<int>? byWeekNo;
+  List<int>? byHour;
+  List<int>? byMinute;
+  List<int>? bySecond;
+  List<int>? bySetPos;
+
+  int? count;
+
   @IsoDateTimeConverter()
   DateTime? until;
 
-  RFC8984RecurrenceRule({required this.frequency, this.until});
+  RFC8984RecurrenceRule({
+    required this.frequency,
+    this.until,
+    this.interval,
+    this.rscale,
+    this.skip,
+    this.firstDayOfWeek,
+    this.byDay,
+    this.byMonthDay,
+    this.byMonth,
+    this.byYearDay,
+    this.byWeekNo,
+    this.byHour,
+    this.byMinute,
+    this.bySecond,
+    this.bySetPos,
+    this.count,
+  });
 
   factory RFC8984RecurrenceRule.fromJson(Map<String, dynamic> json) =>
       _$RFC8984RecurrenceRuleFromJson(json);

@@ -171,8 +171,18 @@ class MatrixCalendarRoomComponent
       return null;
     }
 
-    final start = (data["dtstart"] as ical.IcsDateTime?)?.toDateTime();
-    final end = (data["dtend"] as ical.IcsDateTime?)?.toDateTime();
+    final startIcs = (data["dtstart"] as ical.IcsDateTime?);
+    final endIcs = (data["dtend"] as ical.IcsDateTime?);
+
+    var start = startIcs?.toDateTime();
+    var end = endIcs?.toDateTime();
+    var rrule = data["rrule"] as String?;
+    var startTimezone = startIcs?.tzid;
+
+    RFC8984RecurrenceRule? recur;
+    if (rrule != null) {
+      recur = parseRecurrenceRule(rrule);
+    }
 
     if (start == null || end == null) {
       Log.i("Event had no start or end time, skipping");
@@ -190,11 +200,65 @@ class MatrixCalendarRoomComponent
 
     return RFC8984CalendarEvent(
       uid: uid.toString(),
+      timeZone: startTimezone,
       updated: updated.toUtc(),
       title: title,
+      recurrenceRules: recur != null ? [recur] : null,
       start: start,
       duration: duration,
     );
+  }
+
+  RFC8984RecurrenceRule? parseRecurrenceRule(String rrule) {
+    Log.i(rrule);
+    var rule = Map<String, String>.new();
+    var parts = rrule.split(";");
+    for (var part in parts) {
+      var otherParts = part.split("=");
+      var key = otherParts[0];
+      var value = otherParts[1];
+      rule[key] = value;
+    }
+
+    var frequency = rule["FREQ"]?.toLowerCase();
+    var firstDayOfWeek = rule["WKST"]?.toLowerCase();
+    int? count = rule["COUNT"] != null ? int.parse(rule["COUNT"]!) : null;
+    int? interval =
+        rule["INTERVAL"] != null ? int.parse(rule["INTERVAL"]!) : null;
+    print(parts);
+    if (frequency == null) return null;
+
+    List<Rfc8984NDay>? byDays;
+    if (rule["BYDAY"] != null) {
+      byDays = parseByDays(rule["BYDAY"]!);
+    }
+
+    return RFC8984RecurrenceRule(
+        firstDayOfWeek: firstDayOfWeek,
+        frequency: frequency,
+        interval: interval,
+        count: count,
+        byDay: byDays);
+  }
+
+  List<Rfc8984NDay> parseByDays(String rule) {
+    var days = rule.split(",");
+    var result = List<Rfc8984NDay>.empty(growable: true);
+    for (var day in days) {
+      var lower = day.toLowerCase();
+      var dayName = lower.substring(lower.length - 2);
+      int? period;
+      if (lower.length > 2) {
+        var periodStr = lower.substring(0, lower.length - 2);
+        period = int.tryParse(periodStr);
+      }
+
+      if (["mo", "tu", "we", "th", "fr", "sa", "su"].contains(dayName)) {
+        result.add(Rfc8984NDay(dayName, nthOfPeriod: period));
+      }
+    }
+
+    return result;
   }
 
   @override

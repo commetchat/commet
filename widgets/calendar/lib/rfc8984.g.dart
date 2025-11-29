@@ -93,18 +93,74 @@ Map<String, dynamic> _$RFC8984VirtualLocationToJson(
       if (instance.uri case final value?) 'uri': value,
     };
 
+Rfc8984NDay _$Rfc8984NDayFromJson(Map<String, dynamic> json) => Rfc8984NDay(
+      json['day'] as String,
+      nthOfPeriod: (json['nthOfPeriod'] as num?)?.toInt(),
+    );
+
+Map<String, dynamic> _$Rfc8984NDayToJson(Rfc8984NDay instance) =>
+    <String, dynamic>{
+      'day': instance.day,
+      if (instance.nthOfPeriod case final value?) 'nthOfPeriod': value,
+    };
+
 RFC8984RecurrenceRule _$RFC8984RecurrenceRuleFromJson(
         Map<String, dynamic> json) =>
     RFC8984RecurrenceRule(
       frequency: json['frequency'] as String,
       until: _$JsonConverterFromJson<String, DateTime>(
           json['until'], const IsoDateTimeConverter().fromJson),
+      interval: (json['interval'] as num?)?.toInt(),
+      rscale: json['rscale'] as String?,
+      skip: json['skip'] as String?,
+      firstDayOfWeek: json['firstDayOfWeek'] as String?,
+      byDay: (json['byDay'] as List<dynamic>?)
+          ?.map((e) => Rfc8984NDay.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      byMonthDay: (json['byMonthDay'] as List<dynamic>?)
+          ?.map((e) => (e as num).toInt())
+          .toList(),
+      byMonth:
+          (json['byMonth'] as List<dynamic>?)?.map((e) => e as String).toList(),
+      byYearDay: (json['byYearDay'] as List<dynamic>?)
+          ?.map((e) => (e as num).toInt())
+          .toList(),
+      byWeekNo: (json['byWeekNo'] as List<dynamic>?)
+          ?.map((e) => (e as num).toInt())
+          .toList(),
+      byHour: (json['byHour'] as List<dynamic>?)
+          ?.map((e) => (e as num).toInt())
+          .toList(),
+      byMinute: (json['byMinute'] as List<dynamic>?)
+          ?.map((e) => (e as num).toInt())
+          .toList(),
+      bySecond: (json['bySecond'] as List<dynamic>?)
+          ?.map((e) => (e as num).toInt())
+          .toList(),
+      bySetPos: (json['bySetPos'] as List<dynamic>?)
+          ?.map((e) => (e as num).toInt())
+          .toList(),
+      count: (json['count'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$RFC8984RecurrenceRuleToJson(
         RFC8984RecurrenceRule instance) =>
     <String, dynamic>{
       'frequency': instance.frequency,
+      if (instance.interval case final value?) 'interval': value,
+      if (instance.rscale case final value?) 'rscale': value,
+      if (instance.skip case final value?) 'skip': value,
+      if (instance.firstDayOfWeek case final value?) 'firstDayOfWeek': value,
+      if (instance.byDay case final value?) 'byDay': value,
+      if (instance.byMonthDay case final value?) 'byMonthDay': value,
+      if (instance.byMonth case final value?) 'byMonth': value,
+      if (instance.byYearDay case final value?) 'byYearDay': value,
+      if (instance.byWeekNo case final value?) 'byWeekNo': value,
+      if (instance.byHour case final value?) 'byHour': value,
+      if (instance.byMinute case final value?) 'byMinute': value,
+      if (instance.bySecond case final value?) 'bySecond': value,
+      if (instance.bySetPos case final value?) 'bySetPos': value,
+      if (instance.count case final value?) 'count': value,
       if (_$JsonConverterToJson<String, DateTime>(
               instance.until, const IsoDateTimeConverter().toJson)
           case final value?)

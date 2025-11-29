@@ -178,8 +178,7 @@ class MatrixCalendar {
   ) {
     var localTime = event.start.toLocal();
 
-    bool oneOffAllDayEvent =
-        (event.duration.inMinutes == 24 * 60 &&
+    bool oneOffAllDayEvent = (event.duration.inMinutes == 24 * 60 &&
         localTime.hour == 0 &&
         localTime.minute == 0);
 
@@ -196,6 +195,7 @@ class MatrixCalendar {
       date: localTime,
       startTime: localTime,
       endTime: clippedEndTime,
+      recurrenceSettings: toRecurrenceSettings(event),
       event: MatrixCalendarEventState(data: event),
     );
 
@@ -349,5 +349,52 @@ class MatrixCalendar {
     } else {
       return false;
     }
+  }
+
+  RecurrenceSettings? toRecurrenceSettings(RFC8984CalendarEvent event) {
+    if (event.recurrenceRules == null) return null;
+
+    var rule = event.recurrenceRules?.firstOrNull;
+    if (rule == null) return null;
+
+    var frequency = switch (rule.frequency) {
+      "daily" => RepeatFrequency.daily,
+      "weekly" => RepeatFrequency.weekly,
+      "montly" => RepeatFrequency.monthly,
+      "yearly" => RepeatFrequency.yearly,
+      _ => RepeatFrequency.doNotRepeat,
+    };
+
+    if (rule.interval != null) {
+      print("Calendar does not currently support repeat intervals");
+      return null;
+    }
+
+    List<int>? weekdays;
+
+    if (rule.byDay != null) {
+      weekdays = List.empty(growable: true);
+      for (var day in rule.byDay!) {
+        var dayNum = switch (day.day) {
+          "mo" => 0,
+          "tu" => 1,
+          "we" => 2,
+          "th" => 3,
+          "fr" => 4,
+          "sa" => 5,
+          "su" => 6,
+          _ => throw UnimplementedError()
+        };
+
+        weekdays.add(dayNum);
+      }
+    }
+
+    return RecurrenceSettings(
+      startDate: event.start,
+      occurrences: rule.count,
+      frequency: frequency,
+      weekdays: weekdays,
+    );
   }
 }
