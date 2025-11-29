@@ -160,30 +160,43 @@ class _CalendarViewWeekState extends State<CalendarViewWeek> {
                     );
                   },
                   fullDayEventBuilder: (events, date) {
-                    var colorScheme = Theme.of(context).colorScheme;
-                    return Padding(
-                      padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: colorScheme.primary,
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(8, 2, 8, 2),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                events.first.title,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodySmall
-                                    ?.copyWith(color: colorScheme.onPrimary),
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: events.map((e) {
+                        return Padding(
+                          padding: const EdgeInsets.fromLTRB(2, 0, 2, 2),
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              color: widget.calendar.config.processEventColor(
+                                e.color,
+                                context,
                               ),
-                            ],
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(8, 2, 8, 2),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    e.title,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall
+                                        ?.copyWith(
+                                          color: widget.calendar.config
+                                              .processEventTextColor(
+                                            e.color,
+                                            context,
+                                          ),
+                                        ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
+                        );
+                      }).toList(),
                     );
                   },
                   timeLineWidth: 80,

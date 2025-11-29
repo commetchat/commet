@@ -68,33 +68,40 @@ class _CalendarViewMonthState extends State<CalendarViewDay> {
                 ),
                 onDateTap: (date) => widget.createEvent?.call(date),
                 fullDayEventBuilder: (events, date) {
-                  var colorScheme = Theme.of(context).colorScheme;
-                  return Padding(
-                    padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        color: colorScheme.primary,
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(8, 2, 8, 2),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            SizedBox(
+                  return Row(
+                    mainAxisSize: MainAxisSize.max,
+                    children: events.map((e) {
+                      return Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              color: widget.calendar.config.processEventColor(
+                                e.color,
+                                context,
+                              ),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(8, 2, 8, 2),
                               child: Text(
-                                events.first.title,
+                                e.title,
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodySmall
-                                    ?.copyWith(color: colorScheme.onPrimary),
+                                    ?.copyWith(
+                                      color: widget.calendar.config
+                                          .processEventTextColor(
+                                        e.color,
+                                        context,
+                                      ),
+                                    ),
                               ),
                             ),
-                          ],
+                          ),
                         ),
-                      ),
-                    ),
+                      );
+                    }).toList(),
                   );
                 },
                 hourIndicatorSettings: HourIndicatorSettings(
