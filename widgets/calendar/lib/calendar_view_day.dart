@@ -44,8 +44,6 @@ class _CalendarViewMonthState extends State<CalendarViewDay> {
         var heightPerMinute =
             (constraints.maxHeight - headerSize) / minutesPerDay;
 
-        print(heightPerMinute);
-
         const minHeightPerMinute = 0.4;
         if (heightPerMinute < minHeightPerMinute) {
           heightPerMinute = minHeightPerMinute;
