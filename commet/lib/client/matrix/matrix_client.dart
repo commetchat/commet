@@ -482,7 +482,7 @@ class MatrixClient extends Client {
               "events": {
                 "m.room.avatar": 50,
                 "m.room.canonical_alias": 50,
-                "m.room.encryption": 999,
+                "m.room.encryption": 100,
                 "m.room.history_visibility": 100,
                 "m.room.name": 50,
                 "m.room.power_levels": 100,
