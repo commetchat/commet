@@ -380,12 +380,12 @@ class _MatrixRoomPermissionsPageState extends State<MatrixRoomPermissionsPage> {
     if (isCalendarRoom) {
       permissions.addAll([
         MatrixRoomPermissionEntry(
-          key: "chat.commet.calendar.event",
+          key: "chat.commet.calendar_event",
           keyParent: "events",
           title: labelMatrixPermissionsAddCalendarEventTitle,
           description: labelMatrixPermissionsAddCalendarEventDescription,
           icon: Icons.calendar_month,
-          powerLevel: 25,
+          powerLevel: 50,
         ),
       ]);
     }
