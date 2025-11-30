@@ -385,7 +385,7 @@ class _MatrixRoomPermissionsPageState extends State<MatrixRoomPermissionsPage> {
           title: labelMatrixPermissionsAddCalendarEventTitle,
           description: labelMatrixPermissionsAddCalendarEventDescription,
           icon: Icons.calendar_month,
-          powerLevel: 50,
+          powerLevel: 25,
         ),
       ]);
     }

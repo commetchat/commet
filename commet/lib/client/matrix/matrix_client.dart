@@ -489,7 +489,7 @@ class MatrixClient extends Client {
                 "m.room.server_acl": 100,
                 "m.room.tombstone": 100,
                 "m.reaction": 50,
-                "chat.commet.calendar.event": 25,
+                "chat.commet.calendar_event": 25,
               },
               "events_default": 50,
               "state_default": 50,
