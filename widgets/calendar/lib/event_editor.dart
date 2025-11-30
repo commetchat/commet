@@ -140,9 +140,10 @@ class _CalendarEventEditorState extends State<CalendarEventEditor> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                if (allDayEvent) SizedBox(width: 50, child: Text("Date:")),
-                if (!allDayEvent) SizedBox(width: 50, child: Text("From:")),
+                if (allDayEvent) Text("Date:"),
+                if (!allDayEvent) Text("From:"),
                 Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     TextButton.icon(
                       onPressed: () => showDatePicker(
@@ -190,8 +191,9 @@ class _CalendarEventEditorState extends State<CalendarEventEditor> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                SizedBox(width: 50, child: Text("To:")),
+                Text("To:"),
                 Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     TextButton.icon(
                       onPressed: () => showDatePicker(
@@ -237,7 +239,7 @@ class _CalendarEventEditorState extends State<CalendarEventEditor> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                SizedBox(width: 50, child: Text("Repeat:")),
+                Text("Repeat:"),
                 TextButton.icon(
                     onPressed: () {
                       widget.config
