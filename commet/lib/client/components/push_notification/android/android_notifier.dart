@@ -53,8 +53,14 @@ class AndroidNotifier implements Notifier {
   }
 
   static Future<void> onForegroundMessage(Map<String, dynamic> message) async {
-    var roomId = message['room_id'] as String;
-    var eventId = message['event_id'] as String;
+    var roomId = message["room_id"] as String?;
+    var eventId = message["event_id"] as String?;
+    var counts = message["counts"] as String?;
+
+    if (roomId == null || eventId == null) {
+      Log.w("TODO: Handle counts: $counts");
+      return;
+    }
 
     var client = clientManager!.clients
         .firstWhereOrNull((element) => element.hasRoom(roomId));
