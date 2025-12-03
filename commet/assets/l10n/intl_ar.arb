@@ -1,0 +1,52 @@
+{
+  "promptHomeserver": "الخادوم الرئيسي",
+  "@promptHomeserver": {
+    "description": "Placeholder text for homeserver field on login form",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptUsername": "اسم المستخدم",
+  "@promptUsername": {
+    "description": "Placeholder text for username field on login form",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptPassword": "كلمة السر",
+  "@promptPassword": {
+    "description": "Placeholder text for password field on login form",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsAppGeneral": "عام",
+  "@labelSettingsAppGeneral": {
+    "description": "Label for the App General settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomSettingsGeneral": "عام",
+  "@labelRoomSettingsGeneral": {
+    "description": "Label for general room settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceSettingsGeneral": "عام",
+  "@labelSpaceSettingsGeneral": {
+    "description": "Label for general space settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelThirdPartyServicesTitle": "خدمات الطرف الثالث",
+  "@labelThirdPartyServicesTitle": {
+    "description": "Header for the third party services section in settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelGifSearchDescription": "يفعِّل بحث GIF في تينور. ستوكَّل الطلبات عبر {proxyUrl}",
+  "@labelGifSearchDescription": {
+    "description": "Explains that gifs will be fetched via proxy",
+    "type": "text",
+    "placeholders": {
+      "proxyUrl": {}
+    }
+  }
+}
