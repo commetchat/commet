@@ -14,12 +14,13 @@ class PickedPhoto {
 
 abstract class PhotoAlbumRoom<R extends Client, T extends Room>
     implements RoomComponent<R, T> {
-  bool get isPhotoAlbum;
-
   bool get canUpload;
 
-  Future<void> uploadPhotos(List<PickedPhoto> photos,
-      {bool sendOriginal = false, bool extractMetadata = true});
+  Future<void> uploadPhotos(
+    List<PickedPhoto> photos, {
+    bool sendOriginal = false,
+    bool extractMetadata = true,
+  });
 
   Future<PhotoAlbumTimeline> getTimeline();
 }

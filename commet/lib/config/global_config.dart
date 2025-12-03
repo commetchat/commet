@@ -10,10 +10,16 @@ class GlobalConfig {
     return data["default_homeserver"] ?? "matrix.org";
   }
 
+  static String get calendarWidgetHost {
+    return data["calendar_widget"] ?? "calendar-widget.commet.chat";
+  }
+
   static Future<void> init() async {
     try {
-      String jsonData = await rootBundle
-          .loadString('assets/config/global_config.json', cache: false);
+      String jsonData = await rootBundle.loadString(
+        'assets/config/global_config.json',
+        cache: false,
+      );
 
       data = const JsonDecoder().convert(jsonData);
       Log.i(jsonData);

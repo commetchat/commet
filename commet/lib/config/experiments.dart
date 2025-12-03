@@ -9,6 +9,9 @@ class Experiments {
   static bool get elementCall =>
       preferences.isExperimentEnabled("element_call");
 
+  static bool get calendarRooms =>
+      preferences.isExperimentEnabled("calendar_room");
+
   static Future<void> setVoip(bool value) =>
       preferences.setExperimentEnabled("voip", value);
 
@@ -17,4 +20,7 @@ class Experiments {
 
   static Future<void> setPhotoAlbumRooms(bool value) =>
       preferences.setExperimentEnabled("photo_album_rooms", value);
+
+  static Future<void> setCalendarRoom(bool value) =>
+      preferences.setExperimentEnabled("calendar_room", value);
 }
