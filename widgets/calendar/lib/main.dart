@@ -27,11 +27,6 @@ class CalendarWidgetApp extends StatelessWidget {
     if (parameters["theme"] == "dark") themeBrightness = Brightness.dark;
     if (parameters["theme"] == "light") themeBrightness = Brightness.light;
 
-    DynamicSchemeVariant themeVariant = DynamicSchemeVariant.tonalSpot;
-
-    if (parameters["themeVariant"] == "monochrome")
-      themeVariant = DynamicSchemeVariant.monochrome;
-
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: themeBrightness == Brightness.dark
@@ -123,7 +118,7 @@ class _CalendarWidgetViewState extends State<CalendarWidgetView> {
         createEvent: (event) async {
           try {
             return widget.calendar.createEvent(event);
-          } catch (e, s) {
+          } catch (e, _) {
             return false;
           }
         },
