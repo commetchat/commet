@@ -304,7 +304,7 @@ class _CalendarEventEditorState extends State<CalendarEventEditor> {
                 if (widget.editingExistingEvent && widget.deleteEvent != null)
                   Expanded(
                     child: tiamat.Button.danger(
-                      text: "Delete Event",
+                      text: "Delete",
                       onTap: () {
                         widget.deleteEvent
                             ?.call(widget.initialEvent!)
