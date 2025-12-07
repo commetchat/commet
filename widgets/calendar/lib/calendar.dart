@@ -137,6 +137,18 @@ class MatrixCalendar {
     );
   }
 
+  bool canEditEvent(MatrixCalendarEventState event) {
+    if (event.remoteSourceId != null) {
+      return false;
+    }
+
+    if (event.senderId != widgetApi.userId) {
+      return false;
+    }
+
+    return true;
+  }
+
   void onWidgetReady(void event) {
     widgetApi.requestCapabilities([
       MatrixCapability.getRoomState(
@@ -319,10 +331,21 @@ class MatrixCalendar {
     await _syncControllerEventsToRoomState();
   }
 
+  Future<void> deleteEvent(RFC8984CalendarEvent event) async {
+    for (var e in controller.allEvents.toList()) {
+      if (e.event?.data.uid == event.uid) {
+        controller.remove(e);
+      }
+    }
+    await _syncControllerEventsToRoomState();
+  }
+
   Future<bool> createEvent(RFC8984CalendarEvent event) async {
     if (event.uid == "") {
       event.uid = _generateId();
     }
+
+    controller.removeWhere((e) => e.event?.data.uid == event.uid);
 
     var calendarEvents = fromRfcEvent(event);
     for (var calendarEvent in calendarEvents) {

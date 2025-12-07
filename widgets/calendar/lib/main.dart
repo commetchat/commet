@@ -110,12 +110,35 @@ class _CalendarWidgetViewState extends State<CalendarWidgetView> {
     super.dispose();
   }
 
+  Future<void> editEvent(MatrixCalendarEventState event) async {
+    var result = await widget.calendar.config.dialog<bool?>(
+      context: context,
+      builder: (context) => CalendarEventEditor(
+        config: widget.calendar.config,
+        submitEvent: (event) async {
+          try {
+            return widget.calendar.createEvent(event);
+          } catch (e, _) {
+            return false;
+          }
+        },
+        deleteEvent: (event) => widget.calendar.deleteEvent(event),
+        initialEvent: event.data,
+        editingExistingEvent: true,
+      ),
+    );
+
+    if (result != true) {
+      widget.calendar.updateFromRoomState();
+    }
+  }
+
   Future<void> createEvent(DateTime time) async {
     var result = await widget.calendar.config.dialog<bool?>(
       context: context,
       builder: (context) => CalendarEventEditor(
         config: widget.calendar.config,
-        createEvent: (event) async {
+        submitEvent: (event) async {
           try {
             return widget.calendar.createEvent(event);
           } catch (e, _) {
@@ -129,6 +152,7 @@ class _CalendarWidgetViewState extends State<CalendarWidgetView> {
           start: time,
           duration: Duration(hours: 1),
         ),
+        editingExistingEvent: false,
       ),
     );
 
@@ -144,6 +168,12 @@ class _CalendarWidgetViewState extends State<CalendarWidgetView> {
     });
   }
 
+  void onEventTapped(MatrixCalendarEventState event) {
+    if (widget.calendar.canEditEvent(event)) {
+      editEvent(event);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -156,6 +186,7 @@ class _CalendarWidgetViewState extends State<CalendarWidgetView> {
               useMobileLayout: widget.useMobileLayout,
               createEvent: createEvent,
               setViewMode: setViewMode,
+              onEventTapped: onEventTapped,
             ),
           if (mode == CalendarViewMode.week)
             CalendarViewWeek(
@@ -163,6 +194,7 @@ class _CalendarWidgetViewState extends State<CalendarWidgetView> {
               useMobileLayout: widget.useMobileLayout,
               createEvent: createEvent,
               setViewMode: setViewMode,
+              onEventTapped: onEventTapped,
             ),
           if (mode == CalendarViewMode.day)
             CalendarViewDay(
@@ -170,6 +202,7 @@ class _CalendarWidgetViewState extends State<CalendarWidgetView> {
               useMobileLayout: widget.useMobileLayout,
               createEvent: createEvent,
               setViewMode: setViewMode,
+              onEventTapped: onEventTapped,
             ),
           if (widget.watermark)
             Align(

@@ -10,6 +10,7 @@ class CalendarViewMonth extends StatefulWidget {
     required this.useMobileLayout,
     this.createEvent,
     this.setViewMode,
+    this.onEventTapped,
     super.key,
   });
   final MatrixCalendar calendar;
@@ -17,6 +18,7 @@ class CalendarViewMonth extends StatefulWidget {
 
   final Function(DateTime)? createEvent;
   final Function(CalendarViewMode)? setViewMode;
+  final Function(MatrixCalendarEventState)? onEventTapped;
 
   @override
   State<CalendarViewMonth> createState() => _CalendarViewMonthState();
@@ -136,64 +138,7 @@ class _CalendarViewMonthState extends State<CalendarViewMonth> {
                                     mainAxisSize: MainAxisSize.max,
                                     children: event
                                         .map(
-                                          (e) => Padding(
-                                            padding: const EdgeInsets.fromLTRB(
-                                              2,
-                                              0,
-                                              2,
-                                              2,
-                                            ),
-                                            child: Opacity(
-                                              opacity: e.event?.loaded != true
-                                                  ? 0.3
-                                                  : 1.0,
-                                              child: DecoratedBox(
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                    8,
-                                                  ),
-                                                  color: widget.calendar.config
-                                                      .processEventColor(
-                                                    e.color,
-                                                    context,
-                                                  ),
-                                                ),
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.fromLTRB(
-                                                    8,
-                                                    2,
-                                                    8,
-                                                    2,
-                                                  ),
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Text(
-                                                        e.title,
-                                                        style: Theme.of(context)
-                                                            .textTheme
-                                                            .bodySmall
-                                                            ?.copyWith(
-                                                              fontSize: 10,
-                                                              color: widget
-                                                                  .calendar
-                                                                  .config
-                                                                  .processEventTextColor(
-                                                                e.color,
-                                                                context,
-                                                              ),
-                                                            ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
+                                          (e) => createEventEntry(e, context),
                                         )
                                         .toList(),
                                   ),
@@ -227,6 +172,45 @@ class _CalendarViewMonthState extends State<CalendarViewMonth> {
               ),
             ),
         ],
+      ),
+    );
+  }
+
+  Padding createEventEntry(
+      CalendarEventData<MatrixCalendarEventState> event, BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(2, 0, 2, 2),
+      child: Opacity(
+        opacity: event.event?.loaded != true ? 0.3 : 1.0,
+        child: Material(
+          color: widget.calendar.config.processEventColor(
+            event.color,
+            context,
+          ),
+          clipBehavior: Clip.hardEdge,
+          borderRadius: BorderRadius.circular(8),
+          child: InkWell(
+            onTap: () => widget.onEventTapped?.call(event.event!),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(8, 2, 8, 2),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    event.title,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          fontSize: 10,
+                          color: widget.calendar.config.processEventTextColor(
+                            event.color,
+                            context,
+                          ),
+                        ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

@@ -14,13 +14,17 @@ import 'package:intl/intl.dart' as intl;
 class CalendarEventEditor extends StatefulWidget {
   const CalendarEventEditor({
     this.initialEvent,
-    required this.createEvent,
+    required this.submitEvent,
     required this.config,
+    required this.editingExistingEvent,
+    this.deleteEvent,
     super.key,
   });
   final RFC8984CalendarEvent? initialEvent;
   final MatrixCalendarConfig config;
-  final Future<bool> Function(RFC8984CalendarEvent event) createEvent;
+  final bool editingExistingEvent;
+  final Future<bool> Function(RFC8984CalendarEvent event) submitEvent;
+  final Future<void> Function(RFC8984CalendarEvent event)? deleteEvent;
 
   @override
   State<CalendarEventEditor> createState() => _CalendarEventEditorState();
@@ -72,6 +76,8 @@ class _CalendarEventEditorState extends State<CalendarEventEditor> {
   @override
   void initState() {
     var time = widget.initialEvent?.start ?? DateTime.now();
+    time =
+        widget.config.convertToLocalTime(time, widget.initialEvent?.timeZone);
     eventName = widget.initialEvent?.title ?? "";
     pickedStartDate = time;
     pickedStartTime = TimeOfDay.fromDateTime(time);
@@ -137,6 +143,7 @@ class _CalendarEventEditorState extends State<CalendarEventEditor> {
           ),
           // Start Time
           SizedBox(
+            width: 500,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -294,6 +301,19 @@ class _CalendarEventEditorState extends State<CalendarEventEditor> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
+                if (widget.editingExistingEvent && widget.deleteEvent != null)
+                  Expanded(
+                    child: tiamat.Button.danger(
+                      text: "Delete Event",
+                      onTap: () {
+                        widget.deleteEvent
+                            ?.call(widget.initialEvent!)
+                            .then((_) {
+                          Navigator.of(context).pop();
+                        });
+                      },
+                    ),
+                  ),
                 Expanded(
                   child: tiamat.Button.secondary(
                     text: "Cancel",
@@ -344,7 +364,7 @@ class _CalendarEventEditorState extends State<CalendarEventEditor> {
 
                           try {
                             var succeeded =
-                                await widget.createEvent(event).timeout(
+                                await widget.submitEvent(event).timeout(
                               Duration(seconds: 10),
                               onTimeout: () async {
                                 setState(() {
