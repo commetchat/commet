@@ -146,13 +146,14 @@ packages:
     source: hosted
     version: "8.12.0"
   calendar_view:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: calendar_view
-      sha256: "94b5ccc06f6ab11fa3e40eda19f6f925bc49a355dfad8cfafece3bad54ce9773"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.4.0"
+      path: "."
+      ref: HEAD
+      resolved-ref: fbd03769c8715cf43211dfb878640a5fc0133dbc
+      url: "https://github.com/commetchat/flutter_calendar_view.git"
+    source: git
+    version: "2.0.0"
   canonical_json:
     dependency: transitive
     description:

@@ -25,7 +25,15 @@ dependencies:
   uuid: any
   timezone: ^0.10.1
   flutter_timezone: ^5.0.1
+  url_launcher: ^6.3.2
 
+dependency_overrides:
+  # https://github.com/SimformSolutionsPvtLtd/flutter_calendar_view/pull/496
+  # https://github.com/SimformSolutionsPvtLtd/flutter_calendar_view/pull/384
+  calendar_view: 
+    git: https://github.com/commetchat/flutter_calendar_view.git
+    # path: ../../../flutter_calendar_view
+    
 dev_dependencies:
   flutter_test:
     sdk: flutter

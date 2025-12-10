@@ -92,6 +92,7 @@ class _CalendarViewMonthState extends State<CalendarViewMonth> {
                     opacity: isInMonth ? 1 : 0.4,
                     child: Material(
                       child: InkWell(
+                        mouseCursor: SystemMouseCursors.basic,
                         onTap: () =>
                             widget.createEvent?.call(date.copyWith(hour: 9)),
                         child: Column(

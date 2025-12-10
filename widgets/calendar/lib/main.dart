@@ -1,3 +1,4 @@
+import 'package:calendar_view/calendar_view.dart';
 import 'package:commet_calendar_widget/calendar.dart';
 import 'package:commet_calendar_widget/calendar_view_day.dart';
 import 'package:commet_calendar_widget/calendar_view_month.dart';
@@ -9,6 +10,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:matrix_widget_api/matrix_widget_api.dart';
 import 'package:tiamat/config/config.dart';
 import 'package:timezone/data/latest.dart' as tzData;
+import 'package:url_launcher/url_launcher.dart';
 
 void main() {
   tzData.initializeTimeZones();
@@ -176,43 +178,91 @@ class _CalendarWidgetViewState extends State<CalendarWidgetView> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          if (mode == CalendarViewMode.month)
-            CalendarViewMonth(
-              calendar: widget.calendar,
-              useMobileLayout: widget.useMobileLayout,
-              createEvent: createEvent,
-              setViewMode: setViewMode,
-              onEventTapped: onEventTapped,
-            ),
-          if (mode == CalendarViewMode.week)
-            CalendarViewWeek(
-              calendar: widget.calendar,
-              useMobileLayout: widget.useMobileLayout,
-              createEvent: createEvent,
-              setViewMode: setViewMode,
-              onEventTapped: onEventTapped,
-            ),
-          if (mode == CalendarViewMode.day)
-            CalendarViewDay(
-              calendar: widget.calendar,
-              useMobileLayout: widget.useMobileLayout,
-              createEvent: createEvent,
-              setViewMode: setViewMode,
-              onEventTapped: onEventTapped,
-            ),
-          if (widget.watermark)
-            Align(
-              alignment: AlignmentGeometry.bottomRight,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(8, 8, 12, 8),
-                child: appIcon(context),
+    var theme = Theme.of(context);
+    var extensions = theme.extensions.values.toList();
+
+    extensions.addAll(
+      [
+        WeekViewThemeData(
+          weekDayTileColor: theme.colorScheme.surfaceContainerLow,
+          weekDayTextColor: Colors.red,
+          hourLineColor: Colors.red,
+          halfHourLineColor: Colors.red,
+          quarterHourLineColor: Colors.red,
+          liveIndicatorColor: Colors.red,
+          pageBackgroundColor: Colors.red,
+          headerIconColor: Colors.red,
+          headerTextColor: Colors.red,
+          headerBackgroundColor: Colors.red,
+          timelineTextColor: theme.colorScheme.onSurface,
+          borderColor: Colors.transparent,
+          verticalLinesColor: theme.colorScheme.surfaceContainerLow,
+        ),
+        DayViewThemeData(
+            hourLineColor: Colors.red,
+            halfHourLineColor: Colors.red,
+            quarterHourLineColor: Colors.red,
+            pageBackgroundColor: Colors.red,
+            liveIndicatorColor: Colors.red,
+            headerIconColor: Colors.red,
+            headerTextColor: Colors.red,
+            headerBackgroundColor: Colors.red,
+            timelineTextColor: theme.colorScheme.onSurface),
+      ],
+    );
+
+    return Theme(
+      data: theme.copyWith(extensions: extensions),
+      child: Material(
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            if (mode == CalendarViewMode.month)
+              CalendarViewMonth(
+                calendar: widget.calendar,
+                useMobileLayout: widget.useMobileLayout,
+                createEvent: createEvent,
+                setViewMode: setViewMode,
+                onEventTapped: onEventTapped,
               ),
-            ),
-        ],
+            if (mode == CalendarViewMode.week)
+              CalendarViewWeek(
+                calendar: widget.calendar,
+                useMobileLayout: widget.useMobileLayout,
+                createEvent: createEvent,
+                setViewMode: setViewMode,
+                onEventTapped: onEventTapped,
+              ),
+            if (mode == CalendarViewMode.day)
+              CalendarViewDay(
+                calendar: widget.calendar,
+                useMobileLayout: widget.useMobileLayout,
+                createEvent: createEvent,
+                setViewMode: setViewMode,
+                onEventTapped: onEventTapped,
+              ),
+            if (widget.watermark)
+              Align(
+                alignment: AlignmentGeometry.bottomRight,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(4, 4, 8, 4),
+                  child: ClipRRect(
+                    borderRadius: BorderRadiusGeometry.circular(8),
+                    child: Material(
+                      child: InkWell(
+                        onTap: () =>
+                            launchUrl(Uri.parse("https://commet.chat")),
+                        child: Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: appIcon(context),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
       ),
     ); // CalendarViewMonth(calendar: calendar);
   }

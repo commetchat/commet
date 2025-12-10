@@ -129,7 +129,7 @@ class _CalendarEventEditorState extends State<CalendarEventEditor> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.fromLTRB(0, 8, 8, 8),
             child: TextFormField(
               initialValue: eventName,
               decoration: const InputDecoration(
@@ -186,7 +186,11 @@ class _CalendarEventEditorState extends State<CalendarEventEditor> {
                             pickedStartTime = result ?? pickedStartTime;
                           }),
                         ),
-                        label: Text(formatter.format(startTime)),
+                        label: SizedBox(
+                            width: 60,
+                            child: Align(
+                                alignment: AlignmentGeometry.centerRight,
+                                child: Text(formatter.format(startTime)))),
                       ),
                   ],
                 )
@@ -235,7 +239,11 @@ class _CalendarEventEditorState extends State<CalendarEventEditor> {
                           pickedEndTime = result ?? pickedEndTime;
                         }),
                       ),
-                      label: Text(formatter.format(endTime)),
+                      label: SizedBox(
+                          width: 60,
+                          child: Align(
+                              alignment: AlignmentGeometry.centerRight,
+                              child: Text(formatter.format(endTime)))),
                     ),
                   ],
                 ),

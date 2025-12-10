@@ -92,11 +92,13 @@ class _CalendarViewWeekState extends State<CalendarViewWeek> {
                   showLiveTimeLineInAllDays: false,
                   controller: widget.calendar.controller,
                   liveTimeIndicatorSettings: LiveTimeIndicatorSettings(
-                    color: Theme.of(context).colorScheme.primary,
-                    showTime: true,
-                    height: 2,
-                    showTimeBackgroundView: false,
-                  ),
+                      color: Theme.of(context).colorScheme.primary,
+                      textColor: Theme.of(context).colorScheme.onPrimary,
+                      showTime: true,
+                      height: 2,
+                      timeBackgroundViewWidth: 62,
+                      showTimeBackgroundView: true,
+                      showBullet: false),
                   weekDayBuilder: (date) {
                     var now = DateTime.now();
                     bool isToday = date.year == now.year &&
@@ -165,39 +167,32 @@ class _CalendarViewWeekState extends State<CalendarViewWeek> {
                       children: events.map((e) {
                         return Padding(
                           padding: const EdgeInsets.fromLTRB(2, 0, 2, 2),
-                          child: Listener(
-                            behavior: HitTestBehavior.opaque,
-                            onPointerUp: (_) =>
-                                widget.onEventTapped?.call(e.event!),
-                            child: Material(
-                              borderRadius: BorderRadius.circular(8),
-                              clipBehavior: Clip.hardEdge,
-                              color: widget.calendar.config
-                                  .processEventColor(e.color, context),
-                              child: InkWell(
-                                onTap: () {},
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(8, 2, 8, 2),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        e.title,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodySmall
-                                            ?.copyWith(
-                                              color: widget.calendar.config
-                                                  .processEventTextColor(
-                                                e.color,
-                                                context,
-                                              ),
+                          child: Material(
+                            borderRadius: BorderRadius.circular(8),
+                            clipBehavior: Clip.hardEdge,
+                            color: widget.calendar.config
+                                .processEventColor(e.color, context),
+                            child: InkWell(
+                              onTap: () => widget.onEventTapped?.call(e.event!),
+                              child: Padding(
+                                padding: const EdgeInsets.fromLTRB(8, 2, 8, 2),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      e.title,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall
+                                          ?.copyWith(
+                                            color: widget.calendar.config
+                                                .processEventTextColor(
+                                              e.color,
+                                              context,
                                             ),
-                                      ),
-                                    ],
-                                  ),
+                                          ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
@@ -226,96 +221,89 @@ class _CalendarViewWeekState extends State<CalendarViewWeek> {
                             events.first.color,
                             context,
                           ),
-                          child: Listener(
-                            behavior: HitTestBehavior.opaque,
-                            onPointerUp: (_) =>
+                          child: InkWell(
+                            onTap: () =>
                                 widget.onEventTapped?.call(events.first.event!),
-                            child: InkWell(
-                              onTap: () {},
-                              child: Stack(
-                                children: [
-                                  RotatedBox(
-                                    quarterTurns: rotate ? 1 : 0,
-                                    child: Padding(
-                                      padding:
-                                          const EdgeInsets.fromLTRB(8, 1, 4, 0),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
+                            child: Stack(
+                              children: [
+                                RotatedBox(
+                                  quarterTurns: rotate ? 1 : 0,
+                                  child: Padding(
+                                    padding:
+                                        const EdgeInsets.fromLTRB(8, 1, 4, 0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          events.first.title,
+                                          maxLines: ((boundary.height - 11)
+                                                      .toInt() /
+                                                  (12 +
+                                                      1)) // 11 calculated as sum of all top and bottom padding,  then divide by font size + 1
+                                              .toInt(),
+                                          overflow: TextOverflow.ellipsis,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall
+                                              ?.copyWith(
+                                                fontSize: 12,
+                                                color: widget.calendar.config
+                                                    .processEventTextColor(
+                                                  events.first.color,
+                                                  context,
+                                                ),
+                                              ),
+                                        ),
+                                        if (events.first.description != null &&
+                                            boundary.height > 70)
                                           Text(
-                                            events.first.title,
-                                            maxLines: ((boundary.height - 11)
-                                                        .toInt() /
-                                                    (12 +
-                                                        1)) // 11 calculated as sum of all top and bottom padding,  then divide by font size + 1
-                                                .toInt(),
-                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 3,
+                                            events.first.description!,
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .bodySmall
                                                 ?.copyWith(
-                                                  fontSize: 12,
                                                   color: widget.calendar.config
                                                       .processEventTextColor(
                                                     events.first.color,
                                                     context,
                                                   ),
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                 ),
                                           ),
-                                          if (events.first.description !=
-                                                  null &&
-                                              boundary.height > 70)
-                                            Text(
-                                              maxLines: 3,
-                                              events.first.description!,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodySmall
-                                                  ?.copyWith(
-                                                    color: widget
-                                                        .calendar.config
-                                                        .processEventTextColor(
-                                                      events.first.color,
-                                                      context,
-                                                    ),
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                  ),
-                                            ),
-                                        ],
-                                      ),
+                                      ],
                                     ),
                                   ),
-                                  if (events.first.event?.remoteSourceId !=
-                                      null)
-                                    Align(
-                                      alignment: AlignmentGeometry.bottomRight,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(2.0),
-                                        child: Container(
-                                          color: widget.calendar.config
-                                              .processEventColor(
-                                            events.first.color,
-                                            context,
-                                          ),
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(2.0),
-                                            child: Icon(
-                                              size: 10,
-                                              Icons.satellite_alt,
-                                              color: widget.calendar.config
-                                                  .processEventTextColor(
-                                                events.first.color,
-                                                context,
-                                              ),
+                                ),
+                                if (events.first.event?.remoteSourceId != null)
+                                  Align(
+                                    alignment: AlignmentGeometry.bottomRight,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(2.0),
+                                      child: Container(
+                                        color: widget.calendar.config
+                                            .processEventColor(
+                                          events.first.color,
+                                          context,
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(2.0),
+                                          child: Icon(
+                                            size: 10,
+                                            Icons.satellite_alt,
+                                            color: widget.calendar.config
+                                                .processEventTextColor(
+                                              events.first.color,
+                                              context,
                                             ),
                                           ),
                                         ),
                                       ),
                                     ),
-                                ],
-                              ),
+                                  ),
+                              ],
                             ),
                           ),
                         ),
