@@ -112,17 +112,17 @@ class _CalendarViewWeekState extends State<CalendarViewWeek> {
                         date.day == now.day;
                     var format = DateFormat('EEEE').format(date);
 
-                    return Container(
-                      color: colorScheme.surfaceContainerLow,
-                      child: Padding(
-                        padding: const EdgeInsets.all(0.0),
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15),
-                            color: isToday
-                                ? colorScheme.primary
-                                : Colors.transparent,
-                          ),
+                    return Material(
+                      color: isToday ? colorScheme.primary : Colors.transparent,
+                      borderRadius: BorderRadius.circular(15),
+                      clipBehavior: Clip.hardEdge,
+                      child: InkWell(
+                        onTap: () {
+                          widget.onPageChanged?.call(date);
+                          widget.setViewMode?.call(CalendarViewMode.day);
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(0.0),
                           child: Padding(
                             padding: const EdgeInsets.all(0.0),
                             child: Column(
