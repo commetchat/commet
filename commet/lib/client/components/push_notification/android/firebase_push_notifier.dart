@@ -22,7 +22,7 @@ dynamic DefaultFirebaseOptions;
 // --------
 
 Future<void> onForegroundMessage(dynamic message) async {
-  return AndroidNotifier.onForegroundMessage(message);
+  return AndroidNotifier.onForegroundMessage(message.data);
 }
 
 @pragma('vm:entry-point')
