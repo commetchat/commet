@@ -169,13 +169,14 @@
             "request": "launch",
             "type": "dart",
             "program": "widgets/calendar/lib/main.dart",
+            "deviceId": "chrome",
             "toolArgs": [
                 "--web-port",
                 "36347",
                 "--web-header=Cross-Origin-Opener-Policy=same-origin",
                 "--web-header=Cross-Origin-Embedder-Policy=require-corp",
                 "--web-tls-cert-path=../../widgets/localhost.crt",
-                "--web-tls-cert-key-path=../../widgets/localhost.key"
+                "--web-tls-cert-key-path=../../widgets/localhost.key",
             ],
         },
         {
@@ -184,13 +185,14 @@
             "type": "dart",
             "program": "widgets/calendar/lib/main.dart",
             "flutterMode": "release",
+            "deviceId": "chrome",
             "toolArgs": [
                 "--web-port",
                 "36347",
                 "--web-header=Cross-Origin-Opener-Policy=same-origin",
                 "--web-header=Cross-Origin-Embedder-Policy=require-corp",
                 "--web-tls-cert-path=../../widgets/localhost.crt",
-                "--web-tls-cert-key-path=../../widgets/localhost.key"
+                "--web-tls-cert-key-path=../../widgets/localhost.key",
             ],
         },
     ]
