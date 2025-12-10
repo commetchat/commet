@@ -262,6 +262,7 @@ class _CalendarWidgetViewState extends State<CalendarWidgetView> {
                   child: ClipRRect(
                     borderRadius: BorderRadiusGeometry.circular(8),
                     child: Material(
+                      color: Colors.transparent,
                       child: InkWell(
                         onTap: () =>
                             launchUrl(Uri.parse("https://commet.chat")),
