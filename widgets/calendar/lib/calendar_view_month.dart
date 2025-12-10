@@ -11,14 +11,17 @@ class CalendarViewMonth extends StatefulWidget {
     this.createEvent,
     this.setViewMode,
     this.onEventTapped,
+    this.onPageChanged,
+    this.initialDate,
     super.key,
   });
   final MatrixCalendar calendar;
   final bool useMobileLayout;
-
+  final DateTime? initialDate;
   final Function(DateTime)? createEvent;
   final Function(CalendarViewMode)? setViewMode;
   final Function(MatrixCalendarEventState)? onEventTapped;
+  final Function(DateTime)? onPageChanged;
 
   @override
   State<CalendarViewMonth> createState() => _CalendarViewMonthState();
@@ -46,6 +49,7 @@ class _CalendarViewMonthState extends State<CalendarViewMonth> {
             padding:
                 EdgeInsets.fromLTRB(0, 0, 0, widget.useMobileLayout ? 80 : 0),
             child: MonthView(
+              initialMonth: widget.initialDate,
               key: key,
               safeAreaOption: SafeAreaOption(
                 left: false,
@@ -53,6 +57,9 @@ class _CalendarViewMonthState extends State<CalendarViewMonth> {
                 top: false,
                 bottom: false,
               ),
+              onPageChange: (date, page) {
+                widget.onPageChanged?.call(date);
+              },
               weekDayBuilder: (day) {
                 return DecoratedBox(
                   decoration:

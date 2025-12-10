@@ -87,28 +87,31 @@ class CalendarWidgetView extends StatefulWidget {
     super.key,
     this.watermark = true,
     this.useMobileLayout = true,
+    this.autoDisposeCalendar = true,
   });
   final MatrixCalendar calendar;
 
   final bool watermark;
   final bool useMobileLayout;
+  final bool autoDisposeCalendar;
   @override
   State<CalendarWidgetView> createState() => _CalendarWidgetViewState();
 }
 
 class _CalendarWidgetViewState extends State<CalendarWidgetView> {
   var mode = CalendarViewMode.week;
-
+  DateTime? currentDate;
   @override
   void initState() {
     widget.calendar.widgetApi.start();
-
     super.initState();
   }
 
   @override
   void dispose() {
-    widget.calendar.widgetApi.stop();
+    if (widget.autoDisposeCalendar) {
+      widget.calendar.widgetApi.stop();
+    }
     super.dispose();
   }
 
@@ -176,6 +179,10 @@ class _CalendarWidgetViewState extends State<CalendarWidgetView> {
     }
   }
 
+  onPageChanged(DateTime pageDate) {
+    currentDate = pageDate;
+  }
+
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
@@ -224,6 +231,8 @@ class _CalendarWidgetViewState extends State<CalendarWidgetView> {
                 createEvent: createEvent,
                 setViewMode: setViewMode,
                 onEventTapped: onEventTapped,
+                onPageChanged: onPageChanged,
+                initialDate: currentDate,
               ),
             if (mode == CalendarViewMode.week)
               CalendarViewWeek(
@@ -232,6 +241,8 @@ class _CalendarWidgetViewState extends State<CalendarWidgetView> {
                 createEvent: createEvent,
                 setViewMode: setViewMode,
                 onEventTapped: onEventTapped,
+                onPageChanged: onPageChanged,
+                initialDate: currentDate,
               ),
             if (mode == CalendarViewMode.day)
               CalendarViewDay(
@@ -240,6 +251,8 @@ class _CalendarWidgetViewState extends State<CalendarWidgetView> {
                 createEvent: createEvent,
                 setViewMode: setViewMode,
                 onEventTapped: onEventTapped,
+                onPageChanged: onPageChanged,
+                initialDate: currentDate,
               ),
             if (widget.watermark)
               Align(

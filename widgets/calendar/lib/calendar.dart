@@ -110,31 +110,32 @@ class MatrixCalendar {
     widgetApi.onReady.listen(onWidgetReady);
 
     widgetApi.onAction(
-      ToWidgetAction.updateState,
-      preventDefaultHandler: true,
-      (update) {
-        var states = Map<String, dynamic>.from(update);
-        var data = states['data'];
-        var stateEvents = data['state'];
+        ToWidgetAction.updateState,
+        preventDefaultHandler: true,
+        onStateUpdated);
+  }
 
-        for (var stateEvent in stateEvents) {
-          var event = Map<String, dynamic>.from(stateEvent);
+  Map<String, dynamic>? onStateUpdated(Map<String, dynamic> update) {
+    var states = Map<String, dynamic>.from(update);
+    var data = states['data'];
+    var stateEvents = data['state'];
 
-          var type = event['type'];
+    for (var stateEvent in stateEvents) {
+      var event = Map<String, dynamic>.from(stateEvent);
 
-          print("CalendarWidget: received ${type} state event");
-          var stateKey = event['state_key'] ?? "";
-          if (!roomState.containsKey(type)) {
-            roomState[type] = {};
-          }
+      var type = event['type'];
 
-          roomState[type]![stateKey] = event;
-        }
+      print("CalendarWidget: received ${type} state event");
+      var stateKey = event['state_key'] ?? "";
+      if (!roomState.containsKey(type)) {
+        roomState[type] = {};
+      }
 
-        updateFromRoomState();
-        return null;
-      },
-    );
+      roomState[type]![stateKey] = event;
+    }
+
+    updateFromRoomState();
+    return null;
   }
 
   bool canEditEvent(MatrixCalendarEventState event) {

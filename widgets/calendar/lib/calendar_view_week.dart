@@ -12,15 +12,20 @@ class CalendarViewWeek extends StatefulWidget {
     super.key,
     this.createEvent,
     this.setViewMode,
+    this.onPageChanged,
     this.onEventTapped,
+    this.initialDate,
   });
 
   final Function(DateTime)? createEvent;
   final Function(CalendarViewMode)? setViewMode;
 
   final Function(MatrixCalendarEventState)? onEventTapped;
-  final bool useMobileLayout;
 
+  final Function(DateTime)? onPageChanged;
+
+  final bool useMobileLayout;
+  final DateTime? initialDate;
   final MatrixCalendar calendar;
 
   @override
@@ -63,6 +68,7 @@ class _CalendarViewWeekState extends State<CalendarViewWeek> {
                 padding: EdgeInsets.fromLTRB(
                     0, 0, 0, widget.useMobileLayout ? 80 : 0),
                 child: WeekView(
+                  initialDay: widget.initialDate,
                   key: key,
                   headerStyle: headerStyle,
                   heightPerMinute: heightPerMinute,
@@ -311,7 +317,9 @@ class _CalendarViewWeekState extends State<CalendarViewWeek> {
                     );
                   },
                   backgroundColor: Theme.of(context).colorScheme.surface,
-                  onPageChange: (date, pageIndex) => print("$date, $pageIndex"),
+                  onPageChange: (date, pageIndex) {
+                    widget.onPageChanged?.call(date);
+                  },
                 ),
               ),
               if (widget.useMobileLayout)

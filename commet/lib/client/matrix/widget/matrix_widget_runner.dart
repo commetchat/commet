@@ -104,6 +104,7 @@ class MatrixWidgetRunner implements MatrixWidgetApi {
 
   @override
   void stop() {
+    Log.i("Stopping Widget Runner: ${room.id}");
     syncStreamSub?.cancel();
     actionListeners.clear();
   }

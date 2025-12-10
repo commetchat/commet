@@ -9,15 +9,18 @@ class CalendarViewDay extends StatefulWidget {
     required this.calendar,
     required this.useMobileLayout,
     this.createEvent,
+    this.onPageChanged,
     this.setViewMode,
     this.onEventTapped,
+    this.initialDate,
     super.key,
   });
   final MatrixCalendar calendar;
-
+  final Function(DateTime)? onPageChanged;
   final Function(DateTime)? createEvent;
   final Function(CalendarViewMode)? setViewMode;
   final Function(MatrixCalendarEventState)? onEventTapped;
+  final DateTime? initialDate;
   final bool useMobileLayout;
 
   @override
@@ -57,6 +60,7 @@ class _CalendarViewDayState extends State<CalendarViewDay> {
                   EdgeInsets.fromLTRB(0, 0, 0, widget.useMobileLayout ? 80 : 0),
               child: DayView(
                 key: key,
+                initialDay: widget.initialDate,
                 showVerticalLine: false,
                 backgroundColor: Theme.of(context).colorScheme.surface,
                 heightPerMinute: heightPerMinute,
@@ -231,6 +235,9 @@ class _CalendarViewDayState extends State<CalendarViewDay> {
                   prevPage: () => key.currentState?.previousPage(),
                   setViewMode: widget.setViewMode,
                 ),
+                onPageChange: (date, page) {
+                  widget.onPageChanged?.call(date);
+                },
                 controller: widget.calendar.controller,
               ),
             ),
