@@ -6,3 +6,7 @@ commet/assets/js/package/olm_legacy.js
 commet/.vodozemac/
 commet/assets/vodozemac/vodozemac_bindings_dart_bg.wasm
 commet/assets/vodozemac/vodozemac_bindings_dart.js
+/.dart_tool
+build/.last_build_id
+widgets/matrix_widget_api/build/.last_build_id
+widgets/calendar/android/local.properties
