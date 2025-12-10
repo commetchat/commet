@@ -14,7 +14,7 @@ class MatrixWidgetRunner implements MatrixWidgetApi {
   matrix.Client client;
   matrix.Room room;
 
-  bool started = false;
+  bool running = false;
 
   MatrixWidgetRunner(this.client, this.room);
 
@@ -92,13 +92,13 @@ class MatrixWidgetRunner implements MatrixWidgetApi {
 
   @override
   void start() {
-    if (started) {
+    if (running) {
       return;
     }
 
     Log.i("Starting Widget Runner: ${room.id}");
     syncStreamSub = client.onSync.stream.listen(onSync);
-    started = true;
+    running = true;
     _onReady.add(());
   }
 
@@ -107,6 +107,7 @@ class MatrixWidgetRunner implements MatrixWidgetApi {
     Log.i("Stopping Widget Runner: ${room.id}");
     syncStreamSub?.cancel();
     actionListeners.clear();
+    running = false;
   }
 
   @override
