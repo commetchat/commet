@@ -164,7 +164,7 @@ class RichTextEditingController extends TextEditingController {
                     child: EmojiWidget(
                         height: size,
                         MatrixEmoticon(uri, mx.matrixClient,
-                            shortcode: content ?? "",
+                            shortcode: content,
                             packUsage: EmoticonUsage.all,
                             usage: EmoticonUsage.emoji))));
             return currentIndex;
