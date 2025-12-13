@@ -17,6 +17,7 @@ import 'package:commet/client/components/emoticon/emoji_pack.dart';
 import 'package:commet/client/components/gif/gif_search_result.dart';
 import 'package:commet/utils/autofill_utils.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/gestures.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -587,46 +588,58 @@ class MessageInputState extends State<MessageInput> {
           padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
           child: SizedBox(
             height: 30,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.fromLTRB(0, 0, 300, 0),
-              itemCount: autoFillResults!.length,
-              controller: autofillScrollController,
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                bool selected = false;
-                var data = autoFillResults![index];
-                if (autoFillSelection != null) {
-                  selected = data == autoFillResults![autoFillSelection!];
-                }
+            child: Listener(
+              onPointerSignal: (event) {
+                if (!Layout.desktop) return;
+                if (event is PointerScrollEvent) {
+                  final offset = event.scrollDelta.dy;
 
-                return ClipRRect(
-                  borderRadius: BorderRadius.circular(3),
-                  child: Material(
-                    color: selected
-                        ? Theme.of(context).colorScheme.secondary
-                        : Colors.transparent,
-                    child: InkWell(
-                      onTap: () => applyAutoFill(data),
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(4, 1, 4, 1),
-                        child: Row(
-                          children: [
-                            if (data is AutofillSearchResultEmoticon)
-                              EmojiWidget(data.emoticon),
-                            tiamat.Text.labelLow(
-                              data.result,
-                              color: selected
-                                  ? Theme.of(context).colorScheme.onSecondary
-                                  : Theme.of(context).colorScheme.secondary,
-                            ),
-                          ],
+                  autofillScrollController.jumpTo(
+                      (autofillScrollController.offset + offset).clamp(0,
+                          autofillScrollController.position.maxScrollExtent));
+                }
+              },
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.fromLTRB(0, 0, 300, 0),
+                itemCount: autoFillResults!.length,
+                controller: autofillScrollController,
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  bool selected = false;
+                  var data = autoFillResults![index];
+                  if (autoFillSelection != null) {
+                    selected = data == autoFillResults![autoFillSelection!];
+                  }
+
+                  return ClipRRect(
+                    borderRadius: BorderRadius.circular(3),
+                    child: Material(
+                      color: selected
+                          ? Theme.of(context).colorScheme.secondary
+                          : Colors.transparent,
+                      child: InkWell(
+                        onTap: () => applyAutoFill(data),
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(4, 1, 4, 1),
+                          child: Row(
+                            children: [
+                              if (data is AutofillSearchResultEmoticon)
+                                EmojiWidget(data.emoticon),
+                              tiamat.Text.labelLow(
+                                data.result,
+                                color: selected
+                                    ? Theme.of(context).colorScheme.onSecondary
+                                    : Theme.of(context).colorScheme.secondary,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
           ),
         ),
