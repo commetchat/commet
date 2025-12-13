@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/gif/gif_component.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/config/layout_config.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/emoji_widget.dart';
@@ -160,6 +161,12 @@ class MessageInputState extends State<MessageInput> {
     setInputTextSubscription = widget.setInputText?.listen(onSetInputText);
 
     textFocus = FocusNode(onKeyEvent: onKey);
+
+    if (Layout.desktop) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        textFocus.requestFocus();
+      });
+    }
 
     super.initState();
   }
@@ -409,77 +416,81 @@ class MessageInputState extends State<MessageInput> {
     return Material(
       color: Colors.transparent,
       child: TextFieldTapRegion(
-        child: Opacity(
-          opacity: widget.isProcessing ? 0.5 : 1,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (widget.typingIndicatorWidget != null)
-                widget.typingIndicatorWidget!,
-              if (widget.interactionType != null) interactionText(),
-              if (widget.attachments != null && widget.attachments!.isNotEmpty)
-                displayAttachments(),
-              ConstrainedBox(
-                constraints: const BoxConstraints(maxHeight: 200),
-                child: Padding(
-                  padding: padding,
-                  child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (widget.enabled) addAttachmentButton(),
-                        Flexible(
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(5),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .surfaceContainerLow),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  textInput(context),
-                                  if (widget.enabled) toggleEmojiButton(),
-                                ],
+        child: IgnorePointer(
+          ignoring: widget.isProcessing,
+          child: Opacity(
+            opacity: widget.isProcessing ? 0.5 : 1,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (widget.typingIndicatorWidget != null)
+                  widget.typingIndicatorWidget!,
+                if (widget.interactionType != null) interactionText(),
+                if (widget.attachments != null &&
+                    widget.attachments!.isNotEmpty)
+                  displayAttachments(),
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxHeight: 200),
+                  child: Padding(
+                    padding: padding,
+                    child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (widget.enabled) addAttachmentButton(),
+                          Flexible(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(5),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .surfaceContainerLow),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    textInput(context),
+                                    if (widget.enabled) toggleEmojiButton(),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        if (widget.enabled) sendMessageButton()
-                      ]),
+                          if (widget.enabled) sendMessageButton()
+                        ]),
+                  ),
                 ),
-              ),
-              SizedBox(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 2, 0, 0),
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const SizedBox(height: 30),
-                        if (senderOverride != null) senderOverrideView(),
-                        if (autoFillResults != null) autofillResultsList(),
-                        if (autoFillResults == null)
-                          const Expanded(child: SizedBox()),
-                        if (widget.readIndicator != null &&
-                            autoFillResults?.isEmpty != false)
-                          readReceipts()
-                      ]),
+                SizedBox(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 2, 0, 0),
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const SizedBox(height: 30),
+                          if (senderOverride != null) senderOverrideView(),
+                          if (autoFillResults != null) autofillResultsList(),
+                          if (autoFillResults == null)
+                            const Expanded(child: SizedBox()),
+                          if (widget.readIndicator != null &&
+                              autoFillResults?.isEmpty != false)
+                            readReceipts()
+                        ]),
+                  ),
                 ),
-              ),
-              if (widget.availibleEmoticons != null &&
-                  widget.availibleStickers != null)
-                AnimatedContainer(
-                  curve: Curves.easeOutExpo,
-                  duration: const Duration(milliseconds: 500),
-                  height: showEmotePicker ? emotePickerHeight : 0,
-                  child: ClipRect(child: buildEmojiPicker()),
-                )
-            ],
+                if (widget.availibleEmoticons != null &&
+                    widget.availibleStickers != null)
+                  AnimatedContainer(
+                    curve: Curves.easeOutExpo,
+                    duration: const Duration(milliseconds: 500),
+                    height: showEmotePicker ? emotePickerHeight : 0,
+                    child: ClipRect(child: buildEmojiPicker()),
+                  )
+              ],
+            ),
           ),
         ),
       ),
@@ -676,7 +687,7 @@ class MessageInputState extends State<MessageInput> {
             focusNode: textFocus,
             onChanged: onTextfieldUpdated,
             controller: controller,
-            readOnly: !widget.enabled,
+            readOnly: !widget.enabled || widget.isProcessing,
             textAlignVertical: TextAlignVertical.center,
             style: Theme.of(context).textTheme.bodyMedium!,
             maxLines: null,
