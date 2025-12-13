@@ -53,33 +53,7 @@ extension MatrixExtensions on Client {
           topic: topic);
     }
 
-    print(result);
-    // var state = await getRoomState(roomId);
-    // String? displayName;
-    // ImageProvider? avatar;
-    // String? topic;
-
-    // var nameState = state.where((element) => element.type == "m.room.name");
-    // if (nameState.isEmpty) return null;
-
-    // displayName = (nameState.first).content['name'] as String?;
-    // var avatarState = state.where((element) => element.type == "m.room.avatar");
-
-    // if (avatarState.isNotEmpty) {
-    //   var mxc = Uri.parse(avatarState.first.content['url'] as String);
-    //   avatar = MatrixMxcImage(mxc, this,
-    //       doFullres: false, doThumbnail: true, cache: false);
-    // }
-
-    // var topicState = state.where((element) => element.type == "m.room.topic");
-    // if (topicState.isNotEmpty)
-    //   topic = topicState.first.content['topic'] as String?;
-
-    // return GenericRoomPreview(roomId,
-    //     avatar: avatar,
-    //     displayName: displayName!,
-    //     type: RoomPreviewType.room,
-    //     topic: topic);
+    return null;
   }
 
   Future<void> addEmoticonRoomPack(String roomId, String packKey) async {
