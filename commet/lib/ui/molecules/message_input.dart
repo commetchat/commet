@@ -329,9 +329,13 @@ class MessageInputState extends State<MessageInput> {
     }
   }
 
-  bool isAutofillMxid(String text) {
+  bool isKnownAutofillMatch(String text) {
     if (text.startsWith("@") || text.startsWith("!")) {
       return text.isValidMatrixId;
+    }
+
+    if (text.startsWith(":") && text.endsWith(":")) {
+      return true;
     } else {
       return false;
     }
@@ -365,7 +369,7 @@ class MessageInputState extends State<MessageInput> {
 
     var text = controller.text.substring(startFill.$1, startFill.$2);
     var endText = controller.text.substring(endFill.$1, endFill.$2);
-    if (isAutofillMxid(text)) {
+    if (isKnownAutofillMatch(text)) {
       // go forward
       if ((prevSelection != null &&
           prevSelection!.baseOffset < controller.selection.baseOffset)) {
@@ -378,7 +382,7 @@ class MessageInputState extends State<MessageInput> {
       }
     }
 
-    if (isAutofillMxid(endText) && len != 0) {
+    if (isKnownAutofillMatch(endText) && len != 0) {
       // go forward
       if ((prevSelection != null &&
           prevSelection!.extentOffset < controller.selection.extentOffset)) {
@@ -421,7 +425,7 @@ class MessageInputState extends State<MessageInput> {
 
         var text = controller.text.substring(range.$1, range.$2);
 
-        if (isAutofillMxid(text)) {
+        if (isKnownAutofillMatch(text)) {
           controller.text =
               controller.text.replaceRange(selection, selectionEnd, "");
           onTextfieldUpdated(controller.text);
