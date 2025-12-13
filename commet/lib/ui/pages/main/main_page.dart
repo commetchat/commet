@@ -7,6 +7,9 @@ import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/profile.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/debug/log.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
+import 'package:commet/ui/organisms/user_profile/user_profile.dart';
+import 'package:commet/ui/pages/add_space_or_room/add_space_or_room.dart';
 import 'package:commet/ui/pages/setup/setup_page.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:commet/ui/navigation/navigation_utils.dart';
@@ -91,6 +94,8 @@ class MainPageState extends State<MainPage> {
     });
 
     EventBus.openRoom.stream.listen(onOpenRoomSignal);
+
+    EventBus.openUserProfile.stream.listen(onOpenUserProfileSignal);
 
     SchedulerBinding.instance.scheduleFrameCallback(onFirstFrame);
   }
@@ -231,6 +236,10 @@ class MainPageState extends State<MainPage> {
 
     var room = client!.getRoom(roomId);
 
+    if (room == null) {
+      room = client.getRoomByAlias(roomId);
+    }
+
     if (room != null) {
       var spacesWithRoom =
           client.spaces.where((element) => element.containsRoom(roomId));
@@ -240,6 +249,14 @@ class MainPageState extends State<MainPage> {
       }
 
       selectRoom(room);
+    } else {
+      AdaptiveDialog.show(context,
+          builder: (dialogContext) => AddSpaceOrRoom(
+                clients: [client!],
+                initialRoomId: roomId,
+                mode: AddSpaceOrRoomMode.joinExistingRoom,
+              ),
+          title: "Add Room");
     }
   }
 
@@ -250,6 +267,22 @@ class MainPageState extends State<MainPage> {
           RoomSettingsPage(
             room: currentRoom!,
           ));
+    }
+  }
+
+  void onOpenUserProfileSignal((String, String, String?) event) {
+    var userId = event.$1;
+    var clientId = event.$2;
+
+    var client = clientManager.getClient(clientId);
+    if (client != null) {
+      AdaptiveDialog.show(context,
+          builder: (_) => UserProfile(
+                userId: userId,
+                client: client,
+                dismiss: () => Navigator.pop(context),
+              ),
+          title: "User");
     }
   }
 }

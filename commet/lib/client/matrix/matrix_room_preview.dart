@@ -1,5 +1,6 @@
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/matrix/matrix_peer.dart';
+import 'package:commet/client/room.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:flutter/widgets.dart';
 import 'package:matrix/matrix.dart';
@@ -37,4 +38,10 @@ class MatrixSpaceRoomChunkPreview implements RoomPreview {
 
   @override
   Color get color => MatrixPeer.hashColor(roomId);
+
+  @override
+  int? get numMembers => 0;
+
+  @override
+  RoomVisibility? get visibility => null;
 }

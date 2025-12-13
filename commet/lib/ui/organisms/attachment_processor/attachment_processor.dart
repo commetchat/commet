@@ -8,6 +8,7 @@ import 'package:commet/utils/mime.dart';
 import 'package:exif/exif.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
 import 'package:image/image.dart' as img;
@@ -43,6 +44,8 @@ class _AttachmentProcessorState extends State<AttachmentProcessor> {
   bool sendOriginalFile = false;
 
   bool processing = false;
+
+  FocusNode focusNode = FocusNode();
 
   @override
   void initState() {
@@ -94,49 +97,61 @@ class _AttachmentProcessorState extends State<AttachmentProcessor> {
             opacity: processing ? 0.5 : 1,
             child: IgnorePointer(
               ignoring: processing,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (widget.attachment.name != null)
-                    Row(
-                      children: [
-                        Icon(icon),
-                        Flexible(
-                          child: tiamat.Text.labelLow(
-                            widget.attachment.name!,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+              child: KeyboardListener(
+                focusNode: focusNode,
+                autofocus: true,
+                onKeyEvent: (value) {
+                  if (processing) return;
+
+                  if (value.logicalKey == LogicalKeyboardKey.enter) {
+                    submit();
+                  }
+                },
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (widget.attachment.name != null)
+                      Row(
+                        children: [
+                          Icon(icon),
+                          Flexible(
+                            child: tiamat.Text.labelLow(
+                              widget.attachment.name!,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  Flexible(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints.loose(const Size(500, 500)),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: FilePreview(
-                            mimeType: widget.attachment.mimeType,
-                            path: widget.attachment.path,
-                            data: widget.attachment.data,
-                            videoController: videoController,
+                        ],
+                      ),
+                    Flexible(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ConstrainedBox(
+                          constraints:
+                              BoxConstraints.loose(const Size(500, 500)),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: FilePreview(
+                              mimeType: widget.attachment.mimeType,
+                              path: widget.attachment.path,
+                              data: widget.attachment.data,
+                              videoController: videoController,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                  if (canProcessData)
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: buildFileProcessingSwitch(),
-                    ),
-                  if (sendOriginalFile || !canProcessData)
-                    buildMetadataDisplay(),
-                  buildConfirmButton(),
-                ],
+                    if (canProcessData)
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: buildFileProcessingSwitch(),
+                      ),
+                    if (sendOriginalFile || !canProcessData)
+                      buildMetadataDisplay(),
+                    buildConfirmButton(),
+                  ],
+                ),
               ),
             ),
           ),

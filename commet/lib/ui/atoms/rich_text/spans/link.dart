@@ -5,7 +5,10 @@ import 'package:tiamat/config/style/theme_extensions.dart';
 
 class LinkSpan {
   static InlineSpan create(String text,
-      {required BuildContext context, destination, TextStyle? style}) {
+      {required BuildContext context,
+      required String clientId,
+      destination,
+      TextStyle? style}) {
     var color = Theme.of(context).extension<ExtraColors>()?.linkColor ??
         Theme.of(context).colorScheme.primary;
 
@@ -16,7 +19,7 @@ class LinkSpan {
         recognizer: TapGestureRecognizer()
           ..onTap = () {
             if (destination != null) {
-              LinkUtils.open(destination);
+              LinkUtils.open(destination, clientId: clientId);
             }
           });
   }

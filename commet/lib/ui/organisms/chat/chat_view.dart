@@ -92,6 +92,7 @@ class ChatView extends StatelessWidget {
   Widget input() {
     return ClipRRect(
       child: MessageInput(
+        state.room,
         isRoomE2EE: state.room.isE2EE,
         focusKeyboard: state.onFocusMessageInput.stream,
         attachments: state.attachments,

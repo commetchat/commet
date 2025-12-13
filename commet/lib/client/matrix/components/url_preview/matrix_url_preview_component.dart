@@ -125,6 +125,10 @@ class MatrixUrlPreviewComponent implements UrlPreviewComponent<MatrixClient> {
       return null;
     }
 
+    if (uri.authority == "matrix.to") {
+      return null;
+    }
+
     if (cache.containsKey(uri.toString())) {
       return cache[uri.toString()];
     }

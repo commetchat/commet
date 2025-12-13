@@ -1,12 +1,25 @@
 import 'dart:convert';
 
+import 'package:commet/client/components/emoticon/emoticon.dart';
+import 'package:commet/client/matrix/components/emoticon/matrix_emoticon.dart';
+import 'package:commet/client/matrix/components/emoticon/matrix_room_emoticon_component.dart';
+import 'package:commet/client/matrix/matrix_client.dart';
+import 'package:commet/client/room.dart';
+import 'package:commet/main.dart';
+import 'package:commet/ui/atoms/emoji_widget.dart';
+import 'package:commet/ui/atoms/mention.dart';
 import 'package:flutter/material.dart';
 // ignore: depend_on_referenced_packages
 import 'package:markdown/markdown.dart' as md;
 import 'package:tiamat/config/config.dart';
 
+// ignore: implementation_imports
+import 'package:matrix/src/utils/markdown.dart' as mx_markdown;
+import 'package:matrix/matrix.dart' as matrix;
+
 class RichTextEditingController extends TextEditingController {
-  RichTextEditingController({super.text});
+  RichTextEditingController({required this.room, super.text});
+  final Room room;
 
   @override
   TextSpan buildTextSpan(
@@ -17,8 +30,18 @@ class RichTextEditingController extends TextEditingController {
   }
 
   TextSpan build(String text, BuildContext context) {
+    var emoticons = room.getComponent<MatrixRoomEmoticonComponent>();
+
     var doc = md.Document(
-        encodeHtml: false, extensionSet: md.ExtensionSet.gitHubFlavored);
+        encodeHtml: false,
+        extensionSet: md.ExtensionSet.gitHubFlavored,
+        inlineSyntaxes: [
+          mx_markdown.PillSyntax(),
+          mx_markdown.SpoilerSyntax(),
+          if (emoticons != null)
+            mx_markdown.EmoteSyntax(() =>
+                emoticons.getEmotePacksFlat(matrix.ImagePackUsage.emoticon))
+        ]);
 
     List<md.Node>? parsed;
     try {
@@ -45,7 +68,8 @@ class RichTextEditingController extends TextEditingController {
   }
 
   int handleNode(BuildContext context, int currentIndex, String text,
-      List<TextSpan> children, TextStyle style, md.Node node) {
+      List<TextSpan> children, TextStyle style, md.Node node,
+      {Widget? overrideWidget, double overrideVerticalOffset = 2.5}) {
     var originalStyle = style.copyWith();
 
     if (node is md.Text) {
@@ -59,12 +83,41 @@ class RichTextEditingController extends TextEditingController {
 
       if (index != 0) {
         var sub = substr.substring(0, index);
+
         children.add(TextSpan(
             text: sub, style: Theme.of(context).textTheme.bodyMedium!));
         currentIndex += sub.length;
       }
 
-      children.add(TextSpan(text: nodeText, style: originalStyle));
+      if (overrideWidget != null) {
+        // The total number of items that can be in the span (characters + child widgets) MUST
+        // equal the amount of characters in the string it is meant to represent, so that the
+        // cursor renders in the correct place.
+        // This is a hacky way to acheive that
+        var widgetChildren = List<InlineSpan>.generate(
+            nodeText.length,
+            (i) => WidgetSpan(
+                child: Container(
+                    child: i == 0
+                        ? Transform.translate(
+                            offset: Offset(0, overrideVerticalOffset),
+                            child: overrideWidget)
+                        : SizedBox(
+                            width: 0,
+                            height: 0,
+                          ))));
+
+        children.add(TextSpan(
+          children: widgetChildren,
+          style: originalStyle,
+        ));
+      } else {
+        children.add(TextSpan(
+          text: nodeText,
+          style: originalStyle,
+        ));
+      }
+
       currentIndex += nodeText.length;
     }
 
@@ -75,6 +128,11 @@ class RichTextEditingController extends TextEditingController {
           break;
         case "strong":
           style = style.copyWith(fontWeight: FontWeight.bold);
+          break;
+        case "span":
+          if (node.attributes.containsKey("data-mx-spoiler"))
+            style =
+                style.copyWith(backgroundColor: style.color?.withAlpha(200));
           break;
         case "code":
           var color =
@@ -91,8 +149,67 @@ class RichTextEditingController extends TextEditingController {
               fontFamily: "code",
               fontFeatures: const [FontFeature.disable("calt")]);
           break;
+        case "img":
+          if (room.client case MatrixClient mx) {
+            var content = node.attributes["alt"];
+            var src = node.attributes["src"] as String;
+            var uri = Uri.parse(src);
+            var size = 24.0;
+            currentIndex = handleNode(
+                context, currentIndex, text, children, style, md.Text(content!),
+                overrideVerticalOffset: 5,
+                overrideWidget: SizedBox(
+                    height: size,
+                    width: size,
+                    child: EmojiWidget(
+                        height: size,
+                        MatrixEmoticon(uri, mx.matrixClient,
+                            shortcode: content,
+                            packUsage: EmoticonUsage.all,
+                            usage: EmoticonUsage.emoji))));
+            return currentIndex;
+          }
         case "a":
           style = style.copyWith(color: Theme.of(context).colorScheme.primary);
+          var href = node.attributes["href"];
+          if (href != null) {
+            var result = MatrixClient.parseMatrixLink(Uri.parse(href));
+            if (result != null) {
+              var mxId = result.$2;
+
+              for (var element in node.children!) {
+                if (result.$1 == MatrixLinkType.user) {
+                  var user = room.getMember(mxId);
+                  if (user != null) {
+                    currentIndex = handleNode(
+                        context, currentIndex, text, children, style, element,
+                        overrideWidget: MentionWidget(
+                            displayName: user.displayName,
+                            avatar: user.avatar,
+                            style: style,
+                            placeholderColor: user.defaultColor));
+                    return currentIndex;
+                  }
+                } else if (result.$1 == MatrixLinkType.room) {
+                  var taggedRoom = room.client.getRoom(mxId);
+
+                  if (taggedRoom != null) {
+                    currentIndex = handleNode(
+                        context, currentIndex, text, children, style, element,
+                        overrideWidget: MentionWidget(
+                            fallbackIcon: preferences.usePlaceholderRoomAvatars
+                                ? null
+                                : taggedRoom.icon,
+                            displayName: taggedRoom.displayName,
+                            avatar: taggedRoom.avatar,
+                            style: style,
+                            placeholderColor: taggedRoom.defaultColor));
+                    return currentIndex;
+                  }
+                }
+              }
+            }
+          }
           break;
         case "del":
           style = style.copyWith(decoration: TextDecoration.lineThrough);
