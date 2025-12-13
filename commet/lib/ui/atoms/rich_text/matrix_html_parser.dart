@@ -387,8 +387,9 @@ class LinkifyHtmlExtension extends HtmlExtension {
             mentionedRoom ??= room.client.getRoomByAlias(mxid);
             overrideWidget = MentionWidget(
               displayName: mentionedRoom?.displayName ?? mxid.substring(1),
-              fallbackIcon:
-                  preferences.usePlaceholderRoomAvatars ? null : Icons.tag,
+              fallbackIcon: preferences.usePlaceholderRoomAvatars
+                  ? null
+                  : mentionedRoom?.icon ?? Icons.tag,
               placeholderColor:
                   mentionedRoom?.defaultColor ?? MatrixPeer.hashColor(mxid),
               avatar: mentionedRoom?.avatar,

@@ -168,7 +168,7 @@ class RichTextEditingController extends TextEditingController {
                         overrideWidget: MentionWidget(
                             fallbackIcon: preferences.usePlaceholderRoomAvatars
                                 ? null
-                                : Icons.tag,
+                                : taggedRoom.icon,
                             displayName: taggedRoom.displayName,
                             avatar: taggedRoom.avatar,
                             style: style,
