@@ -26,7 +26,7 @@ class MatrixMessageEffectsComponent
   static const effectTypeCuteEvent = "im.fluffychat.cute_event";
   static const effectTypeGoogly = "googly_eyes";
   static const effectTypeHug = "hug";
-
+  static const effectTypeCuddle = "cuddle";
   MatrixMessageEffectsComponent(this.client) {
     var mx = client.getMatrixClient();
 
@@ -97,8 +97,10 @@ class MatrixMessageEffectsComponent
       case effectTypeSpaceInvaders:
         return MessageEffectSpaceInvaders();
       case effectTypeGoogly:
-        return MessageEffectEyes();
+        return MessageEffectEyes(numParticles: 100);
       case effectTypeHug:
+        return MessageEffectHug();
+      case effectTypeCuddle:
         return MessageEffectHug();
     }
 
