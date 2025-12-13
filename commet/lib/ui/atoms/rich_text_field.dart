@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/room.dart';
+import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/mention.dart';
 import 'package:flutter/material.dart';
 // ignore: depend_on_referenced_packages
@@ -154,6 +155,7 @@ class RichTextEditingController extends TextEditingController {
                         overrideWidget: MentionWidget(
                             displayName: user.displayName,
                             avatar: user.avatar,
+                            style: style,
                             placeholderColor: user.defaultColor));
                     return currentIndex;
                   }
@@ -164,8 +166,12 @@ class RichTextEditingController extends TextEditingController {
                     currentIndex = handleNode(
                         context, currentIndex, text, children, style, element,
                         overrideWidget: MentionWidget(
+                            fallbackIcon: preferences.usePlaceholderRoomAvatars
+                                ? null
+                                : Icons.tag,
                             displayName: taggedRoom.displayName,
                             avatar: taggedRoom.avatar,
+                            style: style,
                             placeholderColor: taggedRoom.defaultColor));
                     return currentIndex;
                   }

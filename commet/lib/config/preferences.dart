@@ -63,6 +63,9 @@ class Preferences {
   static const String _silenceNotifications =
       "silence_notifications_when_other_device_active";
 
+  static const String _disableTextCursorManagement =
+      "disable_text_cursor_management";
+
   final StreamController _onSettingChanged = StreamController.broadcast();
   Stream get onSettingChanged => _onSettingChanged.stream;
   bool isInit = false;
@@ -395,6 +398,14 @@ class Preferences {
 
   Future<void> setSilenceNotifications(bool value) async {
     await _preferences!.setBool(_silenceNotifications, value);
+    _onSettingChanged.add(null);
+  }
+
+  bool get disableTextCursorManagement =>
+      _preferences!.getBool(_disableTextCursorManagement) ?? false;
+
+  Future<void> setdisableTextCursorManagement(bool value) async {
+    await _preferences!.setBool(_disableTextCursorManagement, value);
     _onSettingChanged.add(null);
   }
 }

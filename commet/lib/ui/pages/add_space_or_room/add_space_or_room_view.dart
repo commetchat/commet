@@ -451,7 +451,7 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
                           child:
                               tiamat.Text.label(labelCouldNotLoadRoomPreview)),
             ),
-            tiamat.Button.success(
+            tiamat.Button(
               isLoading: widget.loading,
               text: widget.roomMode
                   ? promptConfirmRoomJoin

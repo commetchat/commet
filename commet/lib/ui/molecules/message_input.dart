@@ -224,19 +224,20 @@ class MessageInputState extends State<MessageInput> {
 
   (int, int) getAutofillTextRange({int? cursorPosition}) {
     var cursor = controller.selection.base.offset;
-    if (cursor >= controller.text.length) {
-      cursor = controller.text.length - 1;
-    }
 
     if (controller.text == "") {
       return (0, 0);
     }
 
     int start = cursorPosition ?? cursor;
-    if (start >= controller.text.length) {
-      start -= 1;
-    }
     int end = controller.text.length;
+
+    if (start > 0) {
+      start -= 1;
+      if (controller.text[start] == ' ') {
+        return (0, 0);
+      }
+    }
 
     for (int i = start; i >= 0; i--) {
       var char = controller.text[i];
@@ -339,6 +340,14 @@ class MessageInputState extends State<MessageInput> {
   TextSelection? prevSelection;
 
   void controllerListener() {
+    if (PlatformUtils.isAndroid) {
+      return;
+    }
+
+    if (preferences.disableTextCursorManagement) {
+      return;
+    }
+
     var startFill =
         getAutofillTextRange(cursorPosition: controller.selection.baseOffset);
 
@@ -358,21 +367,21 @@ class MessageInputState extends State<MessageInput> {
     var endText = controller.text.substring(endFill.$1, endFill.$2);
     if (isAutofillMxid(text)) {
       // go forward
-      if (prevSelection != null &&
-          prevSelection!.baseOffset < controller.selection.baseOffset) {
+      if ((prevSelection != null &&
+          prevSelection!.baseOffset < controller.selection.baseOffset)) {
         baseOffset = startFill.$2;
       } else {
         // go backward
-        if (baseOffset > startFill.$1) {
+        if (baseOffset > startFill.$1 && baseOffset != startFill.$2) {
           baseOffset = startFill.$1;
         }
       }
     }
 
-    if (isAutofillMxid(endText)) {
+    if (isAutofillMxid(endText) && len != 0) {
       // go forward
-      if (prevSelection != null &&
-          prevSelection!.extentOffset < controller.selection.extentOffset) {
+      if ((prevSelection != null &&
+          prevSelection!.extentOffset < controller.selection.extentOffset)) {
         extentOffset = endFill.$2;
       } else {
         // go backward
@@ -392,32 +401,34 @@ class MessageInputState extends State<MessageInput> {
   }
 
   KeyEventResult onKey(FocusNode node, KeyEvent event) {
-    if (HardwareKeyboard.instance
-        .isLogicalKeyPressed(LogicalKeyboardKey.backspace)) {
-      var selection = controller.selection.baseOffset;
-      var selectionEnd = controller.selection.extentOffset;
+    if (BuildConfig.MOBILE) return KeyEventResult.ignored;
 
-      var range = getAutofillTextRange();
+    if (!preferences.disableTextCursorManagement) {
+      if (HardwareKeyboard.instance
+          .isLogicalKeyPressed(LogicalKeyboardKey.backspace)) {
+        var selection = controller.selection.baseOffset;
+        var selectionEnd = controller.selection.extentOffset;
 
-      if (range.$1 < selection) {
-        selection = range.$1;
-      }
+        var range = getAutofillTextRange();
 
-      if (range.$2 > selectionEnd) {
-        selectionEnd = range.$2;
-      }
+        if (range.$1 < selection) {
+          selection = range.$1;
+        }
 
-      var text = controller.text.substring(range.$1, range.$2);
+        if (range.$2 > selectionEnd) {
+          selectionEnd = range.$2;
+        }
 
-      if (isAutofillMxid(text)) {
-        controller.text =
-            controller.text.replaceRange(selection, selectionEnd, "");
-        onTextfieldUpdated(controller.text);
-        return KeyEventResult.handled;
+        var text = controller.text.substring(range.$1, range.$2);
+
+        if (isAutofillMxid(text)) {
+          controller.text =
+              controller.text.replaceRange(selection, selectionEnd, "");
+          onTextfieldUpdated(controller.text);
+          return KeyEventResult.handled;
+        }
       }
     }
-
-    if (BuildConfig.MOBILE) return KeyEventResult.ignored;
 
     if (HardwareKeyboard.instance
         .isLogicalKeyPressed(LogicalKeyboardKey.keyV)) {

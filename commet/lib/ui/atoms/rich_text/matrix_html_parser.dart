@@ -4,6 +4,7 @@ import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/matrix/matrix_peer.dart';
 import 'package:commet/client/room.dart';
+import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/code_block.dart';
 import 'package:commet/ui/atoms/emoji_widget.dart';
 import 'package:commet/ui/atoms/mention.dart';
@@ -385,7 +386,9 @@ class LinkifyHtmlExtension extends HtmlExtension {
             var mentionedRoom = room.client.getRoom(mxid);
             mentionedRoom ??= room.client.getRoomByAlias(mxid);
             overrideWidget = MentionWidget(
-              displayName: mentionedRoom?.displayName ?? mxid,
+              displayName: mentionedRoom?.displayName ?? mxid.substring(1),
+              fallbackIcon:
+                  preferences.usePlaceholderRoomAvatars ? null : Icons.tag,
               placeholderColor:
                   mentionedRoom?.defaultColor ?? MatrixPeer.hashColor(mxid),
               avatar: mentionedRoom?.avatar,
