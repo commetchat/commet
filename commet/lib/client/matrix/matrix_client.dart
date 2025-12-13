@@ -554,7 +554,8 @@ class MatrixClient extends Client {
   Future<RoomPreview?> getRoomPreview(String address) async {
     try {
       return await _matrixClient.getRoomPreview(address);
-    } catch (exception) {
+    } catch (exception, trace) {
+      Log.onError(exception, trace);
       return null;
     }
   }
@@ -563,7 +564,8 @@ class MatrixClient extends Client {
   Future<RoomPreview?> getSpacePreview(String address) async {
     try {
       return await _matrixClient.getRoomPreview(address);
-    } catch (exception) {
+    } catch (exception, trace) {
+      Log.onError(exception, trace);
       return null;
     }
   }

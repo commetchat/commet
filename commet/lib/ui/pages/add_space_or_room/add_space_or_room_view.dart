@@ -435,8 +435,7 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
                 ),
               ],
             ),
-            SizedBox(
-              height: 100,
+            Flexible(
               child: loadingSpacePreview
                   ? const Column(
                       crossAxisAlignment: CrossAxisAlignment.center,

@@ -339,9 +339,6 @@ class MessageInputState extends State<MessageInput> {
   TextSelection? prevSelection;
 
   void controllerListener() {
-    print(
-        "Selection: ${controller.selection.base.offset} -> ${controller.selection.extentOffset}");
-
     var startFill =
         getAutofillTextRange(cursorPosition: controller.selection.baseOffset);
 
@@ -373,14 +370,11 @@ class MessageInputState extends State<MessageInput> {
     }
 
     if (isAutofillMxid(endText)) {
-      print("Autofill extent");
       // go forward
       if (prevSelection != null &&
           prevSelection!.extentOffset < controller.selection.extentOffset) {
-        print("forward");
         extentOffset = endFill.$2;
       } else {
-        print("backward");
         // go backward
         if (extentOffset > endFill.$1) {
           extentOffset = endFill.$1;
@@ -395,8 +389,6 @@ class MessageInputState extends State<MessageInput> {
         TextSelection(baseOffset: baseOffset, extentOffset: extentOffset);
 
     prevSelection = controller.selection;
-
-    print(len);
   }
 
   KeyEventResult onKey(FocusNode node, KeyEvent event) {

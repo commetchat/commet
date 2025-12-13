@@ -1,5 +1,6 @@
 import 'package:commet/client/matrix/components/emoticon/matrix_emoticon_component.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
+import 'package:commet/client/room.dart' show RoomVisibility;
 import 'package:commet/client/room_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart';
@@ -17,32 +18,68 @@ extension MatrixExtensions on Client {
   }
 
   Future<RoomPreview?> getRoomPreview(String roomId) async {
-    var state = await getRoomState(roomId);
-    String? displayName;
-    ImageProvider? avatar;
-    String? topic;
+    var result = await request(RequestType.GET,
+        "/client/unstable/im.nheko.summary/rooms/${Uri.encodeComponent(roomId)}/summary");
 
-    var nameState = state.where((element) => element.type == "m.room.name");
-    if (nameState.isEmpty) return null;
+    var name = result["name"] as String?;
+    var id = result["room_id"] as String?;
+    var avatar = result["avatar_url"] as String?;
+    var topic = result["topic"] as String?;
+    var numMembers = result["num_joined_members"] as int?;
+    var joinRule = result["join_rule"] as String?;
 
-    displayName = (nameState.first).content['name'] as String?;
-    var avatarState = state.where((element) => element.type == "m.room.avatar");
+    var visibility = switch (joinRule) {
+      "public" => RoomVisibility.public,
+      "knock" => RoomVisibility.knock,
+      "invite" => RoomVisibility.invite,
+      "private" => RoomVisibility.private,
+      _ => RoomVisibility.private,
+    };
 
-    if (avatarState.isNotEmpty) {
-      var mxc = Uri.parse(avatarState.first.content['url'] as String);
-      avatar = MatrixMxcImage(mxc, this,
-          doFullres: false, doThumbnail: true, cache: false);
+    if (name != null && id != null) {
+      ImageProvider? image;
+      if (avatar != null) {
+        var mxc = Uri.parse(avatar);
+        image = MatrixMxcImage(mxc, this,
+            doFullres: false, doThumbnail: true, cache: false);
+      }
+
+      return GenericRoomPreview(id,
+          displayName: name,
+          type: RoomPreviewType.room,
+          avatar: image,
+          numMembers: numMembers,
+          visibility: visibility,
+          topic: topic);
     }
 
-    var topicState = state.where((element) => element.type == "m.room.topic");
-    if (topicState.isNotEmpty)
-      topic = topicState.first.content['topic'] as String?;
+    print(result);
+    // var state = await getRoomState(roomId);
+    // String? displayName;
+    // ImageProvider? avatar;
+    // String? topic;
 
-    return GenericRoomPreview(roomId,
-        avatar: avatar,
-        displayName: displayName!,
-        type: RoomPreviewType.room,
-        topic: topic);
+    // var nameState = state.where((element) => element.type == "m.room.name");
+    // if (nameState.isEmpty) return null;
+
+    // displayName = (nameState.first).content['name'] as String?;
+    // var avatarState = state.where((element) => element.type == "m.room.avatar");
+
+    // if (avatarState.isNotEmpty) {
+    //   var mxc = Uri.parse(avatarState.first.content['url'] as String);
+    //   avatar = MatrixMxcImage(mxc, this,
+    //       doFullres: false, doThumbnail: true, cache: false);
+    // }
+
+    // var topicState = state.where((element) => element.type == "m.room.topic");
+    // if (topicState.isNotEmpty)
+    //   topic = topicState.first.content['topic'] as String?;
+
+    // return GenericRoomPreview(roomId,
+    //     avatar: avatar,
+    //     displayName: displayName!,
+    //     type: RoomPreviewType.room,
+    //     topic: topic);
   }
 
   Future<void> addEmoticonRoomPack(String roomId, String packKey) async {
