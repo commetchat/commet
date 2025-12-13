@@ -295,4 +295,10 @@ class MatrixBackgroundRoom implements Room {
 
   @override
   Timeline? get timeline => throw UnimplementedError();
+
+  @override
+  Member? getMember(String id) {
+    // TODO: implement getMember
+    throw UnimplementedError();
+  }
 }

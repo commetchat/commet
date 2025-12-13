@@ -1,9 +1,12 @@
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_emoticon.dart';
+import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
+import 'package:commet/client/matrix/matrix_peer.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/ui/atoms/code_block.dart';
 import 'package:commet/ui/atoms/emoji_widget.dart';
+import 'package:commet/ui/atoms/mention.dart';
 import 'package:commet/ui/atoms/rich_text/spans/link.dart';
 import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:commet/utils/link_utils.dart';
@@ -44,7 +47,6 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
 
   static final CodeBlockHtmlExtension _codeBlock = CodeBlockHtmlExtension();
   static final CodeHtmlExtension _code = CodeHtmlExtension();
-  static final LinkifyHtmlExtension _linkify = LinkifyHtmlExtension();
   static final LineBreakHtmlExtension _lineBreak = LineBreakHtmlExtension();
 
   static const Set<String> allowedHtmlTags = {
@@ -107,6 +109,7 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
     var extension =
         MatrixEmoticonHtmlExtension(widget.client, widget.room, big);
     var imageExtension = MatrixImageExtension(widget.client, widget.room);
+    var linkify = LinkifyHtmlExtension(widget.room);
     var result = Html(
       data: widget.text,
       extensions: [
@@ -114,7 +117,7 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
         spoiler,
         _codeBlock,
         _code,
-        _linkify,
+        linkify,
         _lineBreak,
         imageExtension
       ],
@@ -350,17 +353,69 @@ class CodeHtmlExtension extends HtmlExtension {
 }
 
 class LinkifyHtmlExtension extends HtmlExtension {
+  final Room room;
+  const LinkifyHtmlExtension(this.room);
+
   @override
   InlineSpan build(ExtensionContext context) {
     if (context.node.attributes.containsKey("href")) {
+      var uri = context.node.attributes["href"]!;
+      var href = Uri.parse(uri);
+
+      if (href.host == "matrix.to") {
+        var result = MatrixClient.parseMatrixLink(href);
+        if (result != null) {
+          var mxid = result.$2;
+
+          Widget? overrideWidget;
+          if (result.$1 == MatrixLinkType.user) {
+            var user = room.getMemberOrFallback(mxid);
+            overrideWidget = MentionWidget(
+              displayName: user.displayName,
+              placeholderColor: user.defaultColor,
+              avatar: user.avatar,
+              onTap: () => LinkUtils.open(href,
+                  clientId: room.client.identifier,
+                  contextRoomId: room.identifier),
+            );
+          }
+
+          if (result.$1 == MatrixLinkType.room ||
+              result.$1 == MatrixLinkType.roomAlias) {
+            var mentionedRoom = room.client.getRoom(mxid);
+            mentionedRoom ??= room.client.getRoomByAlias(mxid);
+            overrideWidget = MentionWidget(
+              displayName: mentionedRoom?.displayName ?? mxid,
+              placeholderColor:
+                  mentionedRoom?.defaultColor ?? MatrixPeer.hashColor(mxid),
+              avatar: mentionedRoom?.avatar,
+              onTap: () => LinkUtils.open(href,
+                  clientId: room.client.identifier,
+                  contextRoomId: room.identifier),
+            );
+          }
+
+          if (overrideWidget != null) {
+            return WidgetSpan(
+                child: Transform.translate(
+                    offset: Offset(0, 2),
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
+                      child: overrideWidget,
+                    )));
+          }
+        }
+      }
+
       return LinkSpan.create(context.node.text!,
+          clientId: room.client.identifier,
           context: context.buildContext!,
           destination: Uri.parse(context.node.attributes["href"]!));
     }
 
     return TextSpan(
         children: TextUtils.linkifyString(context.node.text!,
-            context: context.buildContext!));
+            clientId: room.client.identifier, context: context.buildContext!));
   }
 
   @override
@@ -428,7 +483,9 @@ class MatrixImageExtension extends HtmlExtension {
 
     if (mxcUrl.scheme != 'mxc' || !room.shouldPreviewMedia) {
       return LinkSpan.create(mxcUrl.toString(),
-          destination: mxcUrl, context: context.buildContext!);
+          clientId: room.client.identifier,
+          destination: mxcUrl,
+          context: context.buildContext!);
     }
 
     final width = double.tryParse(context.attributes['width'] ?? '');

@@ -22,6 +22,7 @@ class AddSpaceOrRoomView extends StatefulWidget {
       this.roomMode = false,
       this.rooms,
       this.loading = false,
+      this.initialRoomId,
       this.onRoomsSelected,
       this.initialPhase});
   final List<Client>? clients;
@@ -32,6 +33,7 @@ class AddSpaceOrRoomView extends StatefulWidget {
   final AddSpaceOrRoomPhase? initialPhase;
   final bool roomMode;
   final bool loading;
+  final String? initialRoomId;
 
   final List<Room>? rooms;
 
@@ -54,7 +56,7 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
   RoomType type = RoomType.defaultRoom;
   TextEditingController nameController = TextEditingController();
   TextEditingController topicController = TextEditingController();
-  TextEditingController spaceAddressController = TextEditingController();
+  late TextEditingController spaceAddressController;
   GlobalKey<ToggleableListState> selectedRoomsState = GlobalKey();
 
   RoomPreview? spacePreview;
@@ -189,6 +191,12 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
     selectedClient = widget.client ?? widget.clients![0];
 
     if (widget.initialPhase != null) phase = widget.initialPhase!;
+    spaceAddressController = TextEditingController(text: widget.initialRoomId);
+
+    if (widget.initialRoomId != null) {
+      loadingSpacePreview = true;
+      spacePreviewDebounce.run(getSpacePreview);
+    }
 
     spaceAddressController.addListener(() {
       setState(() {

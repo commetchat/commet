@@ -23,6 +23,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
+import 'package:matrix/matrix.dart' as matrix;
 import 'package:pasteboard/pasteboard.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import '../../client/attachment.dart';
@@ -41,7 +42,7 @@ class AttachmentPicker {
 }
 
 class MessageInput extends StatefulWidget {
-  const MessageInput(
+  const MessageInput(this.room,
       {super.key,
       this.maxHeight = 200,
       this.onSendMessage,
@@ -92,6 +93,7 @@ class MessageInput extends StatefulWidget {
   final Stream<String>? setInputText;
   final bool isProcessing;
   final bool enabled;
+  final Room room;
   final Widget? typingIndicatorWidget;
   final List<EmoticonPack>? availibleEmoticons;
   final List<EmoticonPack>? availibleStickers;
@@ -155,7 +157,8 @@ class MessageInputState extends State<MessageInput> {
 
   @override
   void initState() {
-    controller = RichTextEditingController();
+    controller = RichTextEditingController(room: widget.room);
+    controller.addListener(controllerListener);
     keyboardFocusSubscription =
         widget.focusKeyboard?.listen((_) => onKeyboardFocusRequested());
 
@@ -219,7 +222,7 @@ class MessageInputState extends State<MessageInput> {
     });
   }
 
-  (int, int) getAutofillTextRange() {
+  (int, int) getAutofillTextRange({int? cursorPosition}) {
     var cursor = controller.selection.base.offset;
     if (cursor >= controller.text.length) {
       cursor = controller.text.length - 1;
@@ -229,10 +232,13 @@ class MessageInputState extends State<MessageInput> {
       return (0, 0);
     }
 
-    int start = cursor;
+    int start = cursorPosition ?? cursor;
+    if (start >= controller.text.length) {
+      start -= 1;
+    }
     int end = controller.text.length;
 
-    for (int i = cursor - 1; i >= 0; i--) {
+    for (int i = start; i >= 0; i--) {
       var char = controller.text[i];
       if (char == ' ') {
         if (i == controller.text.length) {
@@ -322,7 +328,103 @@ class MessageInputState extends State<MessageInput> {
     }
   }
 
+  bool isAutofillMxid(String text) {
+    if (text.startsWith("@") || text.startsWith("!")) {
+      return text.isValidMatrixId;
+    } else {
+      return false;
+    }
+  }
+
+  TextSelection? prevSelection;
+
+  void controllerListener() {
+    print(
+        "Selection: ${controller.selection.base.offset} -> ${controller.selection.extentOffset}");
+
+    var startFill =
+        getAutofillTextRange(cursorPosition: controller.selection.baseOffset);
+
+    var endFill =
+        getAutofillTextRange(cursorPosition: controller.selection.extentOffset);
+
+    var len = controller.selection.start - controller.selection.end;
+
+    var baseOffset = controller.selection.baseOffset;
+    var extentOffset = controller.selection.extentOffset;
+
+    if (baseOffset == -1 || extentOffset == -1) {
+      return;
+    }
+
+    var text = controller.text.substring(startFill.$1, startFill.$2);
+    var endText = controller.text.substring(endFill.$1, endFill.$2);
+    if (isAutofillMxid(text)) {
+      // go forward
+      if (prevSelection != null &&
+          prevSelection!.baseOffset < controller.selection.baseOffset) {
+        baseOffset = startFill.$2;
+      } else {
+        // go backward
+        if (baseOffset > startFill.$1) {
+          baseOffset = startFill.$1;
+        }
+      }
+    }
+
+    if (isAutofillMxid(endText)) {
+      print("Autofill extent");
+      // go forward
+      if (prevSelection != null &&
+          prevSelection!.extentOffset < controller.selection.extentOffset) {
+        print("forward");
+        extentOffset = endFill.$2;
+      } else {
+        print("backward");
+        // go backward
+        if (extentOffset > endFill.$1) {
+          extentOffset = endFill.$1;
+        }
+      }
+    }
+
+    if (len == 0) {
+      extentOffset = baseOffset;
+    }
+    controller.selection =
+        TextSelection(baseOffset: baseOffset, extentOffset: extentOffset);
+
+    prevSelection = controller.selection;
+
+    print(len);
+  }
+
   KeyEventResult onKey(FocusNode node, KeyEvent event) {
+    if (HardwareKeyboard.instance
+        .isLogicalKeyPressed(LogicalKeyboardKey.backspace)) {
+      var selection = controller.selection.baseOffset;
+      var selectionEnd = controller.selection.extentOffset;
+
+      var range = getAutofillTextRange();
+
+      if (range.$1 < selection) {
+        selection = range.$1;
+      }
+
+      if (range.$2 > selectionEnd) {
+        selectionEnd = range.$2;
+      }
+
+      var text = controller.text.substring(range.$1, range.$2);
+
+      if (isAutofillMxid(text)) {
+        controller.text =
+            controller.text.replaceRange(selection, selectionEnd, "");
+        onTextfieldUpdated(controller.text);
+        return KeyEventResult.handled;
+      }
+    }
+
     if (BuildConfig.MOBILE) return KeyEventResult.ignored;
 
     if (HardwareKeyboard.instance
@@ -626,6 +728,16 @@ class MessageInputState extends State<MessageInput> {
                             children: [
                               if (data is AutofillSearchResultEmoticon)
                                 EmojiWidget(data.emoticon),
+                              if (data is AutofillSearchResultAvatar)
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(0, 0, 3, 0),
+                                  child: tiamat.Avatar(
+                                      image: data.image,
+                                      radius: 10,
+                                      placeholderColor: data.fallbackColor,
+                                      placeholderText: data.result),
+                                ),
                               tiamat.Text.labelLow(
                                 data.result,
                                 color: selected

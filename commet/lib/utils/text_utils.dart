@@ -46,7 +46,9 @@ class TextUtils {
   }
 
   static List<InlineSpan> linkifyString(String text,
-      {TextStyle? style, required BuildContext context}) {
+      {TextStyle? style,
+      required BuildContext context,
+      required String clientId}) {
     var matches = _urlRegex.allMatches(text);
     return formatMatches(
       matches,
@@ -54,6 +56,7 @@ class TextUtils {
       style: style,
       builder: (matchedText, theme) {
         return LinkSpan.create(matchedText,
+            clientId: clientId,
             context: context,
             destination: Uri.parse(matchedText),
             style: style);
