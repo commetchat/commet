@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/gif/gif_component.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/config/layout_config.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/emoji_widget.dart';
@@ -16,11 +17,13 @@ import 'package:commet/client/components/emoticon/emoji_pack.dart';
 import 'package:commet/client/components/gif/gif_search_result.dart';
 import 'package:commet/utils/autofill_utils.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/gestures.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
+import 'package:matrix/matrix.dart' as matrix;
 import 'package:pasteboard/pasteboard.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import '../../client/attachment.dart';
@@ -39,7 +42,7 @@ class AttachmentPicker {
 }
 
 class MessageInput extends StatefulWidget {
-  const MessageInput(
+  const MessageInput(this.room,
       {super.key,
       this.maxHeight = 200,
       this.onSendMessage,
@@ -90,6 +93,7 @@ class MessageInput extends StatefulWidget {
   final Stream<String>? setInputText;
   final bool isProcessing;
   final bool enabled;
+  final Room room;
   final Widget? typingIndicatorWidget;
   final List<EmoticonPack>? availibleEmoticons;
   final List<EmoticonPack>? availibleStickers;
@@ -153,13 +157,20 @@ class MessageInputState extends State<MessageInput> {
 
   @override
   void initState() {
-    controller = RichTextEditingController();
+    controller = RichTextEditingController(room: widget.room);
+    controller.addListener(controllerListener);
     keyboardFocusSubscription =
         widget.focusKeyboard?.listen((_) => onKeyboardFocusRequested());
 
     setInputTextSubscription = widget.setInputText?.listen(onSetInputText);
 
     textFocus = FocusNode(onKeyEvent: onKey);
+
+    if (Layout.desktop) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        textFocus.requestFocus();
+      });
+    }
 
     super.initState();
   }
@@ -211,20 +222,24 @@ class MessageInputState extends State<MessageInput> {
     });
   }
 
-  (int, int) getAutofillTextRange() {
+  (int, int) getAutofillTextRange({int? cursorPosition}) {
     var cursor = controller.selection.base.offset;
-    if (cursor >= controller.text.length) {
-      cursor = controller.text.length - 1;
-    }
 
     if (controller.text == "") {
       return (0, 0);
     }
 
-    int start = cursor;
+    int start = cursorPosition ?? cursor;
     int end = controller.text.length;
 
-    for (int i = cursor - 1; i >= 0; i--) {
+    if (start > 0) {
+      start -= 1;
+      if (controller.text[start] == ' ') {
+        return (0, 0);
+      }
+    }
+
+    for (int i = start; i >= 0; i--) {
       var char = controller.text[i];
       if (char == ' ') {
         if (i == controller.text.length) {
@@ -314,8 +329,110 @@ class MessageInputState extends State<MessageInput> {
     }
   }
 
+  bool isKnownAutofillMatch(String text) {
+    if (text.startsWith("@") || text.startsWith("!")) {
+      return text.isValidMatrixId;
+    }
+
+    if (text.startsWith(":") && text.endsWith(":")) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  TextSelection? prevSelection;
+
+  void controllerListener() {
+    if (PlatformUtils.isAndroid) {
+      return;
+    }
+
+    if (preferences.disableTextCursorManagement) {
+      return;
+    }
+
+    var startFill =
+        getAutofillTextRange(cursorPosition: controller.selection.baseOffset);
+
+    var endFill =
+        getAutofillTextRange(cursorPosition: controller.selection.extentOffset);
+
+    var len = controller.selection.start - controller.selection.end;
+
+    var baseOffset = controller.selection.baseOffset;
+    var extentOffset = controller.selection.extentOffset;
+
+    if (baseOffset == -1 || extentOffset == -1) {
+      return;
+    }
+
+    var text = controller.text.substring(startFill.$1, startFill.$2);
+    var endText = controller.text.substring(endFill.$1, endFill.$2);
+    if (isKnownAutofillMatch(text)) {
+      // go forward
+      if ((prevSelection != null &&
+          prevSelection!.baseOffset < controller.selection.baseOffset)) {
+        baseOffset = startFill.$2;
+      } else {
+        // go backward
+        if (baseOffset > startFill.$1 && baseOffset != startFill.$2) {
+          baseOffset = startFill.$1;
+        }
+      }
+    }
+
+    if (isKnownAutofillMatch(endText) && len != 0) {
+      // go forward
+      if ((prevSelection != null &&
+          prevSelection!.extentOffset < controller.selection.extentOffset)) {
+        extentOffset = endFill.$2;
+      } else {
+        // go backward
+        if (extentOffset > endFill.$1) {
+          extentOffset = endFill.$1;
+        }
+      }
+    }
+
+    if (len == 0) {
+      extentOffset = baseOffset;
+    }
+    controller.selection =
+        TextSelection(baseOffset: baseOffset, extentOffset: extentOffset);
+
+    prevSelection = controller.selection;
+  }
+
   KeyEventResult onKey(FocusNode node, KeyEvent event) {
     if (BuildConfig.MOBILE) return KeyEventResult.ignored;
+
+    if (!preferences.disableTextCursorManagement) {
+      if (HardwareKeyboard.instance
+          .isLogicalKeyPressed(LogicalKeyboardKey.backspace)) {
+        var selection = controller.selection.baseOffset;
+        var selectionEnd = controller.selection.extentOffset;
+
+        var range = getAutofillTextRange();
+
+        if (range.$1 < selection) {
+          selection = range.$1;
+        }
+
+        if (range.$2 > selectionEnd) {
+          selectionEnd = range.$2;
+        }
+
+        var text = controller.text.substring(range.$1, range.$2);
+
+        if (isKnownAutofillMatch(text)) {
+          controller.text =
+              controller.text.replaceRange(selection, selectionEnd, "");
+          onTextfieldUpdated(controller.text);
+          return KeyEventResult.handled;
+        }
+      }
+    }
 
     if (HardwareKeyboard.instance
         .isLogicalKeyPressed(LogicalKeyboardKey.keyV)) {
@@ -409,77 +526,81 @@ class MessageInputState extends State<MessageInput> {
     return Material(
       color: Colors.transparent,
       child: TextFieldTapRegion(
-        child: Opacity(
-          opacity: widget.isProcessing ? 0.5 : 1,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (widget.typingIndicatorWidget != null)
-                widget.typingIndicatorWidget!,
-              if (widget.interactionType != null) interactionText(),
-              if (widget.attachments != null && widget.attachments!.isNotEmpty)
-                displayAttachments(),
-              ConstrainedBox(
-                constraints: const BoxConstraints(maxHeight: 200),
-                child: Padding(
-                  padding: padding,
-                  child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (widget.enabled) addAttachmentButton(),
-                        Flexible(
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(5),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .surfaceContainerLow),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  textInput(context),
-                                  if (widget.enabled) toggleEmojiButton(),
-                                ],
+        child: IgnorePointer(
+          ignoring: widget.isProcessing,
+          child: Opacity(
+            opacity: widget.isProcessing ? 0.5 : 1,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (widget.typingIndicatorWidget != null)
+                  widget.typingIndicatorWidget!,
+                if (widget.interactionType != null) interactionText(),
+                if (widget.attachments != null &&
+                    widget.attachments!.isNotEmpty)
+                  displayAttachments(),
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxHeight: 200),
+                  child: Padding(
+                    padding: padding,
+                    child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (widget.enabled) addAttachmentButton(),
+                          Flexible(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(5),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .surfaceContainerLow),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    textInput(context),
+                                    if (widget.enabled) toggleEmojiButton(),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        if (widget.enabled) sendMessageButton()
-                      ]),
+                          if (widget.enabled) sendMessageButton()
+                        ]),
+                  ),
                 ),
-              ),
-              SizedBox(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 2, 0, 0),
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const SizedBox(height: 30),
-                        if (senderOverride != null) senderOverrideView(),
-                        if (autoFillResults != null) autofillResultsList(),
-                        if (autoFillResults == null)
-                          const Expanded(child: SizedBox()),
-                        if (widget.readIndicator != null &&
-                            autoFillResults?.isEmpty != false)
-                          readReceipts()
-                      ]),
+                SizedBox(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 2, 0, 0),
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const SizedBox(height: 30),
+                          if (senderOverride != null) senderOverrideView(),
+                          if (autoFillResults != null) autofillResultsList(),
+                          if (autoFillResults == null)
+                            const Expanded(child: SizedBox()),
+                          if (widget.readIndicator != null &&
+                              autoFillResults?.isEmpty != false)
+                            readReceipts()
+                        ]),
+                  ),
                 ),
-              ),
-              if (widget.availibleEmoticons != null &&
-                  widget.availibleStickers != null)
-                AnimatedContainer(
-                  curve: Curves.easeOutExpo,
-                  duration: const Duration(milliseconds: 500),
-                  height: showEmotePicker ? emotePickerHeight : 0,
-                  child: ClipRect(child: buildEmojiPicker()),
-                )
-            ],
+                if (widget.availibleEmoticons != null &&
+                    widget.availibleStickers != null)
+                  AnimatedContainer(
+                    curve: Curves.easeOutExpo,
+                    duration: const Duration(milliseconds: 500),
+                    height: showEmotePicker ? emotePickerHeight : 0,
+                    child: ClipRect(child: buildEmojiPicker()),
+                  )
+              ],
+            ),
           ),
         ),
       ),
@@ -576,46 +697,68 @@ class MessageInputState extends State<MessageInput> {
           padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
           child: SizedBox(
             height: 30,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.fromLTRB(0, 0, 300, 0),
-              itemCount: autoFillResults!.length,
-              controller: autofillScrollController,
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                bool selected = false;
-                var data = autoFillResults![index];
-                if (autoFillSelection != null) {
-                  selected = data == autoFillResults![autoFillSelection!];
-                }
+            child: Listener(
+              onPointerSignal: (event) {
+                if (!Layout.desktop) return;
+                if (event is PointerScrollEvent) {
+                  final offset = event.scrollDelta.dy;
 
-                return ClipRRect(
-                  borderRadius: BorderRadius.circular(3),
-                  child: Material(
-                    color: selected
-                        ? Theme.of(context).colorScheme.secondary
-                        : Colors.transparent,
-                    child: InkWell(
-                      onTap: () => applyAutoFill(data),
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(4, 1, 4, 1),
-                        child: Row(
-                          children: [
-                            if (data is AutofillSearchResultEmoticon)
-                              EmojiWidget(data.emoticon),
-                            tiamat.Text.labelLow(
-                              data.result,
-                              color: selected
-                                  ? Theme.of(context).colorScheme.onSecondary
-                                  : Theme.of(context).colorScheme.secondary,
-                            ),
-                          ],
+                  autofillScrollController.jumpTo(
+                      (autofillScrollController.offset + offset).clamp(0,
+                          autofillScrollController.position.maxScrollExtent));
+                }
+              },
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.fromLTRB(0, 0, 300, 0),
+                itemCount: autoFillResults!.length,
+                controller: autofillScrollController,
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  bool selected = false;
+                  var data = autoFillResults![index];
+                  if (autoFillSelection != null) {
+                    selected = data == autoFillResults![autoFillSelection!];
+                  }
+
+                  return ClipRRect(
+                    borderRadius: BorderRadius.circular(3),
+                    child: Material(
+                      color: selected
+                          ? Theme.of(context).colorScheme.secondary
+                          : Colors.transparent,
+                      child: InkWell(
+                        onTap: () => applyAutoFill(data),
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(4, 1, 4, 1),
+                          child: Row(
+                            children: [
+                              if (data is AutofillSearchResultEmoticon)
+                                EmojiWidget(data.emoticon),
+                              if (data is AutofillSearchResultAvatar)
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(0, 0, 3, 0),
+                                  child: tiamat.Avatar(
+                                      image: data.image,
+                                      radius: 10,
+                                      placeholderColor: data.fallbackColor,
+                                      placeholderText: data.result),
+                                ),
+                              tiamat.Text.labelLow(
+                                data.result,
+                                color: selected
+                                    ? Theme.of(context).colorScheme.onSecondary
+                                    : Theme.of(context).colorScheme.secondary,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
           ),
         ),
@@ -676,7 +819,7 @@ class MessageInputState extends State<MessageInput> {
             focusNode: textFocus,
             onChanged: onTextfieldUpdated,
             controller: controller,
-            readOnly: !widget.enabled,
+            readOnly: !widget.enabled || widget.isProcessing,
             textAlignVertical: TextAlignVertical.center,
             style: Theme.of(context).textTheme.bodyMedium!,
             maxLines: null,

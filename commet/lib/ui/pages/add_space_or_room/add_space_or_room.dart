@@ -7,6 +7,7 @@ enum AddSpaceOrRoomMode {
   createOrJoinSpace,
   createOrJoinRoom,
   createOrExistingRoom,
+  joinExistingRoom,
 }
 
 class AddSpaceOrRoom extends StatefulWidget {
@@ -19,10 +20,12 @@ class AddSpaceOrRoom extends StatefulWidget {
     this.createSpace,
     this.joinRoom,
     this.joinSpace,
+    this.initialRoomId,
     this.onRoomsSelected,
     this.mode = AddSpaceOrRoomMode.createOrJoinSpace,
   });
   final List<Client>? clients;
+  final String? initialRoomId;
   final Client? client;
   final AddSpaceOrRoomMode mode;
   final List<Room>? eligibleRooms;
@@ -41,6 +44,7 @@ class AddSpaceOrRoom extends StatefulWidget {
       List<Room>? rooms,
       this.client,
       this.clients,
+      this.initialRoomId,
       this.createRoom,
       this.onRoomsSelected})
       : mode = AddSpaceOrRoomMode.createOrExistingRoom,
@@ -65,6 +69,9 @@ class AddSpaceOrRoomState extends State<AddSpaceOrRoom> {
       case AddSpaceOrRoomMode.createOrExistingRoom:
         await widget.createRoom?.call(client, args);
         break;
+      case AddSpaceOrRoomMode.joinExistingRoom:
+        // TODO: Handle this case.
+        throw UnimplementedError();
     }
 
     if (mounted) {
@@ -84,6 +91,9 @@ class AddSpaceOrRoomState extends State<AddSpaceOrRoom> {
       case AddSpaceOrRoomMode.createOrExistingRoom:
         await widget.joinRoom?.call(client, address);
         break;
+      case AddSpaceOrRoomMode.joinExistingRoom:
+        // TODO: Handle this case.
+        throw UnimplementedError();
     }
 
     if (mounted) {
@@ -93,18 +103,26 @@ class AddSpaceOrRoomState extends State<AddSpaceOrRoom> {
 
   @override
   Widget build(BuildContext context) {
+    AddSpaceOrRoomPhase? initialPhase = null;
+    if (widget.mode == AddSpaceOrRoomMode.createOrExistingRoom) {
+      initialPhase = AddSpaceOrRoomPhase.askCreateOrExisting;
+    }
+
+    if (widget.mode == AddSpaceOrRoomMode.joinExistingRoom) {
+      initialPhase = AddSpaceOrRoomPhase.join;
+    }
     return AddSpaceOrRoomView(
       clients: widget.clients,
       client: widget.client,
       onCreate: create,
       onJoin: join,
       roomMode: widget.mode == AddSpaceOrRoomMode.createOrJoinRoom ||
-          widget.mode == AddSpaceOrRoomMode.createOrExistingRoom,
+          widget.mode == AddSpaceOrRoomMode.createOrExistingRoom ||
+          widget.mode == AddSpaceOrRoomMode.joinExistingRoom,
       rooms: widget.eligibleRooms,
+      initialRoomId: widget.initialRoomId,
       loading: loading,
-      initialPhase: widget.mode == AddSpaceOrRoomMode.createOrExistingRoom
-          ? AddSpaceOrRoomPhase.askCreateOrExisting
-          : null,
+      initialPhase: initialPhase,
       onRoomsSelected: (rooms) {
         setState(() {
           loading = true;

@@ -257,4 +257,10 @@ class MatrixBackgroundClient implements Client {
 
   @override
   bool get supportsE2EE => throw UnimplementedError();
+
+  @override
+  Room? getRoomByAlias(String identifier) {
+    // TODO: implement getRoomByAlias
+    throw UnimplementedError();
+  }
 }
