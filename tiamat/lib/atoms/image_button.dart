@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
+import 'package:tiamat/utils.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 import 'package:flutter/material.dart' as m;
 import './text.dart' as tiamat;
@@ -364,7 +365,9 @@ class _ImageButtonState extends State<ImageButton> {
         onTap: widget.onTap,
         child: widget.image != null
             ? Ink(
-                child: Image(
+                child: FadeInImage(
+                  placeholder: transparentImage.image,
+                  fadeInDuration: Durations.short2,
                   filterQuality: FilterQuality.medium,
                   image: widget.image!,
                   fit: BoxFit.cover,
