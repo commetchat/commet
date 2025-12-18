@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:commet/utils/image_utils.dart';
 import 'package:commet/utils/mime.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -68,7 +69,19 @@ class LODImageProvider extends ImageProvider<String> {
     return completer!;
   }
 
+  Future<void> fetchThumbnail() async {
+    if (completer == null) {
+      ImageUtils.imageProviderToImage(this);
+    }
+
+    await completer?.fetchThumbnail();
+  }
+
   Future<void> fetchFullRes() async {
+    if (completer == null) {
+      ImageUtils.imageProviderToImage(this);
+    }
+
     await completer?.fetchFullRes();
   }
 }
@@ -95,7 +108,8 @@ class LODImageCompleter extends ImageStreamCompleter {
   int? fullResHeight;
   double scale = 1;
   Timer? _timer;
-  bool _isFullResLoading = false;
+  Future? fullResLoading = null;
+  Future? thumbnailLoading = null;
 
   LODImageCompleter(
       {this.blurhash,
@@ -142,47 +156,74 @@ class LODImageCompleter extends ImageStreamCompleter {
   }
 
   Future<void> _loadThumbnail() async {
-    var bytes = await loadThumbnail!.call();
-    if (bytes == null) return;
+    if (thumbnailLoading != null) return thumbnailLoading;
+    if (currentlyLoadedImage == LODImageType.thumbnail) return;
+    if (currentlyLoadedImage == LODImageType.fullres) return;
 
-    mimeType = Mime.lookupType("", data: bytes);
+    thumbnailLoading = () async {
+      var bytes = await loadThumbnail!.call();
+      if (bytes == null) return;
 
-    var codec = await callback(
-      await ImmutableBuffer.fromUint8List(bytes),
-      getTargetSize: (intrinsicWidth, intrinsicHeight) {
-        return TargetImageSize(height: thumbnailHeight);
-      },
-    );
+      mimeType = Mime.lookupType("", data: bytes);
 
-    _setCodec(LODImageType.thumbnail, codec);
+      var codec = await callback(
+        await ImmutableBuffer.fromUint8List(bytes),
+        getTargetSize: (intrinsicWidth, intrinsicHeight) {
+          return TargetImageSize(height: thumbnailHeight);
+        },
+      );
+
+      await _setCodec(LODImageType.thumbnail, codec);
+    }();
+
+    await thumbnailLoading;
+    thumbnailLoading = null;
   }
 
   Future<void> fetchFullRes() async {
     return _loadFullRes();
   }
 
-  Future<void> _loadFullRes() async {
-    if (_isFullResLoading) return;
-    _isFullResLoading = true;
-    var bytes = await loadFullRes!.call();
-    if (bytes == null) return;
+  Future<void> fetchThumbnail() async {
+    return _loadThumbnail();
+  }
 
-    mimeType = Mime.lookupType("", data: bytes);
-    var codec = await callback(
-      await ImmutableBuffer.fromUint8List(bytes),
-      getTargetSize: (intrinsicWidth, intrinsicHeight) {
-        return TargetImageSize(height: fullResHeight);
-      },
-    );
-    await _setCodec(LODImageType.fullres, codec);
+  Future<void> _loadFullRes() async {
+    if (fullResLoading != null) {
+      return fullResLoading;
+    }
+
+    if (currentlyLoadedImage == LODImageType.fullres) {
+      return;
+    }
+
+    if (loadFullRes == null) {
+      return;
+    }
+
+    fullResLoading = () async {
+      var bytes = await loadFullRes!.call();
+      if (bytes == null) return;
+
+      mimeType = Mime.lookupType("", data: bytes);
+      var codec = await callback(
+        await ImmutableBuffer.fromUint8List(bytes),
+        getTargetSize: (intrinsicWidth, intrinsicHeight) {
+          return TargetImageSize(height: fullResHeight);
+        },
+      );
+
+      await _setCodec(LODImageType.fullres, codec);
+    }();
+
+    await fullResLoading;
+    fullResLoading = null;
   }
 
   Future<void> _setCodec(LODImageType type, Codec codec) async {
-    if (type.index > (currentlyLoadedImage?.index ?? -1)) {
-      _codec = codec;
-      currentlyLoadedImage = type;
-      await _decodeNextFrameAndSchedule();
-    }
+    _codec = codec;
+    await _decodeNextFrameAndSchedule();
+    currentlyLoadedImage = type;
   }
 
   Future<void> _decodeNextFrameAndSchedule() async {
@@ -191,13 +232,13 @@ class LODImageCompleter extends ImageStreamCompleter {
 
     _nextFrame = await _codec!.getNextFrame();
 
-    if (_codec!.frameCount == 1) {
-      _emitFrame(ImageInfo(
-        image: _nextFrame!.image.clone(),
-        scale: _scale,
-        debugLabel: debugLabel,
-      ));
+    _emitFrame(ImageInfo(
+      image: _nextFrame!.image.clone(),
+      scale: _scale,
+      debugLabel: debugLabel,
+    ));
 
+    if (_codec!.frameCount == 1) {
       _nextFrame!.image.dispose();
       _nextFrame = null;
       return;
