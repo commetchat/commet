@@ -1,6 +1,7 @@
 import 'package:commet/client/components/space_color_scheme/space_color_scheme_component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_space.dart';
+import 'package:commet/utils/image/lod_image.dart';
 import 'package:commet/utils/task_scheduler.dart';
 import 'package:flutter/src/material/color_scheme.dart';
 
@@ -30,6 +31,10 @@ class MatrixSpaceColorSchemeComponent
   late ColorScheme _scheme;
 
   Future<void> updateColorScheme() async {
+    if (space.avatar case LODImageProvider img) {
+      await img.fetchThumbnail();
+    }
+
     if (space.avatar != null) {
       var scheme = await ColorScheme.fromImageProvider(
           provider: space.avatar!,
