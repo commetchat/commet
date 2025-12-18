@@ -205,7 +205,7 @@ class EmojiPicker extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: FittedBox(
-                        fit: BoxFit.cover, child: EmojiWidget(list[index])),
+                        fit: BoxFit.fitWidth, child: EmojiWidget(list[index])),
                   ));
             },
           )

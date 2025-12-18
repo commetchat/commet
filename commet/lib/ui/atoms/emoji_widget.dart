@@ -1,6 +1,6 @@
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:tiamat/tiamat.dart' as tiamat;
 
 // ignore: must_be_immutable
 class EmojiWidget extends StatelessWidget {
@@ -17,10 +17,11 @@ class EmojiWidget extends StatelessWidget {
             ? SizedBox(
                 width: height,
                 height: height,
-                child: Image(
+                child: FadeInImage(
+                  placeholder: tiamat.transparentImage.image,
+                  fadeInDuration: Durations.medium1,
                   filterQuality: FilterQuality.medium,
-                  isAntiAlias: true,
-                  fit: BoxFit.fitHeight,
+                  fit: BoxFit.contain,
                   width: height,
                   height: height,
                   image: emoji.image!,

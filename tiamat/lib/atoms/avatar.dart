@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tiamat/utils.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 
 @UseCase(name: 'Default', type: Avatar)
@@ -106,13 +107,19 @@ class Avatar extends StatelessWidget {
         height: radius * 2,
         child: DecoratedBox(
             decoration: BoxDecoration(
-                border: border,
-                borderRadius: BorderRadius.circular(radius / 1.25),
-                image: DecorationImage(
-                    image: image!,
-                    isAntiAlias: true,
-                    filterQuality: FilterQuality.medium,
-                    fit: BoxFit.cover))),
+              border: border,
+              borderRadius: BorderRadius.circular(radius / 1.25),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(radius / 1.25),
+              child: FadeInImage(
+                placeholder: transparentImage.image,
+                fadeInDuration: Durations.short2,
+                image: image!,
+                fit: BoxFit.cover,
+                filterQuality: FilterQuality.medium,
+              ),
+            )),
       );
     }
 
