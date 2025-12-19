@@ -7,7 +7,7 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:commet/client/components/voip/webrtc_screencapture_source.dart';
-import 'package:commet/client/matrix/components/voip_room/matrix_livekit_android_screencapture_source.dart';
+import 'package:commet/client/components/voip/android_screencapture_source.dart';
 import 'package:commet/client/matrix/components/voip_room/matrix_livekit_voip_stream.dart';
 import 'package:commet/client/matrix/components/voip_room/matrix_voip_room_component.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
@@ -223,7 +223,7 @@ class MatrixLivekitVoipSession implements VoipSession {
 
   @override
   Future<void> setScreenShare(ScreenCaptureSource source) async {
-    if (source is MatrixLivekitAndroidScreencaptureSource) {
+    if (source is WebrtcAndroidScreencaptureSource) {
       livekitRoom.localParticipant?.setScreenShareEnabled(true);
       Log.i("Got android screen capture source!");
       _stateChanged.add(());
@@ -288,7 +288,7 @@ class MatrixLivekitVoipSession implements VoipSession {
   @override
   Future<ScreenCaptureSource?> pickScreenCapture(BuildContext context) async {
     if (Platform.isAndroid) {
-      return MatrixLivekitAndroidScreencaptureSource.getCaptureSource(context);
+      return WebrtcAndroidScreencaptureSource.getCaptureSource(context);
     }
     return WebrtcScreencaptureSource.showSelectSourcePrompt(context);
   }
