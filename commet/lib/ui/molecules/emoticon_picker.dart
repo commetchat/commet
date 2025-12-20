@@ -38,7 +38,7 @@ class EmoticonPicker extends StatefulWidget {
 class _EmoticonPickerState extends State<EmoticonPicker>
     with TickerProviderStateMixin {
   late TabController controller;
-
+  PageStorageBucket bucket = PageStorageBucket();
   String get labelEmojiPickerEmojiTab => Intl.message("Emoji",
       desc: "Label for the emoji tab in emoji picker",
       name: "labelEmojiPickerEmojiTab");
@@ -60,49 +60,52 @@ class _EmoticonPickerState extends State<EmoticonPicker>
   @override
   Widget build(BuildContext context) {
     return ClipRect(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Expanded(
-            child: TabBarView(controller: controller, children: [
-              Tab(
-                child: EmojiPicker(
-                  widget.emoji,
-                  onlyEmoji: true,
-                  onEmoticonPressed: (emoticon) =>
-                      widget.onEmojiPressed?.call(emoticon),
-                ),
-              ),
-              Tab(
-                child: StickerPicker(
-                  packs: widget.stickers,
-                  stickerPicked: (sticker) =>
-                      widget.onStickerPressed?.call(sticker),
-                ),
-              ),
-              if (widget.allowGifSearch && widget.gifComponent != null)
+      child: PageStorage(
+        bucket: bucket,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Expanded(
+              child: TabBarView(controller: controller, children: [
                 Tab(
-                  child: GifPicker(
-                    search: widget.gifComponent!.search,
-                    placeholderText: widget.gifComponent!.searchPlaceholder,
-                    gifPicked: widget.onGifPressed,
+                  child: EmojiPicker(
+                    widget.emoji,
+                    onlyEmoji: true,
+                    onEmoticonPressed: (emoticon) =>
+                        widget.onEmojiPressed?.call(emoticon),
                   ),
-                )
-            ]),
-          ),
-          tiamat.Tile.low(
-            child: SizedBox(
-              height: 40,
-              child: TabBar(controller: controller, tabs: [
-                Tab(
-                  text: labelEmojiPickerEmojiTab,
                 ),
-                Tab(text: labelEmojiPickerStickerTab),
-                if (widget.allowGifSearch) Tab(text: labelEmojiPickerGifTab)
+                Tab(
+                  child: StickerPicker(
+                    packs: widget.stickers,
+                    stickerPicked: (sticker) =>
+                        widget.onStickerPressed?.call(sticker),
+                  ),
+                ),
+                if (widget.allowGifSearch && widget.gifComponent != null)
+                  Tab(
+                    child: GifPicker(
+                      search: widget.gifComponent!.search,
+                      placeholderText: widget.gifComponent!.searchPlaceholder,
+                      gifPicked: widget.onGifPressed,
+                    ),
+                  )
               ]),
             ),
-          ),
-        ],
+            tiamat.Tile.low(
+              child: SizedBox(
+                height: 40,
+                child: TabBar(controller: controller, tabs: [
+                  Tab(
+                    text: labelEmojiPickerEmojiTab,
+                  ),
+                  Tab(text: labelEmojiPickerStickerTab),
+                  if (widget.allowGifSearch) Tab(text: labelEmojiPickerGifTab)
+                ]),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

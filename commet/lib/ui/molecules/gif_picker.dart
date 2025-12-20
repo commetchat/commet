@@ -116,6 +116,8 @@ class _GifPickerState extends State<GifPicker> {
               controller: _textController,
               decoration: InputDecoration(
                   icon: const Icon(Icons.search),
+                  isDense: true,
+                  border: InputBorder.none,
                   hintText: widget.placeholderText),
             )),
       ),

@@ -9,6 +9,7 @@ import 'package:commet/config/layout_config.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/emoji_widget.dart';
+import 'package:commet/ui/atoms/random_emoji_button.dart';
 import 'package:commet/ui/atoms/rich_text_field.dart';
 import 'package:commet/ui/molecules/attachment_icon.dart';
 import 'package:commet/ui/organisms/attachment_processor/attachment_processor.dart';
@@ -129,6 +130,7 @@ class MessageInputState extends State<MessageInput> {
   bool hasEmotePickerOpened = false;
   List<AutofillSearchResult>? autoFillResults;
   Client? senderOverride;
+  JustTheController emojiTooltipController = JustTheController();
 
   int? autoFillSelection;
   (int, int)? autoFillRange;
@@ -286,6 +288,10 @@ class MessageInputState extends State<MessageInput> {
   void toggleEmojiOverlay() {
     setState(() {
       showEmotePicker = !showEmotePicker;
+
+      if (Layout.desktop) {
+        emojiTooltipController.showTooltip(autoClose: false);
+      }
       if (showEmotePicker) {
         hasEmotePickerOpened = true;
       }
@@ -593,14 +599,16 @@ class MessageInputState extends State<MessageInput> {
                         ]),
                   ),
                 ),
-                if (widget.availibleEmoticons != null &&
-                    widget.availibleStickers != null)
-                  AnimatedContainer(
-                    curve: Curves.easeOutExpo,
-                    duration: const Duration(milliseconds: 500),
-                    height: showEmotePicker ? emotePickerHeight : 0,
-                    child: ClipRect(child: buildEmojiPicker()),
-                  )
+                if (Layout.mobile)
+                  if (widget.availibleEmoticons != null &&
+                      widget.availibleStickers != null)
+                    AnimatedContainer(
+                      curve: Curves.easeOutExpo,
+                      duration: const Duration(milliseconds: 500),
+                      height: showEmotePicker ? emotePickerHeight : 0,
+                      child:
+                          ClipRect(child: buildEmojiPicker(emotePickerHeight)),
+                    )
               ],
             ),
           ),
@@ -798,16 +806,33 @@ class MessageInputState extends State<MessageInput> {
 
   Widget toggleEmojiButton() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 0, 2, 0),
-      child: SizedBox(
-          width: widget.size,
-          height: widget.size,
-          child: tiamat.IconButton(
-            icon: Icons.face,
-            size: widget.size * widget.iconScale,
-            onPressed: toggleEmojiOverlay,
-          )),
-    );
+        padding: const EdgeInsets.fromLTRB(0, 0, 2, 0),
+        child: JustTheTooltip(
+          isModal: true,
+          controller: emojiTooltipController,
+          backgroundColor: Colors.transparent,
+          tailLength: 0,
+          content: ClipRRect(
+            borderRadius: BorderRadiusGeometry.circular(8),
+            child: Material(
+              child: Container(
+                color: Theme.of(context).colorScheme.surfaceContainer,
+                child: SizedBox(
+                  height: 500,
+                  width: 500,
+                  child: buildEmojiPicker(502),
+                ),
+              ),
+            ),
+          ),
+          child: SizedBox(
+              width: widget.size,
+              height: widget.size,
+              child: RandomEmojiButton(
+                size: widget.size,
+                onTap: toggleEmojiOverlay,
+              )),
+        ));
   }
 
   Expanded textInput(BuildContext context) {
@@ -859,7 +884,7 @@ class MessageInputState extends State<MessageInput> {
       (MediaQuery.of(context).size.height / (BuildConfig.MOBILE ? 2.5 : 3)) /
       preferences.appScale;
 
-  Widget buildEmojiPicker() {
+  Widget buildEmojiPicker(double height) {
     var recent = widget.room.client
         .getComponent<RecentEmoticonComponent>()
         ?.getRecentTypedEmoticon(widget.room);
@@ -877,8 +902,8 @@ class MessageInputState extends State<MessageInput> {
     }
 
     return OverflowBox(
-        minHeight: emotePickerHeight,
-        maxHeight: emotePickerHeight,
+        minHeight: height,
+        maxHeight: height,
         alignment: Alignment.topCenter,
         child: !hasEmotePickerOpened
             ? Container()
