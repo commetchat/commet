@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/voip/android_screencapture_source.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:commet/client/components/voip/webrtc_screencapture_source.dart';
@@ -146,7 +147,7 @@ class MatrixVoipSession implements VoipSession {
   Future<void> updateStats() async {
     var now = DateTime.now();
     var diff = now.difference(_lastUpdatedStats).inMilliseconds;
-    print(diff);
+
     if (diff < 200) {
       return;
     }
@@ -158,6 +159,14 @@ class MatrixVoipSession implements VoipSession {
   @override
   Future<void> setScreenShare(ScreenCaptureSource source) async {
     MediaStream? stream;
+
+    if (source is WebrtcAndroidScreencaptureSource) {
+      stream = await navigator.mediaDevices.getDisplayMedia({
+        'video': {
+          'mandatory': {'frameRate': 30.0}
+        }
+      });
+    }
 
     if (source is WebrtcScreencaptureSource) {
       stream = await navigator.mediaDevices.getDisplayMedia({
@@ -172,7 +181,6 @@ class MatrixVoipSession implements VoipSession {
 
     if (stream != null) {
       currentScreenshare = source;
-
       await stopScreenshare();
       session.addLocalStream(
           stream, matrix.SDPStreamMetadataPurpose.Screenshare);
@@ -207,7 +215,8 @@ class MatrixVoipSession implements VoipSession {
   void initStreams() {
     List<MatrixVoipStream> result = List.empty(growable: true);
 
-    var s = List.from(session.getLocalStreams, growable: true);
+    var s = List<matrix.WrappedMediaStream>.from(session.getLocalStreams,
+        growable: true);
     s.addAll(session.getRemoteStreams);
 
     for (var stream in s) {
@@ -224,7 +233,7 @@ class MatrixVoipSession implements VoipSession {
     streams = result;
   }
 
-  bool shouldAddStream(stream) {
+  bool shouldAddStream(matrix.WrappedMediaStream stream) {
     if (stream.purpose == matrix.SDPStreamMetadataPurpose.Screenshare &&
         stream.videoMuted) {
       return false;

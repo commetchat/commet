@@ -255,6 +255,9 @@ class _CallViewState extends State<CallView> {
                   child: VoipStreamView(
                     key: ValueKey("callView__${e.streamId}"),
                     e,
+                    fit: e.type == VoipStreamType.screenshare
+                        ? BoxFit.contain
+                        : BoxFit.cover,
                     widget.currentSession,
                     onFullscreen: () {
                       Lightbox.show(context,
