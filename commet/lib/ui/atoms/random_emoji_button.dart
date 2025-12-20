@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/atoms/emoji_widget.dart';
 import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:flutter/material.dart';
@@ -48,9 +49,11 @@ class _RandomEmojiButtonState extends State<RandomEmojiButton> {
             });
           },
           onTap: () {
-            setState(() {
-              newRandomEmoji();
-            });
+            if (Layout.mobile) {
+              setState(() {
+                newRandomEmoji();
+              });
+            }
 
             widget.onTap?.call();
           },

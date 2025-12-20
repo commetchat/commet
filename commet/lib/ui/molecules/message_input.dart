@@ -810,13 +810,12 @@ class MessageInputState extends State<MessageInput> {
         child: JustTheTooltip(
           isModal: true,
           controller: emojiTooltipController,
-          backgroundColor: Colors.transparent,
-          tailLength: 0,
+          backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
           content: ClipRRect(
             borderRadius: BorderRadiusGeometry.circular(8),
             child: Material(
               child: Container(
-                color: Theme.of(context).colorScheme.surfaceContainer,
+                color: Theme.of(context).colorScheme.surfaceContainerLow,
                 child: SizedBox(
                   height: 500,
                   width: 500,
