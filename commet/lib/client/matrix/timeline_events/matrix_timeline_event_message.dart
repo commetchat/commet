@@ -99,7 +99,10 @@ class MatrixTimelineEventMessage extends MatrixTimelineEvent
     } else {
       var plain = _getPlaintextBody(timeline: timeline);
       if (plain != "") {
-        return MatrixHtmlParser.parse(plain, mx, room);
+        return PlaintextMessageBody(
+          content: plain,
+          clientIdentifier: client.identifier,
+        );
       }
     }
 
@@ -217,5 +220,19 @@ class MatrixTimelineEventMessage extends MatrixTimelineEvent
     } else {
       return (tl as MatrixTimeline).matrixTimeline;
     }
+  }
+}
+
+class PlaintextMessageBody extends StatelessWidget {
+  const PlaintextMessageBody(
+      {required this.content, required this.clientIdentifier, super.key});
+  final String content;
+  final String clientIdentifier;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text.rich(TextSpan(
+        children: TextUtils.linkifyString(content,
+            context: context, clientId: clientIdentifier)));
   }
 }

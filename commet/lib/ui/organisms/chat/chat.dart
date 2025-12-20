@@ -265,7 +265,8 @@ class ChatState extends State<Chat> {
     try {
       await component?.executeCommand(message, room,
           interactingEvent: interactingEvent, type: interactionType);
-    } catch (error) {
+    } catch (error, trace) {
+      Log.onError(error, trace);
       if (mounted)
         AdaptiveDialog.show(context,
             builder: (context) => tiamat.Text.label("$error"));
