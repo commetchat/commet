@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:collection/collection.dart';
 import 'package:commet/client/components/emoticon/emoji_pack.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_emoticon.dart';
@@ -39,8 +40,6 @@ class MatrixEmoticonPack implements EmoticonPack {
           packUsage: this.usage, shortcode: shortCode, usage: usage);
     }).toList();
   }
-
-  late Map<String, Emoticon> shortcodeToEmoticon;
 
   late Map<String, dynamic> state;
 
@@ -198,7 +197,7 @@ class MatrixEmoticonPack implements EmoticonPack {
 
   @override
   Emoticon? getByShortcode(String shortcode) {
-    return shortcodeToEmoticon[shortcode];
+    return emotes.firstWhereOrNull((i) => i.shortcode == shortcode);
   }
 
   @override

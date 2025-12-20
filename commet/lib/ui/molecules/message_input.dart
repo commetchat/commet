@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/emoticon/dynamic_emoticon_pack.dart';
+import 'package:commet/client/components/emoticon_recent/recent_emoticon_component.dart';
 import 'package:commet/client/components/gif/gif_component.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/layout_config.dart';
@@ -858,6 +860,22 @@ class MessageInputState extends State<MessageInput> {
       preferences.appScale;
 
   Widget buildEmojiPicker() {
+    var recent = widget.room.client
+        .getComponent<RecentEmoticonComponent>()
+        ?.getRecentTypedEmoticon(widget.room);
+    var availableEmoji = widget.availibleEmoticons!.toList();
+
+    if (recent != null && recent.isNotEmpty) {
+      availableEmoji.insert(
+          0,
+          DynamicEmoticonPack(
+              identifier: "dynamic_pack_frequently_used_typing",
+              displayName: "Frequently Used",
+              icon: Icons.schedule,
+              emoticons: recent,
+              usage: EmoticonUsage.all));
+    }
+
     return OverflowBox(
         minHeight: emotePickerHeight,
         maxHeight: emotePickerHeight,
@@ -865,7 +883,7 @@ class MessageInputState extends State<MessageInput> {
         child: !hasEmotePickerOpened
             ? Container()
             : EmoticonPicker(
-                emoji: widget.availibleEmoticons!,
+                emoji: availableEmoji,
                 stickers: widget.availibleStickers ?? [],
                 onEmojiPressed: insertEmoticon,
                 packListAxis:
@@ -1001,6 +1019,9 @@ class MessageInputState extends State<MessageInput> {
   }
 
   void insertEmoticon(Emoticon emote) {
+    var recents = widget.room.client.getComponent<RecentEmoticonComponent>();
+    recents?.typedEmoticon(widget.room, emote);
+
     var text = controller.text;
     var selection = controller.selection;
     int start = selection.start;

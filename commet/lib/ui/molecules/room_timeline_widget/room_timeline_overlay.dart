@@ -1,4 +1,5 @@
 import 'package:commet/main.dart';
+import 'package:commet/ui/atoms/emoji_widget.dart';
 import 'package:commet/ui/molecules/room_timeline_widget/room_timeline_overlay_button.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_menu.dart';
 import 'package:flutter/material.dart';
@@ -114,6 +115,14 @@ class TimelineOverlayState extends State<TimelineOverlay> {
   }
 
   Widget buildPrimaryMenu(BuildContext context) {
+    var reactions = currentMenu?.recentReactions;
+    if (reactions != null) {
+      if (reactions.length > 4) {
+        reactions = reactions.sublist(0, 4);
+      }
+    }
+    const double size = 30;
+
     return MouseRegion(
       child: DecoratedBox(
           key: menuKey,
@@ -128,16 +137,45 @@ class TimelineOverlayState extends State<TimelineOverlay> {
               ? Padding(
                   padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
                   child: Row(children: [
+                    for (var e in reactions!)
+                      buildAction(
+                          name: e.shortcode,
+                          child: EmojiWidget(
+                            e,
+                            height: size / 1.5,
+                            padding: const EdgeInsetsGeometry.all(2),
+                          ),
+                          onTap: () {
+                            currentMenu?.timeline.room
+                                .addReaction(currentMenu!.event, e);
+                          }),
+                    if (currentMenu!.addReactionAction != null)
+                      buildAction(
+                          name: currentMenu!.addReactionAction!.name,
+                          child: m.Icon(
+                            currentMenu!.addReactionAction!.icon,
+                            color: Theme.of(context).colorScheme.secondary,
+                            size: size / 1.5,
+                          ),
+                          onTap: () =>
+                              togglePopupMenu(currentMenu!.addReactionAction!)),
+                    SizedBox(height: 10, child: VerticalDivider()),
                     for (var e in currentMenu!.primaryActions)
                       buildAction(
                           name: e.name,
-                          icon: e.icon,
+                          child: m.Icon(
+                            e.icon,
+                            color: Theme.of(context).colorScheme.secondary,
+                            size: size / 1.5,
+                          ),
+                          size: size,
                           onTap: e.secondaryMenuBuilder != null
                               ? () => togglePopupMenu(e)
                               : () => e.action?.call(context)),
                     buildAction(
                         name: "Options",
-                        icon: m.Icons.more_vert,
+                        child: Icon(m.Icons.more_vert),
+                        size: size,
                         contextMenuItems: currentMenu!.secondaryActions
                             .map((e) => ContextMenuItem(
                                 text: e.name,
@@ -188,49 +226,43 @@ class TimelineOverlayState extends State<TimelineOverlay> {
   }
 
   Widget buildAction(
-      {required String name,
-      required IconData icon,
+      {required Widget child,
+      String? name,
       Function()? onTap,
+      double size = 30,
       List<ContextMenuItem>? contextMenuItems}) {
-    const double size = 30;
     var pad = const EdgeInsets.all(2);
-    return tiamat.Tooltip(
-      text: name,
-      child: m.Padding(
-        padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(size / 2),
-          child: Material(
-            color: Colors.transparent,
-            child: m.SizedBox(
-              width: size,
-              height: size,
-              child: contextMenuItems != null
-                  ? ContextMenu(
-                      modal: true,
-                      items: contextMenuItems,
-                      child: Padding(
-                        padding: pad,
-                        child: Icon(
-                          icon,
-                          size: size / 1.5,
-                        ),
-                      ),
-                    )
-                  : InkWell(
-                      onTap: onTap,
-                      child: Padding(
-                          padding: pad,
-                          child: Icon(
-                            color: Theme.of(context).colorScheme.secondary,
-                            icon,
-                            size: size / 1.5,
-                          )),
+
+    var result = m.Padding(
+      padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(size / 2),
+        child: Material(
+          color: Colors.transparent,
+          child: m.SizedBox(
+            width: size,
+            height: size,
+            child: contextMenuItems != null
+                ? ContextMenu(
+                    modal: true,
+                    items: contextMenuItems,
+                    child: Padding(
+                      padding: pad,
+                      child: child,
                     ),
-            ),
+                  )
+                : InkWell(
+                    onTap: onTap,
+                    child: Padding(
+                      padding: pad,
+                      child: child,
+                    )),
           ),
         ),
       ),
     );
+    if (name != null) return tiamat.Tooltip(text: name, child: result);
+
+    return result;
   }
 }
