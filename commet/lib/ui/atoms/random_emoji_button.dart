@@ -7,9 +7,11 @@ import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 
 class RandomEmojiButton extends StatefulWidget {
-  const RandomEmojiButton({this.size = 20, this.onTap, super.key});
+  const RandomEmojiButton(
+      {this.size = 20, this.toggled = false, this.onTap, super.key});
   final double size;
   final Function()? onTap;
+  final bool toggled;
 
   @override
   State<RandomEmojiButton> createState() => _RandomEmojiButtonState();
@@ -31,6 +33,8 @@ class _RandomEmojiButtonState extends State<RandomEmojiButton> {
 
     color =
         HSLColor.fromAHSL(1.0, hsl.hue, hsl.saturation, lightness).toColor();
+
+    bool showColor = hovered || widget.toggled;
 
     return SizedBox(
       width: widget.size,
@@ -59,16 +63,16 @@ class _RandomEmojiButtonState extends State<RandomEmojiButton> {
           },
           child: Center(
             child: AnimatedScale(
-              scale: hovered ? 1.2 : 1,
+              scale: showColor ? 1.2 : 1,
               curve: Curves.easeOutCubic,
               duration: Duration(milliseconds: 100),
               child: ColorFiltered(
                 colorFilter: ColorFilter.mode(
-                    color, hovered ? BlendMode.dst : (BlendMode.modulate)),
+                    color, showColor ? BlendMode.dst : (BlendMode.modulate)),
                 child: ColorFiltered(
-                  colorFilter: contrast(hovered ? 0 : 0.3),
+                  colorFilter: contrast(showColor ? 0 : 0.3),
                   child: ColorFiltered(
-                    colorFilter: saturationColorFilter(hovered ? 1 : 0),
+                    colorFilter: saturationColorFilter(showColor ? 1 : 0),
                     child: EmojiWidget(
                       UnicodeEmoticon(emoji),
                       padding: EdgeInsetsGeometry.all(1),

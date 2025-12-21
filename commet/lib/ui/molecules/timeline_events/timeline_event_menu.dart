@@ -16,6 +16,7 @@ import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/code_block.dart';
 import 'package:commet/ui/molecules/emoji_picker.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
+import 'package:commet/utils/autofill_utils.dart';
 import 'package:commet/utils/common_strings.dart';
 import 'package:commet/utils/download_utils.dart';
 import 'package:commet/utils/event_bus.dart';
@@ -172,12 +173,16 @@ class TimelineEventMenu {
         icon: Icons.add_reaction,
         secondaryMenuBuilder: (context, dismissSecondaryMenu) {
           return EmojiPicker(availableEmoji,
+              searchDelegate: (search) =>
+                  AutofillUtils.searchEmoticon(search, timeline.room, limit: 50)
+                      .whereType<AutofillSearchResultEmoticon>()
+                      .toList(),
               preferredTooltipDirection: AxisDirection.left,
               onEmoticonPressed: (emote) async {
-            timeline.room.addReaction(event, emote);
-            await Future.delayed(const Duration(milliseconds: 100));
-            dismissSecondaryMenu();
-          });
+                timeline.room.addReaction(event, emote);
+                await Future.delayed(const Duration(milliseconds: 100));
+                dismissSecondaryMenu();
+              });
         },
       );
     }

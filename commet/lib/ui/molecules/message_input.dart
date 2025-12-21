@@ -805,6 +805,16 @@ class MessageInputState extends State<MessageInput> {
   }
 
   Widget toggleEmojiButton() {
+    var button = SizedBox(
+        width: widget.size,
+        height: widget.size,
+        child: RandomEmojiButton(
+            size: widget.size,
+            onTap: toggleEmojiOverlay,
+            toggled: Layout.mobile ? showEmotePicker : false));
+
+    if (Layout.mobile) return button;
+
     return Padding(
         padding: const EdgeInsets.fromLTRB(0, 0, 2, 0),
         child: JustTheTooltip(
@@ -824,13 +834,7 @@ class MessageInputState extends State<MessageInput> {
               ),
             ),
           ),
-          child: SizedBox(
-              width: widget.size,
-              height: widget.size,
-              child: RandomEmojiButton(
-                size: widget.size,
-                onTap: toggleEmojiOverlay,
-              )),
+          child: button,
         ));
   }
 
@@ -908,6 +912,10 @@ class MessageInputState extends State<MessageInput> {
             ? Container()
             : EmoticonPicker(
                 emoji: availableEmoji,
+                searchDelegate: (search) =>
+                    AutofillUtils.searchEmoticon(search, widget.room, limit: 50)
+                        .whereType<AutofillSearchResultEmoticon>()
+                        .toList(),
                 stickers: widget.availibleStickers ?? [],
                 onEmojiPressed: insertEmoticon,
                 packListAxis:
