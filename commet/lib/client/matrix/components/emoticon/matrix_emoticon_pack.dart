@@ -10,7 +10,6 @@ import 'package:commet/client/matrix/components/emoticon/matrix_space_emoticon_c
 import 'package:commet/client/matrix/extensions/matrix_client_extensions.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:flutter/widgets.dart';
-import 'package:fuzzy/fuzzy.dart';
 import 'package:matrix/matrix.dart';
 
 class MatrixEmoticonPack implements EmoticonPack {
