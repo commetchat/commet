@@ -181,21 +181,6 @@ class MatrixEmoticonPack implements EmoticonPack {
   }
 
   @override
-  List<Emoticon> search(String searchText, [int limit = -1]) {
-    var fuzzy = Fuzzy<Emoticon>(emoji,
-        options: FuzzyOptions(threshold: 0.4, keys: [
-          WeightedKey(
-              name: "shortcode",
-              getter: (obj) {
-                return obj.shortcode ?? "";
-              },
-              weight: 1)
-        ]));
-
-    return fuzzy.search(searchText, limit).map((e) => e.item).toList();
-  }
-
-  @override
   Emoticon? getByShortcode(String shortcode) {
     return emotes.firstWhereOrNull((i) => i.shortcode == shortcode);
   }

@@ -82,11 +82,6 @@ class DynamicEmoticonPack implements EmoticonPack {
   String get ownerId => throw UnimplementedError();
 
   @override
-  List<Emoticon> search(String searchText, [int limit = -1]) {
-    throw UnimplementedError();
-  }
-
-  @override
   Future<void> setPackUsage(EmoticonUsage usage) {
     throw UnimplementedError();
   }

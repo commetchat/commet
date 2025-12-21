@@ -57,6 +57,4 @@ abstract class EmoticonPack {
   });
 
   Future<void> markAsGlobal(bool isGlobal);
-
-  List<Emoticon> search(String searchText, [int limit = -1]);
 }
