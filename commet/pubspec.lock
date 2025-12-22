@@ -1031,8 +1031,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "upstream-v1.1.1+patch.1"
-      resolved-ref: "31b093c391050468c881187e919814497112594b"
+      ref: "upstream-v1.1.1+patch.2"
+      resolved-ref: "5fb41f33916abfd7ad483557223b31abb40260e8"
       url: "https://github.com/commetchat/matrix-dart-sdk-drift-db.git"
     source: git
     version: "0.0.1"
