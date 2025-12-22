@@ -152,10 +152,6 @@ class MatrixCalendarRoomComponent
         continue;
       }
 
-      if (result.headers["content-type"]?.startsWith("text/calendar") != true) {
-        Log.e("Resulting information was not a calendar, continuing");
-        continue;
-      }
       var content = result.body;
       final iCal = ICalendar.fromString(content);
 
