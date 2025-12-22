@@ -102,6 +102,10 @@ class MatrixRecentEmoticonComponent
     String? customPackRoomId;
     String key = emoticon.key;
 
+    if (emoticon is UnicodeEmoticon) {
+      return RecentEmoji(key: key);
+    }
+
     if (emoticon is MatrixEmoticon) {
       if (emoticon.shortcode != null) {
         key = emoticon.shortcode!;
@@ -121,6 +125,10 @@ class MatrixRecentEmoticonComponent
           break;
         }
       }
+
+      if (customPackid == null) {
+        return null;
+      }
     }
 
     return RecentEmoji(
@@ -132,7 +140,7 @@ class MatrixRecentEmoticonComponent
   @override
   Future<void> reactedEmoticon(Room room, Emoticon emoticon) async {
     var emoji = toRecentEmoji(room, emoticon);
-    if (emoji == null) return;
+    if (emoji == null || emoji.key == "") return;
 
     _reactionEmoji = addToList(emoji, _reactionEmoji);
     reactionDebouncer.run(() => storeRecentReactions());
@@ -188,7 +196,11 @@ class MatrixRecentEmoticonComponent
     var list = content["recent_emoji"] as List<dynamic>?;
     if (list == null) return [];
 
-    return list.map((i) => RecentEmoji.fromjson(i)).nonNulls.toList();
+    return list
+        .map((i) => RecentEmoji.fromjson(i))
+        .nonNulls
+        .where((i) => i.key != "")
+        .toList();
   }
 
   @override
