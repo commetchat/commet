@@ -49,8 +49,6 @@ class _KeyboardAdaptorState extends State<KeyboardAdaptor> {
       sizeOverride = null;
     }
 
-    print("Padding: ${padding.bottom}");
-
     var contentHeight = (sizeOverride ?? offset) - padding.bottom;
     var pushHeight = (shouldPushContent ? (offset - padding.bottom) : 0.0);
     pushHeight = max(pushHeight, 0);
