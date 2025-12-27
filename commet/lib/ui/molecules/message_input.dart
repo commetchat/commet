@@ -1161,12 +1161,12 @@ class MessageInputState extends State<MessageInput> {
     //Add whitespace where necessary
     if (emote.slug.startsWith(":") || emote.slug.endsWith(":")) {
       if (start > 0) {
-        var startChar = text.characters.elementAt(start - 1);
+        var startChar = text[start - 1];
         if (startChar != " ") slug = " $slug";
       }
 
       if (end < text.length) {
-        var endChar = text.characters.elementAt(end);
+        var endChar = text[end];
         if (endChar != " ") slug = "$slug ";
       } else {
         slug = "$slug ";
