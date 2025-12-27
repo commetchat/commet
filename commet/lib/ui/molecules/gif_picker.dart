@@ -13,9 +13,11 @@ class GifPicker extends StatefulWidget {
       {super.key,
       this.gifPicked,
       this.search,
+      this.focus,
       this.placeholderText = "Search Gif"});
   final Future<void> Function(GifSearchResult gif)? gifPicked;
   final Future<List<GifSearchResult>> Function(String query)? search;
+  final FocusNode? focus;
 
   final String placeholderText;
 
@@ -114,6 +116,7 @@ class _GifPickerState extends State<GifPicker> {
             height: BuildConfig.DESKTOP ? 30 : null,
             child: TextField(
               controller: _textController,
+              focusNode: widget.focus,
               decoration: InputDecoration(
                   icon: const Icon(Icons.search),
                   isDense: true,
@@ -142,6 +145,7 @@ class _GifPickerState extends State<GifPicker> {
       child: MasonryGridView.extent(
         maxCrossAxisExtent: 300,
         mainAxisSpacing: 8,
+        padding: EdgeInsetsGeometry.all(0),
         crossAxisSpacing: 8,
         itemCount: searchResult!.length,
         itemBuilder: (context, index) {

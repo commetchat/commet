@@ -17,12 +17,14 @@ class EmojiPicker extends StatefulWidget {
       this.onlyStickers = false,
       this.staggered = false,
       this.searchDelegate,
+      this.focus,
       this.preferredTooltipDirection = AxisDirection.right,
       this.packListAxis = Axis.vertical});
   final void Function(Emoticon emoticon)? onEmoticonPressed;
   final List<EmoticonPack> packs;
   final double size;
   final Axis packListAxis;
+  final FocusNode? focus;
   final double packButtonSize;
   final bool staggered;
   final bool onlyStickers;
@@ -220,6 +222,7 @@ class _EmojiPickerState extends State<EmojiPicker> {
                           child: Padding(
                             padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                             child: TextField(
+                              focusNode: widget.focus,
                               controller: textController,
                               onChanged: onSearchTextChanged,
                               decoration: InputDecoration(

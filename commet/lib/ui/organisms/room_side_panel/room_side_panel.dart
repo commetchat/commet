@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:commet/config/layout_config.dart';
-import 'package:commet/ui/atoms/keyboard_adaptor.dart';
 import 'package:commet/ui/organisms/chat/chat.dart';
 import 'package:commet/ui/organisms/room_event_search/room_event_search_widget.dart';
 import 'package:commet/ui/organisms/room_members_list/room_members_list.dart';
@@ -139,35 +138,32 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
       caulkClipTopLeft: true,
       caulkClipBottomLeft: true,
       caulkPadBottom: true,
-      child: KeyboardAdaptor(
-        safeAreaTop: false,
-        Column(
-          children: [
-            Flexible(
-              child: Stack(
-                children: [
-                  Chat(
-                    widget.state.currentRoom!,
-                    threadId: currentThreadId,
-                    key: ValueKey(
-                        "room-timeline-key-${widget.state.currentRoom!.localId}_thread_$currentThreadId"),
-                  ),
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: Padding(
-                      padding: const EdgeInsets.all(24.0),
-                      child: tiamat.CircleButton(
-                        icon: Icons.close,
-                        radius: 24,
-                        onPressed: () => EventBus.closeThread.add(null),
-                      ),
+      child: Column(
+        children: [
+          Flexible(
+            child: Stack(
+              children: [
+                Chat(
+                  widget.state.currentRoom!,
+                  threadId: currentThreadId,
+                  key: ValueKey(
+                      "room-timeline-key-${widget.state.currentRoom!.localId}_thread_$currentThreadId"),
+                ),
+                Align(
+                  alignment: Alignment.topRight,
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: tiamat.CircleButton(
+                      icon: Icons.close,
+                      radius: 24,
+                      onPressed: () => EventBus.closeThread.add(null),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

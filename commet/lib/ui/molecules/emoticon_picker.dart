@@ -21,12 +21,18 @@ class EmoticonPicker extends StatefulWidget {
     this.onStickerPressed,
     this.onGifPressed,
     this.gifComponent,
+    this.emojiSearchFocus,
+    this.stickerSearchFocus,
+    this.gifSearchFocus,
     this.searchDelegate,
     this.packListAxis = Axis.vertical,
   });
   final List<EmoticonPack> emoji;
   final List<EmoticonPack> stickers;
   final GifComponent? gifComponent;
+  final FocusNode? emojiSearchFocus;
+  final FocusNode? stickerSearchFocus;
+  final FocusNode? gifSearchFocus;
   final bool allowGifSearch;
   final void Function(Emoticon emoticon)? onEmojiPressed;
   final void Function(Emoticon emoticon)? onStickerPressed;
@@ -75,6 +81,7 @@ class _EmoticonPickerState extends State<EmoticonPicker>
                 Tab(
                   child: EmojiPicker(
                     widget.emoji,
+                    focus: widget.emojiSearchFocus,
                     searchDelegate: (value) => widget.searchDelegate!
                         .call(value)
                         .where((i) => i.emoticon.isEmoji)
@@ -87,6 +94,7 @@ class _EmoticonPickerState extends State<EmoticonPicker>
                 Tab(
                   child: EmojiPicker(
                     widget.stickers,
+                    focus: widget.stickerSearchFocus,
                     searchDelegate: (value) => widget.searchDelegate!
                         .call(value)
                         .where((i) => i.emoticon.isSticker)
@@ -100,6 +108,7 @@ class _EmoticonPickerState extends State<EmoticonPicker>
                 if (widget.allowGifSearch && widget.gifComponent != null)
                   Tab(
                     child: GifPicker(
+                      focus: widget.gifSearchFocus,
                       search: widget.gifComponent!.search,
                       placeholderText: widget.gifComponent!.searchPlaceholder,
                       gifPicked: widget.onGifPressed,

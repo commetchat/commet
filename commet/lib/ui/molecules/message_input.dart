@@ -9,6 +9,7 @@ import 'package:commet/config/layout_config.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/emoji_widget.dart';
+import 'package:commet/ui/atoms/keyboard_adaptor.dart';
 import 'package:commet/ui/atoms/random_emoji_button.dart';
 import 'package:commet/ui/atoms/rich_text_field.dart';
 import 'package:commet/ui/molecules/attachment_icon.dart';
@@ -19,6 +20,7 @@ import 'package:commet/ui/organisms/chat/chat.dart';
 import 'package:commet/client/components/emoticon/emoji_pack.dart';
 import 'package:commet/client/components/gif/gif_search_result.dart';
 import 'package:commet/utils/autofill_utils.dart';
+import 'package:commet/utils/debounce.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/gestures.dart';
 
@@ -120,6 +122,10 @@ class MessageInput extends StatefulWidget {
 
 class MessageInputState extends State<MessageInput> {
   late FocusNode textFocus;
+  FocusNode emojiSearchFocus = FocusNode();
+  FocusNode stickerSearchFocus = FocusNode();
+  FocusNode gifSearchFocus = FocusNode();
+
   late TextEditingController controller;
   late JustTheController emojiOverlayController = JustTheController();
   StreamSubscription? keyboardFocusSubscription;
@@ -131,6 +137,9 @@ class MessageInputState extends State<MessageInput> {
   List<AutofillSearchResult>? autoFillResults;
   Client? senderOverride;
   JustTheController emojiTooltipController = JustTheController();
+
+  KeyboardAdaptorController keyboardAdaptorController =
+      KeyboardAdaptorController();
 
   int? autoFillSelection;
   (int, int)? autoFillRange;
@@ -169,6 +178,7 @@ class MessageInputState extends State<MessageInput> {
     setInputTextSubscription = widget.setInputText?.listen(onSetInputText);
 
     textFocus = FocusNode(onKeyEvent: onKey);
+    textFocus.addListener(onTextFocusChanged);
 
     if (Layout.desktop) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -277,25 +287,68 @@ class MessageInputState extends State<MessageInput> {
       if (controller.text.trim().isEmpty) return;
     }
 
-    setState(() {
-      showEmotePicker = false;
-    });
-
     widget.onSendMessage
         ?.call(controller.text.trim(), overrideClient: senderOverride);
   }
 
+  // This duration is to try and hide the transition from keyboard popup animation
+  Debouncer removeHeightOverrideDebouncer =
+      Debouncer(delay: Duration(seconds: 1));
+
+  bool get isInEmojiPicker => showEmotePicker && !textFocus.hasFocus;
+
   void toggleEmojiOverlay() {
     setState(() {
-      showEmotePicker = !showEmotePicker;
+      if (Layout.mobile) {
+        if (isInEmojiPicker) {
+          onKeyboardFocusRequested();
+          clearKeyboardOverride();
+        } else {
+          showEmotePicker = true;
+          keyboardAdaptorController.keepCurrentSize?.call();
+          removeHeightOverrideDebouncer.cancel();
+          if (textFocus.hasFocus) {
+            unfocus();
+          }
+        }
+      }
 
       if (Layout.desktop) {
+        showEmotePicker = !showEmotePicker;
         emojiTooltipController.showTooltip(autoClose: false);
       }
+
       if (showEmotePicker) {
         hasEmotePickerOpened = true;
       }
     });
+  }
+
+  void clearKeyboardOverride({bool debounce = true}) {
+    final func = () {
+      if (showEmotePicker) {
+        showEmotePicker = false;
+      }
+
+      if (!showEmotePicker) {
+        keyboardAdaptorController.clearOverride?.call();
+      }
+    };
+
+    if (!debounce) {
+      removeHeightOverrideDebouncer.cancel();
+      func();
+    }
+
+    removeHeightOverrideDebouncer.run(func);
+  }
+
+  void onTextFocusChanged() {
+    print("Focus changed!! ${textFocus.hasFocus}");
+
+    if (textFocus.hasFocus) {
+      clearKeyboardOverride();
+    }
   }
 
   void updateAutofillScroll() {
@@ -533,83 +586,104 @@ class MessageInputState extends State<MessageInput> {
 
     return Material(
       color: Colors.transparent,
-      child: TextFieldTapRegion(
-        child: IgnorePointer(
-          ignoring: widget.isProcessing,
-          child: Opacity(
-            opacity: widget.isProcessing ? 0.5 : 1,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (widget.typingIndicatorWidget != null)
-                  widget.typingIndicatorWidget!,
-                if (widget.interactionType != null) interactionText(),
-                if (widget.attachments != null &&
-                    widget.attachments!.isNotEmpty)
-                  displayAttachments(),
-                ConstrainedBox(
-                  constraints: const BoxConstraints(maxHeight: 200),
-                  child: Padding(
-                    padding: padding,
-                    child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (widget.enabled) addAttachmentButton(),
-                          Flexible(
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(5),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .surfaceContainerLow),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    textInput(context),
-                                    if (widget.enabled) toggleEmojiButton(),
-                                  ],
+      child: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) {
+          print(didPop);
+          print(result);
+        },
+        child: TextFieldTapRegion(
+          child: IgnorePointer(
+            ignoring: widget.isProcessing,
+            child: Opacity(
+              opacity: widget.isProcessing ? 0.5 : 1,
+              child: KeyboardAdaptor(
+                paddingContent: (Layout.mobile && showEmotePicker)
+                    ? buildEmojiPicker()
+                    : Container(),
+                shouldPushContent: () {
+                  if (emojiSearchFocus.hasFocus) {
+                    return true;
+                  }
+
+                  if (stickerSearchFocus.hasFocus) {
+                    return true;
+                  }
+
+                  if (gifSearchFocus.hasFocus) {
+                    return true;
+                  }
+
+                  return false;
+                },
+                controller: keyboardAdaptorController,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (widget.typingIndicatorWidget != null)
+                      widget.typingIndicatorWidget!,
+                    if (widget.interactionType != null) interactionText(),
+                    if (widget.attachments != null &&
+                        widget.attachments!.isNotEmpty)
+                      displayAttachments(),
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxHeight: 200),
+                      child: Padding(
+                        padding: padding,
+                        child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (widget.enabled) addAttachmentButton(),
+                              Flexible(
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(5),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .surfaceContainerLow),
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        textInput(context),
+                                        if (widget.enabled) toggleEmojiButton(),
+                                      ],
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ),
-                          if (widget.enabled) sendMessageButton()
-                        ]),
-                  ),
+                              if (widget.enabled) sendMessageButton()
+                            ]),
+                      ),
+                    ),
+                    SizedBox(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 2, 0, 0),
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              const SizedBox(height: 30),
+                              if (senderOverride != null) senderOverrideView(),
+                              if (autoFillResults != null)
+                                autofillResultsList(),
+                              if (autoFillResults == null)
+                                const Expanded(child: SizedBox()),
+                              if (widget.readIndicator != null &&
+                                  autoFillResults?.isEmpty != false)
+                                readReceipts()
+                            ]),
+                      ),
+                    ),
+                  ],
                 ),
-                SizedBox(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 2, 0, 0),
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          const SizedBox(height: 30),
-                          if (senderOverride != null) senderOverrideView(),
-                          if (autoFillResults != null) autofillResultsList(),
-                          if (autoFillResults == null)
-                            const Expanded(child: SizedBox()),
-                          if (widget.readIndicator != null &&
-                              autoFillResults?.isEmpty != false)
-                            readReceipts()
-                        ]),
-                  ),
-                ),
-                if (Layout.mobile)
-                  if (widget.availibleEmoticons != null &&
-                      widget.availibleStickers != null)
-                    AnimatedContainer(
-                      curve: Curves.easeOutExpo,
-                      duration: const Duration(milliseconds: 500),
-                      height: showEmotePicker ? emotePickerHeight : 0,
-                      child:
-                          ClipRect(child: buildEmojiPicker(emotePickerHeight)),
-                    )
-              ],
+              ),
             ),
           ),
         ),
@@ -811,7 +885,9 @@ class MessageInputState extends State<MessageInput> {
         child: RandomEmojiButton(
             size: widget.size,
             onTap: toggleEmojiOverlay,
-            toggled: Layout.mobile ? showEmotePicker : false));
+            toggled: Layout.mobile
+                ? (showEmotePicker && !textFocus.hasFocus)
+                : false));
 
     if (Layout.mobile) return button;
 
@@ -829,7 +905,12 @@ class MessageInputState extends State<MessageInput> {
                 child: SizedBox(
                   height: 500,
                   width: 500,
-                  child: buildEmojiPicker(502),
+                  child: OverflowBox(
+                      minHeight: 502,
+                      minWidth: 500,
+                      maxHeight: 502,
+                      maxWidth: 500,
+                      child: SizedBox(height: 502, child: buildEmojiPicker())),
                 ),
               ),
             ),
@@ -887,7 +968,7 @@ class MessageInputState extends State<MessageInput> {
       (MediaQuery.of(context).size.height / (BuildConfig.MOBILE ? 2.5 : 3)) /
       preferences.appScale;
 
-  Widget buildEmojiPicker(double height) {
+  Widget buildEmojiPicker() {
     var recent = widget.room.client
         .getComponent<RecentEmoticonComponent>()
         ?.getRecentTypedEmoticon(widget.room);
@@ -904,36 +985,34 @@ class MessageInputState extends State<MessageInput> {
               usage: EmoticonUsage.all));
     }
 
-    return OverflowBox(
-        minHeight: height,
-        maxHeight: height,
-        alignment: Alignment.topCenter,
-        child: !hasEmotePickerOpened
-            ? Container()
-            : EmoticonPicker(
-                emoji: availableEmoji,
-                searchDelegate: (search) =>
-                    AutofillUtils.searchEmoticon(search, widget.room, limit: 50)
-                        .whereType<AutofillSearchResultEmoticon>()
-                        .toList(),
-                stickers: widget.availibleStickers ?? [],
-                onEmojiPressed: insertEmoticon,
-                packListAxis:
-                    BuildConfig.DESKTOP ? Axis.vertical : Axis.horizontal,
-                allowGifSearch: preferences.tenorGifSearchEnabled,
-                gifComponent: widget.gifComponent,
-                onStickerPressed: (emoticon) {
-                  widget.sendSticker?.call(emoticon);
-                  setState(() {
-                    showEmotePicker = false;
-                  });
-                },
-                onGifPressed: (gif) async {
-                  await widget.sendGif?.call(gif);
-                  setState(() {
-                    showEmotePicker = false;
-                  });
-                }));
+    return !hasEmotePickerOpened
+        ? Container()
+        : EmoticonPicker(
+            emoji: availableEmoji,
+            emojiSearchFocus: emojiSearchFocus,
+            stickerSearchFocus: stickerSearchFocus,
+            gifSearchFocus: gifSearchFocus,
+            searchDelegate: (search) =>
+                AutofillUtils.searchEmoticon(search, widget.room, limit: 50)
+                    .whereType<AutofillSearchResultEmoticon>()
+                    .toList(),
+            stickers: widget.availibleStickers ?? [],
+            onEmojiPressed: insertEmoticon,
+            packListAxis: BuildConfig.DESKTOP ? Axis.vertical : Axis.horizontal,
+            allowGifSearch: preferences.tenorGifSearchEnabled,
+            gifComponent: widget.gifComponent,
+            onStickerPressed: (emoticon) {
+              widget.sendSticker?.call(emoticon);
+              setState(() {
+                clearKeyboardOverride(debounce: false);
+              });
+            },
+            onGifPressed: (gif) async {
+              await widget.sendGif?.call(gif);
+              setState(() {
+                clearKeyboardOverride(debounce: false);
+              });
+            });
   }
 
   Future<void> handlePickedAttachment(PendingFileAttachment attachment) async {
