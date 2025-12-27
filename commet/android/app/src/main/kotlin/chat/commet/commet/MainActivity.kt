@@ -1,11 +1,17 @@
 package chat.commet.commetapp
 
+import android.app.Activity
+import android.content.Context
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 import androidx.annotation.NonNull
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugins.GeneratedPluginRegistrant
 
-import android.content.Context
 
 class MainActivity: FlutterActivity() {
     override fun attachBaseContext(base: Context) {
@@ -17,7 +23,7 @@ class MainActivity: FlutterActivity() {
     }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
-        // do nothing, because the engine was been configured in provideEngine
+        registerMethods(flutterEngine, this);
     }
 
     companion object {
@@ -36,10 +42,42 @@ abstract class BaseActivity : FlutterActivity() {
 
     override fun getDartEntrypointFunctionName() = entryPoint
 
-    override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) =
-            GeneratedPluginRegistrant.registerWith(flutterEngine)
+    override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
+        registerMethods(flutterEngine, this);
+        GeneratedPluginRegistrant.registerWith(flutterEngine)
+    }
 }
 
 class BubbleActivity : BaseActivity() {
     override var entryPoint = "bubble"
+}
+
+fun registerMethods(flutterEngine: FlutterEngine, activity: Activity) {
+    MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "chat.commet.commetapp/utils").apply {
+        setMethodCallHandler { call, result ->
+            if(call.method == "dismissKeyboard") {
+                hideKeyboard(activity);
+                result.success(null);
+            }
+            if(call.method == "isKeyboardOpen") {
+                result.success(isKeyboardOpen(activity));
+            }
+        }
+    }
+}
+
+fun hideKeyboard(activity: Activity) {
+    val imm = activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+    //Find the currently focused view, so we can grab the correct window token from it.
+    var view = activity.getCurrentFocus()
+    //If no view currently has focus, create a new one, just so we can grab a window token from it
+    if (view == null) {
+        view = View(activity)
+    }
+    imm.hideSoftInputFromWindow(view.getWindowToken(), 0)
+}
+
+fun isKeyboardOpen(activity: Activity): Boolean {
+    val insets = ViewCompat.getRootWindowInsets(activity.window.decorView.rootView)
+    return insets?.isVisible(WindowInsetsCompat.Type.ime()) == true
 }

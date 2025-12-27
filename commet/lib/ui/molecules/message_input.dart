@@ -7,6 +7,7 @@ import 'package:commet/client/components/gif/gif_component.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/config/platform_utils.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/emoji_widget.dart';
 import 'package:commet/ui/atoms/keyboard_adaptor.dart';
@@ -297,18 +298,28 @@ class MessageInputState extends State<MessageInput> {
 
   bool get isInEmojiPicker => showEmotePicker && !textFocus.hasFocus;
 
-  void toggleEmojiOverlay() {
+  Future<void> toggleEmojiOverlay() async {
+    var keyboardOpen = await isKeyboardOpen();
+    print("Keyboard open: $keyboardOpen");
+
     setState(() {
       if (Layout.mobile) {
-        if (isInEmojiPicker) {
-          onKeyboardFocusRequested();
+        if (showEmotePicker && !keyboardOpen) {
+          // STUPID: since we use android api to dismiss keyboard,
+          // requesting focus normally doesnt work, but if we do this
+          // we can get the onscreen keyboard back
+          unfocus();
+          Future.delayed(Duration(milliseconds: 100)).then((_) {
+            textFocus.requestFocus();
+          });
+
           clearKeyboardOverride();
         } else {
           showEmotePicker = true;
           keyboardAdaptorController.keepCurrentSize?.call();
           removeHeightOverrideDebouncer.cancel();
           if (textFocus.hasFocus) {
-            unfocus();
+            dismissKeyboard();
           }
         }
       }
@@ -341,6 +352,23 @@ class MessageInputState extends State<MessageInput> {
     }
 
     removeHeightOverrideDebouncer.run(func);
+  }
+
+  void dismissKeyboard() {
+    if (BuildConfig.ANDROID) {
+      const platform = const MethodChannel('chat.commet.commetapp/utils');
+      platform.invokeMethod("dismissKeyboard");
+    }
+  }
+
+  Future<bool> isKeyboardOpen() async {
+    if (BuildConfig.ANDROID) {
+      const platform = const MethodChannel('chat.commet.commetapp/utils');
+      var result = await platform.invokeMethod<bool>("isKeyboardOpen");
+      return result!;
+    } else {
+      return textFocus.hasFocus;
+    }
   }
 
   void onTextFocusChanged() {
