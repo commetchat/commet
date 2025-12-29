@@ -1,6 +1,7 @@
 import 'package:calendar_view/calendar_view.dart';
 import 'package:commet_calendar_widget/calendar.dart';
 import 'package:commet_calendar_widget/calendar_view_header.dart';
+import 'package:commet_calendar_widget/event_view.dart';
 import 'package:commet_calendar_widget/main.dart';
 import 'package:flutter/material.dart';
 
@@ -141,12 +142,17 @@ class _CalendarViewMonthState extends State<CalendarViewMonth> {
                               Expanded(
                                 child: SingleChildScrollView(
                                   child: Column(
+                                    spacing: 3,
                                     crossAxisAlignment:
                                         CrossAxisAlignment.stretch,
                                     mainAxisSize: MainAxisSize.max,
                                     children: event
                                         .map(
-                                          (e) => createEventEntry(e, context),
+                                          (e) => EventViewMini(
+                                            e,
+                                            widget.calendar,
+                                            onEventTapped: widget.onEventTapped,
+                                          ),
                                         )
                                         .toList(),
                                   ),
@@ -180,45 +186,6 @@ class _CalendarViewMonthState extends State<CalendarViewMonth> {
               ),
             ),
         ],
-      ),
-    );
-  }
-
-  Padding createEventEntry(
-      CalendarEventData<MatrixCalendarEventState> event, BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(2, 0, 2, 2),
-      child: Opacity(
-        opacity: event.event?.loaded != true ? 0.3 : 1.0,
-        child: Material(
-          color: widget.calendar.config.processEventColor(
-            event.color,
-            context,
-          ),
-          clipBehavior: Clip.hardEdge,
-          borderRadius: BorderRadius.circular(8),
-          child: InkWell(
-            onTap: () => widget.onEventTapped?.call(event.event!),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(8, 2, 8, 2),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    event.title,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          fontSize: 10,
-                          color: widget.calendar.config.processEventTextColor(
-                            event.color,
-                            context,
-                          ),
-                        ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
       ),
     );
   }

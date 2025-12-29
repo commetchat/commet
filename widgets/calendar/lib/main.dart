@@ -120,14 +120,15 @@ class _CalendarWidgetViewState extends State<CalendarWidgetView> {
       context: context,
       builder: (context) => CalendarEventEditor(
         config: widget.calendar.config,
-        submitEvent: (event) async {
+        submitEvent: (event, {String? eventType}) async {
           try {
-            return widget.calendar.createEvent(event);
+            return widget.calendar.createEvent(event, eventType: eventType);
           } catch (e, _) {
             return false;
           }
         },
         deleteEvent: (event) => widget.calendar.deleteEvent(event),
+        eventType: event.type,
         initialEvent: event.data,
         editingExistingEvent: true,
       ),
@@ -143,9 +144,9 @@ class _CalendarWidgetViewState extends State<CalendarWidgetView> {
       context: context,
       builder: (context) => CalendarEventEditor(
         config: widget.calendar.config,
-        submitEvent: (event) async {
+        submitEvent: (event, {String? eventType}) async {
           try {
-            return widget.calendar.createEvent(event);
+            return widget.calendar.createEvent(event, eventType: eventType);
           } catch (e, _) {
             return false;
           }

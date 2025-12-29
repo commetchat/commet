@@ -22,12 +22,21 @@ import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
 
 class CustomMatrixCalendarConfig extends MatrixCalendarConfig {
+  final MatrixRoom room;
+
+  CustomMatrixCalendarConfig(this.room);
+
   @override
   Future<T?> dialog<T>({
     required BuildContext context,
     required Widget Function(BuildContext context) builder,
   }) {
     return AdaptiveDialog.show(context, builder: builder);
+  }
+
+  @override
+  ImageProvider<Object>? getUserAvatar(String userId) {
+    return room.getMemberOrFallback(userId).avatar;
   }
 }
 
@@ -43,7 +52,7 @@ class MatrixCalendarRoomComponent
 
   StreamController controller = StreamController.broadcast();
 
-  late StoredStreamController<Map<String, String>> syncedCalendars;
+  late StoredStreamController<Map<String, SyncedCalendar>> syncedCalendars;
 
   static bool isCalendarRoom(MatrixRoom room) {
     return room.matrixRoom.getState(EventTypes.RoomCreate)?.content['type'] ==
@@ -52,7 +61,7 @@ class MatrixCalendarRoomComponent
 
   MatrixCalendarRoomComponent(this.client, this.room) {
     var api = MatrixWidgetRunner(client.matrixClient, room.matrixRoom);
-    _calendar = MatrixCalendar(api, config: CustomMatrixCalendarConfig());
+    _calendar = MatrixCalendar(api, config: CustomMatrixCalendarConfig(room));
     _calendar.controller.addListener(() {
       controller.add(());
     });
@@ -97,19 +106,30 @@ class MatrixCalendarRoomComponent
     }
   }
 
-  Map<String, String> getCalendarsFromAccountData() {
+  Map<String, SyncedCalendar> getCalendarsFromAccountData() {
     var data = room.matrixRoom.roomAccountData[syncedCalendarsEventType];
     if (data == null) {
       return {};
     }
 
     try {
-      var content = data.content["urls"];
+      var content = data.content["remote_calendars"];
       if (content == null) {
         return {};
       }
 
-      var result = Map<String, String>.from(content as dynamic);
+      var entries = content as Map<String, dynamic>;
+      var result = Map<String, SyncedCalendar>();
+
+      for (var entry in entries.entries) {
+        var id = entry.key;
+        var data = entry.value as Map<String, dynamic>;
+
+        var cal = SyncedCalendar.fromJson(data);
+        cal.id = id;
+        result[id] = cal;
+      }
+
       return result;
     } catch (_) {
       return {};
@@ -117,52 +137,70 @@ class MatrixCalendarRoomComponent
   }
 
   @override
-  Future<void> addSyncedCalendar(String url) {
-    var urls = syncedCalendars.value ?? {};
+  Future<void> addSyncedCalendar(SyncedCalendar calendar) {
+    var calendars = syncedCalendars.value ?? {};
+
     var uuid = const Uuid();
-    var id = uuid.v4();
-    urls = {};
-    urls[id] = url.toString();
+    var id = calendar.id ?? uuid.v4();
+    calendars[id] = calendar;
+
+    syncedCalendars.add(calendars);
+
     var c = room.matrixRoom.client;
 
-    Log.i("Setting synced calendars: ${urls}");
+    var result = Map<String, dynamic>();
+
+    for (var entry in calendars.entries) {
+      result[entry.key] = entry.value.toJson();
+    }
+
+    Log.i("Setting synced calendars: ${calendars}");
     return room.matrixRoom.client.setAccountDataPerRoom(
       c.userID!,
       room.matrixRoom.id,
       syncedCalendarsEventType,
-      {"urls": urls},
+      {"remote_calendars": result},
     );
   }
 
   @override
   Future<void> runCalendarSync() async {
-    var urls = syncedCalendars.value;
-    if (urls == null) {
+    var calendars = syncedCalendars.value;
+    if (calendars == null) {
       return;
     }
 
     Map<String, List<RFC8984CalendarEvent>> foundEvents = {};
 
-    for (var entry in urls.entries) {
-      var url = Uri.parse(entry.value);
-      var result = await http.get(url);
+    for (var entry in calendars.entries) {
+      if (entry.value.sourceType == CalendarSource.ical) {
+        var url = Uri.parse(entry.value.source);
+        var events = await getEventsFromIcsUrl(url);
 
-      if (result.statusCode != 200) {
-        Log.e("Failed to get calendar");
-        continue;
+        if (entry.value.overrideEventName != null) {
+          events = events
+              .map((i) => RFC8984CalendarEvent(
+                  uid: i.uid,
+                  updated: i.updated,
+                  title: entry.value.overrideEventName!,
+                  start: i.start,
+                  timeZone: i.timeZone,
+                  duration: i.duration))
+              .toList();
+        }
+
+        if (events.isNotEmpty) {
+          foundEvents[entry.key] = events;
+        }
       }
-
-      var content = result.body;
-      final iCal = ICalendar.fromString(content);
-
-      var results =
-          iCal.data.map((e) => fromIcal(entry.key, e)).nonNulls.toList();
-
-      Log.i("Found ${results.length} events to sync to calendar");
-
-      foundEvents[entry.key] = results;
+      calendar.syncEvents(foundEvents,
+          eventType: switch (entry.value.syncType) {
+            CalendarSyncType.events => "event",
+            CalendarSyncType.unavailability => "unavailability"
+          });
     }
-    calendar.syncEvents(foundEvents);
+
+    calendar.syncEvents({}, push: true);
   }
 
   RFC8984CalendarEvent? fromIcal(String calendarId, Map<String, dynamic> data) {
@@ -181,6 +219,13 @@ class MatrixCalendarRoomComponent
     RFC8984RecurrenceRule? recur;
     if (rrule != null) {
       recur = parseRecurrenceRule(rrule);
+    }
+
+    // if it doesnt recur, we dont need a timezone
+    if (recur == null) {
+      start = start?.toUtc();
+      end = end?.toUtc();
+      startTimezone = null;
     }
 
     if (start == null || end == null) {
@@ -278,5 +323,26 @@ class MatrixCalendarRoomComponent
     );
 
     calendar.removeAllEventsFromRemoteCalendar(id);
+  }
+
+  @override
+  Future<List<RFC8984CalendarEvent>> getEventsFromIcsUrl(Uri uri,
+      {String? calendarId}) async {
+    var result = await http.get(uri);
+
+    if (result.statusCode != 200) {
+      Log.e("Failed to get calendar");
+      return List.empty();
+    }
+
+    var content = result.body;
+    final iCal = ICalendar.fromString(content);
+
+    var id = calendarId ?? "unknown_id";
+
+    var results = iCal.data.map((e) => fromIcal(id, e)).nonNulls.toList();
+
+    Log.i("Found ${results.length} events to sync to calendar");
+    return results;
   }
 }

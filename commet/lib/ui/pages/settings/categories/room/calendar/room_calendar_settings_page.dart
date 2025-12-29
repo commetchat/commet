@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:commet/client/components/calendar_room/calendar_room_component.dart';
+import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
+import 'package:commet/ui/pages/settings/categories/room/calendar/add_calendar_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/atoms/tile.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -15,7 +17,7 @@ class RoomCalendarSettingsPage extends StatefulWidget {
 }
 
 class _RoomCalendarSettingsPageState extends State<RoomCalendarSettingsPage> {
-  late Map<String, String> syncedCalendarUrls;
+  late Map<String, SyncedCalendar> syncedCalendarUrls;
 
   TextEditingController controller = TextEditingController();
 
@@ -40,16 +42,6 @@ class _RoomCalendarSettingsPageState extends State<RoomCalendarSettingsPage> {
     super.dispose();
   }
 
-  addIcsUrl() {
-    var text = controller.text;
-
-    print(text);
-
-    widget.calendarComponent.addSyncedCalendar(text);
-
-    controller.text = "";
-  }
-
   @override
   Widget build(BuildContext context) {
     return tiamat.Panel(
@@ -66,6 +58,7 @@ class _RoomCalendarSettingsPageState extends State<RoomCalendarSettingsPage> {
               return Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
+                  mainAxisSize: MainAxisSize.max,
                   children: [
                     SizedBox(
                       width: 30,
@@ -85,9 +78,8 @@ class _RoomCalendarSettingsPageState extends State<RoomCalendarSettingsPage> {
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: tiamat.Text(
-                        Uri.parse(syncedCalendarUrls[remoteCalendarId]!).host,
-                      ),
+                      child:
+                          buildSyncEntry(syncedCalendarUrls[remoteCalendarId]!),
                     ),
                   ],
                 ),
@@ -97,49 +89,114 @@ class _RoomCalendarSettingsPageState extends State<RoomCalendarSettingsPage> {
           SizedBox(
             height: 50,
             child: Row(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Expanded(
-                  child: TextFormField(
-                    controller: controller,
-                    decoration: InputDecoration(labelText: "ICS Url"),
-                  ),
-                ),
                 SizedBox(
                   height: 50,
                   width: 50,
                   child: tiamat.IconButton(
                     icon: Icons.add,
-                    onPressed: addIcsUrl,
+                    onPressed: () => AdaptiveDialog.pickOne(
+                      context,
+                      title: "Sync Calendar Source",
+                      items: [
+                        CalendarSource.room,
+                        CalendarSource.ical,
+                      ],
+                      itemBuilder: (context, item, callback) {
+                        var text = switch (item) {
+                          CalendarSource.ical => "Calendar Url",
+                          CalendarSource.room => "Room",
+                        };
+
+                        var icon = switch (item) {
+                          CalendarSource.ical => Icons.calendar_month,
+                          CalendarSource.room => Icons.tag,
+                        };
+                        return SizedBox(
+                          height: 50,
+                          child: tiamat.TextButton(
+                            text,
+                            icon: icon,
+                            onTap: callback,
+                          ),
+                        );
+                      },
+                    ).then((type) {
+                      switch (type) {
+                        case CalendarSource.ical:
+                          AdaptiveDialog.show(context,
+                              builder: (context) => AddRemoteCalendarDialog(
+                                  widget.calendarComponent));
+                        case CalendarSource.room:
+                          // TODO: Handle this case.
+                          throw UnimplementedError();
+                        case _:
+                          break;
+                      }
+                    }),
                   ),
                 ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Align(
-              alignment: AlignmentGeometry.centerRight,
-              child: tiamat.Button.secondary(
-                text: "Run Sync",
-                isLoading: runningSync,
-                onTap: () {
-                  setState(() {
-                    runningSync = true;
-                  });
+                if (syncedCalendarUrls.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Align(
+                      alignment: AlignmentGeometry.centerRight,
+                      child: tiamat.Button.secondary(
+                        text: "Run Sync",
+                        isLoading: runningSync,
+                        onTap: () {
+                          setState(() {
+                            runningSync = true;
+                          });
 
-                  widget.calendarComponent.runCalendarSync().then((_) {
-                    setState(() {
-                      runningSync = false;
-                    });
-                  });
-                },
-              ),
+                          widget.calendarComponent.runCalendarSync().then((_) {
+                            setState(() {
+                              runningSync = false;
+                            });
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget buildSyncEntry(SyncedCalendar calendar) {
+    var description = switch (calendar.sourceType) {
+      CalendarSource.ical => Uri.parse(calendar.source).host,
+      CalendarSource.room => "Room ${calendar.source}",
+    };
+
+    var entryStyle = Theme.of(context).textTheme.bodyMedium!.copyWith(
+          color: Theme.of(context).colorScheme.secondary,
+          fontWeight: FontWeight.w400,
+          fontSize: 12,
+        );
+
+    return RichText(
+      text: TextSpan(children: [
+        TextSpan(text: description),
+        TextSpan(text: " as ", style: entryStyle),
+        TextSpan(
+          text: switch (calendar.syncType) {
+            CalendarSyncType.events => "Events",
+            CalendarSyncType.unavailability => "Unavailability",
+          },
+        ),
+        if (calendar.overrideEventName != null)
+          TextSpan(text: " with name ", style: entryStyle),
+        if (calendar.overrideEventName != null)
+          TextSpan(text: "'${calendar.overrideEventName!}'"),
+        if (preferences.developerMode)
+          TextSpan(text: " (${calendar.id})", style: entryStyle)
+      ]),
     );
   }
 }

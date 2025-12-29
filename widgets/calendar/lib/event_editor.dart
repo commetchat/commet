@@ -18,12 +18,15 @@ class CalendarEventEditor extends StatefulWidget {
     required this.config,
     required this.editingExistingEvent,
     this.deleteEvent,
+    this.eventType,
     super.key,
   });
   final RFC8984CalendarEvent? initialEvent;
   final MatrixCalendarConfig config;
+  final String? eventType;
   final bool editingExistingEvent;
-  final Future<bool> Function(RFC8984CalendarEvent event) submitEvent;
+  final Future<bool> Function(RFC8984CalendarEvent event, {String? eventType})
+      submitEvent;
   final Future<void> Function(RFC8984CalendarEvent event)? deleteEvent;
 
   @override
@@ -42,6 +45,8 @@ class _CalendarEventEditorState extends State<CalendarEventEditor> {
   RFC8984RecurrenceRule? recurrenceRule;
 
   late bool allDayEvent;
+
+  String eventType = "event";
 
   bool get requiresTimezone =>
       !allDayEvent &&
@@ -82,6 +87,9 @@ class _CalendarEventEditorState extends State<CalendarEventEditor> {
     pickedStartDate = time;
     pickedStartTime = TimeOfDay.fromDateTime(time);
     timezone = widget.initialEvent?.timeZone;
+    if (widget.eventType != null) {
+      eventType = widget.eventType!;
+    }
     recurrenceRule = widget.initialEvent?.recurrenceRules?.firstOrNull;
 
     if (timezone == null) {
@@ -93,7 +101,7 @@ class _CalendarEventEditorState extends State<CalendarEventEditor> {
     allDayEvent = widget.initialEvent?.duration == Duration(hours: 24) &&
         widget.initialEvent?.start.isUtc == false;
 
-    var end = time.add(Duration(hours: 1));
+    var end = time.add(widget.initialEvent?.duration ?? Duration(hours: 1));
     pickedEndDate = end;
     pickedEndTime = TimeOfDay.fromDateTime(end);
 
@@ -140,6 +148,21 @@ class _CalendarEventEditorState extends State<CalendarEventEditor> {
                 eventName = value;
               }),
             ),
+          ),
+          SegmentedButton(
+            emptySelectionAllowed: true,
+            multiSelectionEnabled: false,
+            showSelectedIcon: false,
+            segments: [
+              ButtonSegment(value: "event", label: Text("Event")),
+              ButtonSegment(
+                  value: "unavailability", label: Text("Unavailability")),
+            ],
+            expandedInsets: EdgeInsets.all(0),
+            selected: {eventType},
+            onSelectionChanged: (a) => setState(() {
+              eventType = a.first;
+            }),
           ),
           // Start Time
           SizedBox(
@@ -371,8 +394,9 @@ class _CalendarEventEditorState extends State<CalendarEventEditor> {
                           });
 
                           try {
-                            var succeeded =
-                                await widget.submitEvent(event).timeout(
+                            var succeeded = await widget
+                                .submitEvent(event, eventType: eventType)
+                                .timeout(
                               Duration(seconds: 10),
                               onTimeout: () async {
                                 setState(() {

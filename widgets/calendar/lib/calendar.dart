@@ -20,7 +20,9 @@ class MatrixCalendarEventState {
   String? remoteSourceId;
   String? type;
 
-  MatrixCalendarEventState({this.senderId, required this.data});
+  bool get isUnavailability => type == "unavailability";
+
+  MatrixCalendarEventState({this.senderId, required this.data, this.type});
 }
 
 class MatrixCalendarConfig {
@@ -90,6 +92,14 @@ class MatrixCalendarConfig {
 
     var local = utc.native.toLocal();
     return local;
+  }
+
+  ImageProvider? getUserAvatar(String userId) {
+    return null;
+  }
+
+  String? getUserDisplayname(String userId) {
+    return userId.split("@")[1].split(":").first;
   }
 
   const MatrixCalendarConfig();
@@ -184,7 +194,8 @@ class MatrixCalendar {
             var mxCalendarEvent = RFC8984CalendarEvent.fromJson(rfc8984Event);
 
             var color = config.getColorFromUser(sender);
-            var calendarEvents = fromRfcEvent(mxCalendarEvent);
+            var calendarEvents =
+                fromRfcEvent(mxCalendarEvent, eventType: eventType);
             for (var calendarEvent in calendarEvents) {
               calendarEvent = calendarEvent.copyWith(color: color);
               calendarEvent.event!.senderId = sender;
@@ -217,8 +228,8 @@ class MatrixCalendar {
   // Converts an RFC8984 Calendar events to a events which can be displayed by the calendar widget
   // If an event spans multiple days, it gets split in to one event per day
   List<CalendarEventData<MatrixCalendarEventState>> fromRfcEvent(
-    RFC8984CalendarEvent event,
-  ) {
+      RFC8984CalendarEvent event,
+      {String? eventType}) {
     var eventTimezone = event.timeZone;
     var localTime = config.convertToLocalTime(event.start, eventTimezone);
 
@@ -240,7 +251,7 @@ class MatrixCalendar {
       startTime: localTime,
       endTime: clippedEndTime,
       recurrenceSettings: toRecurrenceSettings(event),
-      event: MatrixCalendarEventState(data: event),
+      event: MatrixCalendarEventState(data: event, type: eventType),
     );
 
     events.add(finalEvent);
@@ -263,7 +274,7 @@ class MatrixCalendar {
             endTime: newClippedEndTime.subtract(
               Duration(minutes: 1),
             ), // to prevent the calendar view from considering this as 'all day event'
-            event: MatrixCalendarEventState(data: event),
+            event: MatrixCalendarEventState(data: event, type: eventType),
           ),
         );
 
@@ -293,9 +304,8 @@ class MatrixCalendar {
     return label;
   }
 
-  Future<void> syncEvents(
-    Map<String, List<RFC8984CalendarEvent>> events,
-  ) async {
+  Future<void> syncEvents(Map<String, List<RFC8984CalendarEvent>> events,
+      {String? eventType, bool push = false}) async {
     for (var entry in events.entries) {
       var eventsToSync = entry.value;
       var remoteSourceId = entry.key;
@@ -308,23 +318,23 @@ class MatrixCalendar {
       }
 
       for (var event in eventsToSync) {
-        var calendarEvents = fromRfcEvent(event);
+        var calendarEvents = fromRfcEvent(event, eventType: eventType);
         for (var calendarEvent in calendarEvents) {
           var color = config.getColorFromUser(widgetApi.userId);
 
           calendarEvent = calendarEvent.copyWith(color: color);
           calendarEvent.event!.senderId = widgetApi.userId;
           calendarEvent.event!.remoteSourceId = remoteSourceId;
-          calendarEvent.event!.type = "event";
 
           controller.add(calendarEvent);
         }
       }
     }
 
-    await _syncControllerEventsToRoomState();
-
-    updateFromRoomState();
+    if (push) {
+      await _syncControllerEventsToRoomState();
+      updateFromRoomState();
+    }
   }
 
   Future<void> removeAllEventsFromRemoteCalendar(String id) async {
@@ -341,14 +351,15 @@ class MatrixCalendar {
     await _syncControllerEventsToRoomState();
   }
 
-  Future<bool> createEvent(RFC8984CalendarEvent event) async {
+  Future<bool> createEvent(RFC8984CalendarEvent event,
+      {String? eventType}) async {
     if (event.uid == "") {
       event.uid = _generateId();
     }
 
     controller.removeWhere((e) => e.event?.data.uid == event.uid);
 
-    var calendarEvents = fromRfcEvent(event);
+    var calendarEvents = fromRfcEvent(event, eventType: eventType);
     for (var calendarEvent in calendarEvents) {
       var color = config.getColorFromUser(widgetApi.userId);
 

@@ -1,7 +1,9 @@
 import 'package:calendar_view/calendar_view.dart';
 import 'package:commet_calendar_widget/calendar.dart';
 import 'package:commet_calendar_widget/calendar_view_header.dart';
+import 'package:commet_calendar_widget/event_view.dart';
 import 'package:commet_calendar_widget/main.dart';
+import 'package:commet_calendar_widget/unavailability_painter.dart';
 import 'package:flutter/material.dart';
 
 class CalendarViewDay extends StatefulWidget {
@@ -78,36 +80,7 @@ class _CalendarViewDayState extends State<CalendarViewDay> {
                     mainAxisSize: MainAxisSize.max,
                     children: events.map((e) {
                       return Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
-                          child: Material(
-                            clipBehavior: Clip.hardEdge,
-                            borderRadius: BorderRadius.circular(8),
-                            color: widget.calendar.config.processEventColor(
-                              e.color,
-                              context,
-                            ),
-                            child: InkWell(
-                              onTap: () => widget.onEventTapped?.call(e.event!),
-                              child: Padding(
-                                padding: const EdgeInsets.fromLTRB(8, 2, 8, 2),
-                                child: Text(
-                                  e.title,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodySmall
-                                      ?.copyWith(
-                                        color: widget.calendar.config
-                                            .processEventTextColor(
-                                          e.color,
-                                          context,
-                                        ),
-                                      ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
+                        child: EventViewMini(e, widget.calendar),
                       );
                     }).toList(),
                   );
@@ -118,104 +91,15 @@ class _CalendarViewDayState extends State<CalendarViewDay> {
                 eventTileBuilder:
                     (date, events, boundary, startDuration, endDuration) {
                   var event = events.first;
+
                   return Padding(
-                    padding: const EdgeInsets.fromLTRB(2, 1, 12, 0),
-                    child: Opacity(
-                      opacity: events.first.event?.loaded != true ? 0.3 : 1.0,
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: ClipRect(
-                          child: Material(
-                            clipBehavior: Clip.hardEdge,
-                            borderRadius: BorderRadius.circular(8),
-                            color: widget.calendar.config.processEventColor(
-                              event.color,
-                              context,
-                            ),
-                            child: InkWell(
-                              onTap: () =>
-                                  widget.onEventTapped?.call(event.event!),
-                              child: Stack(
-                                children: [
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(8, 4, 4, 0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          event.title,
-                                          maxLines: ((boundary.height - 11)
-                                                      .toInt() /
-                                                  (12 +
-                                                      1)) // 11 calculated as sum of all top and bottom padding,  then divide by font size + 1
-                                              .toInt(),
-                                          overflow: TextOverflow.ellipsis,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodySmall
-                                              ?.copyWith(
-                                                fontSize: 12,
-                                                color: widget.calendar.config
-                                                    .processEventTextColor(
-                                                  event.color,
-                                                  context,
-                                                ),
-                                              ),
-                                        ),
-                                        if (event.description != null &&
-                                            boundary.height > 70)
-                                          Text(
-                                            maxLines: 3,
-                                            event.description!,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodySmall
-                                                ?.copyWith(
-                                                  color: widget.calendar.config
-                                                      .processEventTextColor(
-                                                    event.color,
-                                                    context,
-                                                  ),
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                ),
-                                          ),
-                                      ],
-                                    ),
-                                  ),
-                                  if (event.event?.remoteSourceId != null)
-                                    Align(
-                                      alignment: AlignmentGeometry.bottomRight,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(2.0),
-                                        child: Container(
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(2.0),
-                                            child: Icon(
-                                              size: 10,
-                                              Icons.satellite_alt,
-                                              color: widget.calendar.config
-                                                  .processEventTextColor(
-                                                event.color,
-                                                context,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
+                      padding: const EdgeInsets.fromLTRB(2, 1, 12, 0),
+                      child: EventViewBox(
+                        event,
+                        widget.calendar,
+                        boundary: boundary,
+                        onEventTapped: widget.onEventTapped,
+                      ));
                 },
                 onEventTap: (events, date) => print("Tapped event!"),
                 liveTimeIndicatorSettings: LiveTimeIndicatorSettings(
