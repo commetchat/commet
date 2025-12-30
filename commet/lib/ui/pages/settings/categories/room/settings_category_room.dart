@@ -119,15 +119,18 @@ class SettingsCategoryRoom implements SettingsCategory {
           icon: Icons.admin_panel_settings,
           makeScrollable: false,
           pageBuilder: (context) {
-            return MatrixRoomPermissionsPage((room as MatrixRoom).matrixRoom);
+            return MatrixRoomPermissionsPage(
+              (room as MatrixRoom).matrixRoom,
+              showCalendarPermissions: calendar?.hasCalendar == true,
+            );
           },
         ),
-      if (calendar != null)
+      if (calendar?.hasCalendar == true)
         SettingsTab(
           icon: Icons.calendar_month,
           label: labelRoomSettingsCalendar,
           pageBuilder: (context) {
-            return RoomCalendarSettingsPage(calendar);
+            return RoomCalendarSettingsPage(calendar!);
           },
         ),
       if (preferences.developerMode)

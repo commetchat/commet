@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 import 'dart:ui';
 
@@ -23,6 +24,27 @@ class MatrixCalendarEventState {
   bool get isUnavailability => type == "unavailability";
 
   MatrixCalendarEventState({this.senderId, required this.data, this.type});
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    if (other is! MatrixCalendarEventState) {
+      return false;
+    }
+
+    var js = data.toJson();
+    var otherJs = other.data.toJson();
+
+    js.remove("updated");
+    js.remove("uid");
+    otherJs.remove("updated");
+    otherJs.remove("uid");
+
+    return other.type == type &&
+        other.remoteSourceId == remoteSourceId &&
+        jsonEncode(js) == jsonEncode(otherJs);
+  }
 }
 
 class MatrixCalendarConfig {
@@ -225,6 +247,10 @@ class MatrixCalendar {
         .toList();
   }
 
+  List<MatrixCalendarEventState> getAllEvents() {
+    return controller.allEvents.map((i) => i.event!).toList();
+  }
+
   // Converts an RFC8984 Calendar events to a events which can be displayed by the calendar widget
   // If an event spans multiple days, it gets split in to one event per day
   List<CalendarEventData<MatrixCalendarEventState>> fromRfcEvent(
@@ -305,7 +331,9 @@ class MatrixCalendar {
   }
 
   Future<void> syncEvents(Map<String, List<RFC8984CalendarEvent>> events,
-      {String? eventType, bool push = false}) async {
+      {String? eventType,
+      bool push = false,
+      bool markAsDelivered = false}) async {
     for (var entry in events.entries) {
       var eventsToSync = entry.value;
       var remoteSourceId = entry.key;
@@ -334,6 +362,12 @@ class MatrixCalendar {
     if (push) {
       await _syncControllerEventsToRoomState();
       updateFromRoomState();
+    }
+
+    if (markAsDelivered) {
+      for (var event in controller.allEvents) {
+        event.event!.loaded = true;
+      }
     }
   }
 

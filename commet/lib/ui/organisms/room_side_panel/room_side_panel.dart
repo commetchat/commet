@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:commet/client/components/calendar_room/calendar_room_component.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/atoms/keyboard_adaptor.dart';
 import 'package:commet/ui/organisms/chat/chat.dart';
@@ -9,11 +10,12 @@ import 'package:commet/ui/organisms/room_pinned_messages/room_pinned_messages_wi
 import 'package:commet/ui/organisms/room_quick_access_menu/room_quick_access_menu_mobile.dart';
 import 'package:commet/ui/pages/main/main_page.dart';
 import 'package:commet/utils/event_bus.dart';
+import 'package:commet_calendar_widget/main.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/atoms/tile.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
-enum SidePanelState { defaultView, thread, search, pinnedMessages }
+enum SidePanelState { defaultView, thread, search, pinnedMessages, calendar }
 
 class RoomSidePanel extends StatefulWidget {
   const RoomSidePanel({required this.state, this.builder, super.key});
@@ -41,6 +43,7 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
       EventBus.closeThread.stream.listen(onCloseThreadSignal),
       EventBus.startSearch.stream.listen(onStartSearch),
       EventBus.openPinnedMessages.stream.listen(onShowPinnedMessages),
+      EventBus.openCalendar.stream.listen(onShowCalendar),
     ];
     super.initState();
   }
@@ -56,12 +59,7 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
 
   @override
   Widget build(BuildContext context) {
-    Widget result = Stack(
-      alignment: Alignment.topRight,
-      children: [
-        buildPanelContent(context),
-      ],
-    );
+    Widget result = buildPanelContent(context);
 
     result = Material(
       color: Colors.transparent,
@@ -89,6 +87,8 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
         return buildSearch();
       case SidePanelState.pinnedMessages:
         return buildPinnedMessages();
+      case SidePanelState.calendar:
+        return buildCalendar();
     }
   }
 
@@ -207,6 +207,16 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
     });
   }
 
+  void onShowCalendar(void event) {
+    setState(() {
+      if (state == SidePanelState.calendar) {
+        state = SidePanelState.defaultView;
+      } else {
+        state = SidePanelState.calendar;
+      }
+    });
+  }
+
   Widget buildPinnedMessages() {
     return SizedBox(
         width: Layout.desktop ? 300 : null,
@@ -229,5 +239,47 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
             ),
           ],
         ));
+  }
+
+  Widget buildCalendar() {
+    var calendar = widget.state.currentRoom?.getComponent<CalendarRoom>();
+    if (calendar?.hasCalendar != true) {
+      return Placeholder();
+    }
+
+    var query = MediaQuery.of(context);
+
+    return tiamat.Tile.low(
+      child: Column(
+        children: [
+          if (Layout.mobile)
+            RoomQuickAccessMenuViewMobile(
+              room: widget.state.currentRoom!,
+              key: ValueKey(
+                  "quick_access_menu_${widget.state.currentRoom!.localId}"),
+            ),
+          if (Layout.mobile)
+            Divider(
+              height: 2,
+            ),
+          Expanded(child: LayoutBuilder(builder: (context, constraints) {
+            var newQuery = query.copyWith(
+              size: Size(constraints.maxWidth, constraints.maxHeight),
+            );
+
+            return SizedBox(
+                width: constraints.maxWidth,
+                height: constraints.maxHeight,
+                child: MediaQuery(
+                    data: newQuery,
+                    child: CalendarWidgetView(
+                        calendar: calendar!.calendar!,
+                        watermark: false,
+                        useMobileLayout: Layout.mobile,
+                        autoDisposeCalendar: false)));
+          })),
+        ],
+      ),
+    );
   }
 }

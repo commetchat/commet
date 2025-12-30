@@ -166,10 +166,15 @@ class MatrixWidgetRunner implements MatrixWidgetApi {
       return;
     }
 
+    var currentStates = readableEvents
+        .map((i) => room.getState(i.type, i.stateKey ?? ""))
+        .nonNulls
+        .toList();
+
     Log.i("[${room.id}] Sending ${readableEvents.length} events");
 
     var result = {
-      "data": {"state": readableEvents.map((i) => i.toJson()).toList()},
+      "data": {"state": currentStates.map((i) => i.toJson()).toList()},
     };
 
     Function(Map<String, dynamic>)? callback = actionListeners["update_state"];

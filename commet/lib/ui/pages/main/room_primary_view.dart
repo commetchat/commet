@@ -36,9 +36,9 @@ class RoomPrimaryView extends StatelessWidget {
       );
     }
 
-    if (calendar != null) {
+    if (calendar?.isCalendarRoom == true) {
       return CalendarRoomView(
-        calendar,
+        calendar!,
         key: key,
       );
     }

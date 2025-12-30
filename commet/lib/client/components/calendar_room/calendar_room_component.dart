@@ -59,7 +59,11 @@ class SyncedCalendar {
 
 abstract class CalendarRoom<R extends Client, T extends Room>
     implements RoomComponent<R, T> {
-  MatrixCalendar get calendar;
+  MatrixCalendar? get calendar;
+
+  bool get hasCalendar;
+
+  bool get isCalendarRoom;
 
   Stream<void> get onEventsChanged;
 

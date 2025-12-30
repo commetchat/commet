@@ -1,4 +1,5 @@
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/calendar_room/calendar_room_component.dart';
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/components/event_search/event_search_component.dart';
 import 'package:commet/client/components/invitation/invitation_component.dart';
@@ -24,10 +25,16 @@ class RoomQuickAccessMenu {
 
     final calls = room.client.getComponent<VoipComponent>();
     final direct = room.client.getComponent<DirectMessagesComponent>();
+    final calendar = room.getComponent<CalendarRoom>();
     final bool canCall =
         calls != null && direct?.isRoomDirectMessage(room) == true;
 
     actions = [
+      if (calendar?.hasCalendar == true && calendar?.isCalendarRoom == false)
+        RoomQuickAccessMenuEntry(
+            name: "Calendar",
+            action: (context) => EventBus.openCalendar.add(null),
+            icon: Icons.calendar_month),
       if (invitation != null)
         RoomQuickAccessMenuEntry(
             name: "Invite",

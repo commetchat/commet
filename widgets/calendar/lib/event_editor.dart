@@ -165,60 +165,57 @@ class _CalendarEventEditorState extends State<CalendarEventEditor> {
             }),
           ),
           // Start Time
-          SizedBox(
-            width: 500,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                if (allDayEvent) Text("Date:"),
-                if (!allDayEvent) Text("From:"),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              if (allDayEvent) Text("Date:"),
+              if (!allDayEvent) Text("From:"),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextButton.icon(
+                    onPressed: () => showDatePicker(
+                      context: context,
+                      firstDate: DateTime.fromMicrosecondsSinceEpoch(0),
+                      lastDate: DateTime(2100),
+                      initialDate: pickedStartDate,
+                    ).then(
+                      (v) => setState(() {
+                        pickedStartDate = v ?? pickedStartDate;
+                      }),
+                    ),
+                    label: Text(
+                      DateFormat(
+                        DateFormat.YEAR_MONTH_WEEKDAY_DAY,
+                      ).format(pickedStartDate),
+                    ),
+                  ),
+                  if (!allDayEvent)
                     TextButton.icon(
-                      onPressed: () => showDatePicker(
+                      onPressed: () => showTimePicker(
                         context: context,
-                        firstDate: DateTime.fromMicrosecondsSinceEpoch(0),
-                        lastDate: DateTime(2100),
-                        initialDate: pickedStartDate,
+                        builder: (context, child) {
+                          return MediaQuery(
+                            data: MediaQuery.of(context)
+                                .copyWith(alwaysUse24HourFormat: use24h),
+                            child: child!,
+                          );
+                        },
+                        initialTime: pickedStartTime,
                       ).then(
-                        (v) => setState(() {
-                          pickedStartDate = v ?? pickedStartDate;
+                        (result) => setState(() {
+                          pickedStartTime = result ?? pickedStartTime;
                         }),
                       ),
-                      label: Text(
-                        DateFormat(
-                          DateFormat.YEAR_MONTH_WEEKDAY_DAY,
-                        ).format(pickedStartDate),
-                      ),
+                      label: SizedBox(
+                          width: 60,
+                          child: Align(
+                              alignment: AlignmentGeometry.centerRight,
+                              child: Text(formatter.format(startTime)))),
                     ),
-                    if (!allDayEvent)
-                      TextButton.icon(
-                        onPressed: () => showTimePicker(
-                          context: context,
-                          builder: (context, child) {
-                            return MediaQuery(
-                              data: MediaQuery.of(context)
-                                  .copyWith(alwaysUse24HourFormat: use24h),
-                              child: child!,
-                            );
-                          },
-                          initialTime: pickedStartTime,
-                        ).then(
-                          (result) => setState(() {
-                            pickedStartTime = result ?? pickedStartTime;
-                          }),
-                        ),
-                        label: SizedBox(
-                            width: 60,
-                            child: Align(
-                                alignment: AlignmentGeometry.centerRight,
-                                child: Text(formatter.format(startTime)))),
-                      ),
-                  ],
-                )
-              ],
-            ),
+                ],
+              )
+            ],
           ),
           // End Time
           if (!allDayEvent)

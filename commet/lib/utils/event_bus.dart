@@ -36,6 +36,8 @@ class EventBus {
   static StreamController<void> openPinnedMessages =
       StreamController.broadcast();
 
+  static StreamController<void> openCalendar = StreamController.broadcast();
+
   static StreamController<String> jumpToEvent = StreamController.broadcast();
 
   static StreamController<void> focusTimeline = StreamController.broadcast();

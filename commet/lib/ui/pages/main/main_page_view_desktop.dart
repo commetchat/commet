@@ -262,7 +262,8 @@ class MainPageViewDesktop extends StatelessWidget {
                       child: child,
                     );
 
-                    if (state == SidePanelState.thread) {
+                    if (state == SidePanelState.thread ||
+                        state == SidePanelState.calendar) {
                       result = Flexible(child: result);
                     }
 

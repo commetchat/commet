@@ -3,10 +3,8 @@ import 'package:commet_calendar_widget/calendar.dart';
 import 'package:commet_calendar_widget/calendar_view_header.dart';
 import 'package:commet_calendar_widget/event_view.dart';
 import 'package:commet_calendar_widget/main.dart';
-import 'package:commet_calendar_widget/unavailability_painter.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:tiamat/tiamat.dart' as tiamat;
 
 class CalendarViewWeek extends StatefulWidget {
   const CalendarViewWeek({
@@ -57,8 +55,6 @@ class _CalendarViewWeekState extends State<CalendarViewWeek> {
           const headerSize = 60.0;
           var heightPerMinute =
               (constraints.maxHeight - headerSize) / minutesPerDay;
-
-          print(heightPerMinute);
 
           const minHeightPerMinute = 0.4;
           if (heightPerMinute < minHeightPerMinute) {

@@ -6,6 +6,8 @@ import 'package:commet/client/matrix/components/matrix_sync_listener.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/matrix/widget/matrix_widget_runner.dart';
+import 'package:commet/config/app_config.dart';
+import 'package:commet/config/global_config.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
@@ -45,7 +47,7 @@ class MatrixCalendarRoomComponent
         CalendarRoom<MatrixClient, MatrixRoom>,
         MatrixRoomSyncListener,
         NeedsPostLoginInit {
-  late MatrixCalendar _calendar;
+  MatrixCalendar? _calendar;
 
   static const String syncedCalendarsEventType =
       "chat.commet.calendar.synced_calendar_urls";
@@ -54,17 +56,21 @@ class MatrixCalendarRoomComponent
 
   late StoredStreamController<Map<String, SyncedCalendar>> syncedCalendars;
 
-  static bool isCalendarRoom(MatrixRoom room) {
+  @override
+  bool get isCalendarRoom {
     return room.matrixRoom.getState(EventTypes.RoomCreate)?.content['type'] ==
         "chat.commet.calendar";
   }
 
   MatrixCalendarRoomComponent(this.client, this.room) {
     var api = MatrixWidgetRunner(client.matrixClient, room.matrixRoom);
-    _calendar = MatrixCalendar(api, config: CustomMatrixCalendarConfig(room));
-    _calendar.controller.addListener(() {
-      controller.add(());
-    });
+
+    if (isCalendarRoom) {
+      _calendar = MatrixCalendar(api, config: CustomMatrixCalendarConfig(room));
+      _calendar!.controller.addListener(() {
+        controller.add(());
+      });
+    }
 
     syncedCalendars = StoredStreamController(getCalendarsFromAccountData());
   }
@@ -73,7 +79,7 @@ class MatrixCalendarRoomComponent
   void postLoginInit() {
     if (!isHeadless) {
       TimezoneUtils.instance.init().then((_) {
-        _calendar.widgetApi.start();
+        _calendar?.widgetApi.start();
         CalendarSync.instance.startSyncing();
       });
     }
@@ -86,16 +92,42 @@ class MatrixCalendarRoomComponent
   MatrixRoom room;
 
   @override
-  MatrixCalendar get calendar {
-    return _calendar;
+  MatrixCalendar? get calendar {
+    if (_calendar != null) {
+      return _calendar!;
+    } else {
+      if (isCalendarRoom || hasCalendarWidget) {
+        var api = MatrixWidgetRunner(client.matrixClient, room.matrixRoom);
+        _calendar =
+            MatrixCalendar(api, config: CustomMatrixCalendarConfig(room));
+        _calendar!.controller.addListener(() {
+          controller.add(());
+        });
+
+        _calendar!.widgetApi.start();
+      }
+      return _calendar;
+    }
   }
+
+  bool get hasCalendarWidget =>
+      room.matrixRoom.states.containsKey("chat.commet.calendar_events") ||
+      room.matrixRoom.states["im.vector.modular.widgets"]?.values.any((i) =>
+              i.content["type"] == "chat.commet.widgets.calendar" ||
+              (i.content["url"] as String?)?.startsWith(
+                      "https://${GlobalConfig.calendarWidgetHost}") ==
+                  true) ==
+          true;
+
+  @override
+  bool get hasCalendar => isCalendarRoom || hasCalendarWidget;
 
   @override
   Stream<void> get onEventsChanged => controller.stream;
 
   @override
   List<MatrixCalendarEventState> getEventsOnDay(DateTime date) {
-    return _calendar.getEventsOnDay(date);
+    return _calendar?.getEventsOnDay(date) ?? [];
   }
 
   @override
@@ -165,10 +197,18 @@ class MatrixCalendarRoomComponent
 
   @override
   Future<void> runCalendarSync() async {
+    if (calendar == null) return;
+
     var calendars = syncedCalendars.value;
     if (calendars == null) {
       return;
     }
+
+    if (calendar!.getAllEvents().isEmpty) {
+      await Future.delayed(Duration(seconds: 5));
+    }
+
+    var existingEvents = calendar!.getAllEvents();
 
     Map<String, List<RFC8984CalendarEvent>> foundEvents = {};
 
@@ -193,14 +233,21 @@ class MatrixCalendarRoomComponent
           foundEvents[entry.key] = events;
         }
       }
-      calendar.syncEvents(foundEvents,
+      calendar!.syncEvents(foundEvents,
           eventType: switch (entry.value.syncType) {
             CalendarSyncType.events => "event",
             CalendarSyncType.unavailability => "unavailability"
           });
     }
 
-    calendar.syncEvents({}, push: true);
+    var eventsAfterSync = calendar!.getAllEvents();
+
+    if (shouldUpdateState(existingEvents, eventsAfterSync)) {
+      calendar!.syncEvents({}, push: true);
+    } else {
+      Log.i("Calendar sync result is identical, not updating room state");
+      calendar!.syncEvents({}, push: false, markAsDelivered: true);
+    }
   }
 
   RFC8984CalendarEvent? fromIcal(String calendarId, Map<String, dynamic> data) {
@@ -322,7 +369,7 @@ class MatrixCalendarRoomComponent
       {if (urls.isNotEmpty) "urls": urls},
     );
 
-    calendar.removeAllEventsFromRemoteCalendar(id);
+    calendar!.removeAllEventsFromRemoteCalendar(id);
   }
 
   @override
@@ -344,5 +391,21 @@ class MatrixCalendarRoomComponent
 
     Log.i("Found ${results.length} events to sync to calendar");
     return results;
+  }
+
+  bool shouldUpdateState(List<MatrixCalendarEventState> existingEvents,
+      List<MatrixCalendarEventState> eventsAfterSync) {
+    if (existingEvents.length != eventsAfterSync.length) return true;
+
+    existingEvents.sort((a, b) => a.data.start.compareTo(b.data.start));
+    eventsAfterSync.sort((a, b) => a.data.start.compareTo(b.data.start));
+
+    for (var event in eventsAfterSync) {
+      if (!existingEvents.any((i) => i == event)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 }

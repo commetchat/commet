@@ -70,9 +70,7 @@ class ComponentRegistry {
       if (Experiments.photoAlbumRooms &&
           MatrixPhotoAlbumRoomComponent.isPhotoAlbumRoom(room))
         MatrixPhotoAlbumRoomComponent(client, room),
-      if (Experiments.calendarRooms &&
-          MatrixCalendarRoomComponent.isCalendarRoom(room))
-        MatrixCalendarRoomComponent(client, room),
+      if (Experiments.calendarRooms) MatrixCalendarRoomComponent(client, room),
     ];
   }
 

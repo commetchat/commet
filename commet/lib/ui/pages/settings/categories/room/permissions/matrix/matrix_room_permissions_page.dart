@@ -36,8 +36,10 @@ class MatrixRoomRoleEntry {
 }
 
 class MatrixRoomPermissionsPage extends StatefulWidget {
-  const MatrixRoomPermissionsPage(this.room, {super.key});
+  const MatrixRoomPermissionsPage(this.room,
+      {super.key, this.showCalendarPermissions = false});
   final matrix.Room room;
+  final bool showCalendarPermissions;
 
   @override
   State<MatrixRoomPermissionsPage> createState() =>
@@ -233,9 +235,7 @@ class _MatrixRoomPermissionsPageState extends State<MatrixRoomPermissionsPage> {
       );
 
   void initPermissions() {
-    bool isCalendarRoom =
-        widget.room.getState(matrix.EventTypes.RoomCreate)?.content['type'] ==
-            "chat.commet.calendar";
+    bool isCalendarRoom = widget.showCalendarPermissions;
 
     roles = [
       // MatrixRoomRoleEntry(

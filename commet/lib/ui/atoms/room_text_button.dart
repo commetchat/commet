@@ -52,7 +52,7 @@ class _RoomTextButtonState extends State<RoomTextButton> {
       voipRoomParticipants = voipRoom?.getCurrentParticipants();
     }
 
-    if (calendarRoom != null) {
+    if (calendarRoom?.calendar != null) {
       calendarEvents = calendarRoom!.getEventsOnDay(DateTime.now());
     }
 
@@ -236,15 +236,16 @@ class _RoomTextButtonState extends State<RoomTextButton> {
   }
 
   Widget buildEvent(MatrixCalendarEventState event) {
-    var color = calendarRoom!.calendar.config.getColorFromUser(event.senderId!);
+    var color =
+        calendarRoom!.calendar!.config.getColorFromUser(event.senderId!);
 
     return TinyPill(
       event.data.title,
-      background: calendarRoom!.calendar.config.processEventColor(
+      background: calendarRoom!.calendar!.config.processEventColor(
         color,
         context,
       ),
-      foreground: calendarRoom!.calendar.config.processEventTextColor(
+      foreground: calendarRoom!.calendar!.config.processEventTextColor(
         color,
         context,
       ),

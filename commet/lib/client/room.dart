@@ -61,7 +61,7 @@ abstract class Room {
     }
 
     var calendar = getComponent<CalendarRoom>();
-    if (calendar != null) {
+    if (calendar?.isCalendarRoom == true) {
       return Icons.calendar_month;
     }
 
