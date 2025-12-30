@@ -21,6 +21,23 @@ abstract class Space {
 
   List<Room> get rooms;
 
+  List<Room> get roomsWithChildren {
+    var result = List<Room>.from(rooms);
+
+    for (var space in subspaces) {
+      _addSubspaceRooms(result, space);
+    }
+
+    return result;
+  }
+
+  void _addSubspaceRooms(List<Room> rooms, Space space) {
+    rooms.addAll(space.rooms);
+    for (var subspace in space.subspaces) {
+      _addSubspaceRooms(rooms, subspace);
+    }
+  }
+
   List<Space> get subspaces;
 
   bool get isTopLevel;
@@ -61,14 +78,16 @@ abstract class Space {
 
   String get localId => "${client.identifier}:$identifier";
 
-  int get notificationCount =>
-      rooms.where((element) => element.pushRule == PushRule.notify).fold(
+  int get notificationCount => roomsWithChildren
+      .where((element) => element.pushRule == PushRule.notify)
+      .fold(
           0,
           (previousValue, element) =>
               previousValue + element.notificationCount);
 
-  int get highlightedNotificationCount =>
-      rooms.where((element) => element.pushRule != PushRule.dontNotify).fold(
+  int get highlightedNotificationCount => roomsWithChildren
+      .where((element) => element.pushRule != PushRule.dontNotify)
+      .fold(
           0,
           (previousValue, element) =>
               previousValue + element.highlightedNotificationCount);
