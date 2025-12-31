@@ -53,7 +53,7 @@ class _RoomTextButtonState extends State<RoomTextButton> {
     }
 
     if (calendarRoom?.calendar != null) {
-      calendarEvents = calendarRoom!.getEventsOnDay(DateTime.now());
+      onCalendarEventsChanged(());
     }
 
     if (voipRoomParticipants?.isNotEmpty == true) {
@@ -79,7 +79,10 @@ class _RoomTextButtonState extends State<RoomTextButton> {
 
   void onCalendarEventsChanged(void event) {
     setState(() {
-      calendarEvents = calendarRoom!.getEventsOnDay(DateTime.now());
+      calendarEvents = calendarRoom!
+          .getEventsOnDay(DateTime.now())
+          .where((i) => i.isUnavailability == false)
+          .toList();
     });
   }
 
