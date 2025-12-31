@@ -6,8 +6,12 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 class EmojiWidget extends StatelessWidget {
   final Emoticon emoji;
   double height;
+  EdgeInsetsGeometry padding;
 
-  EmojiWidget(this.emoji, {super.key, this.height = 24});
+  EmojiWidget(this.emoji,
+      {super.key,
+      this.height = 24,
+      this.padding = const EdgeInsetsGeometry.all(0)});
 
   @override
   Widget build(BuildContext context) {
@@ -31,8 +35,11 @@ class EmojiWidget extends StatelessWidget {
                 height: height,
                 child: FittedBox(
                   fit: BoxFit.cover,
-                  child: Text(
-                    emoji.slug,
+                  child: Padding(
+                    padding: padding,
+                    child: Text(
+                      emoji.slug,
+                    ),
                   ),
                 ),
               ));

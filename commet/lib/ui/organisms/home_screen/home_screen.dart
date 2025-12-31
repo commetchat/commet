@@ -39,8 +39,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void onSync(void event) {
-    setState(() {
-      updateRecent();
+    Future.delayed(Duration(seconds: 1)).then((_) {
+      setState(() {
+        updateRecent();
+      });
     });
   }
 

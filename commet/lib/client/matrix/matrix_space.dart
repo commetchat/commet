@@ -164,6 +164,7 @@ class MatrixSpace extends Space {
     _subscriptions = List.from([
       client.onRoomAdded.listen((_) => updateRoomsList()),
       client.onRoomRemoved.listen(onClientRoomRemoved),
+      client.matrixClient.onSync.stream.listen(onMatrixSync),
 
       // Subscribe to all child update events
       _rooms.onAdd.listen(_onRoomAdded),
@@ -350,5 +351,16 @@ class MatrixSpace extends Space {
     }
 
     return null;
+  }
+
+  void onMatrixSync(matrix.SyncUpdate event) {
+    final update = event.rooms?.join;
+    if (update == null) return;
+
+    for (var id in update.keys) {
+      if (roomsWithChildren.any((i) => i.identifier == id)) {
+        _onUpdate.add(null);
+      }
+    }
   }
 }

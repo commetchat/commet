@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:commet/client/components/component_registry.dart';
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
+import 'package:commet/client/components/emoticon_recent/recent_emoticon_component.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/components/room_component.dart';
@@ -177,9 +178,17 @@ class MatrixRoom extends Room {
         .where((event) => event.roomId == _matrixRoom.id)
         .listen(onRoomStateUpdated);
 
+    _matrixRoom.client.onSync.stream
+        .where((i) => i.rooms?.join?.containsKey(_matrixRoom.id) == true)
+        .listen(onRoomSyncUpdate);
+
     _matrixRoom.client.onEvent.stream
         .where((event) => event.roomID == _matrixRoom.id)
         .listen(onEvent);
+
+    _matrixRoom.client.onNotification.stream
+        .where((event) => event.roomId == _matrixRoom.id)
+        .listen(onNotification);
 
     _permissions = MatrixRoomPermissions(_matrixRoom);
   }
@@ -209,6 +218,7 @@ class MatrixRoom extends Room {
     if (eventUpdate.content["type"] == matrix.EventTypes.Message) {
       var roomEvent =
           await matrixRoom.getEventById(eventUpdate.content['event_id']);
+
       if (roomEvent == null) {
         return;
       }
@@ -221,8 +231,13 @@ class MatrixRoom extends Room {
         lastEvent = event;
         _onUpdate.add(null);
       }
-      handleNotification(event);
     }
+  }
+
+  void onNotification(matrix.Event matrixEvent) {
+    var event = convertEvent(matrixEvent);
+
+    handleNotification(event);
   }
 
   Future<void> handleNotification(TimelineEvent event) async {
@@ -513,6 +528,9 @@ class MatrixRoom extends Room {
   @override
   Future<TimelineEvent?> addReaction(
       TimelineEvent reactingTo, Emoticon reaction) async {
+    var recent = client.getComponent<RecentEmoticonComponent>();
+    recent?.reactedEmoticon(this, reaction);
+
     var id = await _matrixRoom.sendReaction(reactingTo.eventId, reaction.key);
     if (id != null) {
       var event = await _matrixRoom.getEventById(id);
@@ -706,5 +724,12 @@ class MatrixRoom extends Room {
     }
 
     return null;
+  }
+
+  void onRoomSyncUpdate(matrix.SyncUpdate event) {
+    var update = event.rooms?.join?[_matrixRoom.id];
+    if (update == null) return;
+
+    _onUpdate.add(null);
   }
 }

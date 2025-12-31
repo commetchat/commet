@@ -66,6 +66,8 @@ class Preferences {
   static const String _disableTextCursorManagement =
       "disable_text_cursor_management";
 
+  static const String _emojiPickerHeight = "emoji_picker_height";
+
   final StreamController _onSettingChanged = StreamController.broadcast();
   Stream get onSettingChanged => _onSettingChanged.stream;
   bool isInit = false;
@@ -406,6 +408,14 @@ class Preferences {
 
   Future<void> setdisableTextCursorManagement(bool value) async {
     await _preferences!.setBool(_disableTextCursorManagement, value);
+    _onSettingChanged.add(null);
+  }
+
+  double get emojiPickerHeight =>
+      _preferences!.getDouble(_emojiPickerHeight) ?? 300;
+
+  Future<void> setEmojiPickerHeight(double value) async {
+    await _preferences!.setDouble(_emojiPickerHeight, value);
     _onSettingChanged.add(null);
   }
 }
