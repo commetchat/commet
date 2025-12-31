@@ -10,6 +10,10 @@ class EventBus {
   static StreamController<(String, String?)> openRoom =
       StreamController<(String, String?)>.broadcast();
 
+  /// First string is user id, Second string is client id, third string is context room
+  static StreamController<(String, String, String?)> openUserProfile =
+      StreamController<(String, String, String?)>.broadcast();
+
   /// 0] Client Id
   /// 1] Room Id
   /// 2] Thread Root Event Id

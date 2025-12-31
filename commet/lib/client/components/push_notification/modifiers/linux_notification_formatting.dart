@@ -12,6 +12,7 @@ import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/rich_text/matrix_html_parser.dart';
+import 'package:commet/utils/image/lod_image.dart';
 import 'package:commet/utils/image_utils.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -285,6 +286,10 @@ class NotificationModifierLinuxFormatting implements NotificationModifier {
       return cached;
     }
 
+    if (image case LODImageProvider _) {
+      await image.fetchFullRes();
+    }
+
     var i = await ImageUtils.imageProviderToImage(image);
 
     var recorder = ui.PictureRecorder();
@@ -315,11 +320,11 @@ class NotificationModifierLinuxFormatting implements NotificationModifier {
   }
 
   Future<String?> convertPlainText(String formattedContent, Room room) async {
-    final html = markdownToHtml(
-      formattedContent,
-      extensionSet: ExtensionSet([], [AutolinkExtensionSyntax()]),
-    );
-
+    final html = markdownToHtml(formattedContent,
+        extensionSet: ExtensionSet(
+          [],
+          [AutolinkExtensionSyntax()],
+        ));
     return convertMatrixHtml(html, room);
   }
 }

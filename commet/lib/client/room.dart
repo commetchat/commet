@@ -171,6 +171,8 @@ abstract class Room {
 
   Member getMemberOrFallback(String id);
 
+  Member? getMember(String id);
+
   Future<Member> fetchMember(String id);
 
   @override

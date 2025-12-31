@@ -43,10 +43,11 @@ class LinuxNotifier implements Notifier {
   late LinuxServerCapabilities capabilities;
 
   static void notificationResponse(NotificationResponse details) {
-    print("Received notification response!");
     final payload = jsonDecode(details.payload!) as Map<String, dynamic>;
 
-    if (details.actionId == "inline-reply") {
+    var action = details.actionId ?? payload["default_action_id"];
+
+    if (action == "inline-reply") {
       var clientId = payload['client_id'];
       var roomId = payload['room_id'];
       var eventId = payload['event_id'];
@@ -67,14 +68,14 @@ class LinuxNotifier implements Notifier {
       return;
     }
 
-    if ([callAccept, openRoom].contains(details.actionId)) {
+    if ([callAccept, openRoom].contains(action)) {
       final roomId = payload['room_id']!;
       EventBus.openRoom.add((roomId, null));
       windowManager.show();
       windowManager.focus();
     }
 
-    if ([callAccept, callDecline].contains(details.actionId)) {
+    if ([callAccept, callDecline].contains(action)) {
       final callId = payload['call_id'];
       final clientId = payload['client_id'];
       final session = clientManager?.callManager.currentSessions
@@ -83,11 +84,11 @@ class LinuxNotifier implements Notifier {
           .firstOrNull;
 
       if (session != null) {
-        if (details.actionId == callAccept) {
+        if (action == callAccept) {
           session.acceptCall(withMicrophone: true);
         }
 
-        if (details.actionId == callDecline) {
+        if (action == callDecline) {
           session.declineCall();
         }
       }
@@ -176,6 +177,10 @@ class LinuxNotifier implements Notifier {
     }
 
     var payload = {
+      // include default action here as well
+      // in some cases it seems `defaultActionName` comes back as null
+      // so we can use this as a fallback
+      "default_action_id": openRoom,
       "room_id": content.roomId,
       "client_id": content.clientId,
       "event_id": content.eventId,
@@ -221,6 +226,10 @@ class LinuxNotifier implements Notifier {
         ]);
 
     var payload = {
+      // include default action here as well
+      // in some cases it seems `defaultActionName` comes back as null
+      // so we can use this as a fallback
+      "default_action_id": openRoom,
       "room_id": content.roomId,
       "client_id": content.clientId,
       "call_id": content.callId

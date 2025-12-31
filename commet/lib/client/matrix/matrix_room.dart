@@ -697,4 +697,14 @@ class MatrixRoom extends Room {
         return false;
     }
   }
+
+  @override
+  Member? getMember(String id) {
+    final user = matrixRoom.getState(matrix.EventTypes.RoomMember, id);
+    if (user != null) {
+      return MatrixMember(matrixRoom.client, user.asUser(matrixRoom));
+    }
+
+    return null;
+  }
 }

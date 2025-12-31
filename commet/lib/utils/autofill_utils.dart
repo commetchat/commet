@@ -61,8 +61,12 @@ class AutofillUtils {
   }
 
   static List<AutofillSearchResult> searchUsers(String string, Room room) {
-    var result = room.memberIds.toList();
-    return result.map((e) => AutofillSearchResult(e, e)).toList();
+    var result =
+        room.memberIds.map((e) => room.getMemberOrFallback(e)).toList();
+    return result
+        .map((e) => AutofillSearchResultAvatar(
+            e.displayName, e.identifier, e.avatar, e.defaultColor))
+        .toList();
   }
 
   static List<AutofillSearchResult> searchRooms(String string, Room room) {
@@ -117,6 +121,14 @@ class AutofillSearchResult {
   String result;
   String slug;
   AutofillSearchResult(this.result, this.slug);
+}
+
+class AutofillSearchResultAvatar extends AutofillSearchResult {
+  ImageProvider? image;
+  Color fallbackColor;
+
+  AutofillSearchResultAvatar(
+      super.result, super.slug, this.image, this.fallbackColor);
 }
 
 class AutofillSearchResultEmoticon extends AutofillSearchResult {

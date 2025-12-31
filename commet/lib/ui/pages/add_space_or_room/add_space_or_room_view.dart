@@ -13,18 +13,18 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 import '../../molecules/account_selector.dart';
 
 class AddSpaceOrRoomView extends StatefulWidget {
-  const AddSpaceOrRoomView({
-    super.key,
-    this.client,
-    this.clients,
-    this.onCreate,
-    this.onJoin,
-    this.roomMode = false,
-    this.rooms,
-    this.loading = false,
-    this.onRoomsSelected,
-    this.initialPhase,
-  });
+  const AddSpaceOrRoomView(
+      {super.key,
+      this.client,
+      this.clients,
+      this.onCreate,
+      this.onJoin,
+      this.roomMode = false,
+      this.rooms,
+      this.loading = false,
+      this.initialRoomId,
+      this.onRoomsSelected,
+      this.initialPhase});
   final List<Client>? clients;
   final Client? client;
   final Function(Client client, CreateRoomArgs args)? onCreate;
@@ -33,6 +33,7 @@ class AddSpaceOrRoomView extends StatefulWidget {
   final AddSpaceOrRoomPhase? initialPhase;
   final bool roomMode;
   final bool loading;
+  final String? initialRoomId;
 
   final List<Room>? rooms;
 
@@ -55,7 +56,7 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
   RoomType type = RoomType.defaultRoom;
   TextEditingController nameController = TextEditingController();
   TextEditingController topicController = TextEditingController();
-  TextEditingController spaceAddressController = TextEditingController();
+  late TextEditingController spaceAddressController;
   GlobalKey<ToggleableListState> selectedRoomsState = GlobalKey();
 
   RoomPreview? spacePreview;
@@ -240,6 +241,12 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
     selectedClient = widget.client ?? widget.clients![0];
 
     if (widget.initialPhase != null) phase = widget.initialPhase!;
+    spaceAddressController = TextEditingController(text: widget.initialRoomId);
+
+    if (widget.initialRoomId != null) {
+      loadingSpacePreview = true;
+      spacePreviewDebounce.run(getSpacePreview);
+    }
 
     spaceAddressController.addListener(() {
       setState(() {
@@ -485,8 +492,7 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
                 ),
               ],
             ),
-            SizedBox(
-              height: 100,
+            Flexible(
               child: loadingSpacePreview
                   ? const Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -501,7 +507,7 @@ class _AddSpaceOrRoomViewState extends State<AddSpaceOrRoomView> {
                               tiamat.Text.label(labelCouldNotLoadRoomPreview),
                         ),
             ),
-            tiamat.Button.success(
+            tiamat.Button(
               isLoading: widget.loading,
               text: widget.roomMode
                   ? promptConfirmRoomJoin

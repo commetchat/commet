@@ -5,7 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_background/flutter_background.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
-class MatrixLivekitAndroidScreencaptureSource implements ScreenCaptureSource {
+class WebrtcAndroidScreencaptureSource implements ScreenCaptureSource {
   static Future<ScreenCaptureSource?> getCaptureSource(
       BuildContext context) async {
     if (PlatformUtils.isAndroid) {
@@ -46,7 +46,7 @@ class MatrixLivekitAndroidScreencaptureSource implements ScreenCaptureSource {
 
       await requestBackgroundPermission();
 
-      return MatrixLivekitAndroidScreencaptureSource();
+      return WebrtcAndroidScreencaptureSource();
     }
 
     return null;

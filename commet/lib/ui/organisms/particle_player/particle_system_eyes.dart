@@ -10,6 +10,10 @@ class MessageEffectEyes implements MessageEffectParticles {
   @override
   EcsParticleSystem? system;
 
+  final int numParticles;
+
+  MessageEffectEyes({this.numParticles = 300});
+
   @override
   Future<void> init() async {
     var data = await ImmutableBuffer.fromAsset(
@@ -27,7 +31,7 @@ class MessageEffectEyes implements MessageEffectParticles {
 
     system = ParticleSystemEyes(
         sprite: sprite, spriteSize: 0.4, gravity: -10, height: 500);
-    system!.setSize(300);
+    system!.setSize(numParticles);
   }
 
   void reset() {
@@ -58,6 +62,8 @@ class ParticleSystemEyes extends ParticleSystemRain {
 
     setPositionX(index, x);
     setPositionY(index, y);
+
+    setScale(index, (r.nextDouble() * 0.4).clamp(0.1, 0.4));
   }
 
   @override

@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'dart:ui' as ui;
@@ -27,7 +28,7 @@ class MessageEffectHug implements MessageEffectParticles {
 
     system = ParticleSystemEyes(
         sprite: sprite, spriteSize: 0.4, gravity: -10, height: 500);
-    system!.setSize(300);
+    system!.setSize(200);
   }
 
   void reset() {
@@ -39,6 +40,8 @@ class ParticleSystemEyes extends ParticleSystemRain {
   @override
   Alignment get alignment => Alignment.bottomLeft;
 
+  double time = 0;
+
   ParticleSystemEyes({
     super.sprite,
     super.spriteSize = 1,
@@ -49,6 +52,28 @@ class ParticleSystemEyes extends ParticleSystemRain {
   @override
   void processRotations(double delta) {
     return;
+  }
+
+  @override
+  void processVelocities(double delta) {
+    time += delta;
+    for (int i = 0; i < numParticles; i++) {
+      int iy = indexToPosYIndex(i);
+      int ix = indexToPosXIndex(i);
+      var vy = velocities[iy];
+      var vx = velocities[ix];
+
+      var r = (i % 100) / 100;
+
+      vy += gravity;
+      vy *= 0.98 - (r * 0.05);
+
+      r = (i % 20) / 20;
+      vx += sin(i.toDouble() + (r * time)) * 0.1;
+
+      velocities[iy] = vy;
+      velocities[ix] = vx;
+    }
   }
 
   @override
@@ -64,6 +89,7 @@ class ParticleSystemEyes extends ParticleSystemRain {
 
     setPositionX(index, x);
     setPositionY(index, y);
+    setScale(index, (r.nextDouble() * 0.2) + 0.2);
   }
 
   @override

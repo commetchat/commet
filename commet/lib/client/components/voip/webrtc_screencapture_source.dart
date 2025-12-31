@@ -1,3 +1,4 @@
+import 'package:commet/client/components/voip/android_screencapture_source.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/ui/organisms/call_view/screen_capture_source_dialog.dart';
@@ -12,6 +13,10 @@ class WebrtcScreencaptureSource implements ScreenCaptureSource {
 
   static Future<ScreenCaptureSource?> showSelectSourcePrompt(
       BuildContext context) async {
+    if (PlatformUtils.isAndroid) {
+      return WebrtcAndroidScreencaptureSource.getCaptureSource(context);
+    }
+
     bool isWayland = PlatformUtils.displayServer == "wayland";
 
     var sources = await desktopCapturer.getSources(

@@ -117,6 +117,9 @@ abstract class Client {
   /// Gets a room by ID. only returns rooms which the client is a member of, otherwise null
   Room? getRoom(String identifier);
 
+  /// Gets a room by alias. only returns rooms which the client is a member of, otherwise null
+  Room? getRoomByAlias(String identifier);
+
   /// Gets a space by ID. only returns spaces which the client is a member of, otherwise null
   Space? getSpace(String identifier);
 

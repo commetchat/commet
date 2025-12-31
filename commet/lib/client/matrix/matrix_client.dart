@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:collection/collection.dart';
 import 'package:commet/client/alert.dart';
 import 'package:commet/client/auth.dart';
 import 'package:commet/client/client_manager.dart';
@@ -655,7 +656,8 @@ class MatrixClient extends Client {
   Future<RoomPreview?> getRoomPreview(String address) async {
     try {
       return await _matrixClient.getRoomPreview(address);
-    } catch (exception) {
+    } catch (exception, trace) {
+      Log.onError(exception, trace);
       return null;
     }
   }
@@ -664,7 +666,8 @@ class MatrixClient extends Client {
   Future<RoomPreview?> getSpacePreview(String address) async {
     try {
       return await _matrixClient.getRoomPreview(address);
-    } catch (exception) {
+    } catch (exception, trace) {
+      Log.onError(exception, trace);
       return null;
     }
   }
@@ -788,4 +791,34 @@ class MatrixClient extends Client {
 
     return result;
   }
+
+  static (MatrixLinkType, String)? parseMatrixLink(Uri uri) {
+    if (uri.authority != "matrix.to") {
+      return null;
+    }
+
+    var mxid = Uri.decodeComponent(uri.fragment.substring(1));
+
+    if (mxid.startsWith("@")) {
+      return (MatrixLinkType.user, mxid);
+    }
+
+    if (mxid.startsWith("!")) {
+      return (MatrixLinkType.room, mxid);
+    }
+
+    if (mxid.startsWith("#")) {
+      return (MatrixLinkType.roomAlias, mxid);
+    }
+
+    return null;
+  }
+
+  @override
+  Room? getRoomByAlias(String identifier) {
+    return rooms.firstWhereOrNull(
+        (r) => (r as MatrixRoom).matrixRoom.canonicalAlias == identifier);
+  }
 }
+
+enum MatrixLinkType { room, roomAlias, user }

@@ -84,12 +84,13 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
 
   @override
   void initState() {
+    effects = widget.timeline.client.getComponent<MessageEffectComponent>();
+
     initFromTimeline(widget.timeline);
 
     controller = ScrollController(initialScrollOffset: -999999);
     EventBus.jumpToEvent.stream.listen(jumpToEvent);
     WidgetsBinding.instance.addPostFrameCallback(onAfterFirstFrame);
-    effects = widget.timeline.client.getComponent<MessageEffectComponent>();
     super.initState();
   }
 
@@ -112,6 +113,18 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
       timeline.onRemove.stream.listen(onEventRemoved),
       timeline.onLoadingStatusChanged.listen(onLoadingStatusChanged),
     ];
+
+    if (preferences.messageEffectsEnabled) {
+      for (int i = 0; i < 5; i++) {
+        if (i >= timeline.events.length) break;
+
+        var event = timeline.events[i];
+        if (effects?.hasEffect(event) == true) {
+          effects?.doEffect(event);
+          break;
+        }
+      }
+    }
 
     eventKeys = List.from(
         timeline.events
@@ -321,7 +334,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
     return Material(
       color: Colors.transparent,
       child: MouseRegion(
-        // onExit: (_) => deselectEvent(),
+        onExit: (_) => deselectEvent(),
         child: ClipRect(
           child: Stack(
             key: stackKey,

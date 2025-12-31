@@ -73,7 +73,7 @@ dependencies:
   matrix_dart_sdk_drift_db:
     git: 
       url: https://github.com/commetchat/matrix-dart-sdk-drift-db.git
-      ref: upstream-v1.1.1+patch.1
+      ref: upstream-v1.1.1+patch.2
 
   signal_sticker_api: 
     git: 
