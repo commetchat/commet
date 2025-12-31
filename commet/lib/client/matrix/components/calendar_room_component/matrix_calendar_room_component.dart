@@ -6,7 +6,6 @@ import 'package:commet/client/matrix/components/matrix_sync_listener.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/matrix/widget/matrix_widget_runner.dart';
-import 'package:commet/config/app_config.dart';
 import 'package:commet/config/global_config.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
