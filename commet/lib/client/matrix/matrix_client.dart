@@ -18,6 +18,7 @@ import 'package:commet/client/profile.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/experiments.dart';
+import 'package:commet/config/global_config.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
 import 'package:commet/main.dart';
@@ -56,16 +57,10 @@ class MatrixClient extends Client {
 
   late String _id;
 
-  final NotifyingList<Room> _rooms = NotifyingList.empty(
-    growable: true,
-  );
-  final NotifyingList<Space> _spaces = NotifyingList.empty(
-    growable: true,
-  );
+  final NotifyingList<Room> _rooms = NotifyingList.empty(growable: true);
+  final NotifyingList<Space> _spaces = NotifyingList.empty(growable: true);
 
-  final NotifyingList<Peer> _peers = NotifyingList.empty(
-    growable: true,
-  );
+  final NotifyingList<Peer> _peers = NotifyingList.empty(growable: true);
 
   final Map<String, Peer> _peersMap = {};
 
@@ -75,8 +70,10 @@ class MatrixClient extends Client {
       ? const matrix.NativeImplementationsDummy()
       : NativeImplementationsCustom(compute);
 
-  MatrixClient(
-      {required String identifier, required matrix.DatabaseApi database}) {
+  MatrixClient({
+    required String identifier,
+    required matrix.DatabaseApi database,
+  }) {
     if (preferences.developerMode) {
       matrix.Logs().level = matrix.Level.verbose;
     } else {
@@ -164,8 +161,10 @@ class MatrixClient extends Client {
         desc: "Title of a warning about encryption",
       );
 
-  static Future<void> loadFromDB(ClientManager manager,
-      {bool isBackgroundService = false}) async {
+  static Future<void> loadFromDB(
+    ClientManager manager, {
+    bool isBackgroundService = false,
+  }) async {
     await Diagnostics.general.timeAsync("loadFromDB", () async {
       var clients = preferences.getRegisteredMatrixClients();
 
@@ -177,21 +176,35 @@ class MatrixClient extends Client {
         for (var clientName in clients) {
           var client = await MatrixClient.create(clientName);
           manager.addClient(client);
-          futures.add(Diagnostics.general
-              .timeAsync("Initializing client $clientName", () async {
-            try {
-              await client.init(true, isBackgroundService: isBackgroundService);
-            } catch (error, trace) {
-              Log.onError(error, trace,
-                  content: "Unable to load client $clientName from database");
+          futures.add(
+            Diagnostics.general.timeAsync(
+              "Initializing client $clientName",
+              () async {
+                try {
+                  await client.init(
+                    true,
+                    isBackgroundService: isBackgroundService,
+                  );
+                } catch (error, trace) {
+                  Log.onError(
+                    error,
+                    trace,
+                    content: "Unable to load client $clientName from database",
+                  );
 
-              client.self = ErrorProfile();
-              manager.alertManager.addAlert(Alert(AlertType.warning,
-                  messageGetter: () =>
-                      "One of the registered accounts (${clientName.substring(0, 8)}...) was unable to load correctly, please check the logs for more details",
-                  titleGetter: () => "Unable to load account"));
-            }
-          }));
+                  client.self = ErrorProfile();
+                  manager.alertManager.addAlert(
+                    Alert(
+                      AlertType.warning,
+                      messageGetter: () =>
+                          "One of the registered accounts (${clientName.substring(0, 8)}...) was unable to load correctly, please check the logs for more details",
+                      titleGetter: () => "Unable to load account",
+                    ),
+                  );
+                }
+              },
+            ),
+          );
         }
       }
 
@@ -207,29 +220,36 @@ class MatrixClient extends Client {
       }
     } catch (exception, trace) {
       Log.onError(exception, trace, content: "Failed to initialize vodozemac");
-      clientManager.alertManager.addAlert(Alert(
-        AlertType.warning,
-        titleGetter: () => matrixClientEncryptionWarningTitle,
-        messageGetter: () => matrixClientVodozemacMissingMessage,
-      ));
+      clientManager.alertManager.addAlert(
+        Alert(
+          AlertType.warning,
+          titleGetter: () => matrixClientEncryptionWarningTitle,
+          messageGetter: () => matrixClientVodozemacMissingMessage,
+        ),
+      );
     }
   }
 
   static matrix.NativeImplementations get nativeImplementations =>
       BuildConfig.WEB
           ? const matrix.NativeImplementationsDummy()
-          : matrix.NativeImplementationsIsolate(compute,
-              vodozemacInit: vodozemac.init);
+          : matrix.NativeImplementationsIsolate(
+              compute,
+              vodozemacInit: vodozemac.init,
+            );
   @override
-  Future<void> init(bool loadingFromCache,
-      {bool isBackgroundService = false}) async {
+  Future<void> init(
+    bool loadingFromCache, {
+    bool isBackgroundService = false,
+  }) async {
     if (!_matrixClient.isLogged()) {
       await Diagnostics.general.timeAsync("Matrix client init", () async {
         await _matrixClient.init(
-            waitForFirstSync: !loadingFromCache,
-            waitUntilLoadCompletedLoaded: true,
-            startSyncLoop: !isBackgroundService,
-            onMigration: () => Log.w("Matrix Database is migrating"));
+          waitForFirstSync: !loadingFromCache,
+          waitUntilLoadCompletedLoaded: true,
+          startSyncLoop: !isBackgroundService,
+          onMigration: () => Log.w("Matrix Database is migrating"),
+        );
       });
 
       await _updateOwnProfile();
@@ -249,16 +269,20 @@ class MatrixClient extends Client {
     _updateSpacesList();
 
     _matrixClient.onKeyVerificationRequest.stream.listen((event) {
-      AdaptiveDialog.show(navigator.currentContext!,
-          builder: (_) => MatrixVerificationPage(request: event),
-          title: "Verification Request");
+      AdaptiveDialog.show(
+        navigator.currentContext!,
+        builder: (_) => MatrixVerificationPage(request: event),
+        title: "Verification Request",
+      );
     });
 
     _matrixClient.onUiaRequest.stream.listen((event) {
       if (event.state == matrix.UiaRequestState.waitForUser) {
-        AdaptiveDialog.show(navigator.currentContext!,
-            builder: (_) => MatrixUIARequest(event, this),
-            title: "Authentication Request");
+        AdaptiveDialog.show(
+          navigator.currentContext!,
+          builder: (_) => MatrixUIARequest(event, this),
+          title: "Authentication Request",
+        );
       }
     });
   }
@@ -315,17 +339,18 @@ class MatrixClient extends Client {
       name,
       verificationMethods: {
         KeyVerificationMethod.emoji,
-        KeyVerificationMethod.numbers
+        KeyVerificationMethod.numbers,
       },
       importantStateEvents: {
         "im.ponies.room_emotes",
         "m.room.power_levels",
         "m.room.join_rules",
+        "chat.commet.calendar_event",
         MatrixVoipRoomComponent.callMemberStateEvent,
       },
       supportedLoginTypes: {
         matrix.AuthenticationTypes.password,
-        matrix.AuthenticationTypes.sso
+        matrix.AuthenticationTypes.sso,
       },
       nativeImplementations: nativeImplementations,
       database: database,
@@ -362,27 +387,31 @@ class MatrixClient extends Client {
       var data = await _matrixClient.database.getUserProfile(id);
       if (data != null) {
         self = MatrixProfile(
-            _matrixClient,
-            matrix.Profile(
-              userId: id,
-              displayName: data.displayname,
-              avatarUrl: data.avatarUrl,
-            ));
+          _matrixClient,
+          matrix.Profile(
+            userId: id,
+            displayName: data.displayname,
+            avatarUrl: data.avatarUrl,
+          ),
+        );
 
         // Update own profile, but lets not wait for it before continuing
         _matrixClient.getProfileFromUserId(id).then((profile) {
           self = MatrixProfile(_matrixClient, profile);
         });
       } else {
-        self = MatrixProfile(_matrixClient,
-            await _matrixClient.getProfileFromUserId(_matrixClient.userID!));
+        self = MatrixProfile(
+          _matrixClient,
+          await _matrixClient.getProfileFromUserId(_matrixClient.userID!),
+        );
       }
     }
   }
 
   void _updateRoomslist() {
-    var joinedRooms = _matrixClient.rooms
-        .where((element) => !element.isSpace && element.membership.isJoin);
+    var joinedRooms = _matrixClient.rooms.where(
+      (element) => !element.isSpace && element.membership.isJoin,
+    );
 
     for (var room in joinedRooms) {
       if (hasRoom(room.id)) continue;
@@ -393,8 +422,10 @@ class MatrixClient extends Client {
   }
 
   void _updateSpacesList() {
-    var allSpaces = _matrixClient.rooms.where((element) =>
-        element.isSpace && element.membership == matrix.Membership.join);
+    var allSpaces = _matrixClient.rooms.where(
+      (element) =>
+          element.isSpace && element.membership == matrix.Membership.join,
+    );
 
     bool didChange = false;
     for (var space in allSpaces) {
@@ -414,6 +445,7 @@ class MatrixClient extends Client {
   Future<Room> createRoom(CreateRoomArgs args) async {
     var creationContent = null;
 
+    List<matrix.StateEvent>? initialState;
     if (Experiments.photoAlbumRooms) {
       if (args.roomType == RoomType.photoAlbum) {
         creationContent = {"type": "chat.commet.photo_album"};
@@ -426,12 +458,74 @@ class MatrixClient extends Client {
       }
     }
 
+    if (Experiments.calendarRooms) {
+      if (args.roomType == RoomType.calendar) {
+        const widgetId = "chat.commet.room_calendar";
+        var widgetHost = GlobalConfig.calendarWidgetHost;
+        creationContent = {"type": "chat.commet.calendar"};
+        initialState = [
+          matrix.StateEvent(
+            content: {
+              "type": "chat.commet.widgets.calendar",
+              "url":
+                  "https://${widgetHost}/#/?widgetId=\$matrix_widget_id&userId=\$matrix_user_id&theme=\$org.matrix.msc2873.client_theme&userDisplayName=\$matrix_display_name&userAvatarUrl=\$matrix_avatar_url&language=\$org.matrix.msc2873.client_language",
+              "name": "Calendar",
+              "data": {},
+            },
+            type: "im.vector.modular.widgets",
+            stateKey: widgetId,
+          ),
+          matrix.StateEvent(
+            type: "m.room.power_levels",
+            content: {
+              "users": {_matrixClient.userID!: 100},
+              "users_default": 0,
+              "events": {
+                "m.room.avatar": 50,
+                "m.room.canonical_alias": 50,
+                "m.room.encryption": 100,
+                "m.room.history_visibility": 100,
+                "m.room.name": 50,
+                "m.room.power_levels": 100,
+                "m.room.server_acl": 100,
+                "m.room.tombstone": 100,
+                "m.reaction": 50,
+                "chat.commet.calendar_event": 25,
+              },
+              "events_default": 50,
+              "state_default": 50,
+              "ban": 50,
+              "kick": 50,
+              "redact": 50,
+              "invite": 0,
+              "historical": 100,
+            },
+          ),
+          matrix.StateEvent(
+            content: {
+              "widgets": {
+                widgetId: {
+                  "container": "top",
+                  "height": 100,
+                  "width": 100,
+                  "index": 0,
+                },
+              },
+            },
+            type: "io.element.widgets.layout",
+          ),
+        ];
+      }
+    }
+
     var id = await _matrixClient.createRoom(
-        creationContent: creationContent,
-        name: args.name,
-        visibility: args.visibility == RoomVisibility.private
-            ? matrix.Visibility.private
-            : matrix.Visibility.public);
+      creationContent: creationContent,
+      name: args.name,
+      initialState: initialState,
+      visibility: args.visibility == RoomVisibility.private
+          ? matrix.Visibility.private
+          : matrix.Visibility.public,
+    );
     var matrixRoom = _matrixClient.getRoomById(id)!;
     if (args.enableE2EE) {
       await matrixRoom.enableEncryption();
@@ -446,15 +540,19 @@ class MatrixClient extends Client {
   @override
   Future<Space> createSpace(CreateRoomArgs args) async {
     var id = await _matrixClient.createSpace(
-        name: args.name,
-        waitForSync: true,
-        visibility: args.visibility == RoomVisibility.private
-            ? matrix.Visibility.private
-            : matrix.Visibility.public);
+      name: args.name,
+      waitForSync: true,
+      visibility: args.visibility == RoomVisibility.private
+          ? matrix.Visibility.private
+          : matrix.Visibility.public,
+    );
 
     if (hasSpace(id)) return getSpace(id)!;
-    var space =
-        MatrixSpace(this, _matrixClient.getRoomById(id)!, _matrixClient);
+    var space = MatrixSpace(
+      this,
+      _matrixClient.getRoomById(id)!,
+      _matrixClient,
+    );
     spaces.add(space);
     return space;
   }
@@ -465,8 +563,11 @@ class MatrixClient extends Client {
     await _matrixClient.waitForRoomInSync(id);
     if (hasSpace(id)) return getSpace(id)!;
 
-    var space =
-        MatrixSpace(this, _matrixClient.getRoomById(id)!, _matrixClient);
+    var space = MatrixSpace(
+      this,
+      _matrixClient.getRoomById(id)!,
+      _matrixClient,
+    );
     spaces.add(space);
     return space;
   }
@@ -489,8 +590,9 @@ class MatrixClient extends Client {
 
   @override
   Future<void> setAvatar(Uint8List bytes, String mimeType) async {
-    await _matrixClient.setAvatar(matrix.MatrixImageFile(
-        bytes: bytes, name: "avatar", mimeType: mimeType));
+    await _matrixClient.setAvatar(
+      matrix.MatrixImageFile(bytes: bytes, name: "avatar", mimeType: mimeType),
+    );
     // TODO: Handle refresh avatar
     // await (self as MatrixPeer).refreshAvatar();
   }
@@ -632,11 +734,7 @@ class MatrixClient extends Client {
   }
 
   @override
-  Future<
-      (
-        bool,
-        List<LoginFlow>?,
-      )> setHomeserver(Uri uri) async {
+  Future<(bool, List<LoginFlow>?)> setHomeserver(Uri uri) async {
     try {
       var result = await _matrixClient.checkHomeserver(uri);
 
@@ -652,10 +750,7 @@ class MatrixClient extends Client {
         resultFlows.addAll(await _getSsoFlows());
       }
 
-      return (
-        true,
-        resultFlows,
-      );
+      return (true, resultFlows);
     } catch (error, trace) {
       Log.onError(error, trace);
       return (false, null);
@@ -665,8 +760,10 @@ class MatrixClient extends Client {
   Future<List<LoginFlow>> _getSsoFlows() async {
     List<LoginFlow> result = List.empty(growable: true);
 
-    Map<String, dynamic> flows =
-        await _matrixClient.request(matrix.RequestType.GET, "/client/v3/login");
+    Map<String, dynamic> flows = await _matrixClient.request(
+      matrix.RequestType.GET,
+      "/client/v3/login",
+    );
 
     flows["flows"].where((element) => element['type'] == "m.login.sso").forEach(
       (element) {

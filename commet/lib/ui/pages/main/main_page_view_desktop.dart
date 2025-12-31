@@ -24,9 +24,11 @@ class MainPageViewDesktop extends StatelessWidget {
   const MainPageViewDesktop(this.state, {super.key});
   final MainPageState state;
 
-  String get directMessagesListHeaderDesktop => Intl.message("Direct Messages",
-      desc: "The header for the direct messages list on desktop",
-      name: "directMessagesListHeaderDesktop");
+  String get directMessagesListHeaderDesktop => Intl.message(
+        "Direct Messages",
+        desc: "The header for the direct messages list on desktop",
+        name: "directMessagesListHeaderDesktop",
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -47,26 +49,29 @@ class MainPageViewDesktop extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
                   child: SideNavigationBar(
-                      currentUser: state.currentUser,
-                      extraEntryBuilders: [
-                        (width) {
-                          return SidebarCallsList(
-                              state.clientManager.callManager, width);
-                        }
-                      ],
-                      onSpaceSelected: (space) {
-                        state.selectSpace(space);
+                    currentUser: state.currentUser,
+                    extraEntryBuilders: [
+                      (width) {
+                        return SidebarCallsList(
+                          state.clientManager.callManager,
+                          width,
+                        );
                       },
-                      onHomeSelected: () {
-                        state.selectHome();
-                      },
-                      clearSpaceSelection: () {
-                        state.clearSpaceSelection();
-                      },
-                      onDirectMessageSelected: (room) {
-                        state.selectHome();
-                        state.selectRoom(room);
-                      }),
+                    ],
+                    onSpaceSelected: (space) {
+                      state.selectSpace(space);
+                    },
+                    onHomeSelected: () {
+                      state.selectHome();
+                    },
+                    clearSpaceSelection: () {
+                      state.clearSpaceSelection();
+                    },
+                    onDirectMessageSelected: (room) {
+                      state.selectHome();
+                      state.selectRoom(room);
+                    },
+                  ),
                 ),
               ),
               if (state.currentView == MainPageSubView.space &&
@@ -86,15 +91,18 @@ class MainPageViewDesktop extends StatelessWidget {
                     caulkClipTopLeft: true,
                     caulkBorderLeft: true,
                     caulkClipBottomLeft: true,
-                    child: ListView(children: [
-                      SpaceSummary(
-                        key: ValueKey(
-                            "space-summary-key-${state.currentSpace!.localId}"),
-                        space: state.currentSpace!,
-                        onRoomTap: (room) => state.selectRoom(room),
-                        onSpaceTap: (space) => state.selectSpace(space),
-                      ),
-                    ]),
+                    child: ListView(
+                      children: [
+                        SpaceSummary(
+                          key: ValueKey(
+                            "space-summary-key-${state.currentSpace!.localId}",
+                          ),
+                          space: state.currentSpace!,
+                          onRoomTap: (room) => state.selectRoom(room),
+                          onSpaceTap: (space) => state.selectSpace(space),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
             ],
@@ -105,7 +113,7 @@ class MainPageViewDesktop extends StatelessWidget {
                 EventBus.onFileDropped.add(details);
               },
             ),
-          const BackgroundTaskViewContainer()
+          const BackgroundTaskViewContainer(),
         ],
       ),
     );
@@ -113,36 +121,40 @@ class MainPageViewDesktop extends StatelessWidget {
 
   SizedBox spaceRoomSelector(BuildContext context) {
     return SizedBox(
-        width: 250,
-        child: Tile.surfaceContainer(
-          caulkPadTop: true,
-          caulkPadBottom: true,
-          caulkClipTopLeft: true,
-          caulkClipTopRight: true,
-          caulkClipBottomLeft: true,
-          caulkClipBottomRight: true,
-          child: Column(
-            children: [
-              SpaceHeader(
-                state.currentSpace!,
-                onTap: state.clearRoomSelection,
-                backgroundColor:
-                    Theme.of(context).colorScheme.surfaceContainerLow,
-              ),
-              Expanded(
-                  child: SingleChildScrollView(
+      width: 250,
+      child: Tile.surfaceContainer(
+        caulkPadTop: true,
+        caulkPadBottom: true,
+        caulkClipTopLeft: true,
+        caulkClipTopRight: true,
+        caulkClipBottomLeft: true,
+        caulkClipBottomRight: true,
+        child: Column(
+          children: [
+            SpaceHeader(
+              state.currentSpace!,
+              onTap: state.clearRoomSelection,
+              backgroundColor: Theme.of(
+                context,
+              ).colorScheme.surfaceContainerLow,
+            ),
+            Expanded(
+              child: SingleChildScrollView(
                 child: SpaceViewer(
                   state.currentSpace!,
-                  key:
-                      ValueKey("space-view-key-${state.currentSpace!.localId}"),
+                  key: ValueKey(
+                    "space-view-key-${state.currentSpace!.localId}",
+                  ),
                   onRoomSelected: (room) {
                     state.selectRoom(room);
                   },
                 ),
-              )),
-            ],
-          ),
-        ));
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget homeView() {
@@ -165,13 +177,15 @@ class MainPageViewDesktop extends StatelessWidget {
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child:
-                        tiamat.Text.labelLow(directMessagesListHeaderDesktop),
+                    child: tiamat.Text.labelLow(
+                      directMessagesListHeaderDesktop,
+                    ),
                   ),
                   Flexible(
                     child: DirectMessageList(
-                        directMessages: state.clientManager.directMessages,
-                        onSelected: (room) => state.selectRoom(room)),
+                      directMessages: state.clientManager.directMessages,
+                      onSelected: (room) => state.selectRoom(room),
+                    ),
                   ),
                 ],
               ),
@@ -189,7 +203,7 @@ class MainPageViewDesktop extends StatelessWidget {
               child: HomeScreen(clientManager: state.clientManager),
             ),
           ),
-        if (state.currentRoom != null) roomChatView()
+        if (state.currentRoom != null) roomChatView(),
       ],
     );
   }
@@ -212,9 +226,7 @@ class MainPageViewDesktop extends StatelessWidget {
                 onTap: state.currentRoom?.permissions.canEditAnything == true
                     ? () => state.navigateRoomSettings()
                     : null,
-                menu: RoomQuickAccessMenuViewDesktop(
-                  room: state.currentRoom!,
-                ),
+                menu: RoomQuickAccessMenuViewDesktop(room: state.currentRoom!),
               ),
             ),
           ),
@@ -233,30 +245,31 @@ class MainPageViewDesktop extends StatelessWidget {
                     caulkClipBottomLeft: true,
                     caulkClipBottomRight: true,
                     caulkBorderLeft: true,
-                    child: RoomPrimaryView(
-                      state.currentRoom!,
-                    ),
+                    child: RoomPrimaryView(state.currentRoom!),
                   ),
                 ),
                 RoomSidePanel(
-                    key: ValueKey(
-                        "room-sidepanel-key-${state.currentRoom!.localId}"),
-                    state: state,
-                    builder: (state, child) {
-                      Widget result = Tile.surfaceContainer(
-                        caulkPadLeft: true,
-                        caulkPadBottom: true,
-                        caulkClipBottomLeft: true,
-                        caulkClipTopLeft: true,
-                        child: child,
-                      );
+                  key: ValueKey(
+                    "room-sidepanel-key-${state.currentRoom!.localId}",
+                  ),
+                  state: state,
+                  builder: (state, child) {
+                    Widget result = Tile.surfaceContainer(
+                      caulkPadLeft: true,
+                      caulkPadBottom: true,
+                      caulkClipBottomLeft: true,
+                      caulkClipTopLeft: true,
+                      child: child,
+                    );
 
-                      if (state == SidePanelState.thread) {
-                        result = Flexible(child: result);
-                      }
+                    if (state == SidePanelState.thread ||
+                        state == SidePanelState.calendar) {
+                      result = Flexible(child: result);
+                    }
 
-                      return result;
-                    })
+                    return result;
+                  },
+                ),
               ],
             ),
           ),

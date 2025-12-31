@@ -2,6 +2,7 @@ import 'package:commet/client/components/component.dart';
 import 'package:commet/client/components/room_component.dart';
 import 'package:commet/client/components/space_component.dart';
 import 'package:commet/client/matrix/components/account_switch_prefix/matrix_account_switch_prefix.dart';
+import 'package:commet/client/matrix/components/calendar_room_component/matrix_calendar_room_component.dart';
 import 'package:commet/client/matrix/components/command_component/matrix_command_component.dart';
 import 'package:commet/client/matrix/components/direct_messages/matrix_direct_messages_component.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_emoticon_component.dart';
@@ -31,10 +32,13 @@ import 'package:commet/config/experiments.dart';
 
 class ComponentRegistry {
   static List<Component<MatrixClient>> getMatrixComponents(
-      MatrixClient client) {
+    MatrixClient client,
+  ) {
     return [
       MatrixEmoticonComponent(
-          client, MatrixEmoticonPersonalStateManager(client)),
+        client,
+        MatrixEmoticonPersonalStateManager(client),
+      ),
       MatrixPushNotificationComponent(client),
       MatrixCommandComponent(client),
 
@@ -54,16 +58,21 @@ class ComponentRegistry {
   }
 
   static List<RoomComponent<MatrixClient, MatrixRoom>> getMatrixRoomComponents(
-      MatrixClient client, MatrixRoom room) {
+    MatrixClient client,
+    MatrixRoom room,
+  ) {
     return [
       MatrixRoomEmoticonComponent(client, room),
       MatrixGifComponent(client, room),
       MatrixReadReceiptComponent(client, room),
       MatrixTypingIndicatorsComponent(client, room),
       MatrixPinnedMessagesComponent(client, room),
-      if (Experiments.elementCall) MatrixVoipRoomComponent(client, room),
-      if (Experiments.photoAlbumRooms)
-        MatrixPhotoAlbumRoomComponent(client, room)
+      if (Experiments.elementCall && MatrixVoipRoomComponent.isVoipRoom(room))
+        MatrixVoipRoomComponent(client, room),
+      if (Experiments.photoAlbumRooms &&
+          MatrixPhotoAlbumRoomComponent.isPhotoAlbumRoom(room))
+        MatrixPhotoAlbumRoomComponent(client, room),
+      if (Experiments.calendarRooms) MatrixCalendarRoomComponent(client, room),
     ];
   }
 
@@ -71,7 +80,7 @@ class ComponentRegistry {
       getMatrixSpaceComponents(MatrixClient client, MatrixSpace space) {
     return [
       MatrixSpaceEmoticonComponent(client, space),
-      MatrixSpaceColorSchemeComponent(client, space)
+      MatrixSpaceColorSchemeComponent(client, space),
     ];
   }
 }

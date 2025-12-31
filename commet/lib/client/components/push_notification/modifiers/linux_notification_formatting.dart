@@ -38,16 +38,20 @@ class NotificationModifierLinuxFormatting implements NotificationModifier {
       final room = client!.getRoom(content.roomId)!;
 
       var formattedContent = await convertFormattedContent(
-          content.formattedContent!, content.formatType!, room);
+        content.formattedContent!,
+        content.formatType!,
+        room,
+      );
 
       final bool showImages =
           room.shouldPreviewMedia && preferences.showMediaInNotifications;
 
       if (showImages && content.attachedImage != null) {
         final uri = await prepareImageForInline(
-            content.attachedImage!,
-            "notification-attached-image-${content.eventId}-${thumbnailImageSize}px.png",
-            thumbnailImageSize);
+          content.attachedImage!,
+          "notification-attached-image-${content.eventId}-${thumbnailImageSize}px.png",
+          thumbnailImageSize,
+        );
         if (uri != null) {
           formattedContent = (formattedContent ?? "") + '\n<img src="${uri}"/>';
         }
@@ -62,7 +66,10 @@ class NotificationModifierLinuxFormatting implements NotificationModifier {
   }
 
   Future<String?> convertFormattedContent(
-      String formattedContent, String format, Room room) async {
+    String formattedContent,
+    String format,
+    Room room,
+  ) async {
     if (format == "org.matrix.custom.html" && room is MatrixRoom) {
       return convertMatrixHtml(formattedContent, room);
     }
@@ -86,21 +93,34 @@ class NotificationModifierLinuxFormatting implements NotificationModifier {
         room.shouldPreviewMedia && preferences.showMediaInNotifications;
 
     for (var node in document.nodes) {
-      result += await handleMatrixNode(node, room as MatrixRoom,
-          emojiSize: bigEmoji ? 32 : 16, showImages: showImages);
+      result += await handleMatrixNode(
+        node,
+        room as MatrixRoom,
+        emojiSize: bigEmoji ? 32 : 16,
+        showImages: showImages,
+      );
     }
 
     return result;
   }
 
-  Future<String> handleMatrixNode(html.Node node, MatrixRoom room,
-      {required double emojiSize, required bool showImages}) async {
+  Future<String> handleMatrixNode(
+    html.Node node,
+    MatrixRoom room, {
+    required double emojiSize,
+    required bool showImages,
+  }) async {
     String content = "";
 
     if (node is html.Element) {
       if (node.localName == "img") {
         return await handleMatrixImage(
-            node, showImages, emojiSize, room, content);
+          node,
+          showImages,
+          emojiSize,
+          room,
+          content,
+        );
       }
 
       if (node.localName == "mx-reply") {
@@ -126,15 +146,23 @@ class NotificationModifierLinuxFormatting implements NotificationModifier {
         content += "<$tag>";
 
         for (var child in node.nodes) {
-          content += await handleMatrixNode(child, room,
-              emojiSize: emojiSize, showImages: showImages);
+          content += await handleMatrixNode(
+            child,
+            room,
+            emojiSize: emojiSize,
+            showImages: showImages,
+          );
         }
 
         content += "</$tag>";
       } else {
         for (var child in node.nodes) {
-          content += await handleMatrixNode(child, room,
-              emojiSize: emojiSize, showImages: showImages);
+          content += await handleMatrixNode(
+            child,
+            room,
+            emojiSize: emojiSize,
+            showImages: showImages,
+          );
         }
       }
     } else {
@@ -183,9 +211,10 @@ class NotificationModifierLinuxFormatting implements NotificationModifier {
           room.shouldPreviewMedia &&
           preferences.showMediaInNotifications) {
         Uri? imagePath = await prepareImageForInline(
-            prev.image!,
-            "matrix-url-notification-${uri}-${thumbnailImageSize}px.png",
-            thumbnailImageSize);
+          prev.image!,
+          "matrix-url-notification-${uri}-${thumbnailImageSize}px.png",
+          thumbnailImageSize,
+        );
 
         if (imagePath != null) {
           result += '\n<img src="${imagePath}"/>';
@@ -199,8 +228,13 @@ class NotificationModifierLinuxFormatting implements NotificationModifier {
     return '<a href="${uri}">${uri}</a>';
   }
 
-  Future<String> handleMatrixImage(html.Element node, bool showImages,
-      double emojiSize, MatrixRoom room, String content) async {
+  Future<String> handleMatrixImage(
+    html.Element node,
+    bool showImages,
+    double emojiSize,
+    MatrixRoom room,
+    String content,
+  ) async {
     final src = node.attributes["src"];
     final alt = node.attributes["alt"];
 
@@ -220,8 +254,11 @@ class NotificationModifierLinuxFormatting implements NotificationModifier {
 
       if (path == null) {
         var img = MatrixMxcImage(
-            Uri.parse(src), (room.client as MatrixClient).matrixClient,
-            doFullres: true, doThumbnail: false);
+          Uri.parse(src),
+          (room.client as MatrixClient).matrixClient,
+          doFullres: true,
+          doThumbnail: false,
+        );
 
         path = await prepareImageForInline(img, cacheId, emojiSize);
       }
@@ -240,7 +277,10 @@ class NotificationModifierLinuxFormatting implements NotificationModifier {
   }
 
   Future<Uri?> prepareImageForInline(
-      ImageProvider image, String cacheId, double maxSize) async {
+    ImageProvider image,
+    String cacheId,
+    double maxSize,
+  ) async {
     final cached = await fileCache?.getFile(cacheId);
     if (cached != null) {
       return cached;
@@ -264,10 +304,11 @@ class NotificationModifierLinuxFormatting implements NotificationModifier {
     var center = Offset(size.width / 2, size.height / 2);
 
     c.drawImageRect(
-        i,
-        Rect.fromLTWH(0, 0, i.width.toDouble(), i.height.toDouble()),
-        Rect.fromCenter(center: center, width: size.width, height: size.height),
-        Paint()..filterQuality = FilterQuality.medium);
+      i,
+      Rect.fromLTWH(0, 0, i.width.toDouble(), i.height.toDouble()),
+      Rect.fromCenter(center: center, width: size.width, height: size.height),
+      Paint()..filterQuality = FilterQuality.medium,
+    );
 
     var pic = recorder.endRecording();
 

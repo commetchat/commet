@@ -11,8 +11,10 @@ abstract class Component<T extends Client> {
 abstract class EventHandlerComponent {
   bool canHandleEvent(TimelineEvent eventType);
 
-  Widget? displayTimelineEvent(TimelineEvent event,
-      {required String senderName});
+  Widget? displayTimelineEvent(
+    TimelineEvent event, {
+    required String senderName,
+  });
 }
 
 abstract class NeedsPostLoginInit {
@@ -28,6 +30,14 @@ abstract class NeedsPostLoginInit {
         if (component is! NeedsPostLoginInit) continue;
 
         (component as NeedsPostLoginInit).postLoginInit();
+      }
+
+      for (var room in client.rooms) {
+        for (var component in room.getAllComponents()) {
+          if (component is! NeedsPostLoginInit) continue;
+
+          (component as NeedsPostLoginInit).postLoginInit();
+        }
       }
     }
   }

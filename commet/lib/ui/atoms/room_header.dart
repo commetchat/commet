@@ -117,37 +117,40 @@ class _RoomHeaderState extends State<RoomHeader> {
       child: m.InkWell(
         onTap: widget.onTap,
         child: Padding(
-          padding: const EdgeInsets.all(10.0),
+          padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(
-                    width: 30,
-                    height: 30,
-                    child: Stack(
-                      alignment: AlignmentGeometry.bottomRight,
-                      children: [
-                        iconWidget,
-                        if (status != null)
-                          UserPanelView.createPresenceIcon(context, status!),
-                      ],
+              Expanded(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(
+                      width: 30,
+                      height: 30,
+                      child: Stack(
+                        alignment: AlignmentGeometry.bottomRight,
+                        children: [
+                          iconWidget,
+                          if (status != null)
+                            UserPanelView.createPresenceIcon(context, status!),
+                        ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  Flexible(
-                    child: m.Text(
-                      widget.room.displayName,
-                      style: m.Theme.of(context).textTheme.titleMedium,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                    const SizedBox(
+                      width: 10,
                     ),
-                  ),
-                ],
+                    Flexible(
+                      child: m.Text(
+                        widget.room.displayName,
+                        style: m.Theme.of(context).textTheme.titleMedium,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
               ),
               if (widget.menu != null) widget.menu!
             ],
