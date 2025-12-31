@@ -33,7 +33,9 @@ class CalendarViewHeader extends StatelessWidget {
 
       return result;
     } else {
-      var format = DateFormat(DateFormat.YEAR_ABBR_MONTH_DAY);
+      var format = mode == CalendarViewMode.day
+          ? DateFormat(DateFormat.YEAR_ABBR_MONTH_WEEKDAY_DAY)
+          : DateFormat(DateFormat.YEAR_ABBR_MONTH_DAY);
       var result = format.format(date);
       var now = DateTime.now();
       if (secondaryDate == null &&
