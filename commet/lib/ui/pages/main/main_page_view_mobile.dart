@@ -79,6 +79,15 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
     return PopScope(
         canPop: canPop(),
         onPopInvokedWithResult: (didPop, result) {
+          var event = ScopePopped();
+          event.currentMobileSide = panelsKey.currentState?.currentSide;
+
+          EventBus.onPopInvoked.add(event);
+
+          if (event.handled) {
+            return;
+          }
+
           switch (panelsKey.currentState?.currentSide) {
             case RevealSide.right:
               panelsKey.currentState?.reveal(RevealSide.main);

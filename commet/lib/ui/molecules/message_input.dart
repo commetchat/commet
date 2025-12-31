@@ -13,6 +13,7 @@ import 'package:commet/ui/atoms/keyboard_adaptor.dart';
 import 'package:commet/ui/atoms/random_emoji_button.dart';
 import 'package:commet/ui/atoms/rich_text_field.dart';
 import 'package:commet/ui/molecules/attachment_icon.dart';
+import 'package:commet/ui/molecules/overlapping_panels.dart';
 import 'package:commet/ui/organisms/attachment_processor/attachment_processor.dart';
 import 'package:commet/ui/molecules/emoticon_picker.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
@@ -21,6 +22,7 @@ import 'package:commet/client/components/emoticon/emoji_pack.dart';
 import 'package:commet/client/components/gif/gif_search_result.dart';
 import 'package:commet/utils/autofill_utils.dart';
 import 'package:commet/utils/debounce.dart';
+import 'package:commet/utils/event_bus.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/gestures.dart';
 
@@ -130,9 +132,11 @@ class MessageInputState extends State<MessageInput> {
   late JustTheController emojiOverlayController = JustTheController();
   StreamSubscription? keyboardFocusSubscription;
   StreamSubscription? setInputTextSubscription;
+  StreamSubscription? onScopePopInvoked;
   OverlayEntry? entry;
   final layerLink = LayerLink();
   bool showEmotePicker = false;
+  bool emotePickerActive = false;
   bool hasEmotePickerOpened = false;
   List<AutofillSearchResult>? autoFillResults;
   Client? senderOverride;
@@ -165,6 +169,7 @@ class MessageInputState extends State<MessageInput> {
   void dispose() {
     keyboardFocusSubscription?.cancel();
     setInputTextSubscription?.cancel();
+    onScopePopInvoked?.cancel();
     super.dispose();
   }
 
@@ -176,6 +181,7 @@ class MessageInputState extends State<MessageInput> {
         widget.focusKeyboard?.listen((_) => onKeyboardFocusRequested());
 
     setInputTextSubscription = widget.setInputText?.listen(onSetInputText);
+    onScopePopInvoked = EventBus.onPopInvoked.stream.listen(onPopped);
 
     textFocus = FocusNode(onKeyEvent: onKey);
     textFocus.addListener(onTextFocusChanged);
@@ -311,10 +317,11 @@ class MessageInputState extends State<MessageInput> {
           Future.delayed(Duration(milliseconds: 100)).then((_) {
             textFocus.requestFocus();
           });
-
+          emotePickerActive = false;
           clearKeyboardOverride();
         } else {
           showEmotePicker = true;
+          emotePickerActive = true;
           keyboardAdaptorController.keepCurrentSize?.call();
           removeHeightOverrideDebouncer.cancel();
           if (textFocus.hasFocus) {
@@ -325,6 +332,7 @@ class MessageInputState extends State<MessageInput> {
 
       if (Layout.desktop) {
         showEmotePicker = !showEmotePicker;
+        emotePickerActive = showEmotePicker;
         emojiTooltipController.showTooltip(autoClose: false);
       }
 
@@ -338,6 +346,7 @@ class MessageInputState extends State<MessageInput> {
     final func = () {
       if (showEmotePicker) {
         showEmotePicker = false;
+        emotePickerActive = false;
       }
 
       if (!showEmotePicker) {
@@ -349,6 +358,10 @@ class MessageInputState extends State<MessageInput> {
       removeHeightOverrideDebouncer.cancel();
       func();
     }
+
+    setState(() {
+      emotePickerActive = false;
+    });
 
     removeHeightOverrideDebouncer.run(func);
   }
@@ -903,7 +916,7 @@ class MessageInputState extends State<MessageInput> {
             onTap: toggleEmojiOverlay,
             toggled: Layout.mobile
                 ? (emojiTooltipController.value == TooltipStatus.isShowing ||
-                    (showEmotePicker && !textFocus.hasFocus))
+                    (emotePickerActive == true))
                 : false));
 
     if (Layout.mobile) return button;
@@ -938,23 +951,26 @@ class MessageInputState extends State<MessageInput> {
     return Expanded(
       child: Stack(
         children: [
-          TextField(
-            focusNode: textFocus,
-            onChanged: onTextfieldUpdated,
-            controller: controller,
-            readOnly: !widget.enabled || widget.isProcessing,
-            textAlignVertical: TextAlignVertical.center,
-            style: Theme.of(context).textTheme.bodyMedium!,
-            maxLines: null,
-            contextMenuBuilder: contextMenuBuilder,
-            keyboardType: TextInputType.multiline,
-            textCapitalization: TextCapitalization.sentences,
-            decoration: InputDecoration(
-                contentPadding:
-                    EdgeInsets.fromLTRB(8, padding / 2, 4, padding / 2),
-                border: InputBorder.none,
-                isDense: true,
-                hintText: widget.hintText),
+          TapRegion(
+            onTapInside: (event) => onTextFocusChanged(),
+            child: TextField(
+              focusNode: textFocus,
+              onChanged: onTextfieldUpdated,
+              controller: controller,
+              readOnly: !widget.enabled || widget.isProcessing,
+              textAlignVertical: TextAlignVertical.center,
+              style: Theme.of(context).textTheme.bodyMedium!,
+              maxLines: null,
+              contextMenuBuilder: contextMenuBuilder,
+              keyboardType: TextInputType.multiline,
+              textCapitalization: TextCapitalization.sentences,
+              decoration: InputDecoration(
+                  contentPadding:
+                      EdgeInsets.fromLTRB(8, padding / 2, 4, padding / 2),
+                  border: InputBorder.none,
+                  isDense: true,
+                  hintText: widget.hintText),
+            ),
           ),
         ],
       ),
@@ -1298,6 +1314,21 @@ class MessageInputState extends State<MessageInput> {
       setState(() {
         widget.addAttachment?.call(processedAttachment);
       });
+    }
+  }
+
+  void onPopped(ScopePopped event) {
+    if (event.handled) {
+      return;
+    }
+
+    if (event.currentMobileSide == RevealSide.left) {
+      return;
+    }
+
+    if (showEmotePicker) {
+      clearKeyboardOverride(debounce: false);
+      event.handled = true;
     }
   }
 }

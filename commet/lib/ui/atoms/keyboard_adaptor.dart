@@ -1,10 +1,13 @@
 import 'dart:math';
+import 'package:commet/main.dart';
 import 'package:commet/utils/scaled_app.dart';
 import 'package:flutter/material.dart';
 
 class KeyboardAdaptorController {
   Function()? keepCurrentSize;
   Function()? clearOverride;
+
+  bool Function()? hasOverride;
 }
 
 class KeyboardAdaptor extends StatefulWidget {
@@ -33,6 +36,7 @@ class _KeyboardAdaptorState extends State<KeyboardAdaptor> {
 
     widget.controller?.keepCurrentSize = keepCurrentSize;
     widget.controller?.clearOverride = clearOverride;
+    widget.controller?.hasOverride = hasOverride;
   }
 
   @override
@@ -46,6 +50,7 @@ class _KeyboardAdaptorState extends State<KeyboardAdaptor> {
         widget.shouldPushContent?.call() == true;
 
     if (sizeOverride != null && offset > sizeOverride!) {
+      preferences.setEmojiPickerHeight(offset);
       sizeOverride = null;
     }
 
@@ -84,7 +89,9 @@ class _KeyboardAdaptorState extends State<KeyboardAdaptor> {
     var offset = max(scaledQuery.viewInsets.bottom, scaledQuery.padding.bottom);
 
     if (offset < min) {
-      offset = min;
+      offset = preferences.emojiPickerHeight;
+    } else {
+      preferences.setEmojiPickerHeight(offset);
     }
 
     sizeOverride = offset;
@@ -94,5 +101,9 @@ class _KeyboardAdaptorState extends State<KeyboardAdaptor> {
     setState(() {
       sizeOverride = null;
     });
+  }
+
+  bool hasOverride() {
+    return sizeOverride != null;
   }
 }
