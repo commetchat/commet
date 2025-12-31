@@ -650,7 +650,9 @@ class MatrixRoom extends Room {
     var state = _matrixRoom.states["m.room.power_levels"]?[""];
     if (state == null) return [];
 
-    var roles = (state.content["users"] as Map<String, dynamic>);
+    var roles = (state.content["users"] as Map<String, dynamic>?);
+    if (roles == null) return [];
+
     var ids = roles.keys;
 
     var result =
