@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:commet/client/components/command/command_component.dart';
+import 'package:commet/client/components/emoticon_recent/recent_emoticon_component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event.dart';
@@ -18,6 +19,7 @@ class MatrixCommandComponent extends CommandComponent<MatrixClient> {
   MatrixCommandComponent(this.client) {
     client.getMatrixClient().addCommand("sendjson", sendJson);
     client.getMatrixClient().addCommand("status", setStatus);
+    client.getMatrixClient().addCommand("clearemojistats", clearEmojiStats);
   }
 
   @override
@@ -75,6 +77,13 @@ class MatrixCommandComponent extends CommandComponent<MatrixClient> {
         client.getMatrixClient().userID!, PresenceType.online,
         statusMsg: args.msg);
 
+    return null;
+  }
+
+  FutureOr<String?> clearEmojiStats(
+      matrix.CommandArgs args, StringBuffer? out) async {
+    var c = client.getComponent<RecentEmoticonComponent>();
+    c?.clear();
     return null;
   }
 }

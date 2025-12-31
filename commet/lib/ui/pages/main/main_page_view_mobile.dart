@@ -1,6 +1,5 @@
 import 'package:commet/client/room.dart';
 import 'package:commet/ui/atoms/room_header.dart';
-import 'package:commet/ui/atoms/keyboard_adaptor.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/atoms/space_header.dart';
 import 'package:commet/ui/molecules/direct_message_list.dart';
@@ -79,7 +78,16 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
   Widget build(BuildContext context) {
     return PopScope(
         canPop: canPop(),
-        onPopInvoked: (didPop) {
+        onPopInvokedWithResult: (didPop, result) {
+          var event = ScopePopped();
+          event.currentMobileSide = panelsKey.currentState?.currentSide;
+
+          EventBus.onPopInvoked.add(event);
+
+          if (event.handled) {
+            return;
+          }
+
           switch (panelsKey.currentState?.currentSide) {
             case RevealSide.right:
               panelsKey.currentState?.reveal(RevealSide.main);
@@ -214,38 +222,35 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
         offset = scaledQuery.padding.bottom;
       }
       return Tile(
-        child: KeyboardAdaptor(
-          safeAreaTop: false,
-          Column(
-            children: [
-              Tile.low(
-                caulkClipBottomRight: true,
-                caulkClipBottomLeft: true,
-                caulkBorderBottom: true,
-                child: ScaledSafeArea(
-                  bottom: false,
-                  left: false,
-                  right: false,
-                  child: SizedBox(
-                    height: 50,
-                    child: RoomHeader(
-                      widget.state.currentRoom!,
-                      onTap: widget.state.currentRoom?.permissions
-                                  .canEditAnything ==
-                              true
-                          ? () => widget.state.navigateRoomSettings()
-                          : null,
-                    ),
+        child: Column(
+          children: [
+            Tile.low(
+              caulkClipBottomRight: true,
+              caulkClipBottomLeft: true,
+              caulkBorderBottom: true,
+              child: ScaledSafeArea(
+                bottom: false,
+                left: false,
+                right: false,
+                child: SizedBox(
+                  height: 50,
+                  child: RoomHeader(
+                    widget.state.currentRoom!,
+                    onTap:
+                        widget.state.currentRoom?.permissions.canEditAnything ==
+                                true
+                            ? () => widget.state.navigateRoomSettings()
+                            : null,
                   ),
                 ),
               ),
-              Expanded(
-                child: RoomPrimaryView(
-                  widget.state.currentRoom!,
-                ),
+            ),
+            Expanded(
+              child: RoomPrimaryView(
+                widget.state.currentRoom!,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       );
     }

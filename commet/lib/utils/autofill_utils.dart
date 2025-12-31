@@ -95,23 +95,40 @@ class AutofillUtils {
     }).toList();
   }
 
-  static List<AutofillSearchResult> searchEmoticon(String string, Room room) {
+  static List<AutofillSearchResult> searchEmoticon(String string, Room room,
+      {int limit = 20, double threshold = 0.2}) {
     var emoticons = room.getComponent<RoomEmoticonComponent>();
     if (emoticons == null) {
       return [];
     }
 
-    var result = List<AutofillSearchResult>.empty(growable: true);
+    var result = List<AutofillSearchResultEmoticon>.empty(growable: true);
 
     for (var pack in emoticons.availableEmoji) {
-      result.addAll(pack.search(string, 20).map((e) {
-        return AutofillSearchResultEmoticon(e.shortcode!, e.slug, e);
+      var fuzzy = Fuzzy<Emoticon>(pack.emoji,
+          options: FuzzyOptions(threshold: threshold, keys: [
+            WeightedKey(
+                name: "shortcode",
+                getter: (obj) {
+                  return obj.shortcode ?? "";
+                },
+                weight: 1)
+          ]));
+
+      var searchResult = fuzzy.search(string, limit);
+
+      result.addAll(searchResult.map((e) {
+        return AutofillSearchResultEmoticon(
+            e.item.shortcode!, e.item.slug, e.item,
+            score: e.score);
       }));
 
-      if (result.length >= 20) {
+      if (result.length >= limit) {
         break;
       }
     }
+
+    result.sort((a, b) => a.score.compareTo(b.score));
 
     return result;
   }
@@ -133,6 +150,7 @@ class AutofillSearchResultAvatar extends AutofillSearchResult {
 
 class AutofillSearchResultEmoticon extends AutofillSearchResult {
   Emoticon emoticon;
-
-  AutofillSearchResultEmoticon(super.result, super.slug, this.emoticon);
+  double score;
+  AutofillSearchResultEmoticon(super.result, super.slug, this.emoticon,
+      {this.score = 0});
 }

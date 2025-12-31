@@ -6,7 +6,6 @@ import 'package:commet/utils/emoji/unicode_emoji_data.dart';
 import 'package:commet/utils/emoji/unicode_emoji_data_groups.g.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fuzzy/fuzzy.dart';
 import 'package:matrix/matrix.dart';
 
 class UnicodeEmojis {
@@ -163,21 +162,6 @@ class UnicodeEmoticonPack implements EmoticonPack {
   @override
   List<String> getShortcodes() {
     return emoji.map((e) => e.shortcode!).toList();
-  }
-
-  @override
-  List<Emoticon> search(String searchText, [int limit = -1]) {
-    var fuzzy = Fuzzy<Emoticon>(emoji,
-        options: FuzzyOptions(threshold: 0.4, keys: [
-          WeightedKey(
-              name: "shortcode",
-              getter: (obj) {
-                return obj.shortcode ?? "";
-              },
-              weight: 1)
-        ]));
-
-    return fuzzy.search(searchText, limit).map((e) => e.item).toList();
   }
 
   @override

@@ -1,4 +1,7 @@
+import 'package:commet/client/components/emoticon/dynamic_emoticon_pack.dart';
+import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/components/emoticon/emoticon_component.dart';
+import 'package:commet/client/components/emoticon_recent/recent_emoticon_component.dart';
 import 'package:commet/client/components/message_effects/message_effect_component.dart';
 import 'package:commet/client/components/photo_album_room/photo_album_room_component.dart';
 import 'package:commet/client/components/pinned_messages/pinned_messages_component.dart';
@@ -13,6 +16,7 @@ import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/code_block.dart';
 import 'package:commet/ui/molecules/emoji_picker.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
+import 'package:commet/utils/autofill_utils.dart';
 import 'package:commet/utils/common_strings.dart';
 import 'package:commet/utils/download_utils.dart';
 import 'package:commet/utils/event_bus.dart';
@@ -26,6 +30,8 @@ class TimelineEventMenu {
 
   late final List<TimelineEventMenuEntry> primaryActions;
   late final List<TimelineEventMenuEntry> secondaryActions;
+  late final List<Emoticon> recentReactions;
+  TimelineEventMenuEntry? addReactionAction;
 
   final Function(TimelineEvent event)? setEditingEvent;
   final Function(TimelineEvent event)? setReplyingEvent;
@@ -136,6 +142,51 @@ class TimelineEventMenu {
       hasEffect = effects?.hasEffect(event) == true;
     }
 
+    var reactions =
+        timeline.room.client.getComponent<RecentEmoticonComponent>();
+    if (reactions != null && canAddReaction) {
+      recentReactions = reactions.getRecentReactionEmoticon(timeline.room);
+    } else {
+      recentReactions = List.empty();
+    }
+
+    if (canAddReaction) {
+      var recent = timeline.room.client
+          .getComponent<RecentEmoticonComponent>()
+          ?.getRecentReactionEmoticon(timeline.room);
+
+      var availableEmoji = emoticons!.availableEmoji;
+
+      if (recent != null && recent.isNotEmpty) {
+        availableEmoji.insert(
+            0,
+            DynamicEmoticonPack(
+                identifier: "dynamic_pack_frequently_used_reactions",
+                displayName: "Frequently Used",
+                icon: Icons.schedule,
+                emoticons: recent,
+                usage: EmoticonUsage.all));
+      }
+
+      addReactionAction = TimelineEventMenuEntry(
+        name: CommonStrings.promptAddReaction,
+        icon: Icons.add_reaction,
+        secondaryMenuBuilder: (context, dismissSecondaryMenu) {
+          return EmojiPicker(availableEmoji,
+              searchDelegate: (search) =>
+                  AutofillUtils.searchEmoticon(search, timeline.room, limit: 50)
+                      .whereType<AutofillSearchResultEmoticon>()
+                      .toList(),
+              preferredTooltipDirection: AxisDirection.left,
+              onEmoticonPressed: (emote) async {
+                timeline.room.addReaction(event, emote);
+                await Future.delayed(const Duration(milliseconds: 100));
+                dismissSecondaryMenu();
+              });
+        },
+      );
+    }
+
     primaryActions = [
       if (canRetrySend)
         TimelineEventMenuEntry(
@@ -189,20 +240,6 @@ class TimelineEventMenu {
               }
               onActionFinished?.call();
             }),
-      if (canAddReaction)
-        TimelineEventMenuEntry(
-          name: CommonStrings.promptAddReaction,
-          icon: Icons.add_reaction,
-          secondaryMenuBuilder: (context, dismissSecondaryMenu) {
-            return EmojiPicker(emoticons!.availableEmoji,
-                preferredTooltipDirection: AxisDirection.left,
-                onEmoticonPressed: (emote) async {
-              timeline.room.addReaction(event, emote);
-              await Future.delayed(const Duration(milliseconds: 100));
-              dismissSecondaryMenu();
-            });
-          },
-        ),
       if (canDeleteEvent)
         TimelineEventMenuEntry(
             name: CommonStrings.promptDelete,

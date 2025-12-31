@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:collection/collection.dart';
 import 'package:commet/client/components/emoticon/emoji_pack.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_emoticon.dart';
@@ -9,7 +10,6 @@ import 'package:commet/client/matrix/components/emoticon/matrix_space_emoticon_c
 import 'package:commet/client/matrix/extensions/matrix_client_extensions.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:flutter/widgets.dart';
-import 'package:fuzzy/fuzzy.dart';
 import 'package:matrix/matrix.dart';
 
 class MatrixEmoticonPack implements EmoticonPack {
@@ -39,8 +39,6 @@ class MatrixEmoticonPack implements EmoticonPack {
           packUsage: this.usage, shortcode: shortCode, usage: usage);
     }).toList();
   }
-
-  late Map<String, Emoticon> shortcodeToEmoticon;
 
   late Map<String, dynamic> state;
 
@@ -182,23 +180,8 @@ class MatrixEmoticonPack implements EmoticonPack {
   }
 
   @override
-  List<Emoticon> search(String searchText, [int limit = -1]) {
-    var fuzzy = Fuzzy<Emoticon>(emoji,
-        options: FuzzyOptions(threshold: 0.4, keys: [
-          WeightedKey(
-              name: "shortcode",
-              getter: (obj) {
-                return obj.shortcode ?? "";
-              },
-              weight: 1)
-        ]));
-
-    return fuzzy.search(searchText, limit).map((e) => e.item).toList();
-  }
-
-  @override
   Emoticon? getByShortcode(String shortcode) {
-    return shortcodeToEmoticon[shortcode];
+    return emotes.firstWhereOrNull((i) => i.shortcode == shortcode);
   }
 
   @override

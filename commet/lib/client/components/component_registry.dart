@@ -8,6 +8,7 @@ import 'package:commet/client/matrix/components/emoticon/matrix_emoticon_compone
 import 'package:commet/client/matrix/components/emoticon/matrix_emoticon_state_manager.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_room_emoticon_component.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_space_emoticon_component.dart';
+import 'package:commet/client/matrix/components/emoticon_recent/matrix_recent_emoticon_component.dart';
 import 'package:commet/client/matrix/components/event_search/matrix_event_search_component.dart';
 import 'package:commet/client/matrix/components/gif/matrix_gif_component.dart';
 import 'package:commet/client/matrix/components/invitation/matrix_invitation_component.dart';
@@ -48,6 +49,7 @@ class ComponentRegistry {
       MatrixMessageEffectsComponent(client),
       MatrixUserPresenceComponent(client),
       MatrixAccountSwitchComponent(client),
+      MatrixRecentEmoticonComponent(client),
     ];
   }
 
