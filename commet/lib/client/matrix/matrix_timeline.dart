@@ -125,7 +125,7 @@ class MatrixTimeline extends Timeline {
   @override
   void markAsRead(TimelineEvent event) async {
     if (event.status == TimelineEventStatus.synced) {
-      _matrixTimeline?.setReadMarker();
+      await _matrixTimeline?.setReadMarker();
     }
   }
 
