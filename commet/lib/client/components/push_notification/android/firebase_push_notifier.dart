@@ -1,16 +1,18 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'dart:async';
+import 'dart:convert';
+import 'dart:isolate';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/push_notification/android/android_notifier.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
+import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/components/push_notification/notifier.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
-import 'package:commet/service/background_service.dart';
-import 'package:commet/service/background_service_notifications/background_service_task_notification.dart';
+import 'package:commet/service/background_service_notifications/background_service_task_notification2.dart';
 
 // Manage these to enable / disable firebase
 // import 'package:firebase_core/firebase_core.dart';
@@ -29,8 +31,35 @@ Future<void> onForegroundMessage(dynamic message) async {
 Future<void> _firebaseMessagingBackgroundHandler(dynamic message) async {
   Log.prefix = "fcm-background";
   Log.i("Got background message: ${message.data}");
-  doBackgroundServiceTask(BackgroundServiceTaskNotification(
-      message.data["room_id"], message.data["event_id"]));
+
+  final data = message.data;
+
+  Isolate.run(() async {
+    try {
+      var notificationManager = BackgroundNotificationsManager2(null);
+
+      await notificationManager.init();
+
+      if (!data.containsKey("room_id") || !data.containsKey("event_id")) {
+        if (preferences.developerMode)
+          NotificationManager.notify(ErrorNotificationContent(
+            title: "Unknown Notification Data",
+            content: jsonEncode(data),
+          ));
+
+        return;
+      }
+
+      notificationManager.handleMessage(data);
+    } catch (e, s) {
+      Log.e(
+          "An error occured while processing unified push background message");
+      Log.onError(e, s);
+      NotificationManager.notify(ErrorNotificationContent(
+          title: "An error occurred while processing notifications",
+          content: "${e} \n\n ${s}"));
+    }
+  }, debugName: "Firebase Isolate");
 }
 
 class FirebasePushNotifier implements Notifier {
