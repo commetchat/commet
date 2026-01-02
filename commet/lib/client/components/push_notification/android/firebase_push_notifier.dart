@@ -29,8 +29,8 @@ Future<void> onForegroundMessage(dynamic message) async {
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(dynamic message) async {
-  Log.i("Got background message: ${message.data}");
   Log.prefix = "fcm-background";
+  Log.i("Got background message: ${message.data}");
   isHeadless = true;
 
   final data = message.data;
@@ -38,7 +38,6 @@ Future<void> _firebaseMessagingBackgroundHandler(dynamic message) async {
   Log.i("Client Manager: $clientManager");
 
   await preferences.init();
-  await NotificationManager.init();
 
   try {
     var notificationManager = BackgroundNotificationsManager2(null);
