@@ -2,7 +2,6 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:isolate';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/push_notification/android/android_notifier.dart';
