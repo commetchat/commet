@@ -29,37 +29,40 @@ Future<void> onForegroundMessage(dynamic message) async {
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(dynamic message) async {
-  Log.prefix = "fcm-background";
   Log.i("Got background message: ${message.data}");
+  Log.prefix = "fcm-background";
+  isHeadless = true;
 
   final data = message.data;
 
-  Isolate.run(() async {
-    try {
-      var notificationManager = BackgroundNotificationsManager2(null);
+  Log.i("Client Manager: $clientManager");
 
-      await notificationManager.init();
+  await preferences.init();
+  await NotificationManager.init();
 
-      if (!data.containsKey("room_id") || !data.containsKey("event_id")) {
-        if (preferences.developerMode)
-          NotificationManager.notify(ErrorNotificationContent(
-            title: "Unknown Notification Data",
-            content: jsonEncode(data),
-          ));
+  try {
+    var notificationManager = BackgroundNotificationsManager2(null);
 
-        return;
-      }
+    await notificationManager.init();
 
-      notificationManager.handleMessage(data);
-    } catch (e, s) {
-      Log.e(
-          "An error occured while processing unified push background message");
-      Log.onError(e, s);
-      NotificationManager.notify(ErrorNotificationContent(
-          title: "An error occurred while processing notifications",
-          content: "${e} \n\n ${s}"));
+    if (!data.containsKey("room_id") || !data.containsKey("event_id")) {
+      if (preferences.developerMode)
+        NotificationManager.notify(ErrorNotificationContent(
+          title: "Unknown Notification Data",
+          content: jsonEncode(data),
+        ));
+
+      return;
     }
-  }, debugName: "Firebase Isolate");
+
+    notificationManager.handleMessage(data);
+  } catch (e, s) {
+    Log.e("An error occured while processing unified push background message");
+    Log.onError(e, s);
+    NotificationManager.notify(ErrorNotificationContent(
+        title: "An error occurred while processing notifications",
+        content: "${e} \n\n ${s}"));
+  }
 }
 
 class FirebasePushNotifier implements Notifier {
