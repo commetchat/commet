@@ -308,7 +308,8 @@ class TimelineEventMenu {
                 return SizedBox(
                   width: 1000,
                   child: SelectionArea(
-                    child: Codeblock(text: event.source, language: "json"),
+                    child: ExpandableCodeBlock(
+                        expanded: true, text: event.source, language: "json"),
                   ),
                 );
               },

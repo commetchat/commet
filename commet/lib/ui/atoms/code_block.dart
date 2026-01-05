@@ -166,10 +166,12 @@ class Codeblock extends StatelessWidget {
 }
 
 class ExpandableCodeBlock extends StatefulWidget {
-  const ExpandableCodeBlock({required this.text, this.language, super.key});
+  const ExpandableCodeBlock(
+      {required this.text, this.expanded = false, this.language, super.key});
 
   final String text;
   final String? language;
+  final bool expanded;
 
   @override
   State<ExpandableCodeBlock> createState() => _ExpandableCodeBlockState();
@@ -186,6 +188,7 @@ class _ExpandableCodeBlockState extends State<ExpandableCodeBlock> {
 
   @override
   void initState() {
+    expanded = widget.expanded;
     lines = widget.text.split("\n");
     super.initState();
   }
