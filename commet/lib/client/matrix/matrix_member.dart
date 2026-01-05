@@ -1,3 +1,5 @@
+import 'package:commet/client/components/user_color/user_color_component.dart';
+import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/member.dart';
 import 'package:flutter/material.dart';
@@ -5,11 +7,11 @@ import 'package:matrix/matrix.dart' as matrix;
 
 class MatrixMember implements Member {
   matrix.User matrixUser;
-  matrix.Client client;
+  MatrixClient client;
 
   @override
   ImageProvider<Object>? get avatar => matrixUser.avatarUrl != null
-      ? MatrixMxcImage(matrixUser.avatarUrl!, client,
+      ? MatrixMxcImage(matrixUser.avatarUrl!, client.matrixClient,
           doThumbnail: true,
           autoLoadFullRes: false,
           doFullres: false,
@@ -62,7 +64,9 @@ class MatrixMember implements Member {
   }
 
   @override
-  Color get defaultColor => hashColor(identifier);
+  Color get defaultColor =>
+      client.getComponent<UserColorComponent>()?.getColor(identifier) ??
+      hashColor(identifier);
 
   @override
   bool operator ==(Object other) {

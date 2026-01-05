@@ -9,12 +9,11 @@ import 'package:commet/client/error_profile.dart';
 import 'package:commet/client/matrix/auth/matrix_sso_login_flow.dart';
 import 'package:commet/client/matrix/auth/matrix_username_password_login_flow.dart';
 import 'package:commet/client/matrix/components/matrix_sync_listener.dart';
+import 'package:commet/client/matrix/components/profile/matrix_profile_component.dart';
 import 'package:commet/client/matrix/components/voip_room/matrix_voip_room_component.dart';
 import 'package:commet/client/matrix/database/matrix_database.dart';
 import 'package:commet/client/matrix/extensions/matrix_client_extensions.dart';
 import 'package:commet/client/matrix/matrix_native_implementations.dart';
-import 'package:commet/client/matrix/matrix_profile.dart';
-import 'package:commet/client/profile.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/experiments.dart';
@@ -362,7 +361,7 @@ class MatrixClient extends Client {
       var data = await _matrixClient.database.getUserProfile(id);
       if (data != null) {
         self = MatrixProfile(
-            _matrixClient,
+            this,
             matrix.Profile(
               userId: id,
               displayName: data.displayname,
@@ -371,10 +370,10 @@ class MatrixClient extends Client {
 
         // Update own profile, but lets not wait for it before continuing
         _matrixClient.getProfileFromUserId(id).then((profile) {
-          self = MatrixProfile(_matrixClient, profile);
+          self = MatrixProfile(this, profile);
         });
       } else {
-        self = MatrixProfile(_matrixClient,
+        self = MatrixProfile(this,
             await _matrixClient.getProfileFromUserId(_matrixClient.userID!));
       }
     }
@@ -517,12 +516,6 @@ class MatrixClient extends Client {
         text: const JsonEncoder.withIndent('  ').convert(data),
       ),
     );
-  }
-
-  @override
-  Future<Profile?> getProfile(String identifier) async {
-    var profile = await _matrixClient.getProfileFromUserId(identifier);
-    return MatrixProfile(_matrixClient, profile);
   }
 
   @override

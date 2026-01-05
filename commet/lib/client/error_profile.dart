@@ -1,4 +1,4 @@
-import 'package:commet/client/profile.dart';
+import 'package:commet/client/components/profile/profile_component.dart';
 import 'package:flutter/material.dart';
 
 class ErrorProfile implements Profile {
@@ -19,4 +19,7 @@ class ErrorProfile implements Profile {
 
   @override
   String get userName => "Error";
+
+  @override
+  ImageProvider<Object>? get banner => null;
 }

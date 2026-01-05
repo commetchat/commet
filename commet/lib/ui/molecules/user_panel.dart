@@ -4,7 +4,6 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/components/user_presence/user_presence_component.dart';
 import 'package:commet/client/member.dart';
 import 'package:commet/ui/atoms/shimmer_loading.dart';
-import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/organisms/user_profile/user_profile.dart';
 import 'package:flutter/material.dart' as material;
 import 'package:flutter/material.dart';
@@ -132,13 +131,7 @@ class _UserPanelState extends material.State<UserPanel> {
   }
 
   void onUserPanelClicked() {
-    AdaptiveDialog.show(context,
-        builder: (_) => UserProfile(
-              userId: widget.userId,
-              client: widget.client,
-              dismiss: () => Navigator.pop(context),
-            ),
-        title: "User");
+    UserProfile.show(context, client: widget.client, userId: widget.userId);
   }
 
   void onChanged((String, UserPresence) event) {
