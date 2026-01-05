@@ -217,6 +217,10 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
         firstFrame = false;
       });
     }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      onScroll();
+    });
   }
 
   void onScroll() {
@@ -248,7 +252,9 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
             controller.position.maxScrollExtent - loadingThreshold &&
         !timeline.isLoadingHistory &&
         timeline.canLoadHistory) {
-      timeline.loadMoreHistory();
+      timeline.loadMoreHistory().then((_) {
+        WidgetsBinding.instance.addPostFrameCallback((_) => onScroll());
+      });
     }
 
     if (controller.offset <

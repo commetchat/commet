@@ -305,8 +305,11 @@ class TimelineEventMenu {
               context,
               title: "Source",
               builder: (context) {
-                return SelectionArea(
-                  child: Codeblock(text: event.source, language: "json"),
+                return SizedBox(
+                  width: 1000,
+                  child: SelectionArea(
+                    child: Codeblock(text: event.source, language: "json"),
+                  ),
                 );
               },
             );
