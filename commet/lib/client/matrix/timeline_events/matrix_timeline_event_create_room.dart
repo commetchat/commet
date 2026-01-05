@@ -3,7 +3,6 @@ import 'package:commet/client/timeline.dart';
 import 'package:commet/client/timeline_events/timeline_event_generic.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:matrix/matrix.dart' as matrix;
 
 class MatrixTimelineEventCreateRoom extends MatrixTimelineEvent
     implements TimelineEventGeneric {
