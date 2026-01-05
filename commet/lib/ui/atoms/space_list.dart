@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:commet/client/client.dart';
+import 'package:commet/client/space_child.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/room_text_button.dart';
 import 'package:commet/utils/event_bus.dart';
@@ -23,8 +24,7 @@ class SpaceList extends StatefulWidget {
 }
 
 class _SpaceListState extends State<SpaceList> {
-  late List<Space> subSpaces;
-  late List<Room> rooms;
+  late List<SpaceChild> children;
 
   late List<StreamSubscription> subs;
 
@@ -34,8 +34,7 @@ class _SpaceListState extends State<SpaceList> {
 
   @override
   void initState() {
-    subSpaces = widget.space.subspaces;
-    rooms = widget.space.rooms;
+    children = widget.space.children;
 
     subs = [
       EventBus.onSelectedRoomChanged.stream.listen(onRoomSelected),
@@ -53,13 +52,13 @@ class _SpaceListState extends State<SpaceList> {
 
   void onSpaceUpdated(void event) {
     setState(() {
-      subSpaces = widget.space.subspaces;
+      children = widget.space.children;
     });
   }
 
   void onRoomUpdated(void event) {
     setState(() {
-      rooms = widget.space.rooms;
+      children = widget.space.children;
     });
   }
 
@@ -82,34 +81,7 @@ class _SpaceListState extends State<SpaceList> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        if (subSpaces.isNotEmpty)
-          Padding(
-              padding: EdgeInsets.fromLTRB(0, widget.isTopLevel ? 12 : 0, 0, 0),
-              child: ImplicitlyAnimatedList(
-                itemData: subSpaces,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                padding: const EdgeInsets.all(0),
-                initialAnimation: false,
-                itemBuilder: (context, data) {
-                  return tiamat.TextButtonExpander(data.displayName,
-                      initiallyExpanded: true,
-                      childrenPadding: const EdgeInsets.fromLTRB(2, 0, 0, 0),
-                      iconColor: Theme.of(context).colorScheme.secondary,
-                      textColor: Theme.of(context).colorScheme.secondary,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
-                          child: SpaceList(
-                            data,
-                            isTopLevel: false,
-                            onRoomSelected: widget.onRoomSelected,
-                          ),
-                        )
-                      ]);
-                },
-              )),
-        if (widget.space.rooms.isNotEmpty) roomsList()
+        for (var child in children) buildChild(child),
       ],
     );
   }
@@ -142,5 +114,33 @@ class _SpaceListState extends State<SpaceList> {
         );
       },
     );
+  }
+
+  Widget buildChild(SpaceChild child) {
+    if (child case SpaceChildSpace _)
+      return tiamat.TextButtonExpander(child.child.displayName,
+          initiallyExpanded: true,
+          childrenPadding: const EdgeInsets.fromLTRB(2, 0, 0, 0),
+          iconColor: Theme.of(context).colorScheme.secondary,
+          textColor: Theme.of(context).colorScheme.secondary,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
+              child: SpaceList(
+                child.child,
+                isTopLevel: false,
+                onRoomSelected: widget.onRoomSelected,
+              ),
+            )
+          ]);
+
+    if (child case SpaceChildRoom _)
+      return RoomTextButton(
+        child.child,
+        onTap: widget.onRoomSelected,
+        highlight: selectedRoom == child.child,
+      );
+
+    return Container();
   }
 }

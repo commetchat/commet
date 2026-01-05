@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:collection/collection.dart';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/component_registry.dart';
 import 'package:commet/client/components/space_component.dart';
@@ -11,7 +12,10 @@ import 'package:commet/client/matrix/matrix_room_permissions.dart';
 import 'package:commet/client/matrix/matrix_room_preview.dart';
 import 'package:commet/client/permissions.dart';
 import 'package:commet/client/room_preview.dart';
+import 'package:commet/client/space_child.dart';
+import 'package:commet/utils/exponential_backoff.dart';
 import 'package:commet/utils/notifying_list.dart';
+import 'package:commet/utils/rng.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
@@ -250,6 +254,20 @@ class MatrixSpace extends Space {
         }
       }
     }
+
+    var orders = Map<String, String>.new();
+    for (var child in _matrixRoom.spaceChildren) {
+      if (child.roomId == null) continue;
+
+      orders[child.roomId!] = child.order;
+    }
+
+    _rooms.sort((a, b) {
+      var orderA = orders[a.identifier] ?? "";
+      var orderB = orders[b.identifier] ?? "";
+
+      return orderA.compareTo(orderB);
+    });
   }
 
   void _onRoomAdded(int index) {
@@ -362,5 +380,64 @@ class MatrixSpace extends Space {
         _onUpdate.add(null);
       }
     }
+  }
+
+  @override
+  List<SpaceChild> get children {
+    List<SpaceChild> result = List.empty(growable: true);
+    _matrixRoom.spaceChildren.sort((a, b) => a.order.compareTo(b.order));
+
+    for (var child in _matrixRoom.spaceChildren) {
+      var id = child.roomId;
+      if (id == null) continue;
+
+      var room = client.getRoom(id);
+      if (room != null) {
+        result.add(SpaceChildRoom(room));
+        continue;
+      }
+
+      var space = client.getSpace(id);
+      if (space != null) {
+        result.add(SpaceChildSpace(space));
+        continue;
+      }
+    }
+
+    return result;
+  }
+
+  @override
+  Future<void> setChildrenOrder(List<SpaceChild> ordered,
+      {Function(double?)? onProgressChanged}) async {
+    var orderKeys =
+        List.generate(ordered.length, (i) => RandomUtils.getRandomString(10));
+    orderKeys.sort();
+
+    for (int i = 0; i < ordered.length; i++) {
+      var item = ordered[i];
+
+      var existing = _matrixRoom.spaceChildren
+          .firstWhereOrNull((e) => e.roomId == item.id);
+
+      var order = orderKeys[i];
+      var suggested = existing?.suggested;
+      var via = existing?.via;
+
+      onProgressChanged?.call(i.toDouble() / ordered.length.toDouble());
+
+      await exponentialBackoff(() async {
+        await _matrixRoom.client.setRoomStateWithKey(
+            _matrixRoom.id, matrix.EventTypes.SpaceChild, item.id, {
+          'via': via,
+          'order': order,
+          if (suggested != null) 'suggested': suggested,
+        });
+      });
+    }
+
+    updateRoomsList();
+
+    _onUpdate.add(());
   }
 }

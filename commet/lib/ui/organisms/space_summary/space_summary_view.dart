@@ -1,13 +1,16 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/room_preview.dart';
+import 'package:commet/client/space_child.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/atoms/room_panel.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/utils/common_strings.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:implicitly_animated_list/implicitly_animated_list.dart';
 import 'package:intl/intl.dart';
@@ -93,17 +96,27 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
           desc: "Greeting to the space, supports markdown formatting",
           name: "labelSpaceGettingText");
 
-  late List<Space> subspaces;
-  late List<Room> rooms;
   late List<RoomPreview> previews;
 
   late List<StreamSubscription> subs;
 
+  late List<SpaceChild> children;
+
+  bool canChangeOrder = true;
+  bool orderChanged = false;
+  bool orderChangeLoading = false;
+  double? orderChangedProgress = null;
+
   @override
   void initState() {
-    subspaces = widget.space.subspaces;
-    rooms = widget.space.rooms;
     previews = widget.space.childPreviews;
+    children = List.from(widget.space.children);
+
+    canChangeOrder = widget.space.permissions.canEditChildren;
+
+    if (widget.space.fullyLoaded == false) {
+      widget.space.loadExtra();
+    }
 
     subs = [
       widget.space.onChildRoomPreviewAdded
@@ -128,13 +141,13 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
 
   void onRoomListChanged() {
     setState(() {
-      rooms = widget.space.rooms;
+      children = List.from(widget.space.children);
     });
   }
 
   void onSpaceListChanged() {
     setState(() {
-      subspaces = widget.space.subspaces;
+      children = List.from(widget.space.children);
     });
   }
 
@@ -149,8 +162,6 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
 
   @override
   Widget build(BuildContext context) {
-    var pad = const EdgeInsets.fromLTRB(0, 4, 0, 4);
-
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -179,20 +190,12 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
                   if (widget.showSpaceSettingsButton) buildSettingsButton()
                 ],
               ),
-              if (previews.isNotEmpty)
-                Padding(
-                  padding: pad,
-                  child: buildPreviewList(),
+              if (children.isNotEmpty)
+                tiamat.Panel(
+                  mode: TileType.surfaceContainerLow,
+                  child: buildChildrenList(),
                 ),
-              if (subspaces.isNotEmpty == true)
-                Padding(
-                  padding: pad,
-                  child: buildSpaceList(),
-                ),
-              Padding(
-                padding: pad,
-                child: buildRoomList(),
-              ),
+              if (previews.isNotEmpty) buildPreviewList(),
             ],
           ),
         ),
@@ -263,92 +266,6 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
     );
   }
 
-  Widget buildRoomList() {
-    return Panel(
-      header: labelSpaceRoomsList,
-      mode: TileType.surfaceContainer,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          if (rooms.isNotEmpty)
-            ImplicitlyAnimatedList(
-              physics: NeverScrollableScrollPhysics(),
-              padding: EdgeInsets.all(0),
-              key: ValueKey("animated-list-rooms-${widget.space.identifier}"),
-              initialAnimation: false,
-              shrinkWrap: true,
-              itemData: rooms,
-              itemBuilder: (context, data) {
-                return buildRoomPanel(data);
-              },
-            ),
-          tiamat.Tooltip(
-            text: tooltipAddRoom,
-            preferredDirection: AxisDirection.left,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
-              child: tiamat.CircleButton(
-                radius: BuildConfig.MOBILE ? 24 : 16,
-                icon: Icons.add,
-                onPressed: () => widget.onAddRoomButtonTap?.call(),
-              ),
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
-  Widget buildSpaceList() {
-    return Panel(
-      header: labelSpaceSubspacesList,
-      mode: TileType.surfaceContainer,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          ImplicitlyAnimatedList(
-            padding: EdgeInsets.all(0),
-            physics: NeverScrollableScrollPhysics(),
-            key: ValueKey(
-                "animated-list-child-spaces-${widget.space.identifier}"),
-            itemData: subspaces,
-            initialAnimation: false,
-            shrinkWrap: true,
-            itemBuilder: (context, space) {
-              return RoomPanel(
-                displayName: space.displayName,
-                color: space.color,
-                body: space.topic,
-                avatar: space.avatar,
-                onTap: () => widget.onSpaceTap?.call(space),
-              );
-            },
-          )
-        ],
-      ),
-    );
-  }
-
-  Widget buildRoomPanel(Room room) {
-    return RoomPanel(
-      displayName: room.displayName,
-      avatar: room.avatar,
-      color: room.defaultColor,
-      onTap: widget.onRoomTap != null
-          ? () {
-              widget.onRoomTap?.call(room);
-            }
-          : null,
-      body: room.lastEvent?.plainTextBody,
-      recentEventSender: room.lastEvent != null
-          ? room.getMemberOrFallback(room.lastEvent!.senderId).displayName
-          : null,
-      recentEventSenderColor: room.lastEvent != null
-          ? room.getColorOfUser(room.lastEvent!.senderId)
-          : null,
-    );
-  }
-
   Widget buildPreviewList() {
     return Panel(
         header: labelSpaceAvailableRoomsList,
@@ -402,5 +319,189 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
         )
       ],
     );
+  }
+
+  Widget buildChildrenList() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        ReorderableListView.builder(
+          shrinkWrap: true,
+          buildDefaultDragHandles: canChangeOrder,
+          itemBuilder: (context, index) {
+            final item = children[index];
+            var key = ValueKey(item.id);
+
+            var pad = EdgeInsets.fromLTRB(0, 0, canChangeOrder ? 50 : 0, 0);
+            if (BuildConfig.MOBILE) {
+              return ReorderableDelayedDragStartListener(
+                  key: key,
+                  enabled: canChangeOrder,
+                  index: index,
+                  child: Padding(
+                    padding: pad,
+                    child: buildItem(
+                      item,
+                    ),
+                  ));
+            } else {
+              return ReorderableDragStartListener(
+                  key: key,
+                  enabled: canChangeOrder && orderChanged,
+                  index: index,
+                  child: Padding(
+                    padding: pad,
+                    child: buildItem(
+                      item,
+                    ),
+                  ));
+            }
+          },
+          onReorderStart: (index) => HapticFeedback.mediumImpact(),
+          proxyDecorator: (child, index, animation) {
+            return AnimatedBuilder(
+              animation: animation,
+              builder: (BuildContext context, Widget? child) {
+                final double animValue =
+                    Curves.easeOut.transform(animation.value);
+                final double scale = lerpDouble(1, 1.03, animValue)!;
+                return Transform.scale(
+                  scale: scale,
+                  child: child,
+                );
+              },
+              child: child,
+            );
+          },
+          itemCount: children.length,
+          onReorder: (oldIndex, newIndex) {
+            if (newIndex > oldIndex) {
+              newIndex -= 1;
+            }
+
+            var i = children.removeAt(oldIndex);
+            children.insert(newIndex, i);
+
+            setState(() {
+              orderChanged = true;
+            });
+          },
+        ),
+        if (orderChanged)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(8, 8, 0, 8),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              spacing: 8,
+              children: [
+                if (!orderChangeLoading)
+                  FloatingActionButton.small(
+                    onPressed: () {
+                      setState(() {
+                        children = widget.space.children;
+                        orderChanged = false;
+                      });
+                    },
+                    child: Icon(Icons.undo),
+                  ),
+                FloatingActionButton.small(
+                  onPressed: () {
+                    setState(() {
+                      orderChangeLoading = true;
+                    });
+
+                    widget.space.setChildrenOrder(children,
+                        onProgressChanged: (v) {
+                      setState(() {
+                        orderChangedProgress = v;
+                      });
+                    }).then((_) {
+                      setState(() {
+                        orderChanged = false;
+                        orderChangeLoading = false;
+                      });
+                    });
+                  },
+                  child: orderChangeLoading
+                      ? SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            color: Theme.of(context).colorScheme.onSurface,
+                            value: orderChangedProgress != null &&
+                                    orderChangedProgress! > 0.1
+                                ? orderChangedProgress
+                                : null,
+                          ))
+                      : Icon(Icons.save),
+                ),
+              ],
+            ),
+          ),
+        if (widget.space.permissions.canEditChildren)
+          tiamat.Tooltip(
+            text: tooltipAddRoom,
+            preferredDirection: AxisDirection.left,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
+              child: tiamat.CircleButton(
+                radius: BuildConfig.MOBILE ? 24 : 16,
+                icon: Icons.add,
+                onPressed: () => widget.onAddRoomButtonTap?.call(),
+              ),
+            ),
+          )
+      ],
+    );
+  }
+
+  Widget buildItem(SpaceChild<dynamic> item) {
+    if (item case SpaceChildRoom _) {
+      final room = item.child;
+      return RoomPanel(
+        displayName: room.displayName,
+        avatar: room.avatar,
+        color: room.defaultColor,
+        onTap: orderChanged
+            ? null
+            : widget.onRoomTap != null
+                ? () {
+                    widget.onRoomTap?.call(room);
+                  }
+                : null,
+        body: room.lastEvent?.plainTextBody,
+        recentEventSender: room.lastEvent != null
+            ? room.getMemberOrFallback(room.lastEvent!.senderId).displayName
+            : null,
+        recentEventSenderColor: room.lastEvent != null
+            ? room.getColorOfUser(room.lastEvent!.senderId)
+            : null,
+      );
+    }
+
+    if (item case SpaceChildSpace _) {
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Container(
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              color: Theme.of(context).colorScheme.surfaceContainer),
+          child: tiamat.TextButtonExpander(item.child.displayName,
+              textPadding: EdgeInsetsGeometry.all(20),
+              icon: Icons.star,
+              avatar: item.child.avatar,
+              avatarPlaceholderColor: item.child.color,
+              avatarPlaceholderText: item.child.displayName,
+              avatarRadius: 24,
+              childrenPadding: const EdgeInsets.fromLTRB(24, 0, 0, 0),
+              initiallyExpanded: false,
+              iconColor: Theme.of(context).colorScheme.secondary,
+              textColor: Theme.of(context).colorScheme.secondary,
+              children: item.child.children.map((i) => buildItem(i)).toList()),
+        ),
+      );
+    }
+
+    return Container();
   }
 }
