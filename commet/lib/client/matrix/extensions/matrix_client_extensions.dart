@@ -40,8 +40,7 @@ extension MatrixExtensions on Client {
       ImageProvider? image;
       if (avatar != null) {
         var mxc = Uri.parse(avatar);
-        image = MatrixMxcImage(mxc, this,
-            doFullres: false, doThumbnail: true, cache: false);
+        image = MatrixMxcImage(mxc, autoLoadFullRes: false, this);
       }
 
       return GenericRoomPreview(id,
