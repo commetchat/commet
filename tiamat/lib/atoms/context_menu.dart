@@ -271,7 +271,7 @@ class ContextMenuItem {
   final Color? color;
 
   Widget build(BuildContext context, Function() onClicked) {
-    var c = color ?? Theme.of(context).textTheme.bodyMedium!.color;
+    var c = color ?? Theme.of(context).colorScheme.onSurface;
     return Material(
       color: Colors.transparent,
       child: Padding(

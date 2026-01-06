@@ -40,8 +40,9 @@ class AdaptiveContextMenu extends StatelessWidget {
                         .map((item) => SizedBox(
                               height: 50,
                               child: tiamat.TextButton(
-                                highlighted: true,
                                 item.text,
+                                textColor:
+                                    Theme.of(context).colorScheme.onSurface,
                                 icon: item.icon,
                                 onTap: () {
                                   Navigator.of(modalContext).pop();

@@ -65,7 +65,11 @@ class AdaptiveDialog {
                   if (title != null)
                     Padding(
                       padding: const EdgeInsets.all(12.0),
-                      child: tiamat.Text.largeTitle(title),
+                      child: tiamat.Text(
+                        title,
+                        type: TextType.largeTitle,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                     ),
                   Center(child: builder(context)),
                 ],
@@ -114,6 +118,44 @@ class AdaptiveDialog {
               tiamat.Button.secondary(
                 text: cancelText,
                 onTap: () => Navigator.pop(context, false),
+              )
+            ],
+          ),
+        ),
+      );
+    }, title: title);
+  }
+
+  static Future<String?> textPrompt(BuildContext context,
+      {String title = "Enter Text",
+      String submitText = "Submit",
+      String? hintText,
+      bool dangerous = false}) {
+    return show<String?>(context, builder: (context) {
+      String result = "";
+
+      return SizedBox(
+        width: Layout.desktop ? 500 : null,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                decoration: InputDecoration(hintText: hintText),
+                onChanged: (value) => result = value,
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              tiamat.Button(
+                text: submitText,
+                onTap: () {
+                  print(result);
+                  Navigator.of(context).pop(result);
+                },
               )
             ],
           ),

@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:commet/client/components/command/command_component.dart';
 import 'package:commet/client/components/emoticon_recent/recent_emoticon_component.dart';
+import 'package:commet/client/components/profile/profile_component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event.dart';
@@ -73,6 +74,8 @@ class MatrixCommandComponent extends CommandComponent<MatrixClient> {
 
   FutureOr<String?> setStatus(
       matrix.CommandArgs args, StringBuffer? out) async {
+    client.getComponent<UserProfileComponent>()?.setStatus(args.msg);
+
     await client.getMatrixClient().setPresence(
         client.getMatrixClient().userID!, PresenceType.online,
         statusMsg: args.msg);

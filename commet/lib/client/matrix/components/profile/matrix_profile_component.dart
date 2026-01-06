@@ -89,6 +89,7 @@ class MatrixProfile
 class MatrixProfileComponent implements UserProfileComponent<MatrixClient> {
   static const String bannerKey = "chat.commet.profile_banner";
   static const String colorSchemeKey = "chat.commet.profile_color_scheme";
+  static const String statusKey = "chat.commet.profile_status";
 
   @override
   MatrixClient client;
@@ -104,6 +105,15 @@ class MatrixProfileComponent implements UserProfileComponent<MatrixClient> {
     var precense = await client
         .getComponent<UserPresenceComponent>()
         ?.getUserPresence(identifier);
+
+    if (precense == null || precense.message == null) {
+      if (fields.containsKey(statusKey)) {
+        precense = UserPresence(UserPresenceStatus.unknown,
+            message: UserPresenceMessage(
+                fields[statusKey].toString(), PresenceMessageType.userCustom));
+      }
+    }
+
     return MatrixProfile(client, matrix.Profile.fromJson(fields),
         precence: precense, fields: fields);
   }
@@ -118,9 +128,11 @@ class MatrixProfileComponent implements UserProfileComponent<MatrixClient> {
   Future<void> setField(String field, dynamic content) async {
     final data = {field: content};
 
-    await client.matrixClient.request(
+    var response = await client.matrixClient.request(
         RequestType.PUT, "/client/v3/profile/${client.self!.identifier}/$field",
         data: data);
+
+    print(response);
   }
 
   @override
@@ -132,5 +144,10 @@ class MatrixProfileComponent implements UserProfileComponent<MatrixClient> {
         Brightness.light => "light",
       }
     });
+  }
+
+  @override
+  Future<void> setStatus(String status) {
+    return setField(statusKey, status);
   }
 }

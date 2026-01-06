@@ -19,6 +19,7 @@ class TimelineEventLayoutMessage extends StatelessWidget {
       this.sticker,
       this.thread,
       this.urlPreviews,
+      this.onAvatarTapped,
       this.edited = false,
       this.avatarSize = 32,
       this.showSender = true});
@@ -35,6 +36,7 @@ class TimelineEventLayoutMessage extends StatelessWidget {
   final bool showSender;
   final bool edited;
   final String? timestamp;
+  final Function()? onAvatarTapped;
 
   final double avatarSize;
 
@@ -92,22 +94,36 @@ class TimelineEventLayoutMessage extends StatelessWidget {
     );
   }
 
-  tiamat.Text name() {
-    return tiamat.Text.name(
-      senderName,
-      color: senderColor,
+  Widget name() {
+    return SelectionContainer.disabled(
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: GestureDetector(
+          onTap: onAvatarTapped,
+          child: tiamat.Text.name(
+            senderName,
+            color: senderColor,
+          ),
+        ),
+      ),
     );
   }
 
   SizedBox avatar() {
     return SizedBox(
       width: avatarSize,
-      child: tiamat.Avatar(
-        radius: avatarSize / 2,
-        image: senderAvatar,
-        placeholderText: senderName,
-        placeholderColor: senderColor,
-        isPadding: showSender == false,
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: GestureDetector(
+          onTap: onAvatarTapped,
+          child: tiamat.Avatar(
+            radius: avatarSize / 2,
+            image: senderAvatar,
+            placeholderText: senderName,
+            placeholderColor: senderColor,
+            isPadding: showSender == false,
+          ),
+        ),
       ),
     );
   }

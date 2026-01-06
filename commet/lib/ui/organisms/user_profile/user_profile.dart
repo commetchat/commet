@@ -57,13 +57,12 @@ class UserProfile extends StatefulWidget {
     return showModalBottomSheet(
       isScrollControlled: true,
       context: context,
+      useSafeArea: false,
       builder: (context) {
-        return SingleChildScrollView(
-          child: UserProfile(
-            userId: userId,
-            client: client,
-            width: double.infinity,
-          ),
+        return UserProfile(
+          userId: userId,
+          client: client,
+          width: double.infinity,
         );
       },
     );
@@ -97,9 +96,13 @@ class _UserProfileState extends State<UserProfile> {
             scheme = ColorScheme.fromSeed(
                 seedColor: p.color!,
                 brightness: brightness,
-                dynamicSchemeVariant: DynamicSchemeVariant.tonalSpot);
+                dynamicSchemeVariant: DynamicSchemeVariant.content);
           }
         }
+      }
+
+      if (banner != null) {
+        await precacheImage(banner!, context);
       }
 
       if (brightness == null)
@@ -214,7 +217,7 @@ class _UserProfileState extends State<UserProfile> {
       colorScheme: ColorScheme.fromSeed(
           seedColor: previewColor,
           brightness: previewBrightness,
-          dynamicSchemeVariant: DynamicSchemeVariant.tonalSpot),
+          dynamicSchemeVariant: DynamicSchemeVariant.content),
     );
   }
 
