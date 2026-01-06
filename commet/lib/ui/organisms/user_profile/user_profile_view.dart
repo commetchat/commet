@@ -250,6 +250,8 @@ class _UserProfileViewState extends State<UserProfileView> {
                                               width: 8,
                                               strokeAlign: 0.9),
                                           image: widget.userAvatar,
+                                          placeholderColor: widget.userColor,
+                                          placeholderText: widget.displayName,
                                         ))),
                                 if (widget.presence?.message != null)
                                   Flexible(

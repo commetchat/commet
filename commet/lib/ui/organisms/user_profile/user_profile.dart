@@ -150,7 +150,7 @@ class _UserProfileState extends State<UserProfile> {
     return Theme(
       data: theme!,
       child: UserProfileView(
-        userAvatar: avatar!,
+        userAvatar: avatar,
         displayName: displayName!,
         identifier: profile!.identifier,
         userColor: profile!.defaultColor,
