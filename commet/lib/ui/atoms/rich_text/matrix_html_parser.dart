@@ -294,7 +294,7 @@ class CodeBlockHtmlExtension extends HtmlExtension {
     var langauge = element?.className.replaceAll('language-', '');
     var code = element!.text;
     return WidgetSpan(
-        child: Codeblock(
+        child: ExpandableCodeBlock(
       text: code,
       language: langauge,
     ));
