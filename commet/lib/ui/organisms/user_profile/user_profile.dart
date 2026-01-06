@@ -105,9 +105,10 @@ class _UserProfileState extends State<UserProfile> {
         }
       }
 
-      if (banner != null) {
-        await precacheImage(banner!, context);
-      }
+      await Future.wait<dynamic>([
+        if (banner != null) precacheImage(banner!, context),
+        if (avatar != null) precacheImage(avatar!, context),
+      ]);
 
       if (brightness == null)
         brightness = Theme.of(context).colorScheme.brightness;
