@@ -26,6 +26,8 @@ class UserProfileView extends StatefulWidget {
       this.hasColorOverride = false,
       this.setPreviewBrightness,
       this.setColorOverride,
+      this.onSetAvatar,
+      this.onChangeName,
       this.savePreviewTheme,
       this.onMessageButtonClicked});
   final ImageProvider? userAvatar;
@@ -38,6 +40,8 @@ class UserProfileView extends StatefulWidget {
   final bool hasColorOverride;
   final double width;
   final Future<void> Function()? onSetBanner;
+  final Future<void> Function()? onSetAvatar;
+  final Future<void> Function()? onChangeName;
   final void Function(Color)? setPreviewColor;
   final Future<void> Function(Brightness)? setPreviewBrightness;
   final Future<void> Function()? onMessageButtonClicked;
@@ -164,18 +168,29 @@ class _UserProfileViewState extends State<UserProfileView> {
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.stretch,
                                               children: [
-                                                Text(
-                                                  widget.displayName,
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .headlineSmall
-                                                      ?.copyWith(
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          color:
-                                                              Theme.of(context)
+                                                MouseRegion(
+                                                  cursor: widget.isSelf
+                                                      ? SystemMouseCursors.click
+                                                      : MouseCursor.defer,
+                                                  child: GestureDetector(
+                                                    onTap: widget.isSelf
+                                                        ? widget.onChangeName
+                                                        : null,
+                                                    child: Text(
+                                                      widget.displayName,
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .headlineSmall
+                                                          ?.copyWith(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              color: Theme.of(
+                                                                      context)
                                                                   .colorScheme
                                                                   .onSurface),
+                                                    ),
+                                                  ),
                                                 ),
                                                 Opacity(
                                                   opacity: 0.8,
@@ -219,13 +234,21 @@ class _UserProfileViewState extends State<UserProfileView> {
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
-                                tiamat.Avatar.large(
-                                  border: BoxBorder.all(
-                                      color: background,
-                                      width: 8,
-                                      strokeAlign: 0.9),
-                                  image: widget.userAvatar,
-                                ),
+                                MouseRegion(
+                                    cursor: widget.isSelf
+                                        ? SystemMouseCursors.click
+                                        : MouseCursor.defer,
+                                    child: GestureDetector(
+                                        onTap: widget.isSelf
+                                            ? widget.onSetAvatar
+                                            : null,
+                                        child: tiamat.Avatar.large(
+                                          border: BoxBorder.all(
+                                              color: background,
+                                              width: 8,
+                                              strokeAlign: 0.9),
+                                          image: widget.userAvatar,
+                                        ))),
                                 if (widget.presence?.message != null)
                                   Flexible(
                                       child: buildPresenceDisplay(background))
@@ -247,6 +270,16 @@ class _UserProfileViewState extends State<UserProfileView> {
 
   List<tiamat.ContextMenuItem> contextMenuItems(BuildContext context) {
     return [
+      if (widget.isSelf)
+        tiamat.ContextMenuItem(
+            text: "Change Avatar",
+            onPressed: () => widget.onSetAvatar?.call(),
+            icon: Icons.person),
+      if (widget.isSelf)
+        tiamat.ContextMenuItem(
+            text: "Change Name",
+            onPressed: () => widget.onChangeName?.call(),
+            icon: Icons.short_text),
       if (widget.isSelf)
         tiamat.ContextMenuItem(
             text: "Change Banner",
@@ -426,29 +459,6 @@ class _UserProfileViewState extends State<UserProfileView> {
               color: Theme.of(context).colorScheme.onSecondary,
             ),
           )),
-    );
-  }
-
-  Widget userAvatarAndName() {
-    return Row(
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(0, 0, 12, 0),
-          child: tiamat.Avatar.large(
-            image: widget.userAvatar,
-            placeholderText: widget.displayName,
-            placeholderColor: widget.userColor,
-          ),
-        ),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            tiamat.Text.largeTitle(widget.displayName),
-            tiamat.Text.tiny(widget.identifier)
-          ],
-        ),
-      ],
     );
   }
 

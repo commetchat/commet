@@ -276,13 +276,7 @@ class MainPageState extends State<MainPage> {
 
     var client = clientManager.getClient(clientId);
     if (client != null) {
-      AdaptiveDialog.show(context,
-          builder: (_) => UserProfile(
-                userId: userId,
-                client: client,
-                dismiss: () => Navigator.pop(context),
-              ),
-          title: "User");
+      UserProfile.show(context, client: client, userId: userId);
     }
   }
 }

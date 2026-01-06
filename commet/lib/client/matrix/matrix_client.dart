@@ -490,6 +490,8 @@ class MatrixClient extends Client {
   Future<void> setAvatar(Uint8List bytes, String mimeType) async {
     await _matrixClient.setAvatar(matrix.MatrixImageFile(
         bytes: bytes, name: "avatar", mimeType: mimeType));
+
+    await _updateOwnProfile();
     // TODO: Handle refresh avatar
     // await (self as MatrixPeer).refreshAvatar();
   }

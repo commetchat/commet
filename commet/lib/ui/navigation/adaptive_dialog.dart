@@ -130,9 +130,12 @@ class AdaptiveDialog {
       {String title = "Enter Text",
       String submitText = "Submit",
       String? hintText,
+      String? initialText,
       bool dangerous = false}) {
     return show<String?>(context, builder: (context) {
       String result = "";
+      TextEditingController controller =
+          TextEditingController(text: initialText);
 
       return SizedBox(
         width: Layout.desktop ? 500 : null,
@@ -144,6 +147,7 @@ class AdaptiveDialog {
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
+                controller: controller,
                 decoration: InputDecoration(hintText: hintText),
                 onChanged: (value) => result = value,
               ),

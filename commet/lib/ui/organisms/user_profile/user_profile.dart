@@ -4,6 +4,7 @@ import 'package:commet/client/components/profile/profile_component.dart';
 import 'package:commet/client/components/user_color/user_color_component.dart';
 import 'package:commet/client/components/user_presence/user_presence_component.dart';
 import 'package:commet/config/layout_config.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:commet/ui/organisms/user_profile/user_profile_view.dart';
 import 'package:flutter/material.dart';
@@ -76,6 +77,8 @@ class _UserProfileState extends State<UserProfile> {
   late UserProfileComponent component;
 
   ImageProvider? banner;
+  String? displayName;
+  ImageProvider? avatar;
 
   @override
   void initState() {
@@ -125,6 +128,8 @@ class _UserProfileState extends State<UserProfile> {
       setState(() {
         theme = Theme.of(context).copyWith(colorScheme: scheme);
         profile = value;
+        displayName = value?.displayName;
+        avatar = value?.avatar;
       });
     });
   }
@@ -144,8 +149,8 @@ class _UserProfileState extends State<UserProfile> {
     return Theme(
       data: theme!,
       child: UserProfileView(
-        userAvatar: profile!.avatar,
-        displayName: profile!.displayName,
+        userAvatar: avatar!,
+        displayName: displayName!,
         identifier: profile!.identifier,
         userColor: profile!.defaultColor,
         userBanner: banner,
@@ -156,7 +161,9 @@ class _UserProfileState extends State<UserProfile> {
         onSetBanner: setBanner,
         setPreviewColor: setPreviewColor,
         setPreviewBrightness: setPreviewBrightness,
+        onChangeName: changeName,
         savePreviewTheme: savePreviewTheme,
+        onSetAvatar: setAvatar,
         setColorOverride: setColorOverride,
         hasColorOverride: widget.client
                 .getComponent<UserColorComponent>()
@@ -235,5 +242,34 @@ class _UserProfileState extends State<UserProfile> {
   Future<void> setColorOverride(Color? color) async {
     var comp = widget.client.getComponent<UserColorComponent>();
     await comp?.setColor(widget.userId, color);
+  }
+
+  Future<void> changeName() async {
+    var text = await AdaptiveDialog.textPrompt(
+      context,
+      initialText: displayName,
+      title: "Change name",
+    );
+    if (text?.trim().isNotEmpty == true) {
+      setState(() {
+        displayName = text!.trim();
+
+        widget.client.setDisplayName(text.trim());
+      });
+    }
+  }
+
+  Future<void> setAvatar() async {
+    var picker = ImagePicker();
+    final result = await picker.pickImage(source: ImageSource.gallery);
+    if (result == null) return;
+
+    final bytes = await result.readAsBytes();
+
+    setState(() {
+      avatar = Image.memory(bytes).image;
+    });
+
+    await widget.client.setAvatar(bytes, "");
   }
 }
