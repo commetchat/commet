@@ -18,6 +18,8 @@ import 'package:commet/utils/text_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart' as matrix;
 
+import 'package:html/parser.dart' as html_parser;
+
 class MatrixTimelineEventMessage extends MatrixTimelineEvent
     with MatrixTimelineEventRelated, MatrixTimelineEventReactions
     implements TimelineEventMessage {
@@ -45,7 +47,7 @@ class MatrixTimelineEventMessage extends MatrixTimelineEvent
       "chat.commet.custom.matrix_plain";
 
   @override
-  String get plainTextBody => event.plaintextBody;
+  String get plainTextBody => event.content["body"] as String;
 
   String _getPlaintextBody({Timeline? timeline}) {
     var e = getDisplayEvent(timeline);
@@ -231,7 +233,11 @@ class PlaintextMessageBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var document = html_parser.parse(content);
+    bool big = shouldDoBigEmoji(document);
+
     return Text.rich(TextSpan(
+        style: TextStyle(fontSize: big ? 34 : null),
         children: TextUtils.linkifyString(content,
             context: context, clientId: clientIdentifier)));
   }

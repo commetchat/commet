@@ -22,6 +22,7 @@ import 'package:commet/client/matrix/matrix_timeline.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_add_reaction.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_call.dart';
+import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_create_room.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_edit.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_emote.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_encrypted.dart';
@@ -457,6 +458,8 @@ class MatrixRoom extends Room {
               : null,
         matrix.EventTypes.Encrypted =>
           MatrixTimelineEventEncrypted(event, client: c),
+        matrix.EventTypes.RoomCreate =>
+          MatrixTimelineEventCreateRoom(event, client: c),
         matrix.EventTypes.Reaction =>
           MatrixTimelineEventAddReaction(event, client: c),
         matrix.EventTypes.RoomMember =>

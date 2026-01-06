@@ -98,6 +98,7 @@ class MatrixTimeline extends Timeline {
 
       await f;
     }
+    _loadingStatusChangedController.add(null);
   }
 
   @override

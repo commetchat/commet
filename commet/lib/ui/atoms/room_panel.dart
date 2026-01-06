@@ -1,3 +1,4 @@
+import 'package:commet/ui/atoms/shimmer_loading.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -17,6 +18,8 @@ class RoomPanel extends StatefulWidget {
       this.recentEventSender,
       this.recentEventSenderColor,
       this.userAvatar,
+      this.loading = false,
+      this.random = 1,
       this.userDisplayName,
       this.showUserAvatar = false,
       super.key});
@@ -35,6 +38,8 @@ class RoomPanel extends StatefulWidget {
   final String? secondaryButtonLabel;
   final Future<void> Function()? onSecondaryButtonPressed;
   final bool showUserAvatar;
+  final bool loading;
+  final double random;
   @override
   State<RoomPanel> createState() => _RoomPanelState();
 }
@@ -57,70 +62,116 @@ class _RoomPanelState extends State<RoomPanel> {
 
   @override
   Widget build(BuildContext context) {
+    var shimmerColor = Theme.of(context).colorScheme.surfaceContainerHighest;
+    bool shimmer = widget.loading;
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: widget.onTap,
-          child: Container(
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(15)),
-            child: Padding(
-              padding: const EdgeInsets.all(2.0),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Expanded(
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            Stack(
-                              alignment: Alignment.bottomRight,
-                              children: [
-                                Avatar.medium(
-                                  image: widget.avatar,
-                                  placeholderText: widget.displayName,
-                                  placeholderColor: widget.color,
-                                ),
-                                if (widget.showUserAvatar)
-                                  Avatar(
-                                    radius: 10,
-                                    image: widget.userAvatar,
-                                    placeholderText: widget.userDisplayName,
-                                    placeholderColor: widget.userColor,
-                                  ),
-                              ],
-                            ),
-                            Flexible(
-                              child: Padding(
-                                padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    tiamat.Text.labelEmphasised(
-                                      widget.displayName,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
+      child: Shimmer(
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: widget.onTap,
+            child: Container(
+              decoration:
+                  BoxDecoration(borderRadius: BorderRadius.circular(15)),
+              child: Padding(
+                padding: const EdgeInsets.all(2.0),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Expanded(
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              Stack(
+                                alignment: Alignment.bottomRight,
+                                children: [
+                                  ShimmerLoading(
+                                    isLoading: widget.loading,
+                                    child: Avatar.medium(
+                                      image: widget.avatar,
+                                      placeholderText:
+                                          shimmer ? " " : widget.displayName,
+                                      placeholderColor:
+                                          shimmer ? shimmerColor : widget.color,
                                     ),
-                                    if (widget.body != null)
-                                      Flexible(child: recentEvent())
-                                  ],
+                                  ),
+                                  if (widget.showUserAvatar)
+                                    Avatar(
+                                      radius: 10,
+                                      image: widget.userAvatar,
+                                      placeholderText: widget.userDisplayName,
+                                      placeholderColor: widget.userColor,
+                                    ),
+                                ],
+                              ),
+                              Flexible(
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(8, 0, 8, 8),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      if (shimmer)
+                                        ShimmerLoading(
+                                          isLoading: shimmer,
+                                          child: Padding(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                0, 4, 0, 0),
+                                            child: Container(
+                                              height: 16,
+                                              width: (widget.random * 80) + 20,
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(4),
+                                                  color: shimmerColor),
+                                            ),
+                                          ),
+                                        ),
+                                      if (shimmer)
+                                        ShimmerLoading(
+                                          isLoading: shimmer,
+                                          child: Padding(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                0, 4, 0, 0),
+                                            child: Container(
+                                              height: 12,
+                                              width: (widget.random * 200) + 20,
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(4),
+                                                  color: shimmerColor),
+                                            ),
+                                          ),
+                                        ),
+                                      if (!shimmer)
+                                        tiamat.Text.labelEmphasised(
+                                          widget.displayName,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      if (widget.body != null)
+                                        Flexible(child: recentEvent())
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                      if (showAnyButton) actionButtons(),
-                    ],
-                  ),
-                ],
+                        if (showAnyButton) actionButtons(),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
