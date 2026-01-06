@@ -27,6 +27,7 @@ class UserProfileView extends StatefulWidget {
       this.setPreviewBrightness,
       this.setColorOverride,
       this.onSetAvatar,
+      this.onSetStatus,
       this.onChangeName,
       this.savePreviewTheme,
       this.onMessageButtonClicked});
@@ -41,6 +42,7 @@ class UserProfileView extends StatefulWidget {
   final double width;
   final Future<void> Function()? onSetBanner;
   final Future<void> Function()? onSetAvatar;
+  final Future<void> Function()? onSetStatus;
   final Future<void> Function()? onChangeName;
   final void Function(Color)? setPreviewColor;
   final Future<void> Function(Brightness)? setPreviewBrightness;
@@ -279,12 +281,17 @@ class _UserProfileViewState extends State<UserProfileView> {
         tiamat.ContextMenuItem(
             text: "Change Name",
             onPressed: () => widget.onChangeName?.call(),
-            icon: Icons.short_text),
+            icon: Icons.tag),
       if (widget.isSelf)
         tiamat.ContextMenuItem(
             text: "Change Banner",
             onPressed: () => widget.onSetBanner?.call(),
             icon: Icons.image),
+      if (widget.isSelf)
+        tiamat.ContextMenuItem(
+            text: "Set Status",
+            onPressed: () => widget.onSetStatus?.call(),
+            icon: Icons.short_text),
       if (widget.isSelf)
         tiamat.ContextMenuItem(
             text: "Edit Color Scheme",

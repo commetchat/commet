@@ -3,7 +3,6 @@ import 'dart:typed_data';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/ui/organisms/user_profile/user_profile.dart';
-import 'package:commet/ui/pages/settings/categories/account/profile/profile_edit_view.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tiamat/tiamat.dart';
 

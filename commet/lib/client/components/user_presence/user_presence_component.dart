@@ -31,5 +31,5 @@ abstract class UserPresenceComponent<T extends Client> implements Component<T> {
 
   Future<UserPresence> getUserPresence(String userId);
 
-  Future<void> setStatus(UserPresenceStatus status);
+  Future<void> setStatus(UserPresenceStatus status, {String? message});
 }

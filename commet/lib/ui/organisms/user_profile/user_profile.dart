@@ -79,6 +79,7 @@ class _UserProfileState extends State<UserProfile> {
   ImageProvider? banner;
   String? displayName;
   ImageProvider? avatar;
+  UserPresence? presence;
 
   @override
   void initState() {
@@ -130,6 +131,10 @@ class _UserProfileState extends State<UserProfile> {
         profile = value;
         displayName = value?.displayName;
         avatar = value?.avatar;
+
+        if (profile case ProfileWithPresence p) {
+          presence = p.precence;
+        }
       });
     });
   }
@@ -139,11 +144,6 @@ class _UserProfileState extends State<UserProfile> {
     if (profile == null) {
       return SizedBox(
           height: 300, child: const Center(child: CircularProgressIndicator()));
-    }
-
-    UserPresence? presence;
-    if (profile case ProfileWithPresence p) {
-      presence = p.precence;
     }
 
     return Theme(
@@ -165,6 +165,7 @@ class _UserProfileState extends State<UserProfile> {
         savePreviewTheme: savePreviewTheme,
         onSetAvatar: setAvatar,
         setColorOverride: setColorOverride,
+        onSetStatus: setStatus,
         hasColorOverride: widget.client
                 .getComponent<UserColorComponent>()
                 ?.getColor(profile!.identifier) !=
@@ -271,5 +272,25 @@ class _UserProfileState extends State<UserProfile> {
     });
 
     await widget.client.setAvatar(bytes, "");
+  }
+
+  Future<void> setStatus() async {
+    var text = await AdaptiveDialog.textPrompt(
+      context,
+      initialText: presence?.message?.message,
+      title: "Change Status",
+    );
+    if (text != null) {
+      var client = widget.client;
+      client.getComponent<UserProfileComponent>()?.setStatus(text);
+      client
+          .getComponent<UserPresenceComponent>()
+          ?.setStatus(UserPresenceStatus.online, message: text);
+
+      setState(() {
+        presence = UserPresence(UserPresenceStatus.online,
+            message: UserPresenceMessage(text, PresenceMessageType.userCustom));
+      });
+    }
   }
 }
