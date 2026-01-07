@@ -7,6 +7,7 @@ import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:commet/ui/organisms/user_profile/user_profile_view.dart';
+import 'package:commet/utils/picker_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -198,8 +199,7 @@ class _UserProfileState extends State<UserProfile> {
   }
 
   Future<void> setBanner() async {
-    var picker = ImagePicker();
-    final result = await picker.pickImage(source: ImageSource.gallery);
+    var result = await PickerUtils.pickImage();
     if (result == null) return;
 
     final bytes = await result.readAsBytes();
@@ -262,8 +262,7 @@ class _UserProfileState extends State<UserProfile> {
   }
 
   Future<void> setAvatar() async {
-    var picker = ImagePicker();
-    final result = await picker.pickImage(source: ImageSource.gallery);
+    var result = await PickerUtils.pickImage();
     if (result == null) return;
 
     final bytes = await result.readAsBytes();
