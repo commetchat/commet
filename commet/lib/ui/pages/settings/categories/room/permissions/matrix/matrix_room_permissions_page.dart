@@ -414,6 +414,7 @@ class _MatrixRoomPermissionsPageState extends State<MatrixRoomPermissionsPage> {
   }
 
   void updatePowerLevels(Map<String, Object?> content) {
+    var stateDefault = content["state_default"] as int;
     for (int i = 0; i < permissions.length; i++) {
       var perm = permissions[i];
 
@@ -429,6 +430,9 @@ class _MatrixRoomPermissionsPageState extends State<MatrixRoomPermissionsPage> {
       if (powerLevel != null) {
         perm.powerLevel = powerLevel;
         perm.originalPowerLevel = powerLevel;
+      } else {
+        perm.powerLevel = stateDefault;
+        perm.originalPowerLevel = stateDefault;
       }
     }
   }
