@@ -13,6 +13,8 @@ abstract class Profile {
   ImageProvider? get avatar;
   ImageProvider? get banner;
   Color get defaultColor;
+
+  String get source;
 }
 
 abstract class ProfileWithPresence {
@@ -26,6 +28,10 @@ abstract class ProfileWithBanner {
 abstract class ProfileWithColorScheme {
   Color? get color;
   Brightness? get brightness;
+}
+
+abstract class ProfileWithPronouns {
+  List<String> get pronouns;
 }
 
 abstract class UserProfileComponent<T extends Client> implements Component<T> {

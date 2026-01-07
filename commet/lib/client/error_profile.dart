@@ -22,4 +22,7 @@ class ErrorProfile implements Profile {
 
   @override
   ImageProvider<Object>? get banner => null;
+
+  @override
+  String get source => "";
 }

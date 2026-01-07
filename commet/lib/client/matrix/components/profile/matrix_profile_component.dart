@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:commet/client/components/profile/profile_component.dart';
@@ -16,7 +17,8 @@ class MatrixProfile
         Profile,
         ProfileWithBanner,
         ProfileWithPresence,
-        ProfileWithColorScheme {
+        ProfileWithColorScheme,
+        ProfileWithPronouns {
   matrix.Profile profile;
   MatrixClient client;
 
@@ -84,12 +86,29 @@ class MatrixProfile
 
     return ColorUtils.fromHexCode(hexString);
   }
+
+  @override
+  List<String> get pronouns {
+    var array = fields[MatrixProfileComponent.pronounsKey];
+
+    try {
+      if (array is List<dynamic>) {
+        return array.map((i) => i["summary"].toString()).toList();
+      }
+    } catch (_) {}
+
+    return [];
+  }
+
+  @override
+  String get source => JsonEncoder.withIndent("  ").convert(fields);
 }
 
 class MatrixProfileComponent implements UserProfileComponent<MatrixClient> {
   static const String bannerKey = "chat.commet.profile_banner";
   static const String colorSchemeKey = "chat.commet.profile_color_scheme";
   static const String statusKey = "chat.commet.profile_status";
+  static const String pronounsKey = "io.fsky.nyx.pronouns";
 
   @override
   MatrixClient client;

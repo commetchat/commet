@@ -4,6 +4,7 @@ import 'package:commet/client/components/profile/profile_component.dart';
 import 'package:commet/client/components/user_color/user_color_component.dart';
 import 'package:commet/client/components/user_presence/user_presence_component.dart';
 import 'package:commet/config/layout_config.dart';
+import 'package:commet/ui/atoms/code_block.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:commet/ui/organisms/user_profile/user_profile_view.dart';
@@ -81,6 +82,7 @@ class _UserProfileState extends State<UserProfile> {
   String? displayName;
   ImageProvider? avatar;
   UserPresence? presence;
+  List<String> pronouns = const [];
 
   @override
   void initState() {
@@ -134,6 +136,10 @@ class _UserProfileState extends State<UserProfile> {
         displayName = value?.displayName;
         avatar = value?.avatar;
 
+        if (profile case ProfileWithPronouns p) {
+          pronouns = p.pronouns;
+        }
+
         if (profile case ProfileWithPresence p) {
           presence = p.precence;
         }
@@ -167,7 +173,9 @@ class _UserProfileState extends State<UserProfile> {
         savePreviewTheme: savePreviewTheme,
         onSetAvatar: setAvatar,
         setColorOverride: setColorOverride,
+        showSource: showSource,
         onSetStatus: setStatus,
+        pronouns: pronouns,
         hasColorOverride: widget.client
                 .getComponent<UserColorComponent>()
                 ?.getColor(profile!.identifier) !=
@@ -292,5 +300,21 @@ class _UserProfileState extends State<UserProfile> {
             message: UserPresenceMessage(text, PresenceMessageType.userCustom));
       });
     }
+  }
+
+  void showSource() {
+    AdaptiveDialog.show(
+      context,
+      title: "Source",
+      builder: (context) {
+        return SizedBox(
+          width: 1000,
+          child: SelectionArea(
+            child: ExpandableCodeBlock(
+                expanded: true, text: profile!.source, language: "json"),
+          ),
+        );
+      },
+    );
   }
 }

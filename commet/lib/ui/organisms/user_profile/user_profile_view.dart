@@ -2,8 +2,10 @@ import 'dart:ui';
 
 import 'package:commet/client/components/user_presence/user_presence_component.dart';
 import 'package:commet/config/layout_config.dart';
+import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/adaptive_context_menu.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
+import 'package:commet/ui/atoms/tiny_pill.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/utils/color_utils.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +31,8 @@ class UserProfileView extends StatefulWidget {
       this.onSetAvatar,
       this.onSetStatus,
       this.onChangeName,
+      this.showSource,
+      this.pronouns = const [],
       this.savePreviewTheme,
       this.onMessageButtonClicked});
   final ImageProvider? userAvatar;
@@ -36,6 +40,7 @@ class UserProfileView extends StatefulWidget {
   final UserPresence? presence;
   final String displayName;
   final String identifier;
+  final List<String> pronouns;
   final Color userColor;
   final bool isSelf;
   final bool hasColorOverride;
@@ -44,6 +49,7 @@ class UserProfileView extends StatefulWidget {
   final Future<void> Function()? onSetAvatar;
   final Future<void> Function()? onSetStatus;
   final Future<void> Function()? onChangeName;
+  final void Function()? showSource;
   final void Function(Color)? setPreviewColor;
   final Future<void> Function(Brightness)? setPreviewBrightness;
   final Future<void> Function()? onMessageButtonClicked;
@@ -209,6 +215,19 @@ class _UserProfileViewState extends State<UserProfileView> {
                                                                 .onSurface),
                                                   ),
                                                 ),
+                                                if (widget.pronouns.isNotEmpty)
+                                                  Padding(
+                                                    padding: const EdgeInsets
+                                                        .fromLTRB(0, 4, 0, 4),
+                                                    child: Wrap(
+                                                      spacing: 4,
+                                                      runSpacing: 4,
+                                                      children: widget.pronouns
+                                                          .map((i) =>
+                                                              TinyPill(i))
+                                                          .toList(),
+                                                    ),
+                                                  ),
                                                 SizedBox(
                                                   height: 20,
                                                 ),
@@ -354,7 +373,12 @@ class _UserProfileViewState extends State<UserProfileView> {
             icon: Icons.remove,
             onPressed: () async {
               widget.setColorOverride?.call(null);
-            })
+            }),
+      if (preferences.developerMode)
+        tiamat.ContextMenuItem(
+            text: "Show Raw Profile",
+            onPressed: () => widget.showSource?.call(),
+            icon: Icons.code),
     ];
   }
 
