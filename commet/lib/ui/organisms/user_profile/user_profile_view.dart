@@ -225,74 +225,104 @@ class _UserProfileViewState extends State<UserProfileView> {
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.stretch,
                                               children: [
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    MouseRegion(
-                                                      cursor: widget.isSelf
-                                                          ? SystemMouseCursors
-                                                              .click
-                                                          : MouseCursor.defer,
-                                                      child: GestureDetector(
-                                                        onTap: widget.isSelf
-                                                            ? widget
-                                                                .onChangeName
-                                                            : null,
-                                                        child: Text(
-                                                          widget.displayName,
-                                                          style: Theme.of(
-                                                                  context)
-                                                              .textTheme
-                                                              .headlineSmall
-                                                              ?.copyWith(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                  color: Theme.of(
-                                                                          context)
-                                                                      .colorScheme
-                                                                      .onSurface),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.fromLTRB(
+                                                          8, 0, 8, 0),
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.start,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .stretch,
+                                                    children: [
+                                                      Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        children: [
+                                                          MouseRegion(
+                                                            cursor: widget
+                                                                    .isSelf
+                                                                ? SystemMouseCursors
+                                                                    .click
+                                                                : MouseCursor
+                                                                    .defer,
+                                                            child:
+                                                                GestureDetector(
+                                                              onTap: widget
+                                                                      .isSelf
+                                                                  ? widget
+                                                                      .onChangeName
+                                                                  : null,
+                                                              child: Text(
+                                                                widget
+                                                                    .displayName,
+                                                                style: Theme.of(
+                                                                        context)
+                                                                    .textTheme
+                                                                    .headlineSmall
+                                                                    ?.copyWith(
+                                                                        fontWeight:
+                                                                            FontWeight
+                                                                                .bold,
+                                                                        color: Theme.of(context)
+                                                                            .colorScheme
+                                                                            .onSurface),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          if (widget.timezone !=
+                                                                  null &&
+                                                              localTime != null)
+                                                            userLocalTime()
+                                                        ],
+                                                      ),
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .fromLTRB(
+                                                                0, 0, 0, 12),
+                                                        child: Opacity(
+                                                          opacity: 0.8,
+                                                          child: Text(
+                                                            widget.identifier,
+                                                            style: Theme.of(
+                                                                    context)
+                                                                .textTheme
+                                                                .labelSmall
+                                                                ?.copyWith(
+                                                                    fontFamily:
+                                                                        "Code",
+                                                                    color: Theme.of(
+                                                                            context)
+                                                                        .colorScheme
+                                                                        .onSurface),
+                                                          ),
                                                         ),
                                                       ),
-                                                    ),
-                                                    if (widget.timezone !=
-                                                            null &&
-                                                        localTime != null)
-                                                      userLocalTime()
-                                                  ],
-                                                ),
-                                                Opacity(
-                                                  opacity: 0.8,
-                                                  child: Text(
-                                                    widget.identifier,
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .labelSmall
-                                                        ?.copyWith(
-                                                            fontFamily: "Code",
-                                                            color: Theme.of(
-                                                                    context)
-                                                                .colorScheme
-                                                                .onSurface),
+                                                      if (widget
+                                                          .pronouns.isNotEmpty)
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .fromLTRB(
+                                                                  0, 4, 0, 4),
+                                                          child: Wrap(
+                                                            spacing: 4,
+                                                            runSpacing: 4,
+                                                            children: widget
+                                                                .pronouns
+                                                                .map((i) =>
+                                                                    TinyPill(i))
+                                                                .toList(),
+                                                          ),
+                                                        ),
+                                                      SizedBox(
+                                                        height: 12,
+                                                      ),
+                                                    ],
                                                   ),
-                                                ),
-                                                if (widget.pronouns.isNotEmpty)
-                                                  Padding(
-                                                    padding: const EdgeInsets
-                                                        .fromLTRB(0, 4, 0, 4),
-                                                    child: Wrap(
-                                                      spacing: 4,
-                                                      runSpacing: 4,
-                                                      children: widget.pronouns
-                                                          .map((i) =>
-                                                              TinyPill(i))
-                                                          .toList(),
-                                                    ),
-                                                  ),
-                                                SizedBox(
-                                                  height: 20,
                                                 ),
                                                 if (!widget.isSelf &&
                                                     widget.showMessageButton)
@@ -362,13 +392,16 @@ class _UserProfileViewState extends State<UserProfileView> {
     var use24 = PlatformUtils.isAndroid
         ? MediaQuery.of(context).alwaysUse24HourFormat
         : false;
-
+    var localDay = DateFormat(DateFormat.WEEKDAY).format(DateTime.now());
     var day = DateFormat(DateFormat.WEEKDAY).format(t);
     var time = MaterialLocalizations.of(context).formatTimeOfDay(
         TimeOfDay.fromDateTime(t),
         alwaysUse24HourFormat: use24);
 
-    final result = "$day, $time";
+    var result = time;
+    if (day != localDay) {
+      result = "$day, $time";
+    }
 
     final colors = Theme.of(context).colorScheme;
     return tiamat.Tooltip(
