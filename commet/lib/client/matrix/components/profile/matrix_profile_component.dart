@@ -18,7 +18,8 @@ class MatrixProfile
         ProfileWithBanner,
         ProfileWithPresence,
         ProfileWithColorScheme,
-        ProfileWithPronouns {
+        ProfileWithPronouns,
+        ProfileWithTimezone {
   matrix.Profile profile;
   MatrixClient client;
 
@@ -102,6 +103,9 @@ class MatrixProfile
 
   @override
   String get source => JsonEncoder.withIndent("  ").convert(fields);
+
+  @override
+  String? get timezone => fields["m.tz"] as String?;
 }
 
 class MatrixProfileComponent implements UserProfileComponent<MatrixClient> {
@@ -168,5 +172,10 @@ class MatrixProfileComponent implements UserProfileComponent<MatrixClient> {
   @override
   Future<void> setStatus(String status) {
     return setField(statusKey, status);
+  }
+
+  @override
+  Future<void> setTimezone(String timezone) {
+    return setField("m.tz", timezone);
   }
 }

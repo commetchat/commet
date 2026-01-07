@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:commet/client/components/user_presence/user_presence_component.dart';
 import 'package:commet/config/layout_config.dart';
+import 'package:commet/config/platform_utils.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/adaptive_context_menu.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
@@ -11,6 +13,8 @@ import 'package:commet/utils/color_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
+
+import 'package:timezone/standalone.dart' as tz;
 
 class UserProfileView extends StatefulWidget {
   const UserProfileView(
@@ -23,11 +27,13 @@ class UserProfileView extends StatefulWidget {
       required this.isSelf,
       this.presence,
       this.onSetBanner,
+      this.timezone,
       this.width = 700,
       this.setPreviewColor,
       this.hasColorOverride = false,
       this.setPreviewBrightness,
       this.setColorOverride,
+      this.shareCurrentTimezone,
       this.onSetAvatar,
       this.onSetStatus,
       this.onChangeName,
@@ -44,11 +50,13 @@ class UserProfileView extends StatefulWidget {
   final Color userColor;
   final bool isSelf;
   final bool hasColorOverride;
+  final String? timezone;
   final double width;
   final Future<void> Function()? onSetBanner;
   final Future<void> Function()? onSetAvatar;
   final Future<void> Function()? onSetStatus;
   final Future<void> Function()? onChangeName;
+  final Future<void> Function()? shareCurrentTimezone;
   final void Function()? showSource;
   final void Function(Color)? setPreviewColor;
   final Future<void> Function(Brightness)? setPreviewBrightness;
@@ -68,6 +76,37 @@ class _UserProfileViewState extends State<UserProfileView> {
       name: "promptOpenDirectMessage");
 
   bool editingColorScheme = false;
+
+  Timer? timezoneTimer;
+
+  tz.TZDateTime? localTime;
+
+  @override
+  void initState() {
+    if (widget.timezone != null) {
+      timezoneTimer =
+          Timer.periodic(Duration(seconds: 1), (_) => updateLocalTime());
+      updateLocalTime();
+    }
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    timezoneTimer?.cancel();
+    super.dispose();
+  }
+
+  void updateLocalTime() {
+    try {
+      setState(() {
+        if (widget.timezone != null) ;
+        var location = tz.getLocation(widget.timezone!);
+        localTime = tz.TZDateTime.now(location);
+      });
+    } catch (_) {}
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -176,29 +215,43 @@ class _UserProfileViewState extends State<UserProfileView> {
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.stretch,
                                               children: [
-                                                MouseRegion(
-                                                  cursor: widget.isSelf
-                                                      ? SystemMouseCursors.click
-                                                      : MouseCursor.defer,
-                                                  child: GestureDetector(
-                                                    onTap: widget.isSelf
-                                                        ? widget.onChangeName
-                                                        : null,
-                                                    child: Text(
-                                                      widget.displayName,
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .headlineSmall
-                                                          ?.copyWith(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              color: Theme.of(
-                                                                      context)
-                                                                  .colorScheme
-                                                                  .onSurface),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    MouseRegion(
+                                                      cursor: widget.isSelf
+                                                          ? SystemMouseCursors
+                                                              .click
+                                                          : MouseCursor.defer,
+                                                      child: GestureDetector(
+                                                        onTap: widget.isSelf
+                                                            ? widget
+                                                                .onChangeName
+                                                            : null,
+                                                        child: Text(
+                                                          widget.displayName,
+                                                          style: Theme.of(
+                                                                  context)
+                                                              .textTheme
+                                                              .headlineSmall
+                                                              ?.copyWith(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                  color: Theme.of(
+                                                                          context)
+                                                                      .colorScheme
+                                                                      .onSurface),
+                                                        ),
+                                                      ),
                                                     ),
-                                                  ),
+                                                    if (widget.timezone !=
+                                                            null &&
+                                                        localTime != null)
+                                                      userLocalTime()
+                                                  ],
                                                 ),
                                                 Opacity(
                                                   opacity: 0.8,
@@ -291,6 +344,29 @@ class _UserProfileViewState extends State<UserProfileView> {
     );
   }
 
+  Widget userLocalTime() {
+    final l = localTime!;
+    var t = DateTime(l.year, l.month, l.day, l.hour, l.minute, l.second);
+
+    var use24 = PlatformUtils.isAndroid
+        ? MediaQuery.of(context).alwaysUse24HourFormat
+        : false;
+
+    var day = DateFormat(DateFormat.WEEKDAY).format(t);
+    var time = MaterialLocalizations.of(context).formatTimeOfDay(
+        TimeOfDay.fromDateTime(t),
+        alwaysUse24HourFormat: use24);
+
+    final result = "$day, $time";
+
+    final colors = Theme.of(context).colorScheme;
+    return tiamat.Tooltip(
+      child: TinyPill(result,
+          background: colors.tertiary, foreground: colors.onTertiary),
+      text: "Local Timezone: ${widget.timezone!}",
+    );
+  }
+
   List<tiamat.ContextMenuItem> contextMenuItems(BuildContext context) {
     return [
       if (widget.isSelf)
@@ -313,6 +389,11 @@ class _UserProfileViewState extends State<UserProfileView> {
             text: "Set Status",
             onPressed: () => widget.onSetStatus?.call(),
             icon: Icons.short_text),
+      if (widget.isSelf)
+        tiamat.ContextMenuItem(
+            text: "Share Current Timezone",
+            onPressed: () => widget.shareCurrentTimezone?.call(),
+            icon: Icons.share_arrival_time),
       if (widget.isSelf)
         tiamat.ContextMenuItem(
             text: "Edit Color Scheme",

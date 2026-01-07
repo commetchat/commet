@@ -3,13 +3,16 @@ import 'package:commet/client/components/direct_messages/direct_message_componen
 import 'package:commet/client/components/profile/profile_component.dart';
 import 'package:commet/client/components/user_color/user_color_component.dart';
 import 'package:commet/client/components/user_presence/user_presence_component.dart';
+import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/atoms/code_block.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:commet/ui/organisms/user_profile/user_profile_view.dart';
 import 'package:commet/utils/picker_utils.dart';
+import 'package:commet/utils/timezone_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 
 class UserProfile extends StatefulWidget {
   const UserProfile(
@@ -81,6 +84,7 @@ class _UserProfileState extends State<UserProfile> {
   String? displayName;
   ImageProvider? avatar;
   UserPresence? presence;
+  String? timezone;
   List<String> pronouns = const [];
 
   @override
@@ -90,9 +94,16 @@ class _UserProfileState extends State<UserProfile> {
 
     component.getProfile(widget.userId).then((value) async {
       banner = value?.banner;
+      avatar = value?.avatar;
 
       ColorScheme? scheme;
       Brightness? brightness;
+
+      if (avatar case MatrixMxcImage mxc) {
+        // create a new image instance so we can load fullres without it loading everywhere
+        avatar = MatrixMxcImage(mxc.identifier, mxc.client,
+            doThumbnail: false, doFullres: true, autoLoadFullRes: true);
+      }
 
       if (value case ProfileWithColorScheme p) {
         if (p.brightness != null) {
@@ -107,16 +118,13 @@ class _UserProfileState extends State<UserProfile> {
         }
       }
 
-      await Future.wait<dynamic>([
-        if (banner != null) precacheImage(banner!, context),
-        if (avatar != null) precacheImage(avatar!, context),
-      ]);
+      await TimezoneUtils.instance.init();
 
       if (brightness == null)
         brightness = Theme.of(context).colorScheme.brightness;
 
       if (scheme == null) {
-        if (value?.avatar != null || value?.avatar != null) {
+        if (avatar != null) {
           scheme = await ColorScheme.fromImageProvider(
               provider: value!.banner ?? value.avatar!,
               brightness: brightness,
@@ -129,11 +137,19 @@ class _UserProfileState extends State<UserProfile> {
         }
       }
 
+      await Future.wait<dynamic>([
+        if (banner != null) precacheImage(banner!, context),
+        if (avatar != null) precacheImage(avatar!, context),
+      ]);
+
       setState(() {
         theme = Theme.of(context).copyWith(colorScheme: scheme);
         profile = value;
         displayName = value?.displayName;
-        avatar = value?.avatar;
+
+        if (profile case ProfileWithTimezone p) {
+          timezone = p.timezone;
+        }
 
         if (profile case ProfileWithPronouns p) {
           pronouns = p.pronouns;
@@ -162,6 +178,7 @@ class _UserProfileState extends State<UserProfile> {
         userColor: profile!.defaultColor,
         userBanner: banner,
         presence: presence,
+        timezone: timezone,
         width: widget.width,
         isSelf: widget.client.self!.identifier == profile!.identifier,
         onMessageButtonClicked: openDirectMessage,
@@ -174,6 +191,7 @@ class _UserProfileState extends State<UserProfile> {
         setColorOverride: setColorOverride,
         showSource: showSource,
         onSetStatus: setStatus,
+        shareCurrentTimezone: shareTimezone,
         pronouns: pronouns,
         hasColorOverride: widget.client
                 .getComponent<UserColorComponent>()
@@ -315,5 +333,18 @@ class _UserProfileState extends State<UserProfile> {
         );
       },
     );
+  }
+
+  Future<void> shareTimezone() async {
+    final currentTimeZone = await FlutterTimezone.getLocalTimezone();
+
+    setState(() {
+      timezone = currentTimeZone.identifier;
+    });
+
+    print(currentTimeZone.identifier);
+    return widget.client
+        .getComponent<UserProfileComponent>()
+        ?.setTimezone(currentTimeZone.identifier);
   }
 }
