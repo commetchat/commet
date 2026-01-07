@@ -22,7 +22,9 @@ class BackgroundNotificationsManager2 {
   List<Map<String, dynamic>> queue = List.empty(growable: true);
 
   Future<void> init() async {
-    await initDatabaseServer();
+    if (fileCache == null || clientManager == null) {
+      await initDatabaseServer();
+    }
 
     if (fileCache == null) {
       fileCache = FileCache.getFileCacheInstance();
@@ -32,15 +34,17 @@ class BackgroundNotificationsManager2 {
       }
     }
 
-    clientManager = ClientManager();
+    if (clientManager == null) {
+      clientManager = ClientManager();
 
-    final clients = preferences.getRegisteredMatrixClients();
-    if (clients != null) {
-      for (var id in clients) {
-        var client = MatrixBackgroundClient(databaseId: id);
-        Log.i("Adding background matrix client: ${id}");
-        await client.init(true, isBackgroundService: true);
-        clientManager!.addClient(client);
+      final clients = preferences.getRegisteredMatrixClients();
+      if (clients != null) {
+        for (var id in clients) {
+          var client = MatrixBackgroundClient(databaseId: id);
+          Log.i("Adding background matrix client: ${id}");
+          await client.init(true, isBackgroundService: true);
+          clientManager!.addClient(client);
+        }
       }
     }
 

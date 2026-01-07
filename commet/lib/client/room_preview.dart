@@ -1,7 +1,7 @@
 import 'package:commet/client/room.dart';
 import 'package:flutter/material.dart';
 
-enum RoomPreviewType { room, space }
+enum RoomPreviewType { room, space, inaccessible }
 
 abstract class RoomPreview {
   String get roomId;

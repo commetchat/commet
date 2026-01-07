@@ -308,18 +308,35 @@ class TimelineEventMenu {
         ),
       if (canCopy)
         TimelineEventMenuEntry(
-          name: CommonStrings.promptCopy,
-          icon: Icons.copy,
-          action: (context) {
-            Clipboard.setData(
-              ClipboardData(
+            name: CommonStrings.promptCopy,
+            icon: Icons.copy,
+            action: (context) {
+              Clipboard.setData(ClipboardData(
                 text: (event as TimelineEventMessage).plainTextBody,
-              ),
-            );
+              ));
+            }),
+      TimelineEventMenuEntry(
+        name: promptShowSource,
+        icon: Icons.code,
+        action: (BuildContext context) {
+          onActionFinished?.call();
+          AdaptiveDialog.show(
+            context,
+            title: "Source",
+            builder: (context) {
+              return SizedBox(
+                width: 1000,
+                child: SelectionArea(
+                  child: ExpandableCodeBlock(
+                      expanded: true, text: event.source, language: "json"),
+                ),
+              );
+            },
+          );
 
-            onActionFinished?.call();
-          },
-        ),
+          onActionFinished?.call();
+        },
+      ),
       TimelineEventMenuEntry(
         name: promptShowSource,
         icon: Icons.code,
