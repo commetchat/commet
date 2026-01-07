@@ -348,9 +348,6 @@ class MatrixCalendar {
       for (var event in eventsToSync) {
         var calendarEvents = fromRfcEvent(event, eventType: eventType);
         for (var calendarEvent in calendarEvents) {
-          var color = config.getColorFromUser(widgetApi.userId);
-
-          calendarEvent = calendarEvent.copyWith(color: color);
           calendarEvent.event!.senderId = widgetApi.userId;
           calendarEvent.event!.remoteSourceId = remoteSourceId;
 

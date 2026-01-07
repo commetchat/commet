@@ -39,6 +39,11 @@ class CustomMatrixCalendarConfig extends MatrixCalendarConfig {
   ImageProvider<Object>? getUserAvatar(String userId) {
     return room.getMemberOrFallback(userId).avatar;
   }
+
+  @override
+  Color getColorFromUser(String userId) {
+    return room.getColorOfUser(userId);
+  }
 }
 
 class MatrixCalendarRoomComponent

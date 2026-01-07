@@ -21,7 +21,7 @@ class EventViewBox extends StatelessWidget {
   Widget build(BuildContext context) {
     bool unavailability = event.event!.isUnavailability;
     var color = calendar.config.processEventColor(
-      event.color,
+      calendar.config.getColorFromUser(event.event!.senderId!),
       context,
     );
     var aspectRatio = boundary.width / boundary.height;
@@ -279,7 +279,7 @@ class EventViewMini extends StatelessWidget {
     var e = event;
     bool unavailability = e.event!.isUnavailability;
     var color = calendar.config.processEventColor(
-      event.color,
+      calendar.config.getColorFromUser(event.event!.senderId!),
       context,
     );
 
