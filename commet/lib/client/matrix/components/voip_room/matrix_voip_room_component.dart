@@ -6,7 +6,6 @@ import 'package:commet/client/matrix/components/matrix_sync_listener.dart';
 import 'package:commet/client/matrix/components/voip_room/matrix_livekit_backend.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
-import 'package:commet/debug/log.dart';
 import 'package:matrix/matrix.dart';
 
 class MatrixVoipRoomComponent
@@ -29,16 +28,15 @@ class MatrixVoipRoomComponent
     backend = MatrixLivekitBackend(room);
   }
 
-  @override
-  bool get isVoipRoom =>
-      room.matrixRoom.getState(EventTypes.RoomCreate)?.content['type'] ==
-      "org.matrix.msc3417.call";
+  static bool isVoipRoom(MatrixRoom room) {
+    return room.matrixRoom.getState(EventTypes.RoomCreate)?.content['type'] ==
+        "org.matrix.msc3417.call";
+  }
 
   StreamController _onParticipantsChanged = StreamController.broadcast();
 
   @override
   onSync(JoinedRoomUpdate update) {
-    Log.d("Got update");
     if (update.timeline?.events == null) {
       return;
     }
@@ -92,9 +90,7 @@ class MatrixVoipRoomComponent
 
   void onStateChanged(void event) {
     final state = currentSession?.state;
-    print(
-      "Got call state: ${state}",
-    );
+    print("Got call state: ${state}");
 
     if (state == VoipState.ended) {
       currentSession = null;
@@ -102,8 +98,9 @@ class MatrixVoipRoomComponent
   }
 
   @override
-  bool get canJoinCall => room.matrixRoom
-      .canSendEvent(MatrixVoipRoomComponent.callMemberStateEvent);
+  bool get canJoinCall => room.matrixRoom.canSendEvent(
+        MatrixVoipRoomComponent.callMemberStateEvent,
+      );
 
   @override
   Future<void> clearAllCallMembershipStatus() async {
@@ -115,8 +112,12 @@ class MatrixVoipRoomComponent
     var futures = [
       for (var entry in state.entries)
         if (entry.value.senderId == client.matrixClient.userID)
-          client.matrixClient.setRoomStateWithKey(room.identifier,
-              MatrixVoipRoomComponent.callMemberStateEvent, entry.key, {})
+          client.matrixClient.setRoomStateWithKey(
+            room.identifier,
+            MatrixVoipRoomComponent.callMemberStateEvent,
+            entry.key,
+            {},
+          ),
     ];
 
     await Future.wait(futures);

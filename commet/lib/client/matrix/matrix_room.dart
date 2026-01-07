@@ -164,6 +164,8 @@ class MatrixRoom extends Room {
     _displayName = room.getLocalizedDisplayname();
     _components = ComponentRegistry.getMatrixRoomComponents(client, this);
 
+    _matrixRoom.postLoad();
+
     _lastStateEventTimestamp = DateTime.fromMillisecondsSinceEpoch(0);
     matrix.Event? latest = room.lastEvent;
 

@@ -17,7 +17,7 @@ class AdaptiveDialog {
     bool dismissible = true,
     double initialHeightMobile = 0.5,
   }) {
-    return AdaptiveDialog.show<T>(context, builder: (context) {
+    return AdaptiveDialog.show<T>(context, title: title, builder: (context) {
       return Column(
         children: items
             .map((i) =>

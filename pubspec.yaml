@@ -1,0 +1,11 @@
+name: _
+publish_to: none
+environment: 
+  sdk: '>=3.6.0 <4.0.0'
+workspace:
+  - commet
+  - tiamat
+  - widgets/matrix_widget_api
+  - widgets/calendar
+dependencies:
+  iso_duration: ^0.1.1

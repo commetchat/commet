@@ -12,10 +12,12 @@ class RoomQuickAccessMenuViewDesktop extends StatelessWidget {
     final menu = RoomQuickAccessMenu(room: room);
 
     return Row(
+      spacing: 4,
+      mainAxisSize: MainAxisSize.min,
       children: menu.actions
           .map((e) => SizedBox(
-              width: 25,
-              height: 25,
+              width: 40,
+              height: 40,
               child: tiamat.IconButton(
                 icon: e.icon,
                 onPressed: () => e.action?.call(context),
