@@ -337,14 +337,18 @@ class _UserProfileState extends State<UserProfile> {
 
   Future<void> shareTimezone() async {
     final currentTimeZone = await FlutterTimezone.getLocalTimezone();
+    if (await AdaptiveDialog.confirmation(context,
+            prompt:
+                "Are you sure you want to share your timezone '${currentTimeZone.identifier}' publicly?") ==
+        true) {
+      setState(() {
+        timezone = currentTimeZone.identifier;
+      });
 
-    setState(() {
-      timezone = currentTimeZone.identifier;
-    });
-
-    print(currentTimeZone.identifier);
-    return widget.client
-        .getComponent<UserProfileComponent>()
-        ?.setTimezone(currentTimeZone.identifier);
+      print(currentTimeZone.identifier);
+      return widget.client
+          .getComponent<UserProfileComponent>()
+          ?.setTimezone(currentTimeZone.identifier);
+    }
   }
 }
