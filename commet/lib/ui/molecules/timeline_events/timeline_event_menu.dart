@@ -337,22 +337,6 @@ class TimelineEventMenu {
           onActionFinished?.call();
         },
       ),
-      TimelineEventMenuEntry(
-        name: promptShowSource,
-        icon: Icons.code,
-        action: (BuildContext context) {
-          onActionFinished?.call();
-          AdaptiveDialog.show(
-            context,
-            title: "Source",
-            builder: (context) {
-              return SelectionArea(
-                child: Codeblock(text: event.source, language: "json"),
-              );
-            },
-          );
-        },
-      ),
       if (preferences.developerMode &&
           (event is TimelineEventMessage || event is TimelineEventSticker))
         TimelineEventMenuEntry(
