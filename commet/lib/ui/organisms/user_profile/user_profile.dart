@@ -21,6 +21,7 @@ class UserProfile extends StatefulWidget {
       this.width = 700,
       this.bannerHeight = 230.0,
       required this.client,
+      this.doSafeArea = true,
       this.showMessageButton = true,
       this.dismiss});
   final Client client;
@@ -28,6 +29,7 @@ class UserProfile extends StatefulWidget {
   final double bannerHeight;
   final double width;
   final Function? dismiss;
+  final bool doSafeArea;
   final bool showMessageButton;
 
   @override
@@ -185,6 +187,7 @@ class _UserProfileState extends State<UserProfile> {
         timezone: timezone,
         bannerHeight: widget.bannerHeight,
         width: widget.width,
+        doSafeArea: widget.doSafeArea,
         showMessageButton: widget.showMessageButton,
         isSelf: widget.client.self!.identifier == profile!.identifier,
         onMessageButtonClicked: openDirectMessage,

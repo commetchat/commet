@@ -38,6 +38,7 @@ class UserProfileView extends StatefulWidget {
       this.onSetAvatar,
       this.onSetStatus,
       this.showMessageButton = true,
+      this.doSafeArea = true,
       this.onChangeName,
       this.showSource,
       this.pronouns = const [],
@@ -48,6 +49,7 @@ class UserProfileView extends StatefulWidget {
   final UserPresence? presence;
   final String displayName;
   final String identifier;
+  final bool doSafeArea;
   final List<String> pronouns;
   final Color userColor;
   final bool isSelf;
@@ -196,6 +198,10 @@ class _UserProfileViewState extends State<UserProfileView> {
                             child: Container(
                               color: background,
                               child: ScaledSafeArea(
+                                bottom: widget.doSafeArea,
+                                top: widget.doSafeArea,
+                                left: widget.doSafeArea,
+                                right: widget.doSafeArea,
                                 child: Column(
                                   children: [
                                     Padding(

@@ -164,9 +164,10 @@ class _RoomMemberListState extends State<RoomMemberList> {
             result = Padding(
               padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
               child: UserProfile(
+                doSafeArea: false,
                 key: ValueKey("room-user-list-user-${member.identifier}"),
                 userId: member.identifier,
-                bannerHeight: Layout.mobile ? 220 : 120,
+                bannerHeight: Layout.mobile ? 200 : 120,
                 client: widget.room.client,
                 showMessageButton: false,
               ),
