@@ -4,9 +4,11 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/member.dart';
 import 'package:commet/client/role.dart';
+import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/atoms/role_view.dart';
 import 'package:commet/ui/atoms/shimmer_loading.dart';
 import 'package:commet/ui/molecules/user_panel.dart';
+import 'package:commet/ui/organisms/user_profile/user_profile.dart';
 import 'package:flutter/material.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -25,6 +27,7 @@ class _RoomMemberListState extends State<RoomMemberList> {
   List<(Member, Role)>? importantMembers;
   bool loadingMoreMembers = false;
   bool isDirectMessageRoom = false;
+
   DirectMessagesComponent? directMessages;
 
   int limit = 100;
@@ -152,6 +155,23 @@ class _RoomMemberListState extends State<RoomMemberList> {
             contextRoom: widget.room,
             userId: member.identifier,
           );
+
+          if (isDirectMessageRoom) {
+            if (member.identifier == widget.room.client.self?.identifier)
+              return SizedBox(
+                height: 0,
+              );
+            result = Padding(
+              padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
+              child: UserProfile(
+                key: ValueKey("room-user-list-user-${member.identifier}"),
+                userId: member.identifier,
+                bannerHeight: Layout.mobile ? 220 : 120,
+                client: widget.room.client,
+                showMessageButton: false,
+              ),
+            );
+          }
 
           var role = getDisplayRole(index);
           if (role != null) {

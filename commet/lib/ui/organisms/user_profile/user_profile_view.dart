@@ -28,6 +28,7 @@ class UserProfileView extends StatefulWidget {
       this.presence,
       this.onSetBanner,
       this.timezone,
+      this.bannerHeight = 230.0,
       this.width = 700,
       this.setPreviewColor,
       this.hasColorOverride = false,
@@ -36,6 +37,7 @@ class UserProfileView extends StatefulWidget {
       this.shareCurrentTimezone,
       this.onSetAvatar,
       this.onSetStatus,
+      this.showMessageButton = true,
       this.onChangeName,
       this.showSource,
       this.pronouns = const [],
@@ -49,6 +51,8 @@ class UserProfileView extends StatefulWidget {
   final List<String> pronouns;
   final Color userColor;
   final bool isSelf;
+  final bool showMessageButton;
+  final double bannerHeight;
   final bool hasColorOverride;
   final String? timezone;
   final double width;
@@ -111,7 +115,7 @@ class _UserProfileViewState extends State<UserProfileView> {
   @override
   Widget build(BuildContext context) {
     var background = Theme.of(context).colorScheme.primaryContainer;
-    const bannerHeight = 230.0;
+    final bannerHeight = widget.bannerHeight;
     const avatarOverlap = 50.0;
 
     return ClipRRect(
@@ -182,7 +186,7 @@ class _UserProfileViewState extends State<UserProfileView> {
                           ),
                         )),
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(
+                      padding: EdgeInsets.fromLTRB(
                           0, bannerHeight - avatarOverlap, 0, 0),
                       child: Stack(
                         children: [
@@ -284,7 +288,8 @@ class _UserProfileViewState extends State<UserProfileView> {
                                                 SizedBox(
                                                   height: 20,
                                                 ),
-                                                if (!widget.isSelf)
+                                                if (!widget.isSelf &&
+                                                    widget.showMessageButton)
                                                   tiamat.Button(
                                                     text:
                                                         promptOpenDirectMessage,

@@ -123,9 +123,7 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
         Flexible(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
-            child: SizedBox(
-                width: Layout.desktop ? 200 : null,
-                child: RoomMembersListWidget(widget.state.currentRoom!)),
+            child: RoomMembersListWidget(widget.state.currentRoom!),
           ),
         ),
       ],
