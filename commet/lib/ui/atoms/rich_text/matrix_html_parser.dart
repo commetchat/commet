@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_emoticon.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
@@ -229,6 +231,14 @@ class MatrixEmoticonHtmlExtension extends HtmlExtension {
       return TextSpan(text: context.attributes["alt"] ?? "");
     }
 
+    var size = emojiSize;
+
+    var fontSize = context.style?.fontSize?.value;
+    if (fontSize != null) {
+      fontSize = fontSize * 1.2;
+      size = max(size, fontSize);
+    }
+
     if (room?.shouldPreviewMedia == false) {
       return WidgetSpan(
           alignment: PlaceholderAlignment.middle,
@@ -256,7 +266,7 @@ class MatrixEmoticonHtmlExtension extends HtmlExtension {
             shortcode: context.attributes["alt"] ?? "",
             packUsage: EmoticonUsage.all,
             usage: EmoticonUsage.emoji),
-        height: emojiSize,
+        height: size,
       ),
     ));
   }
