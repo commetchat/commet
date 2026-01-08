@@ -29,14 +29,9 @@ class AdaptiveContextMenu extends StatelessWidget {
       var callback = () => showModalBottomSheet(
           isDismissible: true,
           showDragHandle: true,
-          isScrollControlled: true,
           context: context,
-          builder: (modalContext) => DraggableScrollableSheet(
-              maxChildSize: 0.8,
-              expand: false,
-              builder: (context, scrollController) {
-                return SingleChildScrollView(
-                  controller: scrollController,
+          builder: (modalContext) => SingleChildScrollView(
+                child: ScaledSafeArea(
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
@@ -59,8 +54,8 @@ class AdaptiveContextMenu extends StatelessWidget {
                           .toList(),
                     ),
                   ),
-                );
-              }));
+                ),
+              ));
 
       return InkWell(
         child: child,
