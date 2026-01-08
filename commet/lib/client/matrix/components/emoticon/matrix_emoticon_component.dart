@@ -325,7 +325,7 @@ class MatrixEmoticonComponent extends EmoticonComponent<MatrixClient> {
 
   Map<String, Map<String, String>> getEmotePacksFlat(
       matrix.ImagePackUsage emoticon) {
-    var packs = globalPacks();
+    var packs = globalPacks() + ownedPacks;
 
     var result = <String, Map<String, String>>{};
 
