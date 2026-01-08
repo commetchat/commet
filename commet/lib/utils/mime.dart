@@ -27,6 +27,7 @@ class Mime {
     "audio/ogg",
     "audio/wav",
     "audio/mp3",
+    "audio/mpeg",
   };
 
   static bool isText(String mime) => mime.startsWith("text/");
