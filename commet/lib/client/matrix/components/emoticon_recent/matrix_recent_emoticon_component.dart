@@ -73,6 +73,9 @@ class MatrixRecentEmoticonComponent
 
       if (emote.customPackId != null) {
         for (var pack in availablePacks) {
+          // this is a custom pack, it cant be in unicode
+          if (pack is UnicodeEmoticonPack) continue;
+
           if (emote.customPackRoomId != null) {
             if (pack.ownerId != emote.customPackRoomId) continue;
           }
