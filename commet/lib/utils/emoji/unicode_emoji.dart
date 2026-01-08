@@ -26,37 +26,37 @@ class UnicodeEmojis {
       UnicodeEmoticonPack(
           dataPacks: [UnicodeEmojiGroups.GROUP_3],
           getLocalisedName: () => "Animals & Nature",
-          identifier: "chat.commet.commetapp.internal_emoticons.group_2",
+          identifier: "chat.commet.commetapp.internal_emoticons.group_3",
           icon: Icons.emoji_nature_rounded),
       UnicodeEmoticonPack(
           dataPacks: [UnicodeEmojiGroups.GROUP_4],
           getLocalisedName: () => "Food & Drink",
-          identifier: "chat.commet.commetapp.internal_emoticons.group_3",
+          identifier: "chat.commet.commetapp.internal_emoticons.group_4",
           icon: Icons.emoji_food_beverage),
       UnicodeEmoticonPack(
           dataPacks: [UnicodeEmojiGroups.GROUP_5],
           getLocalisedName: () => "Travel & Places",
-          identifier: "chat.commet.commetapp.internal_emoticons.group_4",
+          identifier: "chat.commet.commetapp.internal_emoticons.group_5",
           icon: Icons.emoji_transportation),
       UnicodeEmoticonPack(
           dataPacks: [UnicodeEmojiGroups.GROUP_6],
           getLocalisedName: () => "Activities",
-          identifier: "chat.commet.commetapp.internal_emoticons.group_5",
+          identifier: "chat.commet.commetapp.internal_emoticons.group_6",
           icon: Icons.emoji_events),
       UnicodeEmoticonPack(
           dataPacks: [UnicodeEmojiGroups.GROUP_7],
           getLocalisedName: () => "Objects",
-          identifier: "chat.commet.commetapp.internal_emoticons.group_6",
+          identifier: "chat.commet.commetapp.internal_emoticons.group_7",
           icon: Icons.emoji_objects),
       UnicodeEmoticonPack(
           dataPacks: [UnicodeEmojiGroups.GROUP_8],
           getLocalisedName: () => "Symbols",
-          identifier: "chat.commet.commetapp.internal_emoticons.group_7",
+          identifier: "chat.commet.commetapp.internal_emoticons.group_8",
           icon: Icons.emoji_symbols),
       UnicodeEmoticonPack(
           dataPacks: [UnicodeEmojiGroups.GROUP_9],
           getLocalisedName: () => "Flags",
-          identifier: "chat.commet.commetapp.internal_emoticons.group_8",
+          identifier: "chat.commet.commetapp.internal_emoticons.group_9",
           icon: Icons.emoji_flags),
     ]);
 
