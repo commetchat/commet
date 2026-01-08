@@ -8,7 +8,6 @@ import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/adaptive_context_menu.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/atoms/tiny_pill.dart';
-import 'package:commet/ui/molecules/message_input.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/utils/color_utils.dart';
 import 'package:flutter/material.dart';
@@ -47,6 +46,7 @@ class UserProfileView extends StatefulWidget {
       this.onChangeName,
       this.showSource,
       this.pronouns = const [],
+      this.clearStatus,
       this.savePreviewTheme,
       this.onMessageButtonClicked});
   final ImageProvider? userAvatar;
@@ -71,6 +71,7 @@ class UserProfileView extends StatefulWidget {
   final Future<void> Function()? removeTimezone;
   final Future<void> Function()? setBio;
   final Future<void> Function()? clearBio;
+  final Future<void> Function()? clearStatus;
   final void Function()? showSource;
   final void Function(Color)? setPreviewColor;
   final Widget? bio;
@@ -471,11 +472,16 @@ class _UserProfileViewState extends State<UserProfileView> {
             text: "Set Status",
             onPressed: () => widget.onSetStatus?.call(),
             icon: Icons.short_text),
+      if (widget.isSelf && widget.presence?.message != null)
+        tiamat.ContextMenuItem(
+            text: "Clear Status",
+            onPressed: () => widget.clearStatus?.call(),
+            icon: Icons.delete),
       if (widget.isSelf)
         tiamat.ContextMenuItem(
             text: "Set Bio",
             onPressed: () => widget.setBio?.call(),
-            icon: Icons.short_text),
+            icon: Icons.text_snippet),
       if (widget.isSelf && widget.bio != null)
         tiamat.ContextMenuItem(
             text: "Clear Bio",

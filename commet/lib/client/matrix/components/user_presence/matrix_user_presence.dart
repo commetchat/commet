@@ -49,14 +49,15 @@ class MatrixUserPresenceComponent
   Stream<(String, UserPresence)> get onPresenceChanged => _controller.stream;
 
   @override
-  Future<void> setStatus(UserPresenceStatus status, {String? message}) async {
+  Future<void> setStatus(UserPresenceStatus status,
+      {String? message, bool clearMessage = false}) async {
     final self = client.self!.identifier;
 
     final current = await client.matrixClient.getPresence(self);
 
     await client.matrixClient.setPresence(
         self,
-        statusMsg: message ?? current.statusMsg,
+        statusMsg: clearMessage ? null : message ?? current.statusMsg,
         switch (status) {
           UserPresenceStatus.offline => PresenceType.offline,
           UserPresenceStatus.unknown => PresenceType.offline,

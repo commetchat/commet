@@ -222,8 +222,12 @@ class MatrixProfileComponent implements UserProfileComponent<MatrixClient> {
   }
 
   @override
-  Future<void> setStatus(String status) {
-    return setField(statusKey, status);
+  Future<void> setStatus(String? status) {
+    if (status == null) {
+      return removeField(statusKey);
+    } else {
+      return setField(statusKey, status);
+    }
   }
 
   @override

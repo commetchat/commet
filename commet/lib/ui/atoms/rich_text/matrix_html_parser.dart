@@ -17,7 +17,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:html/parser.dart' as html_parser;
 import 'package:html/dom.dart' as dom;
-import 'package:matrix/matrix.dart' as matrix;
 import 'package:tiamat/config/style/theme_extensions.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;

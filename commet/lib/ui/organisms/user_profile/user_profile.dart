@@ -219,6 +219,7 @@ class _UserProfileState extends State<UserProfile> {
         setColorOverride: setColorOverride,
         showSource: showSource,
         onSetStatus: setStatus,
+        clearStatus: clearStatus,
         shareCurrentTimezone: shareTimezone,
         pronouns: pronouns,
         hasColorOverride: widget.client
@@ -345,6 +346,20 @@ class _UserProfileState extends State<UserProfile> {
             message: UserPresenceMessage(text, PresenceMessageType.userCustom));
       });
     }
+  }
+
+  Future<void> clearStatus() async {
+    var client = widget.client;
+    await client.getComponent<UserProfileComponent>()?.setStatus(null);
+
+    await client.getComponent<UserPresenceComponent>()?.setStatus(
+        UserPresenceStatus.online,
+        message: null,
+        clearMessage: true);
+
+    setState(() {
+      presence = UserPresence(UserPresenceStatus.online);
+    });
   }
 
   void showSource() {

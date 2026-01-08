@@ -56,7 +56,7 @@ abstract class UserProfileComponent<T extends Client> implements Component<T> {
 
   Future<void> setProfileColorScheme(Color color, Brightness brightness);
 
-  Future<void> setStatus(String status);
+  Future<void> setStatus(String? status);
 
   Future<void> setTimezone(String timezone);
 
