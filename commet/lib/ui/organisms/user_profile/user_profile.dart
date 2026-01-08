@@ -1,11 +1,13 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
+import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/client/components/profile/profile_component.dart';
 import 'package:commet/client/components/user_color/user_color_component.dart';
 import 'package:commet/client/components/user_presence/user_presence_component.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/atoms/code_block.dart';
+import 'package:commet/ui/molecules/message_input.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:commet/ui/organisms/user_profile/user_profile_view.dart';
@@ -91,6 +93,7 @@ class _UserProfileState extends State<UserProfile> {
   ImageProvider? avatar;
   UserPresence? presence;
   String? timezone;
+  String? bioText;
   List<String> pronouns = const [];
 
   @override
@@ -99,72 +102,76 @@ class _UserProfileState extends State<UserProfile> {
     component = widget.client.getComponent<UserProfileComponent>()!;
 
     component.getProfile(widget.userId).then((value) async {
-      banner = value?.banner;
-      avatar = value?.avatar;
+      await stateFromProfile(value);
+    });
+  }
 
-      ColorScheme? scheme;
-      Brightness? brightness;
+  Future<void> stateFromProfile(Profile? value) async {
+    banner = value?.banner;
+    avatar = value?.avatar;
 
-      if (avatar case MatrixMxcImage mxc) {
-        // create a new image instance so we can load fullres without it loading everywhere
-        avatar = MatrixMxcImage(mxc.identifier, mxc.client,
-            doThumbnail: false, doFullres: true, autoLoadFullRes: true);
-      }
+    ColorScheme? scheme;
+    Brightness? brightness;
 
-      if (value case ProfileWithColorScheme p) {
-        if (p.brightness != null) {
-          brightness = p.brightness!;
+    if (avatar case MatrixMxcImage mxc) {
+      // create a new image instance so we can load fullres without it loading everywhere
+      avatar = MatrixMxcImage(mxc.identifier, mxc.client,
+          doThumbnail: false, doFullres: true, autoLoadFullRes: true);
+    }
 
-          if (p.color != null) {
-            scheme = ColorScheme.fromSeed(
-                seedColor: p.color!,
-                brightness: brightness,
-                dynamicSchemeVariant: DynamicSchemeVariant.content);
-          }
-        }
-      }
+    if (value case ProfileWithColorScheme p) {
+      if (p.brightness != null) {
+        brightness = p.brightness!;
 
-      await TimezoneUtils.instance.init();
-
-      if (brightness == null)
-        brightness = Theme.of(context).colorScheme.brightness;
-
-      if (scheme == null) {
-        if (avatar != null) {
-          scheme = await ColorScheme.fromImageProvider(
-              provider: value!.banner ?? value.avatar!,
-              brightness: brightness,
-              dynamicSchemeVariant: DynamicSchemeVariant.tonalSpot);
-        } else {
+        if (p.color != null) {
           scheme = ColorScheme.fromSeed(
-              seedColor: value!.defaultColor,
+              seedColor: p.color!,
               brightness: brightness,
-              dynamicSchemeVariant: DynamicSchemeVariant.tonalSpot);
+              dynamicSchemeVariant: DynamicSchemeVariant.content);
         }
       }
+    }
 
-      await Future.wait<dynamic>([
-        if (banner != null) precacheImage(banner!, context),
-        if (avatar != null) precacheImage(avatar!, context),
-      ]);
+    await TimezoneUtils.instance.init();
 
-      setState(() {
-        theme = Theme.of(context).copyWith(colorScheme: scheme);
-        profile = value;
-        displayName = value?.displayName;
+    if (brightness == null)
+      brightness = Theme.of(context).colorScheme.brightness;
 
-        if (profile case ProfileWithTimezone p) {
-          timezone = p.timezone;
-        }
+    if (scheme == null) {
+      if (avatar != null) {
+        scheme = await ColorScheme.fromImageProvider(
+            provider: value!.banner ?? value.avatar!,
+            brightness: brightness,
+            dynamicSchemeVariant: DynamicSchemeVariant.tonalSpot);
+      } else {
+        scheme = ColorScheme.fromSeed(
+            seedColor: value!.defaultColor,
+            brightness: brightness,
+            dynamicSchemeVariant: DynamicSchemeVariant.tonalSpot);
+      }
+    }
 
-        if (profile case ProfileWithPronouns p) {
-          pronouns = p.pronouns;
-        }
+    await Future.wait<dynamic>([
+      if (banner != null) precacheImage(banner!, context),
+      if (avatar != null) precacheImage(avatar!, context),
+    ]);
 
-        if (profile case ProfileWithPresence p) {
-          presence = p.precence;
-        }
-      });
+    setState(() {
+      theme = Theme.of(context).copyWith(colorScheme: scheme);
+      profile = value;
+      displayName = value?.displayName;
+
+      if (profile case ProfileWithTimezone p) {
+        timezone = p.timezone;
+      }
+
+      if (profile case ProfileWithPronouns p) {
+        pronouns = p.pronouns;
+      }
+
+      if (profile case ProfileWithPresence p) {
+        presence = p.precence;
+      }
     });
   }
 
@@ -173,6 +180,14 @@ class _UserProfileState extends State<UserProfile> {
     if (profile == null) {
       return SizedBox(
           height: 300, child: const Center(child: CircularProgressIndicator()));
+    }
+
+    Widget? bio;
+
+    if (profile case ProfileWithBio p) {
+      if (p.hasBio || bioText != null) {
+        bio = p.buildBio(context, theme!, overrideText: bioText);
+      }
     }
 
     return Theme(
@@ -197,6 +212,9 @@ class _UserProfileState extends State<UserProfile> {
         removeTimezone: removeTimezone,
         onChangeName: changeName,
         savePreviewTheme: savePreviewTheme,
+        setBio: setBio,
+        clearBio: clearBio,
+        bio: bio,
         onSetAvatar: setAvatar,
         setColorOverride: setColorOverride,
         showSource: showSource,
@@ -363,10 +381,57 @@ class _UserProfileState extends State<UserProfile> {
   }
 
   Future<void> removeTimezone() async {
+    await widget.client.getComponent<UserProfileComponent>()?.removeTimezone();
+
     setState(() {
       timezone = null;
     });
+  }
 
-    return widget.client.getComponent<UserProfileComponent>()?.removeTimezone();
+  Future<void> setBio() async {
+    AdaptiveDialog.show(context, builder: (context) {
+      String? plaintext;
+
+      if (profile case ProfileWithBio p) {
+        plaintext = p.plaintextBio;
+      }
+
+      return SizedBox(
+        width: 600,
+        child: MessageInput(
+          hintText: "Write about yourself!",
+          initialText: bioText ?? plaintext,
+          showAttachmentButton: false,
+          client: widget.client,
+          showGifSearch: false,
+          disableEnterToSend: true,
+          availibleEmoticons:
+              widget.client.getComponent<EmoticonComponent>()?.availablePacks,
+          onSendMessage: (message, {overrideClient}) {
+            widget.client.getComponent<UserProfileComponent>()?.setBio(message);
+
+            setState(() {
+              bioText = message;
+            });
+
+            Navigator.of(context).pop();
+
+            return MessageInputSendResult.success;
+          },
+        ),
+      );
+    });
+  }
+
+  Future<void> clearBio() async {
+    setState(() {
+      bioText = null;
+    });
+
+    await widget.client.getComponent<UserProfileComponent>()?.removeBio();
+
+    component.getProfile(widget.userId).then((value) async {
+      await stateFromProfile(value);
+    });
   }
 }

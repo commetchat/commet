@@ -38,6 +38,15 @@ abstract class ProfileWithTimezone {
   String? get timezone;
 }
 
+abstract class ProfileWithBio {
+  bool get hasBio;
+
+  String? get plaintextBio;
+
+  Widget buildBio(BuildContext context, ThemeData theme,
+      {String? overrideText});
+}
+
 abstract class UserProfileComponent<T extends Client> implements Component<T> {
   /// Gets a peer by ID. will return a peer object for any given ID and then load the data from the server.
   /// This is so that you can display any given peer without having to load the data for it
@@ -50,6 +59,10 @@ abstract class UserProfileComponent<T extends Client> implements Component<T> {
   Future<void> setStatus(String status);
 
   Future<void> setTimezone(String timezone);
+
+  Future<void> setBio(String bio);
+
+  Future<void> removeBio();
 
   Future<void> removeTimezone();
 }

@@ -35,7 +35,7 @@ class MatrixRecentEmoticonComponent
   }
 
   @override
-  List<Emoticon> getRecentTypedEmoticon(Room room) {
+  List<Emoticon> getRecentTypedEmoticon(Room? room) {
     return toEmoticons(room, _typedEmoji);
   }
 
@@ -54,17 +54,18 @@ class MatrixRecentEmoticonComponent
     }
   }
 
-  List<Emoticon> toEmoticons(Room room, List<RecentEmoji> emojis) {
+  List<Emoticon> toEmoticons(Room? room, List<RecentEmoji> emojis) {
     var result = List<Emoticon>.empty(growable: true);
 
-    var comp = room.getComponent<RoomEmoticonComponent>();
-    if (comp == null) {
-      return [];
-    }
+    var comp = room?.getComponent<RoomEmoticonComponent>();
+
+    var availablePacks = comp?.availablePacks ??
+        client.getComponent<EmoticonComponent>()?.availablePacks;
+
+    if (availablePacks == null) return [];
 
     emojis.sort((a, b) => b.count.compareTo(a.count));
 
-    var availablePacks = comp.availablePacks;
     for (var emote in emojis) {
       if (emote.customPackId == null && emote.customPackRoomId == null) {
         result.add(UnicodeEmoticon(emote.key));

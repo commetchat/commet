@@ -8,6 +8,7 @@ import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/adaptive_context_menu.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/atoms/tiny_pill.dart';
+import 'package:commet/ui/molecules/message_input.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/utils/color_utils.dart';
 import 'package:flutter/material.dart';
@@ -37,7 +38,10 @@ class UserProfileView extends StatefulWidget {
       this.shareCurrentTimezone,
       this.removeTimezone,
       this.onSetAvatar,
+      this.bio,
       this.onSetStatus,
+      this.setBio,
+      this.clearBio,
       this.showMessageButton = true,
       this.doSafeArea = true,
       this.onChangeName,
@@ -65,8 +69,11 @@ class UserProfileView extends StatefulWidget {
   final Future<void> Function()? onChangeName;
   final Future<void> Function()? shareCurrentTimezone;
   final Future<void> Function()? removeTimezone;
+  final Future<void> Function()? setBio;
+  final Future<void> Function()? clearBio;
   final void Function()? showSource;
   final void Function(Color)? setPreviewColor;
+  final Widget? bio;
   final Future<void> Function(Brightness)? setPreviewBrightness;
   final Future<void> Function()? onMessageButtonClicked;
   final Future<void> Function()? savePreviewTheme;
@@ -88,6 +95,8 @@ class _UserProfileViewState extends State<UserProfileView> {
   Timer? timezoneTimer;
 
   tz.TZDateTime? localTime;
+
+  ScrollController bioScrollController = ScrollController();
 
   @override
   void initState() {
@@ -339,6 +348,8 @@ class _UserProfileViewState extends State<UserProfileView> {
                                                     ],
                                                   ),
                                                 ),
+                                                if (widget.bio != null)
+                                                  buildBio(context),
                                                 if (!widget.isSelf &&
                                                     widget.showMessageButton)
                                                   tiamat.Button(
@@ -400,6 +411,28 @@ class _UserProfileViewState extends State<UserProfileView> {
     );
   }
 
+  Container buildBio(BuildContext context) {
+    return Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          color: Theme.of(context).colorScheme.surface,
+        ),
+        child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: 200),
+              child: Scrollbar(
+                thumbVisibility: true,
+                controller: bioScrollController,
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.all(0),
+                  controller: bioScrollController,
+                  child: widget.bio,
+                ),
+              ),
+            )));
+  }
+
   Widget userLocalTime() {
     final l = localTime!;
     var t = DateTime(l.year, l.month, l.day, l.hour, l.minute, l.second);
@@ -430,16 +463,6 @@ class _UserProfileViewState extends State<UserProfileView> {
     return [
       if (widget.isSelf)
         tiamat.ContextMenuItem(
-            text: "Change Avatar",
-            onPressed: () => widget.onSetAvatar?.call(),
-            icon: Icons.person),
-      if (widget.isSelf)
-        tiamat.ContextMenuItem(
-            text: "Change Name",
-            onPressed: () => widget.onChangeName?.call(),
-            icon: Icons.tag),
-      if (widget.isSelf)
-        tiamat.ContextMenuItem(
             text: "Change Banner",
             onPressed: () => widget.onSetBanner?.call(),
             icon: Icons.image),
@@ -448,6 +471,16 @@ class _UserProfileViewState extends State<UserProfileView> {
             text: "Set Status",
             onPressed: () => widget.onSetStatus?.call(),
             icon: Icons.short_text),
+      if (widget.isSelf)
+        tiamat.ContextMenuItem(
+            text: "Set Bio",
+            onPressed: () => widget.setBio?.call(),
+            icon: Icons.short_text),
+      if (widget.isSelf && widget.bio != null)
+        tiamat.ContextMenuItem(
+            text: "Clear Bio",
+            onPressed: () => widget.clearBio?.call(),
+            icon: Icons.delete),
       if (widget.isSelf)
         tiamat.ContextMenuItem(
             text: "Share Current Timezone",

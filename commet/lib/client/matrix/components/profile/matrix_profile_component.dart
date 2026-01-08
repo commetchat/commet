@@ -2,15 +2,22 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:commet/client/components/profile/profile_component.dart';
+import 'package:commet/client/matrix/components/emoticon/matrix_emoticon_component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 
 import 'package:commet/client/components/user_presence/user_presence_component.dart';
 import 'package:commet/client/matrix/matrix_member.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
+import 'package:commet/ui/atoms/rich_text/matrix_html_parser.dart';
 import 'package:commet/utils/color_utils.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:html_unescape/html_unescape.dart';
 import 'package:matrix/matrix.dart' as matrix;
 import 'package:matrix/matrix_api_lite/matrix_api.dart';
+
+// ignore: implementation_imports
+import 'package:matrix/src/utils/markdown.dart' as mx_markdown;
 
 class MatrixProfile
     implements
@@ -19,7 +26,8 @@ class MatrixProfile
         ProfileWithPresence,
         ProfileWithColorScheme,
         ProfileWithPronouns,
-        ProfileWithTimezone {
+        ProfileWithTimezone,
+        ProfileWithBio {
   matrix.Profile profile;
   MatrixClient client;
 
@@ -106,11 +114,46 @@ class MatrixProfile
 
   @override
   String? get timezone => fields["m.tz"] as String?;
+
+  @override
+  Widget buildBio(BuildContext context, ThemeData theme,
+      {String? overrideText}) {
+    Map<String, dynamic>? content = fields[MatrixProfileComponent.bioKey];
+
+    if (overrideText != null) {
+      content = MatrixProfileComponent.textToContent(overrideText, client);
+    }
+
+    if (content == null) return Container();
+
+    if (content["format"] == "org.matrix.custom.html") {
+      return Material(
+        color: Colors.transparent,
+        child: MatrixHtmlParser.parse(content["formatted_body"], client, null),
+      );
+    }
+
+    return Material(
+      color: Colors.transparent,
+      child: Text(
+        content["body"],
+        style: theme.textTheme.bodyMedium
+            ?.copyWith(color: theme.colorScheme.onSurface),
+      ),
+    );
+  }
+
+  @override
+  bool get hasBio => fields.containsKey(MatrixProfileComponent.bioKey);
+
+  @override
+  String? get plaintextBio => fields[MatrixProfileComponent.bioKey]?["body"];
 }
 
 class MatrixProfileComponent implements UserProfileComponent<MatrixClient> {
   static const String bannerKey = "chat.commet.profile_banner";
   static const String colorSchemeKey = "chat.commet.profile_color_scheme";
+  static const String bioKey = "chat.commet.profile_bio";
   static const String statusKey = "chat.commet.profile_status";
   static const String pronounsKey = "io.fsky.nyx.pronouns";
 
@@ -191,5 +234,38 @@ class MatrixProfileComponent implements UserProfileComponent<MatrixClient> {
   @override
   Future<void> removeTimezone() {
     return removeField("m.tz");
+  }
+
+  @override
+  Future<void> setBio(String bio) async {
+    Map<String, String> content = textToContent(bio, client);
+
+    await setField(bioKey, content);
+  }
+
+  static Map<String, String> textToContent(String bio, MatrixClient client) {
+    var emoticons = client.getComponent<MatrixEmoticonComponent>();
+    final html = mx_markdown.markdown(
+      bio,
+      getEmotePacks: emoticons != null
+          ? () => emoticons.getEmotePacksFlat(matrix.ImagePackUsage.emoticon)
+          : null,
+    );
+
+    var content = {
+      "body": bio,
+    };
+
+    if (HtmlUnescape().convert(html.replaceAll(RegExp(r'<br />\n?'), '\n')) !=
+        bio) {
+      content["format"] = "org.matrix.custom.html";
+      content["formatted_body"] = html;
+    }
+    return content;
+  }
+
+  @override
+  Future<void> removeBio() {
+    return removeField(bioKey);
   }
 }

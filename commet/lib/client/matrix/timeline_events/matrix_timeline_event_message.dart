@@ -97,7 +97,7 @@ class MatrixTimelineEventMessage extends MatrixTimelineEvent
     bool isFormatted = displayEvent.content.tryGet<String>("format") != null;
     if (isFormatted) {
       return MatrixHtmlParser.parse(
-          _getFormattedBody(timeline: timeline), mx, room);
+          _getFormattedBody(timeline: timeline), client, room);
     } else {
       var plain = _getPlaintextBody(timeline: timeline);
       if (plain != "") {

@@ -64,7 +64,18 @@ class _EmoticonPickerState extends State<EmoticonPicker>
 
   @override
   void initState() {
-    controller = TabController(length: 3, vsync: this);
+    int tabs = 1;
+
+    if (widget.stickers.isNotEmpty) {
+      tabs += 1;
+    }
+
+    if (widget.allowGifSearch) {
+      tabs += 1;
+    }
+
+    controller = TabController(length: tabs, vsync: this);
+
     super.initState();
   }
 
@@ -91,20 +102,21 @@ class _EmoticonPickerState extends State<EmoticonPicker>
                         widget.onEmojiPressed?.call(emoticon),
                   ),
                 ),
-                Tab(
-                  child: EmojiPicker(
-                    widget.stickers,
-                    focus: widget.stickerSearchFocus,
-                    searchDelegate: (value) => widget.searchDelegate!
-                        .call(value)
-                        .where((i) => i.emoticon.isSticker)
-                        .toList(),
-                    onlyStickers: true,
-                    size: BuildConfig.MOBILE ? 125 : 125,
-                    onEmoticonPressed: (emoticon) =>
-                        widget.onStickerPressed?.call(emoticon),
+                if (widget.stickers.isNotEmpty)
+                  Tab(
+                    child: EmojiPicker(
+                      widget.stickers,
+                      focus: widget.stickerSearchFocus,
+                      searchDelegate: (value) => widget.searchDelegate!
+                          .call(value)
+                          .where((i) => i.emoticon.isSticker)
+                          .toList(),
+                      onlyStickers: true,
+                      size: BuildConfig.MOBILE ? 125 : 125,
+                      onEmoticonPressed: (emoticon) =>
+                          widget.onStickerPressed?.call(emoticon),
+                    ),
                   ),
-                ),
                 if (widget.allowGifSearch && widget.gifComponent != null)
                   Tab(
                     child: GifPicker(
@@ -116,23 +128,25 @@ class _EmoticonPickerState extends State<EmoticonPicker>
                   )
               ]),
             ),
-            tiamat.Tile.low(
-              child: SizedBox(
-                height: 40,
-                child: TabBar(
-                    controller: controller,
-                    dividerColor: Colors.transparent,
-                    dividerHeight: 0,
-                    tabs: [
-                      Tab(
-                        text: labelEmojiPickerEmojiTab,
-                      ),
-                      Tab(text: labelEmojiPickerStickerTab),
-                      if (widget.allowGifSearch)
-                        Tab(text: labelEmojiPickerGifTab)
-                    ]),
+            if (controller.length > 1)
+              tiamat.Tile.low(
+                child: SizedBox(
+                  height: 40,
+                  child: TabBar(
+                      controller: controller,
+                      dividerColor: Colors.transparent,
+                      dividerHeight: 0,
+                      tabs: [
+                        Tab(
+                          text: labelEmojiPickerEmojiTab,
+                        ),
+                        if (widget.stickers.isNotEmpty)
+                          Tab(text: labelEmojiPickerStickerTab),
+                        if (widget.allowGifSearch)
+                          Tab(text: labelEmojiPickerGifTab)
+                      ]),
+                ),
               ),
-            ),
           ],
         ),
       ),

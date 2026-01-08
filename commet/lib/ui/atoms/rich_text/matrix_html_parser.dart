@@ -23,7 +23,7 @@ import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class MatrixHtmlParser {
-  static Widget parse(String text, matrix.Client client, Room room) {
+  static Widget parse(String text, MatrixClient client, Room? room) {
     return MatrixHtmlState(
       text,
       client,
@@ -36,8 +36,8 @@ class MatrixHtmlParser {
 class MatrixHtmlState extends StatefulWidget {
   const MatrixHtmlState(this.text, this.client, this.room, {super.key});
   final String text;
-  final matrix.Client client;
-  final Room room;
+  final MatrixClient client;
+  final Room? room;
 
   @override
   State<MatrixHtmlState> createState() => _MatrixHtmlStateState();
@@ -110,7 +110,7 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
     var extension =
         MatrixEmoticonHtmlExtension(widget.client, widget.room, big);
     var imageExtension = MatrixImageExtension(widget.client, widget.room);
-    var linkify = LinkifyHtmlExtension(widget.room);
+    var linkify = LinkifyHtmlExtension(widget.client, widget.room);
     var result = Html(
       data: widget.text,
       extensions: [
@@ -131,6 +131,7 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
             top: Margin.zero(),
             right: Margin.zero(),
           ),
+          color: Theme.of(context).colorScheme.onSurface,
           whiteSpace: WhiteSpace.pre, // handled whitespace for #237
         ),
         "code": Style(backgroundColor: Colors.black.withAlpha(40)),
@@ -195,8 +196,8 @@ bool shouldDoBigEmoji(dom.Document document) {
 }
 
 class MatrixEmoticonHtmlExtension extends HtmlExtension {
-  final matrix.Client client;
-  final Room room;
+  final MatrixClient client;
+  final Room? room;
   final bool bigEmoji;
   const MatrixEmoticonHtmlExtension(this.client, this.room, this.bigEmoji);
 
@@ -229,7 +230,7 @@ class MatrixEmoticonHtmlExtension extends HtmlExtension {
       return TextSpan(text: context.attributes["alt"] ?? "");
     }
 
-    if (room.shouldPreviewMedia == false) {
+    if (room?.shouldPreviewMedia == false) {
       return WidgetSpan(
           alignment: PlaceholderAlignment.middle,
           child: Tooltip(
@@ -239,7 +240,7 @@ class MatrixEmoticonHtmlExtension extends HtmlExtension {
               ),
               richMessage: WidgetSpan(
                   child: EmojiWidget(
-                MatrixEmoticon(uri, client,
+                MatrixEmoticon(uri, client.matrixClient,
                     shortcode: context.attributes["alt"] ?? "",
                     packUsage: EmoticonUsage.all,
                     usage: EmoticonUsage.emoji),
@@ -252,7 +253,7 @@ class MatrixEmoticonHtmlExtension extends HtmlExtension {
         child: Tooltip(
       message: context.attributes["alt"] ?? "",
       child: EmojiWidget(
-        MatrixEmoticon(uri, client,
+        MatrixEmoticon(uri, client.matrixClient,
             shortcode: context.attributes["alt"] ?? "",
             packUsage: EmoticonUsage.all,
             usage: EmoticonUsage.emoji),
@@ -354,8 +355,9 @@ class CodeHtmlExtension extends HtmlExtension {
 }
 
 class LinkifyHtmlExtension extends HtmlExtension {
-  final Room room;
-  const LinkifyHtmlExtension(this.room);
+  final Room? room;
+  final MatrixClient client;
+  const LinkifyHtmlExtension(this.client, this.room);
 
   @override
   InlineSpan build(ExtensionContext context) {
@@ -369,22 +371,24 @@ class LinkifyHtmlExtension extends HtmlExtension {
           var mxid = result.$2;
 
           Widget? overrideWidget;
-          if (result.$1 == MatrixLinkType.user) {
-            var user = room.getMemberOrFallback(mxid);
-            overrideWidget = MentionWidget(
-              displayName: user.displayName,
-              placeholderColor: user.defaultColor,
-              avatar: user.avatar,
-              onTap: () => LinkUtils.open(href,
-                  clientId: room.client.identifier,
-                  contextRoomId: room.identifier),
-            );
+          if (room != null) {
+            if (result.$1 == MatrixLinkType.user) {
+              var user = room!.getMemberOrFallback(mxid);
+              overrideWidget = MentionWidget(
+                displayName: user.displayName,
+                placeholderColor: user.defaultColor,
+                avatar: user.avatar,
+                onTap: () => LinkUtils.open(href,
+                    clientId: client.identifier,
+                    contextRoomId: room?.identifier),
+              );
+            }
           }
 
           if (result.$1 == MatrixLinkType.room ||
               result.$1 == MatrixLinkType.roomAlias) {
-            var mentionedRoom = room.client.getRoom(mxid);
-            mentionedRoom ??= room.client.getRoomByAlias(mxid);
+            var mentionedRoom = client.getRoom(mxid);
+            mentionedRoom ??= client.getRoomByAlias(mxid);
             overrideWidget = MentionWidget(
               displayName: mentionedRoom?.displayName ?? mxid.substring(1),
               fallbackIcon: preferences.usePlaceholderRoomAvatars
@@ -394,8 +398,7 @@ class LinkifyHtmlExtension extends HtmlExtension {
                   mentionedRoom?.defaultColor ?? MatrixPeer.hashColor(mxid),
               avatar: mentionedRoom?.avatar,
               onTap: () => LinkUtils.open(href,
-                  clientId: room.client.identifier,
-                  contextRoomId: room.identifier),
+                  clientId: client.identifier, contextRoomId: room?.identifier),
             );
           }
 
@@ -412,14 +415,14 @@ class LinkifyHtmlExtension extends HtmlExtension {
       }
 
       return LinkSpan.create(context.node.text!,
-          clientId: room.client.identifier,
+          clientId: client.identifier,
           context: context.buildContext!,
           destination: Uri.parse(context.node.attributes["href"]!));
     }
 
     return TextSpan(
         children: TextUtils.linkifyString(context.node.text!,
-            clientId: room.client.identifier, context: context.buildContext!));
+            clientId: client.identifier, context: context.buildContext!));
   }
 
   @override
@@ -445,7 +448,7 @@ class SpoilerHtmlExtension extends HtmlExtension {
   @override
   InlineSpan build(ExtensionContext context) {
     var theme = Theme.of(context.buildContext!);
-    var color = theme.textTheme.bodyMedium!.color;
+    var color = theme.colorScheme.onSurface;
 
     var recogniser = TapGestureRecognizer();
     recogniser.onTap = onTap;
@@ -454,7 +457,7 @@ class SpoilerHtmlExtension extends HtmlExtension {
         recognizer: recogniser,
         style: TextStyle(
             color: color,
-            backgroundColor: hide == true ? color : color!.withAlpha(20)));
+            backgroundColor: hide == true ? color : color.withAlpha(20)));
   }
 
   @override
@@ -469,8 +472,8 @@ class SpoilerHtmlExtension extends HtmlExtension {
 class MatrixImageExtension extends HtmlExtension {
   final double defaultDimension;
 
-  final matrix.Client client;
-  final Room room;
+  final MatrixClient client;
+  final Room? room;
   const MatrixImageExtension(this.client, this.room,
       {this.defaultDimension = 64});
 
@@ -485,9 +488,9 @@ class MatrixImageExtension extends HtmlExtension {
       return TextSpan(text: context.attributes['alt']);
     }
 
-    if (mxcUrl.scheme != 'mxc' || !room.shouldPreviewMedia) {
+    if (mxcUrl.scheme != 'mxc' || room?.shouldPreviewMedia == false) {
       return LinkSpan.create(mxcUrl.toString(),
-          clientId: room.client.identifier,
+          clientId: client.identifier,
           destination: mxcUrl,
           context: context.buildContext!);
     }
@@ -502,7 +505,7 @@ class MatrixImageExtension extends HtmlExtension {
           child: Image(
             image: MatrixMxcImage(
               mxcUrl,
-              client,
+              client.matrixClient,
             ),
           )),
     );
