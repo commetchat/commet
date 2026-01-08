@@ -320,7 +320,8 @@ class MatrixEmoticonComponent extends EmoticonComponent<MatrixClient> {
   }
 
   @override
-  List<EmoticonPack> get availablePacks => globalPacks() + UnicodeEmojis.packs!;
+  List<EmoticonPack> get availablePacks =>
+      globalPacks() + ownedPacks + UnicodeEmojis.packs!;
 
   Map<String, Map<String, String>> getEmotePacksFlat(
       matrix.ImagePackUsage emoticon) {
