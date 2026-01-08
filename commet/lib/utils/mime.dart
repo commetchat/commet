@@ -22,6 +22,13 @@ class Mime {
     "image/bmp",
   };
 
+  static const playableAudioTypes = {
+    "audio/x-wav",
+    "audio/ogg",
+    "audio/wav",
+    "audio/mp3",
+  };
+
   static bool isText(String mime) => mime.startsWith("text/");
 
   static const videoTypes = {
@@ -64,8 +71,8 @@ class Mime {
   static IconData toIcon(String? mimeType) {
     if (imageTypes.contains(mimeType)) return Icons.image;
     if (videoTypes.contains(mimeType)) return Icons.video_file_rounded;
-    if (archiveTypes.contains(mimeType)) return Icons.folder_zip_outlined;
-
+    if (archiveTypes.contains(mimeType)) return Icons.folder_zip;
+    if (playableAudioTypes.contains(mimeType)) return Icons.audio_file;
     return Icons.file_present;
   }
 

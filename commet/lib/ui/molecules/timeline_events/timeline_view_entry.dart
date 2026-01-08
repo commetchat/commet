@@ -254,7 +254,7 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
 
     if (selected) {
       result = Container(
-        color: Theme.of(context).hoverColor,
+        color: Theme.of(context).hoverColor.withAlpha(5),
         child: result,
       );
     }
