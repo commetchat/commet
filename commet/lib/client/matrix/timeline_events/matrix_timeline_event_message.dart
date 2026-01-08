@@ -52,7 +52,7 @@ class MatrixTimelineEventMessage extends MatrixTimelineEvent
   String _getPlaintextBody({Timeline? timeline}) {
     var e = getDisplayEvent(timeline);
 
-    if (["m.file", "m.image", "m.video"].contains(e.messageType)) {
+    if (["m.file", "m.image", "m.video", "m.audio"].contains(e.messageType)) {
       var file = e.content["file"] is Map<String, dynamic>
           ? e.content['file'] as Map<String, dynamic>
           : null;
@@ -78,7 +78,7 @@ class MatrixTimelineEventMessage extends MatrixTimelineEvent
   String _getFormattedBody({Timeline? timeline}) {
     var e = getDisplayEvent(timeline);
 
-    if (["m.file", "m.image", "m.video"].contains(e.messageType)) {
+    if (["m.file", "m.image", "m.video", "m.audio"].contains(e.messageType)) {
       return e.formattedText;
     }
 
