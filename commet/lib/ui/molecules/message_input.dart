@@ -76,7 +76,9 @@ class MessageInput extends StatefulWidget {
       this.typingIndicatorWidget,
       this.availibleEmoticons,
       this.availibleStickers,
+      this.compact = false,
       this.gifComponent,
+      this.enableKeyboardAdapter = true,
       this.onReadReceiptsClicked,
       this.findOverrideClient,
       this.onTapOverrideClient,
@@ -102,6 +104,8 @@ class MessageInput extends StatefulWidget {
   final String? hintText;
   final String? initialText;
   final bool showAttachmentButton;
+  final bool compact;
+  final bool enableKeyboardAdapter;
   final Color? relatedEventSenderColor;
   final List<PendingFileAttachment>? attachments;
   final EventInteractionType? interactionType;
@@ -650,6 +654,7 @@ class MessageInputState extends State<MessageInput> {
           child: Opacity(
             opacity: widget.isProcessing ? 0.5 : 1,
             child: KeyboardAdaptor(
+              enabled: widget.enableKeyboardAdapter,
               paddingContent: (Layout.mobile && showEmotePicker)
                   ? buildEmojiPicker()
                   : Container(),
@@ -714,24 +719,26 @@ class MessageInputState extends State<MessageInput> {
                           ]),
                     ),
                   ),
-                  SizedBox(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 2, 0, 0),
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            const SizedBox(height: 30),
-                            if (senderOverride != null) senderOverrideView(),
-                            if (autoFillResults != null) autofillResultsList(),
-                            if (autoFillResults == null)
-                              const Expanded(child: SizedBox()),
-                            if (widget.readIndicator != null &&
-                                autoFillResults?.isEmpty != false)
-                              readReceipts()
-                          ]),
+                  if (!widget.compact)
+                    SizedBox(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 2, 0, 0),
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              const SizedBox(height: 30),
+                              if (senderOverride != null) senderOverrideView(),
+                              if (autoFillResults != null)
+                                autofillResultsList(),
+                              if (autoFillResults == null)
+                                const Expanded(child: SizedBox()),
+                              if (widget.readIndicator != null &&
+                                  autoFillResults?.isEmpty != false)
+                                readReceipts()
+                            ]),
+                      ),
                     ),
-                  ),
                 ],
               ),
             ),

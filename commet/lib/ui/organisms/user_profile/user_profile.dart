@@ -420,6 +420,8 @@ class _UserProfileState extends State<UserProfile> {
           client: widget.client,
           showGifSearch: false,
           disableEnterToSend: true,
+          compact: true,
+          enableKeyboardAdapter: false,
           availibleEmoticons:
               widget.client.getComponent<EmoticonComponent>()?.availablePacks,
           onSendMessage: (message, {overrideClient}) {
