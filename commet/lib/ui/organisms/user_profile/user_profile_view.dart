@@ -44,6 +44,7 @@ class UserProfileView extends StatefulWidget {
       this.showMessageButton = true,
       this.doSafeArea = true,
       this.onChangeName,
+      this.maxBioHeight = 200,
       this.showSource,
       this.pronouns = const [],
       this.clearStatus,
@@ -60,6 +61,7 @@ class UserProfileView extends StatefulWidget {
   final bool isSelf;
   final bool showMessageButton;
   final double bannerHeight;
+  final double maxBioHeight;
   final bool hasColorOverride;
   final String? timezone;
   final double width;
@@ -261,10 +263,12 @@ class _UserProfileViewState extends State<UserProfileView> {
                                                         CrossAxisAlignment
                                                             .stretch,
                                                     children: [
-                                                      Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
+                                                      Wrap(
+                                                        alignment: WrapAlignment
+                                                            .spaceBetween,
+                                                        runAlignment:
+                                                            WrapAlignment
+                                                                .center,
                                                         children: [
                                                           MouseRegion(
                                                             cursor: widget
@@ -300,7 +304,17 @@ class _UserProfileViewState extends State<UserProfileView> {
                                                           if (widget.timezone !=
                                                                   null &&
                                                               localTime != null)
-                                                            userLocalTime()
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .fromLTRB(
+                                                                      0,
+                                                                      8,
+                                                                      0,
+                                                                      8),
+                                                              child:
+                                                                  userLocalTime(),
+                                                            )
                                                         ],
                                                       ),
                                                       Padding(
@@ -421,7 +435,7 @@ class _UserProfileViewState extends State<UserProfileView> {
         child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: 200),
+              constraints: BoxConstraints(maxHeight: widget.maxBioHeight),
               child: Scrollbar(
                 thumbVisibility: true,
                 controller: bioScrollController,

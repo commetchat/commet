@@ -164,6 +164,7 @@ class _RoomMemberListState extends State<RoomMemberList> {
             result = Padding(
               padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
               child: UserProfile(
+                maxBioHeight: double.infinity,
                 doSafeArea: false,
                 key: ValueKey("room-user-list-user-${member.identifier}"),
                 userId: member.identifier,

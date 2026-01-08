@@ -23,6 +23,7 @@ class UserProfile extends StatefulWidget {
       this.width = 700,
       this.bannerHeight = 230.0,
       required this.client,
+      this.maxBioHeight = 200,
       this.doSafeArea = true,
       this.showMessageButton = true,
       this.dismiss});
@@ -30,6 +31,7 @@ class UserProfile extends StatefulWidget {
   final String userId;
   final double bannerHeight;
   final double width;
+  final double maxBioHeight;
   final Function? dismiss;
   final bool doSafeArea;
   final bool showMessageButton;
@@ -203,6 +205,7 @@ class _UserProfileState extends State<UserProfile> {
         bannerHeight: widget.bannerHeight,
         width: widget.width,
         doSafeArea: widget.doSafeArea,
+        maxBioHeight: widget.maxBioHeight,
         showMessageButton: widget.showMessageButton,
         isSelf: widget.client.self!.identifier == profile!.identifier,
         onMessageButtonClicked: openDirectMessage,

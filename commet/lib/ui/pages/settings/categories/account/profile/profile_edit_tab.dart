@@ -28,6 +28,7 @@ class _ProfileEditTabState extends State<ProfileEditTab> {
   Widget build(BuildContext context) {
     return ListView.builder(
       shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) {
         var client = widget.clientManager.clients[index];
         return Column(
@@ -35,6 +36,7 @@ class _ProfileEditTabState extends State<ProfileEditTab> {
             UserProfile(
               userId: client.self!.identifier,
               client: client,
+              maxBioHeight: double.infinity,
             ),
             const Seperator()
           ],
