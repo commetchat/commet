@@ -35,6 +35,8 @@ class _AudioPlayerState extends State<AudioPlayer> {
     subs = [
       player.stream.playing.listen(onPlayingChanged),
       player.stream.position.listen(onPositionChanged),
+      if (widget.file.onProgressChanged != null)
+        widget.file.onProgressChanged!.listen(onDownloadProgressChanged),
     ];
   }
 
@@ -54,6 +56,7 @@ class _AudioPlayerState extends State<AudioPlayer> {
   bool dragging = false;
 
   double displayPosition = 0;
+  double? downloadProgress;
 
   @override
   Widget build(BuildContext context) {
@@ -112,7 +115,9 @@ class _AudioPlayerState extends State<AudioPlayer> {
                             child: SizedBox(
                                 width: 20,
                                 height: 20,
-                                child: CircularProgressIndicator()),
+                                child: CircularProgressIndicator(
+                                  value: downloadProgress,
+                                )),
                           )
                         : tiamat.IconButton(
                             icon: state == AudioPlayerState.paused
@@ -201,5 +206,12 @@ class _AudioPlayerState extends State<AudioPlayer> {
         }
       });
     }
+  }
+
+  void onDownloadProgressChanged(DownloadProgress event) {
+    print(event);
+    setState(() {
+      downloadProgress = event.downloaded.toDouble() / event.total.toDouble();
+    });
   }
 }
