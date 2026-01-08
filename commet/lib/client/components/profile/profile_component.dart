@@ -50,4 +50,6 @@ abstract class UserProfileComponent<T extends Client> implements Component<T> {
   Future<void> setStatus(String status);
 
   Future<void> setTimezone(String timezone);
+
+  Future<void> removeTimezone();
 }

@@ -194,6 +194,7 @@ class _UserProfileState extends State<UserProfile> {
         onSetBanner: setBanner,
         setPreviewColor: setPreviewColor,
         setPreviewBrightness: setPreviewBrightness,
+        removeTimezone: removeTimezone,
         onChangeName: changeName,
         savePreviewTheme: savePreviewTheme,
         onSetAvatar: setAvatar,
@@ -359,5 +360,13 @@ class _UserProfileState extends State<UserProfile> {
           .getComponent<UserProfileComponent>()
           ?.setTimezone(currentTimeZone.identifier);
     }
+  }
+
+  Future<void> removeTimezone() async {
+    setState(() {
+      timezone = null;
+    });
+
+    return widget.client.getComponent<UserProfileComponent>()?.removeTimezone();
   }
 }

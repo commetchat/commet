@@ -158,6 +158,15 @@ class MatrixProfileComponent implements UserProfileComponent<MatrixClient> {
     print(response);
   }
 
+  Future<void> removeField(String field) async {
+    var response = await client.matrixClient.request(
+      RequestType.DELETE,
+      "/client/v3/profile/${client.self!.identifier}/$field",
+    );
+
+    print(response);
+  }
+
   @override
   Future<void> setProfileColorScheme(Color color, Brightness brightness) async {
     await setField(colorSchemeKey, {
@@ -177,5 +186,10 @@ class MatrixProfileComponent implements UserProfileComponent<MatrixClient> {
   @override
   Future<void> setTimezone(String timezone) {
     return setField("m.tz", timezone);
+  }
+
+  @override
+  Future<void> removeTimezone() {
+    return removeField("m.tz");
   }
 }

@@ -35,6 +35,7 @@ class UserProfileView extends StatefulWidget {
       this.setPreviewBrightness,
       this.setColorOverride,
       this.shareCurrentTimezone,
+      this.removeTimezone,
       this.onSetAvatar,
       this.onSetStatus,
       this.showMessageButton = true,
@@ -63,6 +64,7 @@ class UserProfileView extends StatefulWidget {
   final Future<void> Function()? onSetStatus;
   final Future<void> Function()? onChangeName;
   final Future<void> Function()? shareCurrentTimezone;
+  final Future<void> Function()? removeTimezone;
   final void Function()? showSource;
   final void Function(Color)? setPreviewColor;
   final Future<void> Function(Brightness)? setPreviewBrightness;
@@ -96,6 +98,19 @@ class _UserProfileViewState extends State<UserProfileView> {
     }
 
     super.initState();
+  }
+
+  @override
+  void didUpdateWidget(oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    timezoneTimer?.cancel();
+
+    if (widget.timezone != null) {
+      timezoneTimer =
+          Timer.periodic(Duration(seconds: 1), (_) => updateLocalTime());
+      updateLocalTime();
+    }
   }
 
   @override
@@ -438,6 +453,11 @@ class _UserProfileViewState extends State<UserProfileView> {
             text: "Share Current Timezone",
             onPressed: () => widget.shareCurrentTimezone?.call(),
             icon: Icons.share_arrival_time),
+      if (widget.isSelf && widget.timezone != null)
+        tiamat.ContextMenuItem(
+            text: "Remove Timezone",
+            onPressed: () => widget.removeTimezone?.call(),
+            icon: Icons.timer_off),
       if (widget.isSelf)
         tiamat.ContextMenuItem(
             text: "Edit Color Scheme",
