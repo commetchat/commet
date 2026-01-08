@@ -29,31 +29,38 @@ class AdaptiveContextMenu extends StatelessWidget {
       var callback = () => showModalBottomSheet(
           isDismissible: true,
           showDragHandle: true,
+          isScrollControlled: true,
           context: context,
-          builder: (modalContext) => ScaledSafeArea(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    spacing: 4,
-                    mainAxisSize: MainAxisSize.min,
-                    children: items
-                        .map((item) => SizedBox(
-                              height: 50,
-                              child: tiamat.TextButton(
-                                item.text,
-                                textColor:
-                                    Theme.of(context).colorScheme.onSurface,
-                                icon: item.icon,
-                                onTap: () {
-                                  Navigator.of(modalContext).pop();
-                                  item.onPressed?.call();
-                                },
-                              ),
-                            ))
-                        .toList(),
+          builder: (modalContext) => DraggableScrollableSheet(
+              maxChildSize: 0.8,
+              expand: false,
+              builder: (context, scrollController) {
+                return SingleChildScrollView(
+                  controller: scrollController,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      spacing: 4,
+                      mainAxisSize: MainAxisSize.min,
+                      children: items
+                          .map((item) => SizedBox(
+                                height: 50,
+                                child: tiamat.TextButton(
+                                  item.text,
+                                  textColor:
+                                      Theme.of(context).colorScheme.onSurface,
+                                  icon: item.icon,
+                                  onTap: () {
+                                    Navigator.of(modalContext).pop();
+                                    item.onPressed?.call();
+                                  },
+                                ),
+                              ))
+                          .toList(),
+                    ),
                   ),
-                ),
-              ));
+                );
+              }));
 
       return InkWell(
         child: child,
