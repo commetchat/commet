@@ -1,5 +1,6 @@
 import 'package:commet/ui/pages/settings/settings_button.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
+import 'package:commet/utils/color_utils.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart' as m;
 
@@ -7,9 +8,14 @@ import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class DesktopSettingsPage extends StatefulWidget {
-  const DesktopSettingsPage({required this.settings, this.buttons, super.key});
+  const DesktopSettingsPage(
+      {required this.settings,
+      this.buttons,
+      this.onDonateButtonTapped,
+      super.key});
   final List<SettingsCategory> settings;
   final List<SettingsButton>? buttons;
+  final Function(BuildContext context)? onDonateButtonTapped;
   @override
   State<DesktopSettingsPage> createState() => DesktopSettingsPageState();
 }
@@ -75,64 +81,102 @@ class DesktopSettingsPageState extends State<DesktopSettingsPage> {
       caulkClipTopRight: true,
       caulkClipBottomRight: true,
       caulkBorderRight: true,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: SizedBox(
-          width: 240,
-          child: Column(
-            children: [
-              Padding(
+      child: SizedBox(
+        width: 240,
+        child: Column(
+          children: [
+            Flexible(
+              child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: CircleButton(
-                      key: backButtonKey,
-                      radius: 25,
-                      icon: m.Icons.arrow_back,
-                      onPressed: () => Navigator.of(context).pop(),
-                    )),
-              ),
-              Flexible(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ListView(children: [
-                    ListView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: categories.length,
-                      itemBuilder: (context, categoryIndex) {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            if (categoryIndex != 0) const tiamat.Seperator(),
-                            if (categories[categoryIndex].title != null)
-                              tiamat.Text.labelLow(
-                                  categories[categoryIndex].title!),
-                            tabListBuilder(categoryIndex)
-                          ],
-                        );
-                      },
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: CircleButton(
+                            key: backButtonKey,
+                            radius: 25,
+                            icon: m.Icons.arrow_back,
+                            onPressed: () => Navigator.of(context).pop(),
+                          )),
                     ),
-                    if (widget.buttons != null) const Seperator(),
-                    if (widget.buttons != null)
-                      ListView.builder(
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: widget.buttons!.length,
-                        itemBuilder: (context, index) {
-                          return button(
-                              label: widget.buttons![index].label,
-                              icon: widget.buttons![index].icon,
-                              onTap: widget.buttons![index].onPress,
-                              color: widget.buttons![index].color);
-                        },
+                    Flexible(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ListView(children: [
+                          ListView.builder(
+                            physics: const NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: categories.length,
+                            itemBuilder: (context, categoryIndex) {
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  if (categoryIndex != 0)
+                                    const tiamat.Seperator(),
+                                  if (categories[categoryIndex].title != null)
+                                    tiamat.Text.labelLow(
+                                        categories[categoryIndex].title!),
+                                  tabListBuilder(categoryIndex)
+                                ],
+                              );
+                            },
+                          ),
+                          if (widget.buttons != null) const Seperator(),
+                          if (widget.buttons != null)
+                            ListView.builder(
+                              physics: const NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              itemCount: widget.buttons!.length,
+                              itemBuilder: (context, index) {
+                                return button(
+                                    label: widget.buttons![index].label,
+                                    icon: widget.buttons![index].icon,
+                                    onTap: widget.buttons![index].onPress,
+                                    color: widget.buttons![index].color);
+                              },
+                            ),
+                        ]),
                       ),
-                  ]),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(2.0),
+              child: m.Material(
+                clipBehavior: Clip.antiAlias,
+                color: ColorUtils.fromHexCode("#CE7A6D"),
+                borderRadius: BorderRadius.circular(8),
+                child: m.InkWell(
+                  onTap: () => widget.onDonateButtonTapped?.call(context),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+                        child: Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: m.Icon(
+                                m.Icons.favorite,
+                                color: ColorUtils.fromHexCode("#73342a"),
+                              ),
+                            ),
+                            tiamat.Text(
+                              "Donate",
+                              color: ColorUtils.fromHexCode("#73342a"),
+                            ),
+                          ],
+                        )),
+                  ),
+                ),
+              ),
+            )
+          ],
         ),
       ),
     );
