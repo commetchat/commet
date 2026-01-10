@@ -62,7 +62,7 @@ float Layer(vec2 uv){
     p[8] = GetPos(id, vec2(1., 1.));
 
 
-    float t=iTime* 5.;
+    float t= 5.;
     
 
     for(int i = 0; i < 9;i++)
@@ -101,13 +101,9 @@ void main( void )
 
     uv *= rot;
     
-    for(float i=0.;i<1.;i+= 1./4.){
-        float z = fract(i+t);
-        float size = mix(10., .5, z);
-        float fade = S(0., .9, z) * S(1., .8, z);
-        
-        m += Layer(uv * 1.2 * size + i*24.) * fade;
-    }
+
+    m += Layer(uv * 3) * 0.5;
+    m += Layer(uv * 1) * 0.5;
 
     vec3 col = vec3(.04, .04, .1) + ((vec3(0.2*m, 0.2*m, 0.1*m)));
 
