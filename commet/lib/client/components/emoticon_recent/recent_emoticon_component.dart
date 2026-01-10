@@ -4,7 +4,7 @@ import 'package:commet/client/components/emoticon/emoticon.dart';
 
 abstract class RecentEmoticonComponent<T extends Client>
     implements Component<T> {
-  List<Emoticon> getRecentTypedEmoticon(Room room);
+  List<Emoticon> getRecentTypedEmoticon(Room? room);
 
   List<Emoticon> getRecentReactionEmoticon(Room room);
 

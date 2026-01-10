@@ -117,6 +117,7 @@ dependencies:
   icalendar_parser: ^2.1.0
   image_picker: ^1.2.1
   timezone: ^0.10.1
+  flutter_timezone: ^5.0.1
 dependency_overrides:
   analyzer: ^7.3.0
 

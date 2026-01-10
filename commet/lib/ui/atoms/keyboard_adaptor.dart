@@ -15,11 +15,13 @@ class KeyboardAdaptor extends StatefulWidget {
     super.key,
     required this.child,
     this.paddingContent,
+    this.enabled = true,
     this.shouldPushContent,
     this.controller,
   });
 
   final Widget child;
+  final bool enabled;
   final Widget? paddingContent;
   final bool Function()? shouldPushContent;
   final KeyboardAdaptorController? controller;
@@ -67,18 +69,19 @@ class _KeyboardAdaptorState extends State<KeyboardAdaptor> {
           child: AnimatedContainer(
             duration: Durations.short1,
             child: widget.paddingContent,
-            height: contentHeight,
+            height:
+                (!widget.enabled && sizeOverride == null) ? 0 : contentHeight,
           ),
         ),
         Container(
           // color: Colors.blue.withAlpha(40),
           child: AnimatedContainer(
             duration: Durations.short1,
-            height: pushHeight,
+            height: widget.enabled ? pushHeight : 0,
           ),
         ),
         SizedBox(
-          height: padding.bottom,
+          height: widget.enabled ? padding.bottom : 0,
         )
       ],
     );

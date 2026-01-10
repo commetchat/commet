@@ -1,7 +1,7 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/components/invitation/invitation_component.dart';
-import 'package:commet/client/profile.dart';
+import 'package:commet/client/components/profile/profile_component.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/molecules/profile/mini_profile_view.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';

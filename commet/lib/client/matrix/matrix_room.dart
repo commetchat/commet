@@ -5,9 +5,11 @@ import 'package:commet/client/components/component_registry.dart';
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/components/emoticon_recent/recent_emoticon_component.dart';
+import 'package:commet/client/components/profile/profile_component.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/components/room_component.dart';
+import 'package:commet/client/components/user_color/user_color_component.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_room_emoticon_component.dart';
 import 'package:commet/client/matrix/matrix_attachment.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
@@ -525,7 +527,8 @@ class MatrixRoom extends Room {
 
   @override
   Color getColorOfUser(String userId) {
-    return MatrixPeer.hashColor(userId);
+    return client.getComponent<UserColorComponent>()?.getColor(userId) ??
+        MatrixPeer.hashColor(userId);
   }
 
   @override
@@ -585,8 +588,9 @@ class MatrixRoom extends Room {
     final comp = client.getComponent<DirectMessagesComponent>();
 
     if (comp?.isRoomDirectMessage(this) == true) {
-      var user =
-          await client.getProfile(comp!.getDirectMessagePartnerId(this)!);
+      var user = await client
+          .getComponent<UserProfileComponent>()!
+          .getProfile(comp!.getDirectMessagePartnerId(this)!);
 
       if (user?.avatar != null) {
         return user!.avatar;
@@ -620,7 +624,7 @@ class MatrixRoom extends Room {
   @override
   List<Member> membersList() {
     var users = _matrixRoom.getParticipants();
-    return users.map((e) => MatrixMember(_matrixRoom.client, e)).toList();
+    return users.map((e) => MatrixMember(_client, e)).toList();
   }
 
   @override
@@ -628,7 +632,7 @@ class MatrixRoom extends Room {
     var results = await _matrixRoom
         .requestParticipants([matrix.Membership.join], true, cache);
 
-    return results.map((e) => MatrixMember(_matrixRoom.client, e)).toList();
+    return results.map((e) => MatrixMember(_client, e)).toList();
   }
 
   @override
@@ -637,14 +641,14 @@ class MatrixRoom extends Room {
   @override
   Member getMemberOrFallback(String id) {
     return MatrixMember(
-        _matrixRoom.client, _matrixRoom.unsafeGetUserFromMemoryOrFallback(id));
+        _client, _matrixRoom.unsafeGetUserFromMemoryOrFallback(id));
   }
 
   @override
   Future<Member> fetchMember(String id) async {
     var member = await _matrixRoom.requestUser(id);
     if (member != null) {
-      return MatrixMember(_matrixRoom.client, member);
+      return MatrixMember(_client, member);
     } else {
       return getMemberOrFallback(id);
     }
@@ -725,7 +729,7 @@ class MatrixRoom extends Room {
   Member? getMember(String id) {
     final user = matrixRoom.getState(matrix.EventTypes.RoomMember, id);
     if (user != null) {
-      return MatrixMember(matrixRoom.client, user.asUser(matrixRoom));
+      return MatrixMember(_client, user.asUser(matrixRoom));
     }
 
     return null;

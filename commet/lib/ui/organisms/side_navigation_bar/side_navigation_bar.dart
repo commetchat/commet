@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
-import 'package:commet/client/profile.dart';
+import 'package:commet/client/components/profile/profile_component.dart';
 import 'package:commet/ui/molecules/space_selector.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/navigation/navigation_utils.dart';

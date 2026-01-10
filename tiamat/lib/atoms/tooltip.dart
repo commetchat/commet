@@ -37,7 +37,11 @@ class Tooltip extends StatelessWidget {
           data: Theme.of(context),
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: tiamat.Text.body(text),
+            child: tiamat.Text(
+              text,
+              type: tiamat.TextType.body,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
           ),
         ),
         preferredDirection: preferredDirection,

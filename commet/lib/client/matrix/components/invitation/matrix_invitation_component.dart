@@ -1,11 +1,11 @@
 import 'package:commet/client/components/component.dart';
 import 'package:commet/client/components/invitation/invitation.dart';
 import 'package:commet/client/components/invitation/invitation_component.dart';
+import 'package:commet/client/components/profile/profile_component.dart';
+import 'package:commet/client/matrix/components/profile/matrix_profile_component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/matrix/matrix_peer.dart';
-import 'package:commet/client/matrix/matrix_profile.dart';
-import 'package:commet/client/profile.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:matrix/matrix.dart' as matrix;
@@ -82,6 +82,6 @@ class MatrixInvitationComponent
     var mx = client.getMatrixClient();
     var result = await mx.searchUserDirectory(term);
 
-    return result.results.map((e) => MatrixProfile(mx, e)).toList();
+    return result.results.map((e) => MatrixProfile(client, e)).toList();
   }
 }

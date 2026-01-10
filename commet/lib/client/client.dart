@@ -3,7 +3,7 @@ import 'dart:typed_data';
 
 import 'package:commet/client/auth.dart';
 import 'package:commet/client/components/component.dart';
-import 'package:commet/client/profile.dart';
+import 'package:commet/client/components/profile/profile_component.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/client/space.dart';
@@ -122,10 +122,6 @@ abstract class Client {
 
   /// Gets a space by ID. only returns spaces which the client is a member of, otherwise null
   Space? getSpace(String identifier);
-
-  /// Gets a peer by ID. will return a peer object for any given ID and then load the data from the server.
-  /// This is so that you can display any given peer without having to load the data for it
-  Future<Profile?> getProfile(String identifier);
 
   /// Create a new room
   Future<Room> createRoom(CreateRoomArgs args);

@@ -19,6 +19,7 @@ import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_t
 import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_url_previews.dart';
 import 'package:commet/ui/molecules/timeline_events/layouts/timeline_event_layout_message.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_layout.dart';
+import 'package:commet/ui/organisms/user_profile/user_profile.dart';
 import 'package:commet/utils/text_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' as intl;
@@ -58,6 +59,7 @@ class TimelineEventViewMessage extends StatefulWidget {
 class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
     implements TimelineEventViewWidget {
   late String senderName;
+  late String senderId;
   late Color senderColor;
 
   String get messageFailedToDecrypt => Intl.message("Failed to decrypt event",
@@ -163,6 +165,8 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
               timeline: widget.timeline!,
               component: threadComponent!)
           : null,
+      onAvatarTapped: () => UserProfile.show(context,
+          client: widget.timeline!.client, userId: senderId),
     );
   }
 
@@ -194,6 +198,7 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
     var sender = room!.getMemberOrFallback(event.senderId);
     eventId = event.eventId;
 
+    senderId = sender.identifier;
     senderName = sender.displayName;
     senderAvatar = sender.avatar;
     senderColor = sender.defaultColor;

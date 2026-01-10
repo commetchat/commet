@@ -40,7 +40,7 @@ class MatrixTypingIndicatorsComponent
   @override
   List<Member> get typingUsers => room.matrixRoom.typingUsers
       .where((element) => client.self?.identifier != element.id)
-      .map((e) => MatrixMember(room.matrixRoom.client, e))
+      .map((e) => MatrixMember(client, e))
       .toList();
 
   @override

@@ -3,10 +3,10 @@ import 'dart:typed_data';
 import 'package:commet/client/auth.dart';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/component.dart';
+import 'package:commet/client/components/profile/profile_component.dart';
 import 'package:commet/client/matrix/database/matrix_database.dart';
 import 'package:commet/client/matrix_background/matrix_background_direct_messages_component.dart';
 import 'package:commet/client/matrix_background/matrix_background_room.dart';
-import 'package:commet/client/profile.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/utils/stored_stream_controller.dart';
@@ -19,6 +19,7 @@ import 'package:matrix_dart_sdk_drift_db/matrix_dart_sdk_drift_db.dart';
 class MatrixBackgroundClient implements Client {
   @override
   Profile? self;
+
   String databaseId;
 
   @override
@@ -153,11 +154,6 @@ class MatrixBackgroundClient implements Client {
 
   @override
   Iterable<Room> getEligibleRoomsForSpace(Space space) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<Profile?> getProfile(String identifier) {
     throw UnimplementedError();
   }
 

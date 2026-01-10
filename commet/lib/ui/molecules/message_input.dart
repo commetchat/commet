@@ -49,8 +49,10 @@ class AttachmentPicker {
 }
 
 class MessageInput extends StatefulWidget {
-  const MessageInput(this.room,
+  const MessageInput(
       {super.key,
+      required this.client,
+      this.room,
       this.maxHeight = 200,
       this.onSendMessage,
       this.isRoomE2EE = false,
@@ -63,6 +65,7 @@ class MessageInput extends StatefulWidget {
       this.focusKeyboard,
       this.setInputText,
       this.isProcessing = false,
+      this.initialText,
       this.enabled = true,
       this.editLastMessage,
       this.hintText,
@@ -73,13 +76,18 @@ class MessageInput extends StatefulWidget {
       this.typingIndicatorWidget,
       this.availibleEmoticons,
       this.availibleStickers,
+      this.compact = false,
       this.gifComponent,
+      this.enableKeyboardAdapter = true,
       this.onReadReceiptsClicked,
       this.findOverrideClient,
       this.onTapOverrideClient,
+      this.disableEnterToSend = false,
       this.sendGif,
+      this.showGifSearch = true,
       this.size = 35,
       this.iconScale = 0.5,
+      this.showAttachmentButton = true,
       this.sendSticker,
       this.processAutofill,
       this.cancelReply});
@@ -87,20 +95,27 @@ class MessageInput extends StatefulWidget {
   final double size;
   final double iconScale;
   final bool isRoomE2EE;
+  final bool disableEnterToSend;
   final MessageInputSendResult Function(String message,
       {Client? overrideClient})? onSendMessage;
   final Widget? readIndicator;
   final String? relatedEventBody;
   final String? relatedEventSenderName;
   final String? hintText;
+  final String? initialText;
+  final bool showAttachmentButton;
+  final bool compact;
+  final bool enableKeyboardAdapter;
   final Color? relatedEventSenderColor;
   final List<PendingFileAttachment>? attachments;
   final EventInteractionType? interactionType;
   final Stream<void>? focusKeyboard;
+  final bool showGifSearch;
   final Stream<String>? setInputText;
   final bool isProcessing;
   final bool enabled;
-  final Room room;
+  final Room? room;
+  final Client client;
   final Widget? typingIndicatorWidget;
   final List<EmoticonPack>? availibleEmoticons;
   final List<EmoticonPack>? availibleStickers;
@@ -169,13 +184,17 @@ class MessageInputState extends State<MessageInput> {
   void dispose() {
     keyboardFocusSubscription?.cancel();
     setInputTextSubscription?.cancel();
+    preferencesSubscription?.cancel();
     onScopePopInvoked?.cancel();
     super.dispose();
   }
 
+  StreamSubscription? preferencesSubscription;
+
   @override
   void initState() {
-    controller = RichTextEditingController(room: widget.room);
+    controller = RichTextEditingController(
+        client: widget.client, room: widget.room, text: widget.initialText);
     controller.addListener(controllerListener);
     keyboardFocusSubscription =
         widget.focusKeyboard?.listen((_) => onKeyboardFocusRequested());
@@ -185,6 +204,9 @@ class MessageInputState extends State<MessageInput> {
 
     textFocus = FocusNode(onKeyEvent: onKey);
     textFocus.addListener(onTextFocusChanged);
+
+    preferencesSubscription =
+        preferences.onSettingChanged.listen((_) => setState(() {}));
 
     if (Layout.desktop) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -566,19 +588,21 @@ class MessageInputState extends State<MessageInput> {
       }
     }
 
-    if (HardwareKeyboard.instance
-        .isLogicalKeyPressed(LogicalKeyboardKey.enter)) {
-      if (autoFillSelection != null && autoFillRange != null) {
-        applyAutoFill(autoFillResults![autoFillSelection!]);
+    if (widget.disableEnterToSend != true) {
+      if (HardwareKeyboard.instance
+          .isLogicalKeyPressed(LogicalKeyboardKey.enter)) {
+        if (autoFillSelection != null && autoFillRange != null) {
+          applyAutoFill(autoFillResults![autoFillSelection!]);
+          return KeyEventResult.handled;
+        }
+
+        if (HardwareKeyboard.instance.isShiftPressed) {
+          return KeyEventResult.ignored;
+        }
+
+        sendMessage();
         return KeyEventResult.handled;
       }
-
-      if (HardwareKeyboard.instance.isShiftPressed) {
-        return KeyEventResult.ignored;
-      }
-
-      sendMessage();
-      return KeyEventResult.handled;
     }
 
     if (HardwareKeyboard.instance
@@ -630,6 +654,7 @@ class MessageInputState extends State<MessageInput> {
           child: Opacity(
             opacity: widget.isProcessing ? 0.5 : 1,
             child: KeyboardAdaptor(
+              enabled: widget.enableKeyboardAdapter,
               paddingContent: (Layout.mobile && showEmotePicker)
                   ? buildEmojiPicker()
                   : Container(),
@@ -667,7 +692,8 @@ class MessageInputState extends State<MessageInput> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            if (widget.enabled) addAttachmentButton(),
+                            if (widget.enabled && widget.showAttachmentButton)
+                              addAttachmentButton(),
                             Flexible(
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(5),
@@ -693,24 +719,26 @@ class MessageInputState extends State<MessageInput> {
                           ]),
                     ),
                   ),
-                  SizedBox(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 2, 0, 0),
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            const SizedBox(height: 30),
-                            if (senderOverride != null) senderOverrideView(),
-                            if (autoFillResults != null) autofillResultsList(),
-                            if (autoFillResults == null)
-                              const Expanded(child: SizedBox()),
-                            if (widget.readIndicator != null &&
-                                autoFillResults?.isEmpty != false)
-                              readReceipts()
-                          ]),
+                  if (!widget.compact)
+                    SizedBox(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 2, 0, 0),
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              const SizedBox(height: 30),
+                              if (senderOverride != null) senderOverrideView(),
+                              if (autoFillResults != null)
+                                autofillResultsList(),
+                              if (autoFillResults == null)
+                                const Expanded(child: SizedBox()),
+                              if (widget.readIndicator != null &&
+                                  autoFillResults?.isEmpty != false)
+                                readReceipts()
+                            ]),
+                      ),
                     ),
-                  ),
                 ],
               ),
             ),
@@ -997,9 +1025,10 @@ class MessageInputState extends State<MessageInput> {
       preferences.appScale;
 
   Widget buildEmojiPicker({bool skipIfNeverOpened = true}) {
-    var recent = widget.room.client
+    var recent = widget.client
         .getComponent<RecentEmoticonComponent>()
         ?.getRecentTypedEmoticon(widget.room);
+
     var availableEmoji = widget.availibleEmoticons!.toList();
 
     if (recent != null && recent.isNotEmpty) {
@@ -1020,14 +1049,15 @@ class MessageInputState extends State<MessageInput> {
             emojiSearchFocus: emojiSearchFocus,
             stickerSearchFocus: stickerSearchFocus,
             gifSearchFocus: gifSearchFocus,
-            searchDelegate: (search) =>
-                AutofillUtils.searchEmoticon(search, widget.room, limit: 50)
-                    .whereType<AutofillSearchResultEmoticon>()
-                    .toList(),
+            searchDelegate: (search) => AutofillUtils.searchEmoticon(search,
+                    client: widget.client, room: widget.room, limit: 50)
+                .whereType<AutofillSearchResultEmoticon>()
+                .toList(),
             stickers: widget.availibleStickers ?? [],
             onEmojiPressed: insertEmoticon,
             packListAxis: BuildConfig.DESKTOP ? Axis.vertical : Axis.horizontal,
-            allowGifSearch: preferences.tenorGifSearchEnabled,
+            allowGifSearch:
+                widget.showGifSearch && preferences.tenorGifSearchEnabled,
             gifComponent: widget.gifComponent,
             onStickerPressed: (emoticon) {
               widget.sendSticker?.call(emoticon);
@@ -1158,8 +1188,10 @@ class MessageInputState extends State<MessageInput> {
   }
 
   void insertEmoticon(Emoticon emote) {
-    var recents = widget.room.client.getComponent<RecentEmoticonComponent>();
-    recents?.typedEmoticon(widget.room, emote);
+    if (widget.room != null) {
+      var recents = widget.client.getComponent<RecentEmoticonComponent>();
+      recents?.typedEmoticon(widget.room!, emote);
+    }
 
     var text = controller.text;
     var selection = controller.selection;

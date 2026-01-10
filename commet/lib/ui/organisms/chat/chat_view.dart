@@ -92,7 +92,8 @@ class ChatView extends StatelessWidget {
   Widget input() {
     return ClipRRect(
       child: MessageInput(
-        state.room,
+        client: state.room.client,
+        room: state.room,
         isRoomE2EE: state.room.isE2EE,
         focusKeyboard: state.onFocusMessageInput.stream,
         attachments: state.attachments,
@@ -168,7 +169,8 @@ class ChatView extends StatelessWidget {
                 room: state.room,
               )
             : null,
-        processAutofill: (text) => AutofillUtils.search(text, state.room),
+        processAutofill: (text) =>
+            AutofillUtils.search(text, state.room.client, room: state.room),
       ),
     );
   }

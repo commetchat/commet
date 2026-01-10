@@ -322,18 +322,20 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
   }
 
   Widget buildChildrenList() {
+    bool showHandles = Layout.desktop && canChangeOrder;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         ReorderableListView.builder(
           shrinkWrap: true,
-          buildDefaultDragHandles: canChangeOrder,
+          physics: NeverScrollableScrollPhysics(),
+          buildDefaultDragHandles: showHandles,
           itemBuilder: (context, index) {
             final item = children[index];
             var key = ValueKey(item.id);
 
-            var pad = EdgeInsets.fromLTRB(0, 0, canChangeOrder ? 50 : 0, 0);
-            if (BuildConfig.MOBILE) {
+            var pad = EdgeInsets.fromLTRB(0, 0, showHandles ? 50 : 0, 0);
+            if (Layout.mobile) {
               return ReorderableDelayedDragStartListener(
                   key: key,
                   enabled: canChangeOrder,

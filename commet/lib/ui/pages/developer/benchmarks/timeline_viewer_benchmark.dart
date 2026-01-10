@@ -1,6 +1,6 @@
 import 'package:commet/client/client.dart';
+import 'package:commet/client/matrix/components/profile/matrix_profile_component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
-import 'package:commet/client/matrix/matrix_profile.dart';
 import 'package:commet/diagnostic/mocks/matrix_client_component_mocks.dart';
 import 'package:commet/ui/molecules/room_timeline_widget/room_timeline_widget_view.dart';
 import 'package:commet/ui/pages/developer/benchmarks/benchmark_utils.dart';
@@ -23,7 +23,7 @@ class _BenchmarkTimelineViewerState extends State<BenchmarkTimelineViewer> {
   void initState() {
     MatrixClient.create("benchmark").then((client) {
       client.mockComponents();
-      client.self = MatrixProfile(client.getMatrixClient(),
+      client.self = MatrixProfile(client,
           matrix.Profile(userId: '@benchy:matrix.org', displayName: 'benchy'));
 
       var room = client.createRoomWithData();

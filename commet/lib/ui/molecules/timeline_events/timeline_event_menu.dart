@@ -187,10 +187,10 @@ class TimelineEventMenu {
         icon: Icons.add_reaction,
         secondaryMenuBuilder: (context, dismissSecondaryMenu) {
           return EmojiPicker(availableEmoji,
-              searchDelegate: (search) =>
-                  AutofillUtils.searchEmoticon(search, timeline.room, limit: 50)
-                      .whereType<AutofillSearchResultEmoticon>()
-                      .toList(),
+              searchDelegate: (search) => AutofillUtils.searchEmoticon(search,
+                      client: timeline.client, room: timeline.room, limit: 50)
+                  .whereType<AutofillSearchResultEmoticon>()
+                  .toList(),
               preferredTooltipDirection: AxisDirection.left,
               onEmoticonPressed: (emote) async {
                 timeline.room.addReaction(event, emote);

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:commet/client/components/calendar_room/calendar_room_component.dart';
 import 'package:commet/config/layout_config.dart';
+import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/organisms/chat/chat.dart';
 import 'package:commet/ui/organisms/room_event_search/room_event_search_widget.dart';
 import 'package:commet/ui/organisms/room_members_list/room_members_list.dart';
@@ -123,9 +124,7 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
         Flexible(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
-            child: SizedBox(
-                width: Layout.desktop ? 200 : null,
-                child: RoomMembersListWidget(widget.state.currentRoom!)),
+            child: RoomMembersListWidget(widget.state.currentRoom!),
           ),
         ),
       ],
@@ -263,16 +262,23 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
               size: Size(constraints.maxWidth, constraints.maxHeight),
             );
 
-            return SizedBox(
-                width: constraints.maxWidth,
-                height: constraints.maxHeight,
-                child: MediaQuery(
-                    data: newQuery,
-                    child: CalendarWidgetView(
-                        calendar: calendar!.calendar!,
-                        watermark: false,
-                        useMobileLayout: Layout.mobile,
-                        autoDisposeCalendar: false)));
+            return Container(
+              color: Theme.of(context).colorScheme.surface,
+              child: ScaledSafeArea(
+                top: false,
+                bottom: true,
+                child: SizedBox(
+                    width: constraints.maxWidth,
+                    height: constraints.maxHeight,
+                    child: MediaQuery(
+                        data: newQuery,
+                        child: CalendarWidgetView(
+                            calendar: calendar!.calendar!,
+                            watermark: false,
+                            useMobileLayout: Layout.mobile,
+                            autoDisposeCalendar: false))),
+              ),
+            );
           })),
         ],
       ),

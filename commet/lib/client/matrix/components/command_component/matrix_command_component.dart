@@ -3,6 +3,8 @@ import 'dart:convert';
 
 import 'package:commet/client/components/command/command_component.dart';
 import 'package:commet/client/components/emoticon_recent/recent_emoticon_component.dart';
+import 'package:commet/client/components/profile/profile_component.dart';
+import 'package:commet/client/matrix/components/profile/matrix_profile_component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event.dart';
@@ -20,6 +22,7 @@ class MatrixCommandComponent extends CommandComponent<MatrixClient> {
     client.getMatrixClient().addCommand("sendjson", sendJson);
     client.getMatrixClient().addCommand("status", setStatus);
     client.getMatrixClient().addCommand("clearemojistats", clearEmojiStats);
+    client.getMatrixClient().addCommand("setprofile", setProfile);
   }
 
   @override
@@ -73,6 +76,8 @@ class MatrixCommandComponent extends CommandComponent<MatrixClient> {
 
   FutureOr<String?> setStatus(
       matrix.CommandArgs args, StringBuffer? out) async {
+    client.getComponent<UserProfileComponent>()?.setStatus(args.msg);
+
     await client.getMatrixClient().setPresence(
         client.getMatrixClient().userID!, PresenceType.online,
         statusMsg: args.msg);
@@ -84,6 +89,22 @@ class MatrixCommandComponent extends CommandComponent<MatrixClient> {
       matrix.CommandArgs args, StringBuffer? out) async {
     var c = client.getComponent<RecentEmoticonComponent>();
     c?.clear();
+    return null;
+  }
+
+  FutureOr<String?> setProfile(
+      matrix.CommandArgs args, StringBuffer? stdout) async {
+    final parts = args.msg.split(" ");
+    final field = parts[0];
+    final content = parts.sublist(1).join(" ");
+    dynamic result = content;
+    try {
+      result = jsonDecode(content);
+    } catch (e) {}
+
+    var comp = client.getComponent<MatrixProfileComponent>();
+    comp?.setField(field, result);
+
     return null;
   }
 }
