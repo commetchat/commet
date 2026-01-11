@@ -71,7 +71,7 @@ class SettingsPage extends StatelessWidget {
       },
     );
 
-    String? clientSecret;
+    SecretClientIdentifier? secret;
     String? userId;
 
     if (client == null) return;
@@ -79,25 +79,25 @@ class SettingsPage extends StatelessWidget {
     if (client is Client) {
       userId = client.self!.identifier;
       var comp = client.getComponent<DonationAwardsComponent>();
-      clientSecret = await comp?.getClientSecret();
+      secret = await comp?.getClientSecret();
 
-      if (clientSecret == null) {
+      if (secret == null) {
         AdaptiveDialog.show(context,
             builder: (_) => Text("Error: Unable to get client token"));
       }
     }
 
-    if (clientSecret == null) {
-      clientSecret = "null";
+    if (secret == null) {
+      userId = "null";
     }
 
-    Log.i("Donating with client secret: $clientSecret");
+    Log.i("Donating with encrypted username hash: ${secret?.encryptedHash}");
 
     final String host =
         BuildConfig.DEBUG ? "http://localhost:4321" : "https://commet.chat";
 
     var url = Uri.parse(
-        "$host/donate/#client_reference_id=${clientSecret}&matrix_id=${userId}");
+        "$host/donate/#client_reference_id=${Uri.encodeComponent(secret?.encryptedHash ?? "null")}&matrix_id=${Uri.encodeComponent(userId!)}&secret=${Uri.encodeComponent(secret?.clientSecret ?? "null")}");
 
     LinkUtils.open(url);
   }

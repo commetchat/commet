@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:canonical_json/canonical_json.dart';
 import 'package:commet/client/components/profile/profile_component.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_emoticon_component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
@@ -8,13 +9,16 @@ import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/components/user_presence/user_presence_component.dart';
 import 'package:commet/client/matrix/matrix_member.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/ui/atoms/rich_text/matrix_html_parser.dart';
 import 'package:commet/utils/color_utils.dart';
+import 'package:commet/utils/text_utils.dart';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:html_unescape/html_unescape.dart';
 import 'package:matrix/matrix.dart' as matrix;
 import 'package:matrix/matrix_api_lite/matrix_api.dart';
+import 'package:vodozemac/vodozemac.dart' as vod;
 
 // ignore: implementation_imports
 import 'package:matrix/src/utils/markdown.dart' as mx_markdown;
@@ -27,6 +31,7 @@ class MatrixProfile
         ProfileWithColorScheme,
         ProfileWithPronouns,
         ProfileWithTimezone,
+        ProfileWithBadges,
         ProfileWithBio {
   matrix.Profile profile;
   MatrixClient client;
@@ -148,12 +153,137 @@ class MatrixProfile
 
   @override
   String? get plaintextBio => fields[MatrixProfileComponent.bioKey]?["body"];
+
+  @override
+  Future<List<ProfileBadge>> getBadges() async {
+    List<dynamic>? content = fields[MatrixProfileComponent.badgeKey];
+    if (content == null) return [];
+
+    List<ProfileBadge> badges = List.empty(growable: true);
+
+    for (var entry in content) {
+      if (entry is! Map<String, dynamic>) continue;
+
+      var isValid = await validateBadgeSignature(entry);
+      if (!isValid) continue;
+
+      var signedContent = entry["signed"];
+      if (!validateAwardRecipient(signedContent)) {
+        continue;
+      }
+
+      var awardContent = signedContent["content"] as Map<String, dynamic>?;
+      if (awardContent == null) continue;
+
+      var image = awardContent["image"];
+      var body = awardContent["body"];
+      var brightnessStr = awardContent["chat.commet.image_brightness"];
+
+      Brightness? brightness;
+      if (brightnessStr == "light") {
+        brightness = Brightness.light;
+      }
+
+      if (brightnessStr == "dark") {
+        brightness = Brightness.dark;
+      }
+
+      badges.add(ProfileBadge(
+          MatrixMxcImage(
+            Uri.parse(image),
+            client.matrixClient,
+            doFullres: true,
+            doThumbnail: false,
+            autoLoadFullRes: true,
+          ),
+          body: body,
+          brightness: brightness));
+    }
+
+    return badges;
+  }
+
+  bool validateAwardRecipient(Map<String, dynamic> awardContent) {
+    if (awardContent.containsKey("user_id_hash")) {
+      var hashBytes = Uint8List.fromList(
+          sha256.convert(AsciiEncoder().convert(identifier)).bytes);
+
+      var expectedHash = TextUtils.toHexString(hashBytes);
+
+      if (awardContent["user_id_hash"] != expectedHash) {
+        Log.i(
+            "This award has a has which does not match the current user, Expected: $expectedHash, but got: ${awardContent["user_id_hash"]}");
+
+        return false;
+      } else {
+        Log.i("Award hash valid!");
+        return true;
+      }
+    } else if (awardContent.containsKey("user_id")) {
+      if (awardContent["user_id"] != identifier) {
+        Log.i("Expected user $identifier but got ${awardContent["user_id"]}");
+        return false;
+      }
+
+      return true;
+    } else {
+      Log.i("No way to validate who this badge was intended for, skipping");
+      return false;
+    }
+  }
+
+  Future<bool> validateBadgeSignature(Map<String, dynamic> entry) async {
+    const knownPublicKeys = {
+      "@awards:commet.chat": {
+        "8d4f773c": "a3KSUrUaC0nph7EpOpC1Y6XDnYHttUW5jns3euZ8D+E"
+      }
+    };
+
+    Log.i("Verifying signature content");
+
+    var signed = entry["signed"];
+    var signatures = entry["signatures"] as Map<String, dynamic>;
+
+    var canonical = canonicalJson.encode(signed);
+    var canonicalString = String.fromCharCodes(canonical);
+
+    var keys = knownPublicKeys[signed["sender"]];
+
+    if (keys == null) {
+      return false;
+    }
+
+    Log.i(
+      "Known keys for sender: ${signed["sender"]}: $keys",
+    );
+
+    for (var entry in signatures.entries) {
+      var publicKeyB64 = keys[entry.key];
+
+      if (publicKeyB64 != null) {
+        Log.i("Verifying with public key: $publicKeyB64");
+        var publicKey = vod.Ed25519PublicKey.fromBase64(publicKeyB64);
+        var signature = vod.Ed25519Signature.fromBase64(entry.value);
+
+        try {
+          publicKey.verify(message: canonicalString, signature: signature);
+          Log.i("Successfully verified!");
+          return true;
+        } catch (_) {
+          Log.i("Verification Failed for this signature");
+        }
+      }
+    }
+
+    return false;
+  }
 }
 
 class MatrixProfileComponent implements UserProfileComponent<MatrixClient> {
   static const String bannerKey = "chat.commet.profile_banner";
   static const String colorSchemeKey = "chat.commet.profile_color_scheme";
   static const String bioKey = "chat.commet.profile_bio";
+  static const String badgeKey = "chat.commet.profile_badges";
   static const String statusKey = "chat.commet.profile_status";
   static const String pronounsKey = "io.fsky.nyx.pronouns";
 

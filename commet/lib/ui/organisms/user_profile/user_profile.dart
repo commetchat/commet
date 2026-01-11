@@ -97,6 +97,7 @@ class _UserProfileState extends State<UserProfile> {
   String? timezone;
   String? bioText;
   List<String> pronouns = const [];
+  List<ProfileBadge> badges = [];
 
   @override
   void initState() {
@@ -111,6 +112,10 @@ class _UserProfileState extends State<UserProfile> {
   Future<void> stateFromProfile(Profile? value) async {
     banner = value?.banner;
     avatar = value?.avatar;
+
+    if (value case ProfileWithBadges p) {
+      badges = await p.getBadges();
+    }
 
     ColorScheme? scheme;
     Brightness? brightness;
@@ -217,6 +222,7 @@ class _UserProfileState extends State<UserProfile> {
         savePreviewTheme: savePreviewTheme,
         setBio: setBio,
         clearBio: clearBio,
+        badges: badges,
         bio: bio,
         onSetAvatar: setAvatar,
         setColorOverride: setColorOverride,

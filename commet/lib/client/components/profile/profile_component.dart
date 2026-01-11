@@ -34,6 +34,18 @@ abstract class ProfileWithPronouns {
   List<String> get pronouns;
 }
 
+abstract class ProfileWithBadges {
+  Future<List<ProfileBadge>> getBadges();
+}
+
+class ProfileBadge {
+  ImageProvider image;
+  String body;
+  Brightness? brightness;
+
+  ProfileBadge(this.image, {required this.body, this.brightness});
+}
+
 abstract class ProfileWithTimezone {
   String? get timezone;
 }

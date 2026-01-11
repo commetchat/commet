@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:commet/client/components/profile/profile_component.dart';
 import 'package:commet/client/components/user_presence/user_presence_component.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/config/platform_utils.dart';
@@ -40,6 +41,7 @@ class UserProfileView extends StatefulWidget {
       this.bio,
       this.onSetStatus,
       this.setBio,
+      this.badges = const [],
       this.clearBio,
       this.showMessageButton = true,
       this.doSafeArea = true,
@@ -57,6 +59,7 @@ class UserProfileView extends StatefulWidget {
   final String identifier;
   final bool doSafeArea;
   final List<String> pronouns;
+  final List<ProfileBadge> badges;
   final Color userColor;
   final bool isSelf;
   final bool showMessageButton;
@@ -340,23 +343,38 @@ class _UserProfileViewState extends State<UserProfileView> {
                                                           ),
                                                         ),
                                                       ),
-                                                      if (widget
-                                                          .pronouns.isNotEmpty)
-                                                        Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .fromLTRB(
-                                                                  0, 4, 0, 4),
-                                                          child: Wrap(
-                                                            spacing: 4,
-                                                            runSpacing: 4,
-                                                            children: widget
-                                                                .pronouns
-                                                                .map((i) =>
-                                                                    TinyPill(i))
-                                                                .toList(),
+                                                      Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        children: [
+                                                          Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .fromLTRB(
+                                                                    0, 4, 0, 4),
+                                                            child: Wrap(
+                                                              spacing: 4,
+                                                              runSpacing: 4,
+                                                              children: widget
+                                                                  .pronouns
+                                                                  .map((i) =>
+                                                                      TinyPill(
+                                                                          i))
+                                                                  .toList(),
+                                                            ),
                                                           ),
-                                                        ),
+                                                          Wrap(
+                                                            spacing: 8,
+                                                            children: widget
+                                                                .badges
+                                                                .map((i) =>
+                                                                    buildBadge(
+                                                                        i))
+                                                                .toList(),
+                                                          )
+                                                        ],
+                                                      ),
                                                       SizedBox(
                                                         height: 12,
                                                       ),
@@ -716,5 +734,40 @@ class _UserProfileViewState extends State<UserProfileView> {
     setState(() {
       isLoadingDirectMessage = false;
     });
+  }
+
+  Widget buildBadge(ProfileBadge i) {
+    var doOutline = i.brightness == null
+        ? false
+        : Theme.of(context).brightness == i.brightness;
+
+    return tiamat.Tooltip(
+      text: i.body,
+      child: SizedBox(
+          width: 30,
+          height: 30,
+          child: Stack(
+            children: [
+              if (doOutline)
+                ImageFiltered(
+                  imageFilter: ImageFilter.blur(sigmaX: 1, sigmaY: 1),
+                  child: ColorFiltered(
+                    colorFilter: ColorFilter.mode(
+                        Theme.of(context)
+                            .colorScheme
+                            .inverseSurface
+                            .withAlpha(200),
+                        BlendMode.srcIn),
+                    child: Image(
+                      image: i.image,
+                    ),
+                  ),
+                ),
+              Image(
+                image: i.image,
+              ),
+            ],
+          )),
+    );
   }
 }

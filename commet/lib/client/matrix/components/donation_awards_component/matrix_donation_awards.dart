@@ -1,11 +1,13 @@
 import 'dart:convert';
-import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:commet/client/components/donation_awards/donation_awards_component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/debug/log.dart';
+import 'package:commet/utils/text_utils.dart';
 import 'package:crypto/crypto.dart';
+
+import 'package:cryptography/cryptography.dart';
 
 class MatrixDonationAwardsComponent
     implements DonationAwardsComponent<MatrixClient> {
@@ -14,25 +16,37 @@ class MatrixDonationAwardsComponent
 
   MatrixDonationAwardsComponent(this.client);
 
-  static const String secretKey = "chat.commet.donation_awards_client_secret";
+  static const String secretKey = "chat.commet.donations_client_secret";
 
   @override
-  Future<String?> getClientSecret() async {
+  Future<SecretClientIdentifier?> getClientSecret() async {
     var existing = client.matrixClient.accountData[secretKey];
+
     if (existing != null) {
       var secret = existing.content["secret"];
-      if (secret is String) {
+      var encrypted_hash = existing.content["encrypted_id_hash"];
+
+      if (secret is String && encrypted_hash is String) {
         if (validateSecret(secret)) {
           Log.i("Re-using existing secret");
-          return secret;
+          return SecretClientIdentifier(
+              clientSecret: secret, encryptedHash: encrypted_hash);
         }
       }
     } else {
       Log.i("Generating new client secret");
-      var secret = generateSecret();
-      await client.matrixClient.setAccountData(
-          client.matrixClient.userID!, secretKey, {"secret": secret});
-      return secret;
+
+      var secret = await generateSecret();
+      var encryptedIdHash = await getEncryptedUsernameHash(secret);
+
+      Log.i("Generated Secret: $secret");
+      Log.i("Generated id hash: $encryptedIdHash");
+
+      await client.matrixClient.setAccountData(client.matrixClient.userID!,
+          secretKey, {"secret": secret, "encrypted_id_hash": encryptedIdHash});
+
+      return SecretClientIdentifier(
+          clientSecret: secret, encryptedHash: encryptedIdHash);
     }
 
     Log.e(
@@ -41,54 +55,50 @@ class MatrixDonationAwardsComponent
     return null;
   }
 
-  String generateSecret() {
-    var random = Random.secure();
+  Future<String> generateSecret() async {
+    final algorithm = AesGcm.with128bits();
+    final secretKey = await algorithm.newSecretKey();
+    // final nonce = await algorithm.newNonce();
 
-    Uint8List randomPart = Uint8List(32);
-
-    for (int i = 0; i < randomPart.length; i++) {
-      randomPart[i] = random.nextInt(255);
-    }
-
-    final clientRandomString = _toHexString(randomPart);
-
-    var hash =
-        sha256.convert(AsciiEncoder().convert(client.matrixClient.userID!));
-
-    var hashString = _toHexString(Uint8List.fromList(hash.bytes));
-
-    var secret = "$hashString-$clientRandomString";
-
-    assert(secret.length < 200);
-
-    return secret;
-  }
-
-  String _toHexString(Uint8List bytes) {
-    return bytes.fold<String>(
-        '', (str, byte) => str + byte.toRadixString(16).padLeft(2, '0'));
+    final secretKeyBytes = Uint8List.fromList(await secretKey.extractBytes());
+    // final nonceBytes = Uint8List.fromList(nonce);
+    return TextUtils.toHexString(secretKeyBytes);
   }
 
   bool validateSecret(String secret) {
-    var split = secret.split("-");
+    // TODO: Reimplement validation
+    return true;
+  }
 
-    var hash = split[0];
+  Future<String> getEncryptedUsernameHash(String secret) async {
+    final secretBytes = TextUtils.parseHexString(secret);
 
-    var correctHash =
+    final algorithm = AesGcm.with128bits();
+
+    final secretKey = await algorithm.newSecretKeyFromBytes(secretBytes);
+
+    var userIdHash =
         sha256.convert(AsciiEncoder().convert(client.matrixClient.userID!));
 
-    var hashString = _toHexString(Uint8List.fromList(correctHash.bytes));
+    Log.i(
+        "Hash: ${TextUtils.toHexString(Uint8List.fromList(userIdHash.bytes))}");
 
-    if (hash != hashString) {
-      return false;
-    }
+    var nonce = await algorithm.newNonce();
 
-    var random = split[1];
+    final encrypted = await algorithm.encrypt(userIdHash.bytes,
+        secretKey: secretKey, nonce: nonce);
 
-    if (random.length != 64) {
-      return false;
-    }
+    final bytes = Uint8List.fromList(encrypted.cipherText);
 
-    return true;
+    Log.i("Iv: ${Uint8List.fromList(nonce)}");
+    Log.i("Secret: ${secretBytes}");
+    Log.i("Ciphertext: ${bytes}");
+
+    final encryptedUserIdHash = TextUtils.toHexString(
+        Uint8List.fromList(bytes + Uint8List.fromList(encrypted.mac.bytes)));
+
+    final iv = TextUtils.toHexString(Uint8List.fromList(nonce));
+
+    return "${iv}_$encryptedUserIdHash";
   }
 }
