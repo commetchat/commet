@@ -53,6 +53,7 @@ class _SideNavigationBarDirectMessagesState
           return SpaceIcon(
             displayName: data.displayName,
             placeholderColor: data.defaultColor,
+            spaceId: data.identifier,
             avatar: data.avatar,
             width: 70,
             highlightedNotificationCount: data.notificationCount,

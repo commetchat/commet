@@ -9,6 +9,7 @@ import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/atoms/room_panel.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/utils/common_strings.dart';
+import 'package:commet/utils/image/lod_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -115,6 +116,11 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
     children = List.from(widget.space.children);
 
     canChangeOrder = widget.space.permissions.canEditChildren;
+
+    final banner = widget.banner;
+    if (banner is LODImageProvider) {
+      banner.fetchFullRes();
+    }
 
     if (widget.space.fullyLoaded == false) {
       widget.space.loadExtra();
