@@ -190,11 +190,10 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
                   if (widget.showSpaceSettingsButton) buildSettingsButton()
                 ],
               ),
-              if (children.isNotEmpty)
-                tiamat.Panel(
-                  mode: TileType.surfaceContainerLow,
-                  child: buildChildrenList(),
-                ),
+              tiamat.Panel(
+                mode: TileType.surfaceContainerLow,
+                child: buildChildrenList(),
+              ),
               if (previews.isNotEmpty) buildPreviewList(),
             ],
           ),
