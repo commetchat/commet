@@ -183,7 +183,7 @@ flutter:
     - assets/vodozemac/
   shaders: 
     - assets/shader/texture_coordinate.frag
-    - assets/shader/star_trails.frag
+    - assets/shader/constellation.frag
   fonts: 
     - family: Jellee
       fonts: 
