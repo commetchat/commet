@@ -243,7 +243,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
                       ? DecorationImage(
                           image: widget.banner!, fit: BoxFit.cover)
                       : null,
-                  color: colorScheme.secondary,
+                  color: widget.banner == null ? colorScheme.secondary : null,
                   borderRadius: BorderRadius.only(
                       bottomLeft: Radius.circular(15),
                       bottomRight: Radius.circular(15))),
