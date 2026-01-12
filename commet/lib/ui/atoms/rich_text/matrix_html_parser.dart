@@ -375,7 +375,7 @@ class LinkifyHtmlExtension extends HtmlExtension {
       late Uri href;
       try {
         href = Uri.parse(uri);
-      } catch (e, s) {
+      } catch (e, _) {
         href = Uri();
       }
 
@@ -432,7 +432,7 @@ class LinkifyHtmlExtension extends HtmlExtension {
 
       try {
         destination = Uri.parse(context.node.attributes["href"]!);
-      } catch (e, s) {
+      } catch (e, _) {
         destination = Uri();
       }
 

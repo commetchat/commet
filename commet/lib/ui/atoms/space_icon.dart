@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:commet/client/space.dart';
 import 'package:commet/ui/atoms/notification_badge.dart';
 import 'package:commet/ui/organisms/side_navigation_bar/side_navigation_bar.dart';
+import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart';
 
@@ -12,6 +14,7 @@ class SpaceIcon extends StatefulWidget {
       this.onTap,
       this.showUser = false,
       this.onUpdate,
+      required this.spaceId,
       this.avatar,
       this.placeholderColor,
       this.notificationCount = 0,
@@ -23,6 +26,7 @@ class SpaceIcon extends StatefulWidget {
   final double width;
   final void Function()? onTap;
   final bool showUser;
+  final String spaceId;
   final Stream<void>? onUpdate;
   final String displayName;
   final Color? placeholderColor;
@@ -39,19 +43,31 @@ class SpaceIcon extends StatefulWidget {
 
 class _SpaceIconState extends State<SpaceIcon> {
   StreamSubscription? subscription;
-
+  StreamSubscription? spaceSelectionSub;
   @override
   void initState() {
     subscription = widget.onUpdate?.listen((event) {
       setState(() {});
     });
 
+    spaceSelectionSub =
+        EventBus.onSelectedSpaceChanged.stream.listen(onSelectedSpaceChanged);
+
     super.initState();
+  }
+
+  bool selected = false;
+
+  void onSelectedSpaceChanged(Space? event) {
+    setState(() {
+      selected = event?.identifier == widget.spaceId;
+    });
   }
 
   @override
   void dispose() {
     subscription?.cancel();
+    spaceSelectionSub?.cancel();
     super.dispose();
   }
 
@@ -61,6 +77,12 @@ class _SpaceIconState extends State<SpaceIcon> {
       SideNavigationBar.tooltip(
           widget.displayName,
           ImageButton(
+            border: selected
+                ? Border.all(
+                    color: ColorScheme.of(context).inverseSurface,
+                    width: 3,
+                    strokeAlign: 0.5)
+                : null,
             image: widget.avatar,
             onTap: widget.onTap,
             size: widget.width,
