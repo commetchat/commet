@@ -394,7 +394,7 @@ class _ImageButtonState extends State<ImageButton> {
                                         .toUpperCase(),
                                     style: Theme.of(context)
                                         .textTheme
-                                        .headlineSmall!
+                                        .titleLarge!
                                         .copyWith(fontSize: widget.size / 4),
                                   )
                                 : null))

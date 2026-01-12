@@ -139,7 +139,7 @@ class Avatar extends StatelessWidget {
                           placeholderText!.substring(0, 1).toUpperCase(),
                           style: Theme.of(context)
                               .textTheme
-                              .headlineSmall!
+                              .titleLarge!
                               .copyWith(fontSize: radius),
                         )
                       : null),
