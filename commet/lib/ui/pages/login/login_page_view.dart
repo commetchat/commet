@@ -89,7 +89,7 @@ class _LoginPageViewState extends State<LoginPageView> {
       body: Stack(
         children: [
           ImageFiltered(
-            imageFilter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+            imageFilter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
             child: const StarTrailsBackground(),
           ),
           SafeArea(
