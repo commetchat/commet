@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/space_banner/space_banner_component.dart';
 import 'package:commet/client/components/space_color_scheme/space_color_scheme_component.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/organisms/space_summary/space_summary_view.dart';
@@ -46,12 +47,16 @@ class _SpaceSummaryState extends State<SpaceSummary> {
     if (comp != null) {
       colorScheme = comp.scheme;
     }
+
+    var banner = widget.space.getComponent<SpaceBannerComponent>();
+
     return SpaceSummaryView(
       space: widget.space,
       displayName: widget.space.displayName,
       avatar: widget.space.avatar,
       visibility: widget.space.visibility,
       joinRoom: joinRoom,
+      banner: banner?.banner,
       openSpaceSettings: openSpaceSettings,
       onRoomSettingsButtonTap: openRoomSettings,
       spaceColor: widget.space.color,

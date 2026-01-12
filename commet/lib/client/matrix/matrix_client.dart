@@ -344,6 +344,7 @@ class MatrixClient extends Client {
         "im.ponies.room_emotes",
         "m.room.power_levels",
         "m.room.join_rules",
+        "page.codeberg.everypizza.room.banner",
         "chat.commet.calendar_event",
         MatrixVoipRoomComponent.callMemberStateEvent,
       },

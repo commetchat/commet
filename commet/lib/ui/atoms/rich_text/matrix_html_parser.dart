@@ -389,7 +389,12 @@ class LinkifyHtmlExtension extends HtmlExtension {
   InlineSpan build(ExtensionContext context) {
     if (context.node.attributes.containsKey("href")) {
       var uri = context.node.attributes["href"]!;
-      var href = Uri.parse(uri);
+      late Uri href;
+      try {
+        href = Uri.parse(uri);
+      } catch (e, _) {
+        href = Uri();
+      }
 
       if (href.host == "matrix.to") {
         var result = MatrixClient.parseMatrixLink(href);
@@ -440,10 +445,18 @@ class LinkifyHtmlExtension extends HtmlExtension {
         }
       }
 
+      late Uri destination;
+
+      try {
+        destination = Uri.parse(context.node.attributes["href"]!);
+      } catch (e, _) {
+        destination = Uri();
+      }
+
       return LinkSpan.create(context.node.text!,
           clientId: client.identifier,
           context: context.buildContext!,
-          destination: Uri.parse(context.node.attributes["href"]!));
+          destination: destination);
     }
 
     return TextSpan(
