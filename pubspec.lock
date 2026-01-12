@@ -577,11 +577,9 @@ packages:
   flutter_html:
     dependency: transitive
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "8f695c4bf6c16cf00aa2d4e9933f6b3ed17098d6"
-      url: "https://github.com/commetchat/flutter_html.git"
-    source: git
+      path: "../flutter_html"
+      relative: true
+    source: path
     version: "3.0.0-beta.2"
   flutter_launcher_icons:
     dependency: transitive

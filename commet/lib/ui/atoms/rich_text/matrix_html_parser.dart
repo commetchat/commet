@@ -112,6 +112,8 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
         MatrixEmoticonHtmlExtension(widget.client, widget.room, big);
     var imageExtension = MatrixImageExtension(widget.client, widget.room);
     var linkify = LinkifyHtmlExtension(widget.client, widget.room);
+
+    var theme = TextTheme.of(context);
     var result = Html(
       data: widget.text,
       extensions: [
@@ -124,7 +126,7 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
         imageExtension
       ],
       style: {
-        "body": Style(
+        "body": Style.fromTextStyle(theme.bodyMedium!).copyWith(
           padding: HtmlPaddings.all(0),
           margin: Margins(
             bottom: Margin.zero(),
@@ -153,11 +155,26 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
           ),
           whiteSpace: WhiteSpace.pre,
         ),
-        "p": Style(
-          border: Border.all(),
+        "h1": Style.fromTextStyle(theme.headlineLarge!).copyWith(
           margin: Margins.all(0),
           padding: HtmlPaddings.all(0),
-        )
+          color: Theme.of(context).colorScheme.onSurface,
+        ),
+        "h2": Style.fromTextStyle(theme.headlineMedium!).copyWith(
+          margin: Margins.all(0),
+          padding: HtmlPaddings.all(0),
+          color: Theme.of(context).colorScheme.onSurface,
+        ),
+        "h3": Style.fromTextStyle(theme.headlineSmall!).copyWith(
+          margin: Margins.all(0),
+          padding: HtmlPaddings.all(0),
+          color: Theme.of(context).colorScheme.onSurface,
+        ),
+        "p": Style(
+            border: Border.all(),
+            margin: Margins.all(0),
+            padding: HtmlPaddings.all(0),
+            fontWeight: FontWeight.w900)
       },
       onLinkTap: (url, attributes, element) {
         LinkUtils.open(Uri.parse(url!));

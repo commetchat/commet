@@ -290,11 +290,8 @@ class _UserProfileViewState extends State<UserProfileView> {
                                                                 style: Theme.of(
                                                                         context)
                                                                     .textTheme
-                                                                    .headlineSmall
-                                                                    ?.copyWith(
-                                                                        fontWeight:
-                                                                            FontWeight
-                                                                                .bold,
+                                                                    .headlineSmall!
+                                                                    .copyWith(
                                                                         color: Theme.of(context)
                                                                             .colorScheme
                                                                             .onSurface),
@@ -684,6 +681,7 @@ class _UserProfileViewState extends State<UserProfileView> {
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: tiamat.Text(
+              type: tiamat.TextType.body,
               widget.presence!.message!.message,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,

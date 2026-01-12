@@ -56,7 +56,7 @@ dependencies:
       url: https://github.com/commetchat/highlight.git
       path: ./flutter_highlighter
   flutter_html: 
-    git: https://github.com/commetchat/flutter_html.git
+    path: ../../flutter_html
   flutter_local_notifications: 
     git: 
       url: https://github.com/commetchat/flutter_local_notifications.git
@@ -185,29 +185,34 @@ flutter:
     - assets/shader/texture_coordinate.frag
     - assets/shader/star_trails.frag
   fonts: 
-    - 
-      family: Jellee
+    - family: Jellee
       fonts: 
-        - 
-          asset: assets/font/jellee/Jellee-Bold.ttf
-    - 
-      family: EmojiFont
+        - asset: assets/font/jellee/Jellee-Bold.ttf
+
+    - family: EmojiFont
       fonts: 
-        - 
-          asset: assets/font/emoji-font/TwemojiCOLR.otf
-    - 
-      family: RobotoCustom
+        - asset: assets/font/emoji-font/TwemojiCOLR.otf
+
+    - family: RobotoCustom
       fonts: 
-        - 
-          asset: assets/font/roboto/Roboto-Regular.ttf
-        - 
-          asset: assets/font/roboto/Roboto-Bold.ttf
+        - asset: assets/font/roboto/Roboto-Regular.ttf
+        - asset: assets/font/roboto/Roboto-Bold.ttf
           weight: 700
-    - 
-      family: Code
+    - family: Nunito
+      fonts:
+        - asset: assets/font/nunito/Nunito-VariableFont_wght.ttf
+        - asset: assets/font/nunito/Nunito-Italic-VariableFont_wght.ttf
+          style: italic
+  
+    - family: NunitoSans
+      fonts:
+        - asset: assets/font/nunito/NunitoSans-VariableFont_YTLC,opsz,wdth,wght.ttf
+        - asset: assets/font/nunito/NunitoSans-Italic-VariableFont_YTLC,opsz,wdth,wght.ttf
+          style: italic
+    - family: Code
       fonts: 
-        - 
-          asset: assets/font/code/JetBrainsMono-Regular.ttf
+        - asset: assets/font/code/JetBrainsMono-Regular.ttf
+
   uses-material-design: true
   generate: true
 

@@ -63,7 +63,6 @@ class SpaceHeader extends StatelessWidget {
                           style:
                               Theme.of(context).textTheme.titleLarge!.copyWith(
                                   color: colorScheme.onPrimary,
-                                  fontWeight: FontWeight.w500,
                                   shadows: space.avatar != null
                                       ? [
                                           const BoxShadow(

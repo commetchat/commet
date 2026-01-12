@@ -144,7 +144,7 @@ class _RoomHeaderState extends State<RoomHeader> {
                     Flexible(
                       child: m.Text(
                         widget.room.displayName,
-                        style: m.Theme.of(context).textTheme.titleMedium,
+                        style: m.TextTheme.of(context).titleMedium,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),

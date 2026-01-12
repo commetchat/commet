@@ -76,7 +76,7 @@ class _RoomPanelState extends State<RoomPanel> {
               decoration:
                   BoxDecoration(borderRadius: BorderRadius.circular(15)),
               child: Padding(
-                padding: const EdgeInsets.all(2.0),
+                padding: const EdgeInsets.fromLTRB(4, 4, 2, 2),
                 child: Column(
                   children: [
                     Row(
@@ -181,26 +181,31 @@ class _RoomPanelState extends State<RoomPanel> {
   }
 
   Widget recentEvent() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.baseline,
-      mainAxisSize: MainAxisSize.min,
-      textBaseline: TextBaseline.alphabetic,
-      children: [
-        if (widget.recentEventSender != null)
-          tiamat.Text(
-            widget.recentEventSender!,
-            type: TextType.labelLow,
-            autoAdjustBrightness: true,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            color: widget.recentEventSenderColor,
-          ),
-        tiamat.Text.labelLow(
-          widget.body!,
+    var color =
+        tiamat.Text.adjustColor(context, widget.recentEventSenderColor!);
+
+    var style = TextTheme.of(context).labelMedium?.copyWith(
+          fontSize: 12,
+        );
+    return SizedBox(
+      height: 30,
+      child: RichText(
+          maxLines: 2,
           overflow: TextOverflow.ellipsis,
-          maxLines: 1,
-        )
-      ],
+          text: TextSpan(children: [
+            TextSpan(
+              text: widget.recentEventSender! + ":",
+              style: style?.copyWith(color: color, fontWeight: FontWeight.bold),
+            ),
+            WidgetSpan(
+                child: SizedBox(
+              width: 4,
+            )),
+            TextSpan(
+                text: widget.body,
+                style:
+                    style?.copyWith(color: ColorScheme.of(context).secondary))
+          ])),
     );
   }
 

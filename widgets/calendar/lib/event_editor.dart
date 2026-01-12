@@ -154,9 +154,14 @@ class _CalendarEventEditorState extends State<CalendarEventEditor> {
             multiSelectionEnabled: false,
             showSelectedIcon: false,
             segments: [
-              ButtonSegment(value: "event", label: Text("Event")),
               ButtonSegment(
-                  value: "unavailability", label: Text("Unavailability")),
+                  value: "event",
+                  label: tiamat.Text.labelEmphasised(
+                    "Event",
+                  )),
+              ButtonSegment(
+                  value: "unavailability",
+                  label: tiamat.Text.labelEmphasised("Unavailability")),
             ],
             expandedInsets: EdgeInsets.all(0),
             selected: {eventType},
@@ -168,8 +173,8 @@ class _CalendarEventEditorState extends State<CalendarEventEditor> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              if (allDayEvent) Text("Date:"),
-              if (!allDayEvent) Text("From:"),
+              if (allDayEvent) tiamat.Text.label("Date:"),
+              if (!allDayEvent) tiamat.Text.label("From:"),
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -184,7 +189,8 @@ class _CalendarEventEditorState extends State<CalendarEventEditor> {
                         pickedStartDate = v ?? pickedStartDate;
                       }),
                     ),
-                    label: Text(
+                    label: tiamat.Text.labelEmphasised(
+                      color: ColorScheme.of(context).primary,
                       DateFormat(
                         DateFormat.YEAR_MONTH_WEEKDAY_DAY,
                       ).format(pickedStartDate),
@@ -208,10 +214,12 @@ class _CalendarEventEditorState extends State<CalendarEventEditor> {
                         }),
                       ),
                       label: SizedBox(
-                          width: 60,
+                          width: 65,
                           child: Align(
                               alignment: AlignmentGeometry.centerRight,
-                              child: Text(formatter.format(startTime)))),
+                              child: tiamat.Text.labelEmphasised(
+                                  color: ColorScheme.of(context).primary,
+                                  formatter.format(startTime)))),
                     ),
                 ],
               )
@@ -237,7 +245,8 @@ class _CalendarEventEditorState extends State<CalendarEventEditor> {
                           pickedEndDate = v ?? pickedEndDate;
                         }),
                       ),
-                      label: Text(
+                      label: tiamat.Text.labelEmphasised(
+                        color: ColorScheme.of(context).primary,
                         DateFormat(
                           DateFormat.YEAR_MONTH_WEEKDAY_DAY,
                         ).format(pickedEndDate),
@@ -260,10 +269,12 @@ class _CalendarEventEditorState extends State<CalendarEventEditor> {
                         }),
                       ),
                       label: SizedBox(
-                          width: 60,
+                          width: 65,
                           child: Align(
                               alignment: AlignmentGeometry.centerRight,
-                              child: Text(formatter.format(endTime)))),
+                              child: tiamat.Text.labelEmphasised(
+                                  color: ColorScheme.of(context).primary,
+                                  formatter.format(endTime)))),
                     ),
                   ],
                 ),
@@ -292,9 +303,11 @@ class _CalendarEventEditorState extends State<CalendarEventEditor> {
                         }
                       });
                     },
-                    label: Text(recurrenceRule == null
-                        ? "Never Repeats"
-                        : recurrenceRule!.toString())),
+                    label: tiamat.Text.labelEmphasised(
+                        color: ColorScheme.of(context).primary,
+                        recurrenceRule == null
+                            ? "Never Repeats"
+                            : recurrenceRule!.toString())),
               ],
             ),
           ),

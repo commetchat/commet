@@ -299,7 +299,11 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
 
   Widget buildHeader() {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      MarkdownBody(data: labelSpaceGettingText(widget.displayName)),
+      MarkdownBody(
+        data: labelSpaceGettingText(widget.displayName),
+        styleSheet:
+            MarkdownStyleSheet(h1: Theme.of(context).textTheme.titleLarge),
+      ),
       if (widget.topic != null) tiamat.Text.label(widget.topic!),
     ]);
   }
