@@ -184,9 +184,10 @@ class _RoomPanelState extends State<RoomPanel> {
     var color =
         tiamat.Text.adjustColor(context, widget.recentEventSenderColor!);
 
-    var style = TextTheme.of(context)
-        .labelMedium
-        ?.copyWith(fontSize: 14, fontVariations: [FontVariation.weight(300)]);
+    var style = TextTheme.of(context).labelMedium?.copyWith(
+        fontSize: 12,
+        letterSpacing: 0,
+        fontVariations: [FontVariation.weight(500)]);
     return SizedBox(
       height: 30,
       child: RichText(

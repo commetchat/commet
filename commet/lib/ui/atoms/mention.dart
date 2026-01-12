@@ -53,6 +53,7 @@ class MentionWidget extends StatelessWidget {
                     textScaler: TextScaler.noScaling,
                     style: (style ?? Theme.of(context).textTheme.bodyMedium)
                         ?.copyWith(
+                            fontVariations: [FontVariation.weight(400)],
                             color: tiamat.Text.adjustColor(
                                 context, placeholderColor))),
               ],
