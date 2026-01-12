@@ -32,6 +32,8 @@ abstract class PickerResult {
   Future<Uint8List> readAsBytes();
 
   String get name;
+
+  String? get mimeType;
 }
 
 class PickerResultXFile implements PickerResult {
@@ -46,4 +48,7 @@ class PickerResultXFile implements PickerResult {
 
   @override
   String get name => file.name;
+
+  @override
+  String? get mimeType => file.mimeType;
 }

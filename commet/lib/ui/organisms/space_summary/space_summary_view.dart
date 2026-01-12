@@ -26,6 +26,7 @@ class SpaceSummaryView extends StatefulWidget {
       this.joinRoom,
       this.avatar,
       this.onSpaceUpdated,
+      this.banner,
       this.visibility,
       this.spaceColor,
       this.showSpaceSettingsButton = false,
@@ -44,6 +45,7 @@ class SpaceSummaryView extends StatefulWidget {
   final Stream<void>? onSpaceUpdated;
   final RoomVisibility? visibility;
   final ImageProvider? avatar;
+  final ImageProvider? banner;
   final Color? spaceColor;
   final Function? openSpaceSettings;
   final Function(Room room)? onRoomSettingsButtonTap;
@@ -190,10 +192,12 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
                   if (widget.showSpaceSettingsButton) buildSettingsButton()
                 ],
               ),
-              tiamat.Panel(
-                mode: TileType.surfaceContainerLow,
-                child: buildChildrenList(),
-              ),
+              if (children.isNotEmpty ||
+                  widget.space.permissions.canEditChildren)
+                tiamat.Panel(
+                  mode: TileType.surfaceContainerLow,
+                  child: buildChildrenList(),
+                ),
               if (previews.isNotEmpty) buildPreviewList(),
             ],
           ),
@@ -229,6 +233,10 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
               : EdgeInsetsGeometry.zero,
           child: DecoratedBox(
               decoration: BoxDecoration(
+                  image: widget.banner != null
+                      ? DecorationImage(
+                          image: widget.banner!, fit: BoxFit.cover)
+                      : null,
                   color: colorScheme.secondary,
                   borderRadius: BorderRadius.only(
                       bottomLeft: Radius.circular(15),
@@ -239,7 +247,13 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
                 right: false,
                 top: true,
                 child: SizedBox(
-                  height: 150,
+                  height: 250,
+                  // child: widget.banner != null
+                  //     ? Image(
+                  //         image: widget.banner!,
+                  //         fit: BoxFit.cover,
+                  //       )
+                  //     : null,
                   width: double.infinity,
                 ),
               )),
@@ -247,7 +261,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
         Align(
           alignment: AlignmentGeometry.center,
           child: Padding(
-              padding: const EdgeInsets.fromLTRB(0, 50, 0, 0),
+              padding: const EdgeInsets.fromLTRB(0, 150, 0, 0),
               child: ScaledSafeArea(
                 child: Avatar.extraLarge(
                   border: BoxBorder.all(
@@ -489,7 +503,9 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
               color: Theme.of(context).colorScheme.surfaceContainer),
           child: tiamat.TextButtonExpander(item.child.displayName,
               textPadding: EdgeInsetsGeometry.all(20),
-              icon: Icons.star,
+              icon: Icons.star, onNameTapped: () {
+            widget.onSpaceTap?.call(item.child);
+          },
               avatar: item.child.avatar,
               avatarPlaceholderColor: item.child.color,
               avatarPlaceholderText: item.child.displayName,
