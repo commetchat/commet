@@ -56,7 +56,7 @@ dependencies:
       url: https://github.com/commetchat/highlight.git
       path: ./flutter_highlighter
   flutter_html: 
-    path: ../../flutter_html
+    git: https://github.com/commetchat/flutter_html.git
   flutter_local_notifications: 
     git: 
       url: https://github.com/commetchat/flutter_local_notifications.git
