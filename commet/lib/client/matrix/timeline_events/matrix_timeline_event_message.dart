@@ -47,7 +47,7 @@ class MatrixTimelineEventMessage extends MatrixTimelineEvent
       "chat.commet.custom.matrix_plain";
 
   @override
-  String get plainTextBody => event.content["body"] as String? ?? "";
+  String get plainTextBody => event.plaintextBody;
 
   String _getPlaintextBody({Timeline? timeline}) {
     var e = getDisplayEvent(timeline);
