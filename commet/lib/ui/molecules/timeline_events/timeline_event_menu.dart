@@ -319,7 +319,9 @@ class TimelineEventMenu {
         name: promptShowSource,
         icon: Icons.code,
         action: (BuildContext context) {
+
           onActionFinished?.call();
+
           AdaptiveDialog.show(
             context,
             title: "Source",
@@ -333,8 +335,6 @@ class TimelineEventMenu {
               );
             },
           );
-
-          onActionFinished?.call();
         },
       ),
       if (preferences.developerMode &&
