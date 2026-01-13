@@ -8,7 +8,6 @@ import 'package:commet/utils/image_utils.dart';
 import 'package:crop_image/crop_image.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
@@ -127,15 +126,47 @@ class ImageCropView extends StatelessWidget {
         SizedBox(
           height: 20,
         ),
-        if (Layout.desktop)
-          Row(spacing: 8, mainAxisSize: MainAxisSize.max, children: buttons),
-        if (Layout.mobile)
-          Column(
-            spacing: 8,
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: buttons,
-          )
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8, 8, 8, 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  SizedBox(
+                      height: 50,
+                      width: 50,
+                      child: tiamat.IconButton(
+                        icon: Icons.rotate_90_degrees_ccw,
+                        onPressed: () => controller.rotateLeft(),
+                        size: 30,
+                      )),
+                  SizedBox(
+                      height: 50,
+                      width: 50,
+                      child: tiamat.IconButton(
+                        icon: Icons.rotate_90_degrees_cw,
+                        size: 30,
+                        onPressed: () => controller.rotateRight(),
+                      ))
+                ],
+              ),
+            ),
+            if (Layout.desktop)
+              Row(
+                  spacing: 8,
+                  mainAxisSize: MainAxisSize.max,
+                  children: buttons),
+            if (Layout.mobile)
+              Column(
+                spacing: 8,
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: buttons,
+              )
+          ],
+        ),
       ],
     );
   }
