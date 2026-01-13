@@ -158,7 +158,10 @@ class _RoomPanelState extends State<RoomPanel> {
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                         ),
-                                      if (widget.body != null)
+                                      if (widget.body != null &&
+                                          widget.recentEventSenderColor !=
+                                              null &&
+                                          widget.recentEventSender != null)
                                         Flexible(child: recentEvent())
                                     ],
                                   ),
