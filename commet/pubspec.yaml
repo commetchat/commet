@@ -118,6 +118,7 @@ dependencies:
   image_picker: ^1.2.1
   timezone: ^0.10.1
   flutter_timezone: ^5.0.1
+  crop_image: ^1.0.17
 dependency_overrides:
   analyzer: ^7.3.0
 
