@@ -134,6 +134,13 @@ dependency_overrides:
       ref: main
       path: pkgs/markdown
 
+  ## Fixes https://github.com/MixinNetwork/flutter-plugins/issues/457
+  desktop_webview_window:
+    git:
+      url: https://github.com/commetchat/mixin-flutter-plugins.git
+      ref: webview-patch
+      path: ./packages/desktop_webview_window
+
 dev_dependencies: 
   drift_dev: ^2.28.0
   build_runner: ^2.4.11

@@ -347,12 +347,13 @@ packages:
     source: hosted
     version: "0.6.3"
   desktop_webview_window:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: desktop_webview_window
-      sha256: "57cf20d81689d5cbb1adfd0017e96b669398a669d927906073b0e42fc64111c0"
-      url: "https://pub.dev"
-    source: hosted
+      path: "packages/desktop_webview_window"
+      ref: webview-patch
+      resolved-ref: "82c19ad6ee5ac2b2acac6001d3e0cbefb90f1e22"
+      url: "https://github.com/commetchat/mixin-flutter-plugins.git"
+    source: git
     version: "0.2.3"
   device_frame_plus:
     dependency: transitive
