@@ -56,20 +56,24 @@ class _SpaceAppearanceSettingsPageState
               color: Colors.transparent,
               child: InkWell(
                 onTap: () async {
-                  var result = await PickerUtils.pickImage();
+                  var result = await PickerUtils.pickImageAndCrop(context,
+                      aspectRatio: 16 / 9);
+
                   if (result != null) {
                     setState(() {
                       image = null;
                       uploading = true;
                     });
-                    var bytes = await result.readAsBytes();
+
                     await widget.space
                         .getComponent<SpaceBannerComponent>()
-                        ?.setBanner(bytes, mimeType: result.mimeType);
+                        ?.setBanner(
+                          result,
+                        );
 
                     setState(() {
                       uploading = false;
-                      image = MemoryImage(bytes);
+                      image = MemoryImage(result);
                     });
                   }
                 },
