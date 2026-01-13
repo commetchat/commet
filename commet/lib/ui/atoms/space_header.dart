@@ -64,9 +64,8 @@ class SpaceHeader extends StatelessWidget {
                       padding: const EdgeInsets.fromLTRB(8, 2, 0, 2),
                       child: Text(space.displayName,
                           style:
-                              Theme.of(context).textTheme.titleLarge!.copyWith(
+                              Theme.of(context).textTheme.titleMedium!.copyWith(
                                   color: colorScheme.onPrimary,
-                                  fontWeight: FontWeight.w500,
                                   shadows: space.avatar != null
                                       ? [
                                           const BoxShadow(
