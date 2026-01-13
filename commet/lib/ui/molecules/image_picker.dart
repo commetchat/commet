@@ -1,10 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:commet/utils/picker_utils.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart';
-import '../../utils/mime.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;
 

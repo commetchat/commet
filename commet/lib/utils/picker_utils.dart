@@ -3,7 +3,6 @@ import 'dart:ui';
 
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/config/platform_utils.dart';
-import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/utils/common_strings.dart';
 import 'package:commet/utils/image_utils.dart';
 import 'package:crop_image/crop_image.dart';
