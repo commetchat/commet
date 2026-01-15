@@ -241,7 +241,21 @@ class GetOrCreateRoom extends StatefulWidget {
           context,
           scrollable: false,
           builder: (context) {
-            return join!.formBuilder(context);
+            return join!.formBuilder(context,
+                onPicked: (i) => Navigator.of(context).pop(i));
+          },
+        );
+      }
+
+      if (source == _RoomSourceOptions.existing) {
+        return AdaptiveDialog.show<SpaceChild>(
+          context,
+          scrollable: false,
+          builder: (context) {
+            return SizedBox(
+                height: 500,
+                child: existing!.formBuilder(context,
+                    onPicked: (i) => Navigator.of(context).pop(i)));
           },
         );
       }
