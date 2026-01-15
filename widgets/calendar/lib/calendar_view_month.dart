@@ -149,8 +149,9 @@ class _CalendarViewMonthState extends State<CalendarViewMonth> {
                                     children: event
                                         .map(
                                           (e) => EventViewMini(
-                                            e,
-                                            widget.calendar,
+                                            e.event!,
+                                            widget.calendar.config,
+                                            e.color,
                                             onEventTapped: widget.onEventTapped,
                                           ),
                                         )

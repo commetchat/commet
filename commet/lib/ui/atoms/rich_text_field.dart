@@ -199,6 +199,9 @@ class RichTextEditingController extends TextEditingController {
                 } else if (result.$1 == MatrixLinkType.room) {
                   var taggedRoom = client?.getRoom(mxId);
 
+                  var vias =
+                      (client as MatrixClient).parseAddressToIdAndVia(href);
+
                   if (taggedRoom != null) {
                     currentIndex = handleNode(
                         context, currentIndex, text, children, style, element,
@@ -208,6 +211,7 @@ class RichTextEditingController extends TextEditingController {
                                 : taggedRoom.icon,
                             displayName: taggedRoom.displayName,
                             avatar: taggedRoom.avatar,
+                            vias: vias?.$2,
                             style: style,
                             placeholderColor: taggedRoom.defaultColor));
                     return currentIndex;

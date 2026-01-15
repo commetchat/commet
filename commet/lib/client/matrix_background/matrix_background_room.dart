@@ -301,4 +301,8 @@ class MatrixBackgroundRoom implements Room {
     // TODO: implement getMember
     throw UnimplementedError();
   }
+
+  @override
+  // TODO: implement isSpecialRoomType
+  bool get isSpecialRoomType => false;
 }

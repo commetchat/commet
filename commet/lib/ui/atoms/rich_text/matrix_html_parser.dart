@@ -419,8 +419,12 @@ class LinkifyHtmlExtension extends HtmlExtension {
               result.$1 == MatrixLinkType.roomAlias) {
             var mentionedRoom = client.getRoom(mxid);
             mentionedRoom ??= client.getRoomByAlias(mxid);
+
+            var vias = client.parseAddressToIdAndVia(uri);
+
             overrideWidget = MentionWidget(
               displayName: mentionedRoom?.displayName ?? mxid.substring(1),
+              vias: vias?.$2,
               fallbackIcon: preferences.usePlaceholderRoomAvatars
                   ? null
                   : mentionedRoom?.icon ?? Icons.tag,

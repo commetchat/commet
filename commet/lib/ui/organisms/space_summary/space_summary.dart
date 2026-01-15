@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/space_banner/space_banner_component.dart';
 import 'package:commet/client/components/space_color_scheme/space_color_scheme_component.dart';
-import 'package:commet/ui/navigation/adaptive_dialog.dart';
+import 'package:commet/client/space_child.dart';
 import 'package:commet/ui/organisms/space_summary/space_summary_view.dart';
-import 'package:commet/ui/pages/add_space_or_room/add_space_or_room.dart';
+import 'package:commet/ui/pages/get_or_create_room/get_or_create_room.dart';
 import 'package:commet/ui/pages/settings/room_settings_page.dart';
 import 'package:commet/ui/pages/settings/space_settings_page.dart';
 import 'package:flutter/material.dart';
@@ -86,23 +86,31 @@ class _SpaceSummaryState extends State<SpaceSummary> {
     NavigationUtils.navigateTo(context, RoomSettingsPage(room: room));
   }
 
-  void onAddRoomButtonTap() {
-    AdaptiveDialog.show(context,
-        builder: (dialogContext) => AddSpaceOrRoom.askCreateOrExistingRoom(
-              client: widget.space.client,
-              rooms: widget.space.client
-                  .getEligibleRoomsForSpace(widget.space)
-                  .toList(),
-              createRoom: createRoom,
-              onRoomsSelected: (rooms) {
-                for (var room in rooms) {
-                  widget.space.setSpaceChildRoom(room);
-                }
-                if (mounted) {
-                  Navigator.pop(dialogContext);
-                }
-              },
-            ),
-        title: "Add Room to Space");
+  void onAddRoomButtonTap() async {
+    var room = await GetOrCreateRoom.show(
+      widget.space.client,
+      context,
+      joinRoom: false,
+      showAllRoomTypes: true,
+      existingRoomsRemoveWhere: (child) {
+        if (child case SpaceChildSpace s) {
+          if (s.child == widget.space) return true;
+        }
+
+        if (widget.space.children.any((i) => i.id == child.id)) {
+          return true;
+        }
+
+        return false;
+      },
+    );
+
+    if (room is SpaceChildRoom) {
+      widget.space.setSpaceChildRoom(room.child);
+    }
+
+    if (room is SpaceChildSpace) {
+      widget.space.setSpaceChildSpace(room.child);
+    }
   }
 }

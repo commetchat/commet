@@ -1,3 +1,4 @@
+import 'package:commet/client/client.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:flutter/material.dart';
@@ -31,6 +32,10 @@ class RoomPreviewView extends StatelessWidget {
                 Row(
                   spacing: 8,
                   children: [
+                    if (previewData.type != null)
+                      tiamat.Tooltip(
+                          text: previewData.type!.string,
+                          child: Icon(size: 15, previewData.type!.icon)),
                     if (previewData.numMembers != null)
                       Row(
                         children: [
