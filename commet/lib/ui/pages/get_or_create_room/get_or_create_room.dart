@@ -70,22 +70,6 @@ class GetOrCreateRoom extends StatefulWidget {
     }
 
     final creators = [
-      if (showAllRoomTypes || createSpace)
-        RoomGetter(
-          label: "Space",
-          icon: Icons.spoke,
-          descriptionBuilder: (context) => SpaceCreatorDescription(),
-          formBuilder: (context, {onPicked}) => RoomCreatorWidget(
-            fields: [
-              RoomFieldName(),
-              RoomFieldTopic(),
-              RoomFieldVisibility(),
-            ],
-          ),
-          create: (args) async {
-            return SpaceChildSpace(await client!.createSpace(args));
-          },
-        ),
       if (showAllRoomTypes || createTextChat)
         RoomGetter(
           label: "Text Chat",
@@ -159,7 +143,23 @@ class GetOrCreateRoom extends StatefulWidget {
           create: (args) async {
             return SpaceChildRoom(await client!.createRoom(args));
           },
-        )
+        ),
+      if (showAllRoomTypes || createSpace)
+        RoomGetter(
+          label: "Space",
+          icon: Icons.spoke,
+          descriptionBuilder: (context) => SpaceCreatorDescription(),
+          formBuilder: (context, {onPicked}) => RoomCreatorWidget(
+            fields: [
+              RoomFieldName(),
+              RoomFieldTopic(),
+              RoomFieldVisibility(),
+            ],
+          ),
+          create: (args) async {
+            return SpaceChildSpace(await client!.createSpace(args));
+          },
+        ),
     ];
 
     final existing = pickExisting
