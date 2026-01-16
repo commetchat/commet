@@ -80,7 +80,8 @@ class _CalendarViewDayState extends State<CalendarViewDay> {
                     mainAxisSize: MainAxisSize.max,
                     children: events.map((e) {
                       return Expanded(
-                        child: EventViewMini(e, widget.calendar),
+                        child: EventViewMini(
+                            e.event!, widget.calendar.config, e.color),
                       );
                     }).toList(),
                   );
@@ -95,8 +96,9 @@ class _CalendarViewDayState extends State<CalendarViewDay> {
                   return Padding(
                       padding: const EdgeInsets.fromLTRB(2, 1, 12, 0),
                       child: EventViewBox(
-                        event,
-                        widget.calendar,
+                        event.event!,
+                        color: event.color,
+                        widget.calendar.config,
                         boundary: boundary,
                         onEventTapped: widget.onEventTapped,
                       ));

@@ -173,8 +173,9 @@ class _CalendarViewWeekState extends State<CalendarViewWeek> {
                         return Padding(
                             padding: const EdgeInsets.fromLTRB(2, 0, 2, 2),
                             child: EventViewMini(
-                              e,
-                              widget.calendar,
+                              e.event!,
+                              widget.calendar.config,
+                              e.color,
                               onEventTapped: widget.onEventTapped,
                             ));
                       }).toList(),
@@ -189,8 +190,9 @@ class _CalendarViewWeekState extends State<CalendarViewWeek> {
                     return Padding(
                         padding: const EdgeInsets.fromLTRB(2, 2, 2, 0),
                         child: EventViewBox(
-                          events.first,
-                          widget.calendar,
+                          events.first.event!,
+                          color: events.first.color,
+                          widget.calendar.config,
                           boundary: boundary,
                           onEventTapped: widget.onEventTapped,
                           avatarRadius: 8,

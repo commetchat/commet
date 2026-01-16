@@ -28,18 +28,50 @@ class ClientConnectionStatusUpdate {
 
 enum ClientConnectionStatus { unknown, connected, connecting, disconnected }
 
-enum RoomType { defaultRoom, photoAlbum, voipRoom, calendar }
+enum RoomType {
+  defaultRoom,
+  photoAlbum,
+  space,
+  voipRoom,
+  calendar;
+}
+
+extension ToIcon on RoomType {
+  IconData get icon {
+    return switch (this) {
+      RoomType.defaultRoom => Icons.tag,
+      RoomType.photoAlbum => Icons.photo,
+      RoomType.space => Icons.spoke,
+      RoomType.voipRoom => Icons.volume_up,
+      RoomType.calendar => Icons.calendar_month,
+    };
+  }
+}
+
+extension ToString on RoomType {
+  String get string {
+    return switch (this) {
+      RoomType.defaultRoom => "Chat Room",
+      RoomType.photoAlbum => "Photo Album",
+      RoomType.space => "Space",
+      RoomType.voipRoom => "Voice Chat",
+      RoomType.calendar => "Calendar",
+    };
+  }
+}
 
 class CreateRoomArgs {
-  String name;
-  RoomVisibility visibility;
-  bool enableE2EE;
+  String? name;
+  RoomVisibility? visibility;
+  bool? enableE2EE;
   RoomType roomType;
+  String? topic;
 
   CreateRoomArgs({
-    required this.name,
-    required this.visibility,
-    required this.enableE2EE,
+    this.name,
+    this.visibility,
+    this.enableE2EE,
+    this.topic,
     this.roomType = RoomType.defaultRoom,
   });
 }

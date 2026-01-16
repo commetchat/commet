@@ -1,3 +1,4 @@
+import 'package:commet/client/client.dart' as commet;
 import 'package:commet/client/matrix/components/emoticon/matrix_emoticon_component.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/room.dart' show RoomVisibility;
@@ -17,9 +18,13 @@ extension MatrixExtensions on Client {
         uri.authority, uri.pathSegments.first, width, height);
   }
 
-  Future<RoomPreview?> getRoomPreview(String roomId) async {
+  Future<RoomPreview?> getRoomPreview(String roomId,
+      {List<String>? via}) async {
     var result = await request(RequestType.GET,
-        "/client/unstable/im.nheko.summary/rooms/${Uri.encodeComponent(roomId)}/summary");
+        "/client/unstable/im.nheko.summary/rooms/${Uri.encodeComponent(roomId)}/summary",
+        query: {
+          if (via != null) "via": via.join(","),
+        });
 
     var name = result["name"] as String?;
     var id = result["room_id"] as String?;
@@ -27,6 +32,14 @@ extension MatrixExtensions on Client {
     var topic = result["topic"] as String?;
     var numMembers = result["num_joined_members"] as int?;
     var joinRule = result["join_rule"] as String?;
+
+    var type = switch (result["room_type"]) {
+      "m.space" => commet.RoomType.space,
+      "chat.commet.calendar" => commet.RoomType.calendar,
+      "chat.commet.photo_album" => commet.RoomType.photoAlbum,
+      "org.matrix.msc3417.call" => commet.RoomType.voipRoom,
+      _ => commet.RoomType.defaultRoom
+    };
 
     var visibility = switch (joinRule) {
       "public" => RoomVisibility.public,
@@ -45,7 +58,7 @@ extension MatrixExtensions on Client {
 
       return GenericRoomPreview(id,
           displayName: name,
-          type: RoomPreviewType.room,
+          type: type,
           avatar: image,
           numMembers: numMembers,
           visibility: visibility,

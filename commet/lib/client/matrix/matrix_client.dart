@@ -519,12 +519,16 @@ class MatrixClient extends Client {
       creationContent: creationContent,
       name: args.name,
       initialState: initialState,
+      topic: args.topic,
       visibility: args.visibility == RoomVisibility.private
           ? matrix.Visibility.private
           : matrix.Visibility.public,
     );
+
+    await Future.delayed(Duration(seconds: 1));
+
     var matrixRoom = _matrixClient.getRoomById(id)!;
-    if (args.enableE2EE) {
+    if (args.enableE2EE!) {
       await matrixRoom.enableEncryption();
     }
 
@@ -556,7 +560,11 @@ class MatrixClient extends Client {
 
   @override
   Future<Space> joinSpace(String address) async {
-    var id = await _matrixClient.joinRoom(address);
+    var info = parseAddressToIdAndVia(address);
+    if (info == null) {
+      throw Exception("Invalid address");
+    }
+    var id = await _matrixClient.joinRoom(info.$1, via: info.$2);
     await _matrixClient.waitForRoomInSync(id);
     if (hasSpace(id)) return getSpace(id)!;
 
@@ -571,7 +579,12 @@ class MatrixClient extends Client {
 
   @override
   Future<Room> joinRoom(String address) async {
-    var id = await _matrixClient.joinRoom(address);
+    var info = parseAddressToIdAndVia(address);
+    if (info == null) {
+      throw Exception("Invalid address");
+    }
+
+    var id = await _matrixClient.joinRoom(info.$1, via: info.$2);
     await _matrixClient.waitForRoomInSync(id);
     if (hasRoom(id)) return getRoom(id)!;
 
@@ -644,10 +657,46 @@ class MatrixClient extends Client {
     return _spaces.any((element) => element.identifier == identifier);
   }
 
+  (String, List<String>?)? parseAddressToIdAndVia(String address) {
+    String id = address;
+    List<String>? via;
+
+    if (address.startsWith("!") || address.startsWith("#")) {
+      var split = address.split("?");
+      id = split.first;
+
+      if (split.length >= 2) {
+        var query = Uri.splitQueryString(split[1]);
+        if (query.containsKey("via")) {
+          via = query["via"]!.split(",");
+        }
+
+        // dont need to use via when it is the homeserver this user is connected to
+        via?.removeWhere((i) => i == matrixClient.userID!.domain);
+      }
+    }
+
+    if (address.startsWith("https")) {
+      var url = Uri.parse(address);
+      var info = parseMatrixLink(url);
+
+      if (info == null) {
+        return null;
+      }
+
+      return parseAddressToIdAndVia(info.$3);
+    }
+
+    return (id, via);
+  }
+
   @override
   Future<RoomPreview?> getRoomPreview(String address) async {
     try {
-      return await _matrixClient.getRoomPreview(address);
+      var info = parseAddressToIdAndVia(address);
+      if (info == null) return null;
+
+      return await _matrixClient.getRoomPreview(info.$1, via: info.$2);
     } catch (exception, trace) {
       Log.onError(exception, trace);
       return null;
@@ -656,12 +705,7 @@ class MatrixClient extends Client {
 
   @override
   Future<RoomPreview?> getSpacePreview(String address) async {
-    try {
-      return await _matrixClient.getRoomPreview(address);
-    } catch (exception, trace) {
-      Log.onError(exception, trace);
-      return null;
-    }
+    return getRoomPreview(address);
   }
 
   @override
@@ -784,23 +828,25 @@ class MatrixClient extends Client {
     return result;
   }
 
-  static (MatrixLinkType, String)? parseMatrixLink(Uri uri) {
+  static (MatrixLinkType, String, String)? parseMatrixLink(Uri uri) {
     if (uri.authority != "matrix.to") {
       return null;
     }
 
-    var mxid = Uri.decodeComponent(uri.fragment.substring(1));
+    var joinUrl = Uri.decodeComponent(uri.fragment.substring(1));
 
-    if (mxid.startsWith("@")) {
-      return (MatrixLinkType.user, mxid);
+    var roomId = joinUrl.split("?").first;
+
+    if (roomId.startsWith("@")) {
+      return (MatrixLinkType.user, roomId, joinUrl);
     }
 
-    if (mxid.startsWith("!")) {
-      return (MatrixLinkType.room, mxid);
+    if (roomId.startsWith("!")) {
+      return (MatrixLinkType.room, roomId, joinUrl);
     }
 
-    if (mxid.startsWith("#")) {
-      return (MatrixLinkType.roomAlias, mxid);
+    if (roomId.startsWith("#")) {
+      return (MatrixLinkType.roomAlias, roomId, joinUrl);
     }
 
     return null;

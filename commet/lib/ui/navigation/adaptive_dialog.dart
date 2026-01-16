@@ -1,5 +1,8 @@
+import 'package:commet/client/client.dart';
 import 'package:commet/config/layout_config.dart';
+import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
+import 'package:commet/ui/molecules/user_panel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:tiamat/tiamat.dart';
@@ -27,12 +30,43 @@ class AdaptiveDialog {
     });
   }
 
+  static Future<Client?> pickClient(
+    BuildContext context, {
+    String? title,
+    bool scrollable = true,
+    bool dismissible = true,
+    double initialHeightMobile = 0.5,
+  }) async {
+    if (clientManager?.clients.length == 1) {
+      return clientManager!.clients.first;
+    }
+
+    return AdaptiveDialog.pickOne(
+      context,
+      title: "Pick Account",
+      items: clientManager!.clients,
+      itemBuilder: (context, item, callback) {
+        return SizedBox(
+          child: UserPanelView(
+            avatar: item.self!.avatar,
+            nameColor: item.self!.defaultColor,
+            avatarColor: item.self!.defaultColor,
+            displayName: item.self!.displayName,
+            detail: item.self!.identifier,
+            onClicked: callback,
+          ),
+        );
+      },
+    );
+  }
+
   static Future<T?> show<T extends Object?>(
     BuildContext context, {
     required Widget Function(BuildContext context) builder,
     String? title,
     bool scrollable = true,
     bool dismissible = true,
+    double contentPadding = 8,
     double initialHeightMobile = 0.5,
   }) async {
     if (Layout.desktop) {
@@ -41,6 +75,7 @@ class AdaptiveDialog {
               ? SingleChildScrollView(child: builder(context))
               : builder(context),
           title: title,
+          contentPadding: contentPadding,
           barrierDismissible: dismissible);
     }
 

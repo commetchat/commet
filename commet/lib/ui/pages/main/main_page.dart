@@ -5,11 +5,11 @@ import 'package:commet/client/components/direct_messages/direct_message_componen
 import 'package:commet/client/components/profile/profile_component.dart';
 import 'package:commet/client/components/voip/voip_component.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
+import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/debug/log.dart';
-import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/organisms/user_profile/user_profile.dart';
-import 'package:commet/ui/pages/add_space_or_room/add_space_or_room.dart';
+import 'package:commet/ui/pages/get_or_create_room/get_or_create_room.dart';
 import 'package:commet/ui/pages/setup/setup_page.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:commet/ui/navigation/navigation_utils.dart';
@@ -220,21 +220,34 @@ class MainPageState extends State<MainPage> {
     });
   }
 
-  void onOpenRoomSignal((String, String?) strings) {
+  void onOpenRoomSignal((String, String?) strings) async {
     var roomId = strings.$1;
     var clientId = strings.$2;
+
+    var originalId = roomId;
 
     Client? client;
 
     if (clientId != null) {
       client = clientManager.getClient(clientId);
+
+      if (client is MatrixClient) {
+        var info = client.parseAddressToIdAndVia(roomId);
+        if (info != null) {
+          roomId = info.$1;
+        }
+      }
     } else {
       client = clientManager.clients
           .where((element) => element.hasRoom(roomId))
-          .first;
+          .firstOrNull;
     }
 
-    var room = client!.getRoom(roomId);
+    if (client == null) {
+      return;
+    }
+
+    var room = client.getRoom(roomId);
 
     if (room == null) {
       room = client.getRoomByAlias(roomId);
@@ -250,13 +263,10 @@ class MainPageState extends State<MainPage> {
 
       selectRoom(room);
     } else {
-      AdaptiveDialog.show(context,
-          builder: (dialogContext) => AddSpaceOrRoom(
-                clients: [client!],
-                initialRoomId: roomId,
-                mode: AddSpaceOrRoomMode.joinExistingRoom,
-              ),
-          title: "Add Room");
+      GetOrCreateRoom.show(client, context,
+          pickExisting: false,
+          showAllRoomTypes: false,
+          initialRoomAddress: originalId);
     }
   }
 

@@ -355,6 +355,15 @@ class MatrixSpace extends Space {
   @override
   Future<void> setSpaceChildRoom(Room room) async {
     await _matrixRoom.setSpaceChild(room.identifier);
+    children.add(SpaceChildRoom(room));
+    _onUpdate.add(null);
+  }
+
+  @override
+  Future<void> setSpaceChildSpace(Space room) async {
+    await _matrixRoom.setSpaceChild(room.identifier);
+    children.add(SpaceChildSpace(room));
+    _onUpdate.add(null);
   }
 
   @override

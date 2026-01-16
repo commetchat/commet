@@ -741,4 +741,13 @@ class MatrixRoom extends Room {
 
     _onUpdate.add(null);
   }
+
+  @override
+  // TODO: implement isSpecialRoomType
+  bool get isSpecialRoomType =>
+      matrixRoom
+          .getState(matrix.EventTypes.RoomCreate)
+          ?.content
+          .containsKey("type") ??
+      false;
 }

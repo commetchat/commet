@@ -113,6 +113,8 @@ abstract class Space {
   /// Adds an existing room as a child of a space
   Future<void> setSpaceChildRoom(Room room);
 
+  Future<void> setSpaceChildSpace(Space room);
+
   /// Load extra information about the space, that is not necessarily required for functionality
   Future<void> loadExtra();
 
