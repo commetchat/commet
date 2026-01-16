@@ -4,6 +4,7 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/components/donation_awards/donation_awards_component.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/debug/log.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/organisms/particle_player/particle_system_confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:starfield/particle_system/ecs_particle_system.dart';
@@ -15,10 +16,12 @@ class DonationRewardsConfirmation extends StatefulWidget {
       {required this.client,
       required this.identifier,
       required this.since,
+      required this.didOpenDonationWindow,
       super.key});
   final Client client;
   final SecretClientIdentifier identifier;
-  final DateTime since;
+  final DateTime? since;
+  final bool didOpenDonationWindow;
 
   @override
   State<DonationRewardsConfirmation> createState() =>
@@ -39,8 +42,37 @@ class _DonationRewardsConfirmationState
         DonationAwardsClient(BuildConfig.donationRewardsApiHost, widget.client);
 
     WidgetsBinding.instance.addObserver(this);
-    loop();
+
+    if (widget.since != null) {
+      loop();
+    } else {
+      awards.getAwards(widget.identifier).then((result) {
+        setState(() {
+          if (result == null) {
+            receivedAwards = [];
+          } else {
+            receivedAwards = result;
+          }
+
+          if (receivedAwards?.isNotEmpty == true) {
+            doConfetti();
+          }
+        });
+      });
+    }
+
     super.initState();
+  }
+
+  void doConfetti() async {
+    print("initializing confetti");
+    var effect = MessageEffectConfetti();
+
+    await effect.init();
+
+    setState(() {
+      particles = effect.system;
+    });
   }
 
   @override
@@ -71,17 +103,14 @@ class _DonationRewardsConfirmationState
   Future<void> checkConfirmation() async {
     var result = await awards.getAwards(
       widget.identifier,
-      // since: widget.since,
+      since: widget.since,
     );
     if (result != null) {
-      var effect = MessageEffectConfetti();
-      print("initializing confetti");
-      await effect.init();
-      print("Done");
-      print(effect.system);
+      if (result.isNotEmpty) {
+        doConfetti();
+      }
       setState(() {
         receivedAwards = result;
-        particles = effect.system;
       });
     }
   }
@@ -109,7 +138,9 @@ class _DonationRewardsConfirmationState
                   "Confirming donation",
                   style: TextTheme.of(context).headlineSmall,
                 ),
-                tiamat.Text.labelLow("Follow the instructions in your browser"),
+                if (widget.didOpenDonationWindow)
+                  tiamat.Text.labelLow(
+                      "Follow the instructions in your browser. Please be patient, it may take a minute or two for your awards to appear once your donation has been received."),
               ]),
               Column(
                 children: [
@@ -120,7 +151,7 @@ class _DonationRewardsConfirmationState
                         child: CircularProgressIndicator(),
                       ),
                     ),
-                  if (receivedAwards != null)
+                  if (receivedAwards?.isNotEmpty == true)
                     Container(
                       decoration: BoxDecoration(
                           color: ColorScheme.of(context).surfaceContainerLowest,
@@ -134,7 +165,10 @@ class _DonationRewardsConfirmationState
                                 .toList()),
                       ),
                     ),
-                  if (receivedAwards != null)
+                  if (receivedAwards?.isEmpty == true)
+                    tiamat.Text.labelLow(
+                        "Could not find any donations :( Please consider donating to support development of Commet!"),
+                  if (receivedAwards?.isNotEmpty == true)
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: tiamat.Text.labelLow(
@@ -146,7 +180,7 @@ class _DonationRewardsConfirmationState
                 spacing: 8,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  if (receivedAwards != null)
+                  if (receivedAwards?.isNotEmpty == true)
                     IgnorePointer(
                       ignoring: acceptLoading,
                       child: tiamat.Button(
@@ -167,9 +201,16 @@ class _DonationRewardsConfirmationState
                           }),
                     ),
                   tiamat.Button.secondary(
-                    text: "Dismiss",
-                    onTap: () => Navigator.of(context).pop(),
-                  )
+                      text: "Dismiss",
+                      onTap: () async {
+                        if (receivedAwards?.isEmpty == true ||
+                            await AdaptiveDialog.confirmation(context,
+                                    prompt:
+                                        "Are you sure you want to dismiss without accepting any award?") ==
+                                true) {
+                          Navigator.of(context).pop();
+                        }
+                      })
                 ],
               )
             ],

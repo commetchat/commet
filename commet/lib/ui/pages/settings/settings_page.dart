@@ -110,6 +110,7 @@ class SettingsPage extends StatelessWidget {
           builder: (context) => DonationRewardsConfirmation(
                 client: client!,
                 identifier: secret!,
+                didOpenDonationWindow: true,
                 since: time,
               ),
           dismissible: false);

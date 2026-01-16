@@ -1,5 +1,7 @@
+import 'package:commet/client/components/donation_awards/donation_awards_component.dart';
 import 'package:commet/ui/atoms/adaptive_context_menu.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
+import 'package:commet/ui/pages/settings/donation_rewards_confirmation.dart';
 import 'package:commet/ui/pages/settings/settings_button.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
 import 'package:commet/utils/color_utils.dart';
@@ -148,7 +150,7 @@ class DesktopSettingsPageState extends State<DesktopSettingsPage> {
               ),
             ),
             buildDonateButton(context,
-                onTap: widget.onDonateButtonTapped?.call(context))
+                onTap: () => widget.onDonateButtonTapped?.call(context))
           ],
         ),
       ),
@@ -161,7 +163,30 @@ class DesktopSettingsPageState extends State<DesktopSettingsPage> {
       child: AdaptiveContextMenu(
         items: [
           ContextMenuItem(
-              text: "Refresh Awards", icon: m.Icons.refresh, onPressed: () {}),
+              text: "Refresh Awards",
+              icon: m.Icons.refresh,
+              onPressed: () async {
+                var client = await AdaptiveDialog.pickClient(context);
+
+                if (client != null) {
+                  var identifier = await client
+                      .getComponent<DonationAwardsComponent>()
+                      ?.getClientSecret();
+                  if (identifier != null) {
+                    AdaptiveDialog.show(
+                      context,
+                      builder: (context) {
+                        return DonationRewardsConfirmation(
+                          client: client,
+                          identifier: identifier,
+                          didOpenDonationWindow: false,
+                          since: null,
+                        );
+                      },
+                    );
+                  }
+                }
+              }),
         ],
         child: m.Material(
           clipBehavior: Clip.antiAlias,
