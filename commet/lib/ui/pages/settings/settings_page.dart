@@ -1,6 +1,5 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/donation_awards/donation_awards_component.dart';
-import 'package:commet/config/build_config.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
