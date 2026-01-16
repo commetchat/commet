@@ -1,3 +1,4 @@
+import 'package:commet/client/components/space_banner/space_banner_component.dart';
 import 'package:commet/client/components/space_color_scheme/space_color_scheme_component.dart';
 import 'package:commet/utils/scaled_app.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +23,8 @@ class SpaceHeader extends StatelessWidget {
 
     EdgeInsets padding = MediaQuery.of(context).scale().viewPadding;
 
+    var banner = space.getComponent<SpaceBannerComponent>();
+
     return ClipRRect(
       borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(8), bottomRight: Radius.circular(8)),
@@ -31,9 +34,9 @@ class SpaceHeader extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            if (space.avatar != null)
+            if (banner?.banner != null || space.avatar != null)
               Image(
-                image: space.avatar!,
+                image: banner?.banner ?? space.avatar!,
                 fit: BoxFit.cover,
                 alignment: padding.top > 0
                     ? AlignmentGeometry.xy(0, -0.25)
@@ -61,9 +64,8 @@ class SpaceHeader extends StatelessWidget {
                       padding: const EdgeInsets.fromLTRB(8, 2, 0, 2),
                       child: Text(space.displayName,
                           style:
-                              Theme.of(context).textTheme.titleLarge!.copyWith(
+                              Theme.of(context).textTheme.titleMedium!.copyWith(
                                   color: colorScheme.onPrimary,
-                                  fontWeight: FontWeight.w500,
                                   shadows: space.avatar != null
                                       ? [
                                           const BoxShadow(

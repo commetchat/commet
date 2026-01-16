@@ -72,6 +72,7 @@ class _ProfileEditViewState extends State<ProfileEditView> {
       return ImagePickerButton(
         currentImage: widget.avatar,
         withData: true,
+        cropAspectRatio: 1.0,
         onImageRead: (bytes, mimeType, path) =>
             widget.pickAvatar?.call(bytes, mimeType),
       );

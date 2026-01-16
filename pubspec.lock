@@ -266,6 +266,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.15.0"
+  crop_image:
+    dependency: transitive
+    description:
+      name: crop_image
+      sha256: "27cbce1685a595efee62caab81c98b49b636f765c1da86353f58f5b2bf2775d8"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.17"
   cross_file:
     dependency: transitive
     description:
@@ -579,7 +587,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "8f695c4bf6c16cf00aa2d4e9933f6b3ed17098d6"
+      resolved-ref: "1a2539aa10047b557f590abe21e8a5be0a93be70"
       url: "https://github.com/commetchat/flutter_html.git"
     source: git
     version: "3.0.0-beta.2"
@@ -1119,8 +1127,8 @@ packages:
     dependency: transitive
     description:
       path: "."
-      ref: "upstream-v1.1.1"
-      resolved-ref: "45d195c9e1b19ea064431e21b13e08d6faff774b"
+      ref: "upstream-v1.1.1+patch.1"
+      resolved-ref: "1b9b673a9a5a96dc0b01e5dabee38de9840b0342"
       url: "https://github.com/commetchat/matrix-dart-sdk.git"
     source: git
     version: "1.1.1"
@@ -1128,8 +1136,8 @@ packages:
     dependency: transitive
     description:
       path: "."
-      ref: "upstream-v1.1.1+patch.2"
-      resolved-ref: "5fb41f33916abfd7ad483557223b31abb40260e8"
+      ref: "upstream-v1.1.1+patch.3"
+      resolved-ref: "42fad58ce86ff67d84a8c176f46c45b1c36a965d"
       url: "https://github.com/commetchat/matrix-dart-sdk-drift-db.git"
     source: git
     version: "0.0.1"

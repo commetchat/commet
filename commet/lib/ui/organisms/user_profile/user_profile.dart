@@ -262,16 +262,15 @@ class _UserProfileState extends State<UserProfile> {
   }
 
   Future<void> setBanner() async {
-    var result = await PickerUtils.pickImage();
+    var result =
+        await PickerUtils.pickImageAndCrop(context, aspectRatio: 700 / 230);
     if (result == null) return;
 
-    final bytes = await result.readAsBytes();
-
     setState(() {
-      banner = Image.memory(bytes).image;
+      banner = Image.memory(result).image;
     });
 
-    await component.setBanner(bytes);
+    await component.setBanner(result);
   }
 
   Color previewColor = Colors.blue;
@@ -325,16 +324,14 @@ class _UserProfileState extends State<UserProfile> {
   }
 
   Future<void> setAvatar() async {
-    var result = await PickerUtils.pickImage();
+    var result = await PickerUtils.pickImageAndCrop(context, aspectRatio: 1.0);
     if (result == null) return;
 
-    final bytes = await result.readAsBytes();
-
     setState(() {
-      avatar = Image.memory(bytes).image;
+      avatar = Image.memory(result).image;
     });
 
-    await widget.client.setAvatar(bytes, "");
+    await widget.client.setAvatar(result, "");
   }
 
   Future<void> setStatus() async {

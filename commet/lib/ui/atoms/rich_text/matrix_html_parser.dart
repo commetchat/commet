@@ -107,6 +107,7 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
     var document = html_parser.parse(widget.text);
     bool big = shouldDoBigEmoji(document);
 
+    var theme = TextTheme.of(context);
     // Making a new one of these for every message we pass might make a lot of garbage
     var extension =
         MatrixEmoticonHtmlExtension(widget.client, widget.room, big);
@@ -152,6 +153,21 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
             right: Margin.zero(),
           ),
           whiteSpace: WhiteSpace.pre,
+        ),
+        "h1": Style.fromTextStyle(theme.headlineLarge!).copyWith(
+          margin: Margins.all(0),
+          padding: HtmlPaddings.all(0),
+          color: Theme.of(context).colorScheme.onSurface,
+        ),
+        "h2": Style.fromTextStyle(theme.headlineMedium!).copyWith(
+          margin: Margins.all(0),
+          padding: HtmlPaddings.all(0),
+          color: Theme.of(context).colorScheme.onSurface,
+        ),
+        "h3": Style.fromTextStyle(theme.headlineSmall!).copyWith(
+          margin: Margins.all(0),
+          padding: HtmlPaddings.all(0),
+          color: Theme.of(context).colorScheme.onSurface,
         ),
         "p": Style(
           border: Border.all(),
@@ -372,7 +388,12 @@ class LinkifyHtmlExtension extends HtmlExtension {
   InlineSpan build(ExtensionContext context) {
     if (context.node.attributes.containsKey("href")) {
       var uri = context.node.attributes["href"]!;
-      var href = Uri.parse(uri);
+      late Uri href;
+      try {
+        href = Uri.parse(uri);
+      } catch (e, _) {
+        href = Uri();
+      }
 
       if (href.host == "matrix.to") {
         var result = MatrixClient.parseMatrixLink(href);
@@ -423,10 +444,18 @@ class LinkifyHtmlExtension extends HtmlExtension {
         }
       }
 
+      late Uri destination;
+
+      try {
+        destination = Uri.parse(context.node.attributes["href"]!);
+      } catch (e, _) {
+        destination = Uri();
+      }
+
       return LinkSpan.create(context.node.text!,
           clientId: client.identifier,
           context: context.buildContext!,
-          destination: Uri.parse(context.node.attributes["href"]!));
+          destination: destination);
     }
 
     return TextSpan(

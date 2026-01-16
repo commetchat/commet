@@ -158,7 +158,10 @@ class _RoomPanelState extends State<RoomPanel> {
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                         ),
-                                      if (widget.body != null)
+                                      if (widget.body != null &&
+                                          widget.recentEventSenderColor !=
+                                              null &&
+                                          widget.recentEventSender != null)
                                         Flexible(child: recentEvent())
                                     ],
                                   ),
@@ -181,26 +184,31 @@ class _RoomPanelState extends State<RoomPanel> {
   }
 
   Widget recentEvent() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.baseline,
-      mainAxisSize: MainAxisSize.min,
-      textBaseline: TextBaseline.alphabetic,
-      children: [
-        if (widget.recentEventSender != null)
-          tiamat.Text(
-            widget.recentEventSender!,
-            type: TextType.labelLow,
-            autoAdjustBrightness: true,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            color: widget.recentEventSenderColor,
-          ),
-        tiamat.Text.labelLow(
-          widget.body!,
+    var color =
+        tiamat.Text.adjustColor(context, widget.recentEventSenderColor!);
+
+    var style = TextTheme.of(context)
+        .labelMedium
+        ?.copyWith(fontSize: 12, letterSpacing: 0);
+    return SizedBox(
+      height: 30,
+      child: RichText(
+          maxLines: 2,
           overflow: TextOverflow.ellipsis,
-          maxLines: 1,
-        )
-      ],
+          text: TextSpan(children: [
+            TextSpan(
+              text: widget.recentEventSender! + ":",
+              style: style?.copyWith(color: color),
+            ),
+            WidgetSpan(
+                child: SizedBox(
+              width: 4,
+            )),
+            TextSpan(
+                text: widget.body,
+                style:
+                    style?.copyWith(color: ColorScheme.of(context).secondary))
+          ])),
     );
   }
 

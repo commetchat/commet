@@ -91,7 +91,7 @@ class _RoomHeaderState extends State<RoomHeader> {
     if (shouldShowDefaultIcon) {
       iconWidget = m.Icon(
         defaultIcon,
-        size: 30,
+        size: 25,
       );
     } else {
       iconWidget = tiamat.Avatar(
@@ -127,8 +127,6 @@ class _RoomHeaderState extends State<RoomHeader> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     SizedBox(
-                      width: 30,
-                      height: 30,
                       child: Stack(
                         alignment: AlignmentGeometry.bottomRight,
                         children: [
@@ -144,7 +142,10 @@ class _RoomHeaderState extends State<RoomHeader> {
                     Flexible(
                       child: m.Text(
                         widget.room.displayName,
-                        style: m.Theme.of(context).textTheme.titleMedium,
+                        style: m.Theme.of(context)
+                            .textTheme
+                            .titleSmall
+                            ?.copyWith(color: IconTheme.of(context).color),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
