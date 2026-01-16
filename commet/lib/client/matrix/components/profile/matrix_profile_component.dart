@@ -163,42 +163,10 @@ class MatrixProfile
       List<ProfileBadge> badges = List.empty(growable: true);
 
       for (var entry in content) {
-        if (entry is! Map<String, dynamic>) continue;
-
-        var isValid = await validateBadgeSignature(entry);
-        if (!isValid) continue;
-
-        var signedContent = entry["signed"];
-        if (!validateAwardRecipient(signedContent)) {
-          continue;
+        var badge = await badgeFromContent(client, identifier, entry);
+        if (badge != null) {
+          badges.add(badge);
         }
-
-        var awardContent = signedContent["content"] as Map<String, dynamic>?;
-        if (awardContent == null) continue;
-
-        var image = awardContent["image"];
-        var body = awardContent["body"];
-        var brightnessStr = awardContent["chat.commet.image_brightness"];
-
-        Brightness? brightness;
-        if (brightnessStr == "light") {
-          brightness = Brightness.light;
-        }
-
-        if (brightnessStr == "dark") {
-          brightness = Brightness.dark;
-        }
-
-        badges.add(ProfileBadge(
-            MatrixMxcImage(
-              Uri.parse(image),
-              client.matrixClient,
-              doFullres: true,
-              doThumbnail: false,
-              autoLoadFullRes: true,
-            ),
-            body: body,
-            brightness: brightness));
       }
 
       return badges;
@@ -208,10 +176,63 @@ class MatrixProfile
     }
   }
 
-  bool validateAwardRecipient(Map<String, dynamic> awardContent) {
+  static Future<ProfileBadge?> badgeFromContent(MatrixClient client,
+      String recipientIdentifier, Map<String, dynamic> entry) async {
+    var isValid = await validateBadgeSignature(entry);
+    if (!isValid) return null;
+
+    var signedContent = entry["signed"];
+    if (!validateAwardRecipient(recipientIdentifier, signedContent)) {
+      return null;
+    }
+
+    var awardContent = signedContent["content"] as Map<String, dynamic>?;
+    if (awardContent == null) return null;
+
+    var image = awardContent["image"];
+    var body = awardContent["body"];
+    var brightnessStr = awardContent["chat.commet.image_brightness"];
+
+    Brightness? brightness;
+    if (brightnessStr == "light") {
+      brightness = Brightness.light;
+    }
+
+    if (brightnessStr == "dark") {
+      brightness = Brightness.dark;
+    }
+
+    var linkStr = signedContent["href"] as String?;
+
+    Uri? link;
+    if (linkStr != null) {
+      link = Uri.parse(linkStr);
+      if (link.scheme != "https") {
+        link = null;
+      }
+    }
+
+    return ProfileBadge(
+        MatrixMxcImage(
+          Uri.parse(image),
+          client.matrixClient,
+          doFullres: true,
+          doThumbnail: false,
+          autoLoadFullRes: true,
+        ),
+        source: entry,
+        sender: signedContent["sender"],
+        id: signedContent["id"],
+        body: body,
+        link: link,
+        brightness: brightness);
+  }
+
+  static bool validateAwardRecipient(
+      String recipientIdentifier, Map<String, dynamic> awardContent) {
     if (awardContent.containsKey("user_id_hash")) {
       var hashBytes = Uint8List.fromList(
-          sha256.convert(AsciiEncoder().convert(identifier)).bytes);
+          sha256.convert(AsciiEncoder().convert(recipientIdentifier)).bytes);
 
       var expectedHash = TextUtils.toHexString(hashBytes);
 
@@ -225,8 +246,9 @@ class MatrixProfile
         return true;
       }
     } else if (awardContent.containsKey("user_id")) {
-      if (awardContent["user_id"] != identifier) {
-        Log.i("Expected user $identifier but got ${awardContent["user_id"]}");
+      if (awardContent["user_id"] != recipientIdentifier) {
+        Log.i(
+            "Expected user $recipientIdentifier but got ${awardContent["user_id"]}");
         return false;
       }
 
@@ -237,7 +259,7 @@ class MatrixProfile
     }
   }
 
-  Future<bool> validateBadgeSignature(Map<String, dynamic> entry) async {
+  static Future<bool> validateBadgeSignature(Map<String, dynamic> entry) async {
     const knownPublicKeys = {
       "@awards:data.commet.chat": {
         "8d4f773c": "a3KSUrUaC0nph7EpOpC1Y6XDnYHttUW5jns3euZ8D+E"
@@ -408,5 +430,28 @@ class MatrixProfileComponent implements UserProfileComponent<MatrixClient> {
   @override
   Future<void> removeBio() {
     return removeField(bioKey);
+  }
+
+  @override
+  Future<List<ProfileBadge>> getAvailableBadges() async {
+    var accountEntries = client.matrixClient.accountData.entries
+        .where((i) => i.key.startsWith("chat.commet.profile_badge."));
+
+    List<ProfileBadge> badges = List.empty(growable: true);
+    for (var entry in accountEntries) {
+      var award = await MatrixProfile.badgeFromContent(
+          client, client.self!.identifier, entry.value.content);
+      if (award != null) {
+        badges.add(award);
+      }
+    }
+
+    return badges;
+  }
+
+  @override
+  Future<void> setProfileBadges(List<ProfileBadge> badges) {
+    return setField(
+        "chat.commet.profile_badges", badges.map((i) => i.source).toList());
   }
 }

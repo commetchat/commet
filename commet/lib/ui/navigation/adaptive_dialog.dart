@@ -30,6 +30,47 @@ class AdaptiveDialog {
     });
   }
 
+  static Future<List<T>?> pickMultiple<T extends Object?>(
+    BuildContext context, {
+    required List<T> items,
+    List<T> selected = const [],
+    required Widget Function(BuildContext context, T item) itemBuilder,
+    String? title,
+    bool scrollable = true,
+    bool dismissible = true,
+    double initialHeightMobile = 0.5,
+  }) async {
+    // I had to do this weird thing to make it happy with the type cast
+    // Dont know why
+    var builder = (BuildContext context, dynamic i) {
+      var item = i as T;
+      return itemBuilder(context, item);
+    };
+
+    var result = await AdaptiveDialog.show<List<dynamic>>(
+      context,
+      title: title,
+      dismissible: dismissible,
+      scrollable: scrollable,
+      builder: (context) {
+        return _SelectMultipleView<T>(
+          itemBuilder: builder,
+          items: items,
+          initialSelection: selected,
+        );
+      },
+    );
+
+    print("Got result:");
+    print(result);
+
+    if (result != null) {
+      return result.map((i) => i as T).toList();
+    }
+
+    return null;
+  }
+
   static Future<Client?> pickClient(
     BuildContext context, {
     String? title,
@@ -201,5 +242,82 @@ class AdaptiveDialog {
         ),
       );
     }, title: title);
+  }
+}
+
+class _SelectMultipleView<T> extends StatefulWidget {
+  const _SelectMultipleView(
+      {required this.itemBuilder,
+      required this.items,
+      this.initialSelection = const [],
+      super.key});
+  final List<T> items;
+  final List<T> initialSelection;
+  final Widget Function(BuildContext context, T item) itemBuilder;
+  @override
+  State<_SelectMultipleView> createState() => __SelectMultipleViewState();
+}
+
+class __SelectMultipleViewState<T> extends State<_SelectMultipleView<T>> {
+  List<T> selection = List.empty(growable: true);
+
+  @override
+  void initState() {
+    selection.addAll(widget.initialSelection);
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+        spacing: 8,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          ...widget.items
+              .map((i) => Material(
+                    clipBehavior: Clip.antiAlias,
+                    borderRadius: BorderRadius.circular(8),
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () {
+                        setState(() {
+                          if (selection.contains(i)) {
+                            selection.remove(i);
+                          } else {
+                            selection.add(i);
+                          }
+                        });
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          children: [
+                            Checkbox(
+                                value: selection.contains(i),
+                                onChanged: (v) {
+                                  if (v == true) {
+                                    setState(() {
+                                      selection.add(i);
+                                    });
+                                  } else {
+                                    setState(() {
+                                      selection.remove(i);
+                                    });
+                                  }
+
+                                  print(selection);
+                                }),
+                            widget.itemBuilder(context, i)
+                          ],
+                        ),
+                      ),
+                    ),
+                  ))
+              .toList(),
+          tiamat.Button(
+            text: "Submit",
+            onTap: () => Navigator.of(context).pop(selection),
+          )
+        ]);
   }
 }

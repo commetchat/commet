@@ -6,6 +6,7 @@ import 'package:commet/client/components/user_color/user_color_component.dart';
 import 'package:commet/client/components/user_presence/user_presence_component.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/config/layout_config.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/ui/atoms/code_block.dart';
 import 'package:commet/ui/molecules/message_input.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
@@ -15,6 +16,7 @@ import 'package:commet/utils/picker_utils.dart';
 import 'package:commet/utils/timezone_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
+import 'package:tiamat/tiamat.dart' as tiamat;
 
 class UserProfile extends StatefulWidget {
   const UserProfile(
@@ -158,10 +160,14 @@ class _UserProfileState extends State<UserProfile> {
       }
     }
 
-    await Future.wait<dynamic>([
-      if (banner != null) precacheImage(banner!, context),
-      if (avatar != null) precacheImage(avatar!, context),
-    ]);
+    try {
+      await Future.wait<dynamic>([
+        if (banner != null) precacheImage(banner!, context),
+        if (avatar != null) precacheImage(avatar!, context),
+      ]);
+    } catch (e, s) {
+      Log.onError(e, s);
+    }
 
     setState(() {
       theme = Theme.of(context).copyWith(colorScheme: scheme);
@@ -223,6 +229,7 @@ class _UserProfileState extends State<UserProfile> {
         setBio: setBio,
         clearBio: clearBio,
         badges: badges,
+        editBadges: editBadges,
         bio: bio,
         onSetAvatar: setAvatar,
         setColorOverride: setColorOverride,
@@ -456,5 +463,49 @@ class _UserProfileState extends State<UserProfile> {
     component.getProfile(widget.userId).then((value) async {
       await stateFromProfile(value);
     });
+  }
+
+  Future<void> editBadges() async {
+    var availableBadges = await component.getAvailableBadges();
+
+    if (availableBadges.isEmpty) {
+      AdaptiveDialog.show(context,
+          builder: (context) => SizedBox(
+                height: 200,
+                child: Center(
+                  child: Container(
+                    child: tiamat.Text.labelLow(
+                        "You don't have any badges. You can get badges by donating and supporting development of Commet"),
+                  ),
+                ),
+              ),
+          title: "Badges");
+      return;
+    }
+
+    var selectedBadges = await AdaptiveDialog.pickMultiple<ProfileBadge>(
+      context,
+      selected: badges,
+      items: availableBadges,
+      title: "Your Badges",
+      itemBuilder: (context, item) {
+        return Row(
+          spacing: 8,
+          children: [
+            SizedBox(width: 30, height: 30, child: Image(image: item.image)),
+            tiamat.Text.labelLow(item.body),
+          ],
+        );
+      },
+    );
+
+    if (selectedBadges != null) {
+      component.setProfileBadges(selectedBadges);
+      setState(() {
+        badges = selectedBadges;
+      });
+    }
+
+    print("Selected badges $selectedBadges");
   }
 }

@@ -95,8 +95,7 @@ class SettingsPage extends StatelessWidget {
 
     Log.i("Donating with encrypted username hash: ${secret?.encryptedHash}");
 
-    final String host =
-        BuildConfig.DEBUG ? "http://localhost:4321" : "https://commet.chat";
+    final String host = "https://preview.commet.chat";
 
     var time = DateTime.now();
 

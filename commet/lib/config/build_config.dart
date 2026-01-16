@@ -53,7 +53,7 @@ class BuildConfig {
 
   static const String appSchema = "chat.commet";
 
-  static Uri donationRewardsApiHost = Uri.http("localhost:8787");
+  static Uri donationRewardsApiHost = Uri.https("stripe-rewards.commet.chat");
 
   // IM SO SORRY
   static const String appName = MOBILE

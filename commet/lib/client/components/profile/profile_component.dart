@@ -42,8 +42,31 @@ class ProfileBadge {
   ImageProvider image;
   String body;
   Brightness? brightness;
+  String id;
+  String sender;
+  Uri? link;
+  Map<String, dynamic> source;
 
-  ProfileBadge(this.image, {required this.body, this.brightness});
+  ProfileBadge(this.image,
+      {required this.body,
+      required this.id,
+      required this.sender,
+      required this.source,
+      this.brightness,
+      this.link});
+
+  @override
+  bool operator ==(Object other) {
+    if (other is! ProfileBadge) return false;
+
+    return other.body == body &&
+        other.id == id &&
+        other.sender == sender &&
+        other.brightness == brightness;
+  }
+
+  @override
+  int get hashCode => id.hashCode;
 }
 
 abstract class ProfileWithTimezone {
@@ -77,4 +100,8 @@ abstract class UserProfileComponent<T extends Client> implements Component<T> {
   Future<void> removeBio();
 
   Future<void> removeTimezone();
+
+  Future<List<ProfileBadge>> getAvailableBadges();
+
+  Future<void> setProfileBadges(List<ProfileBadge> badges);
 }
