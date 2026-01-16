@@ -101,4 +101,15 @@ class MatrixDonationAwardsComponent
 
     return "${iv}_$encryptedUserIdHash";
   }
+
+  @override
+  Future<void> acceptAwards(List<Map<String, dynamic>> awards) async {
+    for (var award in awards) {
+      var id = award["signed"]["id"] as String;
+      var sender = award["signed"]["sender"] as String;
+
+      await client.matrixClient.setAccountData(client.matrixClient.userID!,
+          "chat.commet.profile_badge.${id}${sender}", award);
+    }
+  }
 }

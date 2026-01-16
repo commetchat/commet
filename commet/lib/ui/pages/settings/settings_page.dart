@@ -6,6 +6,7 @@ import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/molecules/user_panel.dart' show UserPanelView;
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
+import 'package:commet/ui/pages/settings/donation_rewards_confirmation.dart';
 import 'package:commet/ui/pages/settings/mobile_settings_page.dart';
 import 'package:commet/ui/pages/settings/settings_button.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
@@ -36,6 +37,7 @@ class SettingsPage extends StatelessWidget {
       return MobileSettingsPage(
         settings: settings,
         buttons: buttons,
+        onDonateButtonTapped: onDonateButtonTapped,
       );
     }
 
@@ -96,9 +98,21 @@ class SettingsPage extends StatelessWidget {
     final String host =
         BuildConfig.DEBUG ? "http://localhost:4321" : "https://commet.chat";
 
+    var time = DateTime.now();
+
     var url = Uri.parse(
         "$host/donate/#client_reference_id=${Uri.encodeComponent(secret?.encryptedHash ?? "null")}&matrix_id=${Uri.encodeComponent(userId!)}&secret=${Uri.encodeComponent(secret?.clientSecret ?? "null")}");
 
     LinkUtils.open(url);
+
+    if (userId != "null" && secret != null) {
+      AdaptiveDialog.show(context,
+          builder: (context) => DonationRewardsConfirmation(
+                client: client!,
+                identifier: secret!,
+                since: time,
+              ),
+          dismissible: false);
+    }
   }
 }

@@ -1,4 +1,5 @@
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
+import 'package:commet/ui/pages/settings/desktop_settings_page.dart';
 import 'package:commet/ui/pages/settings/settings_button.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
 import 'package:flutter/material.dart' as m;
@@ -9,10 +10,15 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 import '../../navigation/navigation_utils.dart';
 
 class MobileSettingsPage extends StatefulWidget {
-  const MobileSettingsPage({required this.settings, this.buttons, super.key});
+  const MobileSettingsPage(
+      {required this.settings,
+      this.buttons,
+      this.onDonateButtonTapped,
+      super.key});
   final List<SettingsButton>? buttons;
   final List<SettingsCategory> settings;
 
+  final Function(BuildContext context)? onDonateButtonTapped;
   @override
   State<MobileSettingsPage> createState() => _MobileSettingsPageState();
 }
@@ -114,6 +120,8 @@ class _MobileSettingsPageState extends State<MobileSettingsPage> {
                       )
                   ]),
                 ),
+                DesktopSettingsPageState.buildDonateButton(context,
+                    onTap: () => widget.onDonateButtonTapped?.call(context))
               ],
             ),
           ),

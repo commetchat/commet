@@ -1,3 +1,5 @@
+import 'package:commet/ui/atoms/adaptive_context_menu.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/pages/settings/settings_button.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
 import 'package:commet/utils/color_utils.dart';
@@ -145,38 +147,49 @@ class DesktopSettingsPageState extends State<DesktopSettingsPage> {
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(2.0),
-              child: m.Material(
-                clipBehavior: Clip.antiAlias,
-                color: ColorUtils.fromHexCode("#CE7A6D"),
-                borderRadius: BorderRadius.circular(8),
-                child: m.InkWell(
-                  onTap: () => widget.onDonateButtonTapped?.call(context),
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
-                        child: Row(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: m.Icon(
-                                m.Icons.favorite,
-                                color: ColorUtils.fromHexCode("#73342a"),
-                              ),
-                            ),
-                            tiamat.Text(
-                              "Donate",
-                              color: ColorUtils.fromHexCode("#73342a"),
-                            ),
-                          ],
-                        )),
-                  ),
-                ),
-              ),
-            )
+            buildDonateButton(context,
+                onTap: widget.onDonateButtonTapped?.call(context))
           ],
+        ),
+      ),
+    );
+  }
+
+  static Widget buildDonateButton(BuildContext context, {Function()? onTap}) {
+    return Padding(
+      padding: const EdgeInsets.all(2.0),
+      child: AdaptiveContextMenu(
+        items: [
+          ContextMenuItem(
+              text: "Refresh Awards", icon: m.Icons.refresh, onPressed: () {}),
+        ],
+        child: m.Material(
+          clipBehavior: Clip.antiAlias,
+          color: ColorUtils.fromHexCode("#CE7A6D"),
+          borderRadius: BorderRadius.circular(8),
+          child: m.InkWell(
+            onTap: onTap,
+            child: SizedBox(
+              width: double.infinity,
+              child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+                  child: Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: m.Icon(
+                          m.Icons.favorite,
+                          color: ColorUtils.fromHexCode("#73342a"),
+                        ),
+                      ),
+                      tiamat.Text(
+                        "Donate",
+                        color: ColorUtils.fromHexCode("#73342a"),
+                      ),
+                    ],
+                  )),
+            ),
+          ),
         ),
       ),
     );
