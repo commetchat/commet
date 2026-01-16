@@ -8,6 +8,7 @@ class MentionWidget extends StatelessWidget {
       this.avatar,
       this.style,
       this.fallbackIcon,
+      this.vias,
       this.onTap,
       super.key});
   final String displayName;
@@ -15,6 +16,7 @@ class MentionWidget extends StatelessWidget {
   final Function()? onTap;
   final IconData? fallbackIcon;
   final TextStyle? style;
+  final List<String>? vias;
   final Color placeholderColor;
 
   @override
@@ -55,6 +57,19 @@ class MentionWidget extends StatelessWidget {
                         ?.copyWith(
                             color: tiamat.Text.adjustColor(
                                 context, placeholderColor))),
+                if (vias != null)
+                  for (var i in vias!)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(4, 0, 0, 0),
+                      child: Text("($i)",
+                          textScaler: TextScaler.noScaling,
+                          style:
+                              (style ?? Theme.of(context).textTheme.bodyMedium)
+                                  ?.copyWith(
+                                      fontSize: 12,
+                                      color: tiamat.Text.adjustColor(
+                                          context, placeholderColor))),
+                    ),
               ],
             ),
           ),

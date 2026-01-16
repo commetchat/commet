@@ -4,10 +4,9 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/profile/profile_component.dart';
 import 'package:commet/ui/molecules/space_selector.dart';
-import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/navigation/navigation_utils.dart';
 import 'package:commet/ui/organisms/side_navigation_bar/side_navigation_bar_direct_messages.dart';
-import 'package:commet/ui/pages/add_space_or_room/add_space_or_room.dart';
+import 'package:commet/ui/pages/get_or_create_room/get_or_create_room.dart';
 import 'package:commet/ui/pages/settings/app_settings_page.dart';
 import 'package:commet/utils/common_strings.dart';
 import 'package:flutter/material.dart';
@@ -177,17 +176,8 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                             size: 70,
                             icon: Icons.add,
                             onTap: () {
-                              AdaptiveDialog.show(context,
-                                  builder: (_) => AddSpaceOrRoom(
-                                        clients: _clientManager.clients,
-                                        createSpace: (client, args) async {
-                                          await client.createSpace(args);
-                                        },
-                                        joinSpace: (client, address) async {
-                                          await client.joinSpace(address);
-                                        },
-                                      ),
-                                  title: promptAddSpace);
+                              GetOrCreateRoom.show(null, context,
+                                  pickExisting: false, createSpace: true);
                             },
                           ),
                           context),

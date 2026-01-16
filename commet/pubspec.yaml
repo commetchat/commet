@@ -178,6 +178,8 @@ flutter:
     - assets/sound/
     - assets/images/app_icon/
     - assets/images/effects/particles/
+    - assets/images/placeholders/
+    - assets/images/placeholders/photos/
     - assets/emoji_data/
     - assets/emoji_data/shortcodes/
     - assets/js/package/

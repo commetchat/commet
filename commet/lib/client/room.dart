@@ -44,6 +44,8 @@ abstract class Room {
   /// Returns true if the room is secured by end to end encryption
   bool get isE2EE;
 
+  bool get isSpecialRoomType;
+
   IconData get icon {
     var dm = client.getComponent<DirectMessagesComponent>();
     if (dm?.isRoomDirectMessage(this) == true) {

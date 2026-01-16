@@ -6,22 +6,24 @@ import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class EventViewBox extends StatelessWidget {
-  const EventViewBox(this.event, this.calendar,
+  const EventViewBox(this.event, this.config,
       {required this.boundary,
       this.onEventTapped,
+      required this.color,
       this.avatarRadius = 12,
       super.key});
-  final MatrixCalendar calendar;
-  final CalendarEventData<MatrixCalendarEventState> event;
+  final MatrixCalendarConfig config;
+  final Color color;
+  final MatrixCalendarEventState event;
   final Function(MatrixCalendarEventState)? onEventTapped;
   final Rect boundary;
   final double avatarRadius;
 
   @override
   Widget build(BuildContext context) {
-    bool unavailability = event.event!.isUnavailability;
-    var color = calendar.config.processEventColor(
-      calendar.config.getColorFromUser(event.event!.senderId!),
+    bool unavailability = event.isUnavailability;
+    var color = config.processEventColor(
+      config.getColorFromUser(event.senderId!),
       context,
     );
     var aspectRatio = boundary.width / boundary.height;
@@ -29,7 +31,7 @@ class EventViewBox extends StatelessWidget {
 
     int rotation = rotate ? 1 : 0;
     return Opacity(
-      opacity: event.event!.loaded != true ? 0.3 : 1.0,
+      opacity: event.loaded != true ? 0.3 : 1.0,
       child: DecoratedBox(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
@@ -41,7 +43,7 @@ class EventViewBox extends StatelessWidget {
             color:
                 unavailability ? Theme.of(context).colorScheme.surface : color,
             child: InkWell(
-              onTap: () => onEventTapped?.call(event.event!),
+              onTap: () => onEventTapped?.call(event),
               child: Stack(
                 children: [
                   unavailability
@@ -73,28 +75,27 @@ class EventViewBox extends StatelessWidget {
                                           quarterTurns: -rotation,
                                           child: tiamat.Avatar(
                                             radius: avatarRadius,
-                                            placeholderColor: calendar.config
-                                                .getColorFromUser(
-                                                    event.event!.senderId!),
-                                            placeholderText: calendar.config
-                                                .getUserDisplayname(
-                                                    event.event!.senderId!),
-                                            image: calendar.config
-                                                .getUserAvatar(
-                                                    event.event!.senderId!),
+                                            placeholderColor:
+                                                config.getColorFromUser(
+                                                    event.senderId!),
+                                            placeholderText:
+                                                config.getUserDisplayname(
+                                                    event.senderId!),
+                                            image: config
+                                                .getUserAvatar(event.senderId!),
                                           ),
                                         ),
                                         SizedBox(
                                           width: 3,
                                         ),
                                         Text(
-                                          event.title,
+                                          event.data.title,
                                           style: Theme.of(context)
                                               .textTheme
                                               .labelSmall!
                                               .copyWith(
                                                   fontSize: 10,
-                                                  color: calendar.config
+                                                  color: config
                                                       .processEventTextColor(
                                                           color, context)),
                                         ),
@@ -114,13 +115,11 @@ class EventViewBox extends StatelessWidget {
                                 padding: const EdgeInsets.fromLTRB(0, 4, 4, 0),
                                 child: tiamat.Avatar(
                                   radius: avatarRadius,
-                                  placeholderColor: calendar.config
-                                      .getColorFromUser(event.event!.senderId!),
-                                  placeholderText: calendar.config
-                                      .getUserDisplayname(
-                                          event.event!.senderId!),
-                                  image: calendar.config
-                                      .getUserAvatar(event.event!.senderId!),
+                                  placeholderColor:
+                                      config.getColorFromUser(event.senderId!),
+                                  placeholderText: config
+                                      .getUserDisplayname(event.senderId!),
+                                  image: config.getUserAvatar(event.senderId!),
                                 ),
                               ),
                             RotatedBox(
@@ -141,15 +140,14 @@ class EventViewBox extends StatelessWidget {
                                                     2, 2, 0, 0),
                                             child: tiamat.Avatar(
                                               radius: avatarRadius,
-                                              placeholderColor: calendar.config
-                                                  .getColorFromUser(
-                                                      event.event!.senderId!),
-                                              placeholderText: calendar.config
-                                                  .getUserDisplayname(
-                                                      event.event!.senderId!),
-                                              image: calendar.config
-                                                  .getUserAvatar(
-                                                      event.event!.senderId!),
+                                              placeholderColor:
+                                                  config.getColorFromUser(
+                                                      event.senderId!),
+                                              placeholderText:
+                                                  config.getUserDisplayname(
+                                                      event.senderId!),
+                                              image: config.getUserAvatar(
+                                                  event.senderId!),
                                             ),
                                           ),
                                         if (rotate)
@@ -158,7 +156,7 @@ class EventViewBox extends StatelessWidget {
                                                 EdgeInsetsGeometry.fromLTRB(
                                                     2, 0, 0, 0),
                                             child: Text(
-                                              event.title,
+                                              event.data.title,
                                               maxLines: ((boundary.height - 11)
                                                           .toInt() /
                                                       (12 +
@@ -171,9 +169,9 @@ class EventViewBox extends StatelessWidget {
                                                   .bodySmall
                                                   ?.copyWith(
                                                     fontSize: 12,
-                                                    color: calendar.config
+                                                    color: config
                                                         .processEventTextColor(
-                                                      event.color,
+                                                      color,
                                                       context,
                                                     ),
                                                   ),
@@ -186,7 +184,7 @@ class EventViewBox extends StatelessWidget {
                                                   EdgeInsetsGeometry.fromLTRB(
                                                       2, 0, 0, 0),
                                               child: Text(
-                                                event.title,
+                                                event.data.title,
                                                 maxLines: ((boundary.height -
                                                                 11)
                                                             .toInt() /
@@ -200,9 +198,9 @@ class EventViewBox extends StatelessWidget {
                                                     .bodySmall
                                                     ?.copyWith(
                                                       fontSize: 12,
-                                                      color: calendar.config
+                                                      color: config
                                                           .processEventTextColor(
-                                                        event.color,
+                                                        color,
                                                         context,
                                                       ),
                                                     ),
@@ -211,18 +209,18 @@ class EventViewBox extends StatelessWidget {
                                           ),
                                       ],
                                     ),
-                                    if (event.description != null &&
+                                    if (event.data.description != null &&
                                         boundary.height > 70)
                                       Text(
                                         maxLines: 3,
-                                        event.description!,
+                                        event.data.description!,
                                         style: Theme.of(context)
                                             .textTheme
                                             .bodySmall
                                             ?.copyWith(
-                                              color: calendar.config
-                                                  .processEventTextColor(
-                                                event.color,
+                                              color:
+                                                  config.processEventTextColor(
+                                                color,
                                                 context,
                                               ),
                                               overflow: TextOverflow.ellipsis,
@@ -234,7 +232,7 @@ class EventViewBox extends StatelessWidget {
                             ),
                           ],
                         ),
-                  if (event.event?.remoteSourceId != null)
+                  if (event.remoteSourceId != null)
                     Align(
                       alignment: AlignmentGeometry.bottomRight,
                       child: ClipRRect(
@@ -247,8 +245,8 @@ class EventViewBox extends StatelessWidget {
                             child: Icon(
                               size: 10,
                               Icons.satellite_alt,
-                              color: calendar.config.processEventTextColor(
-                                event.color,
+                              color: config.processEventTextColor(
+                                color,
                                 context,
                               ),
                             ),
@@ -267,19 +265,20 @@ class EventViewBox extends StatelessWidget {
 }
 
 class EventViewMini extends StatelessWidget {
-  const EventViewMini(this.event, this.calendar,
+  const EventViewMini(this.event, this.config, this.color,
       {this.onEventTapped, super.key});
 
-  final MatrixCalendar calendar;
-  final CalendarEventData<MatrixCalendarEventState> event;
+  final MatrixCalendarConfig config;
+  final MatrixCalendarEventState event;
+  final Color color;
   final Function(MatrixCalendarEventState)? onEventTapped;
 
   @override
   Widget build(BuildContext context) {
     var e = event;
-    bool unavailability = e.event!.isUnavailability;
-    var color = calendar.config.processEventColor(
-      calendar.config.getColorFromUser(event.event!.senderId!),
+    bool unavailability = event.isUnavailability;
+    var color = config.processEventColor(
+      config.getColorFromUser(event.senderId!),
       context,
     );
 
@@ -288,9 +287,9 @@ class EventViewMini extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       color: unavailability
           ? Colors.transparent
-          : calendar.config.processEventColor(e.color, context),
+          : config.processEventColor(color, context),
       child: InkWell(
-        onTap: () => onEventTapped?.call(e.event!),
+        onTap: () => onEventTapped?.call(event),
         child: CustomPaint(
           painter: unavailability
               ? UnavailabilityPainter(color: color, vertical: false)
@@ -310,25 +309,24 @@ class EventViewMini extends StatelessWidget {
                     children: [
                       tiamat.Avatar(
                         radius: 10,
-                        image: calendar.config
-                            .getUserAvatar(event.event!.senderId!),
-                        placeholderColor: calendar.config
-                            .getColorFromUser(event.event!.senderId!),
-                        placeholderText: calendar.config
-                            .getUserDisplayname(event.event!.senderId!),
+                        image: config.getUserAvatar(event.senderId!),
+                        placeholderColor:
+                            config.getColorFromUser(event.senderId!),
+                        placeholderText:
+                            config.getUserDisplayname(event.senderId!),
                       ),
                       if (unavailability)
                         Padding(
                           padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
                           child: Text(
-                            event.title,
+                            event.data.title,
                             style: Theme.of(context)
                                 .textTheme
                                 .labelSmall!
                                 .copyWith(
                                     fontSize: 10,
-                                    color: calendar.config
-                                        .processEventTextColor(color, context)),
+                                    color: config.processEventTextColor(
+                                        color, context)),
                           ),
                         ),
                     ],
@@ -349,16 +347,15 @@ class EventViewMini extends StatelessWidget {
                           children: [
                             SizedBox(
                               child: Text(
-                                e.title,
+                                event.data.title,
                                 overflow: TextOverflow.ellipsis,
                                 maxLines: 3,
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodySmall
                                     ?.copyWith(
-                                      color:
-                                          calendar.config.processEventTextColor(
-                                        e.color,
+                                      color: config.processEventTextColor(
+                                        color,
                                         context,
                                       ),
                                     ),
