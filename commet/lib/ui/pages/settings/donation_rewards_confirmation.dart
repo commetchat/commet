@@ -152,18 +152,13 @@ class _DonationRewardsConfirmationState
                       ),
                     ),
                   if (receivedAwards?.isNotEmpty == true)
-                    Container(
-                      decoration: BoxDecoration(
-                          color: ColorScheme.of(context).surfaceContainerLowest,
-                          borderRadius: BorderRadius.circular(8)),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                            spacing: 10,
-                            children: receivedAwards!
-                                .map((i) => buildAward(i))
-                                .toList()),
-                      ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                          spacing: 10,
+                          children: receivedAwards!
+                              .map((i) => buildAward(i))
+                              .toList()),
                     ),
                   if (receivedAwards?.isEmpty == true)
                     tiamat.Text.labelLow(
@@ -221,13 +216,21 @@ class _DonationRewardsConfirmationState
   }
 
   Widget buildAward(DonationAward i) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      spacing: 12,
-      children: [
-        SizedBox(height: 64, width: 64, child: Image(image: i.image)),
-        tiamat.Text.largeTitle(i.title)
-      ],
+    return Container(
+      decoration: BoxDecoration(
+          color: ColorScheme.of(context).surfaceContainerLowest,
+          borderRadius: BorderRadius.circular(8)),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          spacing: 12,
+          children: [
+            SizedBox(height: 64, width: 64, child: Image(image: i.image)),
+            tiamat.Text.largeTitle(i.title)
+          ],
+        ),
+      ),
     );
   }
 }
