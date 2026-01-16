@@ -253,41 +253,47 @@ class _UserProfileViewState extends State<UserProfileView> {
                                             CrossAxisAlignment.stretch,
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          Padding(
-                                            padding: const EdgeInsets.fromLTRB(
-                                                12, 4, 12, 4),
-                                            child: Row(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    displayName(),
-                                                    username(context),
-                                                    pronouns(),
-                                                  ],
-                                                ),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.fromLTRB(
-                                                          0, 8, 0, 0),
-                                                  child: Column(
-                                                    spacing: 8,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment.end,
-                                                    children: [
-                                                      if (localTime != null)
-                                                        userLocalTime(),
-                                                      badges(),
-                                                    ],
+                                          Flexible(
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      12, 4, 12, 4),
+                                              child: Row(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Flexible(
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        displayName(),
+                                                        username(context),
+                                                        pronouns(),
+                                                      ],
+                                                    ),
                                                   ),
-                                                )
-                                              ],
+                                                  Padding(
+                                                    padding: const EdgeInsets
+                                                        .fromLTRB(0, 8, 0, 0),
+                                                    child: Column(
+                                                      spacing: 8,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .end,
+                                                      children: [
+                                                        if (localTime != null)
+                                                          userLocalTime(),
+                                                        badges(),
+                                                      ],
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
                                             ),
                                           ),
                                           if (widget.bio != null)
