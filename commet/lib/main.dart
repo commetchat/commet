@@ -39,6 +39,7 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:tiamat/config/style/theme_changer.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:tiamat/config/style/theme_dark.dart';
+import 'package:desktop_webview_window/desktop_webview_window.dart';
 
 final GlobalKey<NavigatorState> navigator = GlobalKey();
 FileCache? fileCache;
@@ -111,6 +112,10 @@ void bubble() async {
 void main(List<String> args) async {
   commandLineArgs = args;
   print(args);
+
+  if (runWebViewTitleBarWidget(args)) {
+    return;
+  }
 
   if (BuildConfig.RELEASE) {
     runZonedGuarded(appMain, Log.onError, zoneSpecification: Log.spec);
