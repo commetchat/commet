@@ -89,10 +89,12 @@ class _VoipSettingsPage extends State<VoipSettingsPage> {
           "Default Audio Input",
           preferences.voipDefaultAudioInput,
           microphones!,
-          onSelected: (device) {
-            setState(() {
-              preferences.setVoipDefaultAudioInput(device?.label);
-            });
+          onSelected: (device) async {
+            await preferences.setVoipDefaultAudioInput(device?.label);
+
+            WebrtcDefaultDevices.selectInputDevice();
+
+            setState(() {});
           },
         ),
       if (speakers != null)

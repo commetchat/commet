@@ -22,6 +22,8 @@ class WebrtcDefaultDevices {
         print(
             "Picked device id: ${pickedDevice.deviceId} (${pickedDevice.label})");
         constraints["deviceId"] = {'exact': pickedDevice.deviceId};
+
+        webrtc.Helper.selectAudioInput(pickedDevice.deviceId);
       } else {
         print("Preferred audio device not found!");
       }
@@ -31,6 +33,25 @@ class WebrtcDefaultDevices {
 
     return await webrtc.navigator.mediaDevices
         .getUserMedia({"audio": constraints});
+  }
+
+  static Future<void> selectInputDevice() async {
+    var devices = (await webrtc.navigator.mediaDevices.enumerateDevices())
+        .where((i) => i.kind == "audioinput");
+
+    if (preferences.voipDefaultAudioInput != null) {
+      var pickedDevice = devices.firstWhereOrNull(
+          (i) => i.label == preferences.voipDefaultAudioInput);
+
+      if (pickedDevice != null) {
+        print(
+            "Picked device id: ${pickedDevice.deviceId} (${pickedDevice.label})");
+
+        webrtc.Helper.selectAudioInput(pickedDevice.deviceId);
+      } else {
+        print("Preferred audio device not found!");
+      }
+    }
   }
 
   static Future<void> selectOutputDevice() async {
