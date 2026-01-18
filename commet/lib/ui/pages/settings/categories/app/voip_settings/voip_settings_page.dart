@@ -10,7 +10,6 @@ import 'package:flutter/widgets.dart';
 
 import 'package:flutter_webrtc/flutter_webrtc.dart' as webrtc;
 import 'package:tiamat/tiamat.dart' as tiamat;
-import 'package:webrtc_interface/webrtc_interface.dart';
 
 class VoipSettingsPage extends StatefulWidget {
   const VoipSettingsPage({super.key});
