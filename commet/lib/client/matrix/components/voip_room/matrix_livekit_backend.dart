@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:commet/client/components/voip/voip_session.dart';
+import 'package:commet/client/components/voip/webrtc_default_devices.dart';
 import 'package:commet/client/matrix/components/voip_room/matrix_livekit_voip_session.dart';
 import 'package:commet/client/matrix/components/voip_room/matrix_voip_room_component.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
@@ -97,6 +98,8 @@ class MatrixLivekitBackend {
   }
 
   Future<VoipSession?> join() async {
+    WebrtcDefaultDevices.selectOutputDevice();
+
     final fociUrl = await getFociUrl();
 
     if (fociUrl.isEmpty) {
@@ -147,7 +150,6 @@ class MatrixLivekitBackend {
 
     final lkRoom = lk.Room(roomOptions: roomOptions);
     await lkRoom.prepareConnection(sfuUrl, jwt);
-
     final stateKey =
         "_${room.client.self!.identifier}_${room.matrixRoom.client.deviceID!}_m.call";
 

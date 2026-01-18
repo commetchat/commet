@@ -473,7 +473,7 @@ class _EmoticonCreatorState extends State<EmoticonCreator> {
                       value: usage,
                       onItemSelected: (item) {
                         setState(() {
-                          usage = item;
+                          usage = item!;
                         });
                       },
                       itemBuilder: (item) {

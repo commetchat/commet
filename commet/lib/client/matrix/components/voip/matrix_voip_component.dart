@@ -5,6 +5,7 @@ import 'dart:async';
 import 'package:commet/client/components/component.dart';
 import 'package:commet/client/components/voip/voip_component.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
+import 'package:commet/client/components/voip/webrtc_default_devices.dart';
 import 'package:commet/client/matrix/components/voip/matrix_voip_session.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event.dart';
@@ -198,6 +199,8 @@ class MatrixVoipComponent
 
   @override
   Future<void> startCall(String roomId, CallType type, {String? userId}) {
+    WebrtcDefaultDevices.selectOutputDevice();
+
     var callType = switch (type) {
       CallType.voice => mx.CallType.kVoice,
       CallType.video => mx.CallType.kVideo

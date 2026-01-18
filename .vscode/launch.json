@@ -112,6 +112,19 @@
             "flutterMode": "release"
         },
         {
+            "name": "commet (release windows)",
+            "request": "launch",
+            "program": "commet/lib/main.dart",
+            "type": "dart",
+            "toolArgs": [
+                "--dart-define",
+                "PLATFORM=windows",
+                "--dart-define",
+                "BUILD_MODE=release",
+            ],
+            "flutterMode": "release"
+        },
+        {
             "name": "commet (release mobile)",
             "request": "launch",
             "type": "dart",

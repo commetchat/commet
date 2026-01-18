@@ -158,7 +158,7 @@ class CallManager {
   }
 
   Player getSoundPlayer() {
-    player ??= Player();
+    player ??= Player(configuration: PlayerConfiguration());
     player!.setVolume(90);
     return player!;
   }

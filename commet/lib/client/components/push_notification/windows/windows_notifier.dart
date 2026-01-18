@@ -54,6 +54,8 @@ class WindowsNotifier implements Notifier {
     var text = Uri.decodeQueryComponent(event.argument);
     var args = Uri.splitQueryString(text);
 
+    print("Got action: $args");
+
     switch (args['action']) {
       case 'reply':
         var clientId = args['client_id'];
@@ -81,10 +83,35 @@ class WindowsNotifier implements Notifier {
 
         EventBus.openRoom.add((roomId, null));
         windowManager.show();
+        break;
+      case 'accept_call':
+      case 'reject_call':
+        print("Handling call response");
+        final callId = args['call_id'];
+        final clientId = args['client_id'];
+        final session = clientManager?.callManager.currentSessions
+            .where(
+                (e) => e.sessionId == callId && e.client.identifier == clientId)
+            .firstOrNull;
+
+        if (args['action'] == "reject_call") {
+          print("Rejecting call");
+          session?.declineCall();
+        }
+
+        if (args['action'] == "accept_call") {
+          print("Accepting call");
+          session?.acceptCall(withMicrophone: true);
+        }
+
+        break;
     }
   }
 
-  static void onDismissed(DismissedEvent event) {}
+  static void onDismissed(DismissedEvent event) {
+    print("Notification dismissed");
+    print("event: ${event.toString()} ");
+  }
 
   @override
   Future<bool> requestPermission() async {
@@ -96,8 +123,69 @@ class WindowsNotifier implements Notifier {
     switch (notification) {
       case MessageNotificationContent _:
         return displayMessageNotification(notification);
-      default:
+      case CallNotificationContent _:
+        return displayCallNotificationContent(notification);
     }
+  }
+
+  Future<void> displayCallNotificationContent(
+      CallNotificationContent content) async {
+    String? avatarFilePath;
+
+    var client = clientManager?.getClient(content.clientId);
+    var room = client?.getRoom(content.roomId);
+
+    if (room == null) {
+      return;
+    }
+
+    var avatar = await ShortcutsManager.getCachedAvatarImage(
+        placeholderColor: room.getColorOfUser(content.senderId),
+        placeholderText: content.roomName,
+        identifier: content.senderId,
+        format: ShortcutIconFormat.png,
+        shouldZoomOut: false,
+        imageProvider: content.senderImage);
+
+    avatarFilePath = avatar == null ? "" : avatar.toFilePath();
+
+    // ignore: prefer_function_declarations_over_variables
+    var f = (String string) => Uri.encodeComponent(string);
+
+    var title = "${content.roomName}";
+
+    var defaultAction =
+        "action=open_room&amp;client_id=${f(content.clientId)}&amp;room_id=${f(content.roomId)}&amp;call_id=${f(content.callId)}";
+
+    var header = '''<header
+        id="${f(content.roomId)}"
+        title="${content.roomName}"
+        arguments="$defaultAction"/>''';
+
+    if (content.isDirectMessage) {
+      header = "";
+    }
+
+    var xml = """
+<?xml version="1.0" encoding="UTF-8"?>
+<toast launch="$defaultAction">
+   $header
+   <visual>
+      <binding template="ToastGeneric">
+         <text>$title</text>
+         <text>${content.content}</text>
+         <image placement='appLogoOverride' src='$avatarFilePath' hint-crop='circle'/>
+      </binding>
+   </visual>
+   <audio silent='true'/>
+   <actions>
+      <action content="Accept" activationType="background" arguments="action=accept_call&amp;client_id=${f(content.clientId)}&amp;room_id=${f(content.roomId)}&amp;call_id=${f(content.callId)}" />
+      <action content="Reject" activationType="background" arguments="action=reject_call&amp;client_id=${f(content.clientId)}&amp;room_id=${f(content.roomId)}&amp;call_id=${f(content.callId)}" />
+   </actions>
+</toast>
+  """;
+
+    WinToast.instance().showCustomToast(xml: xml);
   }
 
   Future<void> displayMessageNotification(
@@ -124,14 +212,24 @@ class WindowsNotifier implements Notifier {
     // ignore: prefer_function_declarations_over_variables
     var f = (String string) => Uri.encodeComponent(string);
 
-    var title = "${content.senderName} (${content.roomName})";
+    var title = content.senderName;
+
+    var defaultAction =
+        "action=open_room&amp;client_id=${f(content.clientId)}&amp;room_id=${f(content.roomId)}&amp;event_id=${f(content.eventId)}";
+
+    var header = '''<header
+        id="${f(content.roomId)}"
+        title="${content.roomName}"
+        arguments="$defaultAction"/>''';
+
     if (content.isDirectMessage) {
-      title = content.senderName;
+      header = "";
     }
 
     var xml = """
 <?xml version="1.0" encoding="UTF-8"?>
-<toast launch="action=open_room&amp;client_id=${f(content.clientId)}&amp;room_id=${f(content.roomId)}&amp;event_id=${f(content.eventId)}">
+<toast launch="$defaultAction">
+   $header
    <visual>
       <binding template="ToastGeneric">
          <text>$title</text>
