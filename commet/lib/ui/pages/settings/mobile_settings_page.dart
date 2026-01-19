@@ -14,9 +14,11 @@ class MobileSettingsPage extends StatefulWidget {
       {required this.settings,
       this.buttons,
       this.onDonateButtonTapped,
+      this.showDonateButton = false,
       super.key});
   final List<SettingsButton>? buttons;
   final List<SettingsCategory> settings;
+  final bool showDonateButton;
 
   final Function(BuildContext context)? onDonateButtonTapped;
   @override
@@ -120,8 +122,9 @@ class _MobileSettingsPageState extends State<MobileSettingsPage> {
                       )
                   ]),
                 ),
-                DesktopSettingsPageState.buildDonateButton(context,
-                    onTap: () => widget.onDonateButtonTapped?.call(context))
+                if (widget.showDonateButton)
+                  DesktopSettingsPageState.buildDonateButton(context,
+                      onTap: () => widget.onDonateButtonTapped?.call(context))
               ],
             ),
           ),

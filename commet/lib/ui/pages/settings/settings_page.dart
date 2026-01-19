@@ -15,9 +15,14 @@ import 'package:flutter/material.dart';
 import 'desktop_settings_page.dart';
 
 class SettingsPage extends StatelessWidget {
-  const SettingsPage({required this.settings, this.buttons, super.key});
+  const SettingsPage(
+      {required this.settings,
+      this.buttons,
+      this.showDonateButton = false,
+      super.key});
   final List<SettingsCategory> settings;
   final List<SettingsButton>? buttons;
+  final bool showDonateButton;
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +34,7 @@ class SettingsPage extends StatelessWidget {
       return DesktopSettingsPage(
         settings: settings,
         buttons: buttons,
+        showDonateButton: showDonateButton,
         onDonateButtonTapped: onDonateButtonTapped,
       );
     }
@@ -36,6 +42,7 @@ class SettingsPage extends StatelessWidget {
       return MobileSettingsPage(
         settings: settings,
         buttons: buttons,
+        showDonateButton: showDonateButton,
         onDonateButtonTapped: onDonateButtonTapped,
       );
     }

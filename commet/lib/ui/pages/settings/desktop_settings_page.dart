@@ -16,9 +16,11 @@ class DesktopSettingsPage extends StatefulWidget {
       {required this.settings,
       this.buttons,
       this.onDonateButtonTapped,
+      this.showDonateButton = false,
       super.key});
   final List<SettingsCategory> settings;
   final List<SettingsButton>? buttons;
+  final bool showDonateButton;
   final Function(BuildContext context)? onDonateButtonTapped;
   @override
   State<DesktopSettingsPage> createState() => DesktopSettingsPageState();
@@ -91,11 +93,11 @@ class DesktopSettingsPageState extends State<DesktopSettingsPage> {
           children: [
             Flexible(
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
                 child: Column(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.all(8),
                       child: Align(
                           alignment: Alignment.centerLeft,
                           child: CircleButton(
@@ -107,7 +109,7 @@ class DesktopSettingsPageState extends State<DesktopSettingsPage> {
                     ),
                     Flexible(
                       child: Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
                         child: ListView(children: [
                           ListView.builder(
                             physics: const NeverScrollableScrollPhysics(),
@@ -149,8 +151,9 @@ class DesktopSettingsPageState extends State<DesktopSettingsPage> {
                 ),
               ),
             ),
-            buildDonateButton(context,
-                onTap: () => widget.onDonateButtonTapped?.call(context))
+            if (widget.showDonateButton)
+              buildDonateButton(context,
+                  onTap: () => widget.onDonateButtonTapped?.call(context))
           ],
         ),
       ),
@@ -159,7 +162,7 @@ class DesktopSettingsPageState extends State<DesktopSettingsPage> {
 
   static Widget buildDonateButton(BuildContext context, {Function()? onTap}) {
     return Padding(
-      padding: const EdgeInsets.all(2.0),
+      padding: const EdgeInsets.fromLTRB(2, 0, 2, 2),
       child: AdaptiveContextMenu(
         items: [
           ContextMenuItem(
@@ -190,7 +193,7 @@ class DesktopSettingsPageState extends State<DesktopSettingsPage> {
         ],
         child: m.Material(
           clipBehavior: Clip.antiAlias,
-          color: ColorUtils.fromHexCode("#CE7A6D"),
+          color: m.ColorScheme.of(context).surfaceContainerLow,
           borderRadius: BorderRadius.circular(8),
           child: m.InkWell(
             onTap: onTap,
@@ -204,12 +207,12 @@ class DesktopSettingsPageState extends State<DesktopSettingsPage> {
                         padding: const EdgeInsets.all(8.0),
                         child: m.Icon(
                           m.Icons.favorite,
-                          color: ColorUtils.fromHexCode("#73342a"),
+                          color: m.ColorScheme.of(context).onSurfaceVariant,
                         ),
                       ),
                       tiamat.Text(
                         "Donate",
-                        color: ColorUtils.fromHexCode("#73342a"),
+                        color: m.ColorScheme.of(context).onSurface,
                       ),
                     ],
                   )),
