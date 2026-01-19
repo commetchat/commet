@@ -4,7 +4,6 @@ import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/pages/settings/donation_rewards_confirmation.dart';
 import 'package:commet/ui/pages/settings/settings_button.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
-import 'package:commet/utils/color_utils.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart' as m;
 
