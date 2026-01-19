@@ -1,10 +1,13 @@
 import 'package:collection/collection.dart';
+import 'package:commet/config/platform_utils.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart' as webrtc;
 
 class WebrtcDefaultDevices {
-  static Future<webrtc.MediaStream> getDefaultMicrophone() async {
+  static Future<webrtc.MediaStream?> getDefaultMicrophone() async {
+    if (PlatformUtils.isAndroid || PlatformUtils.isWeb) return null;
+
     var devices = (await webrtc.navigator.mediaDevices.enumerateDevices())
         .where((i) => i.kind == "audioinput");
 
@@ -33,6 +36,19 @@ class WebrtcDefaultDevices {
 
     return await webrtc.navigator.mediaDevices
         .getUserMedia({"audio": constraints});
+  }
+
+  static Future<String?> getDefaultMicrophoneId() async {
+    if (PlatformUtils.isAndroid || PlatformUtils.isWeb) return null;
+
+    var devices = (await webrtc.navigator.mediaDevices.enumerateDevices())
+        .where((i) => i.kind == "audioinput");
+
+    if (preferences.voipDefaultAudioInput == null) return null;
+
+    return devices
+        .firstWhereOrNull((i) => i.label == preferences.voipDefaultAudioInput)
+        ?.deviceId;
   }
 
   static Future<void> selectInputDevice() async {

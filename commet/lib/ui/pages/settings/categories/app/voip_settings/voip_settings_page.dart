@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:collection/collection.dart';
 import 'package:commet/client/components/voip/webrtc_default_devices.dart';
+import 'package:commet/config/platform_utils.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/molecules/settings_entry_bool.dart';
@@ -84,7 +85,7 @@ class _VoipSettingsPage extends State<VoipSettingsPage> {
 
   Widget devicePicker() {
     return Column(spacing: 8, children: [
-      if (microphones != null)
+      if (microphones != null && !PlatformUtils.isAndroid)
         buildPicker(
           "Default Audio Input",
           preferences.voipDefaultAudioInput,

@@ -126,18 +126,24 @@ class MatrixVoipSession implements VoipSession {
       {bool withMicrophone = false, bool withCamera = false}) async {
     WebrtcDefaultDevices.selectOutputDevice();
 
-    return session.answerWithStreams([
-      matrix.WrappedMediaStream(
-          stream: await WebrtcDefaultDevices.getDefaultMicrophone(),
-          room: session.room,
-          participant: session.localParticipant!,
-          purpose: matrix.SDPStreamMetadataPurpose.Usermedia,
-          client: session.room.client,
-          audioMuted: false,
-          videoMuted: true,
-          isGroupCall: false,
-          voip: session.voip),
-    ]);
+    var defaultStream = await WebrtcDefaultDevices.getDefaultMicrophone();
+
+    if (defaultStream != null) {
+      return session.answerWithStreams([
+        matrix.WrappedMediaStream(
+            stream: defaultStream,
+            room: session.room,
+            participant: session.localParticipant!,
+            purpose: matrix.SDPStreamMetadataPurpose.Usermedia,
+            client: session.room.client,
+            audioMuted: false,
+            videoMuted: true,
+            isGroupCall: false,
+            voip: session.voip),
+      ]);
+    } else {
+      return session.answer();
+    }
   }
 
   @override
@@ -287,7 +293,7 @@ class MatrixVoipSession implements VoipSession {
   }
 
   @override
-  double get generalAudioLevel => (remoteUserMediaStream?.audiolevel ?? 0);
+  double get generalAudioLevel => (remoteUserMediaStream?.audiolevel ?? 0) * 3;
 
   @override
   Stream<void> get onUpdateVolumeVisualizers => _onVolumeChanged.stream;

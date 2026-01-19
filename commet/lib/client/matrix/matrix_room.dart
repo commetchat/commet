@@ -248,12 +248,17 @@ class MatrixRoom extends Room {
       return;
     }
 
-    // let push notifications handle it
-    if (BuildConfig.ANDROID) {
+    if (event is MatrixTimelineEventCall ||
+        event is MatrixTimelineEventUnknown) {
       return;
     }
 
     if (event is TimelineEventMessage || event is TimelineEventSticker) {
+      // let push notifications handle it
+      if (BuildConfig.ANDROID) {
+        return;
+      }
+
       var notification =
           await MessageNotificationContent.fromEvent(event, this);
       if (notification != null) {

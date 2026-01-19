@@ -30,6 +30,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:media_kit/media_kit.dart';
@@ -60,6 +61,11 @@ void unifiedPushEntry() async {
   await WidgetsFlutterBinding.ensureInitialized();
   await preferences.init();
   await UnifiedPushNotifier().init();
+}
+
+@pragma('vm:entry-point')
+void onBackgroundNotificationResponse(NotificationResponse details) {
+  print("Got a background notification response: $details");
 }
 
 @pragma('vm:entry-point')

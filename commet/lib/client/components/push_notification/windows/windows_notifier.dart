@@ -5,6 +5,7 @@ import 'package:commet/client/components/push_notification/notification_content.
 import 'package:commet/client/components/push_notification/notifier.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/main.dart';
+import 'package:commet/utils/common_strings.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/shortcuts_manager.dart';
 import 'package:desktop_notifications/desktop_notifications.dart';
@@ -179,8 +180,8 @@ class WindowsNotifier implements Notifier {
    </visual>
    <audio silent='true'/>
    <actions>
-      <action content="Accept" activationType="background" arguments="action=accept_call&amp;client_id=${f(content.clientId)}&amp;room_id=${f(content.roomId)}&amp;call_id=${f(content.callId)}" />
-      <action content="Reject" activationType="background" arguments="action=reject_call&amp;client_id=${f(content.clientId)}&amp;room_id=${f(content.roomId)}&amp;call_id=${f(content.callId)}" />
+      <action content="${CommonStrings.promptAccept}" activationType="background" arguments="action=accept_call&amp;client_id=${f(content.clientId)}&amp;room_id=${f(content.roomId)}&amp;call_id=${f(content.callId)}" />
+      <action content="${CommonStrings.promptReject}" activationType="background" arguments="action=reject_call&amp;client_id=${f(content.clientId)}&amp;room_id=${f(content.roomId)}&amp;call_id=${f(content.callId)}" />
    </actions>
 </toast>
   """;

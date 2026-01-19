@@ -120,6 +120,7 @@ class MessageNotificationContent extends NotificationContent {
 class CallNotificationContent extends NotificationContent {
   String roomId;
   String senderId;
+  String senderName;
   String roomName;
   String clientId;
   String callId;
@@ -127,18 +128,24 @@ class CallNotificationContent extends NotificationContent {
   bool isDirectMessage;
 
   ImageProvider? roomImage;
+  String? roomImageId;
+
   ImageProvider? senderImage;
+  String? senderImageId;
 
   CallNotificationContent({
     required this.roomId,
     required this.senderId,
+    required this.senderName,
     required this.roomName,
     required this.clientId,
     required this.callId,
     required this.isDirectMessage,
     this.senderImage,
+    this.senderImageId,
     required super.title,
     required super.content,
     this.roomImage,
+    this.roomImageId,
   });
 }

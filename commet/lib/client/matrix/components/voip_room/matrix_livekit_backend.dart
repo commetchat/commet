@@ -175,7 +175,11 @@ class MatrixLivekitBackend {
 
     await lkRoom.connect(sfuUrl, jwt);
 
-    await lkRoom.localParticipant?.setMicrophoneEnabled(true);
+    var device = await WebrtcDefaultDevices.getDefaultMicrophoneId();
+
+    print("Using default device: ${device}");
+    await lkRoom.localParticipant?.setMicrophoneEnabled(true,
+        audioCaptureOptions: lk.AudioCaptureOptions(deviceId: device));
 
     livekitRoom = lkRoom;
     return MatrixLivekitVoipSession(room, lkRoom);
