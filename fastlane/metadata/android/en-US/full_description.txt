@@ -1,0 +1,29 @@
+<p>Commet is a client for Matrix focused on providing a feature rich experience while maintaining a simple interface. The goal is to build a secure, privacy respecting app without compromising on the features you have come to expect from a modern chat client.</p>
+
+<h3>Feature Rich</h3>
+<p>Commet aims to provide all the functionality you have come to expect from a modern chat app, without compromising security.</p>
+<ul>
+<li>🖼️ GIF Search</li>
+<li>🧵 Threads</li>
+<li>🔍 Encrypted Message Search</li>
+<li>🔗 URL Preview</li>
+<li>😀 Custom Emoji + Stickers</li>
+<li>🚀 Spaces</li>
+<li>📳 Push Notifications</li>
+<li>🔒 End to End Encryption</li>
+</ul>
+
+<h3> Seamless multi-account support</h3>
+
+<p> Commet was built from the ground up with multi-account support in mind, with a unique approach which doesn't require manually switching account.</p>
+
+<p>All your accounts are logged in simultaneously, seamlessly blending together so you can focus on the conversation </p>
+
+<h3>Permission management that makes sense</h3>
+
+<p>Ever felt overwhelmed or confused by the permission system in Matrix? Commet makes it as simple as a drag and drop.</p>
+
+<p>Matrix's permission system is heirarchical, so we display it that way. It's easy to understand at just a glance!</p>
+
+<h3>We are Open Source</h3>
+<p> Commet is built and maintained by a passionate group of volunteers. We are always grateful for any help we can get!</p>
