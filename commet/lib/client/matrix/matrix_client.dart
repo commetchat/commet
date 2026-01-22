@@ -82,6 +82,8 @@ class MatrixClient extends Client {
     _id = identifier;
     _matrixClient = _createMatrixClient(identifier, database);
 
+    self = ErrorProfile();
+
     _matrixClient.onSync.stream.listen(onMatrixClientSync);
     componentsInternal = ComponentRegistry.getMatrixComponents(this);
   }
