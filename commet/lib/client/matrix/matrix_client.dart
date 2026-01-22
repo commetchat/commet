@@ -527,7 +527,7 @@ class MatrixClient extends Client {
           : matrix.Visibility.public,
     );
 
-    await Future.delayed(Duration(seconds: 1));
+    await _matrixClient.waitForRoomInSync(id);
 
     var matrixRoom = _matrixClient.getRoomById(id)!;
     if (args.enableE2EE!) {
