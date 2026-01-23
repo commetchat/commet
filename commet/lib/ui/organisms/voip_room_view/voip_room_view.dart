@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip_room/voip_room_component.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/ui/atoms/shimmer_loading.dart';
 import 'package:commet/ui/layout/bento.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/organisms/call_view/call.dart';
 import 'package:commet/utils/common_strings.dart';
 import 'package:flutter/material.dart';
@@ -183,10 +185,21 @@ class _VoipRoomViewState extends State<VoipRoomView> {
       joining = true;
     });
 
-    final session = await widget.voip.joinCall();
-    if (session != null) {
+    try {
+      final session = await widget.voip.joinCall();
+
+      if (session != null) {
+        setState(() {
+          currentSession = session;
+        });
+      }
+    } catch (e, s) {
+      Log.onError(e, s);
+
+      AdaptiveDialog.showError(context, e, s);
+
       setState(() {
-        currentSession = session;
+        joining = false;
       });
     }
   }

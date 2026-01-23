@@ -1,5 +1,6 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/config/layout_config.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/molecules/user_panel.dart';
@@ -58,6 +59,15 @@ class AdaptiveDialog {
         );
       },
     );
+  }
+
+  static Future<void> showError(
+      BuildContext context, Object exception, StackTrace trace) {
+    return show(context, builder: (context) {
+      return Column(
+        children: [tiamat.Text.body(exception.toString())],
+      );
+    }, title: "Error");
   }
 
   static Future<T?> show<T extends Object?>(

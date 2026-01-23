@@ -98,7 +98,7 @@ class MatrixVoipRoomComponent
   }
 
   @override
-  bool get canJoinCall => room.matrixRoom.canSendEvent(
+  bool get canJoinCall => room.matrixRoom.canChangeStateEvent(
         MatrixVoipRoomComponent.callMemberStateEvent,
       );
 
