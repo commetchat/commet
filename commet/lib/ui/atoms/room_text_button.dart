@@ -8,6 +8,7 @@ import 'package:commet/ui/atoms/adaptive_context_menu.dart';
 import 'package:commet/ui/atoms/dot_indicator.dart';
 import 'package:commet/ui/atoms/notification_badge.dart';
 import 'package:commet/ui/atoms/tiny_pill.dart';
+import 'package:commet/utils/text_utils.dart';
 import 'package:commet_calendar_widget/calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/atoms/context_menu.dart';
@@ -110,6 +111,30 @@ class _RoomTextButtonState extends State<RoomTextButton> {
     bool shouldShowDefaultIcon = (!showRoomIcons && !useGenericIcons) ||
         (showRoomIcons && !useGenericIcons && widget.room.avatar == null);
 
+    String displayName = widget.room.displayName;
+
+    Color? avatarPlaceholderColor =
+        (showRoomIcons && useGenericIcons && widget.room.avatar == null) ||
+                (!showRoomIcons && useGenericIcons)
+            ? widget.room.defaultColor
+            : null;
+
+    String? avatarPlaceholderText =
+        (showRoomIcons && useGenericIcons && widget.room.avatar == null) ||
+                (!showRoomIcons && useGenericIcons)
+            ? widget.room.displayName
+            : null;
+
+    bool startsWithEmoji =
+        TextUtils.isEmoji(widget.room.displayName.characters.first);
+
+    if (startsWithEmoji && widget.room.avatar == null) {
+      shouldShowDefaultIcon = false;
+      var emoji = displayName.characters.first;
+      displayName = displayName.characters.skip(1).string.trim();
+      avatarPlaceholderColor = Colors.transparent;
+      avatarPlaceholderText = emoji;
+    }
     var customBuilder = null;
 
     if (voipRoomParticipants?.isNotEmpty == true) {
@@ -123,24 +148,16 @@ class _RoomTextButtonState extends State<RoomTextButton> {
     Widget result = SizedBox(
       height: customBuilder == null ? height : null,
       child: tiamat.TextButton(
+        displayName,
         customBuilder: customBuilder,
         highlighted: widget.highlight,
-        widget.room.displayName,
         icon: shouldShowDefaultIcon ? defaultIcon : null,
         avatar: showRoomIcons && widget.room.avatar != null
             ? widget.room.avatar
             : null,
         avatarRadius: 12,
-        avatarPlaceholderColor:
-            (showRoomIcons && useGenericIcons && widget.room.avatar == null) ||
-                    (!showRoomIcons && useGenericIcons)
-                ? widget.room.defaultColor
-                : null,
-        avatarPlaceholderText:
-            (showRoomIcons && useGenericIcons && widget.room.avatar == null) ||
-                    (!showRoomIcons && useGenericIcons)
-                ? widget.room.displayName
-                : null,
+        avatarPlaceholderColor: avatarPlaceholderColor,
+        avatarPlaceholderText: avatarPlaceholderText,
         iconColor: color,
         textColor: color,
         softwrap: false,
