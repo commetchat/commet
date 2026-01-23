@@ -13,7 +13,7 @@ class DropdownSelector<T> extends StatelessWidget {
 
   final List<T> items;
   final Widget Function(T item) itemBuilder;
-  final void Function(T item)? onItemSelected;
+  final void Function(T? item)? onItemSelected;
   final double itemHeight;
   final Widget? hint;
 
@@ -53,7 +53,7 @@ class DropdownSelector<T> extends StatelessWidget {
               );
             }).toList(),
             onChanged: (newValue) {
-              onItemSelected?.call(newValue!);
+              onItemSelected?.call(newValue);
             },
           ));
         }),

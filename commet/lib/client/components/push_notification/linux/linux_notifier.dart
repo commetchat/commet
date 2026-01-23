@@ -4,7 +4,9 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notifier.dart';
 import 'package:commet/client/room.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
+import 'package:commet/utils/common_strings.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/image/lod_image.dart';
 import 'package:commet/utils/image_utils.dart';
@@ -83,6 +85,10 @@ class LinuxNotifier implements Notifier {
               (e) => e.sessionId == callId && e.client.identifier == clientId)
           .firstOrNull;
 
+      if (action == callDecline) {
+        clientManager?.callManager.stopRingtone();
+      }
+
       if (session != null) {
         if (action == callAccept) {
           session.acceptCall(withMicrophone: true);
@@ -90,7 +96,10 @@ class LinuxNotifier implements Notifier {
 
         if (action == callDecline) {
           session.declineCall();
+          clientManager?.callManager.stopRingtone();
         }
+      } else {
+        Log.d("Could not find call session");
       }
     }
   }
@@ -220,9 +229,11 @@ class LinuxNotifier implements Notifier {
         category: LinuxNotificationCategory.imReceived,
         timeout: const LinuxNotificationTimeout.expiresNever(),
         urgency: LinuxNotificationUrgency.critical,
-        actions: const [
-          LinuxNotificationAction(key: callAccept, label: "Accept"),
-          LinuxNotificationAction(key: callDecline, label: "Decline"),
+        actions: [
+          LinuxNotificationAction(
+              key: callAccept, label: CommonStrings.promptAccept),
+          LinuxNotificationAction(
+              key: callDecline, label: CommonStrings.promptDecline),
         ]);
 
     var payload = {

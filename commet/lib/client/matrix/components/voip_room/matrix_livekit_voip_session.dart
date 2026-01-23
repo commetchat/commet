@@ -311,6 +311,7 @@ class MatrixLivekitVoipSession implements VoipSession {
 
   Future<void> startHeartbeat() async {
     final capabilities = await room.matrixRoom.client.getVersions();
+    Log.d("${capabilities}");
     if (capabilities.unstableFeatures?["org.matrix.msc4140"] != true) {
       Log.e("Homeserver does not support delayed events");
       return;

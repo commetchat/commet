@@ -193,35 +193,60 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
 
   Widget notificationTests() {
     return ExpansionTile(
-      title: const tiamat.Text.labelEmphasised("Notifications"),
-      backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
-      collapsedBackgroundColor:
-          Theme.of(context).colorScheme.surfaceContainerLow,
-      children: [
-        Wrap(spacing: 8, runSpacing: 8, children: [
-          tiamat.Button(
-            text: "Message Notification",
-            onTap: () async {
-              var client = clientManager!.clients.first;
-              var room = client.rooms.first;
-              var user = client.self!;
-              NotificationManager.notify(MessageNotificationContent(
-                senderName: user.displayName,
-                senderImage: user.avatar,
-                senderId: user.identifier,
-                roomName: room.displayName,
-                roomId: room.identifier,
-                roomImage: await room.getShortcutImage(),
-                content: "Test Message!",
-                clientId: client.identifier,
-                eventId: "fake_event_id",
-                isDirectMessage: true,
-              ));
-            },
-          ),
-        ])
-      ],
-    );
+        title: const tiamat.Text.labelEmphasised("Notifications"),
+        backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
+        collapsedBackgroundColor:
+            Theme.of(context).colorScheme.surfaceContainerLow,
+        children: [
+          Wrap(spacing: 8, runSpacing: 8, children: [
+            tiamat.Button(
+              text: "Message Notification",
+              onTap: () async {
+                var client = clientManager!.clients.first;
+                var room = client.rooms.first;
+                var user = client.self!;
+                NotificationManager.notify(MessageNotificationContent(
+                  senderName: user.displayName,
+                  senderImage: user.avatar,
+                  senderId: user.identifier,
+                  roomName: room.displayName,
+                  roomId: room.identifier,
+                  roomImage: await room.getShortcutImage(),
+                  content: "Test Message!",
+                  clientId: client.identifier,
+                  eventId: "fake_event_id",
+                  isDirectMessage: true,
+                ));
+              },
+            ),
+            tiamat.Button(
+              text: "Call Notification",
+              onTap: () async {
+                if (!BuildConfig.ANDROID) {
+                  clientManager?.callManager.startRingtone();
+                }
+
+                var client = clientManager!.clients.first;
+                var room = client.rooms.first;
+                var user = client.self!;
+                NotificationManager.notify(CallNotificationContent(
+                  title: "Incoming Call!",
+                  senderImage: user.avatar,
+                  senderId: user.identifier,
+                  roomName: room.displayName,
+                  roomId: room.identifier,
+                  senderName: user.displayName,
+                  senderImageId: "fake_call_avatar_id",
+                  roomImage: await room.getShortcutImage(),
+                  content: "Test Call Notification",
+                  clientId: client.identifier,
+                  callId: "fake_call_id",
+                  isDirectMessage: true,
+                ));
+              },
+            ),
+          ])
+        ]);
   }
 
   Widget shortcuts() {

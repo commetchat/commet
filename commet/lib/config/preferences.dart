@@ -68,6 +68,10 @@ class Preferences {
 
   static const String _emojiPickerHeight = "emoji_picker_height";
 
+  static const String _voipDefaultAudioInput = "voip_default_audio_input";
+  static const String _voipDefaultAudioOutput = "voip_default_audio_output";
+  static const String _voipDefaultVideoInput = "voip_default_video_input";
+
   final StreamController _onSettingChanged = StreamController.broadcast();
   Stream get onSettingChanged => _onSettingChanged.stream;
   bool isInit = false;
@@ -416,6 +420,45 @@ class Preferences {
 
   Future<void> setEmojiPickerHeight(double value) async {
     await _preferences!.setDouble(_emojiPickerHeight, value);
+    _onSettingChanged.add(null);
+  }
+
+  String? get voipDefaultAudioInput =>
+      _preferences!.getString(_voipDefaultAudioInput);
+
+  Future<void> setVoipDefaultAudioInput(String? value) async {
+    if (value == null) {
+      await _preferences!.remove(_voipDefaultAudioInput);
+    } else {
+      await _preferences!.setString(_voipDefaultAudioInput, value);
+    }
+
+    _onSettingChanged.add(null);
+  }
+
+  String? get voipDefaultAudioOutput =>
+      _preferences!.getString(_voipDefaultAudioOutput);
+
+  Future<void> setVoipDefaultAudioOutput(String? value) async {
+    if (value == null) {
+      await _preferences!.remove(_voipDefaultAudioOutput);
+    } else {
+      await _preferences!.setString(_voipDefaultAudioOutput, value);
+    }
+
+    _onSettingChanged.add(null);
+  }
+
+  String? get voipDefaultVideoInput =>
+      _preferences!.getString(_voipDefaultVideoInput);
+
+  Future<void> setVoipDefaultVideoInput(String? value) async {
+    if (value == null) {
+      await _preferences!.remove(_voipDefaultVideoInput);
+    } else {
+      await _preferences!.setString(_voipDefaultVideoInput, value);
+    }
+
     _onSettingChanged.add(null);
   }
 }

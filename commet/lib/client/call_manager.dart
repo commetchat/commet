@@ -8,6 +8,7 @@ import 'package:commet/client/components/push_notification/notification_manager.
 import 'package:commet/client/components/voip/voip_component.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/stale_info.dart';
+import 'package:commet/config/platform_utils.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:intl/intl.dart';
 import 'package:media_kit/media_kit.dart';
@@ -63,16 +64,21 @@ class CallManager {
     if (event.state == VoipState.incoming) {
       startRingtone();
 
+      var member = room?.getMemberOrFallback(event.remoteUserId!);
+
       NotificationManager.notify(CallNotificationContent(
           title: notificationTitleIncomingCall(event.roomName),
           content: notificationContentUserIsCalling(
               event.remoteUserName ?? event.remoteUserId!),
           roomId: event.roomId,
           roomName: event.roomName,
+          senderName: member?.displayName ?? event.remoteUserId!,
           roomImage: room?.avatar,
           callId: event.sessionId,
           senderId: event.remoteUserId!,
-          senderImage: room?.getMemberOrFallback(event.remoteUserId!).avatar,
+          senderImage: member?.avatar,
+          senderImageId: member?.avatarId,
+          roomImageId: room?.avatarId,
           clientId: event.client.identifier,
           isDirectMessage: event.client
                   .getComponent<DirectMessagesComponent>()
@@ -110,6 +116,11 @@ class CallManager {
   }
 
   void startRingtone() {
+    // Let push notifications do the ringtone
+    if (PlatformUtils.isAndroid) {
+      return;
+    }
+
     if (player?.state.playing == true) {
       return;
     }
@@ -158,8 +169,9 @@ class CallManager {
   }
 
   Player getSoundPlayer() {
-    player ??= Player();
+    player ??= Player(configuration: PlayerConfiguration());
     player!.setVolume(90);
+
     return player!;
   }
 }

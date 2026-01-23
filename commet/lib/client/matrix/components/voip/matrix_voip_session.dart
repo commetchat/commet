@@ -4,12 +4,14 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/components/voip/android_screencapture_source.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
+import 'package:commet/client/components/voip/webrtc_default_devices.dart';
 import 'package:commet/client/components/voip/webrtc_screencapture_source.dart';
 import 'package:commet/client/matrix/components/rtc_data_channel/matrix_rtc_data_channel_component.dart';
 import 'package:commet/client/matrix/components/voip/matrix_voip_stream.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:flutter_webrtc/flutter_webrtc.dart' as webrtc;
 import 'package:matrix/matrix.dart' as matrix;
 
 class MatrixVoipSession implements VoipSession {
@@ -24,6 +26,8 @@ class MatrixVoipSession implements VoipSession {
   List<StatsReport>? stats;
 
   RTCDataChannel? channel;
+
+  bool _active = true;
 
   ScreenCaptureSource? currentScreenshare;
 
@@ -119,8 +123,27 @@ class MatrixVoipSession implements VoipSession {
 
   @override
   Future<void> acceptCall(
-      {bool withMicrophone = false, bool withCamera = false}) {
-    return session.answer();
+      {bool withMicrophone = false, bool withCamera = false}) async {
+    WebrtcDefaultDevices.selectOutputDevice();
+
+    var defaultStream = await WebrtcDefaultDevices.getDefaultMicrophone();
+
+    if (defaultStream != null) {
+      return session.answerWithStreams([
+        matrix.WrappedMediaStream(
+            stream: defaultStream,
+            room: session.room,
+            participant: session.localParticipant!,
+            purpose: matrix.SDPStreamMetadataPurpose.Usermedia,
+            client: session.room.client,
+            audioMuted: false,
+            videoMuted: true,
+            isGroupCall: false,
+            voip: session.voip),
+      ]);
+    } else {
+      return session.answer();
+    }
   }
 
   @override
@@ -130,6 +153,7 @@ class MatrixVoipSession implements VoipSession {
 
   @override
   Future<void> hangUpCall() {
+    _active = false;
     return session.hangup(reason: matrix.CallErrorCode.userHangup);
   }
 
@@ -152,8 +176,10 @@ class MatrixVoipSession implements VoipSession {
       return;
     }
 
-    stats = await session.pc?.getStats();
-    _lastUpdatedStats = now;
+    if (_active) {
+      stats = await session.pc?.getStats();
+      _lastUpdatedStats = now;
+    }
   }
 
   @override
@@ -161,7 +187,7 @@ class MatrixVoipSession implements VoipSession {
     MediaStream? stream;
 
     if (source is WebrtcAndroidScreencaptureSource) {
-      stream = await navigator.mediaDevices.getDisplayMedia({
+      stream = await webrtc.navigator.mediaDevices.getDisplayMedia({
         'video': {
           'mandatory': {'frameRate': 30.0}
         }
@@ -169,7 +195,7 @@ class MatrixVoipSession implements VoipSession {
     }
 
     if (source is WebrtcScreencaptureSource) {
-      stream = await navigator.mediaDevices.getDisplayMedia({
+      stream = await webrtc.navigator.mediaDevices.getDisplayMedia({
         'video': {
           'width': 1280,
           'height': 720,
@@ -267,7 +293,7 @@ class MatrixVoipSession implements VoipSession {
   }
 
   @override
-  double get generalAudioLevel => (remoteUserMediaStream?.audiolevel ?? 0);
+  double get generalAudioLevel => (remoteUserMediaStream?.audiolevel ?? 0) * 3;
 
   @override
   Stream<void> get onUpdateVolumeVisualizers => _onVolumeChanged.stream;

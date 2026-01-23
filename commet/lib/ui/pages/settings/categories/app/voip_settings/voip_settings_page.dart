@@ -1,10 +1,15 @@
 import 'dart:async';
 
+import 'package:collection/collection.dart';
+import 'package:commet/client/components/voip/webrtc_default_devices.dart';
+import 'package:commet/config/platform_utils.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/molecules/settings_entry_bool.dart';
 import 'package:commet/ui/pages/settings/categories/app/voip_settings/voip_debug_settings.dart';
 import 'package:flutter/widgets.dart';
 
+import 'package:flutter_webrtc/flutter_webrtc.dart' as webrtc;
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class VoipSettingsPage extends StatefulWidget {
@@ -17,10 +22,25 @@ class VoipSettingsPage extends StatefulWidget {
 class _VoipSettingsPage extends State<VoipSettingsPage> {
   StreamSubscription? sub;
 
+  List<webrtc.MediaDeviceInfo>? devices;
+
+  List<webrtc.MediaDeviceInfo>? microphones = [];
+  List<webrtc.MediaDeviceInfo>? speakers = [];
+  List<webrtc.MediaDeviceInfo>? cameras = [];
+
   @override
   void initState() {
     super.initState();
     sub = preferences.onSettingChanged.listen((event) => setState(() {}));
+
+    webrtc.navigator.mediaDevices.enumerateDevices().then((v) => setState(() {
+          Log.i(v);
+          devices = v;
+
+          microphones = v.where((i) => i.kind == "audioinput").toList();
+          speakers = v.where((i) => i.kind == "audiooutput").toList();
+          cameras = v.where((i) => i.kind == "videoinput").toList();
+        }));
   }
 
   @override
@@ -32,6 +52,7 @@ class _VoipSettingsPage extends State<VoipSettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      spacing: 8,
       children: [
         tiamat.Panel(
           mode: tiamat.TileType.surfaceContainerLow,
@@ -44,6 +65,11 @@ class _VoipSettingsPage extends State<VoipSettingsPage> {
             onChanged: preferences.setUseFallbackTurnServer,
           ),
         ),
+        tiamat.Panel(
+          header: "Devices",
+          mode: tiamat.TileType.surfaceContainerLow,
+          child: devicePicker(),
+        ),
         if (preferences.developerMode)
           const Padding(
             padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
@@ -53,6 +79,74 @@ class _VoipSettingsPage extends State<VoipSettingsPage> {
               child: VoipDebugSettings(),
             ),
           ),
+      ],
+    );
+  }
+
+  Widget devicePicker() {
+    return Column(spacing: 8, children: [
+      if (microphones != null && !PlatformUtils.isAndroid)
+        buildPicker(
+          "Default Audio Input",
+          preferences.voipDefaultAudioInput,
+          microphones!,
+          onSelected: (device) async {
+            await preferences.setVoipDefaultAudioInput(device?.label);
+
+            WebrtcDefaultDevices.selectInputDevice();
+
+            setState(() {});
+          },
+        ),
+      if (speakers != null)
+        buildPicker(
+          "Audio Output",
+          preferences.voipDefaultAudioOutput,
+          speakers!,
+          onSelected: (device) async {
+            await preferences.setVoipDefaultAudioOutput(device?.label);
+
+            WebrtcDefaultDevices.selectOutputDevice();
+            setState(() {});
+          },
+        ),
+      // if (cameras != null)
+      //   buildPicker(
+      //     "Video Input",
+      //     preferences.voipDefaultVideoInput,
+      //     cameras!,
+      //     onSelected: (device) {
+      //       setState(() {
+      //         preferences.setVoipDefaultVideoInput(device?.label);
+      //       });
+      //     },
+      //   ),
+    ]);
+  }
+
+  Widget buildPicker(
+      String label, String? selected, List<webrtc.MediaDeviceInfo> microphones,
+      {Function(webrtc.MediaDeviceInfo? device)? onSelected}) {
+    var selectedDevice =
+        microphones.firstWhereOrNull((i) => i.label == selected);
+
+    List<webrtc.MediaDeviceInfo?> items = [null, ...microphones];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        tiamat.Text.labelLow(label),
+        tiamat.DropdownSelector<webrtc.MediaDeviceInfo?>(
+            items: items,
+            onItemSelected: onSelected,
+            itemBuilder: (item) {
+              if (item == null) {
+                return tiamat.Text.labelLow("No Default Selected");
+              } else {
+                return tiamat.Text(item.label);
+              }
+            },
+            value: selectedDevice),
       ],
     );
   }
