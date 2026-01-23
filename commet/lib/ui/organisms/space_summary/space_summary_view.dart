@@ -31,6 +31,7 @@ class SpaceSummaryView extends StatefulWidget {
       this.visibility,
       this.spaceColor,
       this.showSpaceSettingsButton = false,
+      this.onInviteButtonTap,
       this.openSpaceSettings,
       this.onAddRoomButtonTap,
       this.onRoomTap,
@@ -49,6 +50,7 @@ class SpaceSummaryView extends StatefulWidget {
   final ImageProvider? banner;
   final Color? spaceColor;
   final Function? openSpaceSettings;
+  final Function? onInviteButtonTap;
   final Function(Room room)? onRoomSettingsButtonTap;
   final Function(Room room)? onRoomTap;
   final Function(Space space)? onSpaceTap;
@@ -195,7 +197,18 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
                       spaceVisibility(),
                     ],
                   ),
-                  if (widget.showSpaceSettingsButton) buildSettingsButton()
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      spacing: 8,
+                      children: [
+                        if (widget.onInviteButtonTap != null)
+                          buildInviteButton(),
+                        if (widget.showSpaceSettingsButton)
+                          buildSettingsButton(),
+                      ],
+                    ),
+                  )
                 ],
               ),
               if (children.isNotEmpty ||
@@ -212,18 +225,28 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
     );
   }
 
-  Padding buildSettingsButton() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: tiamat.Tooltip(
-        text: tooltipSpaceSettings,
-        preferredDirection: AxisDirection.left,
-        child: tiamat.CircleButton(
-          key: spaceSettingsButtonKey,
-          icon: Icons.settings,
-          radius: BuildConfig.MOBILE ? 24 : 16,
-          onPressed: () => widget.openSpaceSettings?.call(),
-        ),
+  Widget buildSettingsButton() {
+    return tiamat.Tooltip(
+      text: tooltipSpaceSettings,
+      preferredDirection: AxisDirection.left,
+      child: tiamat.CircleButton(
+        key: spaceSettingsButtonKey,
+        icon: Icons.settings,
+        radius: BuildConfig.MOBILE ? 24 : 16,
+        onPressed: () => widget.openSpaceSettings?.call(),
+      ),
+    );
+  }
+
+  Widget buildInviteButton() {
+    return tiamat.Tooltip(
+      text: "Invite",
+      preferredDirection: AxisDirection.left,
+      child: tiamat.CircleButton(
+        key: spaceSettingsButtonKey,
+        icon: Icons.person_add,
+        radius: BuildConfig.MOBILE ? 24 : 16,
+        onPressed: () => widget.onInviteButtonTap?.call(),
       ),
     );
   }

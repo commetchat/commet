@@ -39,7 +39,13 @@ class RoomQuickAccessMenu {
         RoomQuickAccessMenuEntry(
             name: "Invite",
             action: (context) => AdaptiveDialog.show(context,
-                builder: (context) => SendInvitationWidget(room, invitation),
+                builder: (context) => SendInvitationWidget(
+                      room.client,
+                      invitation,
+                      roomId: room.identifier,
+                      displayName: room.displayName,
+                      existingMembers: room.memberIds,
+                    ),
                 title: "Invite"),
             icon: Icons.person_add),
       if (supportsPinnedMessages)
