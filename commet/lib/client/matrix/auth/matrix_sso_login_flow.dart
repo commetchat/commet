@@ -68,11 +68,15 @@ class MatrixSSOLoginFlow implements SsoLoginFlow {
       }
 
       String callbackScheme = Uri.parse(redirectUrl).scheme;
+      String? httpHost;
+      String? httpPath;
 
       // https://github.com/ThexXTURBOXx/flutter_web_auth_2/blob/2b67cb9674c7d3228de4f5728a73b09ae6598cf9/flutter_web_auth_2/README.md#windows-and-linux
       if (PlatformUtils.isLinux || PlatformUtils.isWindows) {
-        redirectUrl = "http://localhost:3001/login";
-        callbackScheme = "http://localhost:3001";
+        redirectUrl = "https://commet/login";
+        callbackScheme = "https";
+        httpHost = "commet";
+        httpPath = "/login";
       }
 
       final url = mx.homeserver!.replace(
@@ -84,7 +88,11 @@ class MatrixSSOLoginFlow implements SsoLoginFlow {
       final result = await FlutterWebAuth2.authenticate(
           url: url.toString(),
           callbackUrlScheme: callbackScheme,
-          options: FlutterWebAuth2Options(useWebview: false));
+          options: FlutterWebAuth2Options(
+            useWebview: true,
+            httpsHost: httpHost,
+            httpsPath: httpPath,
+          ));
 
       var token = Uri.parse(result).queryParameters['loginToken'];
       if (token?.isEmpty ?? false) {
