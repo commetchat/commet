@@ -17,6 +17,7 @@ class _RoomAppearanceSettingsPageState
   @override
   Widget build(BuildContext context) {
     return RoomAppearanceSettingsView(
+      client: widget.room.client,
       avatar: widget.room.avatar,
       displayName: widget.room.displayName,
       identifier: widget.room.identifier,

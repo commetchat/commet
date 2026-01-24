@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:commet/client/client.dart';
+import 'package:commet/client/matrix/matrix_client.dart';
+import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/client/space_child.dart';
 import 'package:commet/config/build_config.dart';
@@ -210,6 +212,25 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
                         if (widget.topic != null)
                           MarkdownBody(
                               data: widget.topic!,
+                              imageBuilder: (uri, title, alt) {
+                                if (uri.scheme == "mxc" &&
+                                    widget.space.client is MatrixClient) {
+                                  return SizedBox(
+                                    height: 50,
+                                    child: Image(
+                                        image: MatrixMxcImage(
+                                            uri,
+                                            doFullres: true,
+                                            doThumbnail: false,
+                                            autoLoadFullRes: true,
+                                            (widget.space.client
+                                                    as MatrixClient)
+                                                .matrixClient)),
+                                  );
+                                }
+
+                                return Container();
+                              },
                               onTapLink: (text, href, title) {
                                 if (href != null) {
                                   LinkUtils.open(Uri.parse(href));

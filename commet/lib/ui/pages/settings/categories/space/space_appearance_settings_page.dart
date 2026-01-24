@@ -41,6 +41,7 @@ class _SpaceAppearanceSettingsPageState
           onImagePicked: onAvatarPicked,
           onNameChanged: setName,
           setTopic: widget.space.setTopic,
+          client: widget.space.client,
           color: widget.space.color,
           topic: widget.space.topic,
           canEditName: widget.space.permissions.canEditName,

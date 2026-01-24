@@ -1,5 +1,8 @@
 import 'dart:typed_data';
 
+import 'package:commet/client/client.dart';
+import 'package:commet/client/matrix/matrix_client.dart';
+import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/ui/molecules/editable_label.dart';
 import 'package:commet/ui/molecules/image_picker.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
@@ -17,6 +20,7 @@ class RoomAppearanceSettingsView extends StatefulWidget {
       required this.displayName,
       required this.identifier,
       required this.color,
+      required this.client,
       this.onImagePicked,
       this.onNameChanged,
       this.topic,
@@ -26,6 +30,7 @@ class RoomAppearanceSettingsView extends StatefulWidget {
       this.canEditAvatar = false,
       super.key});
   final ImageProvider? avatar;
+  final Client client;
   final String displayName;
   final String identifier;
   final String? topic;
@@ -98,6 +103,24 @@ class _RoomAppearanceSettingsViewState
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: MarkdownBody(
+                      imageBuilder: (uri, title, alt) {
+                        if (uri.scheme == "mxc" &&
+                            widget.client is MatrixClient) {
+                          return SizedBox(
+                            height: 50,
+                            child: Image(
+                                image: MatrixMxcImage(
+                                    doFullres: true,
+                                    doThumbnail: false,
+                                    autoLoadFullRes: true,
+                                    uri,
+                                    (widget.client as MatrixClient)
+                                        .matrixClient)),
+                          );
+                        }
+
+                        return Container();
+                      },
                       styleSheet: MarkdownStyleSheet(
                           a: TextTheme.of(context).bodyMedium?.copyWith(
                               color: Theme.of(context)
