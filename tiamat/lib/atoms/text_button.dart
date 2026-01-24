@@ -207,6 +207,7 @@ class TextButton extends StatelessWidget {
     this.textColor,
     this.iconColor,
     this.avatar,
+    this.highlightColor = null,
     this.iconSize = 20,
     this.avatarRadius = 12,
     this.avatarPlaceholderColor,
@@ -221,6 +222,7 @@ class TextButton extends StatelessWidget {
   final ImageProvider? avatar;
   final String? avatarPlaceholderText;
   final Color? avatarPlaceholderColor;
+  final Color? highlightColor;
   final bool highlighted;
   final double iconSize;
   final double avatarRadius;
@@ -267,7 +269,7 @@ class TextButton extends StatelessWidget {
                                       context,
                                     ).colorScheme.onSecondaryContainer
                                   : iconColor ??
-                                        Theme.of(context).colorScheme.onSurface,
+                                      Theme.of(context).colorScheme.onSurface,
                             ),
                     ),
                   ),
@@ -307,7 +309,10 @@ class TextButton extends StatelessWidget {
           material.EdgeInsets.fromLTRB(8, 0, 8, 0),
         ),
         backgroundColor: MaterialStatePropertyAll(
-          highlighted ? Theme.of(context).colorScheme.secondaryContainer : null,
+          highlighted
+              ? highlightColor ??
+                  Theme.of(context).colorScheme.secondaryContainer
+              : null,
         ),
       ),
       child: content,

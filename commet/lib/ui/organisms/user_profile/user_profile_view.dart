@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:commet/client/components/profile/profile_component.dart';
 import 'package:commet/client/components/user_presence/user_presence_component.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/config/platform_utils.dart';
@@ -39,7 +40,9 @@ class UserProfileView extends StatefulWidget {
       this.onSetAvatar,
       this.bio,
       this.onSetStatus,
+      this.editBadges,
       this.setBio,
+      this.badges = const [],
       this.clearBio,
       this.showMessageButton = true,
       this.doSafeArea = true,
@@ -57,6 +60,7 @@ class UserProfileView extends StatefulWidget {
   final String identifier;
   final bool doSafeArea;
   final List<String> pronouns;
+  final List<ProfileBadge> badges;
   final Color userColor;
   final bool isSelf;
   final bool showMessageButton;
@@ -74,6 +78,7 @@ class UserProfileView extends StatefulWidget {
   final Future<void> Function()? setBio;
   final Future<void> Function()? clearBio;
   final Future<void> Function()? clearStatus;
+  final Future<void> Function()? editBadges;
   final void Function()? showSource;
   final void Function(Color)? setPreviewColor;
   final Widget? bio;
@@ -176,6 +181,9 @@ class _UserProfileViewState extends State<UserProfileView> {
                                         sigmaY: 40,
                                         tileMode: TileMode.repeated),
                                     child: Container(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .surfaceContainer,
                                       child: Image(
                                         image: widget.userAvatar!,
                                         fit: BoxFit.cover,
@@ -225,164 +233,90 @@ class _UserProfileViewState extends State<UserProfileView> {
                             child: Container(
                               color: background,
                               child: ScaledSafeArea(
-                                bottom: widget.doSafeArea,
-                                top: widget.doSafeArea,
-                                left: widget.doSafeArea,
-                                right: widget.doSafeArea,
-                                child: Column(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          8, avatarOverlap, 8, 8),
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .surfaceContainer,
-                                        ),
-                                        child: SizedBox(
-                                          width: double.infinity,
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.stretch,
-                                              children: [
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.fromLTRB(
-                                                          8, 0, 8, 0),
-                                                  child: Column(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.start,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .stretch,
-                                                    children: [
-                                                      Wrap(
-                                                        alignment: WrapAlignment
-                                                            .spaceBetween,
-                                                        runAlignment:
-                                                            WrapAlignment
-                                                                .center,
-                                                        children: [
-                                                          MouseRegion(
-                                                            cursor: widget
-                                                                    .isSelf
-                                                                ? SystemMouseCursors
-                                                                    .click
-                                                                : MouseCursor
-                                                                    .defer,
-                                                            child:
-                                                                GestureDetector(
-                                                              onTap: widget
-                                                                      .isSelf
-                                                                  ? widget
-                                                                      .onChangeName
-                                                                  : null,
-                                                              child: Text(
-                                                                widget
-                                                                    .displayName,
-                                                                style: Theme.of(
-                                                                        context)
-                                                                    .textTheme
-                                                                    .headlineSmall
-                                                                    ?.copyWith(
-                                                                        fontWeight:
-                                                                            FontWeight
-                                                                                .bold,
-                                                                        color: Theme.of(context)
-                                                                            .colorScheme
-                                                                            .onSurface),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          if (widget.timezone !=
-                                                                  null &&
-                                                              localTime != null)
-                                                            Padding(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .fromLTRB(
-                                                                      0,
-                                                                      8,
-                                                                      0,
-                                                                      8),
-                                                              child:
-                                                                  userLocalTime(),
-                                                            )
-                                                        ],
-                                                      ),
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .fromLTRB(
-                                                                0, 0, 0, 12),
-                                                        child: Opacity(
-                                                          opacity: 0.8,
-                                                          child: Text(
-                                                            widget.identifier,
-                                                            style: Theme.of(
-                                                                    context)
-                                                                .textTheme
-                                                                .labelSmall
-                                                                ?.copyWith(
-                                                                    fontFamily:
-                                                                        "Code",
-                                                                    color: Theme.of(
-                                                                            context)
-                                                                        .colorScheme
-                                                                        .onSurface),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      if (widget
-                                                          .pronouns.isNotEmpty)
-                                                        Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .fromLTRB(
-                                                                  0, 4, 0, 4),
-                                                          child: Wrap(
-                                                            spacing: 4,
-                                                            runSpacing: 4,
-                                                            children: widget
-                                                                .pronouns
-                                                                .map((i) =>
-                                                                    TinyPill(i))
-                                                                .toList(),
-                                                          ),
-                                                        ),
-                                                      SizedBox(
-                                                        height: 12,
-                                                      ),
-                                                    ],
+                                  bottom: widget.doSafeArea,
+                                  top: widget.doSafeArea,
+                                  left: widget.doSafeArea,
+                                  right: widget.doSafeArea,
+                                  child: Padding(
+                                    padding: EdgeInsets.fromLTRB(
+                                        8, avatarOverlap, 8, 8),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(8),
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .surfaceContainer,
+                                      ),
+                                      child: Column(
+                                        spacing: 8,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.stretch,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Flexible(
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      12, 4, 12, 4),
+                                              child: Row(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Flexible(
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        displayName(),
+                                                        username(context),
+                                                        pronouns(),
+                                                      ],
+                                                    ),
                                                   ),
-                                                ),
-                                                if (widget.bio != null)
-                                                  buildBio(context),
-                                                if (!widget.isSelf &&
-                                                    widget.showMessageButton)
-                                                  tiamat.Button(
-                                                    text:
-                                                        promptOpenDirectMessage,
-                                                    onTap: clickMessageButton,
+                                                  Padding(
+                                                    padding: const EdgeInsets
+                                                        .fromLTRB(0, 8, 0, 0),
+                                                    child: Column(
+                                                      spacing: 8,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .end,
+                                                      children: [
+                                                        if (localTime != null)
+                                                          userLocalTime(),
+                                                        badges(),
+                                                      ],
+                                                    ),
                                                   )
-                                              ],
+                                                ],
+                                              ),
                                             ),
                                           ),
-                                        ),
+                                          if (widget.bio != null)
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      8, 0, 8, 0),
+                                              child: buildBio(context),
+                                            ),
+                                          if (!widget.isSelf &&
+                                              widget.showMessageButton)
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: tiamat.Button(
+                                                text: promptOpenDirectMessage,
+                                                onTap: clickMessageButton,
+                                              ),
+                                            )
+                                        ],
                                       ),
                                     ),
-                                    if (editingColorScheme)
-                                      buildColorSchemeEditor(),
-                                  ],
-                                ),
-                              ),
+                                  )),
                             ),
                           ),
                           Padding(
@@ -421,6 +355,21 @@ class _UserProfileViewState extends State<UserProfileView> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Padding username(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0, 0, 0, 4),
+      child: Opacity(
+        opacity: 0.8,
+        child: Text(
+          widget.identifier,
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              fontFamily: "Code",
+              color: Theme.of(context).colorScheme.onSurface),
         ),
       ),
     );
@@ -486,6 +435,11 @@ class _UserProfileViewState extends State<UserProfileView> {
             text: "Set Status",
             onPressed: () => widget.onSetStatus?.call(),
             icon: Icons.short_text),
+      if (widget.isSelf)
+        tiamat.ContextMenuItem(
+            text: "Set Badges",
+            onPressed: () => widget.editBadges?.call(),
+            icon: Icons.star),
       if (widget.isSelf && widget.presence?.message != null)
         tiamat.ContextMenuItem(
             text: "Clear Status",
@@ -716,5 +670,87 @@ class _UserProfileViewState extends State<UserProfileView> {
     setState(() {
       isLoadingDirectMessage = false;
     });
+  }
+
+  Widget buildBadge(ProfileBadge i) {
+    var doOutline = i.brightness == null
+        ? false
+        : Theme.of(context).brightness == i.brightness;
+
+    return tiamat.Tooltip(
+      text: i.body,
+      child: SizedBox(
+          width: 30,
+          height: 30,
+          child: Stack(
+            children: [
+              if (doOutline)
+                ImageFiltered(
+                  imageFilter: ImageFilter.blur(sigmaX: 1, sigmaY: 1),
+                  child: ColorFiltered(
+                    colorFilter: ColorFilter.mode(
+                        Theme.of(context)
+                            .colorScheme
+                            .inverseSurface
+                            .withAlpha(200),
+                        BlendMode.srcIn),
+                    child: Image(
+                      image: i.image,
+                    ),
+                  ),
+                ),
+              Image(
+                image: i.image,
+              ),
+            ],
+          )),
+    );
+  }
+
+  Widget displayName() {
+    return MouseRegion(
+      cursor: widget.isSelf ? SystemMouseCursors.click : MouseCursor.defer,
+      child: GestureDetector(
+        onTap: widget.isSelf ? widget.onChangeName : null,
+        child: Text(
+          widget.displayName,
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.onSurface),
+        ),
+      ),
+    );
+  }
+
+  Widget pronouns() {
+    if (widget.pronouns.isEmpty) return Container();
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
+      child: Wrap(
+        spacing: 4,
+        runSpacing: 4,
+        children: widget.pronouns.map((i) => TinyPill(i)).toList(),
+      ),
+    );
+  }
+
+  Widget badges() {
+    return Material(
+      clipBehavior: Clip.hardEdge,
+      borderRadius: BorderRadius.circular(8),
+      color: widget.badges.isEmpty && widget.isSelf
+          ? ColorScheme.of(context).surfaceContainerLow
+          : Colors.transparent,
+      child: InkWell(
+        onTap: widget.isSelf ? () => widget.editBadges?.call() : null,
+        child: Padding(
+            padding: EdgeInsetsGeometry.fromLTRB(2, 2, 2, 2),
+            child: Wrap(
+              spacing: 8,
+              children: widget.badges.map((i) => buildBadge(i)).toList(),
+            )),
+      ),
+    );
   }
 }
