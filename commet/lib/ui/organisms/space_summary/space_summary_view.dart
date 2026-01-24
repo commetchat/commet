@@ -43,7 +43,7 @@ class SpaceSummaryView extends StatefulWidget {
   final Space space;
   final String displayName;
   final String? topic;
-  final Future<void> Function(String roomId)? joinRoom;
+  final Future<void> Function(RoomPreview preview)? joinRoom;
   final Stream<void>? onSpaceUpdated;
   final RoomVisibility? visibility;
   final ImageProvider? avatar;
@@ -331,7 +331,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
                     body: preview.topic,
                     color: preview.color,
                     onPrimaryButtonPressed: () async {
-                      await widget.joinRoom?.call(preview.roomId);
+                      await widget.joinRoom?.call(preview);
                     },
                   );
                 }),

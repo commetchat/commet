@@ -167,6 +167,8 @@ abstract class Client {
   /// Join an existing room by address
   Future<Room> joinRoom(String address);
 
+  Future<Room> joinRoomFromPreview(RoomPreview preview);
+
   /// Leaves a room
   Future<void> leaveRoom(Room room);
 

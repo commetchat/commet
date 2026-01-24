@@ -24,7 +24,8 @@ class MatrixSpaceRoomChunkPreview implements RoomPreview {
   @override
   late c.RoomType type;
 
-  MatrixSpaceRoomChunkPreview(this.chunk, this.matrixClient) {
+  MatrixSpaceRoomChunkPreview(this.chunk, this.matrixClient,
+      {this.via = const []}) {
     avatar = chunk.avatarUrl != null
         ? MatrixMxcImage(chunk.avatarUrl!, matrixClient,
             doFullres: false, doThumbnail: true)
@@ -36,6 +37,8 @@ class MatrixSpaceRoomChunkPreview implements RoomPreview {
       type = c.RoomType.defaultRoom;
     }
   }
+
+  List<String> via;
 
   @override
   Color get color => MatrixPeer.hashColor(roomId);
