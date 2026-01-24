@@ -32,7 +32,6 @@ import 'package:commet/client/matrix/components/voip_room/matrix_voip_room_compo
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/matrix/matrix_space.dart';
-import 'package:commet/config/experiments.dart';
 
 class ComponentRegistry {
   static List<Component<MatrixClient>> getMatrixComponents(
@@ -46,7 +45,7 @@ class ComponentRegistry {
       MatrixPushNotificationComponent(client),
       MatrixCommandComponent(client),
 
-      if (Experiments.voip) MatrixVoipComponent(client),
+      MatrixVoipComponent(client),
       // MatrixRTCDataChannelComponent(client),
       // MatrixRtcScreenShareAnnotationComponent(client),
       MatrixUrlPreviewComponent(client),
@@ -74,12 +73,11 @@ class ComponentRegistry {
       MatrixReadReceiptComponent(client, room),
       MatrixTypingIndicatorsComponent(client, room),
       MatrixPinnedMessagesComponent(client, room),
-      if (Experiments.elementCall && MatrixVoipRoomComponent.isVoipRoom(room))
+      if (MatrixVoipRoomComponent.isVoipRoom(room))
         MatrixVoipRoomComponent(client, room),
-      if (Experiments.photoAlbumRooms &&
-          MatrixPhotoAlbumRoomComponent.isPhotoAlbumRoom(room))
+      if (MatrixPhotoAlbumRoomComponent.isPhotoAlbumRoom(room))
         MatrixPhotoAlbumRoomComponent(client, room),
-      if (Experiments.calendarRooms) MatrixCalendarRoomComponent(client, room),
+      MatrixCalendarRoomComponent(client, room),
     ];
   }
 

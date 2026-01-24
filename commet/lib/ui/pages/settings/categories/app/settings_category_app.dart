@@ -1,5 +1,6 @@
 import 'package:commet/client/components/voip/voip_component.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/config/experiments.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/settings/categories/app/advanced_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/app/appearance_settings_page.dart';
@@ -95,12 +96,13 @@ class SettingsCategoryApp implements SettingsCategory {
             pageBuilder: (context) {
               return const AdvancedSettingsPage();
             }),
-        SettingsTab(
-            label: labelSettingsAppExperiments,
-            icon: m.Icons.science,
-            pageBuilder: (context) {
-              return const ExperimentsSettingsPage();
-            }),
+        if (Experiments.hasExperiments)
+          SettingsTab(
+              label: labelSettingsAppExperiments,
+              icon: m.Icons.science,
+              pageBuilder: (context) {
+                return const ExperimentsSettingsPage();
+              }),
         if (preferences.developerMode)
           SettingsTab(
             label: labelSettingsAppDeveloperUtils,
