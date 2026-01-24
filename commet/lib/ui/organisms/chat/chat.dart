@@ -295,7 +295,10 @@ class ChatState extends State<Chat> {
           onFocusMessageInput.add(null);
           break;
         case EventInteractionType.edit:
-          setMessageInputText.add(event.plainTextBody);
+          if (event case TimelineEventMessage m) if (timeline != null) {
+            setMessageInputText.add(m.getPlaintextBody(timeline!));
+          }
+
           onFocusMessageInput.add(null);
           break;
         default:

@@ -2,6 +2,7 @@ import 'package:commet/client/components/account_switch_prefix/account_switch_pr
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
+import 'package:commet/client/timeline_events/timeline_event_message.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/molecules/message_input.dart';
 import 'package:commet/ui/molecules/read_indicator.dart';
@@ -90,6 +91,14 @@ class ChatView extends StatelessWidget {
   }
 
   Widget input() {
+    String? interactingEventBody = state.interactingEvent?.plainTextBody;
+
+    if (state.interactingEvent case TimelineEventMessage m) {
+      if (state.timeline != null) {
+        interactingEventBody = m.getPlaintextBody(state.timeline!);
+      }
+    }
+
     return ClipRRect(
       child: MessageInput(
         client: state.room.client,
@@ -119,7 +128,7 @@ class ChatView extends StatelessWidget {
         iconScale: Layout.mobile ? 0.6 : 0.5,
         isProcessing: state.processing,
         enabled: state.room.permissions.canSendMessage,
-        relatedEventBody: state.interactingEvent?.plainTextBody,
+        relatedEventBody: interactingEventBody,
         relatedEventSenderName: relatedEventSenderName,
         relatedEventSenderColor: relatedEventSenderColor,
         setInputText: state.setMessageInputText.stream,

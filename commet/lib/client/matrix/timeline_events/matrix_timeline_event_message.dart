@@ -90,6 +90,13 @@ class MatrixTimelineEventMessage extends MatrixTimelineEvent
   }
 
   @override
+  String getPlaintextBody(Timeline timeline) {
+    var displayEvent = getDisplayEvent(timeline);
+
+    return displayEvent.plaintextBody;
+  }
+
+  @override
   Widget? buildFormattedContent({Timeline? timeline}) {
     final room = client.getRoom(event.roomId!)!;
 

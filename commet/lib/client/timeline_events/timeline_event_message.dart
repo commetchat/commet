@@ -4,6 +4,8 @@ import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:flutter/material.dart';
 
 abstract class TimelineEventMessage extends TimelineEvent {
+  String getPlaintextBody(Timeline timeline);
+
   Widget? buildFormattedContent({Timeline? timeline});
   String? get body;
   String? get bodyFormat;
