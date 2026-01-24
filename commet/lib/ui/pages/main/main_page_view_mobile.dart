@@ -222,6 +222,7 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
         offset = scaledQuery.padding.bottom;
       }
       return Tile(
+        key: ValueKey("room-chat-view-${widget.state.currentRoom!.localId}"),
         child: Column(
           children: [
             Tile.low(
