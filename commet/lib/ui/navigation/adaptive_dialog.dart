@@ -60,6 +60,17 @@ class AdaptiveDialog {
     );
   }
 
+  static Future<void> showError(
+      BuildContext context, Object exception, StackTrace trace) {
+    return show(context, builder: (context) {
+      return Column(
+        children: [
+          tiamat.Text.body(exception.toString()),
+        ],
+      );
+    }, title: "Error");
+  }
+
   static Future<T?> show<T extends Object?>(
     BuildContext context, {
     required Widget Function(BuildContext context) builder,
