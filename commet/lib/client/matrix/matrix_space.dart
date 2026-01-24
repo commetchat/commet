@@ -340,7 +340,20 @@ class MatrixSpace extends Space {
             _matrixClient.getRoomById(element.roomId)?.membership !=
             matrix.Membership.join)
         .forEach((element) {
-      _previews.add(MatrixSpaceRoomChunkPreview(element, _matrixClient));
+      _previews.removeWhere((i) => i.roomId == element.roomId);
+
+      var viaContent = _matrixRoom
+          .getState(matrix.EventTypes.SpaceChild, element.roomId)
+          ?.content["via"];
+
+      List<String> via = const [];
+
+      if (viaContent is List) {
+        via = List.from(viaContent);
+      }
+
+      _previews
+          .add(MatrixSpaceRoomChunkPreview(element, _matrixClient, via: via));
     });
 
     _fullyLoaded = true;

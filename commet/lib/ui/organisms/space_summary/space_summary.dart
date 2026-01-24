@@ -1,9 +1,13 @@
 import 'dart:async';
 
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/invitation/invitation_component.dart';
 import 'package:commet/client/components/space_banner/space_banner_component.dart';
 import 'package:commet/client/components/space_color_scheme/space_color_scheme_component.dart';
+import 'package:commet/client/room_preview.dart';
 import 'package:commet/client/space_child.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
+import 'package:commet/ui/organisms/invitation_view/send_invitation.dart';
 import 'package:commet/ui/organisms/space_summary/space_summary_view.dart';
 import 'package:commet/ui/pages/get_or_create_room/get_or_create_room.dart';
 import 'package:commet/ui/pages/settings/room_settings_page.dart';
@@ -59,6 +63,8 @@ class _SpaceSummaryState extends State<SpaceSummary> {
       banner: banner?.banner,
       openSpaceSettings: openSpaceSettings,
       onRoomSettingsButtonTap: openRoomSettings,
+      onInviteButtonTap:
+          widget.space.permissions.canInviteUser ? onInviteTap : null,
       spaceColor: widget.space.color,
       onRoomTap: widget.onRoomTap,
       showSpaceSettingsButton: widget.space.permissions.canEditAnything,
@@ -67,10 +73,6 @@ class _SpaceSummaryState extends State<SpaceSummary> {
       onSpaceTap: widget.onSpaceTap,
       colorScheme: colorScheme,
     );
-  }
-
-  Future<void> joinRoom(String roomId) {
-    return widget.space.client.joinRoom(roomId);
   }
 
   Future<void> createRoom(Client client, CreateRoomArgs args) async {
@@ -112,5 +114,21 @@ class _SpaceSummaryState extends State<SpaceSummary> {
     if (room is SpaceChildSpace) {
       widget.space.setSpaceChildSpace(room.child);
     }
+  }
+
+  onInviteTap() {
+    final invitation = widget.space.client.getComponent<InvitationComponent>();
+    if (invitation != null) {
+      AdaptiveDialog.show(context,
+          builder: (context) => SendInvitationWidget(
+              widget.space.client, invitation,
+              roomId: widget.space.identifier,
+              displayName: widget.space.displayName),
+          title: "Invite");
+    }
+  }
+
+  Future<void> joinRoom(RoomPreview preview) async {
+    await widget.space.client.joinRoomFromPreview(preview);
   }
 }

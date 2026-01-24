@@ -11,8 +11,15 @@ import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class SendInvitationWidget extends StatefulWidget {
-  const SendInvitationWidget(this.room, this.component, {super.key});
-  final Room room;
+  const SendInvitationWidget(this.client, this.component,
+      {super.key,
+      required this.roomId,
+      required this.displayName,
+      this.existingMembers});
+  final Client client;
+  final Iterable<String>? existingMembers;
+  final String roomId;
+  final String displayName;
   final InvitationComponent component;
 
   @override
@@ -38,14 +45,13 @@ class _SendInvitationWidgetState extends State<SendInvitationWidget> {
 
   @override
   Widget build(BuildContext context) {
-    var dmComponent =
-        widget.room.client.getComponent<DirectMessagesComponent>();
+    var dmComponent = widget.client.getComponent<DirectMessagesComponent>();
     var recommended = List.from(dmComponent?.directMessageRooms ?? []);
 
-    recommended.removeWhere(
-      (element) => widget.room.memberIds
-          .contains(dmComponent?.getDirectMessagePartnerId(element)),
-    );
+    recommended.removeWhere((element) =>
+        widget.existingMembers
+            ?.contains(dmComponent?.getDirectMessagePartnerId(element)) ==
+        true);
 
     return ScaledSafeArea(
       child: SizedBox(
@@ -133,14 +139,13 @@ class _SendInvitationWidgetState extends State<SendInvitationWidget> {
   void invitePeer(String userId) async {
     final confirm = await AdaptiveDialog.confirmation(context,
         prompt:
-            "Are you sure you want to Invite $userId to the room ${widget.room.displayName}?",
+            "Are you sure you want to Invite $userId to the room ${widget.displayName}?",
         title: "Invitation");
     if (confirm != true) {
       return;
     }
 
-    widget.component
-        .inviteUserToRoom(userId: userId, roomId: widget.room.identifier);
+    widget.component.inviteUserToRoom(userId: userId, roomId: widget.roomId);
 
     if (mounted) Navigator.pop(context);
   }

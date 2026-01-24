@@ -259,4 +259,10 @@ class MatrixBackgroundClient implements Client {
     // TODO: implement getRoomByAlias
     throw UnimplementedError();
   }
+
+  @override
+  Future<Room> joinRoomFromPreview(RoomPreview preview) {
+    // TODO: implement joinRoomFromPreview
+    throw UnimplementedError();
+  }
 }

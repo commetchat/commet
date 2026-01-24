@@ -14,6 +14,7 @@ import 'package:commet/client/matrix/components/voip_room/matrix_voip_room_compo
 import 'package:commet/client/matrix/database/matrix_database.dart';
 import 'package:commet/client/matrix/extensions/matrix_client_extensions.dart';
 import 'package:commet/client/matrix/matrix_native_implementations.dart';
+import 'package:commet/client/matrix/matrix_room_preview.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/experiments.dart';
@@ -858,6 +859,19 @@ class MatrixClient extends Client {
   Room? getRoomByAlias(String identifier) {
     return rooms.firstWhereOrNull(
         (r) => (r as MatrixRoom).matrixRoom.canonicalAlias == identifier);
+  }
+
+  @override
+  Future<Room> joinRoomFromPreview(RoomPreview preview) {
+    String roomId = preview.roomId;
+    if (preview is MatrixSpaceRoomChunkPreview) {
+      var via = preview.via;
+      var query = "?via=" + via.join(",");
+
+      roomId += query;
+    }
+
+    return joinRoom(roomId);
   }
 }
 
