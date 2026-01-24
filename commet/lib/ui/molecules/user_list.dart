@@ -254,14 +254,6 @@ class _RoomMemberListState extends State<RoomMemberList> {
             );
           }
 
-          var role = getDisplayRole(index);
-          if (role != null) {
-            result = Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [RoleView(name: role.name, icon: role.icon), result],
-            );
-          }
-
           result = RoomMemberList.userContextMenu(context,
               userId: member.identifier,
               room: widget.room,
@@ -273,6 +265,14 @@ class _RoomMemberListState extends State<RoomMemberList> {
               onUserKicked: () => roomMembers
                   .removeWhere((i) => i.identifier == member.identifier),
               onUserRoleChanged: () => loadAllUsers());
+
+          var role = getDisplayRole(index);
+          if (role != null) {
+            result = Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [RoleView(name: role.name, icon: role.icon), result],
+            );
+          }
 
           return result;
         }
