@@ -5,10 +5,13 @@ import 'package:commet/client/components/direct_messages/direct_message_componen
 import 'package:commet/client/member.dart';
 import 'package:commet/client/role.dart';
 import 'package:commet/config/layout_config.dart';
+import 'package:commet/ui/atoms/adaptive_context_menu.dart';
 import 'package:commet/ui/atoms/role_view.dart';
 import 'package:commet/ui/atoms/shimmer_loading.dart';
 import 'package:commet/ui/molecules/user_panel.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/organisms/user_profile/user_profile.dart';
+import 'package:commet/utils/error_utils.dart';
 import 'package:flutter/material.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -20,6 +23,82 @@ class RoomMemberList extends StatefulWidget {
 
   @override
   State<RoomMemberList> createState() => _RoomMemberListState();
+
+  static AdaptiveContextMenu userContextMenu(BuildContext context,
+      {required String userId,
+      required String userDisplayName,
+      required Room room,
+      required Widget child,
+      required bool isSelf,
+      Function? onUserKicked,
+      Function? onUserBanned,
+      Function? onUserRoleChanged}) {
+    return AdaptiveContextMenu(
+      items: [
+        if (room.permissions.canChangeRoles)
+          tiamat.ContextMenuItem(
+              text: "Set Role",
+              icon: Icons.shield,
+              onPressed: () async {
+                ErrorUtils.tryRun(context, () async {
+                  var role = await AdaptiveDialog.pickOne(
+                    context,
+                    title: "Pick Role for $userDisplayName",
+                    items: room.availableRoles,
+                    itemBuilder: (context, item, callback) {
+                      return SizedBox(
+                        height: 50,
+                        child: tiamat.TextButton(
+                          item.name,
+                          icon: item.icon,
+                          onTap: callback,
+                        ),
+                      );
+                    },
+                  );
+
+                  if (role != null) {
+                    await room.setMemberRole(userId, role);
+                    onUserRoleChanged?.call();
+                  }
+                });
+              }),
+        if (room.permissions.canKick && !isSelf)
+          tiamat.ContextMenuItem(
+              text: "Kick",
+              icon: Icons.subdirectory_arrow_left_rounded,
+              color: ColorScheme.of(context).error,
+              onPressed: () async {
+                if (await AdaptiveDialog.confirmation(context,
+                        prompt:
+                            "Are you sure you want to kick $userDisplayName from the room?") ==
+                    true) {
+                  ErrorUtils.tryRun(context, () async {
+                    await room.kickUser(userId);
+                    onUserKicked?.call();
+                  });
+                }
+              }),
+        if (room.permissions.canBan && !isSelf)
+          tiamat.ContextMenuItem(
+              text: "Ban",
+              icon: Icons.shield,
+              color: ColorScheme.of(context).error,
+              onPressed: () async {
+                if (await AdaptiveDialog.confirmation(context,
+                        prompt:
+                            "Are you sure you want to ban $userDisplayName from the room?") ==
+                    true) {
+                  ErrorUtils.tryRun(context, () async {
+                    await room.banUser(userId);
+                    onUserBanned?.call();
+                  });
+                }
+              }),
+      ],
+      child: child,
+    );
+  }
 }
 
 class _RoomMemberListState extends State<RoomMemberList> {
@@ -182,6 +261,18 @@ class _RoomMemberListState extends State<RoomMemberList> {
               children: [RoleView(name: role.name, icon: role.icon), result],
             );
           }
+
+          result = RoomMemberList.userContextMenu(context,
+              userId: member.identifier,
+              room: widget.room,
+              userDisplayName: member.displayName,
+              isSelf: member.identifier == widget.room.client.self!.identifier,
+              child: result,
+              onUserBanned: () => roomMembers
+                  .removeWhere((i) => i.identifier == member.identifier),
+              onUserKicked: () => roomMembers
+                  .removeWhere((i) => i.identifier == member.identifier),
+              onUserRoleChanged: () => loadAllUsers());
 
           return result;
         }

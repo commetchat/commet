@@ -305,4 +305,26 @@ class MatrixBackgroundRoom implements Room {
   @override
   // TODO: implement isSpecialRoomType
   bool get isSpecialRoomType => false;
+
+  @override
+  Future<void> banUser(String id) {
+    // TODO: implement banUser
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> kickUser(String id) {
+    // TODO: implement kickUser
+    throw UnimplementedError();
+  }
+
+  @override
+  // TODO: implement availableRoles
+  List<Role> get availableRoles => throw UnimplementedError();
+
+  @override
+  Future<void> setMemberRole(String id, Role role) {
+    // TODO: implement setMemberRole
+    throw UnimplementedError();
+  }
 }

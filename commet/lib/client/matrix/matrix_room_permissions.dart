@@ -37,4 +37,7 @@ class MatrixRoomPermissions extends Permissions {
 
   @override
   bool get canInviteUser => room.canInvite;
+
+  @override
+  bool get canChangeRoles => room.canChangePowerLevel;
 }

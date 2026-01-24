@@ -22,6 +22,7 @@ class TimelineEventLayoutMessage extends StatelessWidget {
       this.onAvatarTapped,
       this.edited = false,
       this.avatarSize = 32,
+      this.avatarBuilder,
       this.showSender = true});
   final String senderName;
   final Color senderColor;
@@ -37,6 +38,7 @@ class TimelineEventLayoutMessage extends StatelessWidget {
   final bool edited;
   final String? timestamp;
   final Function()? onAvatarTapped;
+  final Widget Function(Widget child)? avatarBuilder;
 
   final double avatarSize;
 
@@ -109,8 +111,8 @@ class TimelineEventLayoutMessage extends StatelessWidget {
     );
   }
 
-  SizedBox avatar() {
-    return SizedBox(
+  Widget avatar() {
+    Widget result = SizedBox(
       width: avatarSize,
       child: MouseRegion(
         cursor: SystemMouseCursors.click,
@@ -126,5 +128,11 @@ class TimelineEventLayoutMessage extends StatelessWidget {
         ),
       ),
     );
+
+    if (avatarBuilder != null) {
+      result = avatarBuilder!.call(result);
+    }
+
+    return result;
   }
 }

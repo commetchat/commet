@@ -1,4 +1,6 @@
-class Permissions {
+abstract class Permissions {
+  bool get canChangeRoles => false;
+
   bool get canBan => false;
 
   bool get canKick => false;
