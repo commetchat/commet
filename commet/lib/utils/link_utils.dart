@@ -20,6 +20,8 @@ class LinkUtils {
       }
     }
 
-    launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (uri.scheme == "http" || uri.scheme == "https") {
+      launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
   }
 }
