@@ -17,7 +17,6 @@ import 'package:commet/client/matrix/matrix_native_implementations.dart';
 import 'package:commet/client/matrix/matrix_room_preview.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/config/build_config.dart';
-import 'package:commet/config/experiments.dart';
 import 'package:commet/config/global_config.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
