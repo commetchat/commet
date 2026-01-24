@@ -67,4 +67,9 @@ class MatrixBackgroundTimelineEventMessage implements TimelineEventMessage {
 
   @override
   TimelineEventStatus get status => throw UnimplementedError();
+
+  @override
+  String getPlaintextBody(Timeline timeline) {
+    return plainTextBody;
+  }
 }
