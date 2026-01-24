@@ -218,6 +218,7 @@ class AdaptiveDialog {
       String submitText = "Submit",
       String? hintText,
       String? initialText,
+      bool multiline = false,
       bool dangerous = false}) {
     return show<String?>(context, builder: (context) {
       String result = "";
@@ -235,6 +236,7 @@ class AdaptiveDialog {
             children: [
               TextField(
                 controller: controller,
+                maxLines: multiline ? null : 1,
                 decoration: InputDecoration(hintText: hintText),
                 onChanged: (value) => result = value,
               ),

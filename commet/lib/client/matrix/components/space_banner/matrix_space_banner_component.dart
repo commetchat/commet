@@ -45,4 +45,7 @@ class MatrixSpaceBannerComponent
       },
     );
   }
+
+  @override
+  bool get canEditBanner => space.matrixRoom.canChangeStateEvent(key);
 }

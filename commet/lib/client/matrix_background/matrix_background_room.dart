@@ -327,4 +327,14 @@ class MatrixBackgroundRoom implements Room {
     // TODO: implement setMemberRole
     throw UnimplementedError();
   }
+
+  @override
+  // TODO: implement topic
+  String? get topic => throw UnimplementedError();
+
+  @override
+  Future<void> setTopic(String topic) {
+    // TODO: implement setTopic
+    throw UnimplementedError();
+  }
 }

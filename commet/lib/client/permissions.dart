@@ -11,6 +11,8 @@ abstract class Permissions {
 
   bool get canEditAvatar => false;
 
+  bool get canEditTopic => false;
+
   bool get canEditAnything =>
       (canEditName || canEditAvatar || canChangeNotificationSettings);
 

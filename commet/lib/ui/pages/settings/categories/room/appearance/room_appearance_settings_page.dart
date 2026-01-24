@@ -20,8 +20,12 @@ class _RoomAppearanceSettingsPageState
       avatar: widget.room.avatar,
       displayName: widget.room.displayName,
       identifier: widget.room.identifier,
+      color: widget.room.defaultColor,
       canEditName: widget.room.permissions.canEditName,
       canEditAvatar: widget.room.permissions.canEditAvatar,
+      canEditTopic: widget.room.permissions.canEditTopic,
+      topic: widget.room.topic,
+      setTopic: widget.room.setTopic,
       onImagePicked: setRoomAvatar,
       onNameChanged: setRoomName,
     );

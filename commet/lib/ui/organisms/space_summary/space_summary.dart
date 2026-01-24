@@ -60,6 +60,7 @@ class _SpaceSummaryState extends State<SpaceSummary> {
       avatar: widget.space.avatar,
       visibility: widget.space.visibility,
       joinRoom: joinRoom,
+      topic: widget.space.topic,
       banner: banner?.banner,
       openSpaceSettings: openSpaceSettings,
       onRoomSettingsButtonTap: openRoomSettings,

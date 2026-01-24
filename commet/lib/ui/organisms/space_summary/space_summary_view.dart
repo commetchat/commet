@@ -10,11 +10,13 @@ import 'package:commet/ui/atoms/room_panel.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/utils/common_strings.dart';
 import 'package:commet/utils/image/lod_image.dart';
+import 'package:commet/utils/link_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:implicitly_animated_list/implicitly_animated_list.dart';
 import 'package:intl/intl.dart';
+import 'package:tiamat/config/style/theme_extensions.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
@@ -172,6 +174,10 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
 
   @override
   Widget build(BuildContext context) {
+    var baseTextTheme = TextTheme.of(context)
+        .bodySmall
+        ?.copyWith(color: Theme.of(context).colorScheme.secondary);
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -187,15 +193,40 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      buildHeader(),
-                      spaceVisibility(),
-                    ],
+                  Flexible(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        MarkdownBody(
+                          data: labelSpaceGettingText(widget.displayName),
+                          styleSheet: MarkdownStyleSheet(
+                              h1Padding: EdgeInsets.zero,
+                              pPadding: EdgeInsets.zero),
+                        ),
+                        if (widget.topic != null)
+                          MarkdownBody(
+                              data: widget.topic!,
+                              onTapLink: (text, href, title) {
+                                if (href != null) {
+                                  LinkUtils.open(Uri.parse(href));
+                                }
+                              },
+                              styleSheet: MarkdownStyleSheet.fromTheme(
+                                      Theme.of(context))
+                                  .copyWith(
+                                a: baseTextTheme?.copyWith(
+                                    color: Theme.of(context)
+                                        .extension<ExtraColors>()
+                                        ?.linkColor),
+                                p: baseTextTheme,
+                              )),
+                        spaceVisibility(),
+                      ],
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -337,13 +368,6 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
                 }),
           ],
         ));
-  }
-
-  Widget buildHeader() {
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      MarkdownBody(data: labelSpaceGettingText(widget.displayName)),
-      if (widget.topic != null) tiamat.Text.label(widget.topic!),
-    ]);
   }
 
   Widget spaceVisibility() {

@@ -8,5 +8,7 @@ abstract class SpaceBannerComponent<R extends Client, T extends Space>
     implements SpaceComponent<R, T> {
   ImageProvider? get banner;
 
+  bool get canEditBanner;
+
   Future<void> setBanner(Uint8List data, {String? mimeType});
 }

@@ -140,16 +140,40 @@ class _RoomHeaderState extends State<RoomHeader> {
                       width: 10,
                     ),
                     Flexible(
-                      child: m.Text(
-                        widget.room.displayName,
-                        style: m.Theme.of(context)
-                            .textTheme
-                            .titleSmall
-                            ?.copyWith(color: IconTheme.of(context).color),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                      child: ClipRect(
+                        child: Row(
+                          textBaseline: TextBaseline.alphabetic,
+                          crossAxisAlignment: CrossAxisAlignment.baseline,
+                          children: [
+                            m.Text(
+                              widget.room.displayName,
+                              style: m.Theme.of(context)
+                                  .textTheme
+                                  .titleSmall
+                                  ?.copyWith(
+                                      color: IconTheme.of(context).color),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            if (widget.room.topic != null &&
+                                widget.room.topic!.isNotEmpty)
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                                child: tiamat.Text.labelLow("—"),
+                              ),
+                            if (widget.room.topic != null &&
+                                widget.room.topic!.isNotEmpty)
+                              Flexible(
+                                child: tiamat.Text.labelLow(
+                                  widget.room.topic!,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              )
+                          ],
+                        ),
                       ),
-                    ),
+                    )
                   ],
                 ),
               ),

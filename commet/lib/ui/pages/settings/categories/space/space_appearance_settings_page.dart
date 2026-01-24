@@ -28,6 +28,9 @@ class _SpaceAppearanceSettingsPageState
 
   @override
   Widget build(BuildContext context) {
+    bool canEditBanner =
+        widget.space.getComponent<SpaceBannerComponent>()?.canEditBanner ==
+            true;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -37,61 +40,66 @@ class _SpaceAppearanceSettingsPageState
           identifier: widget.space.identifier,
           onImagePicked: onAvatarPicked,
           onNameChanged: setName,
+          setTopic: widget.space.setTopic,
+          color: widget.space.color,
+          topic: widget.space.topic,
           canEditName: widget.space.permissions.canEditName,
+          canEditTopic: widget.space.permissions.canEditTopic,
           canEditAvatar: widget.space.permissions.canEditAvatar,
         ),
         SizedBox(
           height: 12,
         ),
-        tiamat.Text.labelLow("Set Banner:"),
-        ClipRRect(
-          borderRadius: BorderRadiusGeometry.circular(12),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceContainerLow,
-                image: image != null
-                    ? DecorationImage(image: image!, fit: BoxFit.cover)
-                    : null),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: () async {
-                  var result = await PickerUtils.pickImageAndCrop(context,
-                      aspectRatio: 16 / 9);
+        if (canEditBanner) tiamat.Text.labelLow("Set Banner:"),
+        if (canEditBanner)
+          ClipRRect(
+            borderRadius: BorderRadiusGeometry.circular(12),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surfaceContainerLow,
+                  image: image != null
+                      ? DecorationImage(image: image!, fit: BoxFit.cover)
+                      : null),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () async {
+                    var result = await PickerUtils.pickImageAndCrop(context,
+                        aspectRatio: 16 / 9);
 
-                  if (result != null) {
-                    setState(() {
-                      image = null;
-                      uploading = true;
-                    });
+                    if (result != null) {
+                      setState(() {
+                        image = null;
+                        uploading = true;
+                      });
 
-                    await widget.space
-                        .getComponent<SpaceBannerComponent>()
-                        ?.setBanner(
-                          result,
-                        );
+                      await widget.space
+                          .getComponent<SpaceBannerComponent>()
+                          ?.setBanner(
+                            result,
+                          );
 
-                    setState(() {
-                      uploading = false;
-                      image = MemoryImage(result);
-                    });
-                  }
-                },
-                child: SizedBox(
-                  width: double.infinity,
-                  height: 250,
-                  child: uploading
-                      ? Center(
-                          child: SizedBox(
-                              width: 30,
-                              height: 30,
-                              child: CircularProgressIndicator()))
-                      : null,
+                      setState(() {
+                        uploading = false;
+                        image = MemoryImage(result);
+                      });
+                    }
+                  },
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 250,
+                    child: uploading
+                        ? Center(
+                            child: SizedBox(
+                                width: 30,
+                                height: 30,
+                                child: CircularProgressIndicator()))
+                        : null,
+                  ),
                 ),
               ),
             ),
-          ),
-        )
+          )
       ],
     );
   }
