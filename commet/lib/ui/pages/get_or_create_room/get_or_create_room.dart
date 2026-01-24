@@ -1,6 +1,5 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/client/space_child.dart';
-import 'package:commet/config/experiments.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
@@ -88,7 +87,7 @@ class GetOrCreateRoom extends StatefulWidget {
             return SpaceChildRoom(await client!.createRoom(args));
           },
         ),
-      if ((showAllRoomTypes || createVoiceChat) && Experiments.elementCall)
+      if ((showAllRoomTypes || createVoiceChat))
         RoomGetter(
           label: "Voice Chat",
           icon: Icons.volume_up,
@@ -107,7 +106,7 @@ class GetOrCreateRoom extends StatefulWidget {
             return SpaceChildRoom(await client!.createRoom(args));
           },
         ),
-      if ((showAllRoomTypes || createPhotoRoom) && Experiments.photoAlbumRooms)
+      if ((showAllRoomTypes || createPhotoRoom))
         RoomGetter(
           label: "Photo Album",
           icon: Icons.photo,
@@ -125,7 +124,7 @@ class GetOrCreateRoom extends StatefulWidget {
             return SpaceChildRoom(await client!.createRoom(args));
           },
         ),
-      if ((showAllRoomTypes || createCalendar) && Experiments.calendarRooms)
+      if ((showAllRoomTypes || createCalendar))
         RoomGetter(
           label: "Calendar",
           icon: Icons.calendar_month,

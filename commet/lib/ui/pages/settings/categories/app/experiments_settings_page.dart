@@ -1,5 +1,3 @@
-import 'package:commet/config/experiments.dart';
-import 'package:commet/ui/pages/settings/categories/app/general_settings_page.dart';
 import 'package:flutter/material.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -29,51 +27,7 @@ class _ExperimentsSettingsPageState extends State<ExperimentsSettingsPage> {
           header: "Experiments",
           mode: TileType.surfaceContainerLow,
           child: Column(
-            children: [
-              GeneralSettingsPageState.settingToggle(
-                Experiments.voip,
-                title: "1:1 Voice and Video Calls",
-                description:
-                    "Enables peer to peer voice and video calls, using WebRTC",
-                onChanged: (value) async {
-                  setState(() {
-                    Experiments.setVoip(value);
-                  });
-                },
-              ),
-              GeneralSettingsPageState.settingToggle(
-                Experiments.elementCall,
-                title: "Voice/Video Rooms (Element Call)",
-                description:
-                    "Enables group video and audio calls using LiveKit",
-                onChanged: (value) async {
-                  setState(() {
-                    Experiments.setElementCall(value);
-                  });
-                },
-              ),
-              GeneralSettingsPageState.settingToggle(
-                Experiments.photoAlbumRooms,
-                title: "Photo Album Rooms",
-                description:
-                    "Share photos and videos, with dedicated album viewer",
-                onChanged: (value) async {
-                  setState(() {
-                    Experiments.setPhotoAlbumRooms(value);
-                  });
-                },
-              ),
-              GeneralSettingsPageState.settingToggle(
-                Experiments.calendarRooms,
-                title: "Calendar Rooms",
-                description: "Create a shared calendar using matrix rooms",
-                onChanged: (value) async {
-                  setState(() {
-                    Experiments.setCalendarRoom(value);
-                  });
-                },
-              ),
-            ],
+            children: [],
           ),
         ),
         const Padding(

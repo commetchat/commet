@@ -17,7 +17,6 @@ import 'package:commet/client/matrix/matrix_native_implementations.dart';
 import 'package:commet/client/matrix/matrix_room_preview.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/config/build_config.dart';
-import 'package:commet/config/experiments.dart';
 import 'package:commet/config/global_config.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
@@ -446,76 +445,70 @@ class MatrixClient extends Client {
     var creationContent = null;
 
     List<matrix.StateEvent>? initialState;
-    if (Experiments.photoAlbumRooms) {
-      if (args.roomType == RoomType.photoAlbum) {
-        creationContent = {"type": "chat.commet.photo_album"};
-      }
+    if (args.roomType == RoomType.photoAlbum) {
+      creationContent = {"type": "chat.commet.photo_album"};
     }
 
-    if (Experiments.elementCall) {
-      if (args.roomType == RoomType.voipRoom) {
-        creationContent = {"type": "org.matrix.msc3417.call"};
-      }
+    if (args.roomType == RoomType.voipRoom) {
+      creationContent = {"type": "org.matrix.msc3417.call"};
     }
 
-    if (Experiments.calendarRooms) {
-      if (args.roomType == RoomType.calendar) {
-        const widgetId = "chat.commet.room_calendar";
-        var widgetHost = GlobalConfig.calendarWidgetHost;
-        creationContent = {"type": "chat.commet.calendar"};
-        initialState = [
-          matrix.StateEvent(
-            content: {
-              "type": "chat.commet.widgets.calendar",
-              "url":
-                  "https://${widgetHost}/#/?widgetId=\$matrix_widget_id&userId=\$matrix_user_id&theme=\$org.matrix.msc2873.client_theme&userDisplayName=\$matrix_display_name&userAvatarUrl=\$matrix_avatar_url&language=\$org.matrix.msc2873.client_language",
-              "name": "Calendar",
-              "data": {},
+    if (args.roomType == RoomType.calendar) {
+      const widgetId = "chat.commet.room_calendar";
+      var widgetHost = GlobalConfig.calendarWidgetHost;
+      creationContent = {"type": "chat.commet.calendar"};
+      initialState = [
+        matrix.StateEvent(
+          content: {
+            "type": "chat.commet.widgets.calendar",
+            "url":
+                "https://${widgetHost}/#/?widgetId=\$matrix_widget_id&userId=\$matrix_user_id&theme=\$org.matrix.msc2873.client_theme&userDisplayName=\$matrix_display_name&userAvatarUrl=\$matrix_avatar_url&language=\$org.matrix.msc2873.client_language",
+            "name": "Calendar",
+            "data": {},
+          },
+          type: "im.vector.modular.widgets",
+          stateKey: widgetId,
+        ),
+        matrix.StateEvent(
+          type: "m.room.power_levels",
+          content: {
+            "users": {_matrixClient.userID!: 100},
+            "users_default": 0,
+            "events": {
+              "m.room.avatar": 50,
+              "m.room.canonical_alias": 50,
+              "m.room.encryption": 100,
+              "m.room.history_visibility": 100,
+              "m.room.name": 50,
+              "m.room.power_levels": 100,
+              "m.room.server_acl": 100,
+              "m.room.tombstone": 100,
+              "m.reaction": 50,
+              "chat.commet.calendar_event": 25,
             },
-            type: "im.vector.modular.widgets",
-            stateKey: widgetId,
-          ),
-          matrix.StateEvent(
-            type: "m.room.power_levels",
-            content: {
-              "users": {_matrixClient.userID!: 100},
-              "users_default": 0,
-              "events": {
-                "m.room.avatar": 50,
-                "m.room.canonical_alias": 50,
-                "m.room.encryption": 100,
-                "m.room.history_visibility": 100,
-                "m.room.name": 50,
-                "m.room.power_levels": 100,
-                "m.room.server_acl": 100,
-                "m.room.tombstone": 100,
-                "m.reaction": 50,
-                "chat.commet.calendar_event": 25,
-              },
-              "events_default": 50,
-              "state_default": 50,
-              "ban": 50,
-              "kick": 50,
-              "redact": 50,
-              "invite": 0,
-              "historical": 100,
-            },
-          ),
-          matrix.StateEvent(
-            content: {
-              "widgets": {
-                widgetId: {
-                  "container": "top",
-                  "height": 100,
-                  "width": 100,
-                  "index": 0,
-                },
+            "events_default": 50,
+            "state_default": 50,
+            "ban": 50,
+            "kick": 50,
+            "redact": 50,
+            "invite": 0,
+            "historical": 100,
+          },
+        ),
+        matrix.StateEvent(
+          content: {
+            "widgets": {
+              widgetId: {
+                "container": "top",
+                "height": 100,
+                "width": 100,
+                "index": 0,
               },
             },
-            type: "io.element.widgets.layout",
-          ),
-        ];
-      }
+          },
+          type: "io.element.widgets.layout",
+        ),
+      ];
     }
 
     var id = await _matrixClient.createRoom(
