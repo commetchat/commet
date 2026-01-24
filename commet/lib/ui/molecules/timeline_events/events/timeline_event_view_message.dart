@@ -19,6 +19,7 @@ import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_t
 import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_url_previews.dart';
 import 'package:commet/ui/molecules/timeline_events/layouts/timeline_event_layout_message.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_layout.dart';
+import 'package:commet/ui/molecules/user_list.dart';
 import 'package:commet/ui/organisms/user_profile/user_profile.dart';
 import 'package:commet/utils/text_utils.dart';
 import 'package:flutter/material.dart';
@@ -124,6 +125,20 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
       formattedContent: formattedContent,
       timestamp: timestampToString(sentTime),
       edited: edited,
+      avatarBuilder: (child) {
+        var room = widget.room ?? widget.timeline?.room;
+
+        if (room != null) {
+          return RoomMemberList.userContextMenu(context,
+              userId: senderId,
+              userDisplayName: senderName,
+              room: room,
+              child: child,
+              isSelf: senderId == room.client.self!.identifier);
+        }
+
+        return child;
+      },
       attachments: attachments != null
           ? TimelineEventViewAttachments(
               attachments: attachments!,

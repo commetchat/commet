@@ -10,6 +10,7 @@ import 'package:commet/client/components/push_notification/notification_content.
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/components/room_component.dart';
 import 'package:commet/client/components/user_color/user_color_component.dart';
+import 'package:commet/client/matrix/components/calendar_room_component/matrix_calendar_room_component.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_room_emoticon_component.dart';
 import 'package:commet/client/matrix/matrix_attachment.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
@@ -44,7 +45,6 @@ import 'package:commet/main.dart';
 import 'package:commet/utils/image_utils.dart';
 import 'package:commet/utils/mime.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:html_unescape/html_unescape.dart';
 import 'package:matrix/matrix_api_lite/model/stripped_state_event.dart';
 
@@ -748,11 +748,38 @@ class MatrixRoom extends Room {
   }
 
   @override
-  // TODO: implement isSpecialRoomType
   bool get isSpecialRoomType =>
       matrixRoom
           .getState(matrix.EventTypes.RoomCreate)
           ?.content
           .containsKey("type") ??
       false;
+
+  @override
+  Future<void> banUser(String id) {
+    return matrixRoom.ban(id);
+  }
+
+  @override
+  Future<void> kickUser(String id) {
+    return matrixRoom.kick(id);
+  }
+
+  @override
+  List<Role> get availableRoles => [
+        MatrixRole(100),
+        MatrixRole(50),
+        if (getComponent<MatrixCalendarRoomComponent>()?.hasCalendar == true)
+          MatrixRole(25,
+              nameOverride: "Calendar Moderator",
+              iconOverride: Icons.calendar_month),
+        MatrixRole(0),
+      ];
+
+  @override
+  Future<void> setMemberRole(String id, Role role) async {
+    await matrixRoom.setPower(id, (role as MatrixRole).powerLevel);
+
+    await matrixRoom.waitForRoomInSync();
+  }
 }

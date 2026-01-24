@@ -171,11 +171,19 @@ abstract class Room {
 
   Future<TimelineEvent?> getEvent(String eventId);
 
+  Future<void> kickUser(String id);
+
+  Future<void> banUser(String id);
+
   Member getMemberOrFallback(String id);
 
   Member? getMember(String id);
 
   Future<Member> fetchMember(String id);
+
+  List<Role> get availableRoles;
+
+  Future<void> setMemberRole(String id, Role role);
 
   @override
   bool operator ==(Object other) {

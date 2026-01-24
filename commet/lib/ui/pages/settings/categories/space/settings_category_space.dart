@@ -1,7 +1,10 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/emoticon/emoticon_component.dart';
+import 'package:commet/client/matrix/matrix_client.dart';
+import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/matrix/matrix_space.dart';
 import 'package:commet/main.dart';
+import 'package:commet/ui/molecules/user_list.dart';
 import 'package:commet/ui/pages/settings/categories/room/permissions/matrix/matrix_room_permissions_page.dart';
 import 'package:commet/ui/pages/settings/categories/space/space_developer_settings_view.dart';
 import 'package:commet/ui/pages/settings/categories/space/space_emoji_pack_settings.dart';
@@ -94,6 +97,16 @@ class SettingsCategorySpace implements SettingsCategory {
             pageBuilder: (context) {
               return SpaceDeveloperSettingsView(space);
             }),
+      if (space case MatrixSpace s)
+        SettingsTab(
+          label: "Members",
+          icon: Icons.people,
+          makeScrollable: false,
+          pageBuilder: (context) {
+            return RoomMemberList(MatrixRoom(space.client as MatrixClient,
+                s.matrixRoom, s.matrixRoom.client));
+          },
+        )
     ]);
   }
 
