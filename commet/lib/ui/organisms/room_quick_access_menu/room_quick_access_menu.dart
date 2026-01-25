@@ -31,22 +31,7 @@ class RoomQuickAccessMenu {
     final bool canCall =
         calls != null && direct?.isRoomDirectMessage(room) == true;
 
-    if (preferences.hideRoomSidePanel && Layout.desktop) {
-      actions = [
-        RoomQuickAccessMenuEntry(
-            name: "Show",
-            action: (context) => EventBus.toggleRoomSidePanel.add(null),
-            icon: Icons.chevron_left),
-      ];
-      return;
-    }
-
     actions = [
-      if (calendar?.hasCalendar == true && calendar?.isCalendarRoom == false)
-        RoomQuickAccessMenuEntry(
-            name: "Calendar",
-            action: (context) => EventBus.openCalendar.add(null),
-            icon: Icons.calendar_month),
       if (invitation != null)
         RoomQuickAccessMenuEntry(
             name: "Invite",
@@ -60,27 +45,36 @@ class RoomQuickAccessMenu {
                     ),
                 title: "Invite"),
             icon: Icons.person_add),
-      if (supportsPinnedMessages)
-        RoomQuickAccessMenuEntry(
-            name: "Pinned Messages",
-            action: (context) => EventBus.openPinnedMessages.add(null),
-            icon: Icons.push_pin),
-      if (canSearch)
-        RoomQuickAccessMenuEntry(
-            name: "Search",
-            action: (context) => EventBus.startSearch.add(null),
-            icon: Icons.search),
       if (canCall)
         RoomQuickAccessMenuEntry(
             name: "Call",
             action: (context) =>
                 calls.startCall(room.identifier, CallType.voice),
             icon: Icons.call),
+      if (!preferences.hideRoomSidePanel) ...[
+        if (calendar?.hasCalendar == true && calendar?.isCalendarRoom == false)
+          RoomQuickAccessMenuEntry(
+              name: "Calendar",
+              action: (context) => EventBus.openCalendar.add(null),
+              icon: Icons.calendar_month),
+        if (supportsPinnedMessages)
+          RoomQuickAccessMenuEntry(
+              name: "Pinned Messages",
+              action: (context) => EventBus.openPinnedMessages.add(null),
+              icon: Icons.push_pin),
+        if (canSearch)
+          RoomQuickAccessMenuEntry(
+              name: "Search",
+              action: (context) => EventBus.startSearch.add(null),
+              icon: Icons.search),
+      ],
       if (Layout.desktop)
         RoomQuickAccessMenuEntry(
-            name: "Hide",
+            name: "Toggle Panel",
             action: (context) => EventBus.toggleRoomSidePanel.add(null),
-            icon: Icons.chevron_right),
+            icon: preferences.hideRoomSidePanel
+                ? Icons.chevron_left
+                : Icons.chevron_right),
     ];
   }
 }
