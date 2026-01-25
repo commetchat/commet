@@ -84,5 +84,7 @@ class MatrixBackgroundMember implements Member {
   @override
   String get userName => identifier;
 
-  String? get avatarId => event?.content["avatar_url"] as String;
+  String? get avatarId => event?.content.containsKey("avatar_url") == true
+      ? event?.content["avatar_url"] as String?
+      : null;
 }
