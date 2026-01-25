@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:commet/client/components/calendar_room/calendar_room_component.dart';
 import 'package:commet/config/layout_config.dart';
+import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/organisms/chat/chat.dart';
 import 'package:commet/ui/organisms/room_event_search/room_event_search_widget.dart';
@@ -15,7 +16,14 @@ import 'package:flutter/material.dart';
 import 'package:tiamat/atoms/tile.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
-enum SidePanelState { defaultView, thread, search, pinnedMessages, calendar }
+enum SidePanelState {
+  defaultView,
+  thread,
+  search,
+  pinnedMessages,
+  calendar,
+  nothing
+}
 
 class RoomSidePanel extends StatefulWidget {
   const RoomSidePanel({required this.state, this.builder, super.key});
@@ -32,18 +40,23 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
   String? _currentThreadId;
   String? get currentThreadId => _currentThreadId;
 
-  SidePanelState state = SidePanelState.defaultView;
+  late SidePanelState state;
 
   late List<StreamSubscription> subs;
 
   @override
   void initState() {
+    state = preferences.hideRoomSidePanel && Layout.desktop
+        ? SidePanelState.nothing
+        : SidePanelState.defaultView;
+
     subs = [
       EventBus.openThread.stream.listen(onOpenThreadSignal),
       EventBus.closeThread.stream.listen(onCloseThreadSignal),
       EventBus.startSearch.stream.listen(onStartSearch),
       EventBus.openPinnedMessages.stream.listen(onShowPinnedMessages),
       EventBus.openCalendar.stream.listen(onShowCalendar),
+      EventBus.toggleRoomSidePanel.stream.listen(onToggleSidePanel),
     ];
     super.initState();
   }
@@ -89,6 +102,10 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
         return buildPinnedMessages();
       case SidePanelState.calendar:
         return buildCalendar();
+      case SidePanelState.nothing:
+        return SizedBox(
+          width: 0,
+        );
     }
   }
 
@@ -283,5 +300,19 @@ class _RoomSidePanelState extends State<RoomSidePanel> {
         ],
       ),
     );
+  }
+
+  void onToggleSidePanel(void event) {
+    preferences.setHideRoomSidePanel(!preferences.hideRoomSidePanel);
+
+    if (preferences.hideRoomSidePanel) {
+      setState(() {
+        state = SidePanelState.nothing;
+      });
+    } else {
+      setState(() {
+        state = SidePanelState.defaultView;
+      });
+    }
   }
 }
