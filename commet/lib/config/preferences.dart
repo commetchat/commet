@@ -72,6 +72,8 @@ class Preferences {
   static const String _voipDefaultAudioOutput = "voip_default_audio_output";
   static const String _voipDefaultVideoInput = "voip_default_video_input";
 
+  static const String _hideRoomSidePanel = "hide_room_side_panel";
+
   final StreamController _onSettingChanged = StreamController.broadcast();
   Stream get onSettingChanged => _onSettingChanged.stream;
   bool isInit = false;
@@ -459,6 +461,14 @@ class Preferences {
       await _preferences!.setString(_voipDefaultVideoInput, value);
     }
 
+    _onSettingChanged.add(null);
+  }
+
+  bool get hideRoomSidePanel =>
+      _preferences!.getBool(_hideRoomSidePanel) ?? false;
+
+  Future<void> setHideRoomSidePanel(bool value) async {
+    _preferences!.setBool(_hideRoomSidePanel, value);
     _onSettingChanged.add(null);
   }
 }

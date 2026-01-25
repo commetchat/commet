@@ -43,6 +43,9 @@ class EventBus {
 
   static StreamController<void> openCalendar = StreamController.broadcast();
 
+  static StreamController<void> toggleRoomSidePanel =
+      StreamController.broadcast();
+
   static StreamController<String> jumpToEvent = StreamController.broadcast();
 
   static StreamController<void> focusTimeline = StreamController.broadcast();
