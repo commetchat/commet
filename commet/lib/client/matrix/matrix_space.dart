@@ -462,4 +462,9 @@ class MatrixSpace extends Space {
 
     _onUpdate.add(());
   }
+
+  @override
+  Future<void> setTopic(String topic) {
+    return matrixRoom.setDescription(topic);
+  }
 }

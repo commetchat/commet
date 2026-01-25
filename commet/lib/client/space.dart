@@ -115,6 +115,8 @@ abstract class Space {
 
   Future<void> setSpaceChildSpace(Space room);
 
+  Future<void> setTopic(String topic);
+
   /// Load extra information about the space, that is not necessarily required for functionality
   Future<void> loadExtra();
 

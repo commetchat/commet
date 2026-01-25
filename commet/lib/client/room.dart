@@ -38,6 +38,8 @@ abstract class Room {
   /// Returns the localized display name
   String get displayName;
 
+  String? get topic;
+
   /// The permissions of the room
   Permissions get permissions;
 
@@ -184,6 +186,8 @@ abstract class Room {
   List<Role> get availableRoles;
 
   Future<void> setMemberRole(String id, Role role);
+
+  Future<void> setTopic(String topic);
 
   @override
   bool operator ==(Object other) {
