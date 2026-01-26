@@ -19,12 +19,6 @@ class BuildConfig {
   static const String BUILD_DETAIL =
       String.fromEnvironment('BUILD_DETAIL', defaultValue: "default");
 
-  static const String _BUILD_DATE =
-      String.fromEnvironment('BUILD_DETAIL', defaultValue: "0");
-
-  static DateTime get BUILD_DATE =>
-      DateTime.fromMillisecondsSinceEpoch(int.parse(_BUILD_DATE));
-
   static const bool ENABLE_GOOGLE_SERVICES =
       bool.fromEnvironment("ENABLE_GOOGLE_SERVICES", defaultValue: false);
 
@@ -60,6 +54,12 @@ class BuildConfig {
   static const String appSchema = "chat.commet";
 
   static Uri donationRewardsApiHost = Uri.https("stripe-rewards.commet.chat");
+
+  static const String _BUILD_DATE =
+      String.fromEnvironment('BUILD_DATE', defaultValue: "0");
+
+  static DateTime get BUILD_DATE =>
+      DateTime.fromMillisecondsSinceEpoch(int.parse(_BUILD_DATE));
 
   // IM SO SORRY
   static const String appName = MOBILE
