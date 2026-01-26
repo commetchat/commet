@@ -2,8 +2,6 @@ import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/pages/setup/setup_menu.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
