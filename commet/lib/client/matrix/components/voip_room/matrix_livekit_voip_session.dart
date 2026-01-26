@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'dart:math';
 
 import 'package:commet/client/client.dart';
@@ -287,7 +286,7 @@ class MatrixLivekitVoipSession implements VoipSession {
 
   @override
   Future<ScreenCaptureSource?> pickScreenCapture(BuildContext context) async {
-    if (Platform.isAndroid) {
+    if (PlatformUtils.isAndroid) {
       return WebrtcAndroidScreencaptureSource.getCaptureSource(context);
     }
     return WebrtcScreencaptureSource.showSelectSourcePrompt(context);
