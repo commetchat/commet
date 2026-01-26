@@ -75,6 +75,7 @@ class Preferences {
   static const String _hideRoomSidePanel = "hide_room_side_panel";
 
   static const String _checkForUpdates = "check_for_updates";
+  static const String _runningDonationCheckFlow = "running_donation_check_flow";
 
   final StreamController _onSettingChanged = StreamController.broadcast();
   Stream get onSettingChanged => _onSettingChanged.stream;
@@ -478,6 +479,39 @@ class Preferences {
 
   Future<void> setCheckForUpdates(bool value) async {
     await _preferences!.setBool(_checkForUpdates, value);
+  }
+
+  (String, DateTime)? get runningDonationCheckFlow {
+    var result = _preferences!.getString(_runningDonationCheckFlow);
+
+    if (result != null) {
+      var data = jsonDecode(result);
+      var user = data["user"] as String;
+      var timestamp = data["time"] as int;
+
+      var time = DateTime.fromMillisecondsSinceEpoch(timestamp);
+
+      return (user, time);
+    }
+
+    return null;
+  }
+
+  Future<void> setRunningDonationCheckFlow(
+      String value, DateTime timestamp) async {
+    _preferences!.setString(
+        _runningDonationCheckFlow,
+        jsonEncode({
+          "user": value,
+          "time": timestamp.millisecondsSinceEpoch,
+        }));
+
+    _onSettingChanged.add(null);
+  }
+
+  Future<void> clearRunningDonationCheckFlow() async {
+    _preferences!.remove(_runningDonationCheckFlow);
+
     _onSettingChanged.add(null);
   }
 }
