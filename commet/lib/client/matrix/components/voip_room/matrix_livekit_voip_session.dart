@@ -287,7 +287,7 @@ class MatrixLivekitVoipSession implements VoipSession {
 
   @override
   Future<ScreenCaptureSource?> pickScreenCapture(BuildContext context) async {
-    if (Platform.isAndroid) {
+    if (PlatformUtils.isAndroid) {
       return WebrtcAndroidScreencaptureSource.getCaptureSource(context);
     }
     return WebrtcScreencaptureSource.showSelectSourcePrompt(context);
