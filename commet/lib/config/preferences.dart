@@ -74,6 +74,8 @@ class Preferences {
 
   static const String _hideRoomSidePanel = "hide_room_side_panel";
 
+  static const String _checkForUpdates = "check_for_updates";
+
   final StreamController _onSettingChanged = StreamController.broadcast();
   Stream get onSettingChanged => _onSettingChanged.stream;
   bool isInit = false;
@@ -469,6 +471,13 @@ class Preferences {
 
   Future<void> setHideRoomSidePanel(bool value) async {
     _preferences!.setBool(_hideRoomSidePanel, value);
+    _onSettingChanged.add(null);
+  }
+
+  bool? get checkForUpdates => _preferences!.getBool(_checkForUpdates);
+
+  Future<void> setCheckForUpdates(bool value) async {
+    await _preferences!.setBool(_checkForUpdates, value);
     _onSettingChanged.add(null);
   }
 }

@@ -19,9 +19,6 @@ class _SetupPageState extends State<SetupPage> {
   int currentMenuIndex = 0;
   late SetupMenu currentMenu;
 
-  String get setupPageBeforeYouBegin => Intl.message("Before you begin...",
-      name: "setupPageBeforeYouBegin", desc: "Title for first time setup page");
-
   @override
   void initState() {
     super.initState();
@@ -40,7 +37,6 @@ class _SetupPageState extends State<SetupPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.max,
               children: [
-                tiamat.Text.largeTitle(setupPageBeforeYouBegin),
                 Flexible(
                   child: ClipRRect(
                       borderRadius: BorderRadius.circular(10),
