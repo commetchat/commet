@@ -101,7 +101,7 @@ class _RoomCalendarSettingsPageState extends State<RoomCalendarSettingsPage> {
                       context,
                       title: "Sync Calendar Source",
                       items: [
-                        CalendarSource.room,
+                        //  CalendarSource.room,
                         CalendarSource.ical,
                       ],
                       itemBuilder: (context, item, callback) {
