@@ -49,13 +49,15 @@ class UpdateChecker {
       var val = int.parse(date);
       var time = DateTime.fromMillisecondsSinceEpoch(val);
 
+      var canAutoUpdate = fields["chat.commet.auto_update"] == "true";
+      Log.i("Supports auto update: $canAutoUpdate");
       if (time.isAfter(BuildConfig.BUILD_DATE)) {
         var tag = fields[key];
         clientManager!.alertManager.addAlert(Alert(AlertType.info,
             messageGetter: () =>
                 "There is a newer version of Commet available: ${tag}",
             titleGetter: () => "Update Available",
-            action: doUpdateAction));
+            action: (context) => doUpdateAction(context, canAutoUpdate)));
       } else {
         Log.i(
             "Found an update, but it's build date is not after the current build, current: ${BuildConfig.BUILD_DATE.toString()} remote: ${time.toString()}");
@@ -77,9 +79,9 @@ class UpdateChecker {
     return true;
   }
 
-  static doUpdateAction(BuildContext context) async {
+  static doUpdateAction(BuildContext context, bool canAutoUpdate) async {
     if (PlatformUtils.isWindows) {
-      windowsUpdateAction(context);
+      windowsUpdateAction(context, canAutoUpdate);
     }
 
     if (PlatformUtils.isAndroid) {
@@ -91,7 +93,7 @@ class UpdateChecker {
     }
   }
 
-  static windowsUpdateAction(BuildContext context) async {
+  static windowsUpdateAction(BuildContext context, bool canAutoUpdate) async {
     var exe = Platform.resolvedExecutable;
 
     var installPath = path.dirname(exe);
@@ -101,12 +103,12 @@ class UpdateChecker {
 
     Log.i("Installed at: $installerPath");
 
-    if (await File(installerPath).exists()) {
+    if (await File(installerPath).exists() && canAutoUpdate) {
       var confirmation = await AdaptiveDialog.confirmation(context,
           prompt: "Would you like to run the update installer?");
 
       if (confirmation == true) {
-        ErrorUtils.tryRun(context, () async {
+        await ErrorUtils.tryRun(context, () async {
           Log.i("Found installer, doing automatic update");
 
           for (var client in clientManager!.clients) {
@@ -123,11 +125,9 @@ class UpdateChecker {
 
           // TODO: not this
           await Future.delayed(Duration(seconds: 1));
-
-          exit(0);
         });
 
-        return;
+        exit(0);
       }
 
       if (confirmation == null) return;
