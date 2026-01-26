@@ -79,6 +79,8 @@ Future<void> main(List<String> args) async {
       "VERSION_TAG=$version",
       "--dart-define",
       "ENABLE_GOOGLE_SERVICES=$enableGoogleServices",
+      "--dart-define",
+      "BUILD_DATE=${DateTime.now().millisecondsSinceEpoch}",
       if (buildDetail != null) "--dart-define",
       if (buildDetail != null) "BUILD_DETAIL=$buildDetail",
       if (platform == "web") "--dart-define",
