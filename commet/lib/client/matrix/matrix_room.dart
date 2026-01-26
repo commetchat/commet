@@ -795,4 +795,12 @@ class MatrixRoom extends Room {
 
     await matrixRoom.waitForRoomInSync();
   }
+
+  @override
+  String? get topic => matrixRoom.topic;
+
+  @override
+  Future<void> setTopic(String topic) {
+    return matrixRoom.setDescription(topic);
+  }
 }

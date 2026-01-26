@@ -62,15 +62,14 @@ class SettingsCategorySpace implements SettingsCategory {
               space: space,
             );
           }),
-      if (shouldShowAppearanceSettings())
-        SettingsTab(
-            label: labelSpaceAppearanceSettings,
-            icon: Icons.style,
-            pageBuilder: (context) {
-              return SpaceAppearanceSettingsPage(
-                space: space,
-              );
-            }),
+      SettingsTab(
+          label: labelSpaceAppearanceSettings,
+          icon: Icons.style,
+          pageBuilder: (context) {
+            return SpaceAppearanceSettingsPage(
+              space: space,
+            );
+          }),
       if (emoticons != null &&
           (space.permissions.canEditRoomEmoticons ||
               emoticons.ownedPacks.isNotEmpty))
@@ -108,9 +107,5 @@ class SettingsCategorySpace implements SettingsCategory {
           },
         )
     ]);
-  }
-
-  bool shouldShowAppearanceSettings() {
-    return space.permissions.canEditAvatar || space.permissions.canEditName;
   }
 }

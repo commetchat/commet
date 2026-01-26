@@ -23,6 +23,10 @@ class MatrixRoomPermissions extends Permissions {
   bool get canEditName => room.canChangeStateEvent("m.room.name");
 
   @override
+  bool get canEditTopic =>
+      room.canChangeStateEvent(matrix.EventTypes.RoomTopic);
+
+  @override
   bool get canEnableE2EE => room.canChangeStateEvent("m.room.encryption");
 
   @override
