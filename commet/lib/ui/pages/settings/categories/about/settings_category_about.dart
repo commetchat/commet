@@ -141,16 +141,11 @@ class _AppInfoState extends State<_AppInfo> {
                       const tiamat.Text.largeTitle(BuildConfig.appName),
                       const tiamat.Text.labelEmphasised(
                           BuildConfig.VERSION_TAG),
-                      Row(
-                        spacing: 8,
-                        children: [
-                          tiamat.Text.labelLow(
-                              "${BuildConfig.GIT_HASH.substring(0, 7)} ${BuildConfig.BUILD_DETAIL}"),
-                          tiamat.Text.labelLow("Built: " +
-                              intl.DateFormat(intl.DateFormat.YEAR_MONTH_DAY)
-                                  .format(BuildConfig.BUILD_DATE)),
-                        ],
-                      ),
+                      tiamat.Text.labelLow(
+                          "${BuildConfig.GIT_HASH.substring(0, 7)} ${BuildConfig.BUILD_DETAIL}"),
+                      tiamat.Text.labelLow("Built: " +
+                          intl.DateFormat(intl.DateFormat.YEAR_MONTH_DAY)
+                              .format(BuildConfig.BUILD_DATE)),
                       if (deviceInfo != null)
                         Row(
                           children: [
