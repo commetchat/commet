@@ -33,6 +33,9 @@ class _TimelineEventViewUrlPreviewsState
   @override
   Widget build(BuildContext context) {
     BenchmarkValues.numTimelineUrlPreviewBuilt += 1;
+
+    if (data == UrlPreviewComponent.invalidPreviewData) return Container();
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 2, 40, 2),
       child: (loading || data != null)
