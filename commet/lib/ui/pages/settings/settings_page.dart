@@ -101,19 +101,23 @@ class SettingsPage extends StatelessWidget {
 
     Log.i("Donating with encrypted username hash: ${secret?.encryptedHash}");
 
-    final String host = "https://preview.commet.chat";
+    final String host = "https://commet.chat";
 
     var time = DateTime.now();
 
     var url = Uri.parse(
         "$host/donate/#client_reference_id=${Uri.encodeComponent(secret?.encryptedHash ?? "null")}&matrix_id=${Uri.encodeComponent(userId!)}&secret=${Uri.encodeComponent(secret?.clientSecret ?? "null")}");
 
+    if (client is Client) {
+      preferences.setRunningDonationCheckFlow(client.identifier, time);
+    }
+
     LinkUtils.open(url);
 
     if (userId != "null" && secret != null) {
       AdaptiveDialog.show(context,
           builder: (context) => DonationRewardsConfirmation(
-                client: client!,
+                client: client,
                 identifier: secret!,
                 didOpenDonationWindow: true,
                 since: time,

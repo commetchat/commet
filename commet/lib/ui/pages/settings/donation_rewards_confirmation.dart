@@ -4,6 +4,7 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/components/donation_awards/donation_awards_component.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/debug/log.dart';
+import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/organisms/particle_player/particle_system_confetti.dart';
 import 'package:flutter/material.dart';
@@ -108,6 +109,8 @@ class _DonationRewardsConfirmationState
     if (result != null) {
       if (result.isNotEmpty) {
         doConfetti();
+
+        preferences.clearRunningDonationCheckFlow();
       }
       setState(() {
         receivedAwards = result;
@@ -186,6 +189,8 @@ class _DonationRewardsConfirmationState
                               acceptLoading = true;
                             });
 
+                            preferences.clearRunningDonationCheckFlow();
+
                             await widget.client
                                 .getComponent<DonationAwardsComponent>()
                                 ?.acceptAwards(receivedAwards!
@@ -203,6 +208,7 @@ class _DonationRewardsConfirmationState
                                     prompt:
                                         "Are you sure you want to dismiss without accepting any award?") ==
                                 true) {
+                          preferences.clearRunningDonationCheckFlow();
                           Navigator.of(context).pop();
                         }
                       })
