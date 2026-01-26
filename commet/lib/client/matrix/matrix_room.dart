@@ -115,7 +115,20 @@ class MatrixRoom extends Room {
       const JsonEncoder.withIndent('  ').convert(_matrixRoom.states);
 
   @override
-  Color get defaultColor => getColorOfUser(identifier);
+  Color get defaultColor {
+    var comp = client.getComponent<DirectMessagesComponent>();
+    if (comp?.isRoomDirectMessage(this) == true) {
+      var user = comp?.getDirectMessagePartnerId(this);
+      if (user != null) {
+        var member = getMember(user);
+        if (member != null) {
+          return member.defaultColor;
+        }
+      }
+    }
+
+    return getColorOfUser(identifier);
+  }
 
   @override
   PushRule get pushRule {

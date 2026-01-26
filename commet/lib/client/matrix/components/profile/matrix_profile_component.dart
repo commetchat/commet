@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:canonical_json/canonical_json.dart';
 import 'package:commet/client/components/profile/profile_component.dart';
+import 'package:commet/client/components/user_color/user_color_component.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_emoticon_component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 
@@ -56,7 +57,9 @@ class MatrixProfile
           : null;
 
   @override
-  Color get defaultColor => MatrixMember.hashColor(profile.userId);
+  Color get defaultColor =>
+      client.getComponent<UserColorComponent>()?.getColor(profile.userId) ??
+      MatrixMember.hashColor(profile.userId);
 
   @override
   String? get detail => profile.userId;
