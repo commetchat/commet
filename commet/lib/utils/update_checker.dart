@@ -1,12 +1,16 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:commet/client/alert.dart';
-import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
+import 'package:commet/utils/error_utils.dart';
 import 'package:commet/utils/link_utils.dart';
+import 'package:flutter/material.dart';
+import 'package:path/path.dart' as path;
 
 import 'package:http/http.dart' as http;
 
@@ -17,6 +21,10 @@ class UpdateChecker {
     if (foundUpdate) return;
 
     if (!shouldCheckForUpdates) {
+      return;
+    }
+
+    if (preferences.checkForUpdates != true) {
       return;
     }
 
@@ -50,7 +58,7 @@ class UpdateChecker {
             action: doUpdateAction));
       } else {
         Log.i(
-            "Found an update, but it's build date is not after the current build, current: ${BuildConfig.BUILD_DATE.millisecondsSinceEpoch} remote: ${time.millisecondsSinceEpoch}");
+            "Found an update, but it's build date is not after the current build, current: ${BuildConfig.BUILD_DATE.toString()} remote: ${time.toString()}");
       }
 
       return;
@@ -62,10 +70,6 @@ class UpdateChecker {
       return false;
     }
 
-    if (preferences.checkForUpdates != true) {
-      return false;
-    }
-
     if (BuildConfig.VERSION_TAG == "v0.0.0-artifact") {
       return false;
     }
@@ -73,7 +77,62 @@ class UpdateChecker {
     return true;
   }
 
-  static doUpdateAction() {
-    LinkUtils.open(Uri.parse("https://github.com/commetchat/commet/releases"));
+  static doUpdateAction(BuildContext context) async {
+    if (PlatformUtils.isWindows) {
+      windowsUpdateAction(context);
+    }
+
+    if (PlatformUtils.isAndroid) {
+      LinkUtils.open(Uri.parse("https://commet.chat/install/android/"));
+    }
+
+    if (PlatformUtils.isLinux) {
+      LinkUtils.open(Uri.parse("https://commet.chat/install/linux/"));
+    }
+  }
+
+  static windowsUpdateAction(BuildContext context) async {
+    var exe = Platform.resolvedExecutable;
+
+    var installPath = path.dirname(exe);
+
+    var installerPath =
+        path.join(installPath, "installer", "commet-installer.exe");
+
+    Log.i("Installed at: $installerPath");
+
+    if (await File(installerPath).exists()) {
+      var confirmation = await AdaptiveDialog.confirmation(context,
+          prompt: "Would you like to run the update installer?");
+
+      if (confirmation == true) {
+        ErrorUtils.tryRun(context, () async {
+          Log.i("Found installer, doing automatic update");
+
+          for (var client in clientManager!.clients) {
+            await client.close();
+          }
+
+          Process.run(
+              installerPath,
+              [
+                "--command",
+                "update",
+              ],
+              runInShell: true);
+
+          // TODO: not this
+          await Future.delayed(Duration(seconds: 1));
+
+          exit(0);
+        });
+
+        return;
+      }
+
+      if (confirmation == null) return;
+    }
+
+    LinkUtils.open(Uri.parse("https://commet.chat/install/windows/"));
   }
 }

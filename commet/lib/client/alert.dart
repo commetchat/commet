@@ -1,11 +1,12 @@
 import 'package:commet/utils/notifying_list.dart';
+import 'package:flutter/widgets.dart';
 
 enum AlertType { info, warning, critical }
 
 class Alert {
   late String Function() _messageGetter;
   late String Function() _titleGetter;
-  late Function()? action;
+  late Function(BuildContext context)? action;
   AlertType type;
 
   String get title => _titleGetter();
