@@ -44,11 +44,17 @@ Future<void> _firebaseMessagingBackgroundHandler(dynamic message) async {
     await notificationManager.init();
 
     if (!data.containsKey("room_id") || !data.containsKey("event_id")) {
-      if (preferences.developerMode)
+      if (preferences.developerMode) {
+        // ignore {"prio": "high"} notifications
+        if (data.length == 1 && data.containsKey("prio")) {
+          return;
+        }
+
         NotificationManager.notify(ErrorNotificationContent(
           title: "Unknown Notification Data",
           content: jsonEncode(data),
         ));
+      }
 
       return;
     }
