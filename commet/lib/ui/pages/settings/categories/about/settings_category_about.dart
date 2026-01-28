@@ -16,6 +16,7 @@ import 'package:flutter/material.dart' as m;
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 import 'package:vodozemac/vodozemac.dart' as vod;
+import 'package:intl/intl.dart' as intl;
 
 class SettingsCategoryAbout implements SettingsCategory {
   String get labelSettingsAppLogs => Intl.message("Logs",
@@ -142,6 +143,9 @@ class _AppInfoState extends State<_AppInfo> {
                           BuildConfig.VERSION_TAG),
                       tiamat.Text.labelLow(
                           "${BuildConfig.GIT_HASH.substring(0, 7)} ${BuildConfig.BUILD_DETAIL}"),
+                      tiamat.Text.labelLow("Built: " +
+                          intl.DateFormat(intl.DateFormat.YEAR_MONTH_DAY)
+                              .format(BuildConfig.BUILD_DATE)),
                       if (deviceInfo != null)
                         Row(
                           children: [
@@ -214,7 +218,7 @@ Platform: `${BuildConfig.PLATFORM}`
 Version: `${BuildConfig.VERSION_TAG}`
 Git Hash: `${BuildConfig.GIT_HASH}`
 Detail: `${BuildConfig.BUILD_DETAIL}`
-
+Build Timestamp: `${BuildConfig.BUILD_DATE.millisecondsSinceEpoch} (${intl.DateFormat(intl.DateFormat.YEAR_MONTH_DAY).format(BuildConfig.BUILD_DATE)})`
 
 **System Info**
 ${deviceInfo?.data["name"] is String ? "Name: `${deviceInfo!.data["name"]}`" : ""}

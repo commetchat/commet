@@ -1,4 +1,6 @@
 import 'package:commet/main.dart';
+import 'package:commet/ui/pages/setup/menus/check_for_updates.dart';
+import 'package:commet/utils/update_checker.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
@@ -127,6 +129,8 @@ class GeneralSettingsPageState extends State<GeneralSettingsPage> {
                 });
               },
             ),
+            if (UpdateChecker.shouldCheckForUpdates)
+              CheckForUpdatesSettingWidget(),
           ]),
         ),
         const SizedBox(

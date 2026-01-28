@@ -46,7 +46,7 @@ class NotificationManager {
           messageGetter: () =>
               "The last attempt to start the notification updating service failed. Push notifications will not be updated in the background until this is resolved. Tap for more info",
           titleGetter: () => "Couldn't update notifications in background",
-          action: () => LinkUtils.open(Uri.parse(
+          action: (_) => LinkUtils.open(Uri.parse(
               "https://commet.chat/troubleshoot/android-background-service-failed/")),
         );
 

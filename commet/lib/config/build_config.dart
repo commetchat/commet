@@ -55,6 +55,12 @@ class BuildConfig {
 
   static Uri donationRewardsApiHost = Uri.https("stripe-rewards.commet.chat");
 
+  static const String _BUILD_DATE =
+      String.fromEnvironment('BUILD_DATE', defaultValue: "0");
+
+  static DateTime get BUILD_DATE =>
+      DateTime.fromMillisecondsSinceEpoch(int.parse(_BUILD_DATE));
+
   // IM SO SORRY
   static const String appName = MOBILE
       ? (ANDROID

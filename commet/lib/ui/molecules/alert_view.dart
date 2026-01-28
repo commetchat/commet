@@ -11,7 +11,7 @@ class AlertView extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: alert.action,
+        onTap: alert.action == null ? null : () => alert.action?.call(context),
         child: Row(children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
