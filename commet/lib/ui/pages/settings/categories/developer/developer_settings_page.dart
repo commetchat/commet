@@ -3,6 +3,7 @@ import 'package:commet/client/components/push_notification/notification_content.
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/config/app_config.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/config/platform_utils.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/navigation_utils.dart';
@@ -37,7 +38,7 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
       notificationTests(),
       rendering(),
       error(),
-      if (Platform.isAndroid) shortcuts(),
+      if (PlatformUtils.isAndroid) shortcuts(),
       backgroundTasks(),
       dumpDatabases(),
       tiamat.Panel(

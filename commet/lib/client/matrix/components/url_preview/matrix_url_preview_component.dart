@@ -56,6 +56,8 @@ class MatrixUrlPreviewComponent implements UrlPreviewComponent<MatrixClient> {
 
     if (data != null) {
       cache[uri.toString()] = data;
+    } else {
+      cache[uri.toString()] = UrlPreviewComponent.invalidPreviewData;
     }
 
     return data;
