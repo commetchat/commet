@@ -850,8 +850,23 @@ class MatrixClient extends Client {
 
   @override
   Room? getRoomByAlias(String identifier) {
-    return rooms.firstWhereOrNull(
-        (r) => (r as MatrixRoom).matrixRoom.canonicalAlias == identifier);
+    return rooms.firstWhereOrNull((r) {
+      var room = r as MatrixRoom;
+
+      var state = room.matrixRoom.getState("m.room.canonical_alias");
+      if (state == null) return false;
+
+      if (state.content["alias"] == identifier) {
+        return true;
+      }
+
+      var alts = state.content["alt_aliases"];
+      if (alts is List<dynamic>) {
+        return alts.contains(identifier);
+      }
+
+      return false;
+    });
   }
 
   @override
