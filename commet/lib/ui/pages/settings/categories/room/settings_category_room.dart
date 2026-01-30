@@ -87,14 +87,13 @@ class SettingsCategoryRoom implements SettingsCategory {
           return RoomGeneralSettingsPage(room: room);
         },
       ),
-      if (room.permissions.canEditAppearance)
-        SettingsTab(
-          label: labelRoomSettingsAppearance,
-          icon: Icons.style,
-          pageBuilder: (context) {
-            return RoomAppearanceSettingsPage(room: room);
-          },
-        ),
+      SettingsTab(
+        label: labelRoomSettingsAppearance,
+        icon: Icons.style,
+        pageBuilder: (context) {
+          return RoomAppearanceSettingsPage(room: room);
+        },
+      ),
       if (room.permissions.canEditRoomSecurity)
         SettingsTab(
           label: labelRoomSettingsSecurity,
