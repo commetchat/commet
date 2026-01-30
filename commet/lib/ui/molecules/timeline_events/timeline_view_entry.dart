@@ -310,7 +310,7 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
           timeline: widget.timeline,
           isThreadTimeline: widget.isThreadTimeline,
           detailed: widget.showDetailed || selected,
-          overrideShowSender: widget.singleEvent,
+          overrideShowSender: widget.singleEvent || showDateSeperator,
           jumpToEvent: widget.jumpToEvent,
           previewMedia: widget.previewMedia,
           initialIndex: widget.initialIndex);
