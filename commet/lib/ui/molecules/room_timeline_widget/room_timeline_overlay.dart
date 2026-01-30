@@ -159,7 +159,8 @@ class TimelineOverlayState extends State<TimelineOverlay> {
                           ),
                           onTap: () =>
                               togglePopupMenu(currentMenu!.addReactionAction!)),
-                    SizedBox(height: 10, child: VerticalDivider()),
+                    if (currentMenu!.addReactionAction != null)
+                      SizedBox(height: 10, child: VerticalDivider()),
                     for (var e in currentMenu!.primaryActions)
                       buildAction(
                           name: e.name,
