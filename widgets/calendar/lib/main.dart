@@ -139,6 +139,27 @@ class _CalendarWidgetViewState extends State<CalendarWidgetView> {
     }
   }
 
+  Future<void> viewEvent(MatrixCalendarEventState event) async {
+    await widget.calendar.config.dialog<bool?>(
+      context: context,
+      builder: (context) => CalendarEventEditor(
+        config: widget.calendar.config,
+        editable: false,
+        submitEvent: (event, {String? eventType}) async {
+          try {
+            return widget.calendar.createEvent(event, eventType: eventType);
+          } catch (e, _) {
+            return false;
+          }
+        },
+        deleteEvent: (event) => widget.calendar.deleteEvent(event),
+        eventType: event.type,
+        initialEvent: event.data,
+        editingExistingEvent: true,
+      ),
+    );
+  }
+
   Future<void> createEvent(DateTime time) async {
     var result = await widget.calendar.config.dialog<bool?>(
       context: context,
@@ -177,6 +198,8 @@ class _CalendarWidgetViewState extends State<CalendarWidgetView> {
   void onEventTapped(MatrixCalendarEventState event) {
     if (widget.calendar.canEditEvent(event)) {
       editEvent(event);
+    } else {
+      viewEvent(event);
     }
   }
 

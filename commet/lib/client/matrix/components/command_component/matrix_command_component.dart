@@ -14,6 +14,7 @@ import 'package:commet/debug/log.dart';
 import 'package:commet/ui/organisms/chat/chat.dart';
 import 'package:matrix/matrix.dart' as matrix;
 import 'package:matrix/matrix_api_lite/generated/model.dart';
+import 'package:uuid/uuid.dart';
 
 class MatrixCommandComponent extends CommandComponent<MatrixClient> {
   @override
@@ -24,6 +25,7 @@ class MatrixCommandComponent extends CommandComponent<MatrixClient> {
     client.getMatrixClient().addCommand("status", setStatus);
     client.getMatrixClient().addCommand("clearemojistats", clearEmojiStats);
     client.getMatrixClient().addCommand("setprofile", setProfile);
+    client.getMatrixClient().addCommand("addwidget", addWidget);
   }
 
   @override
@@ -107,6 +109,34 @@ class MatrixCommandComponent extends CommandComponent<MatrixClient> {
 
     var comp = client.getComponent<MatrixProfileComponent>();
     comp?.setField(field, result);
+
+    return null;
+  }
+
+  FutureOr<String?> addWidget(
+      matrix.CommandArgs args, StringBuffer? out) async {
+    if (args.room == null) return null;
+
+    var url = Uri.parse(args.msg);
+    var uuid = const Uuid();
+    var id = uuid.v4();
+
+    var content = {
+      "type": "m.custom",
+      "url": url.toString(),
+      "name": "Custom",
+      "id": id,
+      "creatorUserId": client.self!.identifier,
+      "roomId": args.room!.id,
+    };
+
+    if (url.host == "calendar-widget.commet.chat") {
+      content["type"] = "chat.commet.widgets.calendar";
+      content["name"] = "Calendar";
+    }
+
+    await client.matrixClient.setRoomStateWithKey(
+        args.room!.id, "im.vector.modular.widgets", id, content);
 
     return null;
   }
