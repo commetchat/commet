@@ -74,6 +74,7 @@ class Preferences {
 
   static const String _hideRoomSidePanel = "hide_room_side_panel";
 
+  static const String _checkForUpdates = "check_for_updates";
   static const String _runningDonationCheckFlow = "running_donation_check_flow";
 
   final StreamController _onSettingChanged = StreamController.broadcast();
@@ -472,6 +473,12 @@ class Preferences {
   Future<void> setHideRoomSidePanel(bool value) async {
     _preferences!.setBool(_hideRoomSidePanel, value);
     _onSettingChanged.add(null);
+  }
+
+  bool? get checkForUpdates => _preferences!.getBool(_checkForUpdates);
+
+  Future<void> setCheckForUpdates(bool value) async {
+    await _preferences!.setBool(_checkForUpdates, value);
   }
 
   (String, DateTime)? get runningDonationCheckFlow {
