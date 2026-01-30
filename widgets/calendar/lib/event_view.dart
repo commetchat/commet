@@ -285,9 +285,7 @@ class EventViewMini extends StatelessWidget {
     return Material(
       borderRadius: BorderRadius.circular(8),
       clipBehavior: Clip.antiAlias,
-      color: unavailability
-          ? Colors.transparent
-          : config.processEventColor(color, context),
+      color: unavailability ? Colors.transparent : color,
       child: InkWell(
         onTap: () => onEventTapped?.call(event),
         child: CustomPaint(
