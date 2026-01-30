@@ -15,7 +15,6 @@ import 'package:commet/ui/organisms/chat/chat.dart';
 import 'package:matrix/matrix.dart' as matrix;
 import 'package:matrix/matrix_api_lite/generated/model.dart';
 import 'package:uuid/uuid.dart';
-import 'package:uuid/v4.dart';
 
 class MatrixCommandComponent extends CommandComponent<MatrixClient> {
   @override
