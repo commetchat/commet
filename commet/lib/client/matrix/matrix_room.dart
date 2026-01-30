@@ -80,7 +80,8 @@ class MatrixRoom extends Room {
   matrix.Room get matrixRoom => _matrixRoom;
 
   @override
-  String get displayName => _displayName;
+  String get displayName =>
+      _displayName.startsWith("#") ? _displayName.substring(1) : _displayName;
 
   @override
   Stream<void> get onUpdate => _onUpdate.stream;
