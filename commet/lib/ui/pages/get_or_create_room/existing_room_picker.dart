@@ -160,6 +160,8 @@ class _ExistingRoomPickerState extends State<ExistingRoomPicker> {
               return Padding(
                 padding: const EdgeInsets.all(4.0),
                 child: Material(
+                  clipBehavior: Clip.antiAlias,
+                  borderRadius: BorderRadius.circular(8),
                   child: InkWell(
                     onTap: () {
                       print(child);

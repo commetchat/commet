@@ -287,9 +287,7 @@ class _GetOrCreateRoomState extends State<GetOrCreateRoom> {
   void initState() {
     super.initState();
 
-    if (widget.existing != null) {
-      selected = widget.existing;
-    } else if (widget.join != null) {
+    if (widget.join != null) {
       selected = widget.join;
     } else if (widget.creators.isNotEmpty) {
       selected = widget.creators.first;
