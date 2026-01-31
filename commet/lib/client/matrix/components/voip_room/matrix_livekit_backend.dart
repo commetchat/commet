@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/webrtc_default_devices.dart';
+import 'package:commet/client/matrix/components/voip_room/matrix_livekit_encryption_key_provider.dart';
 import 'package:commet/client/matrix/components/voip_room/matrix_livekit_voip_session.dart';
 import 'package:commet/client/matrix/components/voip_room/matrix_voip_room_component.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
@@ -142,10 +143,17 @@ class MatrixLivekitBackend {
     final sfuUrl = data["url"];
     Log.d("Got sfu: ${sfuUrl}");
     final jwt = data["jwt"];
+    lk.E2EEOptions? e2eeOptions;
+    if (room.isE2EE) {
+      e2eeOptions = lk.E2EEOptions(
+          keyProvider:
+              await MatrixLivekitEncryptionKeyProvider.create(room.matrixRoom));
+    }
 
     final roomOptions = lk.RoomOptions(
       adaptiveStream: true,
       dynacast: true,
+      e2eeOptions: e2eeOptions,
     );
 
     final lkRoom = lk.Room(roomOptions: roomOptions);

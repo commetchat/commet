@@ -16,7 +16,7 @@ dependencies:
   crypto: ^3.0.2
   desktop_drop: ^0.4.1
   desktop_notifications: ^0.6.3
-  device_info_plus: ^11.3.0
+  device_info_plus: ^12.2.0
   flutter_background_service: ^5.0.5
   flutter_blurhash: ^0.8.2
   flutter_markdown: ^0.6.9+1
@@ -87,8 +87,8 @@ dependencies:
   archive: ^3.6.1
   exif: ^3.3.0
   image: ^4.2.0
-  livekit_client: ^2.5.1
-  flutter_webrtc: ^1.2.0
+  livekit_client: ^2.6.1
+  flutter_webrtc: ^1.2.1
   file_picker: ^10.2.0
   flutter_web_auth_2: ^4.1.0
   receive_intent:
