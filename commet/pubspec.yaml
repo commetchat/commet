@@ -16,7 +16,7 @@ dependencies:
   crypto: ^3.0.2
   desktop_drop: ^0.4.1
   desktop_notifications: ^0.6.3
-  device_info_plus: ^11.3.0
+  device_info_plus: ^12.2.0
   flutter_background_service: ^5.0.5
   flutter_blurhash: ^0.8.2
   flutter_markdown: ^0.6.9+1
@@ -75,10 +75,6 @@ dependencies:
       url: https://github.com/commetchat/matrix-dart-sdk-drift-db.git
       ref: upstream-v1.1.1+patch.3
 
-  signal_sticker_api: 
-    git: 
-      url: https://github.com/commetchat/signal-sticker-api.git
-      ref: f3295318c27d420f195e00164f104ead9aaa6209
   starfield: 
     git: https://github.com/lagmachine-com/starfield.git
   sqlite3_flutter_libs: ^0.5.23
@@ -87,8 +83,11 @@ dependencies:
   archive: ^3.6.1
   exif: ^3.3.0
   image: ^4.2.0
-  livekit_client: 2.5.1
-  flutter_webrtc: 1.2.0
+  livekit_client:
+    git:
+      url: https://github.com/commetchat/livekit-client-sdk-flutter.git
+      ref: hkdf
+  flutter_webrtc: 1.2.1
   file_picker: ^10.2.0
   flutter_web_auth_2: ^4.1.0
   receive_intent:
@@ -121,6 +120,7 @@ dependencies:
   canonical_json: ^1.1.2
   cryptography: ^2.9.0
   crop_image: ^1.0.17
+  logging: ^1.3.0
 dependency_overrides:
   analyzer: ^7.3.0
 

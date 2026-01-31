@@ -144,10 +144,11 @@ class MatrixLivekitBackend {
     Log.d("Got sfu: ${sfuUrl}");
     final jwt = data["jwt"];
     lk.E2EEOptions? e2eeOptions;
+
+    var provider =
+        await MatrixLivekitEncryptionKeyProvider.create(room.matrixRoom);
     if (room.isE2EE) {
-      e2eeOptions = lk.E2EEOptions(
-          keyProvider:
-              await MatrixLivekitEncryptionKeyProvider.create(room.matrixRoom));
+      e2eeOptions = lk.E2EEOptions(keyProvider: provider);
     }
 
     final roomOptions = lk.RoomOptions(
@@ -157,6 +158,9 @@ class MatrixLivekitBackend {
     );
 
     final lkRoom = lk.Room(roomOptions: roomOptions);
+
+    provider.lkRoom = lkRoom;
+
     await lkRoom.prepareConnection(sfuUrl, jwt);
     final stateKey =
         "_${room.client.self!.identifier}_${room.matrixRoom.client.deviceID!}_m.call";

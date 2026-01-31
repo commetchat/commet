@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:commet/debug/log.dart';
@@ -8,21 +9,23 @@ import 'package:matrix/matrix.dart' as mx;
 
 class MatrixLivekitEncryptionKeyProvider implements BaseKeyProvider {
   mx.Room room;
+  Room? lkRoom;
 
   BaseKeyProvider _keyProvider;
 
-  MatrixLivekitEncryptionKeyProvider(this._keyProvider, this.room);
+  MatrixLivekitEncryptionKeyProvider(this._keyProvider, this.room) {
+    room.client.onToDeviceEvent.stream.listen(onToDeviceEvent);
+  }
 
   static Future<MatrixLivekitEncryptionKeyProvider> create(mx.Room room) async {
     var provider = await BaseKeyProvider.create(
       sharedKey: false,
-      ratchetWindowSize: 16,
+      ratchetWindowSize: 10,
+      keyRingSize: 255,
       failureTolerance: -1,
     );
 
     Log.i("Created livekit encryption key provider");
-
-    room.client.onToDeviceEvent.stream.listen(onToDeviceEvent);
 
     return MatrixLivekitEncryptionKeyProvider(provider, room);
   }
@@ -84,9 +87,25 @@ class MatrixLivekitEncryptionKeyProvider implements BaseKeyProvider {
   @override
   Uint8List? get sharedKey => _keyProvider.sharedKey;
 
-  static void onToDeviceEvent(mx.ToDeviceEvent event) {
+  void onToDeviceEvent(mx.ToDeviceEvent event) {
     Log.i(
       "Received to device event: ${event.toJson()}",
     );
+
+    if (event.type == "io.element.call.encryption_keys") {
+      var data = event.content["keys"] as Map<String, dynamic>;
+
+      var index = data["index"];
+      var key = data["key"] as String;
+
+      var b = base64Decode(key);
+
+      var deviceId = (event.content["member"]
+          as Map<String, dynamic>)["claimed_device_id"] as String;
+
+      var participantId = event.senderId + ":" + deviceId;
+
+      setRawKey(b, keyIndex: index, participantId: participantId);
+    }
   }
 }
