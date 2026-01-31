@@ -1669,5 +1669,95 @@
     "description": "Description for the enable generic icons setting",
     "type": "text",
     "placeholders": {}
+  },
+  "placeholderRoomAlias": "#awesome-room",
+  "@placeholderRoomAlias": {
+    "description": "Placeholder / Example for a room alias.",
+    "type": "text",
+    "placeholders": {}
+  },
+  "placeholderSpaceAlias": "#awesome-space",
+  "@placeholderSpaceAlias": {
+    "description": "Placeholder / Example for a space alias.",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptCancelEventSend": "取消",
+  "@promptCancelEventSend": {
+    "description": "When a message failed to send, this prompts to cancel sending the event",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptRetryEventSend": "重试",
+  "@promptRetryEventSend": {
+    "description": "When a message failed to send, this prompts to retry sending the event",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelUrlPreviewInEncryptedChatTitle": "在加密聊天中预览 URL",
+  "@labelUrlPreviewInEncryptedChatTitle": {
+    "description": "Label for the toggle for enabling and disabling use of url previews in encrypted chats",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelUrlPreviewInEncryptedChatDescription": "这将把加密聊天中发送的任何 URL 暴露给您的主服务器，以便获取预览",
+  "@labelUrlPreviewInEncryptedChatDescription": {
+    "description": "description for the toggle for enabling and disabling use of url previews in encrypted chats",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMediaPreviewSettingsTitle": "媒体预览",
+  "@labelMediaPreviewSettingsTitle": {
+    "description": "Header for the settings tile for for media preview toggles",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMediaPreviewPrivateRoomsToggle": "私有房间",
+  "@labelMediaPreviewPrivateRoomsToggle": {
+    "description": "Short label for the private rooms toggle in media previews section",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMediaPreviewPrivateRoomsToggleDescription": "切换在私聊中图片、视频、贴纸和链接的预览功能",
+  "@labelMediaPreviewPrivateRoomsToggleDescription": {
+    "description": "Label describing toggle of media previews for private rooms",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMediaPreviewPublicRoomsToggle": "公共房间",
+  "@labelMediaPreviewPublicRoomsToggle": {
+    "description": "Short label for the private rooms toggle in media previews section",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMediaPreviewPublicRoomsToggleDescription": "切换在公共聊天房间中图片、视频、贴纸和链接的预览功能",
+  "@labelMediaPreviewPublicRoomsToggleDescription": {
+    "description": "Label describing toggle of media previews for public rooms",
+    "type": "text",
+    "placeholders": {}
+  },
+  "editEmoticonDialogTitle": "编辑表情",
+  "@editEmoticonDialogTitle": {
+    "description": "Title of a dialog that pops up when choosing to edit an existing emoticon",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptEmoteName": "表情名称",
+  "@promptEmoteName": {
+    "description": "Prompt for the input of the name of an emoji",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmSaveEmoticon": "保存！",
+  "@promptConfirmSaveEmoticon": {
+    "description": "Prompt to confirm the creation of an Emoticon Pack, Emoji, or Sticker",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptShowSticker": "显示贴纸",
+  "@promptShowSticker": {
+    "description": "Prompt to display a sticker, shown when media previews are disabled",
+    "type": "text",
+    "placeholders": {}
   }
 }

@@ -66,7 +66,7 @@
       "user": {}
     }
   },
-  "labelEmojiPickerGifTab": "GIF",
+  "labelEmojiPickerGifTab": "Gif",
   "@labelEmojiPickerGifTab": {
     "description": "Label for the gif search tab in the emoji picker",
     "type": "text",
@@ -330,7 +330,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelGifSearchToggle": "GIF-Suche",
+  "labelGifSearchToggle": "Gif-Suche",
   "@labelGifSearchToggle": {
     "description": "Label for the toggle for enabling and disabling gif search",
     "type": "text",
@@ -1004,13 +1004,13 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelThemeDark": "Dunkelmodus",
+  "labelThemeDark": "Dunkles Thema",
   "@labelThemeDark": {
     "description": "Label for the dark theme",
     "type": "text",
     "placeholders": {}
   },
-  "labelThemeLight": "Heller Modus",
+  "labelThemeLight": "Helles Thema",
   "@labelThemeLight": {
     "description": "Label for the light theme",
     "type": "text",
@@ -1448,7 +1448,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "labelThemeAmoled": "AMOLED",
+  "labelThemeAmoled": "Amoled",
   "@labelThemeAmoled": {
     "description": "Label for the light theme",
     "type": "text",
@@ -1561,5 +1561,149 @@
     "description": "Placeholder label in the pinned messages menu that is shown when there are no pinned messages",
     "type": "text",
     "placeholders": {}
+  },
+  "promptShowSource": "Quelle anzeigen",
+  "@promptShowSource": {
+    "description": "Label for the menu option to view the JSON source of an event",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMediaPreviewSettingsTitle": "Medienvorschau",
+  "@labelMediaPreviewSettingsTitle": {
+    "description": "Header for the settings tile for for media preview toggles",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMediaPreviewPublicRoomsToggle": "Öffentliche Räume",
+  "@labelMediaPreviewPublicRoomsToggle": {
+    "description": "Short label for the private rooms toggle in media previews section",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmSaveEmoticon": "Speichern!",
+  "@promptConfirmSaveEmoticon": {
+    "description": "Prompt to confirm the creation of an Emoticon Pack, Emoji, or Sticker",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelUseRoomAvatars": "Raum-Avatare verwenden",
+  "@labelUseRoomAvatars": {
+    "description": "Label for enabling using room avatars instead of icons",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelEnableRoomIconsDescription": "Raum-Avatare anstelle von Symbolen anzeigen",
+  "@labelEnableRoomIconsDescription": {
+    "description": "Description for the enable room icons setting",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelUseRoomAvatarPlaceholders": "Platzhalter-Avatare verwenden",
+  "@labelUseRoomAvatarPlaceholders": {
+    "description": "Label for enabling generic icons in the appearance settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptPinMessage": "Nachricht anheften",
+  "@promptPinMessage": {
+    "description": "Label for the menu option to pin a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptUnpinMessage": "Nachricht ablösen",
+  "@promptUnpinMessage": {
+    "description": "Label for the menu option to unpin a message",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMessageEffectsTitle": "Nachrichteneffekte",
+  "@labelMessageEffectsTitle": {
+    "description": "Header for the settings tile for message effects, such as confetti",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMessageEffectsDescription": "Nachrichten können mit zusätzlichen Effekten, wie Konfetti, versendet werden",
+  "@labelMessageEffectsDescription": {
+    "description": "Label describing what message effects are",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelUrlPreviewInEncryptedChatTitle": "URL-Vorschau in verschlüsselten Chats",
+  "@labelUrlPreviewInEncryptedChatTitle": {
+    "description": "Label for the toggle for enabling and disabling use of url previews in encrypted chats",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMediaPreviewPrivateRoomsToggle": "Private Räume",
+  "@labelMediaPreviewPrivateRoomsToggle": {
+    "description": "Short label for the private rooms toggle in media previews section",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageUserAcceptedInvite": "{user} hat die Einladung angenommen",
+  "@messageUserAcceptedInvite": {
+    "description": "Message body for when a user accepted an invitation to a room",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messageUserUnbanned": "{sender} hat {user} entbannt",
+  "@messageUserUnbanned": {
+    "description": "Message body for when a user reverts a ban of another user",
+    "type": "text",
+    "placeholders": {
+      "sender": {},
+      "user": {}
+    }
+  },
+  "messagePlaceholderUserUpdatedNameDetailed": "{user} hat seinen Anzeigenamen in „{newName}“ geändert",
+  "@messagePlaceholderUserUpdatedNameDetailed": {
+    "description": "Message body for when a user updates their display name",
+    "type": "text",
+    "placeholders": {
+      "user": {},
+      "newName": {}
+    }
+  },
+  "messageUserBanned": "{sender} hat {user} verbannt",
+  "@messageUserBanned": {
+    "description": "Message body for when a user bans another user from the room",
+    "type": "text",
+    "placeholders": {
+      "sender": {},
+      "user": {}
+    }
+  },
+  "messageUserUnpinnedEvent": "{user} hat eine Nachricht abgelöst",
+  "@messageUserUnpinnedEvent": {
+    "description": "Message body for when a user removes an event from the room's pinned messages",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "promptReplayMessageEffect": "Wiedergabeeffekt",
+  "@promptReplayMessageEffect": {
+    "description": "If a message was sent with an effect, this prompts to replay the effect",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageUserRetractedInvite": "{sender} hat {user} ausgeladen",
+  "@messageUserRetractedInvite": {
+    "description": "Message body for when a user's invitation to a room was withdrawn",
+    "type": "text",
+    "placeholders": {
+      "sender": {},
+      "user": {}
+    }
+  },
+  "messageUserPinnedEvent": "{user} hat eine Nachricht angeheftet!",
+  "@messageUserPinnedEvent": {
+    "description": "Message body for when a user adds an event to the room's pinned messages",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
   }
 }
