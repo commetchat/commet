@@ -21,7 +21,7 @@
 <h3>Your space to connect</h3>
 
 <p>In addition to text and calls, Commet provides additional tools to help you hang out and connect with your friends.
-    Easily plan events with a shared calendar, and upload all the photos to a shared album!.</p>
+    Easily plan events with a shared calendar, and upload all the photos to a shared album!</p>
 
 
 <h3> Seamless multi-account support</h3>
