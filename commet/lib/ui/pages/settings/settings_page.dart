@@ -9,7 +9,7 @@ import 'package:commet/ui/pages/settings/donation_rewards_confirmation.dart';
 import 'package:commet/ui/pages/settings/mobile_settings_page.dart';
 import 'package:commet/ui/pages/settings/settings_button.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
-import 'package:commet/utils/link_utils.dart';
+import 'package:commet/utils/links/link_utils.dart';
 import 'package:flutter/material.dart';
 
 import 'desktop_settings_page.dart';

@@ -12,7 +12,7 @@ import 'package:commet/ui/atoms/emoji_widget.dart';
 import 'package:commet/ui/atoms/mention.dart';
 import 'package:commet/ui/atoms/rich_text/spans/link.dart';
 import 'package:commet/utils/emoji/unicode_emoji.dart';
-import 'package:commet/utils/link_utils.dart';
+import 'package:commet/utils/links/link_utils.dart';
 import 'package:commet/utils/text_utils.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
