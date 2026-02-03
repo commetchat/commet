@@ -43,7 +43,7 @@ class _TimelineEventViewUrlPreviewsState
               key: key,
               data,
               onTap: () {
-                LinkUtils.open(data!.uri);
+                LinkUtils.open(data!.uri, context: context);
               },
             )
           : Container(),

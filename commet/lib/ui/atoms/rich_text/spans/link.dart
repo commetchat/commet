@@ -19,7 +19,7 @@ class LinkSpan {
         recognizer: TapGestureRecognizer()
           ..onTap = () {
             if (destination != null) {
-              LinkUtils.open(destination, clientId: clientId);
+              LinkUtils.open(destination, clientId: clientId, context: context);
             }
           });
   }

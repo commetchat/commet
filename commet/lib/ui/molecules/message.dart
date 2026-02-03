@@ -151,7 +151,7 @@ class _MessageState extends State<Message> {
       child: UrlPreviewWidget(
         widget.links,
         onTap: () {
-          LinkUtils.open(widget.links!.uri);
+          LinkUtils.open(widget.links!.uri, context: context);
         },
       ),
     );

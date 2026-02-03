@@ -233,7 +233,8 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
                               },
                               onTapLink: (text, href, title) {
                                 if (href != null) {
-                                  LinkUtils.open(Uri.parse(href));
+                                  LinkUtils.open(Uri.parse(href),
+                                      context: context);
                                 }
                               },
                               styleSheet: MarkdownStyleSheet.fromTheme(

@@ -112,7 +112,7 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
     var extension =
         MatrixEmoticonHtmlExtension(widget.client, widget.room, big);
     var imageExtension = MatrixImageExtension(widget.client, widget.room);
-    var linkify = LinkifyHtmlExtension(widget.client, widget.room);
+    var linkify = LinkifyHtmlExtension(widget.client, widget.room, openLink);
     var result = Html(
       data: widget.text,
       extensions: [
@@ -176,7 +176,7 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
         )
       },
       onLinkTap: (url, attributes, element) {
-        LinkUtils.open(Uri.parse(url!));
+        LinkUtils.open(Uri.parse(url!), context: context);
       },
       onlyRenderTheseTags: allowedHtmlTags,
     );
@@ -188,6 +188,13 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
     setState(() {
       hideSpoiler = !hideSpoiler;
     });
+  }
+
+  openLink(Uri uri) {
+    LinkUtils.open(uri,
+        clientId: widget.client.identifier,
+        context: context,
+        contextRoomId: widget.room?.identifier);
   }
 }
 
@@ -382,7 +389,8 @@ class CodeHtmlExtension extends HtmlExtension {
 class LinkifyHtmlExtension extends HtmlExtension {
   final Room? room;
   final MatrixClient client;
-  const LinkifyHtmlExtension(this.client, this.room);
+  final Function(Uri uri) openLink;
+  const LinkifyHtmlExtension(this.client, this.room, this.openLink);
 
   @override
   InlineSpan build(ExtensionContext context) {
@@ -408,9 +416,7 @@ class LinkifyHtmlExtension extends HtmlExtension {
                 displayName: user.displayName,
                 placeholderColor: user.defaultColor,
                 avatar: user.avatar,
-                onTap: () => LinkUtils.open(href,
-                    clientId: client.identifier,
-                    contextRoomId: room?.identifier),
+                onTap: () => openLink(href),
               );
             }
           }

@@ -128,7 +128,7 @@ class _RoomAppearanceSettingsViewState
                                   ?.linkColor)),
                       onTapLink: (text, href, title) {
                         if (href != null) {
-                          LinkUtils.open(Uri.parse(href));
+                          LinkUtils.open(Uri.parse(href), context: context);
                         }
                       },
                       data: topic?.isNotEmpty == true ? topic! : "Set a topic"),

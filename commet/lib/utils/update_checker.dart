@@ -85,11 +85,15 @@ class UpdateChecker {
     }
 
     if (PlatformUtils.isAndroid) {
-      LinkUtils.open(Uri.parse("https://commet.chat/install/android/"));
+      LinkUtils.open(
+        Uri.parse("https://commet.chat/install/android/"),
+        context: context,
+      );
     }
 
     if (PlatformUtils.isLinux) {
-      LinkUtils.open(Uri.parse("https://commet.chat/install/linux/"));
+      LinkUtils.open(Uri.parse("https://commet.chat/install/linux/"),
+          context: context);
     }
   }
 
@@ -133,6 +137,7 @@ class UpdateChecker {
       if (confirmation == null) return;
     }
 
-    LinkUtils.open(Uri.parse("https://commet.chat/install/windows/"));
+    LinkUtils.open(Uri.parse("https://commet.chat/install/windows/"),
+        context: context);
   }
 }
