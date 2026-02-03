@@ -1,3 +1,4 @@
+import 'package:commet/config/build_config.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/utils/links/executor/link_executor.dart';
@@ -42,6 +43,11 @@ class LinkExecutorOpenUri extends LinkExecutor {
     if (await super.canHandleLink(uri) == false) return false;
 
     var xformed = getTransformedUri(uri);
+
+    // canLaunchUrl doesnt work on flatpak, so just assume we can do it
+    if (BuildConfig.BUILD_DETAIL == "flatpak") {
+      return true;
+    }
 
     if (PlatformUtils.isLinux || PlatformUtils.isWindows) {
       var canLaunchXformed = await canLaunchUrl(xformed);
