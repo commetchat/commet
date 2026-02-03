@@ -1,4 +1,5 @@
-import 'package:commet/utils/link_utils.dart';
+import 'package:commet/utils/links/link_utils.dart';
+import 'package:commet/utils/links/tracking_parameters_cleaner.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() async {
@@ -40,7 +41,8 @@ void main() async {
       var uri = Uri.parse(pair.$1);
       var expected = Uri.parse(pair.$2);
 
-      var clean = await LinkUtils.cleanTrackingParameters(uri);
+      var clean =
+          await UrlTrackingParametersCleaner.cleanTrackingParameters(uri);
 
       print("Before: $uri   after: $clean");
       expect(clean.toString(), expected.toString());
@@ -51,7 +53,8 @@ void main() async {
     for (var url in unchangedUrls) {
       var uri = Uri.parse(url);
 
-      var clean = await LinkUtils.cleanTrackingParameters(uri);
+      var clean =
+          await UrlTrackingParametersCleaner.cleanTrackingParameters(uri);
 
       expect(clean.toString(), url.toString());
     }
