@@ -312,7 +312,9 @@ class _UserProfileViewState extends State<UserProfileView> {
                                                 text: promptOpenDirectMessage,
                                                 onTap: clickMessageButton,
                                               ),
-                                            )
+                                            ),
+                                          if (editingColorScheme)
+                                            buildColorSchemeEditor()
                                         ],
                                       ),
                                     ),
@@ -435,16 +437,16 @@ class _UserProfileViewState extends State<UserProfileView> {
             text: "Set Status",
             onPressed: () => widget.onSetStatus?.call(),
             icon: Icons.short_text),
-      if (widget.isSelf)
-        tiamat.ContextMenuItem(
-            text: "Set Badges",
-            onPressed: () => widget.editBadges?.call(),
-            icon: Icons.star),
       if (widget.isSelf && widget.presence?.message != null)
         tiamat.ContextMenuItem(
             text: "Clear Status",
             onPressed: () => widget.clearStatus?.call(),
             icon: Icons.delete),
+      if (widget.isSelf)
+        tiamat.ContextMenuItem(
+            text: "Set Badges",
+            onPressed: () => widget.editBadges?.call(),
+            icon: Icons.star),
       if (widget.isSelf)
         tiamat.ContextMenuItem(
             text: "Set Bio",
