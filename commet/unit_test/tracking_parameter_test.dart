@@ -1,4 +1,3 @@
-import 'package:commet/utils/links/link_utils.dart';
 import 'package:commet/utils/links/tracking_parameters_cleaner.dart';
 import 'package:flutter_test/flutter_test.dart';
 
