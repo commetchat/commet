@@ -83,4 +83,7 @@ class MatrixLivekitVoipStream implements VoipStream {
 
     return VoipStreamType.video;
   }
+
+  @override
+  bool get isMuted => publication.track?.muted ?? false;
 }

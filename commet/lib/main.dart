@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:commet/cache/file_cache.dart';
 import 'package:commet/client/client_manager.dart';
@@ -13,6 +14,7 @@ import 'package:commet/config/preferences.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
 import 'package:commet/generated/intl/messages_all.dart';
+import 'package:commet/single_instance.dart';
 import 'package:commet/ui/pages/bubble/bubble_page.dart';
 import 'package:commet/ui/pages/fatal_error/fatal_error_page.dart';
 import 'package:commet/ui/pages/login/login_page.dart';
@@ -27,6 +29,7 @@ import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/first_time_setup.dart';
 import 'package:commet/utils/scaled_app.dart';
 import 'package:commet/utils/shortcuts_manager.dart';
+import 'package:commet/utils/system_wide_shortcuts/system_wide_shortcuts.dart';
 import 'package:commet/utils/update_checker.dart';
 import 'package:commet/utils/window_management.dart';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -44,6 +47,7 @@ import 'package:tiamat/config/style/theme_changer.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:tiamat/config/style/theme_dark.dart';
 import 'package:desktop_webview_window/desktop_webview_window.dart';
+import 'package:window_manager/window_manager.dart';
 
 final GlobalKey<NavigatorState> navigator = GlobalKey();
 FileCache? fileCache;
@@ -126,6 +130,14 @@ void main(List<String> args) async {
     return;
   }
 
+  if (PlatformUtils.isLinux || PlatformUtils.isWindows) {
+    if (await SingleInstance.tryConnectToMainInstance(args)) {
+      exit(0);
+    } else {
+      SingleInstance.becomeMainInstance();
+    }
+  }
+
   if (BuildConfig.RELEASE) {
     runZonedGuarded(appMain, Log.onError, zoneSpecification: Log.spec);
   } else {
@@ -159,6 +171,8 @@ void appMain() async {
     } else {
       await loading;
     }
+
+    SystemWideShortcuts.init();
 
     await startGui();
   } catch (error, stacktrace) {
@@ -265,6 +279,8 @@ Future<void> startGui() async {
     initialClientId: initialClientId,
     initialRoom: initialRoomId,
   ));
+
+  windowManager.show();
 }
 
 void enableEdgeToEdge() async {

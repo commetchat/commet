@@ -121,6 +121,8 @@ dependencies:
   canonical_json: ^1.1.2
   cryptography: ^2.9.0
   crop_image: ^1.0.17
+  dart_ipc: ^1.0.1
+  dbus: ^0.7.11
 dependency_overrides:
   analyzer: ^7.3.0
 

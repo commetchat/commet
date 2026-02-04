@@ -145,6 +145,34 @@ class CallManager {
     player?.setPlaylistMode(PlaylistMode.none);
   }
 
+  void mute() {
+    for (var session in currentSessions) {
+      session.setMicrophoneMute(true);
+    }
+
+    playMuteSound();
+  }
+
+  void playMuteSound() {
+    player = getSoundPlayer();
+    player?.open(Media("asset:///assets/sound/muted.ogg"));
+    player?.setPlaylistMode(PlaylistMode.none);
+  }
+
+  void unmute() {
+    for (var session in currentSessions) {
+      session.setMicrophoneMute(false);
+    }
+
+    playUnmuteSound();
+  }
+
+  void playUnmuteSound() {
+    player = getSoundPlayer();
+    player?.open(Media("asset:///assets/sound/unmuted.ogg"));
+    player?.setPlaylistMode(PlaylistMode.none);
+  }
+
   void endCallSound() {
     player = getSoundPlayer();
     player?.open(Media("asset:///assets/sound/left_call.ogg"));

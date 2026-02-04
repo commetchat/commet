@@ -106,15 +106,48 @@ class _VoipStreamViewState extends State<VoipStreamView>
       case VoipStreamType.audio:
         return tiamat.Tile.low(
           child: Center(
-              child: tiamat.Avatar(
-                  border: Border.all(
-                      strokeAlign: 0.5,
-                      color: getBorderColor(context),
-                      width: clampDouble(audioLevel.value * 15, 0, 5)),
-                  radius: 50,
-                  image: user.avatar,
-                  placeholderColor: user.defaultColor,
-                  placeholderText: user.displayName)),
+              child: Stack(
+            alignment: AlignmentGeometry.bottomRight,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: AnimatedOpacity(
+                  opacity: widget.stream.isMuted ? 0.5 : 1.0,
+                  duration: Duration(milliseconds: 200),
+                  child: tiamat.Avatar(
+                      border: Border.all(
+                          strokeAlign: 0.5,
+                          color: getBorderColor(context),
+                          width: clampDouble(audioLevel.value * 15, 0, 5)),
+                      radius: 50,
+                      image: user.avatar,
+                      placeholderColor: user.defaultColor,
+                      placeholderText: user.displayName),
+                ),
+              ),
+              AnimatedScale(
+                scale: widget.stream.isMuted ? 1.0 : 0.0,
+                curve: widget.stream.isMuted
+                    ? Curves.bounceOut
+                    : Curves.easeInExpo,
+                duration:
+                    Duration(milliseconds: widget.stream.isMuted ? 500 : 200),
+                child: Container(
+                  decoration: BoxDecoration(
+                      color: ColorScheme.of(context).primary,
+                      borderRadius: BorderRadius.circular(8)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Icon(
+                      Icons.mic_off_rounded,
+                      size: 18,
+                      color: ColorScheme.of(context).onPrimary,
+                    ),
+                  ),
+                ),
+              )
+            ],
+          )),
         );
 
       case VoipStreamType.video:
