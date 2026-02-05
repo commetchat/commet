@@ -1,6 +1,10 @@
 import 'package:commet/main.dart';
 import 'package:dbus/dbus.dart';
 
+// for testing:
+// gdbus call --session --dest chat.commet.commetapp --object-path /chat/commet/commetapp/Shortcuts --method chat.commet.commetapp.Shortcuts.unmute
+// gdbus call --session --dest chat.commet.commetapp --object-path /chat/commet/commetapp/Shortcuts --method chat.commet.commetapp.Shortcuts.mute
+
 class SystemWideShortcutsLinux {
   static Future<void> init() async {
     await initDbus();
