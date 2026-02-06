@@ -1,3 +1,4 @@
+import 'package:commet/config/build_config.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/settings/categories/app/shortcut_settings/keyboard_hook_shortcuts_settings_page.dart';
@@ -22,6 +23,10 @@ class ShortcutSettingsPage extends StatelessWidget {
 
     if (preferences.developerMode) {
       showHooksMenu = true;
+    }
+
+    if (BuildConfig.IS_FLATPAK) {
+      showHooksMenu = false;
     }
 
     return Column(
