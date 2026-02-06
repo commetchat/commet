@@ -13,13 +13,16 @@ Actions=ToggleMute;Mute;Unmute
 [Desktop Action ToggleMute]
 Name=Toggle Mute
 Exec=commet --shortcut toggle_mute
-X-KDE-Shortcuts=Ctrl+M
+StartupNotify=false
+X-KDE-Shortcuts=Alt+M
 
 [Desktop Action Mute]
 Name=Mute
+StartupNotify=false
 Exec=commet --shortcut mute
-X-KDE-Shortcuts=Alt+M
+
 
 [Desktop Action Unmute]
 Name=Unmute
+StartupNotify=false
 Exec=commet --shortcut unmute
