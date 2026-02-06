@@ -7,6 +7,7 @@ import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/main.dart';
+import 'package:commet/utils/text_utils.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:matrix/matrix.dart' as matrix;
@@ -55,7 +56,7 @@ class MatrixGifComponent implements GifComponent<MatrixClient, MatrixRoom> {
 
       matrix.Event? replyingTo;
       var uri = await matrixRoom.client
-          .uploadContent(data, filename: "sticker", contentType: "image/gif");
+          .uploadContent(data, filename: "sticker", contentType: gif.mimeType);
 
       var content = {
         "body": gif.fullResUrl.pathSegments.last,
@@ -64,9 +65,10 @@ class MatrixGifComponent implements GifComponent<MatrixClient, MatrixRoom> {
         if (preferences.stickerCompatibilityMode)
           "chat.commet.type": "chat.commet.sticker",
         "info": {
+          "chat.commet.animated": true,
           "w": gif.x.toInt(),
           "h": gif.y.toInt(),
-          "mimetype": "image/gif"
+          "mimetype": gif.mimeType
         }
       };
 
@@ -95,10 +97,10 @@ class MatrixGifComponent implements GifComponent<MatrixClient, MatrixRoom> {
 
     var formats = result['media_formats'] as Map<String, dynamic>;
 
+    String mimeType = "image/gif";
+
     var preview =
         formats['tinygif'] ?? formats['nanogif'] ?? formats['mediumgif'];
-
-    //dynamic fullRes;
 
     var fullRes = formats['gif'];
 
@@ -107,13 +109,23 @@ class MatrixGifComponent implements GifComponent<MatrixClient, MatrixRoom> {
       fullRes = formats['mediumgif'];
     }
 
+    if (formats["webp"]['size'] < fullRes['size']) {
+      fullRes = formats["webp"];
+      mimeType = "image/webp";
+    }
+
+    if (formats["webp"]['size'] < preview['size']) {
+      preview = formats["webp"];
+    }
+
     List<dynamic> dimensions = fullRes['dims']! as List<dynamic>;
 
     return GifSearchResult(
         convertUrl(preview['url']),
         convertUrl(fullRes['url']),
         (dimensions[0] as int).roundToDouble(),
-        (dimensions[1] as int).roundToDouble());
+        (dimensions[1] as int).roundToDouble(),
+        mimeType);
   }
 
   Uri convertUrl(String url) {
