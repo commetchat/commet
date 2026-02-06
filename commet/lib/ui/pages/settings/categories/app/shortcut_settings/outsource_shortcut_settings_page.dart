@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/platform_utils.dart';
+import 'package:commet/debug/log.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/atoms/tile.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -29,13 +30,15 @@ class OutsourceShortcutSettingsPage extends StatelessWidget {
     );
   }
 
-  openSystemSettings() {
+  openSystemSettings() async {
     if (BuildConfig.IS_FLATPAK) {
       // not sure if there is any way to reliably detect desktop environment from flatpak
       // so i guess just try to run it an see what happens
       try {
         Process.start("flatpak-spawn", ["--host" "systemsettings" "kcm_keys"]);
-      } catch (e) {}
+      } catch (e, s) {
+        Log.onError(e, s);
+      }
 
       return;
     }
