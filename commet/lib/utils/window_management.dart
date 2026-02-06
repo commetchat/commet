@@ -21,7 +21,7 @@ class WindowManagement {
       EventBus.onSelectedRoomChanged.stream.listen(_onSelectedRoomChanged);
       EventBus.onSelectedSpaceChanged.stream.listen(_onSelectedSpaceChanged);
 
-      windowManager.show();
+      await windowManager.show();
 
       if (commandLineArgs.contains("--minimize")) {
         windowManager.minimize();
