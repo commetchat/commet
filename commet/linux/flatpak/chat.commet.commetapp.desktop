@@ -9,16 +9,17 @@ Exec=commet
 Terminal=false
 StartupWMClass=chat.commet.commetapp
 Actions=ToggleMute;Mute;Unmute
+
 [Desktop Action ToggleMute]
 Name=Toggle Mute
-Exec=/usr/bin/flatpak run --branch=master --arch=x86_64 --command=commet chat.commet.commetapp
+Exec=commet --shortcut toggle_mute
 X-KDE-Shortcuts=Ctrl+M
 
 [Desktop Action Mute]
 Name=Mute
-Exec=/usr/bin/flatpak run --branch=master --arch=x86_64 --command=commet chat.commet.commetapp
+Exec=commet --shortcut mute
 X-KDE-Shortcuts=Alt+M
 
 [Desktop Action Unmute]
 Name=Unmute
-Exec=/usr/bin/flatpak run --branch=master --arch=x86_64 --command=commet chat.commet.commetapp
+Exec=commet --shortcut unmute

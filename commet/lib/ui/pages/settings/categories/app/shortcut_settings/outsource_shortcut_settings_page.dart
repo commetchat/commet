@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:commet/config/build_config.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/atoms/tile.dart';
@@ -30,7 +31,11 @@ class OutsourceShortcutSettingsPage extends StatelessWidget {
 
   openSystemSettings() {
     if (PlatformUtils.isDesktopEnvironment(DesktopEnvironment.KDEPlasma)) {
-      Process.start("systemsettings", ["kcm_keys"]);
+      if (BuildConfig.IS_FLATPAK) {
+        Process.start("flatpak-spawn", ["--host" "systemsettings" "kcm_keys"]);
+      } else {
+        Process.start("systemsettings", ["kcm_keys"]);
+      }
     }
   }
 }
