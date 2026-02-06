@@ -30,12 +30,18 @@ class OutsourceShortcutSettingsPage extends StatelessWidget {
   }
 
   openSystemSettings() {
-    if (PlatformUtils.isDesktopEnvironment(DesktopEnvironment.KDEPlasma)) {
-      if (BuildConfig.IS_FLATPAK) {
+    if (BuildConfig.IS_FLATPAK) {
+      // not sure if there is any way to reliably detect desktop environment from flatpak
+      // so i guess just try to run it an see what happens
+      try {
         Process.start("flatpak-spawn", ["--host" "systemsettings" "kcm_keys"]);
-      } else {
-        Process.start("systemsettings", ["kcm_keys"]);
-      }
+      } catch (e) {}
+
+      return;
+    }
+
+    if (PlatformUtils.isDesktopEnvironment(DesktopEnvironment.KDEPlasma)) {
+      Process.start("systemsettings", ["kcm_keys"]);
     }
   }
 }
