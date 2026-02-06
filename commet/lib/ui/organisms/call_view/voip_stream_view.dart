@@ -165,6 +165,7 @@ class _VoipStreamViewState extends State<VoipStreamView>
   }
 
   void onStreamChanged(void event) {
+    print("Stream state changed!");
     setState(() {});
   }
 }

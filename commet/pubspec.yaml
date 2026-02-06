@@ -123,6 +123,7 @@ dependencies:
   crop_image: ^1.0.17
   dart_ipc: ^1.0.1
   dbus: ^0.7.11
+  hotkey_manager: ^0.2.3
 dependency_overrides:
   analyzer: ^7.3.0
 

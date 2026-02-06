@@ -24,6 +24,11 @@ int shortcuts_main(
         return 0;
     }
 
+    if (argc < 3)
+    {
+        return -1;
+    }
+
     std::cout << "Got dbus invocation: " << argc << std::endl;
     for (int i = 0; i < argc; ++i)
     {
@@ -43,14 +48,7 @@ int shortcuts_main(
         return -1;
     }
 
-    if (strcmp(argv[2], "mute") == 0)
-    {
-        dbus_msg = ::dbus_message_new_method_call("chat.commet.commetapp", "/chat/commet/commetapp/Shortcuts", "chat.commet.commetapp.Shortcuts", "mute");
-    }
-    else if (strcmp(argv[2], "unmute") == 0)
-    {
-        dbus_msg = ::dbus_message_new_method_call("chat.commet.commetapp", "/chat/commet/commetapp/Shortcuts", "chat.commet.commetapp.Shortcuts", "unmute");
-    }
+    dbus_msg = ::dbus_message_new_method_call("chat.commet.commetapp", "/chat/commet/commetapp/Shortcuts", "chat.commet.commetapp.Shortcuts", argv[2]);
 
     if (dbus_msg == nullptr)
     {

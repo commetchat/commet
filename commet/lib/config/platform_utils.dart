@@ -57,6 +57,18 @@ class PlatformUtils {
       DesktopEnvironment.GNOME => set.contains("GNOME"),
     };
   }
+
+  static bool isDisplayServer(DisplayServer server) {
+    return switch (server) {
+      DisplayServer.Wayland => displayServer == "wayland",
+      DisplayServer.X11 => displayServer == "x11",
+    };
+  }
+}
+
+enum DisplayServer {
+  Wayland,
+  X11,
 }
 
 enum DesktopEnvironment {

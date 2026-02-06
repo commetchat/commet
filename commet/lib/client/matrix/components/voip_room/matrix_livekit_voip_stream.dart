@@ -37,7 +37,7 @@ class MatrixLivekitVoipStream implements VoipStream {
     audiolevel = (e.event[0] as double) > 0.5 ? 1 : 0;
   }
 
-  void onStreamUpdatedEvent(TrackStreamStateUpdatedEvent event) {
+  void onStreamUpdatedEvent() {
     _onChanged.add(());
   }
 

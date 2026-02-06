@@ -1,4 +1,5 @@
 import 'package:commet/main.dart';
+import 'package:commet/utils/system_wide_shortcuts/system_wide_shortcuts.dart';
 import 'package:dbus/dbus.dart';
 
 // for testing:
@@ -37,12 +38,10 @@ class TestObject extends DBusObject {
       return DBusMethodErrorResponse.unknownInterface();
     }
 
-    if (methodCall.name == "mute") {
-      clientManager?.callManager.mute();
-    }
+    var shortcut = SystemWideShortcuts.shortcuts[methodCall.name];
 
-    if (methodCall.name == "unmute") {
-      clientManager?.callManager.unmute();
+    if (shortcut != null) {
+      shortcut.callback();
     }
 
     return DBusMethodSuccessResponse();

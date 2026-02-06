@@ -221,7 +221,6 @@ Future<void> initGuiRequirements() async {
   var locale = PlatformDispatcher.instance.locale;
 
   Future.wait([
-    WindowManagement.init(),
     UnicodeEmojis.load(),
     initializeMessages(locale.languageCode),
     initializeDateFormatting(locale.languageCode),
@@ -280,7 +279,7 @@ Future<void> startGui() async {
     initialRoom: initialRoomId,
   ));
 
-  windowManager.show();
+  WindowManagement.init();
 }
 
 void enableEdgeToEdge() async {
