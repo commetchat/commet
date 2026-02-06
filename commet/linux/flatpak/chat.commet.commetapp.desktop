@@ -9,20 +9,19 @@ Exec=commet
 Terminal=false
 StartupWMClass=chat.commet.commetapp
 Actions=ToggleMute;Mute;Unmute
+X-KDE-StartupNotify=false
+StartupNotify=false
 
 [Desktop Action ToggleMute]
 Name=Toggle Mute
 Exec=commet --shortcut toggle_mute
-StartupNotify=false
 X-KDE-Shortcuts=Alt+M
 
 [Desktop Action Mute]
 Name=Mute
-StartupNotify=false
 Exec=commet --shortcut mute
 
 
 [Desktop Action Unmute]
 Name=Unmute
-StartupNotify=false
 Exec=commet --shortcut unmute
