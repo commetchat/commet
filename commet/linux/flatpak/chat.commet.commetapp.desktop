@@ -1,12 +1,24 @@
 [Desktop Entry]
 Version={{VERSION_TAG}}
 Type=Application
-
 Name=Commet
 Comment=Your space to connect!
 Categories=Utility;Amusement;
-
 Icon=chat.commet.commetapp
 Exec=commet
 Terminal=false
 StartupWMClass=chat.commet.commetapp
+Actions=ToggleMute;Mute;Unmute
+[Desktop Action ToggleMute]
+Name=Toggle Mute
+Exec=/usr/bin/flatpak run --branch=master --arch=x86_64 --command=commet chat.commet.commetapp
+X-KDE-Shortcuts=Ctrl+M
+
+[Desktop Action Mute]
+Name=Mute
+Exec=/usr/bin/flatpak run --branch=master --arch=x86_64 --command=commet chat.commet.commetapp
+X-KDE-Shortcuts=Alt+M
+
+[Desktop Action Unmute]
+Name=Unmute
+Exec=/usr/bin/flatpak run --branch=master --arch=x86_64 --command=commet chat.commet.commetapp
