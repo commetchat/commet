@@ -7,7 +7,6 @@ import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/main.dart';
-import 'package:commet/utils/text_utils.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:matrix/matrix.dart' as matrix;
