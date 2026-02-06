@@ -3,6 +3,6 @@ Version: {{VERSION_TAG}}
 Architecture: all
 Essential: no
 Priority: optional
-Depends: libmpv1 keybinder-3.0
+Depends: libmpv1, keybinder-3.0
 Maintainer: Airyz
 Description: Your space to connect!
