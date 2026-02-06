@@ -1,4 +1,3 @@
-import 'package:commet/main.dart';
 import 'package:commet/utils/system_wide_shortcuts/system_wide_shortcuts.dart';
 import 'package:dbus/dbus.dart';
 
