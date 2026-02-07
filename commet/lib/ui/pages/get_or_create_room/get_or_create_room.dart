@@ -134,8 +134,7 @@ class GetOrCreateRoom extends StatefulWidget {
               RoomFieldName(),
               RoomFieldTopic(),
               RoomFieldVisibility(),
-              RoomFieldEncryption(
-                  canEnableEncryption: false, defaultEnabled: false),
+              RoomFieldEncryption(defaultEnabled: true),
               RoomFieldType(RoomType.calendar),
             ],
           ),

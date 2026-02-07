@@ -104,8 +104,8 @@ class TimelineEventMenu {
     bool canReply = false;
     bool canDeleteEvent = false;
 
-    bool canRetrySend = event.status == TimelineEventStatus.error;
-    bool canCancelSend = event.status == TimelineEventStatus.error;
+    bool canRetrySend = event.status != TimelineEventStatus.synced;
+    bool canCancelSend = event.status != TimelineEventStatus.synced;
 
     var effects = timeline.room.client.getComponent<MessageEffectComponent>();
     var emoticons = timeline.room.getComponent<RoomEmoticonComponent>();

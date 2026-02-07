@@ -1,11 +1,13 @@
 import 'dart:async';
+import 'dart:convert';
+import 'package:collection/collection.dart';
 import 'package:commet/client/components/calendar_room/calendar_room_component.dart';
 import 'package:commet/client/components/calendar_room/calendar_sync.dart';
 import 'package:commet/client/components/component.dart';
 import 'package:commet/client/matrix/components/matrix_sync_listener.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
-import 'package:commet/client/matrix/widget/matrix_widget_runner.dart';
+import 'package:commet/client/matrix/widget/privelidged_matrix_widget_runner.dart';
 import 'package:commet/config/global_config.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
@@ -67,7 +69,8 @@ class MatrixCalendarRoomComponent
   }
 
   MatrixCalendarRoomComponent(this.client, this.room) {
-    var api = MatrixWidgetRunner(client.matrixClient, room.matrixRoom);
+    var api =
+        PrivelidgedMatrixWidgetRunner(client.matrixClient, room.matrixRoom);
 
     if (isCalendarRoom) {
       _calendar = MatrixCalendar(api, config: CustomMatrixCalendarConfig(room));
@@ -101,7 +104,8 @@ class MatrixCalendarRoomComponent
       return _calendar!;
     } else {
       if (isCalendarRoom || hasCalendarWidget) {
-        var api = MatrixWidgetRunner(client.matrixClient, room.matrixRoom);
+        var api =
+            PrivelidgedMatrixWidgetRunner(client.matrixClient, room.matrixRoom);
         _calendar =
             MatrixCalendar(api, config: CustomMatrixCalendarConfig(room));
         _calendar!.controller.addListener(() {
@@ -144,6 +148,26 @@ class MatrixCalendarRoomComponent
 
   Map<String, SyncedCalendar> getCalendarsFromAccountData() {
     var data = room.matrixRoom.roomAccountData[syncedCalendarsEventType];
+
+    if (data != null && room.isE2EE) {
+      if (data.content.isNotEmpty) {
+        Log.w(
+            "Deleting calendar URL source because this room is encrypted, and the source is stored in plaintext - you should generate a new URL");
+        Log.w(data.content);
+
+        room.matrixRoom.client.setAccountDataPerRoom(
+            client.matrixClient.userID!,
+            room.identifier,
+            syncedCalendarsEventType, {});
+      }
+    }
+
+    if (room.isE2EE) {
+      data = BasicEvent(type: syncedCalendarsEventType, content: {
+        "remote_calendars": preferences.getCalendarSources(room.identifier)
+      });
+    }
+
     if (data == null) {
       return {};
     }
@@ -173,7 +197,7 @@ class MatrixCalendarRoomComponent
   }
 
   @override
-  Future<void> addSyncedCalendar(SyncedCalendar calendar) {
+  Future<void> addSyncedCalendar(SyncedCalendar calendar) async {
     var calendars = syncedCalendars.value ?? {};
 
     var uuid = const Uuid();
@@ -191,12 +215,21 @@ class MatrixCalendarRoomComponent
     }
 
     Log.i("Setting synced calendars: ${calendars}");
-    return room.matrixRoom.client.setAccountDataPerRoom(
-      c.userID!,
-      room.matrixRoom.id,
-      syncedCalendarsEventType,
-      {"remote_calendars": result},
-    );
+    Log.i("Is room encrypted: ${room.isE2EE}");
+
+    if (room.isE2EE) {
+      Log.i("Storing calendar source locally, because this room is encrypted");
+      await preferences.setCalendarSources(room.matrixRoom.id, result);
+      syncedCalendars.add(getCalendarsFromAccountData());
+    } else {
+      Log.i("Storing calendar source in account data");
+      return room.matrixRoom.client.setAccountDataPerRoom(
+        c.userID!,
+        room.matrixRoom.id,
+        syncedCalendarsEventType,
+        {"remote_calendars": result},
+      );
+    }
   }
 
   @override
@@ -212,14 +245,18 @@ class MatrixCalendarRoomComponent
       await Future.delayed(Duration(seconds: 5));
     }
 
-    var existingEvents = calendar!.getAllEvents();
-
     Map<String, List<RFC8984CalendarEvent>> foundEvents = {};
 
     for (var entry in calendars.entries) {
       if (entry.value.sourceType == CalendarSource.ical) {
         var url = Uri.parse(entry.value.source);
         var events = await getEventsFromIcsUrl(url);
+
+        var existingEvents = calendar!
+            .getAllEvents()
+            .where((i) => i.remoteSourceId == entry.key)
+            .map((i) => i.data)
+            .toList();
 
         if (entry.value.overrideEventName != null) {
           events = events
@@ -233,6 +270,14 @@ class MatrixCalendarRoomComponent
               .toList();
         }
 
+        if (areEventListsIdentical(existingEvents, events)) {
+          Log.i(
+              "Calendar events are identical, not sending any data for this calendar");
+          continue;
+        } else {
+          Log.i("Calendar events are different, syncing");
+        }
+
         if (events.isNotEmpty) {
           foundEvents[entry.key] = events;
         }
@@ -242,15 +287,6 @@ class MatrixCalendarRoomComponent
             CalendarSyncType.events => "event",
             CalendarSyncType.unavailability => "unavailability"
           });
-    }
-
-    var eventsAfterSync = calendar!.getAllEvents();
-
-    if (shouldUpdateState(existingEvents, eventsAfterSync)) {
-      calendar!.syncEvents({}, push: true);
-    } else {
-      Log.i("Calendar sync result is identical, not updating room state");
-      calendar!.syncEvents({}, push: false, markAsDelivered: true);
     }
   }
 
@@ -366,12 +402,18 @@ class MatrixCalendarRoomComponent
     urls.remove(id);
     var c = room.matrixRoom.client;
 
-    await room.matrixRoom.client.setAccountDataPerRoom(
-      c.userID!,
-      room.matrixRoom.id,
-      syncedCalendarsEventType,
-      {if (urls.isNotEmpty) "urls": urls},
-    );
+    if (room.isE2EE) {
+      Log.i("Storing calendar source locally, because this room is encrypted");
+      await preferences.setCalendarSources(room.matrixRoom.id, urls);
+      syncedCalendars.add(getCalendarsFromAccountData());
+    } else {
+      await room.matrixRoom.client.setAccountDataPerRoom(
+        c.userID!,
+        room.matrixRoom.id,
+        syncedCalendarsEventType,
+        {"remote_calendars": urls},
+      );
+    }
 
     calendar!.removeAllEventsFromRemoteCalendar(id);
   }
@@ -411,5 +453,46 @@ class MatrixCalendarRoomComponent
     }
 
     return false;
+  }
+
+  bool containsEvent(
+      List<RFC8984CalendarEvent> list, RFC8984CalendarEvent event) {
+    var b = event.toJson();
+    b.remove("uid");
+    b.remove("updated");
+
+    var bstr = jsonEncode(b);
+    var contained = list.firstWhereOrNull((i) {
+      var a = i.toJson();
+      a.remove("uid");
+      a.remove("updated");
+      var ason = jsonEncode(a);
+      var identical = ason == bstr;
+
+      print("Is identical: ${identical}  \n($ason)\n($bstr)   ");
+
+      return identical;
+    });
+
+    if (contained == null) {
+      print("Could not find event: ${event.toJson()} in the list");
+    } else {
+      print("Found event: ${event.toJson()} in the list");
+    }
+
+    return contained != null;
+  }
+
+  bool areEventListsIdentical(List<RFC8984CalendarEvent> existingEvents,
+      List<RFC8984CalendarEvent> events) {
+    if (existingEvents.any((i) => !containsEvent(events, i))) {
+      return false;
+    }
+
+    if (events.any((i) => !containsEvent(existingEvents, i))) {
+      return false;
+    }
+
+    return true;
   }
 }

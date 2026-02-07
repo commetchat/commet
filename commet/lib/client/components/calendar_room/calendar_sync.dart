@@ -15,7 +15,7 @@ class CalendarSync {
     isStarted = true;
 
     Log.i("Starting calendar sync");
-    syncAllClients();
+    // syncAllClients();
   }
 
   Future<void> syncAllClients() async {

@@ -19,6 +19,10 @@ abstract class MatrixCapability {
     return "org.matrix.msc2762.send.event:$event";
   }
 
+  static String receiveEvent(String event) {
+    return "org.matrix.msc2762.receive.event:$event";
+  }
+
   static String _roomState(String direction, String type, String? stateKey) {
     var result = "org.matrix.msc2762.$direction.state_event:$type";
 

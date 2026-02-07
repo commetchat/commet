@@ -54,6 +54,8 @@ class Preferences {
 
   static const String _formatNotificationBody = "format_notification_body";
 
+  static const String _syncedCalendarUrls = "synced_calendar_urls";
+
   static const String _previewUrlsInNotification =
       "preview_urls_in_notification";
 
@@ -370,6 +372,20 @@ class Preferences {
             ?.getStringList(_optedInExperiments)
             ?.contains(experiment) ==
         true;
+  }
+
+  Map<String, dynamic> getCalendarSources(String roomId) {
+    var content = _preferences!.getString(_syncedCalendarUrls + ".${roomId}");
+    if (content != null) {
+      return jsonDecode(content);
+    } else {
+      return {};
+    }
+  }
+
+  Future<void> setCalendarSources(String roomId, Map<String, dynamic> sources) {
+    return _preferences!
+        .setString(_syncedCalendarUrls + ".${roomId}", jsonEncode(sources));
   }
 
   bool get showMediaInNotifications =>
