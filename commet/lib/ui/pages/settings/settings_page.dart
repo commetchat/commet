@@ -112,7 +112,10 @@ class SettingsPage extends StatelessWidget {
       preferences.setRunningDonationCheckFlow(client.identifier, time);
     }
 
-    LinkUtils.open(url, context: context, filterTrackingParameters: false);
+    LinkUtils.open(url,
+        context: context,
+        filterTrackingParameters: false,
+        bypassConfirmation: true);
 
     if (userId != "null" && secret != null) {
       AdaptiveDialog.show(context,

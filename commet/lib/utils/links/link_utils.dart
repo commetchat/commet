@@ -14,6 +14,7 @@ class LinkUtils {
       {String? clientId,
       String? contextRoomId,
       BuildContext? context,
+      bool bypassConfirmation = false,
       bool filterTrackingParameters = true}) async {
     if (context != null) {
       ErrorUtils.tryRun(context, () async {
@@ -21,6 +22,7 @@ class LinkUtils {
             clientId: clientId,
             context: context,
             contextRoomId: contextRoomId,
+            bypassConfirmation: bypassConfirmation,
             filterTrackingParameters: filterTrackingParameters);
       });
     } else {
@@ -28,6 +30,7 @@ class LinkUtils {
           clientId: clientId,
           context: context,
           contextRoomId: contextRoomId,
+          bypassConfirmation: bypassConfirmation,
           filterTrackingParameters: filterTrackingParameters);
     }
   }
@@ -36,6 +39,7 @@ class LinkUtils {
       {String? clientId,
       String? contextRoomId,
       BuildContext? context,
+      bool bypassConfirmation = false,
       bool filterTrackingParameters = true}) async {
     if (uri.host == "matrix.to") {
       var result = MatrixClient.parseMatrixLink(uri);
@@ -83,33 +87,40 @@ class LinkUtils {
       }
     }
 
-    var cleanedUrl =
-        await UrlTrackingParametersCleaner.cleanTrackingParameters(uri);
+    var cleanedUrl = filterTrackingParameters
+        ? await UrlTrackingParametersCleaner.cleanTrackingParameters(uri)
+        : uri;
 
     if (cleanedUrl.toString() != uri.toString()) {
       if (context != null) {
-        var confirm = await AdaptiveDialog.confirmation(context,
-            title: "Open Link",
-            confirmationText: "Open",
-            cancelText: "Open Original Link",
-            prompt:
-                "This link contained trackers, which have been removed. Open `$cleanedUrl`?");
+        if (!bypassConfirmation) {
+          var confirm = await AdaptiveDialog.confirmation(context,
+              title: "Open Link",
+              confirmationText: "Open",
+              cancelText: "Open Original Link",
+              prompt:
+                  "This link contained trackers, which have been removed. Open `$cleanedUrl`?");
 
-        if (confirm == null) return;
+          if (confirm == null) return;
 
-        if (confirm == true) {
+          if (confirm == true) {
+            openUrl = cleanedUrl;
+          }
+        } else {
           openUrl = cleanedUrl;
         }
       }
     } else {
-      if (context != null) {
-        if (await AdaptiveDialog.confirmation(context,
-                title: "Open Link",
-                confirmationText: "Open",
-                cancelText: "Cancel",
-                prompt: "Open `$uri` in your web browser?") !=
-            true) {
-          return;
+      if (!bypassConfirmation) {
+        if (context != null) {
+          if (await AdaptiveDialog.confirmation(context,
+                  title: "Open Link",
+                  confirmationText: "Open",
+                  cancelText: "Cancel",
+                  prompt: "Open `$uri` in your web browser?") !=
+              true) {
+            return;
+          }
         }
       }
     }
