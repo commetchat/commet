@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/debug/log.dart';
+import 'package:commet/utils/link_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/atoms/tile.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -21,9 +22,10 @@ class OutsourceShortcutSettingsPage extends StatelessWidget {
         children: [
           tiamat.Text(
               "In your current environment, keyboard shortcuts must be configured in your system settings."),
-          tiamat.Button(
-            text: "Open Settings",
-            onTap: openSystemSettings,
+          tiamat.Button.secondary(
+            text: "More Info",
+            onTap: () => LinkUtils.open(
+                Uri.parse("https://commet.chat/info/keyboard-shortcuts")),
           )
         ],
       ),
