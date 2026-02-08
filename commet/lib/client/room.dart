@@ -192,6 +192,8 @@ abstract class Room {
 
   Future<void> setTopic(String topic);
 
+  Future<void> markAsRead();
+
   @override
   bool operator ==(Object other) {
     if (other is! Room) return false;

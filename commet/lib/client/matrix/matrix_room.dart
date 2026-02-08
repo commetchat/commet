@@ -820,4 +820,11 @@ class MatrixRoom extends Room {
     await matrixRoom.setAvatar(matrix.MatrixFile(bytes: bytes, name: name));
     _avatar = MemoryImage(bytes);
   }
+
+  @override
+  Future<void> markAsRead() async {
+    var tl = await matrixRoom.getTimeline();
+
+    await tl.setReadMarker();
+  }
 }

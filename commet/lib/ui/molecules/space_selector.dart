@@ -90,7 +90,6 @@ class _SpaceSelectorState extends State<SpaceSelector> {
                         );
                       },
                     ),
-                    if (widget.footer != null) const Seperator(),
                     if (widget.footer != null)
                       Padding(
                         padding: SpaceSelector.padding,

@@ -1,4 +1,5 @@
 import 'package:commet/client/room.dart';
+import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/atoms/room_header.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/atoms/space_header.dart';
@@ -225,27 +226,43 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
         key: ValueKey("room-chat-view-${widget.state.currentRoom!.localId}"),
         child: Column(
           children: [
-            Tile.low(
-              caulkClipBottomRight: true,
-              caulkClipBottomLeft: true,
-              caulkBorderBottom: true,
-              child: ScaledSafeArea(
-                bottom: false,
-                left: false,
-                right: false,
-                child: SizedBox(
-                  height: 50,
-                  child: RoomHeader(
-                    widget.state.currentRoom!,
-                    onTap:
-                        widget.state.currentRoom?.permissions.canEditAnything ==
-                                true
-                            ? () => widget.state.navigateRoomSettings()
-                            : null,
+            if (Layout.mobile)
+              Tile.low(
+                caulkClipBottomRight: true,
+                caulkClipBottomLeft: true,
+                caulkBorderBottom: true,
+                child: ScaledSafeArea(
+                  bottom: false,
+                  left: false,
+                  right: false,
+                  child: SizedBox(
+                    height: 50,
+                    child: RoomHeader(
+                      widget.state.currentRoom!,
+                      onTap: widget.state.currentRoom?.permissions
+                                  .canEditAnything ==
+                              true
+                          ? () => widget.state.navigateRoomSettings()
+                          : null,
+                      menu: Center(
+                        child: SizedBox(
+                          width: 30,
+                          height: 30,
+                          child: tiamat.IconButton(
+                            icon: material.Icons.chevron_right,
+                            onPressed: () {
+                              panelsKey.currentState?.reveal(RevealSide.right);
+                            },
+                          ),
+                        ),
+                      ),
+                      onBurgerMenuTap: () {
+                        panelsKey.currentState?.reveal(RevealSide.left);
+                      },
+                    ),
                   ),
                 ),
               ),
-            ),
             Expanded(
               child: RoomPrimaryView(
                 widget.state.currentRoom!,
@@ -257,8 +274,12 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
     }
 
     return Tile(
-        child: ScaledSafeArea(
-            child: HomeScreen(clientManager: widget.state.clientManager)));
+        child: HomeScreen(
+      clientManager: widget.state.clientManager,
+      onBurgerMenuTap: () {
+        panelsKey.currentState?.reveal(RevealSide.left);
+      },
+    ));
   }
 
   Widget userList() {

@@ -58,7 +58,7 @@ class MainPageState extends State<MainPage> {
 
   ClientManager get clientManager => widget.clientManager;
 
-  Profile get currentUser => getCurrentUser();
+  Profile? get currentUser => getCurrentUser();
   Space? get currentSpace => _currentSpace;
   Room? get currentRoom => _currentRoom;
 
@@ -121,16 +121,12 @@ class MainPageState extends State<MainPage> {
     super.dispose();
   }
 
-  Profile getCurrentUser() {
+  Profile? getCurrentUser() {
     if (currentRoom != null) return currentRoom!.client.self!;
 
     if (currentSpace != null) return currentSpace!.client.self!;
 
-    if (_previousRoom != null) return _previousRoom!.client.self!;
-
-    if (_previousSpace != null) return _previousSpace!.client.self!;
-
-    return clientManager.clients.first.self!;
+    return null;
   }
 
   @override
