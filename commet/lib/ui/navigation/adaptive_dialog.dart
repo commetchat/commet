@@ -189,7 +189,12 @@ class AdaptiveDialog {
                 child: Markdown(
                   shrinkWrap: true,
                   styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context))
-                      .copyWith(codeblockPadding: EdgeInsets.all(8)),
+                      .copyWith(
+                          codeblockPadding: EdgeInsets.all(8),
+                          code: TextTheme.of(context).bodySmall!.copyWith(
+                              fontFamily: "Code",
+                              backgroundColor: ColorScheme.of(context)
+                                  .surfaceContainerLowest)),
                   data: prompt,
                 ),
               ),
