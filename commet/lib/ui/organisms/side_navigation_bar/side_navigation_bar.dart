@@ -19,7 +19,7 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 class SideNavigationBar extends StatefulWidget {
   const SideNavigationBar(
       {super.key,
-      required this.currentUser,
+      this.currentUser,
       this.onSpaceSelected,
       this.onDirectMessageSelected,
       this.onSettingsSelected,
@@ -32,7 +32,7 @@ class SideNavigationBar extends StatefulWidget {
 
   final List<Widget Function(double width)>? extraEntryBuilders;
 
-  final Profile currentUser;
+  final Profile? currentUser;
   final void Function(Space space)? onSpaceSelected;
   final void Function()? clearSpaceSelection;
   final void Function(Room room)? onDirectMessageSelected;
@@ -124,9 +124,10 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                   CommonStrings.promptSettings,
                   ImageButton(
                     size: 70,
-                    image: widget.currentUser.avatar,
-                    placeholderColor: widget.currentUser.defaultColor,
-                    placeholderText: widget.currentUser.displayName,
+                    image: widget.currentUser?.avatar,
+                    placeholderColor: widget.currentUser?.defaultColor,
+                    placeholderText: widget.currentUser?.displayName,
+                    icon: Icons.settings,
                     key: SideNavigationBar.settingsKey,
                     onTap: () {
                       NavigationUtils.navigateTo(

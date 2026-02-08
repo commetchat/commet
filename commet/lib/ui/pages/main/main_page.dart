@@ -45,8 +45,6 @@ enum MainPageSubView {
 class MainPageState extends State<MainPage> {
   Space? _currentSpace;
   Room? _currentRoom;
-  Room? _previousRoom;
-  Space? _previousSpace;
 
   MainPageSubView _currentView = MainPageSubView.home;
 
@@ -58,7 +56,7 @@ class MainPageState extends State<MainPage> {
 
   ClientManager get clientManager => widget.clientManager;
 
-  Profile get currentUser => getCurrentUser();
+  Profile? get currentUser => getCurrentUser();
   Space? get currentSpace => _currentSpace;
   Room? get currentRoom => _currentRoom;
 
@@ -121,16 +119,12 @@ class MainPageState extends State<MainPage> {
     super.dispose();
   }
 
-  Profile getCurrentUser() {
+  Profile? getCurrentUser() {
     if (currentRoom != null) return currentRoom!.client.self!;
 
     if (currentSpace != null) return currentSpace!.client.self!;
 
-    if (_previousRoom != null) return _previousRoom!.client.self!;
-
-    if (_previousSpace != null) return _previousSpace!.client.self!;
-
-    return clientManager.clients.first.self!;
+    return null;
   }
 
   @override
@@ -154,7 +148,6 @@ class MainPageState extends State<MainPage> {
 
     onSpaceUpdateSubscription?.cancel();
     setState(() {
-      _previousSpace = _currentSpace;
       _currentSpace = space;
       _currentView = MainPageSubView.space;
     });
@@ -168,7 +161,6 @@ class MainPageState extends State<MainPage> {
     onRoomUpdateSubscription?.cancel();
 
     setState(() {
-      _previousRoom = currentRoom;
       _currentRoom = room;
     });
 
@@ -179,9 +171,6 @@ class MainPageState extends State<MainPage> {
   void clearRoomSelection() {
     onRoomUpdateSubscription?.cancel();
     setState(() {
-      if (currentRoom != null) {
-        _previousRoom = currentRoom;
-      }
       _currentRoom = null;
     });
 
@@ -191,10 +180,6 @@ class MainPageState extends State<MainPage> {
   void clearSpaceSelection() {
     setState(() {
       clearRoomSelection();
-
-      if (currentSpace != null) {
-        _previousSpace = currentSpace;
-      }
 
       _currentSpace = null;
       _currentView = MainPageSubView.home;
