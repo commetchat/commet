@@ -315,9 +315,6 @@ class _HeaderBurgerState extends State<HeaderBurger> {
     if (highlightedNotificationCount > 0) {
       color = widget.highlightColor;
     }
-
-    print(
-        "highlighted: $highlightedNotificationCount  regular: $notificationCount");
   }
 
   @override
