@@ -129,14 +129,6 @@ void main(List<String> args) async {
     return;
   }
 
-  if (PlatformUtils.isLinux || PlatformUtils.isWindows) {
-    if (await SingleInstance.tryConnectToMainInstance(args)) {
-      exit(0);
-    } else {
-      SingleInstance.becomeMainInstance();
-    }
-  }
-
   if (BuildConfig.RELEASE) {
     runZonedGuarded(appMain, Log.onError, zoneSpecification: Log.spec);
   } else {
@@ -155,6 +147,14 @@ void appMain() async {
     }
 
     ensureBindingInit();
+
+    if (PlatformUtils.isLinux || PlatformUtils.isWindows) {
+      if (await SingleInstance.tryConnectToMainInstance(commandLineArgs)) {
+        exit(0);
+      } else {
+        SingleInstance.becomeMainInstance();
+      }
+    }
 
     FlutterError.onError = Log.getFlutterErrorReporter(FlutterError.onError);
 

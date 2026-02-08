@@ -198,7 +198,6 @@ class CallManager {
   }
 
   void playUnmuteSound() {
-    print("Playing unmute");
     if (unmuteSoundPlayer == null) {
       unmuteSoundPlayer ??= Player(configuration: PlayerConfiguration());
       unmuteSoundPlayer!.setVolume(90);
