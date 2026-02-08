@@ -243,9 +243,6 @@ class MatrixCalendar {
       "rel_type": "m.reference",
     });
 
-    print("Got existing events:");
-    print(response);
-
     var events = response["chunk"] as List<dynamic>;
 
     for (var event in events) {
@@ -574,9 +571,6 @@ class MatrixCalendar {
   }
 
   Map<String, dynamic>? onEventReceived(Map<String, dynamic> apiData) {
-    print("Received event!");
-    print(apiData);
-
     var eventType = apiData["data"]["type"];
 
     if (eventType == "chat.commet.calendar_events") {
@@ -601,7 +595,6 @@ class MatrixCalendar {
     var remoteSource = content["remote_source_id"];
 
     var eventId = eventData["event_id"];
-    print("Received event data: $eventId");
     for (var event in events) {
       var mxCalendarEvent = RFC8984CalendarEvent.fromJson(event["event"]);
       var eventType = event["type"];
@@ -619,7 +612,6 @@ class MatrixCalendar {
         calendarEvent.event!.type = eventType;
         calendarEvent.event!.eventId = eventId;
 
-        print("Adding event");
         controller.add(calendarEvent);
       }
     }

@@ -356,7 +356,7 @@ class MatrixCalendarRoomComponent
     int? count = rule["COUNT"] != null ? int.parse(rule["COUNT"]!) : null;
     int? interval =
         rule["INTERVAL"] != null ? int.parse(rule["INTERVAL"]!) : null;
-    print(parts);
+
     if (frequency == null) return null;
 
     List<Rfc8984NDay>? byDays;
@@ -469,16 +469,8 @@ class MatrixCalendarRoomComponent
       var ason = jsonEncode(a);
       var identical = ason == bstr;
 
-      print("Is identical: ${identical}  \n($ason)\n($bstr)   ");
-
       return identical;
     });
-
-    if (contained == null) {
-      print("Could not find event: ${event.toJson()} in the list");
-    } else {
-      print("Found event: ${event.toJson()} in the list");
-    }
 
     return contained != null;
   }

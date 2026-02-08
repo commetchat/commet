@@ -48,8 +48,6 @@ class PrivelidgedMatrixWidgetRunner implements MatrixWidgetApi {
   }
 
   void onCapabilityGranted(String capability) {
-    Log.i("Granted capability: $capability");
-
     if (capability.startsWith("org.matrix.msc2762.receive.state_event:")) {
       var state = capability.replaceFirst(
         "org.matrix.msc2762.receive.state_event:",
@@ -166,13 +164,10 @@ class PrivelidgedMatrixWidgetRunner implements MatrixWidgetApi {
         } catch (e) {}
       }
     } else {
-      print("Sending event: $data");
-
       if (type == "m.room.redaction") {
         eventId = await room.redactEvent(content["redacts"]);
       } else {
         eventId = await room.sendEvent(content, type: type);
-        print(eventId);
       }
 
       var eventResult = {
@@ -300,7 +295,6 @@ class PrivelidgedMatrixWidgetRunner implements MatrixWidgetApi {
   Future<Map<String, dynamic>> handleReadRelations(
       Map<String, dynamic> data) async {
     Log.i("Handling read relations");
-    print(data);
 
     var eventId = data["event_id"];
     var eventType = data["event_type"];
@@ -319,8 +313,6 @@ class PrivelidgedMatrixWidgetRunner implements MatrixWidgetApi {
 
       var decrypted = await Future.wait<matrix.Event?>(
           [for (var event in related.chunk) tryDecryptEvent(event)]);
-
-      print(decrypted);
 
       if (eventType != null) decrypted.removeWhere((i) => i?.type != eventType);
 
