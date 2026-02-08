@@ -43,6 +43,8 @@ class BuildConfig {
 
   static const bool LINUX = PLATFORM == _Constants._linux;
 
+  static const bool IS_FLATPAK = BUILD_DETAIL == "flatpak";
+
   static const bool MAC = PLATFORM == _Constants._macos;
 
   static const bool IOS = PLATFORM == _Constants._ios;

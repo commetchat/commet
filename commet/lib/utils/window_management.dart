@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:collection/collection.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/client/space.dart';
@@ -14,12 +16,14 @@ class WindowManagement {
     await windowManager.ensureInitialized();
     _WindowListener listener = _WindowListener();
 
-    windowManager.setPreventClose(preferences.minimizeOnClose);
+    windowManager.setPreventClose(true);
     windowManager.addListener(listener);
 
     if (PlatformUtils.isLinux || PlatformUtils.isWindows) {
       EventBus.onSelectedRoomChanged.stream.listen(_onSelectedRoomChanged);
       EventBus.onSelectedSpaceChanged.stream.listen(_onSelectedSpaceChanged);
+
+      await windowManager.show();
 
       if (commandLineArgs.contains("--minimize")) {
         windowManager.minimize();
@@ -50,11 +54,19 @@ class WindowManagement {
 
 class _WindowListener extends WindowListener {
   @override
-  void onWindowClose() {
+  void onWindowClose() async {
     super.onWindowClose();
 
     if (preferences.minimizeOnClose) {
       windowManager.minimize();
+    } else {
+      if (clientManager != null) {
+        for (var client in clientManager!.clients) {
+          await client.close();
+        }
+      }
+
+      exit(0);
     }
   }
 }

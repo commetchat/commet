@@ -1,11 +1,13 @@
 import 'package:commet/client/components/voip/voip_component.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/experiments.dart';
+import 'package:commet/config/platform_utils.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/settings/categories/app/advanced_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/app/appearance_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/app/experiments_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/app/general_settings_page.dart';
+import 'package:commet/ui/pages/settings/categories/app/shortcut_settings/shortcut_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/app/voip_settings/voip_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/app/notification_settings/notification_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/app/window_settings.dart';
@@ -74,6 +76,13 @@ class SettingsCategoryApp implements SettingsCategory {
               icon: m.Icons.call,
               pageBuilder: (context) {
                 return const VoipSettingsPage();
+              }),
+        if (PlatformUtils.isLinux || PlatformUtils.isWindows)
+          SettingsTab(
+              label: "Shortcuts",
+              icon: m.Icons.keyboard_alt_outlined,
+              pageBuilder: (context) {
+                return const ShortcutSettingsPage();
               }),
         if (BuildConfig.DESKTOP)
           SettingsTab(

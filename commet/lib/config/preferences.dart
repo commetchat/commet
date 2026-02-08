@@ -6,6 +6,7 @@ import 'package:commet/config/platform_utils.dart';
 import 'package:commet/config/theme_config.dart';
 import 'package:commet/main.dart';
 import 'package:flutter/material.dart';
+import 'package:hotkey_manager/hotkey_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tiamat/config/style/theme_amoled.dart';
 import 'package:tiamat/config/style/theme_json_converter.dart';
@@ -79,6 +80,8 @@ class Preferences {
 
   static const String _checkForUpdates = "check_for_updates";
   static const String _runningDonationCheckFlow = "running_donation_check_flow";
+
+  static const String _systemHotkey = "system_wide_hotkey";
 
   final StreamController _onSettingChanged = StreamController.broadcast();
   Stream get onSettingChanged => _onSettingChanged.stream;
@@ -541,5 +544,26 @@ class Preferences {
     _preferences!.remove(_runningDonationCheckFlow);
 
     _onSettingChanged.add(null);
+  }
+
+  String getHotkeyId(String name) {
+    return _systemHotkey + ".$name";
+  }
+
+  Future<void> setSystemHotkey(String name, HotKey? key) async {
+    var k = getHotkeyId(name);
+
+    if (key == null) {
+      await _preferences!.remove(k);
+    } else {
+      await _preferences!.setString(k, jsonEncode(key.toJson()));
+    }
+  }
+
+  HotKey? getSystemHotkey(String name) {
+    var item = _preferences!.getString(getHotkeyId(name));
+    if (item == null) return null;
+
+    return HotKey.fromJson(jsonDecode(item));
   }
 }

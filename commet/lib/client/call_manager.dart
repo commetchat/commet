@@ -42,6 +42,8 @@ class CallManager {
   }
 
   Player? player;
+  Player? muteSoundPlayer;
+  Player? unmuteSoundPlayer;
 
   void _onClientAdded(int index) {
     var client = clientManager.clients[index];
@@ -143,6 +145,68 @@ class CallManager {
     player = getSoundPlayer();
     player?.open(Media("asset:///assets/sound/joined_call.ogg"));
     player?.setPlaylistMode(PlaylistMode.none);
+  }
+
+  void mute() {
+    for (var session in currentSessions) {
+      session.setMicrophoneMute(true);
+    }
+
+    playMuteSound();
+  }
+
+  bool fakeToggle = false;
+  void toggleMute() {
+    var session = currentSessions.firstOrNull;
+
+    if (session != null) {
+      if (session.isMicrophoneMuted) {
+        unmute();
+      } else {
+        mute();
+      }
+    } else {
+      fakeToggle = !fakeToggle;
+
+      // just to give user feedback when not in a call
+      if (fakeToggle) {
+        playMuteSound();
+      } else {
+        playUnmuteSound();
+      }
+    }
+  }
+
+  void playMuteSound() {
+    if (muteSoundPlayer == null) {
+      muteSoundPlayer ??= Player(configuration: PlayerConfiguration());
+      muteSoundPlayer!.setVolume(90);
+      muteSoundPlayer?.open(Media("asset:///assets/sound/muted.ogg"));
+      muteSoundPlayer?.setPlaylistMode(PlaylistMode.none);
+    }
+
+    muteSoundPlayer?.seek(Duration.zero);
+    muteSoundPlayer?.play();
+  }
+
+  void unmute() {
+    for (var session in currentSessions) {
+      session.setMicrophoneMute(false);
+    }
+
+    playUnmuteSound();
+  }
+
+  void playUnmuteSound() {
+    if (unmuteSoundPlayer == null) {
+      unmuteSoundPlayer ??= Player(configuration: PlayerConfiguration());
+      unmuteSoundPlayer!.setVolume(90);
+      unmuteSoundPlayer?.open(Media("asset:///assets/sound/unmuted.ogg"));
+      unmuteSoundPlayer?.setPlaylistMode(PlaylistMode.none);
+    }
+
+    unmuteSoundPlayer?.seek(Duration.zero);
+    unmuteSoundPlayer?.play();
   }
 
   void endCallSound() {

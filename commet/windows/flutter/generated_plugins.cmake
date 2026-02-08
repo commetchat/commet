@@ -4,12 +4,14 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   connectivity_plus
+  dart_ipc
   desktop_drop
   desktop_webview_window
   dynamic_color
   file_selector_windows
   flutter_timezone
   flutter_webrtc
+  hotkey_manager_windows
   livekit_client
   media_kit_libs_windows_video
   media_kit_video

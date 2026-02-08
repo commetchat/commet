@@ -146,4 +146,7 @@ class MatrixVoipStream implements VoipStream {
   VoipStreamDirection get direction => stream.isLocal()
       ? VoipStreamDirection.outgoing
       : VoipStreamDirection.incoming;
+
+  @override
+  bool get isMuted => stream.audioMuted;
 }

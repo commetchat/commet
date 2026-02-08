@@ -39,6 +39,8 @@ class MatrixLivekitVoipSession implements VoipSession {
     listener.on(onTrackStreamEvent);
     listener.on(onTrackMutedEvent);
     listener.on(onTrackUnmutedEvent);
+    listener.on(onParticipantConnected);
+    listener.on(onParticipantDisconnected);
 
     Timer.periodic(Duration(milliseconds: 200), (timer) {
       if (state == VoipState.ended) timer.cancel();
@@ -92,7 +94,7 @@ class MatrixLivekitVoipSession implements VoipSession {
     for (var track in streams) {
       final t = track as MatrixLivekitVoipStream;
       if (t.publication.sid == event.publication.sid) {
-        t.onStreamUpdatedEvent(event);
+        t.onStreamUpdatedEvent();
       }
     }
   }
@@ -105,12 +107,28 @@ class MatrixLivekitVoipSession implements VoipSession {
           event.publication.sid);
     }
 
+    for (var track in streams) {
+      final t = track as MatrixLivekitVoipStream;
+      if (t.publication.sid == event.publication.sid) {
+        t.onStreamUpdatedEvent();
+      }
+    }
+
+    print("Track muted");
+
     _stateChanged.add(());
   }
 
   void onTrackUnmutedEvent(lk.TrackUnmutedEvent event) {
     final participant =
         event.participant.identity.split(":").getRange(0, 2).join(":");
+
+    for (var track in streams) {
+      final t = track as MatrixLivekitVoipStream;
+      if (t.publication.sid == event.publication.sid) {
+        t.onStreamUpdatedEvent();
+      }
+    }
 
     if (streams.any((e) => e.streamId == event.publication.sid)) {
       return;
@@ -126,6 +144,14 @@ class MatrixLivekitVoipSession implements VoipSession {
 
     streams.add(MatrixLivekitVoipStream(event.publication, participant));
     _stateChanged.add(());
+  }
+
+  void onParticipantConnected(lk.ParticipantConnectedEvent event) {
+    clientManager?.callManager.joinCallSound();
+  }
+
+  void onParticipantDisconnected(lk.ParticipantDisconnectedEvent event) {
+    clientManager?.callManager.endCallSound();
   }
 
   void onLocalTrackPublished(lk.LocalTrackPublishedEvent event) {
@@ -165,13 +191,11 @@ class MatrixLivekitVoipSession implements VoipSession {
 
   @override
   Future<void> hangUpCall() async {
-    final stateKey =
-        "_${room.client.self!.identifier}_${room.matrixRoom.client.deviceID!}_m.call";
+    Log.i("Hanging up call");
 
     await Future.wait([
-      livekitRoom.disconnect(),
-      room.matrixRoom.client.setRoomStateWithKey(room.matrixRoom.id,
-          MatrixVoipRoomComponent.callMemberStateEvent, stateKey, {}),
+      clearRoomCallState(),
+      disconnectCall(),
       stopHeartbeat(),
     ]);
 
@@ -292,20 +316,32 @@ class MatrixLivekitVoipSession implements VoipSession {
     return WebrtcScreencaptureSource.showSelectSourcePrompt(context);
   }
 
+  Future<void> clearRoomCallState() async {
+    Log.i("Clearing call state");
+    final stateKey =
+        "_${room.client.self!.identifier}_${room.matrixRoom.client.deviceID!}_m.call";
+
+    await room.matrixRoom.client.setRoomStateWithKey(room.matrixRoom.id,
+        MatrixVoipRoomComponent.callMemberStateEvent, stateKey, {});
+
+    Log.i("Cleared call state");
+  }
+
   Future<void> stopHeartbeat() async {
     heartbeatTimer?.cancel();
+    heartbeatTimer = null;
 
     if (heartbeatDelayId == null) {
       return;
     }
 
-    heartbeatTimer = null;
-    heartbeatDelayId = null;
-
     await room.matrixRoom.client.request(RequestType.POST,
         "/client/unstable/org.matrix.msc4140/delayed_events/${Uri.encodeComponent(heartbeatDelayId!)}",
         contentType: "application/json",
         data: jsonEncode({"action": "cancel"}));
+
+    heartbeatDelayId = null;
+    Log.i("Stopped heartbeat");
   }
 
   Future<void> startHeartbeat() async {
@@ -352,4 +388,10 @@ class MatrixLivekitVoipSession implements VoipSession {
 
   @override
   Stream<void> get onUpdateVolumeVisualizers => _onVolumeChanged.stream;
+
+  Future<void> disconnectCall() async {
+    Log.i("Disconnecting livekit room");
+    await livekitRoom.disconnect();
+    Log.i("Disconnected livekit room");
+  }
 }

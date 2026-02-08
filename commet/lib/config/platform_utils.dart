@@ -34,4 +34,44 @@ class PlatformUtils {
 
     return "unknown";
   }
+
+  static String? get desktopEnvironment {
+    if (!isLinux) return null;
+
+    final env = Platform.environment;
+
+    return env["XDG_SESSION_TYPE"]!;
+  }
+
+  static bool isDesktopEnvironment(DesktopEnvironment desktopEnvironment) {
+    if (!isLinux) return false;
+
+    final env = Platform.environment;
+    var str = env["XDG_CURRENT_DESKTOP"];
+
+    if (str == null) return false;
+
+    var set = str.split(":").toSet();
+    return switch (desktopEnvironment) {
+      DesktopEnvironment.KDEPlasma => set.contains("KDE"),
+      DesktopEnvironment.GNOME => set.contains("GNOME"),
+    };
+  }
+
+  static bool isDisplayServer(DisplayServer server) {
+    return switch (server) {
+      DisplayServer.Wayland => displayServer == "wayland",
+      DisplayServer.X11 => displayServer == "x11",
+    };
+  }
+}
+
+enum DisplayServer {
+  Wayland,
+  X11,
+}
+
+enum DesktopEnvironment {
+  KDEPlasma,
+  GNOME,
 }

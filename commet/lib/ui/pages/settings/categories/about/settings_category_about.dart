@@ -151,21 +151,19 @@ class _AppInfoState extends State<_AppInfo> {
                               .format(BuildConfig.BUILD_DATE)),
                       if (deviceInfo != null)
                         Row(
+                          spacing: 10,
                           children: [
                             if (deviceInfo!.data["name"] is String)
                               tiamat.Text.labelLow(
                                   deviceInfo!.data["name"]!.toString()),
-                            const SizedBox(
-                              width: 10,
-                            ),
                             if (deviceInfo!.data["version"] is String)
                               tiamat.Text.labelLow(
                                   deviceInfo!.data["version"]!.toString()),
-                            const SizedBox(
-                              width: 10,
-                            ),
                             if (PlatformUtils.isLinux)
-                              tiamat.Text.labelLow(PlatformUtils.displayServer)
+                              tiamat.Text.labelLow(PlatformUtils.displayServer),
+                            if (PlatformUtils.desktopEnvironment != null)
+                              tiamat.Text.labelLow(
+                                  PlatformUtils.desktopEnvironment!)
                           ],
                         ),
                       if (preferences.developerMode)
@@ -228,6 +226,7 @@ ${deviceInfo?.data["name"] is String ? "Name: `${deviceInfo!.data["name"]}`" : "
 ${deviceInfo?.data["version"] is String ? "Version: `${deviceInfo!.data["version"]}`" : ""}
 ${deviceInfo?.data["product"] is String ? "Product: `${deviceInfo!.data["product"]}`" : ""}
 ${PlatformUtils.isLinux ? "Display Server: `${PlatformUtils.displayServer}`" : ""}
+${PlatformUtils.desktopEnvironment != null ? "Desktop Environment: `${PlatformUtils.desktopEnvironment}`" : ""}
 </details>
 """;
 
