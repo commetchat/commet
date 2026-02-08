@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/calendar_room/calendar_room_component.dart';
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
@@ -144,6 +145,8 @@ abstract class Room {
 
   /// Update the display name of this room
   Future<void> setDisplayName(String newName);
+
+  Future<void> setRoomAvatar(Uint8List bytes, String? mimeType);
 
   /// Set a notification push rule
   Future<void> setPushRule(PushRule rule);

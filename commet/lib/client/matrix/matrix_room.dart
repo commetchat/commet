@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 import 'dart:ui';
 import 'package:commet/client/components/component_registry.dart';
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
@@ -803,5 +804,20 @@ class MatrixRoom extends Room {
   @override
   Future<void> setTopic(String topic) {
     return matrixRoom.setDescription(topic);
+  }
+
+  @override
+  Future<void> setRoomAvatar(Uint8List bytes, String? mimeType) async {
+    String name = "image";
+
+    if (mimeType == null) mimeType = Mime.lookupType("", data: bytes);
+
+    if (mimeType != null) {
+      var extension = Mime.extensionFromMime(mimeType);
+      name += ".$extension";
+    }
+
+    await matrixRoom.setAvatar(matrix.MatrixFile(bytes: bytes, name: name));
+    _avatar = MemoryImage(bytes);
   }
 }
