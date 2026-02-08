@@ -1,8 +1,3 @@
-import 'dart:io';
-
-import 'package:commet/config/build_config.dart';
-import 'package:commet/config/platform_utils.dart';
-import 'package:commet/debug/log.dart';
 import 'package:commet/utils/link_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/atoms/tile.dart';
@@ -30,23 +25,5 @@ class OutsourceShortcutSettingsPage extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  openSystemSettings() async {
-    if (BuildConfig.IS_FLATPAK) {
-      // not sure if there is any way to reliably detect desktop environment from flatpak
-      // so i guess just try to run it an see what happens
-      try {
-        Process.start("flatpak-spawn", ["--host" "systemsettings" "kcm_keys"]);
-      } catch (e, s) {
-        Log.onError(e, s);
-      }
-
-      return;
-    }
-
-    if (PlatformUtils.isDesktopEnvironment(DesktopEnvironment.KDEPlasma)) {
-      Process.start("systemsettings", ["kcm_keys"]);
-    }
   }
 }
