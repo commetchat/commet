@@ -21,7 +21,9 @@ class MatrixUserPresenceComponent
     client.matrixClient.onPresenceChanged.stream.listen(changed);
 
     client.matrixClient.onSync.stream.listen(onSync);
-    lastSeen = InMemoryCache(maxRetention: Duration(minutes: 2));
+    lastSeen = InMemoryCache(
+        maxRetention: Duration(minutes: 2),
+        pollFrequency: Duration(seconds: 100));
     lastSeen.onRemove.listen(onLastSeenRemoved);
 
     UserPresenceLifecycleWatcher().init();
@@ -36,7 +38,7 @@ class MatrixUserPresenceComponent
         presence.lastActiveTimestamp == null) {
       var seen = lastSeen.get(userId);
       if (seen != null) {
-        if (DateTime.now().difference(seen).inMinutes < 3) {
+        if (DateTime.now().difference(seen).inSeconds < 120) {
           return UserPresence(UserPresenceStatus.online);
         }
       }
@@ -170,7 +172,8 @@ class MatrixUserPresenceComponent
   }
 
   void onLastSeenRemoved(String event) async {
-    final presence = await client.matrixClient.fetchCurrentPresence(event);
+    final presence = await client.matrixClient
+        .fetchCurrentPresence(event, fetchOnlyFromCached: true);
     if (presence.presence == PresenceType.offline) {
       _controller.add((event, UserPresence(UserPresenceStatus.offline)));
     }
