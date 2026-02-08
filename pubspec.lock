@@ -17,6 +17,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.7.1"
+  adaptive_number:
+    dependency: transitive
+    description:
+      name: adaptive_number
+      sha256: "3a567544e9b5c9c803006f51140ad544aedc79604fd4f3f2c1380003f97c1d77"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   analyzer:
     dependency: "direct overridden"
     description:
@@ -230,10 +238,10 @@ packages:
     dependency: transitive
     description:
       name: connectivity_plus
-      sha256: b5e72753cf63becce2c61fd04dfe0f1c430cc5278b53a1342dc5ad839eab29ec
+      sha256: "33bae12a398f841c6cda09d1064212957265869104c478e5ad51e2fb26c3973c"
       url: "https://pub.dev"
     source: hosted
-    version: "6.1.5"
+    version: "7.0.0"
   connectivity_plus_platform_interface:
     dependency: transitive
     description:
@@ -314,6 +322,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.8"
+  dart_jsonwebtoken:
+    dependency: transitive
+    description:
+      name: dart_jsonwebtoken
+      sha256: "0de65691c1d736e9459f22f654ddd6fd8368a271d4e41aa07e53e6301eff5075"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.3.1"
   dart_style:
     dependency: transitive
     description:
@@ -375,10 +391,10 @@ packages:
     dependency: transitive
     description:
       name: device_info_plus
-      sha256: "98f28b42168cc509abc92f88518882fd58061ea372d7999aecc424345c7bff6a"
+      sha256: "4df8babf73058181227e18b08e6ea3520cf5fc5d796888d33b7cb0f33f984b7c"
       url: "https://pub.dev"
     source: hosted
-    version: "11.5.0"
+    version: "12.3.0"
   device_info_plus_platform_interface:
     dependency: transitive
     description:
@@ -420,6 +436,14 @@ packages:
       url: "https://github.com/Airyzz/material-flutter-packages.git"
     source: git
     version: "1.7.0"
+  ed25519_edwards:
+    dependency: transitive
+    description:
+      name: ed25519_edwards
+      sha256: "6ce0112d131327ec6d42beede1e5dfd526069b18ad45dcf654f15074ad9276cd"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.1"
   enhanced_enum:
     dependency: transitive
     description:
@@ -741,10 +765,10 @@ packages:
     dependency: transitive
     description:
       name: flutter_webrtc
-      sha256: "16ca9e30d428bae3dd32933e875c9f67c5843d1fa726c37cf1fc479eb9294549"
+      sha256: "71a38363a5b50603e405c275f30de2eb90f980b0cc94b0e1e9d8b9d6a6b03bf0"
       url: "https://pub.dev"
     source: hosted
-    version: "1.2.0"
+    version: "1.2.1"
   frontend_server_client:
     dependency: transitive
     description:
@@ -1078,11 +1102,12 @@ packages:
   livekit_client:
     dependency: transitive
     description:
-      name: livekit_client
-      sha256: ddb4467d306be472898b2459c87768121aba030173b3664ef367f7f7f4c96897
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.5.3"
+      path: "."
+      ref: hkdf
+      resolved-ref: f05718ecb7f44adb568954e8f18a24bd6beed246
+      url: "https://github.com/commetchat/livekit-client-sdk-flutter.git"
+    source: git
+    version: "2.6.1"
   logger:
     dependency: transitive
     description:
@@ -1430,6 +1455,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.8"
+  pointycastle:
+    dependency: transitive
+    description:
+      name: pointycastle
+      sha256: "92aa3841d083cc4b0f4709b5c74fd6409a3e6ba833ffc7dc6a8fee096366acf5"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.0"
   pool:
     dependency: transitive
     description:
@@ -1450,10 +1483,10 @@ packages:
     dependency: transitive
     description:
       name: protobuf
-      sha256: de9c9eb2c33f8e933a42932fe1dc504800ca45ebc3d673e6ed7f39754ee4053e
+      sha256: "75ec242d22e950bdcc79ee38dd520ce4ee0bc491d7fadc4ea47694604d22bf06"
       url: "https://pub.dev"
     source: hosted
-    version: "4.2.0"
+    version: "6.0.0"
   provider:
     dependency: transitive
     description:
@@ -1703,15 +1736,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.0"
-  signal_sticker_api:
-    dependency: transitive
-    description:
-      path: "."
-      ref: f3295318c27d420f195e00164f104ead9aaa6209
-      resolved-ref: f3295318c27d420f195e00164f104ead9aaa6209
-      url: "https://github.com/commetchat/signal-sticker-api.git"
-    source: git
-    version: "1.0.0"
   sky_engine:
     dependency: transitive
     description: flutter

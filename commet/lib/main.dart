@@ -36,6 +36,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
+import 'package:logging/logging.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:provider/provider.dart';
 import 'package:receive_intent/receive_intent.dart';
@@ -125,6 +126,12 @@ void main(List<String> args) async {
   if (runWebViewTitleBarWidget(args)) {
     return;
   }
+
+  final format = DateFormat('HH:mm:ss');
+  Logger.root.level = Level.FINEST;
+  Logger.root.onRecord.listen((record) {
+    print('${format.format(record.time)} ${record.level} : ${record.message}');
+  });
 
   if (BuildConfig.RELEASE) {
     runZonedGuarded(appMain, Log.onError, zoneSpecification: Log.spec);
