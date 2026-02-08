@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 import 'dart:ui';
@@ -18,6 +19,7 @@ class MatrixCalendarEventState {
   RFC8984CalendarEvent data;
   bool loaded = false;
   String? senderId;
+  String? eventId;
   String? remoteSourceId;
   String? type;
 
@@ -132,9 +134,13 @@ class MatrixCalendar {
 
   late EventController<MatrixCalendarEventState> controller;
 
+  StreamController onNeedsMigration = StreamController.broadcast();
+
   Map<String, Map<String, dynamic>> roomState = {};
 
   MatrixCalendarConfig config;
+
+  bool needsStateMigration = false;
 
   MatrixCalendar(this.widgetApi, {this.config = const MatrixCalendarConfig()}) {
     this.controller = EventController();
@@ -145,6 +151,9 @@ class MatrixCalendar {
         ToWidgetAction.updateState,
         preventDefaultHandler: true,
         onStateUpdated);
+
+    widgetApi.onAction(
+        ToWidgetAction.sendEvent, preventDefaultHandler: true, onEventReceived);
   }
 
   Map<String, dynamic>? onStateUpdated(Map<String, dynamic> update) {
@@ -158,15 +167,28 @@ class MatrixCalendar {
       var type = event['type'];
 
       print("CalendarWidget: received ${type} state event");
+
       var stateKey = event['state_key'] ?? "";
+
+      if (type == "chat.commet.calendar_event" &&
+          stateKey == widgetApi.userId) {
+        if ((event["content"] as Map<String, dynamic>).isNotEmpty) {
+          needsStateMigration = true;
+          onNeedsMigration.add(null);
+        }
+      }
+
       if (!roomState.containsKey(type)) {
         roomState[type] = {};
       }
 
       roomState[type]![stateKey] = event;
+
+      if (type == "chat.commet.calendars") {
+        readExistingEvents();
+      }
     }
 
-    updateFromRoomState();
     return null;
   }
 
@@ -182,59 +204,56 @@ class MatrixCalendar {
     return true;
   }
 
-  void onWidgetReady(void event) {
-    widgetApi.requestCapabilities([
-      MatrixCapability.getRoomState(
-        "chat.commet.calendar_event",
-        //stateKey: userId,
-      ),
+  bool canDeleteEvent(MatrixCalendarEventState event) {
+    if (event.senderId != widgetApi.userId) {
+      return false;
+    }
+
+    return true;
+  }
+
+  void onWidgetReady(void event) async {
+    await widgetApi.requestCapabilities([
+      MatrixCapability.getRoomState("chat.commet.calendar_event"),
       MatrixCapability.setRoomState(
         "chat.commet.calendar_event",
         stateKey: widgetApi.userId,
       ),
+      MatrixCapability.getRoomState("chat.commet.calendars"),
+      MatrixCapability.setRoomState("chat.commet.calendars"),
+      MatrixCapability.sendEvent("chat.commet.calendar_events"),
+      MatrixCapability.receiveEvent("chat.commet.calendar_events"),
+      MatrixCapability.sendEvent("m.room.redaction"),
+      MatrixCapability.receiveEvent("m.room.redaction"),
+      MatrixCapability.sendEvent("chat.commet.calendar_create"),
     ]);
+
+    await readExistingEvents();
   }
 
-  void updateFromRoomState() {
-    var states = roomState["chat.commet.calendar_event"];
-    var events = controller.allEvents.toList();
-    controller.removeAll(events);
+  Future<void> readExistingEvents({String? nextChunk}) async {
+    var calendarId = await getCalendarId();
+    if (calendarId == null) return;
 
-    for (var entry in states!.entries) {
-      try {
-        var events = Map<String, dynamic>.from(
-          entry.value["content"]["events"],
-        );
-        var sender = entry.value["sender"];
-        for (var key in events.keys) {
-          var event = events[key];
-          var data = Map<String, dynamic>.from(event);
-          try {
-            var rfc8984Event = Map<String, dynamic>.from(data["event"]);
-            var remoteSource = data["remote_source_id"];
-            var eventType = data["type"];
-            var mxCalendarEvent = RFC8984CalendarEvent.fromJson(rfc8984Event);
+    var response = await widgetApi.sendAction(FromWidgetAction.readRelations, {
+      "event_id": calendarId,
+      "event_type": "chat.commet.calendar_events",
+      "limit": 100,
+      if (nextChunk != null) "from": nextChunk,
+      "rel_type": "m.reference",
+    });
 
-            var color = config.getColorFromUser(sender);
-            var calendarEvents =
-                fromRfcEvent(mxCalendarEvent, eventType: eventType);
-            for (var calendarEvent in calendarEvents) {
-              calendarEvent = calendarEvent.copyWith(color: color);
-              calendarEvent.event!.senderId = sender;
-              calendarEvent.event!.loaded = true;
-              calendarEvent.event!.remoteSourceId = remoteSource;
-              calendarEvent.event!.type = eventType;
+    print("Got existing events:");
+    print(response);
 
-              controller.add(calendarEvent);
-            }
-          } catch (error, stack) {
-            print("Failed to parse event item: ${data}, $error");
-            print(stack);
-          }
-        }
-      } catch (_) {
-        print("Failed to state event: ${entry}");
-      }
+    var events = response["chunk"] as List<dynamic>;
+
+    for (var event in events) {
+      handleCalendarEventReceived(event);
+    }
+
+    if (response["next_batch"] is String) {
+      await readExistingEvents(nextChunk: response["next_batch"]);
     }
   }
 
@@ -294,7 +313,7 @@ class MatrixCalendar {
 
         events.add(
           CalendarEventData(
-            title: event.title,
+            title: event.title + " ${event.uid} ",
             date: startTime,
             startTime: startTime,
             endTime: newClippedEndTime.subtract(
@@ -330,56 +349,73 @@ class MatrixCalendar {
     return label;
   }
 
-  Future<void> syncEvents(Map<String, List<RFC8984CalendarEvent>> events,
-      {String? eventType,
-      bool push = false,
-      bool markAsDelivered = false}) async {
+  Future<void> syncEvents(
+    Map<String, List<RFC8984CalendarEvent>> events, {
+    String? eventType,
+  }) async {
+    var calenarId = await getCalendarId(createIfNotFound: true);
+
     for (var entry in events.entries) {
       var eventsToSync = entry.value;
       var remoteSourceId = entry.key;
 
-      var existing = controller.allEvents.toList();
-      for (var existingEvent in existing) {
-        if (existingEvent.event?.remoteSourceId == remoteSourceId) {
-          controller.remove(existingEvent);
+      await removeAllEventsFromRemoteCalendar(remoteSourceId);
+
+      var migratedContent = {
+        "type": "chat.commet.calendar_events",
+        "content": {
+          "m.relates_to": {"event_id": calenarId, "rel_type": "m.reference"},
+          "format": "chat.commet.calendar.event.rfc8984",
+          "remote_source_id": remoteSourceId,
+          "events": entry.value
+              .map((i) => {
+                    if (eventType != null) "type": eventType,
+                    "event": i.toJson(),
+                  })
+              .toList(),
         }
-      }
+      };
 
-      for (var event in eventsToSync) {
-        var calendarEvents = fromRfcEvent(event, eventType: eventType);
-        for (var calendarEvent in calendarEvents) {
-          calendarEvent.event!.senderId = widgetApi.userId;
-          calendarEvent.event!.remoteSourceId = remoteSourceId;
-
-          controller.add(calendarEvent);
-        }
-      }
-    }
-
-    if (push) {
-      await _syncControllerEventsToRoomState();
-      updateFromRoomState();
-    }
-
-    if (markAsDelivered) {
-      for (var event in controller.allEvents) {
-        event.event!.loaded = true;
-      }
+      var result = await widgetApi.sendAction(
+          FromWidgetAction.sendEvent, migratedContent);
     }
   }
 
   Future<void> removeAllEventsFromRemoteCalendar(String id) async {
-    controller.removeWhere((i) => i.event?.remoteSourceId == id);
-    await _syncControllerEventsToRoomState();
+    var existing =
+        controller.allEvents.where((i) => i.event?.remoteSourceId == id);
+
+    Set<String> removeEvents = Set();
+    for (var e in existing) {
+      if (e.event?.eventId != null) removeEvents.add(e.event!.eventId!);
+    }
+
+    print("Events to remove: $removeEvents");
+
+    for (var i in removeEvents) {
+      await redactEvent(i);
+    }
   }
 
   Future<void> deleteEvent(RFC8984CalendarEvent event) async {
+    print("Deleting event");
     for (var e in controller.allEvents.toList()) {
       if (e.event?.data.uid == event.uid) {
-        controller.remove(e);
+        var eventId = e.event?.eventId;
+        print("Event id: $eventId");
+        if (eventId != null) {
+          await redactEvent(eventId);
+        }
       }
     }
-    await _syncControllerEventsToRoomState();
+  }
+
+  Future<void> redactEvent(String eventId) async {
+    await widgetApi.sendAction(FromWidgetAction.sendEvent, {
+      "type": "m.room.redaction",
+      "chat.commet.calendar.redaction": "edit",
+      "content": {"redacts": eventId}
+    });
   }
 
   Future<bool> createEvent(RFC8984CalendarEvent event,
@@ -388,64 +424,106 @@ class MatrixCalendar {
       event.uid = _generateId();
     }
 
+    var existing = controller.allEvents
+        .where((i) =>
+            i.event?.data.uid == event.uid &&
+            i.event?.senderId == widgetApi.userId)
+        .firstOrNull;
+
+    var existingEventId = existing?.event?.eventId;
+
+    print("Existing event for this event:  ${existing}");
+
     controller.removeWhere((e) => e.event?.data.uid == event.uid);
 
+    print("Removed existing events");
     var calendarEvents = fromRfcEvent(event, eventType: eventType);
     for (var calendarEvent in calendarEvents) {
+      print("A");
       var color = config.getColorFromUser(widgetApi.userId);
 
+      print("B");
       calendarEvent = calendarEvent.copyWith(color: color);
       calendarEvent.event!.senderId = widgetApi.userId;
 
-      controller.add(calendarEvent);
+      print("C");
+
+      print("D");
     }
 
-    return _syncControllerEventsToRoomState();
-  }
+    print("Added event");
 
-  Future<bool> _syncControllerEventsToRoomState() async {
-    var events = controller.allEvents
-        .where((e) => e.event?.senderId == widgetApi.userId)
-        .map((e) => e.event)
-        .nonNulls
-        .toList();
-
-    events.sort((a, b) => a.data.uid.compareTo(b.data.uid));
-
-    List<MatrixCalendarEventState> uniqueEvents = List.empty(growable: true);
-
-    for (var event in events) {
-      if (uniqueEvents.any((i) => i.data.uid == event.data.uid)) {
-        continue;
-      }
-
-      uniqueEvents.add(event);
-    }
-
-    var json = {};
-
-    for (var e in uniqueEvents) {
-      var event = {
-        "format": "chat.commet.calendar.event.rfc8984",
-        if (e.remoteSourceId != null) "remote_source_id": e.remoteSourceId,
-        if (e.type != null) "type": e.type!,
-        "event": e.data.toJson(),
-      };
-
-      json[e.data.uid] = event;
-    }
+    var calendarId = await getCalendarId(createIfNotFound: true);
+    print("Calendar id: $calendarId");
+    if (calendarId == null) return false;
 
     var result = await widgetApi.sendAction(FromWidgetAction.sendEvent, {
-      "type": "chat.commet.calendar_event",
-      "state_key": widgetApi.userId,
-      "content": {"events": json},
+      "type": "chat.commet.calendar_events",
+      "content": {
+        "m.relates_to": {"event_id": calendarId, "rel_type": "m.reference"},
+        "format": "chat.commet.calendar.event.rfc8984",
+        "events": [
+          {
+            if (eventType != null) "type": eventType,
+            "event": event.toJson(),
+          }
+        ],
+      }
     });
 
-    if (result.containsKey("event_id")) {
-      return true;
-    } else {
-      return false;
+    print("Sent event!");
+    print(result);
+
+    if (existingEventId != null) {
+      await widgetApi.sendAction(FromWidgetAction.sendEvent, {
+        "type": "m.room.redaction",
+        "content": {"redacts": existingEventId}
+      });
     }
+
+    return true;
+  }
+
+  Future<String?> getCalendarId({bool createIfNotFound = false}) async {
+    var calendar = roomState["chat.commet.calendars"];
+    print("Getting calendar id, create: $createIfNotFound");
+
+    String? calendarId;
+
+    print("State: $calendar");
+
+    try {
+      var calendars = calendar![""]["content"]["calendars"] as List<dynamic>;
+      calendarId = calendars.first as String;
+    } catch (e) {
+      print("Failed to get calendar id: ${e}");
+    }
+
+    if (calendarId == null && createIfNotFound) {
+      var result = await widgetApi.sendAction(FromWidgetAction.sendEvent,
+          {"type": "chat.commet.calendar_create", "content": {}});
+
+      print("Sent action");
+      print("Result: $result");
+
+      if (result.containsKey("event_id")) {
+        calendarId = result["event_id"] as String;
+
+        await widgetApi.sendAction(FromWidgetAction.sendEvent, {
+          "type": "chat.commet.calendars",
+          "state_key": "",
+          "content": {
+            "calendars": [
+              result["event_id"],
+            ]
+          }
+        });
+
+        print("Added calendar to room state");
+      }
+    }
+
+    return calendarId;
   }
 
   RecurrenceSettings? toRecurrenceSettings(RFC8984CalendarEvent event) {
@@ -493,5 +571,152 @@ class MatrixCalendar {
       frequency: frequency,
       weekdays: weekdays,
     );
+  }
+
+  Map<String, dynamic>? onEventReceived(Map<String, dynamic> apiData) {
+    print("Received event!");
+    print(apiData);
+
+    var eventType = apiData["data"]["type"];
+
+    if (eventType == "chat.commet.calendar_events") {
+      handleCalendarEventReceived(apiData["data"]);
+    }
+
+    if (eventType == "m.room.redaction") {
+      handleCalendarEventDeleted(apiData["data"]);
+    }
+
+    return null;
+  }
+
+  void handleCalendarEventReceived(Map<String, dynamic> eventData) {
+    var sender = eventData["sender"];
+    var content = eventData["content"] as Map<String, dynamic>;
+
+    if (!content.containsKey("events")) {
+      return;
+    }
+    var events = content["events"] as List<dynamic>;
+    var remoteSource = content["remote_source_id"];
+
+    var eventId = eventData["event_id"];
+    print("Received event data: $eventId");
+    for (var event in events) {
+      var mxCalendarEvent = RFC8984CalendarEvent.fromJson(event["event"]);
+      var eventType = event["type"];
+
+      var color = config.getColorFromUser(sender);
+      var calendarEvents = fromRfcEvent(mxCalendarEvent, eventType: eventType);
+      controller.removeWhere((i) =>
+          i.event!.data.uid == mxCalendarEvent.uid && i.event!.eventId == null);
+
+      for (var calendarEvent in calendarEvents) {
+        calendarEvent = calendarEvent.copyWith(color: color);
+        calendarEvent.event!.senderId = sender;
+        calendarEvent.event!.loaded = true;
+        calendarEvent.event!.remoteSourceId = remoteSource;
+        calendarEvent.event!.type = eventType;
+        calendarEvent.event!.eventId = eventId;
+
+        print("Adding event");
+        controller.add(calendarEvent);
+      }
+    }
+  }
+
+  void handleCalendarEventDeleted(eventData) {
+    var content = eventData["content"];
+    var eventId = content["redacts"];
+
+    print("Deleting event: $eventId");
+
+    var events = List.empty(growable: true);
+
+    for (int i = 0; i < controller.allEvents.length; i++) {
+      var e = controller.allEvents[i];
+
+      print("Should delet: ${e.event?.eventId} == ${eventId}");
+      if (e.event?.eventId == eventId) {
+        events.add(e);
+        print("Yes");
+      } else {
+        print("no");
+      }
+    }
+
+    for (var e in events) {
+      controller.remove(e);
+    }
+  }
+
+  Future<void> migrateRoomStateEvents(
+      Function(int progress, int total) onProgress) async {
+    var stateEvent = roomState["chat.commet.calendar_event"]![widgetApi.userId];
+
+    var events = Map<String, dynamic>.from(
+        stateEvent["content"]['events'] as Map<String, dynamic>);
+
+    var calendarId = await getCalendarId(createIfNotFound: true);
+    print("Calendar id: $calendarId");
+    if (calendarId == null) return;
+
+    int total = events.length;
+
+    while (events.isNotEmpty) {
+      var key = events.keys.first;
+      var e = events[key];
+
+      var remoteSource = e["remote_source_id"];
+
+      var keys = [
+        key,
+        if (remoteSource != null)
+          ...events.keys
+              .where((e) => events[e]["remote_source_id"] == remoteSource)
+      ];
+
+      var eventsGroup =
+          keys.map((i) => Map<String, dynamic>.from(events[i])).toList();
+
+      for (var event in keys) {
+        print("Removing key: $event");
+        events.remove(event);
+      }
+
+      for (var e in eventsGroup) {
+        e.remove("remote_source_id");
+      }
+
+      int eventsLeft = events.length;
+
+      onProgress(eventsLeft, total);
+
+      var migratedContent = {
+        "type": "chat.commet.calendar_events",
+        "content": {
+          "m.relates_to": {"event_id": calendarId, "rel_type": "m.reference"},
+          "format": "chat.commet.calendar.event.rfc8984",
+          if (remoteSource != null) "remote_source_id": remoteSource,
+          "events": eventsGroup,
+        }
+      };
+
+      var result = await widgetApi.sendAction(
+          FromWidgetAction.sendEvent, migratedContent);
+
+      await Future.delayed(Duration(seconds: 2));
+
+      print("Source: $remoteSource, events: $eventsGroup");
+    }
+
+    await widgetApi.sendAction(FromWidgetAction.sendEvent, {
+      "type": "chat.commet.calendar_event",
+      "state_key": widgetApi.userId,
+      "content": {}
+    });
+
+    needsStateMigration = false;
+    print("Finished migrating");
   }
 }

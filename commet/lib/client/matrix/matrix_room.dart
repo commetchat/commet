@@ -26,6 +26,7 @@ import 'package:commet/client/matrix/timeline_events/matrix_timeline_event.dart'
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_call.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_create_room.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_edit.dart';
+import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_edit_calendar.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_emote.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_encrypted.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_membership.dart';
@@ -498,6 +499,8 @@ class MatrixRoom extends Room {
           MatrixTimelineEventCall(event, client: c),
         matrix.EventTypes.RoomPinnedEvents =>
           MatrixTimelineEventPinnedMessages(event, client: c),
+        "chat.commet.calendar_events" =>
+          MatrixTimelineEventEditCalendar(event, client: c),
         _ => null
       };
 

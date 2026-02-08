@@ -470,32 +470,6 @@ class MatrixClient extends Client {
           stateKey: widgetId,
         ),
         matrix.StateEvent(
-          type: "m.room.power_levels",
-          content: {
-            "users": {_matrixClient.userID!: 100},
-            "users_default": 0,
-            "events": {
-              "m.room.avatar": 50,
-              "m.room.canonical_alias": 50,
-              "m.room.encryption": 100,
-              "m.room.history_visibility": 100,
-              "m.room.name": 50,
-              "m.room.power_levels": 100,
-              "m.room.server_acl": 100,
-              "m.room.tombstone": 100,
-              "m.reaction": 50,
-              "chat.commet.calendar_event": 25,
-            },
-            "events_default": 50,
-            "state_default": 50,
-            "ban": 50,
-            "kick": 50,
-            "redact": 50,
-            "invite": 0,
-            "historical": 100,
-          },
-        ),
-        matrix.StateEvent(
           content: {
             "widgets": {
               widgetId: {

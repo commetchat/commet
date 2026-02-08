@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:calendar_view/calendar_view.dart';
 import 'package:commet_calendar_widget/calendar.dart';
+import 'package:commet_calendar_widget/calendar_convert_dialog.dart';
 import 'package:commet_calendar_widget/calendar_view_day.dart';
 import 'package:commet_calendar_widget/calendar_view_month.dart';
 import 'package:commet_calendar_widget/calendar_view_week.dart';
@@ -101,10 +104,30 @@ class CalendarWidgetView extends StatefulWidget {
 class _CalendarWidgetViewState extends State<CalendarWidgetView> {
   var mode = CalendarViewMode.week;
   DateTime? currentDate;
+  StreamSubscription? sub;
+
   @override
   void initState() {
     widget.calendar.widgetApi.start();
+
+    sub = widget.calendar.onNeedsMigration.stream
+        .listen((_) => showMigrationDialog());
+
+    Future.delayed(Duration(milliseconds: 100)).then((_) {
+      if (widget.calendar.needsStateMigration) {
+        showMigrationDialog();
+      }
+    });
+
     super.initState();
+  }
+
+  void showMigrationDialog() {
+    widget.calendar.config.dialog(
+        context: context,
+        builder: (c) {
+          return CalendarConvertDialog(widget.calendar);
+        });
   }
 
   @override
@@ -112,11 +135,13 @@ class _CalendarWidgetViewState extends State<CalendarWidgetView> {
     if (widget.autoDisposeCalendar) {
       widget.calendar.widgetApi.stop();
     }
+
+    sub?.cancel();
     super.dispose();
   }
 
   Future<void> editEvent(MatrixCalendarEventState event) async {
-    var result = await widget.calendar.config.dialog<bool?>(
+    await widget.calendar.config.dialog<bool?>(
       context: context,
       builder: (context) => CalendarEventEditor(
         config: widget.calendar.config,
@@ -127,16 +152,13 @@ class _CalendarWidgetViewState extends State<CalendarWidgetView> {
             return false;
           }
         },
+        canDelete: widget.calendar.canDeleteEvent(event),
         deleteEvent: (event) => widget.calendar.deleteEvent(event),
         eventType: event.type,
         initialEvent: event.data,
         editingExistingEvent: true,
       ),
     );
-
-    if (result != true) {
-      widget.calendar.updateFromRoomState();
-    }
   }
 
   Future<void> viewEvent(MatrixCalendarEventState event) async {
@@ -145,15 +167,12 @@ class _CalendarWidgetViewState extends State<CalendarWidgetView> {
       builder: (context) => CalendarEventEditor(
         config: widget.calendar.config,
         editable: false,
-        submitEvent: (event, {String? eventType}) async {
-          try {
-            return widget.calendar.createEvent(event, eventType: eventType);
-          } catch (e, _) {
-            return false;
-          }
+        submitEvent: (event, {eventType}) async {
+          return false;
         },
-        deleteEvent: (event) => widget.calendar.deleteEvent(event),
         eventType: event.type,
+        canDelete: widget.calendar.canDeleteEvent(event),
+        deleteEvent: (event) => widget.calendar.deleteEvent(event),
         initialEvent: event.data,
         editingExistingEvent: true,
       ),
@@ -161,7 +180,7 @@ class _CalendarWidgetViewState extends State<CalendarWidgetView> {
   }
 
   Future<void> createEvent(DateTime time) async {
-    var result = await widget.calendar.config.dialog<bool?>(
+    await widget.calendar.config.dialog<bool?>(
       context: context,
       builder: (context) => CalendarEventEditor(
         config: widget.calendar.config,
@@ -182,10 +201,6 @@ class _CalendarWidgetViewState extends State<CalendarWidgetView> {
         editingExistingEvent: false,
       ),
     );
-
-    if (result != true) {
-      widget.calendar.updateFromRoomState();
-    }
   }
 
   void setViewMode(CalendarViewMode viewMode) {
