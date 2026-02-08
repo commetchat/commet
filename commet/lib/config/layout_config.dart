@@ -1,4 +1,5 @@
 import 'package:commet/config/build_config.dart';
+import 'package:commet/main.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 
 class Layout {
@@ -6,6 +7,15 @@ class Layout {
   static bool? _isWebDesktopCache;
 
   static bool get desktop {
+    if (preferences.layoutOverride == "desktop") {
+      return true;
+    }
+
+    if (preferences.layoutOverride != null &&
+        preferences.layoutOverride != "desktop") {
+      return false;
+    }
+
     if (BuildConfig.DESKTOP) {
       return true;
     }
@@ -19,6 +29,15 @@ class Layout {
   }
 
   static bool get mobile {
+    if (preferences.layoutOverride == "mobile") {
+      return true;
+    }
+
+    if (preferences.layoutOverride != null &&
+        preferences.layoutOverride != "mobile") {
+      return false;
+    }
+
     if (BuildConfig.MOBILE) {
       return true;
     }

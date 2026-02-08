@@ -110,7 +110,29 @@ class _AdvancedSettingsPageState extends State<AdvancedSettingsPage> {
               ],
             )
           ]),
-        )
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        Panel(
+            mode: tiamat.TileType.surfaceContainerLow,
+            header: "Override Layout",
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                tiamat.Text.labelLow(
+                    "You may need to restart the app for this to take effect"),
+                tiamat.DropdownSelector(
+                    items: [null, "desktop", "mobile"],
+                    itemBuilder: (item) =>
+                        tiamat.Text.label(item ?? "No Override"),
+                    onItemSelected: (item) async {
+                      await preferences.setLayoutOverride(item);
+                      setState(() {});
+                    },
+                    value: preferences.layoutOverride)
+              ],
+            ))
       ],
     );
   }
