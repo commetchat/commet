@@ -74,6 +74,7 @@ class Preferences {
   static const String _voipDefaultVideoInput = "voip_default_video_input";
 
   static const String _hideRoomSidePanel = "hide_room_side_panel";
+  static const String _layoutOverride = "layout_override";
 
   static const String _checkForUpdates = "check_for_updates";
   static const String _runningDonationCheckFlow = "running_donation_check_flow";
@@ -201,6 +202,17 @@ class Preferences {
 
   void setAppScale(double scale) {
     _preferences!.setDouble(appScaleKey, scale);
+    _onSettingChanged.add(null);
+  }
+
+  String? get layoutOverride => _preferences!.getString(_layoutOverride);
+
+  Future<void> setLayoutOverride(String? value) async {
+    if (value == null) {
+      await _preferences!.remove(_layoutOverride);
+    } else {
+      await _preferences!.setString(_layoutOverride, value);
+    }
     _onSettingChanged.add(null);
   }
 

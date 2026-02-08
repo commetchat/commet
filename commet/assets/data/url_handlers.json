@@ -1,0 +1,30 @@
+{
+    "store.steampowered.com": {
+        "appDisplayName": {
+            "en": "Steam"
+        },
+        "actions": {
+            "openUri": {
+                "platforms": [
+                    "windows",
+                    "linux"
+                ],
+                "uri": "steam://openurl/${uri}"
+            }
+        }
+    },
+    "steamcommunity.com": {
+        "appDisplayName": {
+            "en": "Steam"
+        },
+        "actions": {
+            "openUri": {
+                "platforms": [
+                    "windows",
+                    "linux"
+                ],
+                "uri": "steam://openurl/${uri}"
+            }
+        }
+    }
+}

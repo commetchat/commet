@@ -171,19 +171,21 @@ class _RoomTextButtonState extends State<RoomTextButton> {
       ),
     );
 
-    if (voipRoom != null) {
-      result = AdaptiveContextMenu(
-        items: [
-          if (preferences.developerMode)
-            ContextMenuItem(
-              text: "Clear Membership Status",
-              icon: Icons.call_end,
-              onPressed: () => voipRoom?.clearAllCallMembershipStatus(),
-            ),
-        ],
-        child: result,
-      );
-    }
+    var items = [
+      ContextMenuItem(
+          text: "Mark as Read", onPressed: () => widget.room.markAsRead()),
+      if (voipRoom != null && preferences.developerMode)
+        ContextMenuItem(
+          text: "Clear Membership Status",
+          icon: Icons.call_end,
+          onPressed: () => voipRoom?.clearAllCallMembershipStatus(),
+        ),
+    ];
+
+    result = AdaptiveContextMenu(
+      items: items,
+      child: result,
+    );
 
     return result;
   }

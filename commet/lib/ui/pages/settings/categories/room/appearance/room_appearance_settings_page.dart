@@ -32,7 +32,9 @@ class _RoomAppearanceSettingsPageState
     );
   }
 
-  void setRoomAvatar(Uint8List bytes, String? mimeType) {}
+  void setRoomAvatar(Uint8List bytes, String? mimeType) {
+    widget.room.setRoomAvatar(bytes, mimeType);
+  }
 
   void setRoomName(String name) {
     widget.room.setDisplayName(name);

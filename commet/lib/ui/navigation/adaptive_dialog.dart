@@ -188,6 +188,13 @@ class AdaptiveDialog {
                 padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
                 child: Markdown(
                   shrinkWrap: true,
+                  styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context))
+                      .copyWith(
+                          codeblockPadding: EdgeInsets.all(8),
+                          code: TextTheme.of(context).bodySmall!.copyWith(
+                              fontFamily: "Code",
+                              backgroundColor: ColorScheme.of(context)
+                                  .surfaceContainerLowest)),
                   data: prompt,
                 ),
               ),

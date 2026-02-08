@@ -337,4 +337,16 @@ class MatrixBackgroundRoom implements Room {
     // TODO: implement setTopic
     throw UnimplementedError();
   }
+
+  @override
+  Future<void> setRoomAvatar(Uint8List bytes, String? mimeType) {
+    // TODO: implement setRoomAvatar
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> markAsRead() {
+    // TODO: implement markAsRead
+    throw UnimplementedError();
+  }
 }

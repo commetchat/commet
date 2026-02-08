@@ -1,6 +1,7 @@
 import 'package:commet/ui/atoms/drag_drop_file_target.dart';
 
 import 'package:commet/ui/atoms/room_header.dart';
+import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/atoms/space_header.dart';
 import 'package:commet/ui/molecules/direct_message_list.dart';
 import 'package:commet/ui/molecules/space_viewer.dart';
@@ -48,29 +49,32 @@ class MainPageViewDesktop extends StatelessWidget {
                 mode: TileType.surfaceDim,
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
-                  child: SideNavigationBar(
-                    currentUser: state.currentUser,
-                    extraEntryBuilders: [
-                      (width) {
-                        return SidebarCallsList(
-                          state.clientManager.callManager,
-                          width,
-                        );
+                  child: ScaledSafeArea(
+                    bottom: false,
+                    child: SideNavigationBar(
+                      currentUser: state.currentUser,
+                      extraEntryBuilders: [
+                        (width) {
+                          return SidebarCallsList(
+                            state.clientManager.callManager,
+                            width,
+                          );
+                        },
+                      ],
+                      onSpaceSelected: (space) {
+                        state.selectSpace(space);
                       },
-                    ],
-                    onSpaceSelected: (space) {
-                      state.selectSpace(space);
-                    },
-                    onHomeSelected: () {
-                      state.selectHome();
-                    },
-                    clearSpaceSelection: () {
-                      state.clearSpaceSelection();
-                    },
-                    onDirectMessageSelected: (room) {
-                      state.selectHome();
-                      state.selectRoom(room);
-                    },
+                      onHomeSelected: () {
+                        state.selectHome();
+                      },
+                      clearSpaceSelection: () {
+                        state.clearSpaceSelection();
+                      },
+                      onDirectMessageSelected: (room) {
+                        state.selectHome();
+                        state.selectRoom(room);
+                      },
+                    ),
                   ),
                 ),
               ),
@@ -92,6 +96,7 @@ class MainPageViewDesktop extends StatelessWidget {
                     caulkBorderLeft: true,
                     caulkClipBottomLeft: true,
                     child: ListView(
+                      padding: EdgeInsets.zero,
                       children: [
                         SpaceSummary(
                           key: ValueKey(
@@ -170,24 +175,26 @@ class MainPageViewDesktop extends StatelessWidget {
           caulkBorderRight: true,
           child: Padding(
             padding: const EdgeInsets.fromLTRB(4, 0, 8, 0),
-            child: SizedBox(
-              width: 250,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: tiamat.Text.labelLow(
-                      directMessagesListHeaderDesktop,
+            child: ScaledSafeArea(
+              child: SizedBox(
+                width: 250,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: tiamat.Text.labelLow(
+                        directMessagesListHeaderDesktop,
+                      ),
                     ),
-                  ),
-                  Flexible(
-                    child: DirectMessageList(
-                      directMessages: state.clientManager.directMessages,
-                      onSelected: (room) => state.selectRoom(room),
+                    Flexible(
+                      child: DirectMessageList(
+                        directMessages: state.clientManager.directMessages,
+                        onSelected: (room) => state.selectRoom(room),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -219,14 +226,19 @@ class MainPageViewDesktop extends StatelessWidget {
             caulkClipBottomLeft: true,
             caulkBorderLeft: true,
             caulkBorderBottom: true,
-            child: SizedBox(
-              height: 50,
-              child: RoomHeader(
-                state.currentRoom!,
-                onTap: state.currentRoom?.permissions.canEditAnything == true
-                    ? () => state.navigateRoomSettings()
-                    : null,
-                menu: RoomQuickAccessMenuViewDesktop(room: state.currentRoom!),
+            child: ScaledSafeArea(
+              top: true,
+              bottom: false,
+              child: SizedBox(
+                height: 50,
+                child: RoomHeader(
+                  state.currentRoom!,
+                  onTap: state.currentRoom?.permissions.canEditAnything == true
+                      ? () => state.navigateRoomSettings()
+                      : null,
+                  menu:
+                      RoomQuickAccessMenuViewDesktop(room: state.currentRoom!),
+                ),
               ),
             ),
           ),

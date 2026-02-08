@@ -2,20 +2,27 @@ import 'dart:async';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
+import 'package:commet/config/layout_config.dart';
 import 'package:commet/main.dart';
+import 'package:commet/ui/atoms/room_header.dart';
+import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/organisms/invitation_view/incoming_invitations_view.dart';
+import 'package:commet/utils/common_strings.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:commet/ui/organisms/home_screen/home_screen_view.dart';
 import 'package:commet/utils/update_checker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:tiamat/tiamat.dart' as tiamat;
 
 class HomeScreen extends StatefulWidget {
   final ClientManager clientManager;
   final int numRecentRooms;
+  final void Function()? onBurgerMenuTap;
   const HomeScreen({
     super.key,
     required this.clientManager,
+    this.onBurgerMenuTap,
     this.numRecentRooms = 5,
   });
 
@@ -68,18 +75,49 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(8),
+    return Column(
       children: [
-        IncomingInvitationsWidget(widget.clientManager),
-        HomeScreenView(
-          clientManager: widget.clientManager,
-          rooms: widget.clientManager.singleRooms,
-          recentActivity: recentActivity,
-          onRoomClicked: (room) =>
-              EventBus.openRoom.add((room.identifier, room.client.identifier)),
-          joinRoom: joinRoom,
-          createRoom: createRoom,
+        tiamat.Tile.low(
+          caulkClipBottomRight: true,
+          caulkClipBottomLeft: true,
+          caulkBorderBottom: true,
+          child: ScaledSafeArea(
+            bottom: false,
+            left: false,
+            right: false,
+            child: SizedBox(
+              height: 50,
+              child: HeaderView(
+                showBurger: Layout.mobile,
+                onBurgerMenuTap: widget.onBurgerMenuTap,
+                text: CommonStrings.promptHome,
+              ),
+            ),
+          ),
+        ),
+        Flexible(
+          child: ListView(
+            padding: const EdgeInsets.all(0),
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                    IncomingInvitationsWidget(widget.clientManager),
+                    HomeScreenView(
+                      clientManager: widget.clientManager,
+                      rooms: widget.clientManager.singleRooms,
+                      recentActivity: recentActivity,
+                      onRoomClicked: (room) => EventBus.openRoom
+                          .add((room.identifier, room.client.identifier)),
+                      joinRoom: joinRoom,
+                      createRoom: createRoom,
+                    ),
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
       ],
     );
