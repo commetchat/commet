@@ -193,6 +193,7 @@ flutter:
     - assets/emoji_data/shortcodes/
     - assets/js/package/
     - assets/vodozemac/
+    - assets/data/
   shaders: 
     - assets/shader/texture_coordinate.frag
     - assets/shader/constellation.frag

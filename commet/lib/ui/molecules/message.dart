@@ -4,7 +4,7 @@ import 'package:commet/config/build_config.dart';
 import 'package:commet/diagnostic/benchmark_values.dart';
 import 'package:commet/ui/atoms/emoji_reaction.dart';
 import 'package:commet/ui/molecules/url_preview_widget.dart';
-import 'package:commet/utils/link_utils.dart';
+import 'package:commet/utils/links/link_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart';
@@ -151,7 +151,7 @@ class _MessageState extends State<Message> {
       child: UrlPreviewWidget(
         widget.links,
         onTap: () {
-          LinkUtils.open(widget.links!.uri);
+          LinkUtils.open(widget.links!.uri, context: context);
         },
       ),
     );

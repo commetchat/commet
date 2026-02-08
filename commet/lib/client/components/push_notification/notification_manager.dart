@@ -15,7 +15,7 @@ import 'package:commet/config/build_config.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
-import 'package:commet/utils/link_utils.dart';
+import 'package:commet/utils/links/link_utils.dart';
 
 class NotificationManager {
   static Notifier? _notifier;

@@ -1,4 +1,4 @@
-import 'package:commet/utils/link_utils.dart';
+import 'package:commet/utils/links/link_utils.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
@@ -19,7 +19,7 @@ class LinkSpan {
         recognizer: TapGestureRecognizer()
           ..onTap = () {
             if (destination != null) {
-              LinkUtils.open(destination, clientId: clientId);
+              LinkUtils.open(destination, clientId: clientId, context: context);
             }
           });
   }

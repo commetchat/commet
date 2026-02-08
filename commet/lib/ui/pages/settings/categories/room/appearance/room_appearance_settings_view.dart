@@ -8,7 +8,7 @@ import 'package:commet/ui/molecules/image_picker.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/utils/error_utils.dart';
 import 'package:commet/utils/image/lod_image.dart';
-import 'package:commet/utils/link_utils.dart';
+import 'package:commet/utils/links/link_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:tiamat/config/style/theme_extensions.dart';
@@ -128,7 +128,7 @@ class _RoomAppearanceSettingsViewState
                                   ?.linkColor)),
                       onTapLink: (text, href, title) {
                         if (href != null) {
-                          LinkUtils.open(Uri.parse(href));
+                          LinkUtils.open(Uri.parse(href), context: context);
                         }
                       },
                       data: topic?.isNotEmpty == true ? topic! : "Set a topic"),
