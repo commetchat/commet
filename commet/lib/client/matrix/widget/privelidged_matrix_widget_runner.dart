@@ -171,8 +171,7 @@ class PrivelidgedMatrixWidgetRunner implements MatrixWidgetApi {
       if (type == "m.room.redaction") {
         eventId = await room.redactEvent(content["redacts"]);
       } else {
-        eventId = await room.sendEvent(content,
-            type: type, txid: "fake_" + client.generateUniqueTransactionId());
+        eventId = await room.sendEvent(content, type: type);
         print(eventId);
       }
 
@@ -218,7 +217,7 @@ class PrivelidgedMatrixWidgetRunner implements MatrixWidgetApi {
 
     var readableEvents = events
         .where((i) =>
-            !i.eventId.startsWith("fake_") && canWidgetReceiveEventType(i.type))
+            i.eventId.startsWith("\$") && canWidgetReceiveEventType(i.type))
         .toList();
 
     if (readableStateEvents.isNotEmpty) {
