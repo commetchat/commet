@@ -99,7 +99,7 @@ class LinkUtils {
               confirmationText: "Open",
               cancelText: "Open Original Link",
               prompt:
-                  "This link contained trackers, which have been removed. Open `$cleanedUrl`?");
+                  "This link contained trackers, which have been removed. Open `$cleanedUrl` in your browser?");
 
           if (confirm == null) return;
 
