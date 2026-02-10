@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:commet/client/client.dart';
 import 'package:commet/client/components/message_effects/message_effect_particles.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/client/space.dart';
@@ -22,6 +23,9 @@ class EventBus {
       StreamController<(String, String, String)>.broadcast();
 
   static StreamController<void> closeThread = StreamController.broadcast();
+
+  static StreamController<Client?> setFilterClient =
+      StreamController.broadcast();
 
   /// Called when the user initially logs in to the app, or on app startup when atleast one user account is already logged in
   static StreamController<BuildContext> onLoggedIn =

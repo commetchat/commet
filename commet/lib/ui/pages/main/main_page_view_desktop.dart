@@ -189,6 +189,7 @@ class MainPageViewDesktop extends StatelessWidget {
                     ),
                     Flexible(
                       child: DirectMessageList(
+                        filterClient: state.filterClient,
                         directMessages: state.clientManager.directMessages,
                         onSelected: (room) => state.selectRoom(room),
                       ),
@@ -207,7 +208,10 @@ class MainPageViewDesktop extends StatelessWidget {
               caulkClipBottomLeft: true,
               caulkPadTop: true,
               caulkPadBottom: true,
-              child: HomeScreen(clientManager: state.clientManager),
+              child: HomeScreen(
+                clientManager: state.clientManager,
+                filterClient: state.filterClient,
+              ),
             ),
           ),
         if (state.currentRoom != null) roomChatView(),

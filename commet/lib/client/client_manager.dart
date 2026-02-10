@@ -30,9 +30,13 @@ class ClientManager {
 
   List<Room> get rooms => _rooms;
 
-  List<Room> get singleRooms {
+  List<Room> singleRooms({Client? filterClient}) {
     var result = List<Room>.empty(growable: true);
     for (var client in clients) {
+      if (filterClient != null && client != filterClient) {
+        continue;
+      }
+
       var dmComp = client.getComponent<DirectMessagesComponent>();
 
       for (var room in client.rooms) {

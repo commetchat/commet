@@ -17,11 +17,13 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 
 class HomeScreen extends StatefulWidget {
   final ClientManager clientManager;
+  final Client? filterClient;
   final int numRecentRooms;
   final void Function()? onBurgerMenuTap;
   const HomeScreen({
     super.key,
     required this.clientManager,
+    this.filterClient,
     this.onBurgerMenuTap,
     this.numRecentRooms = 5,
   });
@@ -32,11 +34,19 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late List<Room> recentActivity;
-  StreamSubscription? syncSub;
+
+  Client? filterClient;
+
+  late List<StreamSubscription> subscriptions;
 
   @override
   void initState() {
-    syncSub = widget.clientManager.onSync.stream.listen(onSync);
+    filterClient = widget.filterClient;
+
+    subscriptions = [
+      widget.clientManager.onSync.stream.listen(onSync),
+      EventBus.setFilterClient.stream.listen(setFilterClient),
+    ];
 
     if (preferences.checkForUpdates == true) {
       UpdateChecker.checkForUpdates();
@@ -48,7 +58,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
-    syncSub?.cancel();
+    for (var element in subscriptions) {
+      element.cancel();
+    }
+
     super.dispose();
   }
 
@@ -61,7 +74,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void updateRecent() {
-    recentActivity = List.from(widget.clientManager.rooms);
+    recentActivity =
+        List.from(filterClient?.rooms ?? widget.clientManager.rooms);
+
     recentActivity.removeWhere((element) => element.lastEvent == null);
 
     mergeSort(recentActivity, compare: (a, b) {
@@ -106,7 +121,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     IncomingInvitationsWidget(widget.clientManager),
                     HomeScreenView(
                       clientManager: widget.clientManager,
-                      rooms: widget.clientManager.singleRooms,
+                      rooms: widget.clientManager
+                          .singleRooms(filterClient: filterClient),
                       recentActivity: recentActivity,
                       onRoomClicked: (room) => EventBus.openRoom
                           .add((room.identifier, room.client.identifier)),
@@ -129,5 +145,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> createRoom(Client client, CreateRoomArgs args) async {
     await client.createRoom(args);
+  }
+
+  void setFilterClient(Client? event) {
+    setState(() {
+      filterClient = event;
+      updateRecent();
+    });
   }
 }

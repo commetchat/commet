@@ -1,15 +1,18 @@
 import 'dart:async';
 
+import 'package:commet/client/client.dart';
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/ui/atoms/space_icon.dart';
+import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
 import 'package:implicitly_animated_list/implicitly_animated_list.dart';
 
 class SideNavigationBarDirectMessages extends StatefulWidget {
   const SideNavigationBarDirectMessages(this.directMessages,
-      {super.key, this.onRoomTapped});
+      {super.key, this.onRoomTapped, this.filterClient});
   final DirectMessagesInterface directMessages;
+  final Client? filterClient;
 
   final void Function(Room room)? onRoomTapped;
 
@@ -20,21 +23,47 @@ class SideNavigationBarDirectMessages extends StatefulWidget {
 
 class _SideNavigationBarDirectMessagesState
     extends State<SideNavigationBarDirectMessages> {
-  StreamSubscription? sub;
-
   late List<Room> rooms;
+  Client? filterClient;
+
+  late List<StreamSubscription> subscriptions;
 
   @override
   void initState() {
     super.initState();
+    filterClient = widget.filterClient;
+
     rooms = widget.directMessages.highlightedRoomsList;
-    sub = widget.directMessages.onHighlightedRoomsListUpdated
-        .listen(onListUpdated);
+    subscriptions = [
+      EventBus.setFilterClient.stream.listen(setFilterClient),
+      widget.directMessages.onHighlightedRoomsListUpdated.listen(onListUpdated),
+    ];
+  }
+
+  @override
+  void dispose() {
+    for (var element in subscriptions) {
+      element.cancel();
+    }
+
+    super.dispose();
+  }
+
+  void setFilterClient(Client? event) {
+    setState(() {
+      filterClient = event;
+    });
+
+    onListUpdated(null);
   }
 
   void onListUpdated(void event) {
     setState(() {
       rooms = widget.directMessages.highlightedRoomsList;
+
+      if (filterClient != null) {
+        rooms = rooms.where((i) => i.client == filterClient).toList();
+      }
     });
   }
 
