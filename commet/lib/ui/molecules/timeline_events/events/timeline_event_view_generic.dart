@@ -117,12 +117,15 @@ class _TimelineEventViewGenericState extends State<TimelineEventViewGeneric>
             ),
           ),
           if (widget.room != null)
-            SizedBox(
-              width: 60,
-              child: ReadIndicator(
-                room: widget.room!,
-                users: widget.readReceipts,
-                onTap: widget.onReadReceiptsTapped,
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+              child: SizedBox(
+                width: 70,
+                child: ReadIndicator(
+                  room: widget.room!,
+                  users: widget.readReceipts,
+                  onTap: widget.onReadReceiptsTapped,
+                ),
               ),
             )
         ],
