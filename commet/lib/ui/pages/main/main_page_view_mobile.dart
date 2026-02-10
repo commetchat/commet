@@ -148,51 +148,54 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
   }
 
   Widget navigation(BuildContext newContext) {
-    return Row(
-      children: [
-        Tile(
-          caulkPadRight: true,
-          caulkClipTopRight: true,
-          caulkClipBottomRight: true,
-          caulkBorderRight: true,
-          mode: TileType.surfaceDim,
-          child: ScaledSafeArea(
-            bottom: false,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
-              child: SideNavigationBar(
-                currentUser: widget.state.getCurrentUser(),
-                onSpaceSelected: (space) {
-                  widget.state.selectSpace(space);
-                },
-                clearSpaceSelection: () {
-                  widget.state.clearSpaceSelection();
-                },
-                onHomeSelected: () {
-                  widget.state.selectHome();
-                },
-                onDirectMessageSelected: (room) {
-                  widget.state.selectHome();
-                  widget.state.selectRoom(room);
-                  panelsKey.currentState?.reveal(RevealSide.main);
-                },
-                extraEntryBuilders: [
-                  (width) {
-                    return SidebarCallsList(
-                        widget.state.clientManager.callManager, width);
-                  }
-                ],
+    return Material(
+      color: Colors.transparent,
+      child: Row(
+        children: [
+          Tile(
+            caulkPadRight: true,
+            caulkClipTopRight: true,
+            caulkClipBottomRight: true,
+            caulkBorderRight: true,
+            mode: TileType.surfaceDim,
+            child: ScaledSafeArea(
+              bottom: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
+                child: SideNavigationBar(
+                  currentUser: widget.state.getCurrentUser(),
+                  onSpaceSelected: (space) {
+                    widget.state.selectSpace(space);
+                  },
+                  clearSpaceSelection: () {
+                    widget.state.clearSpaceSelection();
+                  },
+                  onHomeSelected: () {
+                    widget.state.selectHome();
+                  },
+                  onDirectMessageSelected: (room) {
+                    widget.state.selectHome();
+                    widget.state.selectRoom(room);
+                    panelsKey.currentState?.reveal(RevealSide.main);
+                  },
+                  extraEntryBuilders: [
+                    (width) {
+                      return SidebarCallsList(
+                          widget.state.clientManager.callManager, width);
+                    }
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-        if (widget.state.currentView == MainPageSubView.home)
-          directMessagesView(),
-        if (widget.state.currentView == MainPageSubView.space &&
-            widget.state.currentSpace != null)
-          spaceRoomSelector(newContext),
-        const BackgroundTaskViewContainer()
-      ],
+          if (widget.state.currentView == MainPageSubView.home)
+            directMessagesView(),
+          if (widget.state.currentView == MainPageSubView.space &&
+              widget.state.currentSpace != null)
+            spaceRoomSelector(newContext),
+          const BackgroundTaskViewContainer()
+        ],
+      ),
     );
   }
 
@@ -276,6 +279,7 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
     return Tile(
         child: HomeScreen(
       clientManager: widget.state.clientManager,
+      filterClient: widget.state.filterClient,
       onBurgerMenuTap: () {
         panelsKey.currentState?.reveal(RevealSide.left);
       },
@@ -327,6 +331,7 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
                 ),
                 Flexible(
                   child: DirectMessageList(
+                    filterClient: widget.state.filterClient,
                     directMessages: widget.state.clientManager.directMessages,
                     onSelected: (room) {
                       setState(() {

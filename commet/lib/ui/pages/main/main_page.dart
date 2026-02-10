@@ -45,6 +45,7 @@ enum MainPageSubView {
 class MainPageState extends State<MainPage> {
   Space? _currentSpace;
   Room? _currentRoom;
+  Client? filterClient;
 
   MainPageSubView _currentView = MainPageSubView.home;
 
@@ -70,6 +71,11 @@ class MainPageState extends State<MainPage> {
     super.initState();
 
     Client? client;
+    if (preferences.filterClient != null) {
+      filterClient = clientManager.clients
+          .firstWhereOrNull((i) => i.identifier == preferences.filterClient);
+    }
+
     if (widget.initialClientId != null) {
       client = clientManager.getClient(widget.initialClientId!);
     }
@@ -82,8 +88,11 @@ class MainPageState extends State<MainPage> {
 
     if (client != null && widget.initialRoom != null) {
       var room = client.getRoom(widget.initialRoom!);
-      if (room != null) {
-        selectRoom(room);
+
+      if (filterClient == null || room?.client == filterClient) {
+        if (room != null) {
+          selectRoom(room);
+        }
       }
     }
 
@@ -97,6 +106,8 @@ class MainPageState extends State<MainPage> {
     });
 
     EventBus.openRoom.stream.listen(onOpenRoomSignal);
+
+    EventBus.setFilterClient.stream.listen(setFilterClient);
 
     EventBus.openUserProfile.stream.listen(onOpenUserProfileSignal);
 
@@ -123,6 +134,8 @@ class MainPageState extends State<MainPage> {
     if (currentRoom != null) return currentRoom!.client.self!;
 
     if (currentSpace != null) return currentSpace!.client.self!;
+
+    if (filterClient != null) return filterClient!.self!;
 
     return null;
   }
@@ -188,6 +201,22 @@ class MainPageState extends State<MainPage> {
     EventBus.onSelectedSpaceChanged.add(null);
   }
 
+  void setFilterClient(Client? event) {
+    setState(() {
+      filterClient = event;
+
+      if (event != null) {
+        if (_currentRoom?.client != event) {
+          clearRoomSelection();
+        }
+
+        if (_currentSpace != null && _currentSpace?.client != event) {
+          clearSpaceSelection();
+        }
+      }
+    });
+  }
+
   void callRoom(Room room) {
     var component = room.client.getComponent<VoipComponent>();
     if (component == null) {
@@ -239,6 +268,11 @@ class MainPageState extends State<MainPage> {
       return;
     }
 
+    if (filterClient != null && client != filterClient) {
+      askSwitchAccount(client, strings);
+      return;
+    }
+
     var room = client.getRoom(roomId);
 
     if (room == null) {
@@ -260,6 +294,19 @@ class MainPageState extends State<MainPage> {
           showAllRoomTypes: false,
           initialRoomAddress: originalId);
     }
+  }
+
+  Future<void> askSwitchAccount(
+      Client newClient, (String, String?) strings) async {
+    var confirm = await AdaptiveDialog.confirmation(context,
+        prompt:
+            "You tried to open a room for another account (${newClient.self?.identifier}), would you like to switch?",
+        title: "Switch Account");
+    if (confirm != true) return;
+
+    EventBus.setFilterClient.add(newClient);
+    preferences.setFilterClient(newClient.identifier);
+    EventBus.openRoom.add(strings);
   }
 
   void navigateRoomSettings() {

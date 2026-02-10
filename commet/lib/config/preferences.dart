@@ -57,6 +57,8 @@ class Preferences {
 
   static const String _syncedCalendarUrls = "synced_calendar_urls";
 
+  static const String _filterClientId = "filter_client_id";
+
   static const String _previewUrlsInNotification =
       "preview_urls_in_notification";
 
@@ -566,4 +568,16 @@ class Preferences {
 
     return HotKey.fromJson(jsonDecode(item));
   }
+
+  Future<void> setFilterClient(String? id) async {
+    if (id == null) {
+      await _preferences!.remove(_filterClientId);
+    } else {
+      await _preferences!.setString(_filterClientId, id);
+    }
+
+    _onSettingChanged.add(null);
+  }
+
+  String? get filterClient => _preferences?.getString(_filterClientId);
 }

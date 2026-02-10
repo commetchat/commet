@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/ui/molecules/user_panel.dart';
+import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:implicitly_animated_list/implicitly_animated_list.dart';
@@ -10,8 +11,14 @@ import '../atoms/dot_indicator.dart';
 
 class DirectMessageList extends StatefulWidget {
   const DirectMessageList(
-      {required this.directMessages, this.onSelected, super.key});
+      {required this.directMessages,
+      this.onSelected,
+      this.filterClient,
+      super.key});
   final DirectMessagesInterface directMessages;
+
+  final Client? filterClient;
+
   @override
   State<DirectMessageList> createState() => _DirectMessageListState();
   final Function(Room room)? onSelected;
@@ -23,16 +30,27 @@ class _DirectMessageListState extends State<DirectMessageList> {
   late List<StreamSubscription> subscriptions;
   late List<Room> rooms;
 
+  Client? filterClient;
+
   @override
   void initState() {
+    filterClient = widget.filterClient;
     subscriptions = [
       widget.directMessages.onRoomsListUpdated.listen(onListUpdated),
-      widget.directMessages.onHighlightedRoomsListUpdated.listen(onListUpdated)
+      widget.directMessages.onHighlightedRoomsListUpdated.listen(onListUpdated),
+      EventBus.setFilterClient.stream.listen(setFilterClient),
     ];
 
     updateRoomsList();
 
     super.initState();
+  }
+
+  void setFilterClient(Client? event) {
+    setState(() {
+      filterClient = event;
+      updateRoomsList();
+    });
   }
 
   @override
@@ -57,6 +75,11 @@ class _DirectMessageListState extends State<DirectMessageList> {
 
   void updateRoomsList() {
     rooms = List.from(widget.directMessages.directMessageRooms);
+
+    if (filterClient != null) {
+      rooms.removeWhere((i) => i.client != filterClient);
+    }
+
     sortRooms();
   }
 

@@ -3,12 +3,16 @@ import 'dart:async';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/profile/profile_component.dart';
+import 'package:commet/config/layout_config.dart';
+import 'package:commet/main.dart';
+import 'package:commet/ui/atoms/adaptive_context_menu.dart';
 import 'package:commet/ui/molecules/space_selector.dart';
 import 'package:commet/ui/navigation/navigation_utils.dart';
 import 'package:commet/ui/organisms/side_navigation_bar/side_navigation_bar_direct_messages.dart';
 import 'package:commet/ui/pages/get_or_create_room/get_or_create_room.dart';
 import 'package:commet/ui/pages/settings/app_settings_page.dart';
 import 'package:commet/utils/common_strings.dart';
+import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
@@ -43,6 +47,13 @@ class SideNavigationBar extends StatefulWidget {
   State<SideNavigationBar> createState() => _SideNavigationBarState();
 
   static Widget tooltip(String text, Widget child, BuildContext context) {
+    if (Layout.mobile) {
+      return AspectRatio(
+        aspectRatio: 1.0,
+        child: child,
+      );
+    }
+
     return AspectRatio(
       aspectRatio: 1,
       child: JustTheTooltip(
@@ -70,9 +81,19 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
 
   late List<Space> topLevelSpaces;
 
+  Client? filterClient;
+
   @override
   void initState() {
     _clientManager = Provider.of<ClientManager>(context, listen: false);
+
+    void setFilterClient(Client? event) {
+      setState(() {
+        filterClient = event;
+
+        getSpaces();
+      });
+    }
 
     subs = [
       _clientManager.onSpaceChildUpdated.stream.listen((_) => onSpaceUpdate()),
@@ -81,6 +102,7 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
       _clientManager.onSpaceAdded.listen((_) => onSpaceUpdate()),
       _clientManager.onDirectMessageRoomUpdated.stream
           .listen(onDirectMessageUpdated),
+      EventBus.setFilterClient.stream.listen(setFilterClient),
     ];
 
     getSpaces();
@@ -89,9 +111,14 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
   }
 
   void getSpaces() {
-    _clientManager = Provider.of<ClientManager>(context, listen: false);
+    if (filterClient != null) {
+      topLevelSpaces = filterClient!.spaces.where((e) => e.isTopLevel).toList();
+    } else {
+      _clientManager = Provider.of<ClientManager>(context, listen: false);
 
-    topLevelSpaces = _clientManager.spaces.where((e) => e.isTopLevel).toList();
+      topLevelSpaces =
+          _clientManager.spaces.where((e) => e.isTopLevel).toList();
+    }
   }
 
   void onSpaceUpdate() {
@@ -120,21 +147,42 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
           children: [
             Padding(
               padding: SpaceSelector.padding,
-              child: SideNavigationBar.tooltip(
-                  CommonStrings.promptSettings,
-                  ImageButton(
-                    size: 70,
-                    image: widget.currentUser?.avatar,
-                    placeholderColor: widget.currentUser?.defaultColor,
-                    placeholderText: widget.currentUser?.displayName,
-                    icon: Icons.settings,
-                    key: SideNavigationBar.settingsKey,
-                    onTap: () {
-                      NavigationUtils.navigateTo(
-                          context, const AppSettingsPage());
-                    },
-                  ),
-                  context),
+              child: AdaptiveContextMenu(
+                items: [
+                  if (clientManager!.clients.length > 1)
+                    ContextMenuItem(
+                        text: "Mix Accounts",
+                        onPressed: () {
+                          EventBus.setFilterClient.add(null);
+                          preferences.setFilterClient(null);
+                        }),
+                  if (clientManager!.clients.length > 1)
+                    ...clientManager!.clients
+                        .map((i) => ContextMenuItem(
+                            text: i.self!.identifier,
+                            onPressed: () {
+                              print("Setting filter client");
+                              EventBus.setFilterClient.add(i);
+                              preferences.setFilterClient(i.identifier);
+                            }))
+                        .toList()
+                ],
+                child: SideNavigationBar.tooltip(
+                    CommonStrings.promptSettings,
+                    ImageButton(
+                      size: 70,
+                      image: widget.currentUser?.avatar,
+                      placeholderColor: widget.currentUser?.defaultColor,
+                      placeholderText: widget.currentUser?.displayName,
+                      icon: Icons.settings,
+                      key: SideNavigationBar.settingsKey,
+                      onTap: () {
+                        NavigationUtils.navigateTo(
+                            context, const AppSettingsPage());
+                      },
+                    ),
+                    context),
+              ),
             ),
             const SizedBox(
               height: 4,
