@@ -11,6 +11,7 @@ import 'package:commet/client/timeline_events/timeline_event_sticker.dart';
 import 'package:commet/client/timeline_events/timeline_event_unknown.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/main.dart';
+import 'package:commet/ui/molecules/read_indicator.dart';
 import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_attachments.dart';
 import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_reactions.dart';
 import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_reply.dart';
@@ -37,6 +38,8 @@ class TimelineEventViewMessage extends StatefulWidget {
       this.isThreadTimeline = false,
       this.overrideShowSender = false,
       this.jumpToEvent,
+      this.readReceipts = const [],
+      this.onReadReceiptsTapped,
       this.detailed = false,
       this.previewMedia = false,
       required this.initialIndex});
@@ -46,11 +49,13 @@ class TimelineEventViewMessage extends StatefulWidget {
   final Timeline? timeline;
   final TimelineEvent? initialEvent;
   final Room? room;
+  final List<String> readReceipts;
   final int initialIndex;
   final bool overrideShowSender;
   final bool detailed;
   final bool isThreadTimeline;
   final bool previewMedia;
+  final Function()? onReadReceiptsTapped;
 
   @override
   State<TimelineEventViewMessage> createState() =>
@@ -117,6 +122,7 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
 
   @override
   Widget build(BuildContext context) {
+    var room = widget.room ?? widget.timeline?.room;
     return TimelineEventLayoutMessage(
       senderName: senderName,
       senderColor: senderColor,
@@ -143,6 +149,13 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
           ? TimelineEventViewAttachments(
               attachments: attachments!,
               previewMedia: widget.previewMedia,
+            )
+          : null,
+      readReceipts: room != null
+          ? ReadIndicator(
+              room: room,
+              users: widget.readReceipts,
+              onTap: widget.onReadReceiptsTapped,
             )
           : null,
       sticker: sticker != null

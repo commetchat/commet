@@ -1,6 +1,7 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/client/timeline_events/timeline_event_generic.dart';
+import 'package:commet/ui/molecules/read_indicator.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -17,10 +18,14 @@ class TimelineEventViewGeneric extends StatefulWidget {
       this.initialEvent,
       required this.initialIndex,
       this.room,
+      this.onReadReceiptsTapped,
+      this.readReceipts = const [],
       super.key});
   final Timeline? timeline;
   final int initialIndex;
   final Room? room;
+  final Function()? onReadReceiptsTapped;
+  final List<String> readReceipts;
   final TimelineEvent? initialEvent;
   @override
   State<TimelineEventViewGeneric> createState() =>
@@ -70,42 +75,60 @@ class _TimelineEventViewGenericState extends State<TimelineEventViewGeneric>
 
     return m.Material(
       color: m.Colors.transparent,
-      child: Padding(
-        padding: const EdgeInsets.all(2.0),
-        child: Align(
-          alignment: Alignment.centerLeft,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
-            child: Row(
-              children: [
-                if (icon != null)
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(44, 0, 8, 0),
-                    child: Icon(
-                      icon,
-                      size: 20,
-                      color: Theme.of(context).colorScheme.secondary,
-                    ),
-                  ),
-                if (senderAvatar != null)
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(44, 0, 8, 0),
-                    child: Avatar(
-                      image: senderAvatar,
-                      radius: 10,
-                    ),
-                  ),
-                Flexible(
+      child: Row(
+        children: [
+          Flexible(
+            child: Padding(
+              padding: const EdgeInsets.all(2.0),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
                   child: Row(
                     children: [
-                      Flexible(child: tiamat.Text.labelLow(text!)),
+                      if (icon != null)
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(44, 0, 8, 0),
+                          child: Icon(
+                            icon,
+                            size: 20,
+                            color: Theme.of(context).colorScheme.secondary,
+                          ),
+                        ),
+                      if (senderAvatar != null)
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(44, 0, 8, 0),
+                          child: Avatar(
+                            image: senderAvatar,
+                            radius: 10,
+                          ),
+                        ),
+                      Flexible(
+                        child: Row(
+                          children: [
+                            Flexible(child: tiamat.Text.labelLow(text!)),
+                          ],
+                        ),
+                      )
                     ],
                   ),
-                )
-              ],
+                ),
+              ),
             ),
           ),
-        ),
+          if (widget.room != null)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+              child: SizedBox(
+                width: 70,
+                child: ReadIndicator(
+                  room: widget.room!,
+                  users: widget.readReceipts,
+                  onTap: widget.onReadReceiptsTapped,
+                ),
+              ),
+            )
+        ],
       ),
     );
   }

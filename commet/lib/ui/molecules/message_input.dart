@@ -733,9 +733,6 @@ class MessageInputState extends State<MessageInput> {
                                 autofillResultsList(),
                               if (autoFillResults == null)
                                 const Expanded(child: SizedBox()),
-                              if (widget.readIndicator != null &&
-                                  autoFillResults?.isEmpty != false)
-                                readReceipts()
                             ]),
                       ),
                     ),
@@ -790,25 +787,6 @@ class MessageInputState extends State<MessageInput> {
                   ],
                 ),
               ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  ClipRRect readReceipts() {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(4),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: widget.onReadReceiptsClicked,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(8, 2, 2, 2),
-            child: SizedBox(
-              width: 150,
-              child: widget.readIndicator!,
             ),
           ),
         ),

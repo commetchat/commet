@@ -1,4 +1,5 @@
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/read_receipts/read_receipt_component.dart';
 import 'package:commet/client/components/threads/thread_component.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/client/timeline_events/timeline_event_emote.dart';
@@ -16,6 +17,8 @@ import 'package:commet/ui/molecules/timeline_events/timeline_event_date_time_mar
 import 'package:commet/ui/molecules/timeline_events/timeline_event_layout.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_menu.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_menu_dialog.dart';
+import 'package:commet/ui/molecules/user_panel.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
 
 class TimelineViewEntry extends StatefulWidget {
@@ -84,6 +87,9 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
   bool showDateSeperator = false;
 
   ThreadsComponent? threads;
+
+  List<String> readReceipts = [];
+
   @override
   void initState() {
     threads = widget.timeline.room.client.getComponent<ThreadsComponent>();
@@ -99,6 +105,13 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
   void loadState(int eventIndex) {
     var event = widget.timeline.events[eventIndex];
     redacted = widget.timeline.isEventRedacted(event);
+
+    var receipts = widget.timeline.room
+        .getComponent<ReadReceiptComponent>()
+        ?.getReceipts(event);
+    if (receipts != null) {
+      readReceipts = receipts;
+    }
 
     eventId = event.eventId;
     status = event.status;
@@ -310,6 +323,8 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
           timeline: widget.timeline,
           isThreadTimeline: widget.isThreadTimeline,
           detailed: widget.showDetailed || selected,
+          onReadReceiptsTapped: onReadReceiptsTapped,
+          readReceipts: readReceipts,
           overrideShowSender: widget.singleEvent || showDateSeperator,
           jumpToEvent: widget.jumpToEvent,
           previewMedia: widget.previewMedia,
@@ -318,6 +333,9 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
       return TimelineEventViewGeneric(
         timeline: widget.timeline,
         initialIndex: widget.initialIndex,
+        room: widget.timeline.room,
+        readReceipts: readReceipts,
+        onReadReceiptsTapped: onReadReceiptsTapped,
         key: eventKey,
       );
 
@@ -329,8 +347,11 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
     return preferences.developerMode
         ? TimelineEventViewGeneric(
             timeline: widget.timeline,
+            room: widget.timeline.room,
             initialIndex: widget.initialIndex,
             key: eventKey,
+            onReadReceiptsTapped: onReadReceiptsTapped,
+            readReceipts: readReceipts,
           )
         : Container(
             key: eventKey,
@@ -360,5 +381,19 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
       setState(() {
         highlighted = value;
       });
+  }
+
+  onReadReceiptsTapped() {
+    AdaptiveDialog.show(context, title: "Read Receipts", builder: (context) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: readReceipts
+            .map((i) => UserPanel(
+                userId: i,
+                client: widget.timeline.client,
+                contextRoom: widget.timeline.room))
+            .toList(),
+      );
+    });
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:commet/client/components/message_effects/message_effect_component.dart';
+import 'package:commet/client/components/read_receipts/read_receipt_component.dart';
 import 'package:commet/client/timeline.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/config/build_config.dart';
@@ -106,12 +107,14 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
 
     this.timeline = timeline;
     recentItemsCount = timeline.events.length;
-
+    var receipts = timeline.room.getComponent<ReadReceiptComponent>();
     subscriptions = [
       timeline.onEventAdded.stream.listen(onEventAdded),
       timeline.onChange.stream.listen(onEventChanged),
       timeline.onRemove.stream.listen(onEventRemoved),
       timeline.onLoadingStatusChanged.listen(onLoadingStatusChanged),
+      if (receipts != null)
+        receipts.onReadReceiptsUpdated.listen(onReadReceiptUpdated),
     ];
 
     if (preferences.messageEffectsEnabled) {
@@ -187,6 +190,12 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
       (state as TimelineEventViewWidget).update(index);
     } else {
       Log.w("Failed to get state");
+    }
+
+    if (index == 0) {
+      if (attachedToBottom) {
+        widget.markAsRead?.call(timeline.events[0]);
+      }
     }
   }
 
@@ -583,6 +592,30 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
       isLoadingFuture = timeline.isLoadingFuture;
       isLoadingHistory = timeline.isLoadingHistory;
     });
+  }
+
+  void onReadReceiptUpdated(String event) {
+    var key = eventKeys.firstWhere(
+      (element) => element.$2 == event,
+    );
+
+    assert(event == key.$2);
+
+    var state = key.$1.currentState;
+
+    var index = timeline.events.indexWhere((i) => i.eventId == event);
+
+    if (index == -1) {
+      print("Could not find the event in the timeline view");
+    }
+
+    print("Updating read receipts state: $event");
+
+    if (state is TimelineEventViewWidget) {
+      (state as TimelineEventViewWidget).update(index);
+    } else {
+      Log.w("Failed to get state");
+    }
   }
 }
 
