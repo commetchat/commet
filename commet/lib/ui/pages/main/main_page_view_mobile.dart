@@ -14,6 +14,7 @@ import 'package:commet/ui/organisms/side_navigation_bar/side_navigation_bar.dart
 import 'package:commet/ui/organisms/sidebar_call_icon/sidebar_calls_list.dart';
 import 'package:commet/ui/organisms/space_summary/space_summary.dart';
 import 'package:commet/ui/pages/main/main_page.dart';
+import 'package:commet/ui/pages/main/main_page_view_desktop.dart';
 import 'package:commet/ui/pages/main/room_primary_view.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/scaled_app.dart';
@@ -150,50 +151,72 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
   Widget navigation(BuildContext newContext) {
     return Material(
       color: Colors.transparent,
-      child: Row(
+      child: Column(
         children: [
-          Tile(
-            caulkPadRight: true,
-            caulkClipTopRight: true,
-            caulkClipBottomRight: true,
-            caulkBorderRight: true,
-            mode: TileType.surfaceDim,
-            child: ScaledSafeArea(
-              bottom: false,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
-                child: SideNavigationBar(
-                  currentUser: widget.state.getCurrentUser(),
-                  onSpaceSelected: (space) {
-                    widget.state.selectSpace(space);
-                  },
-                  clearSpaceSelection: () {
-                    widget.state.clearSpaceSelection();
-                  },
-                  onHomeSelected: () {
-                    widget.state.selectHome();
-                  },
-                  onDirectMessageSelected: (room) {
-                    widget.state.selectHome();
-                    widget.state.selectRoom(room);
-                    panelsKey.currentState?.reveal(RevealSide.main);
-                  },
-                  extraEntryBuilders: [
-                    (width) {
-                      return SidebarCallsList(
-                          widget.state.clientManager.callManager, width);
-                    }
-                  ],
+          Expanded(
+            child: Row(
+              children: [
+                Tile(
+                  caulkPadRight: true,
+                  caulkClipTopRight: true,
+                  caulkClipBottomRight: true,
+                  caulkBorderRight: true,
+                  mode: TileType.surfaceDim,
+                  child: ScaledSafeArea(
+                    bottom: false,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
+                      child: SideNavigationBar(
+                        currentUser: widget.state.getCurrentUser(),
+                        onSpaceSelected: (space) {
+                          widget.state.selectSpace(space);
+                        },
+                        clearSpaceSelection: () {
+                          widget.state.clearSpaceSelection();
+                        },
+                        onHomeSelected: () {
+                          widget.state.selectHome();
+                        },
+                        onDirectMessageSelected: (room) {
+                          widget.state.selectHome();
+                          widget.state.selectRoom(room);
+                          panelsKey.currentState?.reveal(RevealSide.main);
+                        },
+                        extraEntryBuilders: [
+                          (width) {
+                            return SidebarCallsList(
+                                widget.state.clientManager.callManager, width);
+                          }
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
-              ),
+                if (widget.state.currentView == MainPageSubView.home)
+                  directMessagesView(),
+                if (widget.state.currentView == MainPageSubView.space &&
+                    widget.state.currentSpace != null)
+                  spaceRoomSelector(newContext),
+                const BackgroundTaskViewContainer()
+              ],
             ),
           ),
-          if (widget.state.currentView == MainPageSubView.home)
-            directMessagesView(),
-          if (widget.state.currentView == MainPageSubView.space &&
-              widget.state.currentSpace != null)
-            spaceRoomSelector(newContext),
-          const BackgroundTaskViewContainer()
+          tiamat.Tile.low(
+            caulkPadTop: true,
+            caulkClipTopRight: true,
+            caulkBorderTop: true,
+            caulkPadRight: Layout.mobile,
+            child: ScaledSafeArea(
+              bottom: true,
+              top: false,
+              child: SizedBox(
+                height: 60,
+                child: MainPageViewDesktop.currentUserPanel(
+                    widget.state, context,
+                    height: 60, avatarRadius: 20),
+              ),
+            ),
+          )
         ],
       ),
     );

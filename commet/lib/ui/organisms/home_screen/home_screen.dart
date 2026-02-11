@@ -92,24 +92,25 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        tiamat.Tile.low(
-          caulkClipBottomRight: true,
-          caulkClipBottomLeft: true,
-          caulkBorderBottom: true,
-          child: ScaledSafeArea(
-            bottom: false,
-            left: false,
-            right: false,
-            child: SizedBox(
-              height: 50,
-              child: HeaderView(
-                showBurger: Layout.mobile,
-                onBurgerMenuTap: widget.onBurgerMenuTap,
-                text: CommonStrings.promptHome,
+        if (Layout.mobile)
+          tiamat.Tile.low(
+            caulkClipBottomRight: true,
+            caulkClipBottomLeft: true,
+            caulkBorderBottom: true,
+            child: ScaledSafeArea(
+              bottom: false,
+              left: false,
+              right: false,
+              child: SizedBox(
+                height: 50,
+                child: HeaderView(
+                  showBurger: Layout.mobile,
+                  onBurgerMenuTap: widget.onBurgerMenuTap,
+                  text: CommonStrings.promptHome,
+                ),
               ),
             ),
           ),
-        ),
         Flexible(
           child: ListView(
             padding: const EdgeInsets.all(0),
