@@ -375,7 +375,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "sendEncryptedMessagePrompt": "A envoyé un message chiffré",
+  "sendEncryptedMessagePrompt": "Envoyer un message chiffré",
   "@sendEncryptedMessagePrompt": {
     "description": "Placeholder text for message input in an encrypted room",
     "type": "text",
