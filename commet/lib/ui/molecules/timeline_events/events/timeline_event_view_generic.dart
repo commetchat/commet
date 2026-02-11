@@ -120,7 +120,7 @@ class _TimelineEventViewGenericState extends State<TimelineEventViewGeneric>
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
               child: SizedBox(
-                width: 70,
+                width: 35,
                 child: ReadIndicator(
                   room: widget.room!,
                   users: widget.readReceipts,
