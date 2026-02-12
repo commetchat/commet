@@ -59,10 +59,7 @@ class _RoomPreviewTextButtonState extends State<RoomPreviewTextButton> {
     }
     var customBuilder = null;
 
-    IconData? icon = null;
-    if (widget.room.type == RoomType.defaultRoom) {
-      icon = Icons.tag;
-    }
+    IconData? icon = Icons.tag;
     if (widget.room.type == RoomType.calendar) {
       icon = Icons.calendar_month;
     }
@@ -70,7 +67,7 @@ class _RoomPreviewTextButtonState extends State<RoomPreviewTextButton> {
       icon = Icons.photo;
     }
     if (widget.room.type == RoomType.space) {
-      icon = Icons.star; // IDK what to put here
+      icon = Icons.spoke;
     }
     if (widget.room.type == RoomType.voipRoom) {
       icon = Icons.volume_up;
@@ -92,7 +89,7 @@ class _RoomPreviewTextButtonState extends State<RoomPreviewTextButton> {
           textColor: color,
           softwrap: false,
           onTap: () => widget.onTap?.call(widget.room),
-          footer: Text(CommonStrings.promptJoin),
+          footer: tiamat.Text.labelLow(CommonStrings.promptJoin, color: Theme.of(context).colorScheme.primary),
         ));
 
     return result;
