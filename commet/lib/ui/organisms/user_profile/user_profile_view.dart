@@ -376,11 +376,12 @@ class _UserProfileViewState extends State<UserProfileView> {
                     fontFamily: "Code",
                     color: Theme.of(context).colorScheme.onSurface),
               ),
-              IconButton(
-                icon: const Icon(Icons.copy),
+              tiamat.IconButton(
+                icon: Icons.copy,
                 onPressed: () =>
                     Clipboard.setData(ClipboardData(text: widget.identifier)),
-                iconSize: 12,
+                size: Theme.of(context).textTheme.labelSmall?.fontSize ?? 12,
+                iconColor: Theme.of(context).colorScheme.onSurface,
               ),
             ],
           )),
