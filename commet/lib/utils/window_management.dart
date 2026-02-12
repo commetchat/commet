@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:collection/collection.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/client/space.dart';
-import 'package:commet/config/build_config.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/event_bus.dart';
@@ -11,7 +10,7 @@ import 'package:window_manager/window_manager.dart';
 
 class WindowManagement {
   static Future<void> init() async {
-    if (!BuildConfig.DESKTOP) return;
+    if (!PlatformUtils.isLinux || PlatformUtils.isWindows) return;
 
     await windowManager.ensureInitialized();
     _WindowListener listener = _WindowListener();
@@ -22,8 +21,6 @@ class WindowManagement {
     if (PlatformUtils.isLinux || PlatformUtils.isWindows) {
       EventBus.onSelectedRoomChanged.stream.listen(_onSelectedRoomChanged);
       EventBus.onSelectedSpaceChanged.stream.listen(_onSelectedSpaceChanged);
-
-      await windowManager.show();
 
       if (commandLineArgs.contains("--minimize")) {
         windowManager.minimize();
