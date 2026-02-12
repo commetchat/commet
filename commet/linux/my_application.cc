@@ -43,6 +43,7 @@ static void my_application_activate(GApplication* application) {
   gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(view));
 
   fl_register_plugins(FL_PLUGIN_REGISTRY(view));
+  gtk_widget_hide(GTK_WIDGET(window));
 
   gtk_widget_grab_focus(GTK_WIDGET(view));
 }
