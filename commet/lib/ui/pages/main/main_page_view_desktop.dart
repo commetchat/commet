@@ -174,53 +174,50 @@ class MainPageViewDesktop extends StatelessWidget {
               ],
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Flexible(
-                  child: Row(
-                    spacing: 8,
-                    children: [
-                      if (current != null)
-                        tiamat.Avatar(
-                          radius: avatarRadius,
-                          image: current.avatar,
-                          placeholderColor: current.defaultColor,
-                          placeholderText: current.displayName,
-                        ),
-                      if (current != null)
-                        Flexible(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              tiamat.Text.name(
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  color: current.defaultColor,
-                                  current.displayName),
-                              tiamat.Text.labelLow(
+                child: Row(
+                  spacing: 8,
+                  children: [
+                    if (current != null)
+                      tiamat.Avatar(
+                        radius: avatarRadius,
+                        image: current.avatar,
+                        placeholderColor: current.defaultColor,
+                        placeholderText: current.displayName,
+                      ),
+                    if (current != null)
+                      Flexible(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            tiamat.Text.name(
                                 maxLines: 1,
-                                current.identifier,
                                 overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
+                                color: current.defaultColor,
+                                current.displayName),
+                            tiamat.Text.labelLow(
+                              maxLines: 1,
+                              current.identifier,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
                         ),
-                      if (current == null)
-                        ...clientManager!.clients
-                            .where((i) => i.self != null)
-                            .map((i) => Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(0, 4, 0, 4),
-                                  child: AspectRatio(
-                                    aspectRatio: 1.0,
-                                    child: tiamat.Avatar(
-                                      radius: avatarRadius,
-                                      placeholderColor: i.self!.defaultColor,
-                                      placeholderText: i.self!.displayName,
-                                      image: i.self!.avatar,
-                                    ),
+                      ),
+                    if (current == null)
+                      ...clientManager!.clients
+                          .where((i) => i.self != null)
+                          .map((i) => Padding(
+                                padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
+                                child: AspectRatio(
+                                  aspectRatio: 1.0,
+                                  child: tiamat.Avatar(
+                                    radius: avatarRadius,
+                                    placeholderColor: i.self!.defaultColor,
+                                    placeholderText: i.self!.displayName,
+                                    image: i.self!.avatar,
                                   ),
-                                ))
-                    ],
-                  ),
+                                ),
+                              ))
+                  ],
                 ),
               ),
             )),
