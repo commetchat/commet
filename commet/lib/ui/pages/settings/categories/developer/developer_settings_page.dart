@@ -6,12 +6,14 @@ import 'package:commet/config/build_config.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
 import 'package:commet/main.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/navigation/navigation_utils.dart';
 import 'package:commet/ui/pages/developer/benchmarks/timeline_viewer_benchmark.dart';
 import 'package:commet/ui/pages/settings/categories/app/general_settings_page.dart';
 import 'package:commet/ui/pages/settings/categories/developer/cumulative_diagnostics_widget.dart';
 import 'package:commet/utils/background_tasks/background_task_manager.dart';
 import 'package:commet/utils/background_tasks/mock_tasks.dart';
+import 'package:desktop_webview_window/desktop_webview_window.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -37,6 +39,7 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
       windowSize(),
       notificationTests(),
       rendering(),
+      webView(),
       error(),
       if (PlatformUtils.isAndroid) shortcuts(),
       backgroundTasks(),
@@ -290,6 +293,31 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
                     await Future.delayed(const Duration(seconds: 5));
                     throw Exception("This background task failed!");
                   }, "Async task"))),
+        ])
+      ],
+    );
+  }
+
+  Widget webView() {
+    return ExpansionTile(
+      title: const tiamat.Text.labelEmphasised("WebView"),
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
+      collapsedBackgroundColor:
+          Theme.of(context).colorScheme.surfaceContainerLow,
+      children: [
+        Wrap(spacing: 8, runSpacing: 8, children: [
+          tiamat.Button(
+              text: "Open Webview",
+              onTap: () async {
+                var url = await AdaptiveDialog.textPrompt(context);
+                if (url == null) return;
+
+                var view = await WebviewWindow.create(
+                    configuration:
+                        CreateConfiguration(title: "Commet - Webview"));
+                view.launch(url);
+                view.openDevToolsWindow();
+              }),
         ])
       ],
     );
