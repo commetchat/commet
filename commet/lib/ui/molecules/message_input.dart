@@ -931,6 +931,7 @@ class MessageInputState extends State<MessageInput> {
         padding: const EdgeInsets.fromLTRB(0, 0, 2, 0),
         child: JustTheTooltip(
           isModal: true,
+          preferredDirection: AxisDirection.up,
           controller: emojiTooltipController,
           backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
           content: ClipRRect(
