@@ -10,11 +10,11 @@ class ReadIndicator extends StatelessWidget {
   final Function()? onTap;
   final List<String> users;
 
+  static const int maxItems = 4;
+
   @override
   Widget build(BuildContext context) {
-    var max = 4;
-    var diff = users.length - 3;
-
+    var diff = users.length - maxItems;
     return Material(
       color: Colors.transparent,
       child: Row(
@@ -22,13 +22,12 @@ class ReadIndicator extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (diff > 0) tiamat.Text.labelLow("+$diff "),
             InkWell(
               onTap: onTap,
               child: Stack(
                 children: [
-                  for (int i = 0; i < users.length && i < max; i++)
-                    buildEntry(i, context),
+                  for (int i = 0; i < users.length && i < maxItems; i++)
+                    buildEntry(i, context, fade: diff > 0),
                 ],
               ),
             )
@@ -36,19 +35,22 @@ class ReadIndicator extends StatelessWidget {
     );
   }
 
-  Widget buildEntry(int index, BuildContext context) {
+  Widget buildEntry(int index, BuildContext context, {bool fade = false}) {
     var member = room.getMemberOrFallback(users[index]);
-    return Padding(
-      padding: EdgeInsets.fromLTRB(index.toDouble() * 8, 0, 0, 0),
-      child: tiamat.Avatar(
-        border: BoxBorder.all(
-            color: ColorScheme.of(context).surfaceContainerLow,
-            width: 2,
-            strokeAlign: 0.5),
-        radius: 8,
-        image: member.avatar,
-        placeholderColor: member.defaultColor,
-        placeholderText: member.displayName,
+    return Opacity(
+      opacity: fade ? index / (maxItems - 1) : 1.0,
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(index.toDouble() * 6, 0, 0, 0),
+        child: tiamat.Avatar(
+          border: BoxBorder.all(
+              color: ColorScheme.of(context).surfaceContainerLow,
+              width: 2,
+              strokeAlign: 0.5),
+          radius: 8,
+          image: member.avatar,
+          placeholderColor: member.defaultColor,
+          placeholderText: member.displayName,
+        ),
       ),
     );
   }

@@ -101,7 +101,7 @@ class TimelineEventLayoutMessage extends StatelessWidget {
                             ),
                           ),
                           SizedBox(
-                            width: 70,
+                            width: 35,
                             child: readReceipts,
                           )
                         ],
