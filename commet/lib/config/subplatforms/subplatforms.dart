@@ -8,6 +8,9 @@ class Subplatforms {
     try {
       if (await SteamdeckSubplatform.isSteamdeck()) {
         subplatform = SteamdeckSubplatform();
+      }
+
+      if (subplatform != null) {
         await subplatform!.init();
       }
     } catch (e, s) {
