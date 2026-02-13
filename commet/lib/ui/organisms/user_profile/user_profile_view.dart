@@ -12,6 +12,7 @@ import 'package:commet/ui/atoms/tiny_pill.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/utils/color_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
@@ -366,14 +367,24 @@ class _UserProfileViewState extends State<UserProfileView> {
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 0, 0, 4),
       child: Opacity(
-        opacity: 0.8,
-        child: Text(
-          widget.identifier,
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              fontFamily: "Code",
-              color: Theme.of(context).colorScheme.onSurface),
-        ),
-      ),
+          opacity: 0.8,
+          child: Row(
+            children: [
+              Text(
+                widget.identifier,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    fontFamily: "Code",
+                    color: Theme.of(context).colorScheme.onSurface),
+              ),
+              tiamat.IconButton(
+                icon: Icons.copy,
+                onPressed: () =>
+                    Clipboard.setData(ClipboardData(text: widget.identifier)),
+                size: Theme.of(context).textTheme.labelSmall?.fontSize ?? 12,
+                iconColor: Theme.of(context).colorScheme.onSurface,
+              ),
+            ],
+          )),
     );
   }
 
