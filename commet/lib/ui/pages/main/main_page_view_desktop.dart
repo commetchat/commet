@@ -261,8 +261,9 @@ class MainPageViewDesktop extends StatelessWidget {
                 key: ValueKey(
                   "space-view-key-${state.currentSpace!.localId}",
                 ),
-                onRoomSelected: (room) {
-                  state.selectRoom(room);
+                onRoomSelected: (room, {bool bypassSpecialRoomType = false}) {
+                  state.selectRoom(room,
+                      bypassSpecialRoomType: bypassSpecialRoomType);
                 },
               ),
             ),
@@ -336,7 +337,8 @@ class MainPageViewDesktop extends StatelessWidget {
                     caulkClipBottomLeft: true,
                     caulkClipBottomRight: true,
                     caulkBorderLeft: true,
-                    child: RoomPrimaryView(state.currentRoom!),
+                    child: RoomPrimaryView(state.currentRoom!,
+                        bypassSpecialRoomTypes: state.showAsTextRoom),
                   ),
                 ),
                 RoomSidePanel(

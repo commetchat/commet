@@ -13,7 +13,7 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 class SpaceList extends StatefulWidget {
   const SpaceList(this.space,
       {this.onRoomSelected, this.isTopLevel = true, super.key});
-  final Function(Room room)? onRoomSelected;
+  final Function(Room room, {bool bypassSpecialRoomType})? onRoomSelected;
 
   final bool isTopLevel;
 
