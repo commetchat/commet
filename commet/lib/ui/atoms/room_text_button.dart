@@ -23,7 +23,7 @@ class RoomTextButton extends StatefulWidget {
   });
   final bool highlight;
   final Room room;
-  final Function(Room room)? onTap;
+  final Function(Room room, {bool bypassSpecialRoomType})? onTap;
 
   @override
   State<RoomTextButton> createState() => _RoomTextButtonState();
@@ -173,7 +173,15 @@ class _RoomTextButtonState extends State<RoomTextButton> {
 
     var items = [
       ContextMenuItem(
-          text: "Mark as Read", onPressed: () => widget.room.markAsRead()),
+          text: "Mark as Read",
+          icon: Icons.visibility,
+          onPressed: () => widget.room.markAsRead()),
+      if (widget.room.isSpecialRoomType)
+        ContextMenuItem(
+            text: "Open as Text Chat",
+            icon: Icons.tag,
+            onPressed: () =>
+                widget.onTap?.call(widget.room, bypassSpecialRoomType: true)),
       if (voipRoom != null && preferences.developerMode)
         ContextMenuItem(
           text: "Clear Membership Status",

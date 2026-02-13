@@ -292,6 +292,7 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
             Expanded(
               child: RoomPrimaryView(
                 widget.state.currentRoom!,
+                bypassSpecialRoomTypes: !widget.state.showAsTextRoom,
               ),
             ),
           ],
@@ -357,7 +358,9 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
                   directMessages: widget.state.clientManager.directMessages,
                   onSelected: (room) {
                     setState(() {
-                      selectRoom(room);
+                      selectRoom(
+                        room,
+                      );
                     });
                   },
                 ),
@@ -391,8 +394,9 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
                 widget.state.currentSpace!,
                 key: ValueKey(
                     "space-view-key-${widget.state.currentSpace!.localId}"),
-                onRoomSelected: (room) async {
-                  selectRoom(room);
+                onRoomSelected: (room, {bypassSpecialRoomType = false}) async {
+                  selectRoom(room,
+                      bypassSpecialRoomType: bypassSpecialRoomType);
                 },
               ),
             )),
@@ -412,12 +416,12 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
     widget.state.clearRoomSelection();
   }
 
-  void selectRoom(Room room) {
+  void selectRoom(Room room, {bypassSpecialRoomType = false}) {
     panelsKey.currentState!.reveal(RevealSide.main);
     setState(() {
       shouldMainIgnoreInput = false;
     });
 
-    widget.state.selectRoom(room);
+    widget.state.selectRoom(room, bypassSpecialRoomType: bypassSpecialRoomType);
   }
 }

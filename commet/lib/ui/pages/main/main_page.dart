@@ -45,6 +45,7 @@ enum MainPageSubView {
 class MainPageState extends State<MainPage> {
   Space? _currentSpace;
   Room? _currentRoom;
+  bool showAsTextRoom = false;
   Client? filterClient;
 
   MainPageSubView _currentView = MainPageSubView.home;
@@ -168,13 +169,14 @@ class MainPageState extends State<MainPage> {
     EventBus.onSelectedSpaceChanged.add(space);
   }
 
-  void selectRoom(Room room) {
-    if (room == currentRoom) return;
+  void selectRoom(Room room, {bool bypassSpecialRoomType = false}) {
+    if (room == currentRoom && bypassSpecialRoomType == showAsTextRoom) return;
 
     onRoomUpdateSubscription?.cancel();
 
     setState(() {
       _currentRoom = room;
+      showAsTextRoom = bypassSpecialRoomType;
     });
 
     EventBus.onSelectedRoomChanged.add(room);
