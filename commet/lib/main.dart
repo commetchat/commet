@@ -279,8 +279,9 @@ Future<void> startGui() async {
     initialRoom: initialRoomId,
   ));
 
-  WindowManagement.init();
-  Subplatforms.init();
+  WindowManagement.init().then((_) {
+    Subplatforms.init();
+  });
 }
 
 void enableEdgeToEdge() async {
