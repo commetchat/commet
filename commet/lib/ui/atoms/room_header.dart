@@ -292,6 +292,8 @@ class _HeaderBurgerState extends State<HeaderBurger> {
   }
 
   void updateNotificationCount() {
+    return;
+
     highlightedNotificationCount = 0;
     notificationCount = 0;
 
