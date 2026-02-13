@@ -160,6 +160,10 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
                 onTap: () => windowManager.setSize(const Size(1280, 720)),
               ),
               tiamat.Button(
+                text: "1280x800",
+                onTap: () => windowManager.setSize(const Size(1280, 800)),
+              ),
+              tiamat.Button(
                 text: "1920x1080",
                 onTap: () => windowManager.setSize(const Size(1920, 1080)),
               ),
