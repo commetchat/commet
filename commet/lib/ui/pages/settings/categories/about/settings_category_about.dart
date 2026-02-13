@@ -1,5 +1,6 @@
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/platform_utils.dart';
+import 'package:commet/config/subplatforms/subplatforms.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/settings/categories/developer/log_page.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
@@ -166,6 +167,8 @@ class _AppInfoState extends State<_AppInfo> {
                                   PlatformUtils.desktopEnvironment!)
                           ],
                         ),
+                      if (Subplatforms.subplatform != null)
+                        tiamat.Text.labelLow(Subplatforms.subplatform!.name),
                       if (preferences.developerMode)
                         tiamat.Text.labelLow(getEncryptionInfo()),
                       if (preferences.developerMode)
@@ -227,6 +230,7 @@ ${deviceInfo?.data["version"] is String ? "Version: `${deviceInfo!.data["version
 ${deviceInfo?.data["product"] is String ? "Product: `${deviceInfo!.data["product"]}`" : ""}
 ${PlatformUtils.isLinux ? "Display Server: `${PlatformUtils.displayServer}`" : ""}
 ${PlatformUtils.desktopEnvironment != null ? "Desktop Environment: `${PlatformUtils.desktopEnvironment}`" : ""}
+${Subplatforms.subplatform != null ? "Subplatform: `${Subplatforms.subplatform!.name}`" : ""}
 </details>
 """;
 
