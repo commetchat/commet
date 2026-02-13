@@ -148,7 +148,9 @@ class _SpaceListState extends State<SpaceList> {
             prompt:
                 "Are you sure you want to join the room '${preview.displayName}' ?") ==
         true) {
-      await widget.space.client.joinRoomFromPreview(preview);
+      Room room = await widget.space.client.joinRoomFromPreview(preview);
+      await widget.onRoomSelected?.call(room);
+      subs.add(room.onUpdate.listen(onRoomUpdated));
     }
   }
 
