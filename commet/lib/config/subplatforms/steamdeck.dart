@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:commet/config/platform_utils.dart';
 import 'package:commet/config/subplatforms/subplatforms.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/utils/system_processes_utils.dart';
@@ -21,6 +22,10 @@ class SteamdeckSubplatform implements Subplatform {
   static bool _isGameMode = false;
 
   static Future<bool> isSteamdeck() async {
+    if (!PlatformUtils.isLinux) {
+      return false;
+    }
+
     var processes = await SystemProcessesUtils.getProcessList();
 
     var steamProceses = processes.where((i) => i.command.endsWith("/steam"));
