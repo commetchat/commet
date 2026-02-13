@@ -236,6 +236,7 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
                 widget.state.selectRoom(room);
               },
               onSpaceTap: (space) => widget.state.selectSpace(space),
+              onLeaveRoom: widget.state.clearRoomSelection,
             ),
           ),
         ),

@@ -420,6 +420,7 @@ class MainPageViewDesktop extends StatelessWidget {
                 space: state.currentSpace!,
                 onRoomTap: (room) => state.selectRoom(room),
                 onSpaceTap: (space) => state.selectSpace(space),
+                onLeaveRoom: state.clearRoomSelection,
               ),
             ],
           ),

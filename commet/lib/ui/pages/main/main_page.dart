@@ -317,6 +317,7 @@ class MainPageState extends State<MainPage> {
           context,
           RoomSettingsPage(
             room: currentRoom!,
+            onLeaveRoom: clearRoomSelection,
           ));
     }
   }

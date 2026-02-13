@@ -17,10 +17,11 @@ import '../../navigation/navigation_utils.dart';
 
 class SpaceSummary extends StatefulWidget {
   const SpaceSummary(
-      {super.key, required this.space, this.onRoomTap, this.onSpaceTap});
+      {super.key, required this.space, this.onRoomTap, this.onSpaceTap, this.onLeaveRoom});
   final Space space;
   final Function(Room room)? onRoomTap;
   final Function(Space space)? onSpaceTap;
+  final Function()? onLeaveRoom;
   @override
   State<SpaceSummary> createState() => _SpaceSummaryState();
 }
@@ -86,7 +87,7 @@ class _SpaceSummaryState extends State<SpaceSummary> {
   }
 
   void openRoomSettings(Room room) {
-    NavigationUtils.navigateTo(context, RoomSettingsPage(room: room));
+    NavigationUtils.navigateTo(context, RoomSettingsPage(room: room, onLeaveRoom: widget.onLeaveRoom));
   }
 
   void onAddRoomButtonTap() async {
