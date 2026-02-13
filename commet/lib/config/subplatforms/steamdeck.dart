@@ -23,12 +23,12 @@ class SteamdeckSubplatform implements Subplatform {
   static Future<bool> isSteamdeck() async {
     var processes = await SystemProcessesUtils.getProcessList();
 
-    var steamProceses =
-        processes.where((i) => i.command.endsWith("Steam/steam.sh"));
+    var steamProceses = processes.where((i) => i.command.endsWith("/steam"));
 
     _isSteamDeck = steamProceses.any((i) => i.args.contains("-steamdeck"));
 
-    _isGameMode = steamProceses.any((i) => i.args.contains("-gamepadui"));
+    _isGameMode =
+        _isSteamDeck && steamProceses.any((i) => i.args.contains("-gamepadui"));
 
     Log.i(
         "Is running on steamdeck: ${_isSteamDeck} is gamemode: ${_isGameMode}");
