@@ -59,19 +59,7 @@ class _RoomPreviewTextButtonState extends State<RoomPreviewTextButton> {
     }
     var customBuilder = null;
 
-    IconData? icon = Icons.tag;
-    if (widget.room.type == RoomType.calendar) {
-      icon = Icons.calendar_month;
-    }
-    if (widget.room.type == RoomType.photoAlbum) {
-      icon = Icons.photo;
-    }
-    if (widget.room.type == RoomType.space) {
-      icon = Icons.spoke;
-    }
-    if (widget.room.type == RoomType.voipRoom) {
-      icon = Icons.volume_up;
-    }
+    IconData? icon = widget.room.type?.icon;
 
     Widget result = SizedBox(
         height: customBuilder == null ? height : null,
