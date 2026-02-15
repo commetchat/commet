@@ -318,7 +318,7 @@ class _LoginPageViewState extends State<LoginPageView> {
       height: 50,
       child: tiamat.Button(
         text: promptSubmitLogin,
-        onTap: (_) => _attemptLogin(),
+        onTap: () => _attemptLogin(),
       ),
     );
   }
