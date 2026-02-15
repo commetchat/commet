@@ -372,7 +372,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
             ImplicitlyAnimatedList(
                 padding: EdgeInsets.all(0),
                 key: ValueKey(
-                    "animated-list-child-previews-${widget.space.identifier}"),
+                    "animated-list-child-previews-${widget.space.roomId}"),
                 initialAnimation: false,
                 physics: NeverScrollableScrollPhysics(),
                 itemData: previews,

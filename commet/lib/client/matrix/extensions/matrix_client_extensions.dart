@@ -62,7 +62,7 @@ extension MatrixExtensions on Client {
           avatar: image,
           numMembers: numMembers,
           visibility: visibility,
-          topic: topic);
+          topic: topic, clientId: this.clientName);
     }
 
     return null;

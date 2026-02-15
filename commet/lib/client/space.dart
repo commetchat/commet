@@ -8,10 +8,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:commet/debug/log.dart';
 
-abstract class Space {
+abstract class Space extends BaseRoom {
   late Key key = UniqueKey();
-
-  String get identifier;
 
   Client get client;
 
@@ -98,7 +96,7 @@ abstract class Space {
 
   bool get fullyLoaded;
 
-  String get localId => "${client.identifier}:$identifier";
+  String get localId => "${client.identifier}:$roomId";
 
   int get notificationCount => roomsWithChildren
       .where((element) => element.pushRule == PushRule.notify)
@@ -153,9 +151,9 @@ abstract class Space {
     if (other is! Space) return false;
     if (other.client != client) return false;
     if (identical(this, other)) return true;
-    return identifier == other.identifier;
+    return roomId == other.roomId;
   }
 
   @override
-  int get hashCode => identifier.hashCode;
+  int get hashCode => roomId.hashCode;
 }

@@ -48,7 +48,7 @@ class _SpaceAppearanceSettingsPageState
         RoomAppearanceSettingsView(
           avatar: widget.space.avatar,
           displayName: widget.space.displayName,
-          identifier: widget.space.identifier,
+          identifier: widget.space.roomId,
           onImagePicked: onAvatarPicked,
           onNameChanged: setName,
           setTopic: widget.space.setTopic,

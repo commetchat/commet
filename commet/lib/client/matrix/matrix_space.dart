@@ -125,7 +125,7 @@ class MatrixSpace extends Space {
   String get displayName => _displayName;
 
   @override
-  String get identifier => _matrixRoom.id;
+  String get roomId => _matrixRoom.id;
 
   @override
   Stream<RoomPreview> get onChildRoomPreviewAdded => _previews.onAdd;
@@ -272,11 +272,11 @@ class MatrixSpace extends Space {
       var space = client.getSpace(child.roomId!);
 
       if (space == null) {
-        subspaces.removeWhere((e) => e.identifier == child.roomId);
+        subspaces.removeWhere((e) => e.roomId == child.roomId);
       }
 
       if (space != null) {
-        if (!subspaces.any((s) => s.identifier == child.roomId)) {
+        if (!subspaces.any((s) => s.roomId == child.roomId)) {
           subspaces.add(space);
 
           _previews.removeWhere((p) => p.roomId == child.roomId);
@@ -330,10 +330,10 @@ class MatrixSpace extends Space {
   @override
   Future<List<RoomPreview>> fetchChildren() async {
     var response =
-        await _matrixClient.getSpaceHierarchy(identifier, maxDepth: 5);
+        await _matrixClient.getSpaceHierarchy(roomId, maxDepth: 5);
 
     return response.rooms
-        .where((element) => element.roomId != identifier)
+        .where((element) => element.roomId != roomId)
         .where((element) => !containsRoom(element.roomId))
         .map((e) => MatrixSpaceRoomChunkPreview(e, _matrixClient))
         .toList();
@@ -355,11 +355,11 @@ class MatrixSpace extends Space {
   @override
   Future<void> loadExtra() async {
     var response =
-        await _matrixClient.getSpaceHierarchy(identifier, maxDepth: 1);
+        await _matrixClient.getSpaceHierarchy(roomId, maxDepth: 1);
 
     // read child rooms
     response.rooms
-        .where((element) => element.roomId != identifier)
+        .where((element) => element.roomId != roomId)
         .where((element) =>
             _matrixClient.getRoomById(element.roomId)?.membership !=
             matrix.Membership.join)
@@ -399,7 +399,7 @@ class MatrixSpace extends Space {
 
   @override
   Future<void> setSpaceChildSpace(Space room) async {
-    await _matrixRoom.setSpaceChild(room.identifier);
+    await _matrixRoom.setSpaceChild(room.roomId);
     children.add(SpaceChildSpace(room));
     _onUpdate.add(null);
   }
@@ -499,4 +499,7 @@ class MatrixSpace extends Space {
   Future<void> removeChild(SpaceChild<dynamic> child) async {
     await matrixRoom.removeSpaceChild(child.id);
   }
+  
+  @override
+  String get clientId => client.identifier;
 }

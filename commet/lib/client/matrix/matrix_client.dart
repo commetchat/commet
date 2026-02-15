@@ -588,7 +588,7 @@ class MatrixClient extends Client {
 
   @override
   Space? getSpace(String identifier) {
-    return _spaces.tryFirstWhere((element) => element.identifier == identifier);
+    return _spaces.tryFirstWhere((element) => element.roomId == identifier);
   }
 
   @override
@@ -603,7 +603,7 @@ class MatrixClient extends Client {
 
   @override
   bool hasSpace(String identifier) {
-    return _spaces.any((element) => element.identifier == identifier);
+    return _spaces.any((element) => element.roomId == identifier);
   }
 
   (String, List<String>?)? parseAddressToIdAndVia(String address) {
@@ -689,7 +689,7 @@ class MatrixClient extends Client {
   Future<void> leaveSpace(Space space) async {
     _spaces.remove(space);
     space.close();
-    return _matrixClient.leaveRoom(space.identifier);
+    return _matrixClient.leaveRoom(space.roomId);
   }
 
   void onSyncStatusChanged(matrix.SyncStatusUpdate event) {

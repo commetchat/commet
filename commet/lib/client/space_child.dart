@@ -22,7 +22,7 @@ class SpaceChildSpace<T extends Space> implements SpaceChild<T> {
   final T child;
 
   @override
-  String get id => child.identifier;
+  String get id => child.roomId;
 
   SpaceChildSpace(this.child);
 }
