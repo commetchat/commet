@@ -55,6 +55,7 @@ class _LoginPageViewState extends State<LoginPageView> {
   );
   final TextEditingController _usernameTextField = TextEditingController();
   final TextEditingController _passwordTextField = TextEditingController();
+  final FocusNode _passwordFocusNode = FocusNode();
 
   String get promptHomeserver => Intl.message("Homeserver",
       name: "promptHomeserver",
@@ -80,6 +81,12 @@ class _LoginPageViewState extends State<LoginPageView> {
       });
     }
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _passwordFocusNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -311,10 +318,7 @@ class _LoginPageViewState extends State<LoginPageView> {
       height: 50,
       child: tiamat.Button(
         text: promptSubmitLogin,
-        onTap: flow != null
-            ? () => widget.doPasswordLogin
-                ?.call(flow, _usernameTextField.text, _passwordTextField.text)
-            : null,
+        onTap: (_) => _attemptLogin(),
       ),
     );
   }
@@ -323,8 +327,11 @@ class _LoginPageViewState extends State<LoginPageView> {
     return TextField(
       autocorrect: false,
       controller: _passwordTextField,
+      focusNode: _passwordFocusNode,
       obscureText: true,
       readOnly: widget.isLoggingIn,
+      textInputAction: TextInputAction.go,
+      onSubmitted: (_) => _attemptLogin(),
       decoration: InputDecoration(
         border: const OutlineInputBorder(),
         labelText: promptPassword,
@@ -337,6 +344,14 @@ class _LoginPageViewState extends State<LoginPageView> {
       autocorrect: false,
       controller: _usernameTextField,
       readOnly: widget.isLoggingIn,
+      textInputAction: TextInputAction.next,
+      onSubmitted: (_) {
+        if (_passwordTextField.text.isEmpty) {
+          _passwordFocusNode.requestFocus();
+        } else {
+          _attemptLogin();
+        }
+      },
       inputFormatters: [FilteringTextInputFormatter.deny(RegExp("[ ]"))],
       decoration: InputDecoration(
         border: const OutlineInputBorder(),
@@ -392,6 +407,14 @@ class _LoginPageViewState extends State<LoginPageView> {
   void _onHomeserverTextUpdated() {
     if (widget.updateHomeserver != null) {
       widget.updateHomeserver?.call(_homeserverTextField.text);
+    }
+  }
+
+  void _attemptLogin() {
+    var flow = widget.flows?.whereType<PasswordLoginFlow>().firstOrNull;
+    if (flow != null) {
+      widget.doPasswordLogin
+          ?.call(flow, _usernameTextField.text, _passwordTextField.text);
     }
   }
 }
