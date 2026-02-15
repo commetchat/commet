@@ -6,6 +6,7 @@ import 'package:commet/client/space.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/event_bus.dart';
+import 'package:flutter/services.dart';
 import 'package:window_manager/window_manager.dart';
 
 class WindowManagement {
@@ -18,6 +19,8 @@ class WindowManagement {
     windowManager.setPreventClose(true);
     windowManager.addListener(listener);
 
+    HardwareKeyboard.instance.addHandler(_onKeyEvent);
+
     if (PlatformUtils.isLinux || PlatformUtils.isWindows) {
       EventBus.onSelectedRoomChanged.stream.listen(_onSelectedRoomChanged);
       EventBus.onSelectedSpaceChanged.stream.listen(_onSelectedSpaceChanged);
@@ -26,6 +29,20 @@ class WindowManagement {
         windowManager.minimize();
       }
     }
+  }
+
+  static bool _onKeyEvent(KeyEvent event) {
+    if (event is KeyDownEvent &&
+        event.logicalKey == LogicalKeyboardKey.f11) {
+      _toggleFullscreen();
+      return true;
+    }
+    return false;
+  }
+
+  static void _toggleFullscreen() async {
+    var isFullScreen = await windowManager.isFullScreen();
+    await windowManager.setFullScreen(!isFullScreen);
   }
 
   static String? _currentSpaceName;
