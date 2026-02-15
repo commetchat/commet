@@ -81,8 +81,7 @@ class MatrixDirectMessagesComponent
     return client.getRoom(roomId);
   }
 
-  void onRoomAdded(int index) {
-    var room = client.rooms[index];
+  void onRoomAdded(Room room) {
     if (isRoomDirectMessage(room)) {
       updateRoomsList();
     }
@@ -107,8 +106,7 @@ class MatrixDirectMessagesComponent
     }
   }
 
-  void onRoomRemoved(int index) {
-    var room = client.rooms[index];
+  void onRoomRemoved(Room room) {
     directMessageRooms.remove(room);
     listUpdated.add(null);
   }

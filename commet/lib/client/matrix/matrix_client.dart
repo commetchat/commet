@@ -106,19 +106,19 @@ class MatrixClient extends Client {
   String get identifier => _id;
 
   @override
-  Stream<int> get onPeerAdded => _peers.onAdd;
+  Stream<Peer> get onPeerAdded => _peers.onAdd;
 
   @override
-  Stream<int> get onRoomAdded => _rooms.onAdd;
+  Stream<Room> get onRoomAdded => _rooms.onAdd;
 
   @override
-  Stream<int> get onSpaceAdded => _spaces.onAdd;
+  Stream<Space> get onSpaceAdded => _spaces.onAdd;
 
   @override
-  Stream<int> get onRoomRemoved => _rooms.onRemove;
+  Stream<Room> get onRoomRemoved => _rooms.onRemove;
 
   @override
-  Stream<int> get onSpaceRemoved => _spaces.onRemove;
+  Stream<Space> get onSpaceRemoved => _spaces.onRemove;
 
   @override
   Stream<void> get onSync => _onSync.stream;
