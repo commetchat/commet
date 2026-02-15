@@ -100,10 +100,10 @@ class MatrixSpace extends Space {
   String get identifier => _matrixRoom.id;
 
   @override
-  Stream<int> get onChildRoomPreviewAdded => _previews.onAdd;
+  Stream<RoomPreview> get onChildRoomPreviewAdded => _previews.onAdd;
 
   @override
-  Stream<int> get onChildRoomPreviewRemoved => _previews.onRemove;
+  Stream<RoomPreview> get onChildRoomPreviewRemoved => _previews.onRemove;
 
   @override
   Stream<void> get onChildRoomPreviewsUpdated => _previews.onListUpdated;
@@ -118,16 +118,16 @@ class MatrixSpace extends Space {
   List<Space> get subspaces => _subspaces;
 
   @override
-  Stream<int> get onChildSpaceAdded => _subspaces.onAdd;
+  Stream<Space> get onChildSpaceAdded => _subspaces.onAdd;
 
   @override
-  Stream<int> get onChildSpaceRemoved => _subspaces.onRemove;
+  Stream<Space> get onChildSpaceRemoved => _subspaces.onRemove;
 
   @override
-  Stream<int> get onRoomAdded => _rooms.onAdd;
+  Stream<Room> get onRoomAdded => _rooms.onAdd;
 
   @override
-  Stream<int> get onRoomRemoved => _rooms.onRemove;
+  Stream<Room> get onRoomRemoved => _rooms.onRemove;
 
   @override
   Stream<void> get onUpdate => _onUpdate.stream;
@@ -216,8 +216,7 @@ class MatrixSpace extends Space {
     _avatar = avatar;
   }
 
-  void onClientRoomRemoved(int index) {
-    var leftRoom = client.rooms[index];
+  void onClientRoomRemoved(Room leftRoom) {
     if (containsRoom(leftRoom.identifier)) {
       _rooms.remove(leftRoom);
     }
@@ -270,8 +269,7 @@ class MatrixSpace extends Space {
     });
   }
 
-  void _onRoomAdded(int index) {
-    var room = _rooms[index];
+  void _onRoomAdded(Room room) {
     _subscriptions.add(room.onUpdate.listen((event) {
       _onChildUpdated.add(room);
     }));

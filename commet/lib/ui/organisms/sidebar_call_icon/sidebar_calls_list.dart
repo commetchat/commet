@@ -44,7 +44,7 @@ class _SidebarCallsListState extends State<SidebarCallsList> {
     });
 
     sessions.onRemove.listen((event) {
-      if (sessions[event] == selectedSession) {
+      if (event == selectedSession) {
         setState(() {
           selectedSession = null;
           link = null;

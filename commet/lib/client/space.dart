@@ -62,19 +62,19 @@ abstract class Space {
 
   Stream<Room> get onChildRoomUpdated;
 
-  Stream<int> get onRoomAdded;
+  Stream<Room> get onRoomAdded;
 
-  Stream<int> get onRoomRemoved;
+  Stream<Room> get onRoomRemoved;
 
   Stream<void> get onChildRoomsUpdated;
 
-  Stream<int> get onChildRoomPreviewAdded;
+  Stream<RoomPreview> get onChildRoomPreviewAdded;
 
-  Stream<int> get onChildRoomPreviewRemoved;
+  Stream<RoomPreview> get onChildRoomPreviewRemoved;
 
-  Stream<int> get onChildSpaceAdded;
+  Stream<Space> get onChildSpaceAdded;
 
-  Stream<int> get onChildSpaceRemoved;
+  Stream<Space> get onChildSpaceRemoved;
 
   Stream<void> get onChildRoomPreviewsUpdated;
 
