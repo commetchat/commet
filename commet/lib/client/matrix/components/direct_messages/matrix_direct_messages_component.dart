@@ -36,7 +36,7 @@ class MatrixDirectMessagesComponent
   MatrixDirectMessagesComponent(this.client) {
     client.getMatrixClient().onSync.stream.listen(onMatrixSync);
     EventBus.onSelectedRoomChanged.stream
-        .listen((value) => currentRoomId = value?.identifier ?? "");
+        .listen((value) => currentRoomId = value?.roomId ?? "");
   }
 
   @override
@@ -114,7 +114,7 @@ class MatrixDirectMessagesComponent
   void updateNotificationsList() {
     highlightedRoomsList = directMessageRooms
         .where((e) =>
-            e.displayNotificationCount > 0 && e.identifier != currentRoomId)
+            e.displayNotificationCount > 0 && e.roomId != currentRoomId)
         .toList();
 
     highlightedListUpdated.add(null);

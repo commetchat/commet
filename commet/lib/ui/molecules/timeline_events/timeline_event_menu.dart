@@ -287,7 +287,7 @@ class TimelineEventMenu {
           action: (context) {
             EventBus.openThread.add((
               timeline.client.identifier,
-              timeline.room.identifier,
+              timeline.room.roomId,
               event.eventId,
             ));
             onActionFinished?.call();

@@ -194,7 +194,7 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
     LinkUtils.open(uri,
         clientId: widget.client.identifier,
         context: context,
-        contextRoomId: widget.room?.identifier);
+        contextRoomId: widget.room?.roomId);
   }
 }
 
@@ -438,7 +438,7 @@ class LinkifyHtmlExtension extends HtmlExtension {
                   mentionedRoom?.defaultColor ?? MatrixPeer.hashColor(mxid),
               avatar: mentionedRoom?.avatar,
               onTap: () => LinkUtils.open(href,
-                  clientId: client.identifier, contextRoomId: room?.identifier),
+                  clientId: client.identifier, contextRoomId: room?.roomId),
             );
           }
 

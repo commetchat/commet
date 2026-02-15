@@ -67,7 +67,7 @@ class _TimelineEventViewThreadState extends State<TimelineEventViewThread> {
       senderColor: senderColor,
       onTap: () => EventBus.openThread.add((
         widget.timeline.client.identifier,
-        widget.timeline.room.identifier,
+        widget.timeline.room.roomId,
         threadEventId
       )),
     );

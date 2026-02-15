@@ -85,7 +85,7 @@ class MatrixThreadTimeline implements Timeline {
 
     var mx = client.getMatrixClient();
     var data = await mx.request(matrix.RequestType.GET,
-        "/client/unstable/rooms/${room.identifier}/relations/$threadRootId/m.thread",
+        "/client/unstable/rooms/${room.roomId}/relations/$threadRootId/m.thread",
         query: {
           "limit": limit.toString(),
           if (nextBatch != null) "from": nextBatch

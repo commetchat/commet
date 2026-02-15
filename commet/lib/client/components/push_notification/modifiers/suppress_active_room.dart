@@ -11,7 +11,7 @@ class NotificationModifierSuppressActiveRoom implements NotificationModifier {
 
   NotificationModifierSuppressActiveRoom() {
     EventBus.onSelectedRoomChanged.stream.listen((event) {
-      roomId = event?.identifier;
+      roomId = event?.roomId;
     });
   }
 

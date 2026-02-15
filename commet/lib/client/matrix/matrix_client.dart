@@ -396,7 +396,7 @@ class MatrixClient extends Client {
       rooms.add(MatrixRoom(this, room, _matrixClient));
     }
 
-    rooms.removeWhere((e) => !joinedRooms.any((r) => r.id == e.identifier));
+    rooms.removeWhere((e) => !joinedRooms.any((r) => r.id == e.roomId));
   }
 
   void _updateSpacesList() {
@@ -566,7 +566,7 @@ class MatrixClient extends Client {
 
   @override
   Iterable<Room> getEligibleRoomsForSpace(Space space) {
-    return rooms.where((room) => !space.containsRoom(room.identifier));
+    return rooms.where((room) => !space.containsRoom(room.roomId));
   }
 
   @override
@@ -583,7 +583,7 @@ class MatrixClient extends Client {
 
   @override
   Room? getRoom(String identifier) {
-    return _rooms.tryFirstWhere((element) => element.identifier == identifier);
+    return _rooms.tryFirstWhere((element) => element.roomId == identifier);
   }
 
   @override
@@ -598,7 +598,7 @@ class MatrixClient extends Client {
 
   @override
   bool hasRoom(String identifier) {
-    return _rooms.any((element) => element.identifier == identifier);
+    return _rooms.any((element) => element.roomId == identifier);
   }
 
   @override
@@ -682,7 +682,7 @@ class MatrixClient extends Client {
   Future<void> leaveRoom(Room room) async {
     _rooms.remove(room);
     await room.close();
-    return _matrixClient.leaveRoom(room.identifier);
+    return _matrixClient.leaveRoom(room.roomId);
   }
 
   @override

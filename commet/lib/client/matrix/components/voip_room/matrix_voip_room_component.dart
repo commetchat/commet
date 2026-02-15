@@ -113,7 +113,7 @@ class MatrixVoipRoomComponent
       for (var entry in state.entries)
         if (entry.value.senderId == client.matrixClient.userID)
           client.matrixClient.setRoomStateWithKey(
-            room.identifier,
+            room.roomId,
             MatrixVoipRoomComponent.callMemberStateEvent,
             entry.key,
             {},

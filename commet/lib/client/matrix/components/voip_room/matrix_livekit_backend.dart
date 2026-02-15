@@ -89,7 +89,7 @@ class MatrixLivekitBackend {
       for (var item in fociPreferred) {
         final map = item as Map<String, dynamic>;
         if (map['type'] != "livekit") continue;
-        if (map['livekit_alias'] != room.identifier) continue;
+        if (map['livekit_alias'] != room.roomId) continue;
         return Uri.parse(map['livekit_service_url']);
       }
     }
@@ -159,7 +159,7 @@ class MatrixLivekitBackend {
       "foci_preferred": fociUrl
           .map((e) => {
                 "type": "livekit",
-                "livekit_alias": room.identifier,
+                "livekit_alias": room.roomId,
                 "livekit_service_url": e.toString()
               })
           .toList(),

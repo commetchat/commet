@@ -116,7 +116,7 @@ class AndroidNotifier implements Notifier {
           eventId: eventId,
           senderImageId: user.avatarId,
           roomImageId: room.avatarId,
-          roomId: room.identifier,
+          roomId: room.roomId,
           clientId: client.identifier,
           senderImage: user.avatar,
           roomImage: await room.getShortcutImage(),
@@ -187,14 +187,14 @@ class AndroidNotifier implements Notifier {
         placeholderText: content.roomName,
         imageId: content.roomImageId,
         format: ShortcutIconFormat.png,
-        identifier: room.identifier,
+        identifier: room.roomId,
         imageProvider: await room.getShortcutImage());
 
     await Future.wait([
       shortcutsManager.createShortcutForRoom(room),
     ]);
 
-    var id = room.identifier.hashCode;
+    var id = room.roomId.hashCode;
     var activeStyleInfo = await AndroidFlutterLocalNotificationsPlugin()
         .getActiveNotificationMessagingStyle(id);
 
@@ -280,10 +280,10 @@ class AndroidNotifier implements Notifier {
         placeholderText: content.roomName,
         imageId: content.roomImageId,
         format: ShortcutIconFormat.png,
-        identifier: room.identifier,
+        identifier: room.roomId,
         imageProvider: await room.getShortcutImage());
 
-    var id = room.identifier.hashCode;
+    var id = room.roomId.hashCode;
 
     var payload =
         OpenRoomURI(roomId: content.roomId, clientId: content.clientId)
@@ -407,7 +407,7 @@ class AndroidNotifier implements Notifier {
     if (notifications == null) return;
 
     for (var noti in notifications) {
-      if (noti.groupKey == room.identifier) {
+      if (noti.groupKey == room.roomId) {
         flutterLocalNotificationsPlugin?.cancel(noti.id!);
       }
     }

@@ -39,7 +39,7 @@ class RoomQuickAccessMenu {
                 builder: (context) => SendInvitationWidget(
                       room.client,
                       invitation,
-                      roomId: room.identifier,
+                      roomId: room.roomId,
                       displayName: room.displayName,
                       existingMembers: room.memberIds,
                     ),
@@ -49,7 +49,7 @@ class RoomQuickAccessMenu {
         RoomQuickAccessMenuEntry(
             name: "Call",
             action: (context) =>
-                calls.startCall(room.identifier, CallType.voice),
+                calls.startCall(room.roomId, CallType.voice),
             icon: Icons.call),
       if (!preferences.hideRoomSidePanel) ...[
         if (calendar?.hasCalendar == true && calendar?.isCalendarRoom == false)

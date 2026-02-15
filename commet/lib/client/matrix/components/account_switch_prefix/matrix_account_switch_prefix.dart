@@ -37,7 +37,7 @@ class MatrixAccountSwitchComponent extends AccountSwitchPrefix<MatrixClient> {
       if (string.startsWith(component.clientPrefix!)) {
         print("Found prefixed client!, $otherClient");
 
-        if (otherClient.hasRoom(currentRoom.identifier)) {
+        if (otherClient.hasRoom(currentRoom.roomId)) {
           return (otherClient, component.clientPrefix!);
         } else {
           print("Client is not a member of the room!");

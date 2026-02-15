@@ -53,7 +53,7 @@ class CalendarSync {
 
       if (calendar?.syncedCalendars.value?.isNotEmpty == true) {
         Log.i(
-          "Syncing room calendar from external sources: ${room.identifier}",
+          "Syncing room calendar from external sources: ${room.roomId}",
         );
 
         await calendar!.runCalendarSync();

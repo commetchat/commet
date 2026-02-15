@@ -230,7 +230,7 @@ class MatrixLivekitVoipSession implements VoipSession {
   String? get remoteUserName => null;
 
   @override
-  String get roomId => room.identifier;
+  String get roomId => room.roomId;
 
   @override
   String get roomName => room.displayName;

@@ -157,14 +157,14 @@ class MatrixCalendarRoomComponent
 
         room.matrixRoom.client.setAccountDataPerRoom(
             client.matrixClient.userID!,
-            room.identifier,
+            room.roomId,
             syncedCalendarsEventType, {});
       }
     }
 
     if (room.isE2EE) {
       data = BasicEvent(type: syncedCalendarsEventType, content: {
-        "remote_calendars": preferences.getCalendarSources(room.identifier)
+        "remote_calendars": preferences.getCalendarSources(room.roomId)
       });
     }
 

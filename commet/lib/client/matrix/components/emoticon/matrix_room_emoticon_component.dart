@@ -42,7 +42,7 @@ class MatrixRoomEmoticonComponent extends MatrixEmoticonComponent
   bool get canCreatePack => room.permissions.canEditRoomEmoticons;
 
   @override
-  String get ownerId => room.identifier;
+  String get ownerId => room.roomId;
 
   @override
   String get ownerDisplayName => room.displayName;
@@ -52,7 +52,7 @@ class MatrixRoomEmoticonComponent extends MatrixEmoticonComponent
     List<EmoticonPack> packs = List.from(ownedPacks, growable: true);
 
     for (var space in room.client.spaces
-        .where((element) => element.containsRoom(room.identifier))) {
+        .where((element) => element.containsRoom(room.roomId))) {
       var component = space.getComponent<SpaceEmoticonComponent>();
       if (component == null) continue;
       packs.addAll(component.ownedPacks);
@@ -135,7 +135,7 @@ class MatrixRoomEmoticonComponent extends MatrixEmoticonComponent
     var result = List<EmoticonPack>.of(ownedPacks);
 
     for (var space in room.client.spaces
-        .where((element) => element.containsRoom(room.identifier))) {
+        .where((element) => element.containsRoom(room.roomId))) {
       var component = space.getComponent<MatrixSpaceEmoticonComponent>();
       if (component != null) {
         result.addAll(component.ownedPacks.where((e) => !result.contains(e)));

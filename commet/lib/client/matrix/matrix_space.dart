@@ -262,7 +262,7 @@ class MatrixSpace extends Space {
   }
 
   void onClientRoomRemoved(Room leftRoom) {
-    if (containsRoom(leftRoom.identifier)) {
+    if (containsRoom(leftRoom.roomId)) {
       _rooms.remove(leftRoom);
     }
   }
@@ -285,15 +285,15 @@ class MatrixSpace extends Space {
         var room = client.getRoom(child.roomId!);
 
         if (room == null) {
-          _rooms.removeWhere((e) => e.identifier == child.roomId);
+          _rooms.removeWhere((e) => e.roomId == child.roomId);
         }
 
         if (room != null) {
-          if (!containsRoom(room.identifier) &&
-              !client.hasSpace(room.identifier)) {
+          if (!containsRoom(room.roomId) &&
+              !client.hasSpace(room.roomId)) {
             _rooms.add(room);
             _previews
-                .removeWhere((element) => element.roomId == room.identifier);
+                .removeWhere((element) => element.roomId == room.roomId);
           }
         }
       }
@@ -307,8 +307,8 @@ class MatrixSpace extends Space {
     }
 
     _rooms.sort((a, b) {
-      var orderA = orders[a.identifier] ?? "";
-      var orderB = orders[b.identifier] ?? "";
+      var orderA = orders[a.roomId] ?? "";
+      var orderB = orders[b.roomId] ?? "";
 
       return orderA.compareTo(orderB);
     });
@@ -323,7 +323,7 @@ class MatrixSpace extends Space {
   @override
   Future<Room> createRoom(String name, CreateRoomArgs args) async {
     var room = await client.createRoom(args);
-    _matrixRoom.setSpaceChild(room.identifier);
+    _matrixRoom.setSpaceChild(room.roomId);
     return room;
   }
 
@@ -392,7 +392,7 @@ class MatrixSpace extends Space {
 
   @override
   Future<void> setSpaceChildRoom(Room room) async {
-    await _matrixRoom.setSpaceChild(room.identifier);
+    await _matrixRoom.setSpaceChild(room.roomId);
     children.add(SpaceChildRoom(room));
     _onUpdate.add(null);
   }
@@ -406,7 +406,7 @@ class MatrixSpace extends Space {
 
   @override
   bool containsRoom(String identifier) {
-    return _rooms.any((element) => element.identifier == identifier);
+    return _rooms.any((element) => element.roomId == identifier);
   }
 
   @override
@@ -423,7 +423,7 @@ class MatrixSpace extends Space {
     if (update == null) return;
 
     for (var id in update.keys) {
-      if (roomsWithChildren.any((i) => i.identifier == id)) {
+      if (roomsWithChildren.any((i) => i.roomId == id)) {
         _updateTopLevelStatus();
         _onUpdate.add(null);
       }

@@ -46,7 +46,7 @@ class ClientManager {
           }
         }
 
-        if (client.spaces.any((space) => space.containsRoom(room.identifier))) {
+        if (client.spaces.any((space) => space.containsRoom(room.roomId))) {
           continue;
         }
 

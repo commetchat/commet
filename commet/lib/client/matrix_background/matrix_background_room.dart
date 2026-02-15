@@ -69,7 +69,7 @@ class MatrixBackgroundRoom implements Room {
     }
 
     if (displayName == "") {
-      displayName = identifier;
+      displayName = roomId;
     }
 
     if (avatarId != null) {
@@ -105,7 +105,7 @@ class MatrixBackgroundRoom implements Room {
   }
 
   @override
-  Color get defaultColor => getColorOfUser(identifier);
+  Color get defaultColor => getColorOfUser(roomId);
 
   @override
   String get developerInfo => throw UnimplementedError();
@@ -129,7 +129,7 @@ class MatrixBackgroundRoom implements Room {
     var db = backgroundClient.database.db;
     var data = await (db.select(db.roomMembers)
           ..where(
-              (tbl) => tbl.roomId.equals(identifier) & tbl.userId.equals(id)))
+              (tbl) => tbl.roomId.equals(roomId) & tbl.userId.equals(id)))
         .getSingleOrNull();
 
     MatrixBackgroundMember result = MatrixBackgroundMember(id);
@@ -164,7 +164,7 @@ class MatrixBackgroundRoom implements Room {
   @override
   Future<TimelineEvent<Client>?> getEvent(String eventId) async {
     var result =
-        await backgroundClient.api.getOneRoomEvent(identifier, eventId);
+        await backgroundClient.api.getOneRoomEvent(roomId, eventId);
     Log.i("Received event: ${result}");
 
     if ([
@@ -202,9 +202,6 @@ class MatrixBackgroundRoom implements Room {
 
   @override
   IconData get icon => throw UnimplementedError();
-
-  @override
-  String get identifier => roomId;
 
   @override
   List<(Member, Role)> importantMembers() {
@@ -349,4 +346,8 @@ class MatrixBackgroundRoom implements Room {
     // TODO: implement markAsRead
     throw UnimplementedError();
   }
+  
+  @override
+  // TODO: implement clientId
+  String get clientId => client.identifier;
 }

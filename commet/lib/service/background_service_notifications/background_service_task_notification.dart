@@ -124,7 +124,7 @@ class BackgroundNotificationsManager {
           roomName: room.displayName,
           content: event.plainTextBody,
           eventId: eventId,
-          roomId: room.identifier,
+          roomId: room.roomId,
           clientId: client.identifier,
           senderImage: user.avatar,
           roomImage: room.avatar,

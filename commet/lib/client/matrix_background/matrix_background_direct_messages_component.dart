@@ -33,7 +33,7 @@ class MatrixBackgroundClientDirectMessagesComponent
           var item = pair.value;
           Log.i(item);
           var list = item as List<dynamic>;
-          if (list.contains(room.identifier)) {
+          if (list.contains(room.roomId)) {
             return key;
           }
         }
@@ -58,7 +58,7 @@ class MatrixBackgroundClientDirectMessagesComponent
         for (var item in content.values) {
           Log.i(item);
           var list = item as List<dynamic>;
-          if (list.contains(room.identifier)) {
+          if (list.contains(room.roomId)) {
             Log.i("Found room id in account info, this is a direct message");
             return true;
           }
