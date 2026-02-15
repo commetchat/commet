@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:commet/cache/file_cache.dart';
-import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
@@ -22,7 +21,7 @@ class BackgroundNotificationsManager2 {
   List<Map<String, dynamic>> queue = List.empty(growable: true);
 
   Future<void> init() async {
-    if (fileCache == null || clientManager == null) {
+    if (fileCache == null) {
       await initDatabaseServer();
     }
 
@@ -34,17 +33,13 @@ class BackgroundNotificationsManager2 {
       }
     }
 
-    if (clientManager == null) {
-      clientManager = ClientManager();
-
-      final clients = preferences.getRegisteredMatrixClients();
-      if (clients != null) {
-        for (var id in clients) {
-          var client = MatrixBackgroundClient(databaseId: id);
-          Log.i("Adding background matrix client: ${id}");
-          await client.init(true, isBackgroundService: true);
-          clientManager!.addClient(client);
-        }
+    final clients = preferences.getRegisteredMatrixClients();
+    if (clients != null) {
+      for (var id in clients) {
+        var client = MatrixBackgroundClient(databaseId: id);
+        Log.i("Adding background matrix client: ${id}");
+        await client.init(true, isBackgroundService: true);
+        clientManager.addClient(client);
       }
     }
 
@@ -109,7 +104,7 @@ class BackgroundNotificationsManager2 {
         return;
       }
 
-      var client = clientManager!.clients
+      var client = clientManager.clients
           .firstWhereOrNull((element) => element.hasRoom(roomId));
 
       // If the room does not already belong to any of our clients, it must be an invite

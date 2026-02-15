@@ -23,7 +23,9 @@ class ClientManager {
 
   late final DirectMessagesAggregator directMessages;
 
-  ClientManager() {
+  static ClientManager instance = ClientManager._();
+
+  ClientManager._() {
     directMessages = DirectMessagesAggregator(this);
     callManager = CallManager(this);
   }
@@ -92,14 +94,14 @@ class ClientManager {
   //         previousValue + element.displayNotificationCount);
 
   static Future<ClientManager> init({bool isBackgroundService = false}) async {
-    final newClientManager = ClientManager();
+    instance = ClientManager._();
 
     await Future.wait([
-      MatrixClient.loadFromDB(newClientManager,
+      MatrixClient.loadFromDB(instance,
           isBackgroundService: isBackgroundService),
     ]);
 
-    return newClientManager;
+    return instance;
   }
 
   void addClient(Client client) {

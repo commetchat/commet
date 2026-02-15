@@ -47,7 +47,7 @@ class BackgroundNotificationsManager {
 
     shortcutsManager.init();
 
-    clientManager = await ClientManager.init(isBackgroundService: true);
+    await ClientManager.init(isBackgroundService: true);
   }
 
   void onReceived(Map<String, dynamic>? data) async {
