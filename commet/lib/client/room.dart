@@ -23,7 +23,11 @@ abstract class BaseRoom {
   String get clientId;
 
   /// A locally unique identifier, to distinguish between rooms when two or more accounts in this app are in the same room
-  String get localId => "${clientId}:${roomId}";
+  String get localId => get_localId(roomId, clientId);
+
+  static get_localId(String roomId, String clientId) {
+    return "${clientId}:${roomId}";
+  }
 
   @override
   bool operator ==(Object other) {

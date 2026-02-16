@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:nativewrappers/_internal/vm/lib/ffi_allocation_patch.dart';
-
 import 'package:commet/utils/notifying_map.dart';
 
 class NotifyingSubMap<K, V extends V2, V2> implements NotifyingMap<K, V> {
@@ -13,7 +11,7 @@ class NotifyingSubMap<K, V extends V2, V2> implements NotifyingMap<K, V> {
   NotifyingSubMap(this._parent, bool Function(V2? element)? condition) {
     _condition =
         (V2? element) => (element is V && (condition?.call(element) ?? true));
-    _length = entries.length();
+    _length = entries.length;
 
     onAdd.listen((e) {
       _length = _length + 1;
@@ -25,11 +23,11 @@ class NotifyingSubMap<K, V extends V2, V2> implements NotifyingMap<K, V> {
 
   Stream<MapEntry<K, V>> get onAdd => _parent.onAdd
       .where((e) => _condition.call(e.value))
-      .map((e) => e as MapEntry<K, V>);
+      .map((e) => MapEntry(e.key, e.value as V));
 
   Stream<MapEntry<K, V>> get onRemove => _parent.onRemove
       .where((e) => _condition.call(e.value))
-      .map((e) => e as MapEntry<K, V>);
+      .map((e) => MapEntry(e.key, e.value as V));
 
   @override
   V? operator [](Object? key) {
@@ -82,7 +80,7 @@ class NotifyingSubMap<K, V extends V2, V2> implements NotifyingMap<K, V> {
       ._parent
       .entries
       .where((e) => _condition.call(e.value))
-      .map((e) => e as MapEntry<K, V>);
+      .map((e) => MapEntry(e.key, e.value as V));
 
   @override
   void forEach(void Function(K key, V value) action) {
@@ -131,6 +129,9 @@ class NotifyingSubMap<K, V extends V2, V2> implements NotifyingMap<K, V> {
     return _parent.update(key, (value) {
       if (_condition.call(value)) {
         return update.call(value as V);
+      }
+      if (ifAbsent == null){
+        return value;
       }
       return ifAbsent.call();
     }, ifAbsent: ifAbsent) as V;

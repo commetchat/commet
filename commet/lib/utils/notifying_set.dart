@@ -14,7 +14,7 @@ class NotifyingSet<T> implements Set<T> {
   Stream<T> get onRemove => _onRemove.stream;
 
 
-  NotifyingSet({bool sync = false}) {
+  NotifyingSet({bool sync = true}) {
     _internalSet = Set();
     _onAdd = StreamController.broadcast(sync: sync);
     _onRemove = StreamController.broadcast(sync: sync);

@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/account_switch_prefix/account_switch_prefix.dart';
-import 'package:commet/client/stale_info.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/molecules/user_panel.dart';
 import 'package:commet/ui/navigation/adaptive_text_dialog.dart';
@@ -27,10 +26,12 @@ class AccountManagementSettingsTab extends StatefulWidget {
 
 class _AccountManagementSettingsTabState
     extends State<AccountManagementSettingsTab> {
-  StreamSubscription<int>? onClientAddedListener;
-  StreamSubscription<StalePeerInfo>? onClientRemovedListener;
+  StreamSubscription<Client>? onClientAddedListener;
+  StreamSubscription<Client>? onClientRemovedListener;
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
-  late int _numClients;
+  final List<Client> _clientList = List.empty(growable: true);
+
+  int get _numClients => _clientList.length;
 
   String get promptAddAccount => Intl.message("Add Account",
       desc: "Label for button in settings to add another account",
@@ -51,28 +52,25 @@ class _AccountManagementSettingsTabState
 
   @override
   void initState() {
-    onClientAddedListener =
-        widget.clientManager.onClientAdded.stream.listen((index) {
-      _listKey.currentState?.insertItem(index);
-      setState(() {
-        _numClients++;
-      });
+    onClientAddedListener = widget.clientManager.onClientAdded.listen((client) {
+      _clientList.add(client);
+      _listKey.currentState?.insertItem(_clientList.length - 1);
+      setState(() {});
     });
 
     onClientRemovedListener =
-        widget.clientManager.onClientRemoved.stream.listen((info) {
-      _listKey.currentState?.removeItem(
-          info.index,
-          (context, animation) => SizeTransition(
-                sizeFactor: animation,
-                child: accountListItem(
-                    displayName: info.displayName!,
-                    avatar: info.avatar,
-                    detail: info.identifier),
-              ));
+        widget.clientManager.onClientRemoved.listen((client) {
+        int index = _clientList.indexOf(client);
+        _listKey.currentState?.removeItem(
+            index,
+            (context, animation) => SizeTransition(
+                  sizeFactor: animation,
+                  child: accountListItem(
+                      displayName: client.self!.displayName,
+                      avatar: client.self!.avatar,
+                      detail: client.self!.identifier),
+                ));
     });
-
-    _numClients = widget.clientManager.clients.length;
 
     super.initState();
   }

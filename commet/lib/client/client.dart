@@ -97,13 +97,13 @@ abstract class Client {
   List<Room> get singleRooms;
 
   /// Gets list of all rooms
-  List<Room> get rooms;
+  Iterable<Room> get rooms;
 
   /// Gets list of all spaces
-  List<Space> get spaces;
+  Iterable<Space> get spaces;
 
   /// Gets list of all currently known users
-  List<Peer> get peers;
+  Iterable<Peer> get peers;
 
   /// When a room is added, this will be called with the index of the new room
   Stream<Room> get onRoomAdded;

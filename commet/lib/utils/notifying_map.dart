@@ -13,7 +13,7 @@ class NotifyingMap<K, V> implements Map<K, V> {
   // This stream is called just before an item is removed from the list, the item will still be accessible at this index until the stream is completed
   Stream<MapEntry<K, V>> get onRemove => _onRemove.stream;
   
-  NotifyingMap({bool sync = false}) {
+  NotifyingMap({bool sync = true}) {
     _internalMap = Map();
     _onAdd = StreamController.broadcast(sync: sync);
     _onRemove = StreamController.broadcast(sync: sync);
@@ -119,7 +119,7 @@ class NotifyingMap<K, V> implements Map<K, V> {
     if (ifAbsent == null){
       return _internalMap.update(key, update);
     }
-    bool absent = false;
+    bool absent = true;
     V? old_value = null;
     V value = _internalMap.update(key, (V value) {absent = false; old_value = value; return update(value);}, ifAbsent: ifAbsent);
     if (absent) {
