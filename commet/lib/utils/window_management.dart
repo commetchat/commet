@@ -32,8 +32,7 @@ class WindowManagement {
   }
 
   static bool _onKeyEvent(KeyEvent event) {
-    if (event is KeyDownEvent &&
-        event.logicalKey == LogicalKeyboardKey.f11) {
+    if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.f11) {
       _toggleFullscreen();
       return true;
     }
@@ -59,9 +58,11 @@ class WindowManagement {
   }
 
   static void _updateTitle() {
-    final result = [_currentRoomName, _currentSpaceName, "commet"]
-        .whereNot((a) => a == null)
-        .join(" | ");
+    final result = [
+      _currentRoomName,
+      _currentSpaceName,
+      "commet",
+    ].whereNot((a) => a == null).join(" | ");
     windowManager.setTitle(result);
   }
 }
