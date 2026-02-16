@@ -15,22 +15,11 @@ class SpaceGeneralSettingsPage extends StatefulWidget {
 }
 
 class _SpaceGeneralSettingsPageState extends State<SpaceGeneralSettingsPage> {
-  late PushRule pushRule;
-
-  @override
-  void initState() {
-    pushRule = widget.space.pushRule;
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        RoomGeneralSettingsView(
-          pushRule: pushRule,
-          onPushRuleChanged: setPushRule,
-        ),
         const SizedBox(
           height: 10,
         ),
@@ -38,15 +27,5 @@ class _SpaceGeneralSettingsPageState extends State<SpaceGeneralSettingsPage> {
           MatrixRoomAddressSettings((widget.space as MatrixSpace).matrixRoom)
       ],
     );
-  }
-
-  void setPushRule(PushRule? rule) {
-    if (rule == null) return;
-
-    setState(() {
-      pushRule = rule;
-    });
-
-    widget.space.setPushRule(rule);
   }
 }
