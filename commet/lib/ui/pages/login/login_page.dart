@@ -21,11 +21,11 @@ class LoginPage extends StatefulWidget {
 
 class LoginPageState extends State<LoginPage> {
   String get messageLoginFailed => Intl.message("Login Failed...",
-      name: "messageLoginFailed",
+      name: "messageLoginFail",
       desc: "Generic text to show that an attempted login has failed");
 
-  String get messageLoginError => Intl.message("An error occured",
-      name: "messageLoginError",
+  String get messageLoginError => Intl.message("Incorrect username or password.",
+      name: "messageLoginIncorrect",
       desc:
           "A generic error message to convey that an error occured when attempting to login");
 
@@ -118,7 +118,11 @@ class LoginPageState extends State<LoginPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(message),
+            content: Text(
+              message,
+              style: TextStyle(color: Colors.white),
+            ),
+            backgroundColor: Colors.red,  // scary error colour!!!!
           ),
         );
       }
