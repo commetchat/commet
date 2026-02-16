@@ -94,7 +94,7 @@ class BackgroundNotificationsManager {
     var eventId = data["event_id"] as String;
 
     var client =
-        clientManager!.clients.firstWhere((element) => element.hasRoom(roomId));
+        clientManager.clients.firstWhere((element) => element.hasRoom(roomId));
 
     Log.i("Found client: ${client.identifier}");
     var room = client.getRoom(roomId);

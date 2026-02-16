@@ -26,7 +26,7 @@ class MatrixAccountSwitchComponent extends AccountSwitchPrefix<MatrixClient> {
 
   @override
   (Client, String)? getPrefixedAccount(String string, Room currentRoom) {
-    for (var otherClient in clientManager!.clients) {
+    for (var otherClient in clientManager.clients) {
       if (otherClient is! MatrixClient) continue;
 
       var component = otherClient.getComponent<AccountSwitchPrefix>();
@@ -84,7 +84,7 @@ class MatrixAccountSwitchComponent extends AccountSwitchPrefix<MatrixClient> {
 
   @override
   bool isPossiblyUsingPrefix(String currentText) {
-    for (var otherClient in clientManager!.clients) {
+    for (var otherClient in clientManager.clients) {
       if (otherClient is! MatrixClient) continue;
 
       var component = otherClient.getComponent<AccountSwitchPrefix>();

@@ -322,7 +322,7 @@ class MatrixRoom extends Room {
     }
 
     // never notify for a message that came from an account we are logged in to!
-    if (clientManager?.clients
+    if (clientManager.clients
             .any((element) => element.self?.identifier == event.senderId) ==
         true) {
       return false;

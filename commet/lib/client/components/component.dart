@@ -21,7 +21,7 @@ abstract class NeedsPostLoginInit {
   void postLoginInit();
 
   static void doPostLoginInit() {
-    for (var client in clientManager!.clients) {
+    for (var client in clientManager.clients) {
       if (!client.isLoggedIn()) continue;
 
       var components = client.getAllComponents()!;

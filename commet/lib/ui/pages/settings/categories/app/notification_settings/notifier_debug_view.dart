@@ -16,7 +16,7 @@ class _NotifierDebugViewState extends State<NotifierDebugView> {
 
   @override
   void initState() {
-    component = clientManager!.clients.firstOrNull
+    component = clientManager.clients.firstOrNull
         ?.getComponent<PushNotificationComponent>();
     super.initState();
   }
@@ -25,9 +25,9 @@ class _NotifierDebugViewState extends State<NotifierDebugView> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        if (clientManager!.clients.length > 1)
+        if (clientManager.clients.length > 1)
           AccountSelector(
-            clientManager!.clients,
+            clientManager.clients,
             onClientSelected: (client) {
               setState(() {
                 component = client.getComponent<PushNotificationComponent>();

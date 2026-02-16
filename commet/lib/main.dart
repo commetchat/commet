@@ -115,7 +115,7 @@ void bubble() async {
             child: child,
           ),
       home: BubblePage(
-        clientManager!,
+        clientManager,
         initialClientId: initialClientId,
         initialRoom: initialRoomId,
       )));
@@ -272,7 +272,7 @@ Future<void> startGui() async {
   }
 
   runApp(App(
-    clientManager: clientManager!,
+    clientManager: clientManager,
     initialTheme: initialTheme,
     initialClientId: initialClientId,
     initialRoom: initialRoomId,

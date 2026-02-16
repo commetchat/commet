@@ -42,9 +42,9 @@ class _CallWidgetState extends State<CallWidget> {
 
   Future<void> setMicrophoneMute(bool isMuted) {
     if (isMuted) {
-      clientManager?.callManager.playMuteSound();
+      clientManager.callManager.playMuteSound();
     } else {
-      clientManager?.callManager.playUnmuteSound();
+      clientManager.callManager.playUnmuteSound();
     }
 
     return widget.session.setMicrophoneMute(isMuted);

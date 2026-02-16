@@ -60,7 +60,7 @@ class LinuxNotifier implements Notifier {
       if (eventId == null) return;
       if (message == null) return;
 
-      var client = clientManager!.getClient(clientId);
+      var client = clientManager.getClient(clientId);
 
       if (client == null) return;
 
@@ -80,13 +80,13 @@ class LinuxNotifier implements Notifier {
     if ([callAccept, callDecline].contains(action)) {
       final callId = payload['call_id'];
       final clientId = payload['client_id'];
-      final session = clientManager?.callManager.currentSessions
+      final session = clientManager.callManager.currentSessions
           .where(
               (e) => e.sessionId == callId && e.client.identifier == clientId)
           .firstOrNull;
 
       if (action == callDecline) {
-        clientManager?.callManager.stopRingtone();
+        clientManager.callManager.stopRingtone();
       }
 
       if (session != null) {
@@ -96,7 +96,7 @@ class LinuxNotifier implements Notifier {
 
         if (action == callDecline) {
           session.declineCall();
-          clientManager?.callManager.stopRingtone();
+          clientManager.callManager.stopRingtone();
         }
       } else {
         Log.d("Could not find call session");
@@ -131,7 +131,7 @@ class LinuxNotifier implements Notifier {
 
   Future<void> displayMessageNotification(
       MessageNotificationContent content) async {
-    var client = clientManager?.getClient(content.clientId);
+    var client = clientManager.getClient(content.clientId);
     var room = client?.getRoom(content.roomId);
 
     if (room == null) {
@@ -201,7 +201,7 @@ class LinuxNotifier implements Notifier {
   }
 
   Future<void> displayCallNotification(CallNotificationContent content) async {
-    var client = clientManager?.getClient(content.clientId);
+    var client = clientManager.getClient(content.clientId);
     var room = client?.getRoom(content.roomId);
 
     if (room == null) {

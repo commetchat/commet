@@ -69,7 +69,7 @@ class WindowsNotifier implements Notifier {
         if (eventId == null) return;
         if (message == null) return;
 
-        var client = clientManager!.getClient(clientId);
+        var client = clientManager.getClient(clientId);
 
         if (client == null) return;
 
@@ -90,7 +90,7 @@ class WindowsNotifier implements Notifier {
         print("Handling call response");
         final callId = args['call_id'];
         final clientId = args['client_id'];
-        final session = clientManager?.callManager.currentSessions
+        final session = clientManager.callManager.currentSessions
             .where(
                 (e) => e.sessionId == callId && e.client.identifier == clientId)
             .firstOrNull;
@@ -133,7 +133,7 @@ class WindowsNotifier implements Notifier {
       CallNotificationContent content) async {
     String? avatarFilePath;
 
-    var client = clientManager?.getClient(content.clientId);
+    var client = clientManager.getClient(content.clientId);
     var room = client?.getRoom(content.roomId);
 
     if (room == null) {
@@ -193,7 +193,7 @@ class WindowsNotifier implements Notifier {
       MessageNotificationContent content) async {
     String? avatarFilePath;
 
-    var client = clientManager?.getClient(content.clientId);
+    var client = clientManager.getClient(content.clientId);
     var room = client?.getRoom(content.roomId);
 
     if (room == null) {

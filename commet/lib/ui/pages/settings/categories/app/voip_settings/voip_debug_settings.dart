@@ -17,7 +17,7 @@ class _VoipDebugSettingsState extends State<VoipDebugSettings> {
 
   @override
   void initState() {
-    selectedClient = clientManager!.clients.first;
+    selectedClient = clientManager.clients.first;
     super.initState();
   }
 
@@ -25,9 +25,9 @@ class _VoipDebugSettingsState extends State<VoipDebugSettings> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        if (clientManager!.clients.length > 1)
+        if (clientManager.clients.length > 1)
           AccountSelector(
-            clientManager!.clients,
+            clientManager.clients,
             onClientSelected: (client) {
               setState(() {
                 selectedClient = client;

@@ -139,8 +139,8 @@ class MainPageViewDesktop extends StatelessWidget {
       {double height = 50, double avatarRadius = 12}) {
     Profile? current = state.currentUser;
 
-    if (clientManager!.clients.length == 1) {
-      current = clientManager!.clients.first.self;
+    if (clientManager.clients.length == 1) {
+      current = clientManager.clients.first.self;
     }
 
     return Material(
@@ -154,15 +154,15 @@ class MainPageViewDesktop extends StatelessWidget {
                 child: AdaptiveContextMenu(
               modal: true,
               items: [
-                if (clientManager!.clients.length > 1)
+                if (clientManager.clients.length > 1)
                   tiamat.ContextMenuItem(
                       text: "Mix Accounts",
                       onPressed: () {
                         EventBus.setFilterClient.add(null);
                         preferences.setFilterClient(null);
                       }),
-                if (clientManager!.clients.length > 1)
-                  ...clientManager!.clients
+                if (clientManager.clients.length > 1)
+                  ...clientManager.clients
                       .map((i) => tiamat.ContextMenuItem(
                           text: i.self!.identifier,
                           onPressed: () {
@@ -203,7 +203,7 @@ class MainPageViewDesktop extends StatelessWidget {
                         ),
                       ),
                     if (current == null)
-                      ...clientManager!.clients
+                      ...clientManager.clients
                           .where((i) => i.self != null)
                           .map((i) => Padding(
                                 padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),

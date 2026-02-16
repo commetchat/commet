@@ -21,16 +21,12 @@ class CalendarSync {
   Future<void> syncAllClients() async {
     Log.i("Client Manager: ${clientManager}");
 
-    if (clientManager == null) {
-      Timer(Duration(seconds: 30), () => syncAllClients());
-    } else {
-      await Future.wait([
-        for (var client in clientManager!.clients) syncClient(client),
-      ]);
+    await Future.wait([
+      for (var client in clientManager.clients) syncClient(client),
+    ]);
 
-      Timer(Duration(minutes: 30), () => syncAllClients());
+    Timer(Duration(minutes: 30), () => syncAllClients());
     }
-  }
 
   Future<void> syncClient(Client client) async {
     // Wait for client to come online

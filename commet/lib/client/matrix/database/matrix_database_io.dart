@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:commet/config/app_config.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
 import 'package:commet/utils/database/multiple_database_server.dart';
-import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart';
 import 'package:matrix_dart_sdk_drift_db/matrix_dart_sdk_drift_db.dart';
 import 'package:path/path.dart' as p;

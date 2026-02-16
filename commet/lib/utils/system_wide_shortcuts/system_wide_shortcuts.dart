@@ -34,13 +34,13 @@ class SystemWideShortcuts {
   static Map<String, AppShortcut> shortcuts = {
     "mute": AppShortcut(
         getDisplayName: () => "Mute",
-        callback: () => clientManager?.callManager.mute()),
+        callback: () => clientManager.callManager.mute()),
     "unmute": AppShortcut(
         getDisplayName: () => "Unmute",
-        callback: () => clientManager?.callManager.unmute()),
+        callback: () => clientManager.callManager.unmute()),
     "toggle_mute": AppShortcut(
         getDisplayName: () => "Toggle Mute",
-        callback: () => clientManager?.callManager.toggleMute()),
+        callback: () => clientManager.callManager.toggleMute()),
   };
 
   static Future<void> storeHotkeys() async {

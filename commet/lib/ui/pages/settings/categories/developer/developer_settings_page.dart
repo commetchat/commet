@@ -203,7 +203,7 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
             tiamat.Button(
               text: "Message Notification",
               onTap: () async {
-                var client = clientManager!.clients.first;
+                var client = clientManager.clients.first;
                 var room = client.rooms.first;
                 var user = client.self!;
                 NotificationManager.notify(MessageNotificationContent(
@@ -224,10 +224,10 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
               text: "Call Notification",
               onTap: () async {
                 if (!BuildConfig.ANDROID) {
-                  clientManager?.callManager.startRingtone();
+                  clientManager.callManager.startRingtone();
                 }
 
-                var client = clientManager!.clients.first;
+                var client = clientManager.clients.first;
                 var room = client.rooms.first;
                 var user = client.self!;
                 NotificationManager.notify(CallNotificationContent(

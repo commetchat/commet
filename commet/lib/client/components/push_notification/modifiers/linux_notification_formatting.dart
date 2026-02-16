@@ -34,7 +34,7 @@ class NotificationModifierLinuxFormatting implements NotificationModifier {
     if (content is MessageNotificationContent &&
         content.formattedContent != null &&
         content.formatType != null) {
-      final client = clientManager!.getClient(content.clientId);
+      final client = clientManager.getClient(content.clientId);
       final room = client!.getRoom(content.roomId)!;
 
       var formattedContent = await convertFormattedContent(

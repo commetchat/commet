@@ -7,7 +7,6 @@ import 'package:commet/client/components/push_notification/notification_content.
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/components/voip/voip_component.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
-import 'package:commet/client/stale_info.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:intl/intl.dart';
