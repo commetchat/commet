@@ -145,6 +145,7 @@ class LoginPageState extends State<LoginPage> {
   }
 
   void onLoginProgressChanged(ClientConnectionStatusUpdate event) {
+    if (!mounted) return;
     setState(() {
       progress = event.progress;
     });

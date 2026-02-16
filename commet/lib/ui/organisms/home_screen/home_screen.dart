@@ -45,6 +45,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
     subscriptions = [
       widget.clientManager.onSync.stream.listen(onSync),
+      widget.clientManager.onClientRemoved.stream.listen((_) {
+        setState(() {
+          updateRecent();
+        });
+      }),
       EventBus.setFilterClient.stream.listen(setFilterClient),
     ];
 
