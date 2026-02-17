@@ -71,8 +71,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void onSync(void event) {
-      setState(() {
-        updateRecent();
+    setState(() {
+      updateRecent();
     });
   }
 

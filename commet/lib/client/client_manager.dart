@@ -17,9 +17,11 @@ class ClientManager {
 
   final NotifyingMap<String, Client> _clients = NotifyingMap();
 
-  late final NotifyingMap<String, Room> _rooms = NotifyingSubMap(_all_rooms, null);
+  late final NotifyingMap<String, Room> _rooms =
+      NotifyingSubMap(_all_rooms, null);
 
-  late final NotifyingMap<String, Space> _spaces = NotifyingSubMap(_all_rooms, null);
+  late final NotifyingMap<String, Space> _spaces =
+      NotifyingSubMap(_all_rooms, null);
 
   NotifyingMap<String, Room> get motifyingMapRoom => _rooms;
   NotifyingMap<String, Space> get motifyingMapSpace => _spaces;

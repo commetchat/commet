@@ -847,7 +847,7 @@ class MatrixRoom extends Room {
 
     await tl.setReadMarker();
   }
-  
+
   @override
   String get clientId => client.identifier;
 }

@@ -128,8 +128,7 @@ class MatrixBackgroundRoom implements Room {
   Future<Member> fetchMember(String id) async {
     var db = backgroundClient.database.db;
     var data = await (db.select(db.roomMembers)
-          ..where(
-              (tbl) => tbl.roomId.equals(roomId) & tbl.userId.equals(id)))
+          ..where((tbl) => tbl.roomId.equals(roomId) & tbl.userId.equals(id)))
         .getSingleOrNull();
 
     MatrixBackgroundMember result = MatrixBackgroundMember(id);
@@ -163,8 +162,7 @@ class MatrixBackgroundRoom implements Room {
 
   @override
   Future<TimelineEvent<Client>?> getEvent(String eventId) async {
-    var result =
-        await backgroundClient.api.getOneRoomEvent(roomId, eventId);
+    var result = await backgroundClient.api.getOneRoomEvent(roomId, eventId);
     Log.i("Received event: ${result}");
 
     if ([
@@ -346,7 +344,7 @@ class MatrixBackgroundRoom implements Room {
     // TODO: implement markAsRead
     throw UnimplementedError();
   }
-  
+
   @override
   // TODO: implement clientId
   String get clientId => client.identifier;

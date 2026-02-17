@@ -48,8 +48,7 @@ class MatrixSpaceRoomChunkPreview extends RoomPreview {
 
   @override
   RoomVisibility? get visibility => null;
-  
+
   @override
   String get clientId => matrixClient.clientName;
-  
 }

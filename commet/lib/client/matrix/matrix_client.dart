@@ -53,9 +53,11 @@ class MatrixClient extends Client {
 
   late String _id;
 
-  late final NotifyingMap<String, Room> _rooms = NotifyingSubMap(clientManager.motifyingMapRoom, (e) => e?.clientId == _id);
+  late final NotifyingMap<String, Room> _rooms = NotifyingSubMap(
+      clientManager.motifyingMapRoom, (e) => e?.clientId == _id);
 
-  late final NotifyingMap<String, Space> _spaces = NotifyingSubMap(clientManager.motifyingMapSpace, (e) => e?.clientId == _id);
+  late final NotifyingMap<String, Space> _spaces = NotifyingSubMap(
+      clientManager.motifyingMapSpace, (e) => e?.clientId == _id);
 
   late final NotifyingMap<String, Peer> _peers = NotifyingMap();
 
@@ -602,12 +604,14 @@ class MatrixClient extends Client {
 
   @override
   bool hasRoom(String identifier) {
-    return _rooms.containsKey(BaseRoom.get_localId(identifier, this.identifier));
+    return _rooms
+        .containsKey(BaseRoom.get_localId(identifier, this.identifier));
   }
 
   @override
   bool hasSpace(String identifier) {
-    return _spaces.containsKey(BaseRoom.get_localId(identifier, this.identifier));
+    return _spaces
+        .containsKey(BaseRoom.get_localId(identifier, this.identifier));
   }
 
   (String, List<String>?)? parseAddressToIdAndVia(String address) {

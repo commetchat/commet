@@ -130,7 +130,7 @@ class NotifyingSubMap<K, V extends V2, V2> implements NotifyingMap<K, V> {
       if (_condition.call(value)) {
         return update.call(value as V);
       }
-      if (ifAbsent == null){
+      if (ifAbsent == null) {
         return value;
       }
       return ifAbsent.call();

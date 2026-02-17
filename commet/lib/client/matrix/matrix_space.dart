@@ -289,11 +289,9 @@ class MatrixSpace extends Space {
         }
 
         if (room != null) {
-          if (!containsRoom(room.roomId) &&
-              !client.hasSpace(room.roomId)) {
+          if (!containsRoom(room.roomId) && !client.hasSpace(room.roomId)) {
             _rooms.add(room);
-            _previews
-                .removeWhere((element) => element.roomId == room.roomId);
+            _previews.removeWhere((element) => element.roomId == room.roomId);
           }
         }
       }
@@ -329,8 +327,7 @@ class MatrixSpace extends Space {
 
   @override
   Future<List<RoomPreview>> fetchChildren() async {
-    var response =
-        await _matrixClient.getSpaceHierarchy(roomId, maxDepth: 5);
+    var response = await _matrixClient.getSpaceHierarchy(roomId, maxDepth: 5);
 
     return response.rooms
         .where((element) => element.roomId != roomId)
@@ -354,8 +351,7 @@ class MatrixSpace extends Space {
 
   @override
   Future<void> loadExtra() async {
-    var response =
-        await _matrixClient.getSpaceHierarchy(roomId, maxDepth: 1);
+    var response = await _matrixClient.getSpaceHierarchy(roomId, maxDepth: 1);
 
     // read child rooms
     response.rooms
@@ -499,7 +495,7 @@ class MatrixSpace extends Space {
   Future<void> removeChild(SpaceChild<dynamic> child) async {
     await matrixRoom.removeSpaceChild(child.id);
   }
-  
+
   @override
   String get clientId => client.identifier;
 }

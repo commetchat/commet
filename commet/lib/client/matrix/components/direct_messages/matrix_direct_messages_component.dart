@@ -113,8 +113,8 @@ class MatrixDirectMessagesComponent
 
   void updateNotificationsList() {
     highlightedRoomsList = directMessageRooms
-        .where((e) =>
-            e.displayNotificationCount > 0 && e.roomId != currentRoomId)
+        .where(
+            (e) => e.displayNotificationCount > 0 && e.roomId != currentRoomId)
         .toList();
 
     highlightedListUpdated.add(null);

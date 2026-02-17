@@ -6,13 +6,13 @@ class NotifyingMap<K, V> implements Map<K, V> {
   late final StreamController<MapEntry<K, V>> _onAdd;
 
   late final StreamController<MapEntry<K, V>> _onRemove;
-  
+
   // This stream is called after an item is added to the list
   Stream<MapEntry<K, V>> get onAdd => _onAdd.stream;
 
   // This stream is called just before an item is removed from the list, the item will still be accessible at this index until the stream is completed
   Stream<MapEntry<K, V>> get onRemove => _onRemove.stream;
-  
+
   NotifyingMap({bool sync = true}) {
     _internalMap = Map();
     _onAdd = StreamController.broadcast(sync: sync);
@@ -48,7 +48,7 @@ class NotifyingMap<K, V> implements Map<K, V> {
 
   @override
   void clear() {
-    Map<K,V> oldmap = this._internalMap;
+    Map<K, V> oldmap = this._internalMap;
     this._internalMap = Map();
     for (final entry in oldmap.entries) {
       _onRemove.add(entry);
@@ -107,8 +107,15 @@ class NotifyingMap<K, V> implements Map<K, V> {
 
   @override
   void removeWhere(bool Function(K key, V value) test) {
-    List<MapEntry<K,V>> removed = List.empty(growable: true);
-    _internalMap.removeWhere((key, value) {if (test(key, value)) {removed.add(MapEntry(key,value)) ;return true;}; return false;});
+    List<MapEntry<K, V>> removed = List.empty(growable: true);
+    _internalMap.removeWhere((key, value) {
+      if (test(key, value)) {
+        removed.add(MapEntry(key, value));
+        return true;
+      }
+      ;
+      return false;
+    });
     for (final entry in removed) {
       _onRemove.add(entry);
     }
@@ -116,12 +123,16 @@ class NotifyingMap<K, V> implements Map<K, V> {
 
   @override
   V update(K key, V Function(V value) update, {V Function()? ifAbsent}) {
-    if (ifAbsent == null){
+    if (ifAbsent == null) {
       return _internalMap.update(key, update);
     }
     bool absent = true;
     V? old_value = null;
-    V value = _internalMap.update(key, (V value) {absent = false; old_value = value; return update(value);}, ifAbsent: ifAbsent);
+    V value = _internalMap.update(key, (V value) {
+      absent = false;
+      old_value = value;
+      return update(value);
+    }, ifAbsent: ifAbsent);
     if (absent) {
       _onAdd.add(MapEntry(key, value));
     } else {

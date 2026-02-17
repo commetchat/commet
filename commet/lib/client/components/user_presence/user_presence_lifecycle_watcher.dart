@@ -52,7 +52,7 @@ class UserPresenceLifecycleWatcher {
         component.setStatus(state);
       }
     }
-  
+
     lastUpdatedStatus = now;
   }
 }

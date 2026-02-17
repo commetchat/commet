@@ -26,7 +26,7 @@ class CalendarSync {
     ]);
 
     Timer(Duration(minutes: 30), () => syncAllClients());
-    }
+  }
 
   Future<void> syncClient(Client client) async {
     // Wait for client to come online

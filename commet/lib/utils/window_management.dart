@@ -78,7 +78,7 @@ class _WindowListener extends WindowListener {
       for (var client in clientManager.clients) {
         await client.close();
       }
-    
+
       exit(0);
     }
   }

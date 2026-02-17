@@ -158,8 +158,7 @@ class HomeScreenView extends StatelessWidget {
                       : null,
                   onTap: () => onRoomClicked?.call(room),
                   showUserAvatar: clientManager.rooms
-                          .where((element) =>
-                              element.roomId == room.roomId)
+                          .where((element) => element.roomId == room.roomId)
                           .length >
                       1,
                   userAvatar: room.client.self!.avatar,

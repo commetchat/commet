@@ -140,8 +140,7 @@ class ChatView extends StatelessWidget {
             ?.getPrefixedAccount(input, state.room)
             ?.$1,
         onTapOverrideClient: (overrideClient) {
-          EventBus.openRoom
-              .add((state.room.roomId, overrideClient.identifier));
+          EventBus.openRoom.add((state.room.roomId, overrideClient.identifier));
 
           if (state.isThread) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -165,8 +164,8 @@ class ChatView extends StatelessWidget {
         typingIndicatorWidget: state.typingIndicators != null
             ? TypingIndicatorsWidget(
                 component: state.typingIndicators!,
-                key: ValueKey(
-                    "room_typing_indicators_key_${state.room.roomId}"),
+                key:
+                    ValueKey("room_typing_indicators_key_${state.room.roomId}"),
               )
             : null,
         processAutofill: (text) =>

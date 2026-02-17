@@ -212,7 +212,7 @@ class TextUtils {
         }
       }
     }
-  
+
     return text;
   }
 

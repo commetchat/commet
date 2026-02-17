@@ -37,14 +37,15 @@ class GenericRoomPreview extends RoomPreview {
       required this.type,
       this.numMembers,
       this.visibility,
-      this.topic, required this.clientId});
+      this.topic,
+      required this.clientId});
 
   @override
   Color get color => Colors.grey;
 
   @override
   RoomVisibility? visibility;
-  
+
   @override
   final String clientId;
 }

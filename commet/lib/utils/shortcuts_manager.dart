@@ -58,9 +58,9 @@ class ShortcutsManager {
 
     var item = ShortcutItem(
         id: room.roomId,
-        action: OpenRoomURI(
-                roomId: room.roomId, clientId: room.client.identifier)
-            .toString(),
+        action:
+            OpenRoomURI(roomId: room.roomId, clientId: room.client.identifier)
+                .toString(),
         shortLabel: room.displayName,
         icon: icon,
         shortcutIconAsset: ShortcutIconAsset.memoryAsset,

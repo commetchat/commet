@@ -60,16 +60,16 @@ class _AccountManagementSettingsTabState
 
     onClientRemovedListener =
         widget.clientManager.onClientRemoved.listen((client) {
-        int index = _clientList.indexOf(client);
-        _listKey.currentState?.removeItem(
-            index,
-            (context, animation) => SizeTransition(
-                  sizeFactor: animation,
-                  child: accountListItem(
-                      displayName: client.self!.displayName,
-                      avatar: client.self!.avatar,
-                      detail: client.self!.identifier),
-                ));
+      int index = _clientList.indexOf(client);
+      _listKey.currentState?.removeItem(
+          index,
+          (context, animation) => SizeTransition(
+                sizeFactor: animation,
+                child: accountListItem(
+                    displayName: client.self!.displayName,
+                    avatar: client.self!.avatar,
+                    detail: client.self!.identifier),
+              ));
     });
 
     super.initState();
