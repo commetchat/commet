@@ -344,28 +344,32 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
         caulkClipBottomRight: true,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: tiamat.Text.labelLow(directMessagesListHeaderMobile),
-              ),
-              Flexible(
-                child: DirectMessageList(
-                  filterClient: widget.state.filterClient,
-                  directMessages: widget.state.clientManager.directMessages,
-                  onSelected: (room) {
-                    setState(() {
-                      selectRoom(
-                        room,
-                      );
-                    });
-                  },
+          child: ScaledSafeArea(
+            top: true,
+            bottom: false,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: tiamat.Text.labelLow(directMessagesListHeaderMobile),
                 ),
-              ),
-            ],
+                Flexible(
+                  child: DirectMessageList(
+                    filterClient: widget.state.filterClient,
+                    directMessages: widget.state.clientManager.directMessages,
+                    onSelected: (room) {
+                      setState(() {
+                        selectRoom(
+                          room,
+                        );
+                      });
+                    },
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
