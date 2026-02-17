@@ -311,8 +311,6 @@ class _LoginPageViewState extends State<LoginPageView> {
   }
 
   SizedBox loginButton() {
-    var flow = widget.flows?.whereType<PasswordLoginFlow>().firstOrNull;
-
     return SizedBox(
       width: double.infinity,
       height: 50,
