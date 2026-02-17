@@ -16,6 +16,7 @@ class _StarTrailsBackgroundState extends State<StarTrailsBackground> {
   static FragmentShader? shader;
   late Timer timer;
   double delta = 0;
+  bool animate = true;
 
   void loadShader() async {
     loadingShader = true;
@@ -40,11 +41,19 @@ class _StarTrailsBackgroundState extends State<StarTrailsBackground> {
       loadShader();
     }
 
-    timer = Timer.periodic(const Duration(milliseconds: 16), (timer) {
+    WidgetsBinding.instance.addPostFrameCallback(update);
+
+    timer = Timer.periodic(const Duration(milliseconds: 16), frameTimer);
+  }
+
+  void frameTimer(Timer timer) {
+    if (animate) {
       setState(() {
         delta += 1 / 60;
       });
-    });
+    } else {
+      timer.cancel();
+    }
   }
 
   @override
@@ -64,6 +73,32 @@ class _StarTrailsBackgroundState extends State<StarTrailsBackground> {
           child: widget.child,
         ),
       );
+    }
+  }
+
+  Duration? previous;
+  int slowFrames = 0;
+  void update(Duration timeStamp) {
+    if (previous != null) {
+      var diff = timeStamp - previous!;
+      var fps = 1000 / diff.inMilliseconds;
+
+      if (fps < 30) {
+        slowFrames += 1;
+      }
+
+      if (slowFrames > 10) {
+        print("Disabling animation");
+        animate = false;
+      }
+      print(1000 / diff.inMilliseconds);
+    }
+
+    if (animate) {
+      previous = timeStamp;
+      if (mounted) {
+        WidgetsBinding.instance.addPostFrameCallback(update);
+      }
     }
   }
 }
