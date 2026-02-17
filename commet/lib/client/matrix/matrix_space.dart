@@ -232,16 +232,17 @@ class MatrixSpace extends Space {
             .firstOrNull;
         if (chunk == null) return;
 
-      var viaContent = _matrixRoom
-          .getState(matrix.EventTypes.SpaceChild, chunk.roomId)
-          ?.content["via"];
+        var viaContent = _matrixRoom
+            .getState(matrix.EventTypes.SpaceChild, chunk.roomId)
+            ?.content["via"];
 
-      List<String> via = const [];
+        List<String> via = const [];
 
-      if (viaContent is List) {
-        via = List.from(viaContent);
-      }
-        _previews.add(MatrixSpaceRoomChunkPreview(chunk, _matrixClient, via: via));
+        if (viaContent is List) {
+          via = List.from(viaContent);
+        }
+        _previews
+            .add(MatrixSpaceRoomChunkPreview(chunk, _matrixClient, via: via));
       });
       _fullyLoaded = true;
     }

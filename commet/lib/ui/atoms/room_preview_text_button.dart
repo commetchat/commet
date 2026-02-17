@@ -77,7 +77,8 @@ class _RoomPreviewTextButtonState extends State<RoomPreviewTextButton> {
           textColor: color,
           softwrap: false,
           onTap: () => widget.onTap?.call(widget.room),
-          footer: tiamat.Text.labelLow(CommonStrings.promptJoin, color: Theme.of(context).colorScheme.primary),
+          footer: tiamat.Text.labelLow(CommonStrings.promptJoin,
+              color: Theme.of(context).colorScheme.primary),
         ));
 
     return result;
