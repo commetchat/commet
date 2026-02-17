@@ -292,7 +292,7 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
             Expanded(
               child: RoomPrimaryView(
                 widget.state.currentRoom!,
-                bypassSpecialRoomTypes: !widget.state.showAsTextRoom,
+                bypassSpecialRoomTypes: widget.state.showAsTextRoom,
               ),
             ),
           ],
