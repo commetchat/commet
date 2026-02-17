@@ -282,7 +282,14 @@ class NotifyingList<T> implements List<T> {
   @override
   void removeWhere(bool Function(T element) test) {
     List<T> removed = List.empty(growable: true);
-    _internalList.removeWhere((element) {if (test(element)) {removed.add(element);return true;}; return false;});
+    _internalList.removeWhere((element) {
+      if (test(element)) {
+        removed.add(element);
+        return true;
+      }
+      ;
+      return false;
+    });
     for (final entry in removed) {
       _onRemove.add(entry);
     }
