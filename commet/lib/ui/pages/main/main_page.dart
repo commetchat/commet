@@ -53,6 +53,8 @@ class MainPageState extends State<MainPage> {
   StreamSubscription? onSpaceUpdateSubscription;
   StreamSubscription? onRoomUpdateSubscription;
   StreamSubscription? onCallStartedSubscription;
+  StreamSubscription? onClientRemovedSubscription;
+  StreamSubscription? onClientAddedSubscription;
 
   MainPageSubView get currentView => _currentView;
 
@@ -112,6 +114,13 @@ class MainPageState extends State<MainPage> {
 
     EventBus.openUserProfile.stream.listen(onOpenUserProfileSignal);
 
+    onClientRemovedSubscription =
+        clientManager.onClientRemoved.stream.listen(onClientRemoved);
+
+    onClientAddedSubscription = clientManager.onClientAdded.stream.listen((_) {
+      if (mounted) setState(() {});
+    });
+
     SchedulerBinding.instance.scheduleFrameCallback(onFirstFrame);
 
     checkDonationFlow();
@@ -128,7 +137,34 @@ class MainPageState extends State<MainPage> {
 
   @override
   void dispose() {
+    onSpaceUpdateSubscription?.cancel();
+    onRoomUpdateSubscription?.cancel();
+    onCallStartedSubscription?.cancel();
+    onClientRemovedSubscription?.cancel();
+    onClientAddedSubscription?.cancel();
     super.dispose();
+  }
+
+  void onClientRemoved(dynamic event) {
+    if (!mounted) return;
+
+    setState(() {
+      if (_currentRoom != null && !clientManager.rooms.contains(_currentRoom)) {
+        _currentRoom = null;
+      }
+
+      if (_currentSpace != null &&
+          !clientManager.spaces.contains(_currentSpace)) {
+        _currentSpace = null;
+        _currentView = MainPageSubView.home;
+      }
+
+      if (filterClient != null &&
+          !clientManager.clients.contains(filterClient)) {
+        filterClient = null;
+        EventBus.setFilterClient.add(null);
+      }
+    });
   }
 
   Profile? getCurrentUser() {

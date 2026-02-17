@@ -353,9 +353,30 @@ class AppView extends StatefulWidget {
 }
 
 class _AppViewState extends State<AppView> {
+  StreamSubscription? _onClientRemovedSubscription;
+  StreamSubscription? _onClientAddedSubscription;
+
   @override
   void initState() {
     super.initState();
+    _onClientRemovedSubscription =
+        widget.clientManager.onClientRemoved.stream.listen((_) {
+      if (!widget.clientManager.isLoggedIn()) {
+        navigator.currentState?.popUntil((route) => route.isFirst);
+        setState(() {});
+      }
+    });
+    _onClientAddedSubscription =
+        widget.clientManager.onClientAdded.stream.listen((_) {
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _onClientRemovedSubscription?.cancel();
+    _onClientAddedSubscription?.cancel();
+    super.dispose();
   }
 
   @override
@@ -367,10 +388,7 @@ class _AppViewState extends State<AppView> {
             initialRoom: widget.initialRoom,
           )
         : LoginPage(onSuccess: (_) {
-            Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (_) => MainPage(widget.clientManager)),
-              (route) => false,
-            );
+            setState(() {});
           });
   }
 }
