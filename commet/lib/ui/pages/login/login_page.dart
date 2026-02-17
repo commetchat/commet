@@ -116,7 +116,7 @@ class LoginPageState extends State<LoginPage> {
 
     if (message != null) {
       if (mounted) {
-        showDialog(
+        showAdaptiveDialog(
           context: context,
           builder: (context) {
             return AlertDialog(
