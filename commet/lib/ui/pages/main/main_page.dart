@@ -117,8 +117,7 @@ class MainPageState extends State<MainPage> {
     onClientRemovedSubscription =
         clientManager.onClientRemoved.stream.listen(onClientRemoved);
 
-    onClientAddedSubscription =
-        clientManager.onClientAdded.stream.listen((_) {
+    onClientAddedSubscription = clientManager.onClientAdded.stream.listen((_) {
       if (mounted) setState(() {});
     });
 
@@ -150,8 +149,7 @@ class MainPageState extends State<MainPage> {
     if (!mounted) return;
 
     setState(() {
-      if (_currentRoom != null &&
-          !clientManager.rooms.contains(_currentRoom)) {
+      if (_currentRoom != null && !clientManager.rooms.contains(_currentRoom)) {
         _currentRoom = null;
       }
 
