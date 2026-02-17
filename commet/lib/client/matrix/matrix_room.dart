@@ -704,7 +704,9 @@ class MatrixRoom extends Room {
 
   void onRoomStateUpdated(({String roomId, StrippedStateEvent state}) event) {
     _displayName = _matrixRoom.getLocalizedDisplayname();
-    if (event.state.type == "m.room.name") {
+    if (event.state.type == "m.room.name" ||
+        event.state.type == "m.room.avatar" ||
+        event.state.type == "m.room.topic") {
       _onUpdate.add(null);
     }
   }
@@ -805,8 +807,9 @@ class MatrixRoom extends Room {
   String? get topic => matrixRoom.topic;
 
   @override
-  Future<void> setTopic(String topic) {
-    return matrixRoom.setDescription(topic);
+  Future<void> setTopic(String topic) async {
+    await matrixRoom.setDescription(topic);
+    _onUpdate.add(null);
   }
 
   @override
@@ -822,6 +825,7 @@ class MatrixRoom extends Room {
 
     await matrixRoom.setAvatar(matrix.MatrixFile(bytes: bytes, name: name));
     _avatar = MemoryImage(bytes);
+    _onUpdate.add(null);
   }
 
   @override

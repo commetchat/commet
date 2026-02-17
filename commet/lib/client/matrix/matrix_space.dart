@@ -132,6 +132,10 @@ class MatrixSpace extends Space {
   @override
   Stream<void> get onUpdate => _onUpdate.stream;
 
+  void notifyUpdate() {
+    _onUpdate.add(null);
+  }
+
   @override
   Permissions get permissions => _permissions;
 
@@ -306,6 +310,7 @@ class MatrixSpace extends Space {
         bytes: bytes,
         name: "avatar",
         mimeType: mimeType == "" ? null : mimeType));
+    _onUpdate.add(null);
   }
 
   @override
@@ -363,6 +368,7 @@ class MatrixSpace extends Space {
   Future<void> setDisplayName(String newName) async {
     _displayName = newName;
     await _matrixRoom.setName(newName);
+    _onUpdate.add(null);
   }
 
   @override
@@ -464,8 +470,9 @@ class MatrixSpace extends Space {
   }
 
   @override
-  Future<void> setTopic(String topic) {
-    return matrixRoom.setDescription(topic);
+  Future<void> setTopic(String topic) async {
+    await matrixRoom.setDescription(topic);
+    _onUpdate.add(null);
   }
 
   @override
