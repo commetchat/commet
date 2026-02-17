@@ -268,24 +268,6 @@ class MatrixClient extends Client {
 
     _updateRoomslist();
     _updateSpacesList();
-
-    _matrixClient.onKeyVerificationRequest.stream.listen((event) {
-      AdaptiveDialog.show(
-        navigator.currentContext!,
-        builder: (_) => MatrixVerificationPage(request: event),
-        title: "Verification Request",
-      );
-    });
-
-    _matrixClient.onUiaRequest.stream.listen((event) {
-      if (event.state == matrix.UiaRequestState.waitForUser) {
-        AdaptiveDialog.show(
-          navigator.currentContext!,
-          builder: (_) => MatrixUIARequest(event, this),
-          title: "Authentication Request",
-        );
-      }
-    });
   }
 
   void onMatrixClientSync(matrix.SyncUpdate update) {
