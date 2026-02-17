@@ -175,14 +175,18 @@ class MatrixSpace extends Space {
 
   late List<StreamSubscription> _subscriptions;
 
+  bool _isTopLevel = false;
   @override
-  bool get isTopLevel {
+  bool get isTopLevel => _isTopLevel;
+
+  void _updateTopLevelStatus() {
     for (var room in _matrixClient.rooms.where((r) => r.isSpace)) {
       if (room.spaceChildren.any((child) => child.roomId == _matrixRoom.id)) {
-        return false;
+        _isTopLevel = false;
+        return;
       }
     }
-    return true;
+    _isTopLevel = true;
   }
 
   MatrixSpace(
@@ -201,6 +205,9 @@ class MatrixSpace extends Space {
       client.onRoomAdded.listen((_) => updateRoomsList()),
       client.onRoomRemoved.listen(onClientRoomRemoved),
       client.matrixClient.onSync.stream.listen(onMatrixSync),
+      client.matrixClient.onRoomState.stream
+          .where((i) => i.roomId == room.id)
+          .listen(onStateChanged),
 
       // Subscribe to all child update events
       _rooms.onAdd.listen(_onRoomAdded),
@@ -215,6 +222,12 @@ class MatrixSpace extends Space {
     }
 
     updateRoomsList();
+    _updateTopLevelStatus();
+  }
+
+  void onStateChanged(
+      ({String roomId, matrix.StrippedStateEvent state}) event) {
+    refresh();
   }
 
   @override
@@ -413,6 +426,7 @@ class MatrixSpace extends Space {
 
     for (var id in update.keys) {
       if (roomsWithChildren.any((i) => i.identifier == id)) {
+        _updateTopLevelStatus();
         _onUpdate.add(null);
       }
     }
