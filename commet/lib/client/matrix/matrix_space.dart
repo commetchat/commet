@@ -467,4 +467,9 @@ class MatrixSpace extends Space {
   Future<void> setTopic(String topic) {
     return matrixRoom.setDescription(topic);
   }
+
+  @override
+  Future<void> removeChild(SpaceChild<dynamic> child) async {
+    await matrixRoom.removeSpaceChild(child.id);
+  }
 }

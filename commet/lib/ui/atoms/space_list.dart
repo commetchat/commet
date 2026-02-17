@@ -12,12 +12,20 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 
 class SpaceList extends StatefulWidget {
   const SpaceList(this.space,
-      {this.onRoomSelected, this.isTopLevel = true, super.key});
+      {this.onRoomSelected,
+      this.isTopLevel = true,
+      this.currentDepth = 0,
+      this.maxDepth = 5,
+      super.key});
   final Function(Room room, {bool bypassSpecialRoomType})? onRoomSelected;
 
   final bool isTopLevel;
 
   final Space space;
+
+  final int maxDepth;
+
+  final int currentDepth;
 
   @override
   State<SpaceList> createState() => _SpaceListState();
@@ -117,22 +125,28 @@ class _SpaceListState extends State<SpaceList> {
   }
 
   Widget buildChild(SpaceChild child) {
-    if (child case SpaceChildSpace _)
-      return tiamat.TextButtonExpander(child.child.displayName,
-          initiallyExpanded: true,
-          childrenPadding: const EdgeInsets.fromLTRB(2, 0, 0, 0),
-          iconColor: Theme.of(context).colorScheme.secondary,
-          textColor: Theme.of(context).colorScheme.secondary,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
-              child: SpaceList(
-                child.child,
-                isTopLevel: false,
-                onRoomSelected: widget.onRoomSelected,
-              ),
-            )
-          ]);
+    if (child case SpaceChildSpace _) {
+      if (widget.currentDepth < widget.maxDepth) {
+        return tiamat.TextButtonExpander(child.child.displayName,
+            initiallyExpanded: true,
+            childrenPadding: const EdgeInsets.fromLTRB(2, 0, 0, 0),
+            iconColor: Theme.of(context).colorScheme.secondary,
+            textColor: Theme.of(context).colorScheme.secondary,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
+                child: SpaceList(
+                  child.child,
+                  isTopLevel: false,
+                  currentDepth: widget.currentDepth + 1,
+                  onRoomSelected: widget.onRoomSelected,
+                ),
+              )
+            ]);
+      } else {
+        return tiamat.TextButton(widget.space.displayName);
+      }
+    }
 
     if (child case SpaceChildRoom _)
       return RoomTextButton(
