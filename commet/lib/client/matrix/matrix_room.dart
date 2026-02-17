@@ -615,8 +615,8 @@ class MatrixRoom extends Room {
           .getComponent<UserProfileComponent>()!
           .getProfile(comp!.getDirectMessagePartnerId(this)!);
 
-      if (user?.avatar != null) {
-        return user!.avatar;
+      if (user.avatar != null) {
+        return user.avatar;
       }
     }
 
