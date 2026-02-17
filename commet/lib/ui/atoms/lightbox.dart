@@ -169,13 +169,13 @@ class _LightboxState extends State<Lightbox> {
       onTap: () {
         dismiss();
       },
-      child: RotatedBox(
-        quarterTurns: rotate ? 1 : 0,
-        child: Container(
-          color: Colors.transparent,
-          child: Padding(
-            padding: const EdgeInsets.all(BuildConfig.MOBILE ? 10 : 100.0),
-            child: ScaledSafeArea(
+      child: Container(
+        color: Colors.transparent,
+        child: Padding(
+          padding: const EdgeInsets.all(BuildConfig.MOBILE ? 10 : 100.0),
+          child: ScaledSafeArea(
+            child: RotatedBox(
+              quarterTurns: rotate ? 1 : 0,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: InteractiveViewer(
