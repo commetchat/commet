@@ -37,7 +37,8 @@ class Preferences {
   static const String _fallbackTurnServer = "fallback_turn_server";
   static const String _urlPreviewInE2EEChat = "use_url_preview_in_e2ee_chat";
   static const String _messageEffectsEnabled = "message_effects_enabled";
-  static const String _askBeforeDeletingMessageEnabled = "ask_before_deleting_message_enabled";
+  static const String _askBeforeDeletingMessageEnabled =
+      "ask_before_deleting_message_enabled";
   static const String _lastForegroundServiceSucceeded =
       "did_last_foreground_service_run_succeed";
   static const String _showRoomAvatars = "show_room_avatars";

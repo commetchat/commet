@@ -273,6 +273,7 @@ class TimelineEventMenu {
               });
             } else {
               timeline.deleteEvent(event);
+              onActionFinished?.call();
             }
           },
         ),

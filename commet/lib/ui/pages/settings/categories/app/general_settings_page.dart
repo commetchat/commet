@@ -45,18 +45,20 @@ class GeneralSettingsPageState extends State<GeneralSettingsPage> {
           "description for the toggle for enabling and disabling use of url previews in encrypted chats",
       name: "labelUrlPreviewInEncryptedChatDescription");
 
-  String get labelAppBehaviourTitle =>
-      Intl.message("App Behaviour",
-          desc: "Header for the app behaviour section in settings",
-          name: "labelAppBehaviourTitle");
+  String get labelAppBehaviourTitle => Intl.message("App Behaviour",
+      desc: "Header for the app behaviour section in settings",
+      name: "labelAppBehaviourTitle");
 
-  String get labelAskBeforeDeletingMessageToggle => Intl.message("Ask before deleting messages",
-      desc: "Label for the toggle for enabling and disabling message deletion confirmation",
+  String get labelAskBeforeDeletingMessageToggle => Intl.message(
+      "Ask before deleting messages",
+      desc:
+          "Label for the toggle for enabling and disabling message deletion confirmation",
       name: "labelAskBeforeDeletingMessageToggle");
 
   String get labelAskBeforeDeletingMessageDescription => Intl.message(
       "Enables the pop-up asking for confirmation when deleting a message.",
-      desc: "Label describing what 'asking before deleting messages' even means",
+      desc:
+          "Label describing what 'asking before deleting messages' even means",
       name: "labelAskBeforeDeletingMessageDescription");
 
   String get labelMessageEffectsTitle => Intl.message("Message Effects",
