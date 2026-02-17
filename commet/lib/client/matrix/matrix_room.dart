@@ -117,6 +117,7 @@ class MatrixRoom extends Room {
   String get developerInfo =>
       const JsonEncoder.withIndent('  ').convert(_matrixRoom.states);
 
+  Color? hashColor;
   @override
   Color get defaultColor {
     var comp = client.getComponent<DirectMessagesComponent>();
@@ -130,7 +131,11 @@ class MatrixRoom extends Room {
       }
     }
 
-    return getColorOfUser(identifier);
+    if (hashColor != null) return hashColor!;
+
+    hashColor = MatrixPeer.hashColor(identifier);
+
+    return hashColor!;
   }
 
   // cache the result of push rule because this was becoming an expensive operation for ui stuff
