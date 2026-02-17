@@ -9,6 +9,7 @@ import 'package:commet/utils/debounce.dart';
 import 'package:commet/utils/rng.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key, this.onSuccess, this.canNavigateBack = false});
@@ -18,6 +19,7 @@ class LoginPage extends StatefulWidget {
   @override
   State<LoginPage> createState() => LoginPageState();
 }
+
 
 class LoginPageState extends State<LoginPage> {
   String get messageLoginFailed => Intl.message("Login Failed...",
@@ -116,25 +118,13 @@ class LoginPageState extends State<LoginPage> {
 
     if (message != null) {
       if (mounted) {
-        showAdaptiveDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: Text('Login error'),
-              content: Text(message),
-              actions: <Widget>[
-                TextButton(
-                  child: Text('OK'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          },
-        );
+        AdaptiveDialog.show(
+          context,
+          title: "Login failed",
+          builder: (_) => Text("Incorrect login. Ensure that you have entered your username and password correctly, and that you have entered the homeserver address correctly.")
+          );
+        };
       }
-    }
 
 
     if (result == LoginResult.success) {
