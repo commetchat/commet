@@ -8,6 +8,7 @@ import 'package:commet/client/room_preview.dart';
 import 'package:commet/client/space_child.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/layout_config.dart';
+import 'package:commet/ui/atoms/adaptive_context_menu.dart';
 import 'package:commet/ui/atoms/room_panel.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/utils/common_strings.dart';
@@ -430,9 +431,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
                   index: index,
                   child: Padding(
                     padding: pad,
-                    child: buildItem(
-                      item,
-                    ),
+                    child: buildItem(item, widget.space),
                   ));
             } else {
               return ReorderableDragStartListener(
@@ -441,9 +440,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
                   index: index,
                   child: Padding(
                     padding: pad,
-                    child: buildItem(
-                      item,
-                    ),
+                    child: buildItem(item, widget.space),
                   ));
             }
           },
@@ -545,10 +542,13 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
     );
   }
 
-  Widget buildItem(SpaceChild<dynamic> item) {
+  Widget buildItem(SpaceChild<dynamic> item, Space parent,
+      {int depth = 0, int maxDepth = 5}) {
+    Widget? result;
+
     if (item case SpaceChildRoom _) {
       final room = item.child;
-      return RoomPanel(
+      result = RoomPanel(
         displayName: room.displayName,
         avatar: room.avatar,
         color: room.defaultColor,
@@ -567,10 +567,8 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
             ? room.getColorOfUser(room.lastEvent!.senderId)
             : null,
       );
-    }
-
-    if (item case SpaceChildSpace _) {
-      return Padding(
+    } else if (item case SpaceChildSpace _) {
+      result = Padding(
         padding: const EdgeInsets.all(8.0),
         child: Container(
           decoration: BoxDecoration(
@@ -589,11 +587,28 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
               initiallyExpanded: false,
               iconColor: Theme.of(context).colorScheme.secondary,
               textColor: Theme.of(context).colorScheme.secondary,
-              children: item.child.children.map((i) => buildItem(i)).toList()),
+              children: depth >= maxDepth
+                  ? []
+                  : item.child.children
+                      .map((i) => buildItem(i, item.child,
+                          depth: depth + 1, maxDepth: maxDepth))
+                      .toList()),
         ),
       );
+    } else {
+      result = Container();
     }
 
-    return Container();
+    return AdaptiveContextMenu(
+      items: [
+        ContextMenuItem(
+          text: "Remove from ${parent.displayName}",
+          onPressed: () {
+            parent.removeChild(item);
+          },
+        )
+      ],
+      child: result,
+    );
   }
 }
