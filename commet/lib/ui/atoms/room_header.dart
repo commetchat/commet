@@ -60,6 +60,9 @@ class _RoomHeaderState extends State<RoomHeader> {
           setState(() {});
         }
       }),
+      widget.room.onUpdate.listen((_) {
+        if (mounted) setState(() {});
+      }),
       if (presence != null)
         presence!.onPresenceChanged.listen(onUserPresenceChanged),
     ];
