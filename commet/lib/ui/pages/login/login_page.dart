@@ -21,13 +21,13 @@ class LoginPage extends StatefulWidget {
 
 class LoginPageState extends State<LoginPage> {
   String get messageLoginFailed => Intl.message("Login Failed...",
-      name: "messageLoginFail",
+      name: "messageLoginFailed",
       desc: "Generic text to show that an attempted login has failed");
 
-  String get messageLoginError => Intl.message("Incorrect username or password.",
+  String get messageLoginIncorrect => Intl.message("Incorrect username or password.",
       name: "messageLoginIncorrect",
       desc:
-          "A generic error message to convey that an error occured when attempting to login");
+          "A generic error message to convey that an error occured when attempting to login, usually an invalid username or password.");
 
   String get messageAlreadyLoggedIn => Intl.message(
         "You have already logged in to this account",
@@ -109,7 +109,7 @@ class LoginPageState extends State<LoginPage> {
     String? message = switch (result) {
       LoginResult.success => null,
       LoginResult.failed => messageLoginFailed,
-      LoginResult.error => messageLoginError,
+      LoginResult.error => messageLoginIncorrect,
       LoginResult.alreadyLoggedIn => messageAlreadyLoggedIn,
       LoginResult.cancelled => "Login cancelled"
     };
