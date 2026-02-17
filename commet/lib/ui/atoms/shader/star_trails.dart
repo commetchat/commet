@@ -88,10 +88,9 @@ class _StarTrailsBackgroundState extends State<StarTrailsBackground> {
       }
 
       if (slowFrames > 10) {
-        print("Disabling animation");
+        print("Disabling splash animation due to poor performance");
         animate = false;
       }
-      print(1000 / diff.inMilliseconds);
     }
 
     if (animate) {
