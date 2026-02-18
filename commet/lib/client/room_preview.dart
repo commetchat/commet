@@ -1,11 +1,9 @@
 import 'package:commet/client/client.dart';
-import 'package:commet/client/room.dart';
 import 'package:flutter/material.dart';
 
 enum RoomPreviewType { room, space, inaccessible }
 
-abstract class RoomPreview {
-  String get roomId;
+abstract class RoomPreview extends BaseRoom {
   ImageProvider? get avatar;
   String get displayName;
   String? get topic;
@@ -15,7 +13,7 @@ abstract class RoomPreview {
   RoomVisibility? get visibility;
 }
 
-class GenericRoomPreview implements RoomPreview {
+class GenericRoomPreview extends RoomPreview {
   @override
   String roomId;
 
@@ -39,11 +37,15 @@ class GenericRoomPreview implements RoomPreview {
       required this.type,
       this.numMembers,
       this.visibility,
-      this.topic});
+      this.topic,
+      required this.clientId});
 
   @override
   Color get color => Colors.grey;
 
   @override
   RoomVisibility? visibility;
+
+  @override
+  final String clientId;
 }

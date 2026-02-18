@@ -203,14 +203,12 @@ class TextUtils {
   }
 
   static String redactSensitiveInfo(String text) {
-    if (clientManager != null) {
-      for (final client in clientManager!.clients) {
-        if (client is MatrixClient) {
-          var token = client.getMatrixClient().accessToken;
+    for (final client in clientManager.clients) {
+      if (client is MatrixClient) {
+        var token = client.getMatrixClient().accessToken;
 
-          if (token != null) {
-            text = text.replaceAll(token, "[REDACTED ACCESS TOKEN]");
-          }
+        if (token != null) {
+          text = text.replaceAll(token, "[REDACTED ACCESS TOKEN]");
         }
       }
     }

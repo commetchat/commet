@@ -274,9 +274,9 @@ class _HeaderBurgerState extends State<HeaderBurger> {
     super.initState();
     color = widget.notificationColor;
     subs = [
-      clientManager!.directMessages.onHighlightedRoomsListUpdated
+      clientManager.directMessages.onHighlightedRoomsListUpdated
           .listen((_) => updateState()),
-      clientManager!.onSpaceUpdated.stream.listen((_) => updateState()),
+      clientManager.onSpaceUpdated.stream.listen((_) => updateState()),
     ];
 
     updateNotificationCount();
@@ -299,14 +299,14 @@ class _HeaderBurgerState extends State<HeaderBurger> {
     notificationCount = 0;
 
     var topLevelSpaces =
-        clientManager!.spaces.where((e) => e.isTopLevel).toList();
+        clientManager.spaces.where((e) => e.isTopLevel).toList();
 
     for (var i in topLevelSpaces) {
       highlightedNotificationCount += i.displayHighlightedNotificationCount;
       notificationCount += i.displayNotificationCount;
     }
 
-    for (var dm in clientManager!.directMessages.highlightedRoomsList) {
+    for (var dm in clientManager.directMessages.highlightedRoomsList) {
       highlightedNotificationCount += dm.displayNotificationCount;
       notificationCount += dm.displayNotificationCount;
     }

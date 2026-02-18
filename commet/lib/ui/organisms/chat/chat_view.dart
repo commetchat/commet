@@ -60,7 +60,7 @@ class ChatView extends StatelessWidget {
             child: CircularProgressIndicator(),
           )
         : RoomTimelineWidget(
-            key: ValueKey("${state.room.identifier}-timeline"),
+            key: ValueKey("${state.room.roomId}-timeline"),
             timeline: state.timeline!,
             setReplyingEvent: (event) => state.setInteractingEvent(event,
                 type: EventInteractionType.reply),
@@ -140,14 +140,13 @@ class ChatView extends StatelessWidget {
             ?.getPrefixedAccount(input, state.room)
             ?.$1,
         onTapOverrideClient: (overrideClient) {
-          EventBus.openRoom
-              .add((state.room.identifier, overrideClient.identifier));
+          EventBus.openRoom.add((state.room.roomId, overrideClient.identifier));
 
           if (state.isThread) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               EventBus.openThread.add((
                 overrideClient.identifier,
-                state.room.identifier,
+                state.room.roomId,
                 state.threadId!
               ));
             });
@@ -165,8 +164,8 @@ class ChatView extends StatelessWidget {
         typingIndicatorWidget: state.typingIndicators != null
             ? TypingIndicatorsWidget(
                 component: state.typingIndicators!,
-                key: ValueKey(
-                    "room_typing_indicators_key_${state.room.identifier}"),
+                key:
+                    ValueKey("room_typing_indicators_key_${state.room.roomId}"),
               )
             : null,
         processAutofill: (text) =>

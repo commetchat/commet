@@ -37,7 +37,7 @@ class _RoomAppearanceSettingsPageState
       client: widget.room.client,
       avatar: widget.room.avatar,
       displayName: widget.room.displayName,
-      identifier: widget.room.identifier,
+      identifier: widget.room.roomId,
       color: widget.room.defaultColor,
       canEditName: widget.room.permissions.canEditName,
       canEditAvatar: widget.room.permissions.canEditAvatar,

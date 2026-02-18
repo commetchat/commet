@@ -18,10 +18,31 @@ enum RoomVisibility { public, private, invite, knock }
 
 enum PushRule { notify, mentionsOnly, dontNotify }
 
+abstract class BaseRoom {
+  String get roomId;
+  String get clientId;
+
+  /// A locally unique identifier, to distinguish between rooms when two or more accounts in this app are in the same room
+  String get localId => get_localId(roomId, clientId);
+
+  static get_localId(String roomId, String clientId) {
+    return "${clientId}:${roomId}";
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (other is! BaseRoom) return false;
+    if (identical(this, other)) return true;
+    return localId == other.localId;
+  }
+
+  @override
+  int get hashCode => localId.hashCode;
+}
+
 /// The Room object should only be used for rooms which the user is a member of.
 /// Rooms which the user has not joined should be represented with a RoomPreview
-abstract class Room {
-  String get identifier;
+abstract class Room extends BaseRoom {
   Client get client;
   final Key key = UniqueKey();
 
@@ -140,9 +161,6 @@ abstract class Room {
 
   bool get isMembersListComplete;
 
-  /// A locally unique identifier, to distinguish between rooms when two or more accounts in this app are in the same room
-  String get localId => "${client.identifier}:$identifier";
-
   /// Update the display name of this room
   Future<void> setDisplayName(String newName);
 
@@ -193,15 +211,4 @@ abstract class Room {
   Future<void> setTopic(String topic);
 
   Future<void> markAsRead();
-
-  @override
-  bool operator ==(Object other) {
-    if (other is! Room) return false;
-    if (other.client != client) return false;
-    if (identical(this, other)) return true;
-    return identifier == other.identifier;
-  }
-
-  @override
-  int get hashCode => identifier.hashCode;
 }

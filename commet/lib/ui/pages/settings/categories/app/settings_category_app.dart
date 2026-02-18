@@ -68,7 +68,7 @@ class SettingsCategoryApp implements SettingsCategory {
             pageBuilder: (context) {
               return const AppearanceSettingsPage();
             }),
-        if (clientManager?.clients
+        if (clientManager.clients
                 .any((e) => e.getComponent<VoipComponent>() != null) ==
             true)
           SettingsTab(

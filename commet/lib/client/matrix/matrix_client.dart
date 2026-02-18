@@ -21,8 +21,8 @@ import 'package:commet/config/global_config.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
 import 'package:commet/main.dart';
-import 'package:commet/utils/list_extension.dart';
-import 'package:commet/utils/notifying_list.dart';
+import 'package:commet/utils/notifying_map.dart';
+import 'package:commet/utils/notifying_sub_map.dart';
 import 'package:commet/utils/stored_stream_controller.dart';
 import 'package:flutter/foundation.dart';
 import 'package:crypto/crypto.dart';
@@ -53,12 +53,16 @@ class MatrixClient extends Client {
 
   late String _id;
 
-  final NotifyingList<Room> _rooms = NotifyingList.empty(growable: true);
-  final NotifyingList<Space> _spaces = NotifyingList.empty(growable: true);
+  late final NotifyingMap<String, Room> _rooms = NotifyingSubMap(
+      clientManager.motifyingMapRoom, (e) => e?.clientId == _id);
 
-  final NotifyingList<Peer> _peers = NotifyingList.empty(growable: true);
+  late final NotifyingMap<String, Space> _spaces = NotifyingSubMap(
+      clientManager.motifyingMapSpace, (e) => e?.clientId == _id);
 
-  final Map<String, Peer> _peersMap = {};
+  late final NotifyingMap<String, Peer> _peers = NotifyingMap();
+
+  NotifyingMap<String, Room> get motifyingMapRoom => _rooms;
+  NotifyingMap<String, Space> get motifyingMapSpace => _spaces;
 
   final StreamController _onSync = StreamController.broadcast();
 
@@ -106,34 +110,34 @@ class MatrixClient extends Client {
   String get identifier => _id;
 
   @override
-  Stream<int> get onPeerAdded => _peers.onAdd;
+  Stream<Peer> get onPeerAdded => _peers.onAdd.map((e) => e.value);
 
   @override
-  Stream<int> get onRoomAdded => _rooms.onAdd;
+  Stream<Room> get onRoomAdded => _rooms.onAdd.map((e) => e.value);
 
   @override
-  Stream<int> get onSpaceAdded => _spaces.onAdd;
+  Stream<Space> get onSpaceAdded => _spaces.onAdd.map((e) => e.value);
 
   @override
-  Stream<int> get onRoomRemoved => _rooms.onRemove;
+  Stream<Room> get onRoomRemoved => _rooms.onRemove.map((e) => e.value);
 
   @override
-  Stream<int> get onSpaceRemoved => _spaces.onRemove;
+  Stream<Space> get onSpaceRemoved => _spaces.onRemove.map((e) => e.value);
 
   @override
   Stream<void> get onSync => _onSync.stream;
 
   @override
-  List<Peer> get peers => _peers;
+  Iterable<Peer> get peers => _peers.values;
 
   @override
-  List<Room> get rooms => _rooms;
+  Iterable<Room> get rooms => _rooms.values;
 
   @override
   List<Room> get singleRooms => throw UnimplementedError();
 
   @override
-  List<Space> get spaces => _spaces;
+  Iterable<Space> get spaces => _spaces.values;
 
   @override
   StoredStreamController<ClientConnectionStatusUpdate> connectionStatusChanged =
@@ -393,10 +397,11 @@ class MatrixClient extends Client {
 
     for (var room in joinedRooms) {
       if (hasRoom(room.id)) continue;
-      rooms.add(MatrixRoom(this, room, _matrixClient));
+      var newRoom = MatrixRoom(this, room, _matrixClient);
+      _rooms[newRoom.localId] = newRoom;
     }
 
-    rooms.removeWhere((e) => !joinedRooms.any((r) => r.id == e.identifier));
+    _rooms.removeWhere((k, v) => !joinedRooms.any((r) => r.id == v.roomId));
   }
 
   void _updateSpacesList() {
@@ -408,7 +413,8 @@ class MatrixClient extends Client {
     bool didChange = false;
     for (var space in allSpaces) {
       if (hasSpace(space.id)) continue;
-      spaces.add(MatrixSpace(this, space, _matrixClient));
+      var matrixSpace = MatrixSpace(this, space, _matrixClient);
+      _spaces[matrixSpace.localId] = matrixSpace;
       didChange = true;
     }
 
@@ -483,7 +489,7 @@ class MatrixClient extends Client {
 
     if (hasRoom(id)) return getRoom(id)!;
     var room = MatrixRoom(this, matrixRoom, _matrixClient);
-    rooms.add(room);
+    _rooms[room.localId] = room;
     return room;
   }
 
@@ -503,7 +509,7 @@ class MatrixClient extends Client {
       _matrixClient.getRoomById(id)!,
       _matrixClient,
     );
-    spaces.add(space);
+    _spaces[space.localId] = space;
     return space;
   }
 
@@ -522,7 +528,7 @@ class MatrixClient extends Client {
       _matrixClient.getRoomById(id)!,
       _matrixClient,
     );
-    spaces.add(space);
+    _spaces[space.localId] = space;
     return space;
   }
 
@@ -538,7 +544,7 @@ class MatrixClient extends Client {
     if (hasRoom(id)) return getRoom(id)!;
 
     var room = MatrixRoom(this, _matrixClient.getRoomById(id)!, _matrixClient);
-    rooms.add(room);
+    _rooms[room.localId] = room;
     return room;
   }
 
@@ -566,7 +572,7 @@ class MatrixClient extends Client {
 
   @override
   Iterable<Room> getEligibleRoomsForSpace(Space space) {
-    return rooms.where((room) => !space.containsRoom(room.identifier));
+    return rooms.where((room) => !space.containsRoom(room.roomId));
   }
 
   @override
@@ -583,27 +589,29 @@ class MatrixClient extends Client {
 
   @override
   Room? getRoom(String identifier) {
-    return _rooms.tryFirstWhere((element) => element.identifier == identifier);
+    return _rooms[BaseRoom.get_localId(identifier, this.identifier)];
   }
 
   @override
   Space? getSpace(String identifier) {
-    return _spaces.tryFirstWhere((element) => element.identifier == identifier);
+    return _spaces[BaseRoom.get_localId(identifier, this.identifier)];
   }
 
   @override
   bool hasPeer(String identifier) {
-    return _peersMap.containsKey(identifier);
+    return _peers.containsKey(identifier);
   }
 
   @override
   bool hasRoom(String identifier) {
-    return _rooms.any((element) => element.identifier == identifier);
+    return _rooms
+        .containsKey(BaseRoom.get_localId(identifier, this.identifier));
   }
 
   @override
   bool hasSpace(String identifier) {
-    return _spaces.any((element) => element.identifier == identifier);
+    return _spaces
+        .containsKey(BaseRoom.get_localId(identifier, this.identifier));
   }
 
   (String, List<String>?)? parseAddressToIdAndVia(String address) {
@@ -680,16 +688,16 @@ class MatrixClient extends Client {
 
   @override
   Future<void> leaveRoom(Room room) async {
-    _rooms.remove(room);
+    _rooms.remove(room.localId);
     await room.close();
-    return _matrixClient.leaveRoom(room.identifier);
+    return _matrixClient.leaveRoom(room.roomId);
   }
 
   @override
   Future<void> leaveSpace(Space space) async {
-    _spaces.remove(space);
+    _spaces.remove(space.localId);
     space.close();
-    return _matrixClient.leaveRoom(space.identifier);
+    return _matrixClient.leaveRoom(space.roomId);
   }
 
   void onSyncStatusChanged(matrix.SyncStatusUpdate event) {

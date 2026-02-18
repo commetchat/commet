@@ -53,7 +53,7 @@ FileCache? fileCache;
 Preferences preferences = Preferences();
 ShortcutsManager shortcutsManager = ShortcutsManager();
 BackgroundTaskManager backgroundTaskManager = BackgroundTaskManager();
-ClientManager? clientManager;
+ClientManager get clientManager => ClientManager.instance;
 
 bool isHeadless = false;
 
@@ -111,11 +111,11 @@ void bubble() async {
         GlobalCupertinoLocalizations.delegate,
       ],
       builder: (context, child) => Provider<ClientManager>(
-            create: (context) => clientManager!,
+            create: (context) => ClientManager.instance,
             child: child,
           ),
       home: BubblePage(
-        clientManager!,
+        clientManager,
         initialClientId: initialClientId,
         initialRoom: initialRoomId,
       )));
@@ -202,7 +202,7 @@ Future<void> initNecessary() async {
     GlobalConfig.init(),
   ]);
 
-  clientManager = await ClientManager.init();
+  await ClientManager.init();
   Diagnostics.setPostInit();
 
   shortcutsManager.init();
@@ -272,7 +272,7 @@ Future<void> startGui() async {
   }
 
   runApp(App(
-    clientManager: clientManager!,
+    clientManager: clientManager,
     initialTheme: initialTheme,
     initialClientId: initialClientId,
     initialRoom: initialRoomId,

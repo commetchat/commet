@@ -203,7 +203,7 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
             tiamat.Button(
               text: "Message Notification",
               onTap: () async {
-                var client = clientManager!.clients.first;
+                var client = clientManager.clients.first;
                 var room = client.rooms.first;
                 var user = client.self!;
                 NotificationManager.notify(MessageNotificationContent(
@@ -211,7 +211,7 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
                   senderImage: user.avatar,
                   senderId: user.identifier,
                   roomName: room.displayName,
-                  roomId: room.identifier,
+                  roomId: room.roomId,
                   roomImage: await room.getShortcutImage(),
                   content: "Test Message!",
                   clientId: client.identifier,
@@ -224,10 +224,10 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
               text: "Call Notification",
               onTap: () async {
                 if (!BuildConfig.ANDROID) {
-                  clientManager?.callManager.startRingtone();
+                  clientManager.callManager.startRingtone();
                 }
 
-                var client = clientManager!.clients.first;
+                var client = clientManager.clients.first;
                 var room = client.rooms.first;
                 var user = client.self!;
                 NotificationManager.notify(CallNotificationContent(
@@ -235,7 +235,7 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
                   senderImage: user.avatar,
                   senderId: user.identifier,
                   roomName: room.displayName,
-                  roomId: room.identifier,
+                  roomId: room.roomId,
                   senderName: user.displayName,
                   senderImageId: "fake_call_avatar_id",
                   roomImage: await room.getShortcutImage(),

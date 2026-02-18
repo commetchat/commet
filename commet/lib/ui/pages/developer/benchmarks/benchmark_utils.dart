@@ -34,7 +34,7 @@ extension BenchmarkUtils on MatrixClient {
     }, mxRoom));
 
     var room = MatrixRoom(this, mxRoom, getMatrixClient());
-    rooms.add(room);
+    motifyingMapRoom[room.localId] = room;
     return room;
   }
 }

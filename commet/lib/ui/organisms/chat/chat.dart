@@ -207,7 +207,7 @@ class ChatState extends State<Chat> {
     var targetThread = threadsComponent;
 
     if (overrideClient != null) {
-      var newRoom = overrideClient.getRoom(targetRoom.identifier);
+      var newRoom = overrideClient.getRoom(targetRoom.roomId);
       if (newRoom != null) {
         targetRoom = newRoom;
         targetThread = targetRoom.client.getComponent<ThreadsComponent>();

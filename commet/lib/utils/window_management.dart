@@ -75,10 +75,8 @@ class _WindowListener extends WindowListener {
     if (preferences.minimizeOnClose) {
       windowManager.minimize();
     } else {
-      if (clientManager != null) {
-        for (var client in clientManager!.clients) {
-          await client.close();
-        }
+      for (var client in clientManager.clients) {
+        await client.close();
       }
 
       exit(0);

@@ -1,5 +1,4 @@
 import 'package:commet/client/client.dart';
-import 'package:commet/client/room.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart';

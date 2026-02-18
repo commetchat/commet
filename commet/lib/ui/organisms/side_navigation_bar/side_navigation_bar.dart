@@ -207,7 +207,7 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
 
   bool shouldShowAvatarForSpace(Space space) {
     var spaces = _clientManager.spaces
-        .where((element) => element.identifier == space.identifier);
+        .where((element) => element.roomId == space.roomId);
     return spaces.length > 1;
   }
 }

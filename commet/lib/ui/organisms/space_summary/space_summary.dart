@@ -123,7 +123,7 @@ class _SpaceSummaryState extends State<SpaceSummary> {
       AdaptiveDialog.show(context,
           builder: (context) => SendInvitationWidget(
               widget.space.client, invitation,
-              roomId: widget.space.identifier,
+              roomId: widget.space.roomId,
               displayName: widget.space.displayName),
           title: "Invite");
     }

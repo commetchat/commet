@@ -125,7 +125,7 @@ class LoginPageState extends State<LoginPage> {
     }
 
     if (result == LoginResult.success) {
-      clientManager?.addClient(loginClient!);
+      clientManager.addClient(loginClient!);
       widget.onSuccess?.call(loginClient!);
     }
   }

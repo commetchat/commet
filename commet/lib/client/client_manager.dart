@@ -9,26 +9,36 @@ import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/stale_info.dart';
 import 'package:commet/client/tasks/client_connection_status_task.dart';
 import 'package:commet/main.dart';
-import 'package:commet/utils/notifying_list.dart';
+import 'package:commet/utils/notifying_map.dart';
+import 'package:commet/utils/notifying_sub_map.dart';
 
 class ClientManager {
-  final Map<String, Client> _clients = {};
+  final NotifyingMap<String, BaseRoom> _all_rooms = NotifyingMap();
 
-  final NotifyingList<Room> _rooms = NotifyingList.empty(growable: true);
+  final NotifyingMap<String, Client> _clients = NotifyingMap();
 
-  final NotifyingList<Space> _spaces = NotifyingList.empty(growable: true);
+  late final NotifyingMap<String, Room> _rooms =
+      NotifyingSubMap(_all_rooms, null);
+
+  late final NotifyingMap<String, Space> _spaces =
+      NotifyingSubMap(_all_rooms, null);
+
+  NotifyingMap<String, Room> get motifyingMapRoom => _rooms;
+  NotifyingMap<String, Space> get motifyingMapSpace => _spaces;
 
   final AlertManager alertManager = AlertManager();
   late CallManager callManager;
 
   late final DirectMessagesAggregator directMessages;
 
-  ClientManager() {
+  static final ClientManager instance = ClientManager._();
+
+  ClientManager._() {
     directMessages = DirectMessagesAggregator(this);
     callManager = CallManager(this);
   }
 
-  List<Room> get rooms => _rooms;
+  Iterable<Room> get rooms => _rooms.values;
 
   List<Room> singleRooms({Client? filterClient}) {
     var result = List<Room>.empty(growable: true);
@@ -46,7 +56,7 @@ class ClientManager {
           }
         }
 
-        if (client.spaces.any((space) => space.containsRoom(room.identifier))) {
+        if (client.spaces.any((space) => space.containsRoom(room.roomId))) {
           continue;
         }
 
@@ -57,7 +67,7 @@ class ClientManager {
     return result;
   }
 
-  List<Space> get spaces => _spaces;
+  Iterable<Space> get spaces => _spaces.values;
 
   final List<Client> _clientsList = List.empty(growable: true);
   final Map<Client, List<StreamSubscription>> _clientSubscriptions = {};
@@ -66,18 +76,17 @@ class ClientManager {
 
   late StreamController<void> onSync = StreamController.broadcast();
 
-  Stream<int> get onRoomAdded => _rooms.onAdd;
+  Stream<Room> get onRoomAdded => _rooms.onAdd.map((e) => e.value);
 
-  Stream<int> get onRoomRemoved => _rooms.onRemove;
+  Stream<Room> get onRoomRemoved => _rooms.onRemove.map((e) => e.value);
 
-  Stream<int> get onSpaceAdded => _spaces.onAdd;
+  Stream<Space> get onSpaceAdded => _spaces.onAdd.map((e) => e.value);
 
-  Stream<int> get onSpaceRemoved => _spaces.onRemove;
+  Stream<Space> get onSpaceRemoved => _spaces.onRemove.map((e) => e.value);
 
-  late StreamController<int> onClientAdded = StreamController.broadcast();
+  Stream<Client> get onClientAdded => _clients.onAdd.map((e) => e.value);
 
-  late StreamController<StalePeerInfo> onClientRemoved =
-      StreamController.broadcast();
+  Stream<Client> get onClientRemoved => _clients.onRemove.map((e) => e.value);
 
   late StreamController<Space> onSpaceUpdated = StreamController.broadcast();
   late StreamController<Space> onSpaceChildUpdated =
@@ -92,14 +101,12 @@ class ClientManager {
   //         previousValue + element.displayNotificationCount);
 
   static Future<ClientManager> init({bool isBackgroundService = false}) async {
-    final newClientManager = ClientManager();
-
     await Future.wait([
-      MatrixClient.loadFromDB(newClientManager,
+      MatrixClient.loadFromDB(instance,
           isBackgroundService: isBackgroundService),
     ]);
 
-    return newClientManager;
+    return instance;
   }
 
   void addClient(Client client) {
@@ -108,27 +115,16 @@ class ClientManager {
 
       _clientsList.add(client);
 
-      for (int i = 0; i < client.rooms.length; i++) {
-        _onClientAddedRoom(client, i);
-      }
-
-      for (int i = 0; i < client.spaces.length; i++) {
-        _addSpace(client, i);
+      for (final e in client.spaces) {
+        _addSpace(client, e);
       }
 
       _clientSubscriptions[client] = [
         client.onSync.listen((_) => _synced()),
-        client.onRoomAdded.listen((index) => _onClientAddedRoom(client, index)),
-        client.onRoomRemoved
-            .listen((index) => _onClientRemovedRoom(client, index)),
-        client.onSpaceAdded.listen((index) => _addSpace(client, index)),
-        client.onSpaceRemoved
-            .listen((index) => _onClientRemovedSpace(client, index)),
+        client.onSpaceAdded.listen((space) => _addSpace(client, space)),
         client.connectionStatusChanged.stream
             .listen((event) => _onClientConnectionStatusChanged(client, event)),
       ];
-
-      onClientAdded.add(_clients.length - 1);
     } catch (error) {}
   }
 
@@ -146,25 +142,9 @@ class ClientManager {
     }
   }
 
-  void _onClientAddedRoom(Client client, int index) {
-    rooms.add(client.rooms[index]);
-  }
-
-  void _onClientRemovedRoom(Client client, int index) {
-    var room = client.rooms[index];
-    _rooms.remove(room);
-  }
-
-  void _onClientRemovedSpace(Client client, int index) {
-    var space = client.spaces[index];
-    _spaces.remove(space);
-  }
-
-  void _addSpace(Client client, int index) {
-    var space = client.spaces[index];
+  void _addSpace(Client client, Space space) {
     space.onUpdate.listen((_) => spaceUpdated(space));
     space.onChildRoomUpdated.listen((_) => spaceChildUpdated(space));
-    spaces.add(client.spaces[index]);
   }
 
   void spaceUpdated(Space space) {
@@ -196,20 +176,19 @@ class ClientManager {
         identifier: client.self!.identifier,
         avatar: client.self!.avatar);
 
-    for (int i = rooms.length - 1; i >= 0; i--) {
-      if (rooms[i].client == client) {
-        rooms.removeAt(i);
+    for (final room in rooms) {
+      if (room.client == client) {
+        _rooms.remove(room.localId);
       }
     }
 
-    for (int i = spaces.length - 1; i >= 0; i--) {
-      if (spaces[i].client == client) {
-        spaces.removeAt(i);
+    for (final space in spaces) {
+      if (space.client == client) {
+        _spaces.remove(space.localId);
       }
     }
 
     await client.logout();
-    onClientRemoved.add(clientInfo);
     _clients.remove(client.identifier);
     _clientsList.removeAt(clientIndex);
   }

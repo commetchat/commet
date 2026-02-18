@@ -6,7 +6,7 @@ import 'package:commet/client/room_preview.dart';
 import 'package:flutter/widgets.dart';
 import 'package:matrix/matrix.dart';
 
-class MatrixSpaceRoomChunkPreview implements RoomPreview {
+class MatrixSpaceRoomChunkPreview extends RoomPreview {
   SpaceRoomsChunk chunk;
   Client matrixClient;
   @override
@@ -48,4 +48,7 @@ class MatrixSpaceRoomChunkPreview implements RoomPreview {
 
   @override
   RoomVisibility? get visibility => null;
+
+  @override
+  String get clientId => matrixClient.clientName;
 }

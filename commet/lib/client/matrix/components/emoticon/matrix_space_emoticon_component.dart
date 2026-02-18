@@ -14,7 +14,7 @@ class MatrixSpaceEmoticonComponent extends MatrixEmoticonComponent
   bool get canCreatePack => space.permissions.canEditRoomEmoticons;
 
   @override
-  String get ownerId => space.identifier;
+  String get ownerId => space.roomId;
 
   @override
   String get ownerDisplayName => space.displayName;

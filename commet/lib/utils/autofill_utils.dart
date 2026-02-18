@@ -74,7 +74,7 @@ class AutofillUtils {
   static List<AutofillSearchResult> searchRooms(String string, Room room) {
     var rooms = List<Room>.empty(growable: true);
     var spaces = room.client.spaces
-        .where((element) => element.containsRoom(room.identifier));
+        .where((element) => element.containsRoom(room.roomId));
     for (var space in spaces) {
       for (var room in space.rooms) {
         if (!rooms.contains(room)) {
@@ -93,7 +93,7 @@ class AutofillUtils {
         ]));
 
     return fuzzy.search(string, 20).map((e) {
-      return AutofillSearchResult(e.item.displayName, e.item.identifier);
+      return AutofillSearchResult(e.item.displayName, e.item.roomId);
     }).toList();
   }
 

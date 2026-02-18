@@ -1,9 +1,8 @@
 import 'dart:async';
 
+import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
-import 'package:commet/client/room.dart';
-import 'package:commet/client/stale_info.dart';
 
 class DirectMessagesAggregator implements DirectMessagesInterface {
   ClientManager clientManager;
@@ -34,8 +33,8 @@ class DirectMessagesAggregator implements DirectMessagesInterface {
       comp?.onHighlightedRoomsListUpdated.listen(onHighlightedListUpdated);
     }
 
-    clientManager.onClientAdded.stream.listen(onClientAdded);
-    clientManager.onClientRemoved.stream.listen(onClientRemoved);
+    clientManager.onClientAdded.listen(onClientAdded);
+    clientManager.onClientRemoved.listen(onClientRemoved);
   }
 
   void updateDirectMessageRooms() {
@@ -61,8 +60,7 @@ class DirectMessagesAggregator implements DirectMessagesInterface {
     updateDirectMessageRooms();
   }
 
-  void onClientAdded(int index) {
-    var client = clientManager.clients[index];
+  void onClientAdded(Client client) {
     final comp = client.getComponent<DirectMessagesComponent>();
     if (comp != null) {
       comp.onRoomsListUpdated.listen(onClientUpdatedList);
@@ -71,7 +69,7 @@ class DirectMessagesAggregator implements DirectMessagesInterface {
     }
   }
 
-  void onClientRemoved(StalePeerInfo event) {
+  void onClientRemoved(Client client) {
     updateDirectMessageRooms();
   }
 

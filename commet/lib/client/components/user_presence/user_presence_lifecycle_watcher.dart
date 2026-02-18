@@ -46,12 +46,10 @@ class UserPresenceLifecycleWatcher {
       }
     }
 
-    if (clientManager != null) {
-      for (var client in clientManager!.clients) {
-        final component = client.getComponent<UserPresenceComponent>();
-        if (component != null) {
-          component.setStatus(state);
-        }
+    for (var client in clientManager.clients) {
+      final component = client.getComponent<UserPresenceComponent>();
+      if (component != null) {
+        component.setStatus(state);
       }
     }
 

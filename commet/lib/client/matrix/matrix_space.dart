@@ -125,13 +125,13 @@ class MatrixSpace extends Space {
   String get displayName => _displayName;
 
   @override
-  String get identifier => _matrixRoom.id;
+  String get roomId => _matrixRoom.id;
 
   @override
-  Stream<int> get onChildRoomPreviewAdded => _previews.onAdd;
+  Stream<RoomPreview> get onChildRoomPreviewAdded => _previews.onAdd;
 
   @override
-  Stream<int> get onChildRoomPreviewRemoved => _previews.onRemove;
+  Stream<RoomPreview> get onChildRoomPreviewRemoved => _previews.onRemove;
 
   @override
   Stream<void> get onChildRoomPreviewsUpdated => _previews.onListUpdated;
@@ -146,16 +146,16 @@ class MatrixSpace extends Space {
   List<Space> get subspaces => _subspaces;
 
   @override
-  Stream<int> get onChildSpaceAdded => _subspaces.onAdd;
+  Stream<Space> get onChildSpaceAdded => _subspaces.onAdd;
 
   @override
-  Stream<int> get onChildSpaceRemoved => _subspaces.onRemove;
+  Stream<Space> get onChildSpaceRemoved => _subspaces.onRemove;
 
   @override
-  Stream<int> get onRoomAdded => _rooms.onAdd;
+  Stream<Room> get onRoomAdded => _rooms.onAdd;
 
   @override
-  Stream<int> get onRoomRemoved => _rooms.onRemove;
+  Stream<Room> get onRoomRemoved => _rooms.onRemove;
 
   @override
   Stream<void> get onUpdate => _onUpdate.stream;
@@ -261,9 +261,8 @@ class MatrixSpace extends Space {
     _avatar = avatar;
   }
 
-  void onClientRoomRemoved(int index) {
-    var leftRoom = client.rooms[index];
-    if (containsRoom(leftRoom.identifier)) {
+  void onClientRoomRemoved(Room leftRoom) {
+    if (containsRoom(leftRoom.roomId)) {
       _rooms.remove(leftRoom);
     }
   }
@@ -273,11 +272,11 @@ class MatrixSpace extends Space {
       var space = client.getSpace(child.roomId!);
 
       if (space == null) {
-        subspaces.removeWhere((e) => e.identifier == child.roomId);
+        subspaces.removeWhere((e) => e.roomId == child.roomId);
       }
 
       if (space != null) {
-        if (!subspaces.any((s) => s.identifier == child.roomId)) {
+        if (!subspaces.any((s) => s.roomId == child.roomId)) {
           subspaces.add(space);
 
           _previews.removeWhere((p) => p.roomId == child.roomId);
@@ -286,15 +285,13 @@ class MatrixSpace extends Space {
         var room = client.getRoom(child.roomId!);
 
         if (room == null) {
-          _rooms.removeWhere((e) => e.identifier == child.roomId);
+          _rooms.removeWhere((e) => e.roomId == child.roomId);
         }
 
         if (room != null) {
-          if (!containsRoom(room.identifier) &&
-              !client.hasSpace(room.identifier)) {
+          if (!containsRoom(room.roomId) && !client.hasSpace(room.roomId)) {
             _rooms.add(room);
-            _previews
-                .removeWhere((element) => element.roomId == room.identifier);
+            _previews.removeWhere((element) => element.roomId == room.roomId);
           }
         }
       }
@@ -308,15 +305,14 @@ class MatrixSpace extends Space {
     }
 
     _rooms.sort((a, b) {
-      var orderA = orders[a.identifier] ?? "";
-      var orderB = orders[b.identifier] ?? "";
+      var orderA = orders[a.roomId] ?? "";
+      var orderB = orders[b.roomId] ?? "";
 
       return orderA.compareTo(orderB);
     });
   }
 
-  void _onRoomAdded(int index) {
-    var room = _rooms[index];
+  void _onRoomAdded(Room room) {
     _subscriptions.add(room.onUpdate.listen((event) {
       _onChildUpdated.add(room);
     }));
@@ -325,17 +321,16 @@ class MatrixSpace extends Space {
   @override
   Future<Room> createRoom(String name, CreateRoomArgs args) async {
     var room = await client.createRoom(args);
-    _matrixRoom.setSpaceChild(room.identifier);
+    _matrixRoom.setSpaceChild(room.roomId);
     return room;
   }
 
   @override
   Future<List<RoomPreview>> fetchChildren() async {
-    var response =
-        await _matrixClient.getSpaceHierarchy(identifier, maxDepth: 5);
+    var response = await _matrixClient.getSpaceHierarchy(roomId, maxDepth: 5);
 
     return response.rooms
-        .where((element) => element.roomId != identifier)
+        .where((element) => element.roomId != roomId)
         .where((element) => !containsRoom(element.roomId))
         .map((e) => MatrixSpaceRoomChunkPreview(e, _matrixClient))
         .toList();
@@ -356,12 +351,11 @@ class MatrixSpace extends Space {
 
   @override
   Future<void> loadExtra() async {
-    var response =
-        await _matrixClient.getSpaceHierarchy(identifier, maxDepth: 1);
+    var response = await _matrixClient.getSpaceHierarchy(roomId, maxDepth: 1);
 
     // read child rooms
     response.rooms
-        .where((element) => element.roomId != identifier)
+        .where((element) => element.roomId != roomId)
         .where((element) =>
             _matrixClient.getRoomById(element.roomId)?.membership !=
             matrix.Membership.join)
@@ -394,21 +388,21 @@ class MatrixSpace extends Space {
 
   @override
   Future<void> setSpaceChildRoom(Room room) async {
-    await _matrixRoom.setSpaceChild(room.identifier);
+    await _matrixRoom.setSpaceChild(room.roomId);
     children.add(SpaceChildRoom(room));
     _onUpdate.add(null);
   }
 
   @override
   Future<void> setSpaceChildSpace(Space room) async {
-    await _matrixRoom.setSpaceChild(room.identifier);
+    await _matrixRoom.setSpaceChild(room.roomId);
     children.add(SpaceChildSpace(room));
     _onUpdate.add(null);
   }
 
   @override
   bool containsRoom(String identifier) {
-    return _rooms.any((element) => element.identifier == identifier);
+    return _rooms.any((element) => element.roomId == identifier);
   }
 
   @override
@@ -425,7 +419,7 @@ class MatrixSpace extends Space {
     if (update == null) return;
 
     for (var id in update.keys) {
-      if (roomsWithChildren.any((i) => i.identifier == id)) {
+      if (roomsWithChildren.any((i) => i.roomId == id)) {
         _updateTopLevelStatus();
         _onUpdate.add(null);
       }
@@ -501,4 +495,7 @@ class MatrixSpace extends Space {
   Future<void> removeChild(SpaceChild<dynamic> child) async {
     await matrixRoom.removeSpaceChild(child.id);
   }
+
+  @override
+  String get clientId => client.identifier;
 }

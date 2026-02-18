@@ -60,7 +60,7 @@ class _SpaceIconState extends State<SpaceIcon> {
 
   void onSelectedSpaceChanged(Space? event) {
     setState(() {
-      selected = event?.identifier == widget.spaceId;
+      selected = event?.roomId == widget.spaceId;
     });
   }
 

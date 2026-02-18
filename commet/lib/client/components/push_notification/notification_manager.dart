@@ -50,7 +50,7 @@ class NotificationManager {
               "https://commet.chat/troubleshoot/android-background-service-failed/")),
         );
 
-        clientManager?.alertManager.addAlert(alert);
+        clientManager.alertManager.addAlert(alert);
         preferences.setLastForegroundServiceRunSucceeded(null);
       }
     }

@@ -7,7 +7,6 @@ import 'package:commet/client/components/push_notification/notification_content.
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/components/voip/voip_component.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
-import 'package:commet/client/stale_info.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:intl/intl.dart';
@@ -37,17 +36,14 @@ class CallManager {
       NotifyingList.empty(growable: true);
 
   CallManager(this.clientManager) {
-    clientManager.onClientAdded.stream.listen(_onClientAdded);
-    clientManager.onClientRemoved.stream.listen(_onClientRemoved);
+    clientManager.onClientAdded.listen(_onClientAdded);
   }
 
   Player? player;
   Player? muteSoundPlayer;
   Player? unmuteSoundPlayer;
 
-  void _onClientAdded(int index) {
-    var client = clientManager.clients[index];
-
+  void _onClientAdded(Client client) {
     var voip = client.getComponent<VoipComponent>();
     if (voip == null) {
       return;
@@ -56,8 +52,6 @@ class CallManager {
     voip.onSessionStarted.listen(onClientSessionStarted);
     voip.onSessionEnded.listen(onSessionEnded);
   }
-
-  void _onClientRemoved(StalePeerInfo event) {}
 
   void onClientSessionStarted(VoipSession event) {
     var room = event.client.getRoom(event.roomId);

@@ -67,7 +67,7 @@ class MainPageState extends State<MainPage> {
   VoipSession? get currentCall => currentRoom == null
       ? null
       : widget.clientManager.callManager
-          .getCallInRoom(currentRoom!.client, currentRoom!.identifier);
+          .getCallInRoom(currentRoom!.client, currentRoom!.roomId);
 
   @override
   void initState() {
@@ -269,7 +269,7 @@ class MainPageState extends State<MainPage> {
 
     var partner = direct.getDirectMessagePartnerId(room);
 
-    component.startCall(room.identifier, CallType.voice, userId: partner);
+    component.startCall(room.roomId, CallType.voice, userId: partner);
   }
 
   void selectHome() {

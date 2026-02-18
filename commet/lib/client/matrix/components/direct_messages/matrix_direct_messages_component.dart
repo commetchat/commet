@@ -36,7 +36,7 @@ class MatrixDirectMessagesComponent
   MatrixDirectMessagesComponent(this.client) {
     client.getMatrixClient().onSync.stream.listen(onMatrixSync);
     EventBus.onSelectedRoomChanged.stream
-        .listen((value) => currentRoomId = value?.identifier ?? "");
+        .listen((value) => currentRoomId = value?.roomId ?? "");
   }
 
   @override
@@ -81,8 +81,7 @@ class MatrixDirectMessagesComponent
     return client.getRoom(roomId);
   }
 
-  void onRoomAdded(int index) {
-    var room = client.rooms[index];
+  void onRoomAdded(Room room) {
     if (isRoomDirectMessage(room)) {
       updateRoomsList();
     }
@@ -107,16 +106,15 @@ class MatrixDirectMessagesComponent
     }
   }
 
-  void onRoomRemoved(int index) {
-    var room = client.rooms[index];
+  void onRoomRemoved(Room room) {
     directMessageRooms.remove(room);
     listUpdated.add(null);
   }
 
   void updateNotificationsList() {
     highlightedRoomsList = directMessageRooms
-        .where((e) =>
-            e.displayNotificationCount > 0 && e.identifier != currentRoomId)
+        .where(
+            (e) => e.displayNotificationCount > 0 && e.roomId != currentRoomId)
         .toList();
 
     highlightedListUpdated.add(null);

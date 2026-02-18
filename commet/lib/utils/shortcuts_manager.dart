@@ -42,7 +42,7 @@ class ShortcutsManager {
     if (loading != null) await loading;
 
     var cachedAvatar = await getCachedAvatarImage(
-        identifier: room.identifier,
+        identifier: room.roomId,
         placeholderColor: room.defaultColor,
         placeholderText: room.displayName,
         format: ShortcutIconFormat.jpeg,
@@ -57,10 +57,10 @@ class ShortcutsManager {
     }
 
     var item = ShortcutItem(
-        id: room.identifier,
-        action: OpenRoomURI(
-                roomId: room.identifier, clientId: room.client.identifier)
-            .toString(),
+        id: room.roomId,
+        action:
+            OpenRoomURI(roomId: room.roomId, clientId: room.client.identifier)
+                .toString(),
         shortLabel: room.displayName,
         icon: icon,
         shortcutIconAsset: ShortcutIconAsset.memoryAsset,

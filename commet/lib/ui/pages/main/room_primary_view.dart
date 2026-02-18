@@ -52,9 +52,9 @@ class RoomPrimaryView extends StatelessWidget {
       }
     }
 
-    final call = clientManager?.callManager.getCallInRoom(
+    final call = clientManager.callManager.getCallInRoom(
       room.client,
-      room.identifier,
+      room.roomId,
     );
 
     return Column(

@@ -71,10 +71,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void onSync(void event) {
-    Future.delayed(Duration(seconds: 1)).then((_) {
-      setState(() {
-        updateRecent();
-      });
+    setState(() {
+      updateRecent();
     });
   }
 
@@ -131,7 +129,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           .singleRooms(filterClient: filterClient),
                       recentActivity: recentActivity,
                       onRoomClicked: (room) => EventBus.openRoom
-                          .add((room.identifier, room.client.identifier)),
+                          .add((room.roomId, room.client.identifier)),
                       joinRoom: joinRoom,
                       createRoom: createRoom,
                     ),

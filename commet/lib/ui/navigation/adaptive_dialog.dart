@@ -78,14 +78,14 @@ class AdaptiveDialog {
     bool dismissible = true,
     double initialHeightMobile = 0.5,
   }) async {
-    if (clientManager?.clients.length == 1) {
-      return clientManager!.clients.first;
+    if (clientManager.clients.length == 1) {
+      return clientManager.clients.first;
     }
 
     return AdaptiveDialog.pickOne(
       context,
       title: "Pick Account",
-      items: clientManager!.clients,
+      items: clientManager.clients,
       itemBuilder: (context, item, callback) {
         return SizedBox(
           child: UserPanelView(

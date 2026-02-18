@@ -56,7 +56,7 @@ class SettingsPage extends StatelessWidget {
       title: "Pick an account to donate with",
       context,
       items: [
-        ...clientManager!.clients,
+        ...clientManager.clients,
         "anonymous",
       ],
       itemBuilder: (context, item, callback) {

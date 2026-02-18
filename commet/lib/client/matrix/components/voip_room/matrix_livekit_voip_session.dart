@@ -28,7 +28,7 @@ class MatrixLivekitVoipSession implements VoipSession {
   final StreamController<void> _onVolumeChanged = StreamController.broadcast();
 
   MatrixLivekitVoipSession(this.room, this.livekitRoom) {
-    clientManager?.callManager.onClientSessionStarted(this);
+    clientManager.callManager.onClientSessionStarted(this);
     addInitialStreams();
 
     final listener = livekitRoom.createListener();
@@ -147,11 +147,11 @@ class MatrixLivekitVoipSession implements VoipSession {
   }
 
   void onParticipantConnected(lk.ParticipantConnectedEvent event) {
-    clientManager?.callManager.joinCallSound();
+    clientManager.callManager.joinCallSound();
   }
 
   void onParticipantDisconnected(lk.ParticipantDisconnectedEvent event) {
-    clientManager?.callManager.endCallSound();
+    clientManager.callManager.endCallSound();
   }
 
   void onLocalTrackPublished(lk.LocalTrackPublishedEvent event) {
@@ -203,7 +203,7 @@ class MatrixLivekitVoipSession implements VoipSession {
     _stateChanged.add(());
     _onConnectionChanged.add(state);
 
-    clientManager?.callManager.onSessionEnded(this);
+    clientManager.callManager.onSessionEnded(this);
   }
 
   @override
@@ -230,7 +230,7 @@ class MatrixLivekitVoipSession implements VoipSession {
   String? get remoteUserName => null;
 
   @override
-  String get roomId => room.identifier;
+  String get roomId => room.roomId;
 
   @override
   String get roomName => room.displayName;

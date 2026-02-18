@@ -53,7 +53,7 @@ class UpdateChecker {
       Log.i("Supports auto update: $canAutoUpdate");
       if (time.isAfter(BuildConfig.BUILD_DATE)) {
         var tag = fields[key];
-        clientManager!.alertManager.addAlert(Alert(AlertType.info,
+        clientManager.alertManager.addAlert(Alert(AlertType.info,
             messageGetter: () =>
                 "There is a newer version of Commet available: ${tag}",
             titleGetter: () => "Update Available",
@@ -115,7 +115,7 @@ class UpdateChecker {
         await ErrorUtils.tryRun(context, () async {
           Log.i("Found installer, doing automatic update");
 
-          for (var client in clientManager!.clients) {
+          for (var client in clientManager.clients) {
             await client.close();
           }
 

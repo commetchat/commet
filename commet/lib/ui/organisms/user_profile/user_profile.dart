@@ -257,11 +257,11 @@ class _UserProfileState extends State<UserProfile> {
 
     if (existingRooms.isNotEmpty == true) {
       EventBus.openRoom
-          .add((existingRooms.first.identifier, widget.client.identifier));
+          .add((existingRooms.first.roomId, widget.client.identifier));
     } else {
       var room = await component.createDirectMessage(profile!.identifier);
       if (room != null) {
-        EventBus.openRoom.add((room.identifier, widget.client.identifier));
+        EventBus.openRoom.add((room.roomId, widget.client.identifier));
       }
     }
 

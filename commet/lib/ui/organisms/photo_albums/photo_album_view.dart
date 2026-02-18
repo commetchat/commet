@@ -43,7 +43,7 @@ class _PhotoAlbumViewState extends State<PhotoAlbumView> {
 
   late List<StreamSubscription> subs;
 
-  void onAdded(int event) {
+  void onAdded(Photo event) {
     setState(() {
       numItems = timeline!.photos.length;
     });
@@ -397,13 +397,13 @@ class _PhotoAlbumViewState extends State<PhotoAlbumView> {
         builder: (_) => PhotosAlbumUploadView(f, widget.component));
   }
 
-  void onChanged(int event) {
+  void onChanged(Photo event) {
     setState(() {
       numItems = timeline!.photos.length;
     });
   }
 
-  void onRemoved(int event) {
+  void onRemoved(Photo event) {
     setState(() {
       numItems = timeline!.photos.length;
     });

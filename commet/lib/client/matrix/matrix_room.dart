@@ -133,7 +133,7 @@ class MatrixRoom extends Room {
 
     if (hashColor != null) return hashColor!;
 
-    hashColor = MatrixPeer.hashColor(identifier);
+    hashColor = MatrixPeer.hashColor(roomId);
 
     return hashColor!;
   }
@@ -199,7 +199,7 @@ class MatrixRoom extends Room {
   Client get client => _client;
 
   @override
-  String get identifier => _matrixRoom.id;
+  String get roomId => _matrixRoom.id;
 
   @override
   Timeline? get timeline => _timeline;
@@ -262,7 +262,7 @@ class MatrixRoom extends Room {
   }
 
   void onEvent(matrix.EventUpdate eventUpdate) async {
-    if (eventUpdate.roomID != identifier) {
+    if (eventUpdate.roomID != roomId) {
       return;
     }
 
@@ -322,7 +322,7 @@ class MatrixRoom extends Room {
     }
 
     // never notify for a message that came from an account we are logged in to!
-    if (clientManager?.clients
+    if (clientManager.clients
             .any((element) => element.self?.identifier == event.senderId) ==
         true) {
       return false;
@@ -633,7 +633,7 @@ class MatrixRoom extends Room {
     }
 
     return client.spaces
-        .where((space) => space.containsRoom(identifier))
+        .where((space) => space.containsRoom(roomId))
         .firstOrNull
         ?.avatar;
   }
@@ -847,4 +847,7 @@ class MatrixRoom extends Room {
 
     await tl.setReadMarker();
   }
+
+  @override
+  String get clientId => client.identifier;
 }

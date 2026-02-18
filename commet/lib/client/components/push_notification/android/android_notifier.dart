@@ -65,18 +65,18 @@ class AndroidNotifier implements Notifier {
       return;
     }
 
-    var client = clientManager!.clients
+    var client = clientManager.clients
         .firstWhereOrNull((element) => element.hasRoom(roomId));
 
     if (client == null) {
-      client = clientManager!.clients.firstWhereOrNull((client) =>
+      client = clientManager.clients.firstWhereOrNull((client) =>
           client
               .getComponent<InvitationComponent>()
               ?.invitations
               .any((i) => i.roomId == roomId) ==
           true);
 
-      for (client in clientManager!.clients) {
+      for (client in clientManager.clients) {
         final comp = client.getComponent<InvitationComponent>();
 
         var invite =
@@ -116,7 +116,7 @@ class AndroidNotifier implements Notifier {
           eventId: eventId,
           senderImageId: user.avatarId,
           roomImageId: room.avatarId,
-          roomId: room.identifier,
+          roomId: room.roomId,
           clientId: client.identifier,
           senderImage: user.avatar,
           roomImage: await room.getShortcutImage(),
@@ -149,7 +149,7 @@ class AndroidNotifier implements Notifier {
 
   Future<void> displayMessageNotification(
       MessageNotificationContent content) async {
-    var client = clientManager?.getClient(content.clientId);
+    var client = clientManager.getClient(content.clientId);
     var room = client?.getRoom(content.roomId);
 
     if (room == null) {
@@ -187,14 +187,14 @@ class AndroidNotifier implements Notifier {
         placeholderText: content.roomName,
         imageId: content.roomImageId,
         format: ShortcutIconFormat.png,
-        identifier: room.identifier,
+        identifier: room.roomId,
         imageProvider: await room.getShortcutImage());
 
     await Future.wait([
       shortcutsManager.createShortcutForRoom(room),
     ]);
 
-    var id = room.identifier.hashCode;
+    var id = room.roomId.hashCode;
     var activeStyleInfo = await AndroidFlutterLocalNotificationsPlugin()
         .getActiveNotificationMessagingStyle(id);
 
@@ -254,7 +254,7 @@ class AndroidNotifier implements Notifier {
   }
 
   Future<void> displayCallNotification(CallNotificationContent content) async {
-    var client = clientManager?.getClient(content.clientId);
+    var client = clientManager.getClient(content.clientId);
     var room = client?.getRoom(content.roomId);
 
     if (room == null) {
@@ -280,10 +280,10 @@ class AndroidNotifier implements Notifier {
         placeholderText: content.roomName,
         imageId: content.roomImageId,
         format: ShortcutIconFormat.png,
-        identifier: room.identifier,
+        identifier: room.roomId,
         imageProvider: await room.getShortcutImage());
 
-    var id = room.identifier.hashCode;
+    var id = room.roomId.hashCode;
 
     var payload =
         OpenRoomURI(roomId: content.roomId, clientId: content.clientId)
@@ -355,7 +355,7 @@ class AndroidNotifier implements Notifier {
       var uri = CustomURI.parse(details.actionId!);
       Log.d("Parsed action uri: $uri");
       if (uri case AcceptCallUri _) {
-        final session = clientManager?.callManager.currentSessions
+        final session = clientManager.callManager.currentSessions
             .where((e) =>
                 e.sessionId == uri.callId &&
                 e.client.identifier == uri.clientId)
@@ -367,7 +367,7 @@ class AndroidNotifier implements Notifier {
       }
 
       if (uri case DeclineCallUri _) {
-        final session = clientManager?.callManager.currentSessions
+        final session = clientManager.callManager.currentSessions
             .where((e) =>
                 e.sessionId == uri.callId &&
                 e.client.identifier == uri.clientId)
@@ -407,7 +407,7 @@ class AndroidNotifier implements Notifier {
     if (notifications == null) return;
 
     for (var noti in notifications) {
-      if (noti.groupKey == room.identifier) {
+      if (noti.groupKey == room.roomId) {
         flutterLocalNotificationsPlugin?.cancel(noti.id!);
       }
     }
