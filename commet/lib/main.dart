@@ -360,14 +360,14 @@ class _AppViewState extends State<AppView> {
   void initState() {
     super.initState();
     _onClientRemovedSubscription =
-        widget.clientManager.onClientRemoved.stream.listen((_) {
+        widget.clientManager.onClientRemoved.listen((_) {
       if (!widget.clientManager.isLoggedIn()) {
         navigator.currentState?.popUntil((route) => route.isFirst);
         setState(() {});
       }
     });
     _onClientAddedSubscription =
-        widget.clientManager.onClientAdded.stream.listen((_) {
+        widget.clientManager.onClientAdded.listen((_) {
       setState(() {});
     });
   }

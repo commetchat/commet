@@ -115,9 +115,9 @@ class MainPageState extends State<MainPage> {
     EventBus.openUserProfile.stream.listen(onOpenUserProfileSignal);
 
     onClientRemovedSubscription =
-        clientManager.onClientRemoved.stream.listen(onClientRemoved);
+        clientManager.onClientRemoved.listen(onClientRemoved);
 
-    onClientAddedSubscription = clientManager.onClientAdded.stream.listen((_) {
+    onClientAddedSubscription = clientManager.onClientAdded.listen((_) {
       if (mounted) setState(() {});
     });
 
