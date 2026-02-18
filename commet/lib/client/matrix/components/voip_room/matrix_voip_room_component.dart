@@ -78,7 +78,7 @@ class MatrixVoipRoomComponent
   @override
   Future<VoipSession?> joinCall() async {
     currentSession = await backend.join();
-    currentSession!.onStateChanged.listen(onStateChanged);
+    currentSession?.onStateChanged.listen(onStateChanged);
     return currentSession;
   }
 
