@@ -80,6 +80,9 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
   void getDevices() async {
     var gotDevices = await widget.client.getMatrixClient().getDevices();
 
+    gotDevices
+        ?.sort((a, b) => (b.lastSeenTs ?? 0).compareTo(a.lastSeenTs ?? 0));
+
     if (mounted)
       setState(() {
         devices = gotDevices;

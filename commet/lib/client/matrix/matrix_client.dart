@@ -21,8 +21,6 @@ import 'package:commet/config/global_config.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
 import 'package:commet/main.dart';
-import 'package:commet/ui/navigation/adaptive_dialog.dart';
-import 'package:commet/ui/pages/matrix/authentication/matrix_uia_request.dart';
 import 'package:commet/utils/list_extension.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:commet/utils/stored_stream_controller.dart';
@@ -37,7 +35,6 @@ import 'package:matrix/encryption.dart';
 import 'package:flutter_vodozemac/flutter_vodozemac.dart' as vodozemac;
 
 import '../../ui/atoms/code_block.dart';
-import '../../ui/pages/matrix/verification/matrix_verification_page.dart';
 import 'matrix_room.dart';
 import 'matrix_space.dart';
 import 'package:vodozemac/vodozemac.dart' as vod;
@@ -268,24 +265,6 @@ class MatrixClient extends Client {
 
     _updateRoomslist();
     _updateSpacesList();
-
-    _matrixClient.onKeyVerificationRequest.stream.listen((event) {
-      AdaptiveDialog.show(
-        navigator.currentContext!,
-        builder: (_) => MatrixVerificationPage(request: event),
-        title: "Verification Request",
-      );
-    });
-
-    _matrixClient.onUiaRequest.stream.listen((event) {
-      if (event.state == matrix.UiaRequestState.waitForUser) {
-        AdaptiveDialog.show(
-          navigator.currentContext!,
-          builder: (_) => MatrixUIARequest(event, this),
-          title: "Authentication Request",
-        );
-      }
-    });
   }
 
   void onMatrixClientSync(matrix.SyncUpdate update) {
