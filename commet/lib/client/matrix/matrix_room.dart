@@ -117,6 +117,7 @@ class MatrixRoom extends Room {
   String get developerInfo =>
       const JsonEncoder.withIndent('  ').convert(_matrixRoom.states);
 
+  Color? hashColor;
   @override
   Color get defaultColor {
     var comp = client.getComponent<DirectMessagesComponent>();
@@ -130,12 +131,22 @@ class MatrixRoom extends Room {
       }
     }
 
-    return getColorOfUser(identifier);
+    if (hashColor != null) return hashColor!;
+
+    hashColor = MatrixPeer.hashColor(identifier);
+
+    return hashColor!;
   }
 
+  // cache the result of push rule because this was becoming an expensive operation for ui stuff
+  matrix.PushRuleState? _pushRule;
   @override
   PushRule get pushRule {
-    switch (_matrixRoom.pushRuleState) {
+    if (_pushRule == null) {
+      _pushRule = _matrixRoom.pushRuleState;
+    }
+
+    switch (_pushRule!) {
       case matrix.PushRuleState.notify:
         return PushRule.notify;
       case matrix.PushRuleState.mentionsOnly:
@@ -143,6 +154,27 @@ class MatrixRoom extends Room {
       case matrix.PushRuleState.dontNotify:
         return PushRule.dontNotify;
     }
+  }
+
+  @override
+  Future<void> setPushRule(PushRule rule) async {
+    var newRule = _matrixRoom.pushRuleState;
+
+    switch (rule) {
+      case PushRule.notify:
+        newRule = matrix.PushRuleState.notify;
+        break;
+      case PushRule.mentionsOnly:
+        newRule = matrix.PushRuleState.mentionsOnly;
+        break;
+      case PushRule.dontNotify:
+        newRule = matrix.PushRuleState.dontNotify;
+        break;
+    }
+
+    await _matrixRoom.setPushRuleState(newRule);
+    _pushRule = _matrixRoom.pushRuleState;
+    _onUpdate.add(null);
   }
 
   @override
@@ -522,26 +554,6 @@ class MatrixRoom extends Room {
   }
 
   @override
-  Future<void> setPushRule(PushRule rule) async {
-    var newRule = _matrixRoom.pushRuleState;
-
-    switch (rule) {
-      case PushRule.notify:
-        newRule = matrix.PushRuleState.notify;
-        break;
-      case PushRule.mentionsOnly:
-        newRule = matrix.PushRuleState.mentionsOnly;
-        break;
-      case PushRule.dontNotify:
-        newRule = matrix.PushRuleState.dontNotify;
-        break;
-    }
-
-    await _matrixRoom.setPushRuleState(newRule);
-    _onUpdate.add(null);
-  }
-
-  @override
   Future<void> setDisplayName(String newName) async {
     _displayName = newName;
     _onUpdate.add(null);
@@ -762,6 +774,7 @@ class MatrixRoom extends Room {
 
   void onRoomSyncUpdate(matrix.SyncUpdate event) {
     var update = event.rooms?.join?[_matrixRoom.id];
+
     if (update == null) return;
 
     _onUpdate.add(null);

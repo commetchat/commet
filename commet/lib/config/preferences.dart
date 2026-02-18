@@ -37,6 +37,8 @@ class Preferences {
   static const String _fallbackTurnServer = "fallback_turn_server";
   static const String _urlPreviewInE2EEChat = "use_url_preview_in_e2ee_chat";
   static const String _messageEffectsEnabled = "message_effects_enabled";
+  static const String _askBeforeDeletingMessageEnabled =
+      "ask_before_deleting_message_enabled";
   static const String _lastForegroundServiceSucceeded =
       "did_last_foreground_service_run_succeed";
   static const String _showRoomAvatars = "show_room_avatars";
@@ -330,6 +332,13 @@ class Preferences {
       await _preferences!.setBool(_lastForegroundServiceSucceeded, value);
     }
   }
+
+  Future<void> setAskBeforeDeletingMessageEnabled(bool value) async {
+    await _preferences!.setBool(_askBeforeDeletingMessageEnabled, value);
+  }
+
+  bool get askBeforeDeletingMessageEnabled =>
+      _preferences!.getBool(_askBeforeDeletingMessageEnabled) ?? true;
 
   Future<void> setMessageEffectsEnabled(bool value) async {
     await _preferences!.setBool(_messageEffectsEnabled, value);
