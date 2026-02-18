@@ -56,16 +56,44 @@ class MatrixSpace extends Space {
 
   @override
   Color get color => MatrixPeer.hashColor(_matrixRoom.id);
+
+  // cache the result of push rule because this was becoming an expensive operation for ui stuff
+  matrix.PushRuleState? _pushRule;
   @override
   PushRule get pushRule {
-    switch (_matrixRoom.pushRuleState) {
+    if (_pushRule == null) {
+      _pushRule = _matrixRoom.pushRuleState;
+    }
+
+    switch (_pushRule!) {
       case matrix.PushRuleState.notify:
         return PushRule.notify;
       case matrix.PushRuleState.mentionsOnly:
-        return PushRule.notify;
+        return PushRule.mentionsOnly;
       case matrix.PushRuleState.dontNotify:
         return PushRule.dontNotify;
     }
+  }
+
+  @override
+  Future<void> setPushRule(PushRule rule) async {
+    var newRule = _matrixRoom.pushRuleState;
+
+    switch (rule) {
+      case PushRule.notify:
+        newRule = matrix.PushRuleState.notify;
+        break;
+      case PushRule.mentionsOnly:
+        newRule = matrix.PushRuleState.mentionsOnly;
+        break;
+      case PushRule.dontNotify:
+        newRule = matrix.PushRuleState.dontNotify;
+        break;
+    }
+
+    await _matrixRoom.setPushRuleState(newRule);
+    _pushRule = _matrixRoom.pushRuleState;
+    _onUpdate.add(null);
   }
 
   @override
@@ -147,14 +175,18 @@ class MatrixSpace extends Space {
 
   late List<StreamSubscription> _subscriptions;
 
+  bool _isTopLevel = false;
   @override
-  bool get isTopLevel {
+  bool get isTopLevel => _isTopLevel;
+
+  void _updateTopLevelStatus() {
     for (var room in _matrixClient.rooms.where((r) => r.isSpace)) {
       if (room.spaceChildren.any((child) => child.roomId == _matrixRoom.id)) {
-        return false;
+        _isTopLevel = false;
+        return;
       }
     }
-    return true;
+    _isTopLevel = true;
   }
 
   MatrixSpace(
@@ -173,6 +205,9 @@ class MatrixSpace extends Space {
       client.onRoomAdded.listen((_) => updateRoomsList()),
       client.onRoomRemoved.listen(onClientRoomRemoved),
       client.matrixClient.onSync.stream.listen(onMatrixSync),
+      client.matrixClient.onRoomState.stream
+          .where((i) => i.roomId == room.id)
+          .listen(onStateChanged),
 
       // Subscribe to all child update events
       _rooms.onAdd.listen(_onRoomAdded),
@@ -187,6 +222,12 @@ class MatrixSpace extends Space {
     }
 
     updateRoomsList();
+    _updateTopLevelStatus();
+  }
+
+  void onStateChanged(
+      ({String roomId, matrix.StrippedStateEvent state}) event) {
+    refresh();
   }
 
   @override
@@ -314,26 +355,6 @@ class MatrixSpace extends Space {
   }
 
   @override
-  Future<void> setPushRule(PushRule rule) async {
-    var newRule = _matrixRoom.pushRuleState;
-
-    switch (rule) {
-      case PushRule.notify:
-        newRule = matrix.PushRuleState.notify;
-        break;
-      case PushRule.mentionsOnly:
-        newRule = matrix.PushRuleState.mentionsOnly;
-        break;
-      case PushRule.dontNotify:
-        newRule = matrix.PushRuleState.dontNotify;
-        break;
-    }
-
-    await _matrixRoom.setPushRuleState(newRule);
-    _onUpdate.add(null);
-  }
-
-  @override
   Future<void> loadExtra() async {
     var response =
         await _matrixClient.getSpaceHierarchy(identifier, maxDepth: 1);
@@ -405,6 +426,7 @@ class MatrixSpace extends Space {
 
     for (var id in update.keys) {
       if (roomsWithChildren.any((i) => i.identifier == id)) {
+        _updateTopLevelStatus();
         _onUpdate.add(null);
       }
     }
