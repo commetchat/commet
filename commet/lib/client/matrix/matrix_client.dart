@@ -443,6 +443,7 @@ class MatrixClient extends Client {
   @override
   Future<Room> createRoom(CreateRoomArgs args) async {
     var creationContent = null;
+    Map<String, Object?>? powerLevelContentOverride = {};
 
     List<matrix.StateEvent>? initialState;
     if (args.roomType == RoomType.photoAlbum) {
@@ -451,6 +452,12 @@ class MatrixClient extends Client {
 
     if (args.roomType == RoomType.voipRoom) {
       creationContent = {"type": "org.matrix.msc3417.call"};
+      powerLevelContentOverride = {
+        "events": {
+          "org.matrix.msc3401.call": 0,
+          "org.matrix.msc3401.call.member": 0
+        }
+      };
     }
 
     if (args.roomType == RoomType.calendar) {
@@ -486,14 +493,14 @@ class MatrixClient extends Client {
     }
 
     var id = await _matrixClient.createRoom(
-      creationContent: creationContent,
-      name: args.name,
-      initialState: initialState,
-      topic: args.topic,
-      visibility: args.visibility == RoomVisibility.private
-          ? matrix.Visibility.private
-          : matrix.Visibility.public,
-    );
+        creationContent: creationContent,
+        name: args.name,
+        initialState: initialState,
+        topic: args.topic,
+        visibility: args.visibility == RoomVisibility.private
+            ? matrix.Visibility.private
+            : matrix.Visibility.public,
+        powerLevelContentOverride: powerLevelContentOverride);
 
     await _matrixClient.waitForRoomInSync(id);
 
