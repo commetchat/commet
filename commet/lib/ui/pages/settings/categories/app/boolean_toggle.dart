@@ -8,8 +8,10 @@ class BooleanPreferenceToggle extends StatefulWidget {
       {required this.preference,
       required this.title,
       this.description,
+      this.onChanged,
       super.key});
   final BoolPreference preference;
+  final Function(bool)? onChanged;
 
   final String title;
   final String? description;
@@ -47,6 +49,7 @@ class _BooleanPreferenceToggleState extends State<BooleanPreferenceToggle> {
             onChanged: (value) async {
               await widget.preference.set(value);
               setState(() {});
+              widget.onChanged?.call(value);
             },
           ),
         )

@@ -6,6 +6,7 @@ import 'package:commet/utils/scaled_app.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart' as m;
 import 'package:intl/intl.dart';
+import 'package:tiamat/config/style/theme_changer.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:tiamat/tiamat.dart';
 
@@ -105,6 +106,10 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
                   preference: preferences.shouldFollowSystemTheme,
                   title: "Follow System Brightness",
                   description: "Automatically follow system Light / Dark mode",
+                  onChanged: (_) async {
+                    var theme = await preferences.resolveTheme();
+                    if (context.mounted) ThemeChanger.setTheme(context, theme);
+                  },
                 )),
             Padding(
                 padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
@@ -112,6 +117,10 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
                   preference: preferences.shouldFollowSystemColors,
                   title: "Follow System Colors",
                   description: "Automatically follow system color scheme",
+                  onChanged: (_) async {
+                    var theme = await preferences.resolveTheme();
+                    if (context.mounted) ThemeChanger.setTheme(context, theme);
+                  },
                 )),
             const Seperator(),
             const ThemeListWidget(),
