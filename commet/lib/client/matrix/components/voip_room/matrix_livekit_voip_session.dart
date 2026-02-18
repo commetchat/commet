@@ -246,19 +246,6 @@ class MatrixLivekitVoipSession implements VoipSession {
 
   @override
   Future<void> setScreenShare(ScreenCaptureSource source) async {
-    if (source is SdkManagedScreenCaptureSource) {
-      var track = await lk.LocalVideoTrack.createScreenShareTrack(
-          lk.ScreenShareCaptureOptions(
-        // no sourceId → SDK will open the dialog
-        maxFrameRate: 30,
-        params: lk.VideoParametersPresets.h1080_169,
-      ));
-
-      await livekitRoom.localParticipant?.publishVideoTrack(track);
-      _stateChanged.add(());
-      return;
-    }
-
     if (source is WebrtcAndroidScreencaptureSource) {
       livekitRoom.localParticipant?.setScreenShareEnabled(true);
       Log.i("Got android screen capture source!");
@@ -266,11 +253,11 @@ class MatrixLivekitVoipSession implements VoipSession {
       return;
     }
 
-    final src = (source as WebrtcScreencaptureSource).source;
-
     var track = await lk.LocalVideoTrack.createScreenShareTrack(
         lk.ScreenShareCaptureOptions(
-      sourceId: src.id,
+      sourceId: source is SdkManagedScreenCaptureSource
+          ? null // don't provide a source id and let the SDK handle pick
+          : (source as WebrtcScreencaptureSource).source.id,
       maxFrameRate: 30,
       params: lk.VideoParametersPresets.h1080_169,
     ));
