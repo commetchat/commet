@@ -24,8 +24,7 @@ class SidebarManager {
 
   List<ResolvedSidebarItem> get items => _resolvedItems;
 
-  final StreamController<void> onSidebarChanged =
-      StreamController.broadcast();
+  final StreamController<void> onSidebarChanged = StreamController.broadcast();
 
   SidebarManager(this.clientManager);
 
@@ -94,8 +93,7 @@ class SidebarManager {
   void _resolve() {
     final topLevelSpaces = clientManager.spaces
         .where((s) => s.isTopLevel)
-        .where(
-            (s) => _filterClient == null || s.client == _filterClient)
+        .where((s) => _filterClient == null || s.client == _filterClient)
         .toList();
 
     final spaceMap = <String, Space>{};
@@ -139,9 +137,8 @@ class SidebarManager {
       }
     }
 
-    final unplaced = topLevelSpaces
-        .where((s) => !placedIds.contains(s.identifier))
-        .toList();
+    final unplaced =
+        topLevelSpaces.where((s) => !placedIds.contains(s.identifier)).toList();
 
     resolved.insertAll(0, unplaced.reversed.map((s) => ResolvedSpace(s)));
 
@@ -243,8 +240,7 @@ class SidebarManager {
       final item = _rawItems[i];
       if (item is SidebarFolder && item.id == folderId) {
         if (!item.children.contains(spaceId)) {
-          _rawItems[i] =
-              item.copyWith(children: [...item.children, spaceId]);
+          _rawItems[i] = item.copyWith(children: [...item.children, spaceId]);
         }
         break;
       }
@@ -282,8 +278,7 @@ class SidebarManager {
       if (item is SidebarFolder &&
           item.id != exceptFolderId &&
           item.children.contains(spaceId)) {
-        final newChildren =
-            item.children.where((c) => c != spaceId).toList();
+        final newChildren = item.children.where((c) => c != spaceId).toList();
         if (newChildren.length <= 1) {
           _rawItems.removeAt(i);
           for (var child in newChildren) {
@@ -301,8 +296,7 @@ class SidebarManager {
     for (int i = 0; i < _rawItems.length; i++) {
       final item = _rawItems[i];
       if (item is SidebarFolder && item.id == folderId) {
-        final newChildren =
-            item.children.where((c) => c != spaceId).toList();
+        final newChildren = item.children.where((c) => c != spaceId).toList();
 
         if (newChildren.length <= 1) {
           _rawItems.removeAt(i);
@@ -323,13 +317,11 @@ class SidebarManager {
     _debouncedPersist();
   }
 
-  void moveSpaceOutOfFolder(
-      String folderId, String spaceId, int insertIndex) {
+  void moveSpaceOutOfFolder(String folderId, String spaceId, int insertIndex) {
     for (int i = 0; i < _rawItems.length; i++) {
       final item = _rawItems[i];
       if (item is SidebarFolder && item.id == folderId) {
-        final newChildren =
-            item.children.where((c) => c != spaceId).toList();
+        final newChildren = item.children.where((c) => c != spaceId).toList();
 
         if (newChildren.length <= 1) {
           _rawItems.removeAt(i);

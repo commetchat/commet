@@ -21,8 +21,8 @@ class FolderIcon extends StatelessWidget {
   final VoidCallback onTap;
   final double width;
 
-  int get _highlightedNotificationCount => spaces.fold(
-      0, (sum, s) => sum + s.displayHighlightedNotificationCount);
+  int get _highlightedNotificationCount =>
+      spaces.fold(0, (sum, s) => sum + s.displayHighlightedNotificationCount);
 
   @override
   Widget build(BuildContext context) {
@@ -71,8 +71,7 @@ class FolderIcon extends StatelessWidget {
         offset: 5,
         tailLength: 5,
         tailBaseWidth: 5,
-        backgroundColor:
-            Theme.of(context).colorScheme.surfaceContainerLowest,
+        backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
         child: content,
       );
     }

@@ -56,8 +56,7 @@ class DraggableSpaceSelector extends StatefulWidget {
   final Widget? footer;
 
   @override
-  State<DraggableSpaceSelector> createState() =>
-      _DraggableSpaceSelectorState();
+  State<DraggableSpaceSelector> createState() => _DraggableSpaceSelectorState();
 }
 
 class _DraggableSpaceSelectorState extends State<DraggableSpaceSelector> {
@@ -117,8 +116,7 @@ class _DraggableSpaceSelectorState extends State<DraggableSpaceSelector> {
                     if (widget.header != null) const tiamat.Seperator(),
                     for (int i = 0; i < widget.items.length; i++)
                       _buildDragItem(i, widget.items[i]),
-                    if (_isDragging)
-                      _buildInsertionZone(widget.items.length),
+                    if (_isDragging) _buildInsertionZone(widget.items.length),
                     if (widget.footer != null)
                       Padding(
                         padding: SpaceSelector.padding,
@@ -298,8 +296,7 @@ class _DraggableSpaceSelectorState extends State<DraggableSpaceSelector> {
               onTap: () {
                 widget.onSpaceSelected?.call(space);
               },
-              showUser:
-                  widget.shouldShowAvatarForSpace?.call(space) ?? false,
+              showUser: widget.shouldShowAvatarForSpace?.call(space) ?? false,
             ),
           ),
         ),
@@ -439,8 +436,7 @@ class _DraggableSpaceSelectorState extends State<DraggableSpaceSelector> {
       tiamat.ContextMenuItem(
         text: _promptUngroup,
         icon: Icons.folder_off,
-        onPressed: () =>
-            widget.sidebarManager.ungroupFolder(folder.id),
+        onPressed: () => widget.sidebarManager.ungroupFolder(folder.id),
       ),
     ];
 
@@ -455,8 +451,7 @@ class _DraggableSpaceSelectorState extends State<DraggableSpaceSelector> {
         DragTarget<SidebarDragData>(
           onWillAcceptWithDetails: (details) =>
               details.data.isDraggingSpace &&
-              !folder.spaces
-                  .any((s) => s.identifier == details.data.spaceId),
+              !folder.spaces.any((s) => s.identifier == details.data.spaceId),
           onAcceptWithDetails: (details) {
             if (details.data.fromFolderId != null) {
               widget.sidebarManager.removeSpaceFromFolder(
@@ -475,8 +470,7 @@ class _DraggableSpaceSelectorState extends State<DraggableSpaceSelector> {
                   spaces: folder.spaces,
                   isExpanded: folder.isExpanded,
                   width: widget.width,
-                  onTap: () => widget.sidebarManager
-                      .toggleFolder(folder.id),
+                  onTap: () => widget.sidebarManager.toggleFolder(folder.id),
                 ),
                 if (_folderHasNotifications(folder)) _messageOverlay(),
               ],
@@ -547,9 +541,7 @@ class _DraggableSpaceSelectorState extends State<DraggableSpaceSelector> {
     return Container(
       margin: const EdgeInsets.fromLTRB(4, 0, 4, 2),
       decoration: BoxDecoration(
-        color: Theme.of(context)
-            .colorScheme
-            .surfaceContainerHigh,
+        color: Theme.of(context).colorScheme.surfaceContainerHigh,
         borderRadius:
             BorderRadius.vertical(bottom: Radius.circular(bottomRadius)),
       ),
@@ -566,16 +558,14 @@ class _DraggableSpaceSelectorState extends State<DraggableSpaceSelector> {
               widthOverride: widget.width - 8,
             ),
           ],
-          if (_isDragging)
-            _buildFolderInsertionZone(folder.id, spaces.length),
+          if (_isDragging) _buildFolderInsertionZone(folder.id, spaces.length),
         ],
       ),
     );
   }
 
   bool _folderHasNotifications(ResolvedFolder folder) {
-    return folder.spaces
-        .any((s) => s.displayNotificationCount > 0);
+    return folder.spaces.any((s) => s.displayNotificationCount > 0);
   }
 
   Widget _messageOverlay() {
@@ -594,8 +584,7 @@ class _DraggableSpaceSelectorState extends State<DraggableSpaceSelector> {
             controller: controller,
             autofocus: true,
             decoration: InputDecoration(hintText: _promptFolderName),
-            onSubmitted: (value) =>
-                Navigator.of(dialogContext).pop(value),
+            onSubmitted: (value) => Navigator.of(dialogContext).pop(value),
           ),
           actions: [
             TextButton(
@@ -603,8 +592,7 @@ class _DraggableSpaceSelectorState extends State<DraggableSpaceSelector> {
               child: Text(_promptCancel),
             ),
             TextButton(
-              onPressed: () =>
-                  Navigator.of(dialogContext).pop(controller.text),
+              onPressed: () => Navigator.of(dialogContext).pop(controller.text),
               child: Text(_promptCreate),
             ),
           ],
@@ -633,8 +621,7 @@ class _DraggableSpaceSelectorState extends State<DraggableSpaceSelector> {
             controller: controller,
             autofocus: true,
             decoration: InputDecoration(hintText: _promptFolderName),
-            onSubmitted: (value) =>
-                Navigator.of(dialogContext).pop(value),
+            onSubmitted: (value) => Navigator.of(dialogContext).pop(value),
           ),
           actions: [
             TextButton(
@@ -642,8 +629,7 @@ class _DraggableSpaceSelectorState extends State<DraggableSpaceSelector> {
               child: Text(_promptCancel),
             ),
             TextButton(
-              onPressed: () =>
-                  Navigator.of(dialogContext).pop(controller.text),
+              onPressed: () => Navigator.of(dialogContext).pop(controller.text),
               child: Text(_promptRename),
             ),
           ],
