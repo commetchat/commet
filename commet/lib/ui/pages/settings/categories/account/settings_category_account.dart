@@ -74,7 +74,7 @@ class SettingsCategoryAccount implements SettingsCategory {
                 clientManager: Provider.of<ClientManager>(context));
           },
         ),
-        if (preferences.developerMode)
+        if (preferences.developerMode.value)
           SettingsTab(
             label: labelSettingsTabDeveloper,
             icon: Icons.code,

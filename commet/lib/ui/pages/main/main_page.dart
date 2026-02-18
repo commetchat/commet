@@ -74,7 +74,7 @@ class MainPageState extends State<MainPage> {
     super.initState();
 
     Client? client;
-    if (preferences.filterClient != null) {
+    if (preferences.filterClient.value != null) {
       filterClient = clientManager.clients
           .firstWhereOrNull((i) => i.identifier == preferences.filterClient);
     }
@@ -343,7 +343,7 @@ class MainPageState extends State<MainPage> {
     if (confirm != true) return;
 
     EventBus.setFilterClient.add(newClient);
-    preferences.setFilterClient(newClient.identifier);
+    preferences.filterClient.set(newClient.identifier);
     EventBus.openRoom.add(strings);
   }
 

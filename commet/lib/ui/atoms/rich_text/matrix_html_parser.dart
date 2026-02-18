@@ -431,7 +431,7 @@ class LinkifyHtmlExtension extends HtmlExtension {
             overrideWidget = MentionWidget(
               displayName: mentionedRoom?.displayName ?? mxid.substring(1),
               vias: vias?.$2,
-              fallbackIcon: preferences.usePlaceholderRoomAvatars
+              fallbackIcon: preferences.usePlaceholderRoomAvatars.value
                   ? null
                   : mentionedRoom?.icon ?? Icons.tag,
               placeholderColor:

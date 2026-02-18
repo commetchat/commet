@@ -206,9 +206,10 @@ class RichTextEditingController extends TextEditingController {
                     currentIndex = handleNode(
                         context, currentIndex, text, children, style, element,
                         overrideWidget: MentionWidget(
-                            fallbackIcon: preferences.usePlaceholderRoomAvatars
-                                ? null
-                                : taggedRoom.icon,
+                            fallbackIcon:
+                                preferences.usePlaceholderRoomAvatars.value
+                                    ? null
+                                    : taggedRoom.icon,
                             displayName: taggedRoom.displayName,
                             avatar: taggedRoom.avatar,
                             vias: vias?.$2,

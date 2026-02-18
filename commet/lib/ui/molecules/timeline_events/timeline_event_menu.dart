@@ -336,7 +336,7 @@ class TimelineEventMenu {
           );
         },
       ),
-      if (preferences.developerMode &&
+      if (preferences.developerMode.value &&
           (event is TimelineEventMessage || event is TimelineEventSticker))
         TimelineEventMenuEntry(
           name: "Show Notification",

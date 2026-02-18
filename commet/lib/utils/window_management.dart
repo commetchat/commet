@@ -72,7 +72,7 @@ class _WindowListener extends WindowListener {
   void onWindowClose() async {
     super.onWindowClose();
 
-    if (preferences.minimizeOnClose) {
+    if (preferences.minimizeOnClose.value) {
       windowManager.minimize();
     } else {
       if (clientManager != null) {

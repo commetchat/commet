@@ -469,7 +469,7 @@ class MessageInputState extends State<MessageInput> {
       return;
     }
 
-    if (preferences.disableTextCursorManagement) {
+    if (preferences.disableTextCursorManagement.value) {
       return;
     }
 
@@ -528,7 +528,7 @@ class MessageInputState extends State<MessageInput> {
   KeyEventResult onKey(FocusNode node, KeyEvent event) {
     if (BuildConfig.MOBILE) return KeyEventResult.ignored;
 
-    if (!preferences.disableTextCursorManagement) {
+    if (!preferences.disableTextCursorManagement.value) {
       if (HardwareKeyboard.instance
           .isLogicalKeyPressed(LogicalKeyboardKey.backspace)) {
         var selection = controller.selection.baseOffset;
@@ -1001,7 +1001,7 @@ class MessageInputState extends State<MessageInput> {
 
   double get emotePickerHeight =>
       (MediaQuery.of(context).size.height / (BuildConfig.MOBILE ? 2.5 : 3)) /
-      preferences.appScale;
+      preferences.appScale.value;
 
   Widget buildEmojiPicker({bool skipIfNeverOpened = true}) {
     var recent = widget.client
@@ -1036,7 +1036,7 @@ class MessageInputState extends State<MessageInput> {
             onEmojiPressed: insertEmoticon,
             packListAxis: BuildConfig.DESKTOP ? Axis.vertical : Axis.horizontal,
             allowGifSearch:
-                widget.showGifSearch && preferences.tenorGifSearchEnabled,
+                widget.showGifSearch && preferences.tenorGifSearchEnabled.value,
             gifComponent: widget.gifComponent,
             onStickerPressed: (emoticon) {
               widget.sendSticker?.call(emoticon);
@@ -1106,7 +1106,7 @@ class MessageInputState extends State<MessageInput> {
               await handlePickedAttachment(attachment);
             }
           }),
-      if (PlatformUtils.isAndroid && preferences.developerMode)
+      if (PlatformUtils.isAndroid && preferences.developerMode.value)
         AttachmentPicker(
             icon: Icons.perm_media,
             label: "Media",

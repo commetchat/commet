@@ -88,7 +88,7 @@ class SettingsCategorySpace implements SettingsCategory {
               return MatrixRoomPermissionsPage(
                   (space as MatrixSpace).matrixRoom);
             }),
-      if (preferences.developerMode)
+      if (preferences.developerMode.value)
         SettingsTab(
             label: labelSpaceDeveloperSettings,
             icon: Icons.code,

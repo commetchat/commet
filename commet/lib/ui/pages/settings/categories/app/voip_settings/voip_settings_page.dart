@@ -5,7 +5,7 @@ import 'package:commet/client/components/voip/webrtc_default_devices.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
-import 'package:commet/ui/molecules/settings_entry_bool.dart';
+import 'package:commet/ui/pages/settings/categories/app/boolean_toggle.dart';
 import 'package:commet/ui/pages/settings/categories/app/voip_settings/voip_debug_settings.dart';
 import 'package:flutter/widgets.dart';
 
@@ -57,12 +57,11 @@ class _VoipSettingsPage extends State<VoipSettingsPage> {
         tiamat.Panel(
           mode: tiamat.TileType.surfaceContainerLow,
           header: "Call Connection",
-          child: SettingsEntryBool(
-            preferences.useFallbackTurnServer,
+          child: BooleanPreferenceToggle(
+            preference: preferences.useFallbackTurnServer,
             title: "Use TURN Fallback",
             description:
                 "Calls cannot be connected without a TURN server. If your homeserver does not provide a TURN server, fall back to using '${preferences.fallbackTurnServer}'. Your IP address will be revealed to this server when establishing calls",
-            onChanged: preferences.setUseFallbackTurnServer,
           ),
         ),
         tiamat.Panel(
@@ -70,7 +69,7 @@ class _VoipSettingsPage extends State<VoipSettingsPage> {
           mode: tiamat.TileType.surfaceContainerLow,
           child: devicePicker(),
         ),
-        if (preferences.developerMode)
+        if (preferences.developerMode.value)
           const Padding(
             padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
             child: tiamat.Panel(
@@ -88,10 +87,10 @@ class _VoipSettingsPage extends State<VoipSettingsPage> {
       if (microphones != null && !PlatformUtils.isAndroid)
         buildPicker(
           "Default Audio Input",
-          preferences.voipDefaultAudioInput,
+          preferences.voipDefaultAudioInput.value,
           microphones!,
           onSelected: (device) async {
-            await preferences.setVoipDefaultAudioInput(device?.label);
+            await preferences.voipDefaultAudioInput.set(device?.label);
 
             WebrtcDefaultDevices.selectInputDevice();
 
@@ -101,10 +100,10 @@ class _VoipSettingsPage extends State<VoipSettingsPage> {
       if (speakers != null)
         buildPicker(
           "Audio Output",
-          preferences.voipDefaultAudioOutput,
+          preferences.voipDefaultAudioOutput.value,
           speakers!,
           onSelected: (device) async {
-            await preferences.setVoipDefaultAudioOutput(device?.label);
+            await preferences.voipDefaultAudioOutput.set(device?.label);
 
             WebrtcDefaultDevices.selectOutputDevice();
             setState(() {});
