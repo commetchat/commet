@@ -311,6 +311,8 @@ class _UserProfileViewState extends State<UserProfileView> {
                                                   const EdgeInsets.all(8.0),
                                               child: tiamat.Button(
                                                 text: promptOpenDirectMessage,
+                                                isLoading:
+                                                    isLoadingDirectMessage,
                                                 onTap: clickMessageButton,
                                               ),
                                             ),
