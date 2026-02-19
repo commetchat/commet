@@ -325,7 +325,7 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
       }
       var event = widget.timeline!.events[testIndex];
 
-      if (preferences.developerMode) {
+      if (preferences.developerMode.value) {
         prevEvent = event;
         break;
       }

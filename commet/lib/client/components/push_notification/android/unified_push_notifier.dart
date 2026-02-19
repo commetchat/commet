@@ -30,14 +30,14 @@ class UnifiedPushNotifier implements Notifier {
   UnifiedPushNotifier() {
     notifier = AndroidNotifier();
 
-    if (preferences.unifiedPushEnabled == null) {
+    if (preferences.unifiedPushEnabled.value == null) {
       FirstTimeSetup.registerPostLoginSetup(UnifiedPushSetup());
     }
   }
 
   StreamController<String> onEndpointChanged = StreamController.broadcast();
 
-  String? get endpoint => preferences.unifiedPushEndpoint;
+  String? get endpoint => preferences.unifiedPushEndpoint.value;
 
   @override
   bool get enabled => preferences.unifiedPushEnabled == true;
@@ -66,7 +66,7 @@ class UnifiedPushNotifier implements Notifier {
       return null;
     }
 
-    return preferences.unifiedPushEndpoint;
+    return preferences.unifiedPushEndpoint.value;
   }
 
   @override
@@ -80,7 +80,7 @@ class UnifiedPushNotifier implements Notifier {
   }
 
   void onNewEndpoint(String endpoint, String instance) async {
-    await preferences.setUnifiedPushEndpoint(endpoint);
+    await preferences.unifiedPushEndpoint.set(endpoint);
     await PushNotificationComponent.updateAllPushers();
     onEndpointChanged.add(endpoint);
   }
@@ -92,7 +92,7 @@ class UnifiedPushNotifier implements Notifier {
       await notificationManager.init();
 
       if (!message.containsKey("room_id") || !message.containsKey("event_id")) {
-        if (preferences.developerMode) {
+        if (preferences.developerMode.value) {
           // ignore {"prio": "high"} notifications
           if (message.length == 1 && message.containsKey("prio")) {
             return;
@@ -155,8 +155,8 @@ class UnifiedPushNotifier implements Notifier {
 
   Future<void> unregister() async {
     await UnifiedPush.unregister();
-    await preferences.setUnifiedPushEnabled(false);
-    await preferences.setUnifiedPushEndpoint(null);
+    await preferences.unifiedPushEnabled.set(false);
+    await preferences.unifiedPushEndpoint.set(null);
     await PushNotificationComponent.updateAllPushers();
   }
 

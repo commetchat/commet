@@ -44,7 +44,7 @@ class NotificationModifierLinuxFormatting implements NotificationModifier {
       );
 
       final bool showImages =
-          room.shouldPreviewMedia && preferences.showMediaInNotifications;
+          room.shouldPreviewMedia && preferences.showMediaInNotifications.value;
 
       if (showImages && content.attachedImage != null) {
         final uri = await prepareImageForInline(
@@ -90,7 +90,7 @@ class NotificationModifierLinuxFormatting implements NotificationModifier {
     String result = "";
 
     final bool showImages =
-        room.shouldPreviewMedia && preferences.showMediaInNotifications;
+        room.shouldPreviewMedia && preferences.showMediaInNotifications.value;
 
     for (var node in document.nodes) {
       result += await handleMatrixNode(
@@ -187,7 +187,7 @@ class NotificationModifierLinuxFormatting implements NotificationModifier {
     final preview = room.client.getComponent<UrlPreviewComponent>();
 
     bool shouldGetPreview = preview?.shouldGetPreviewsInRoom(room) == true &&
-        preferences.previewUrlsInNotifications;
+        preferences.previewUrlInNotifications.value;
 
     if (!shouldGetPreview) {
       return '<a href="${uri}">${uri}</a>';
@@ -209,7 +209,7 @@ class NotificationModifierLinuxFormatting implements NotificationModifier {
 
       if (prev.image != null &&
           room.shouldPreviewMedia &&
-          preferences.showMediaInNotifications) {
+          preferences.showMediaInNotifications.value) {
         Uri? imagePath = await prepareImageForInline(
           prev.image!,
           "matrix-url-notification-${uri}-${thumbnailImageSize}px.png",

@@ -145,10 +145,10 @@ class MatrixVoipComponent
             dismissible: false,
             title: "Call Error");
 
-        preferences.setUseFallbackTurnServer(result ?? false);
+        preferences.useFallbackTurnServer.set(result ?? false);
       }
 
-      if (preferences.useFallbackTurnServer) {
+      if (preferences.useFallbackTurnServer.value) {
         servers = [
           {
             "urls": [preferences.fallbackTurnServer]

@@ -70,7 +70,7 @@ class MatrixClient extends Client {
     required String identifier,
     required matrix.DatabaseApi database,
   }) {
-    if (preferences.developerMode) {
+    if (preferences.developerMode.value) {
       matrix.Logs().level = matrix.Level.verbose;
     } else {
       matrix.Logs().level = matrix.Level.warning;

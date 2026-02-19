@@ -159,7 +159,7 @@ class MainPageViewDesktop extends StatelessWidget {
                       text: "Mix Accounts",
                       onPressed: () {
                         EventBus.setFilterClient.add(null);
-                        preferences.setFilterClient(null);
+                        preferences.filterClient.set(null);
                       }),
                 if (clientManager!.clients.length > 1)
                   ...clientManager!.clients
@@ -168,7 +168,7 @@ class MainPageViewDesktop extends StatelessWidget {
                           onPressed: () {
                             print("Setting filter client");
                             EventBus.setFilterClient.add(i);
-                            preferences.setFilterClient(i.identifier);
+                            preferences.filterClient.set(i.identifier);
                           }))
                       .toList()
               ],

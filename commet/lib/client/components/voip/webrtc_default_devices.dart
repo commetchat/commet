@@ -17,7 +17,7 @@ class WebrtcDefaultDevices {
       'autoGainControl': false,
     };
 
-    if (preferences.voipDefaultAudioInput != null) {
+    if (preferences.voipDefaultAudioInput.value != null) {
       var pickedDevice = devices.firstWhereOrNull(
           (i) => i.label == preferences.voipDefaultAudioInput);
 
@@ -44,7 +44,7 @@ class WebrtcDefaultDevices {
     var devices = (await webrtc.navigator.mediaDevices.enumerateDevices())
         .where((i) => i.kind == "audioinput");
 
-    if (preferences.voipDefaultAudioInput == null) return null;
+    if (preferences.voipDefaultAudioInput.value == null) return null;
 
     return devices
         .firstWhereOrNull((i) => i.label == preferences.voipDefaultAudioInput)
@@ -55,7 +55,7 @@ class WebrtcDefaultDevices {
     var devices = (await webrtc.navigator.mediaDevices.enumerateDevices())
         .where((i) => i.kind == "audioinput");
 
-    if (preferences.voipDefaultAudioInput != null) {
+    if (preferences.voipDefaultAudioInput.value != null) {
       var pickedDevice = devices.firstWhereOrNull(
           (i) => i.label == preferences.voipDefaultAudioInput);
 
@@ -71,7 +71,7 @@ class WebrtcDefaultDevices {
   }
 
   static Future<void> selectOutputDevice() async {
-    if (preferences.voipDefaultAudioOutput == null) return;
+    if (preferences.voipDefaultAudioOutput.value == null) return;
 
     var devices = (await webrtc.navigator.mediaDevices.enumerateDevices())
         .where((i) => i.kind == "audiooutput");

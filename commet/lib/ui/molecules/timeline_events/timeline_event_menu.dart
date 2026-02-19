@@ -264,7 +264,7 @@ class TimelineEventMenu {
           name: CommonStrings.promptDelete,
           icon: Icons.delete,
           action: (BuildContext context) {
-            if (preferences.askBeforeDeletingMessageEnabled) {
+            if (preferences.askBeforeDeletingMessageEnabled.value) {
               AdaptiveDialog.confirmation(context).then((value) {
                 if (value == true) {
                   timeline.deleteEvent(event);
@@ -341,7 +341,7 @@ class TimelineEventMenu {
           );
         },
       ),
-      if (preferences.developerMode &&
+      if (preferences.developerMode.value &&
           (event is TimelineEventMessage || event is TimelineEventSticker))
         TimelineEventMenuEntry(
           name: "Show Notification",

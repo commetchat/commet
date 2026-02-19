@@ -132,7 +132,7 @@ class SettingsCategoryRoom implements SettingsCategory {
             return RoomCalendarSettingsPage(calendar!);
           },
         ),
-      if (preferences.developerMode)
+      if (preferences.developerMode.value)
         SettingsTab(
           label: labelRoomSettingsDeveloper,
           icon: Icons.code,

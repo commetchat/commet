@@ -539,7 +539,7 @@ class _UserProfileViewState extends State<UserProfileView> {
             onPressed: () async {
               widget.setColorOverride?.call(null);
             }),
-      if (preferences.developerMode)
+      if (preferences.developerMode.value)
         tiamat.ContextMenuItem(
             text: "Show Raw Profile",
             onPressed: () => widget.showSource?.call(),

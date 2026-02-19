@@ -739,12 +739,12 @@ class MatrixRoom extends Room {
   bool get shouldPreviewMedia {
     switch (_matrixRoom.joinRules) {
       case matrix.JoinRules.public:
-        return preferences.previewMediaInPublicRooms;
+        return preferences.previewMediaInPublicRooms.value;
 
       case matrix.JoinRules.knock:
       case matrix.JoinRules.invite:
       case matrix.JoinRules.private:
-        return preferences.previewMediaInPrivateRooms;
+        return preferences.previewMediaInPrivateRooms.value;
 
       case matrix.JoinRules.restricted:
         if (_client.spaces.any((e) =>
@@ -752,9 +752,9 @@ class MatrixRoom extends Room {
             e.containsRoom(_matrixRoom.id))) {
           // if any public space contains this room, consider the room public
           // this is kind of flawed, because there could be public spaces we are not a member of
-          return preferences.previewMediaInPublicRooms;
+          return preferences.previewMediaInPublicRooms.value;
         } else {
-          return preferences.previewMediaInPrivateRooms;
+          return preferences.previewMediaInPrivateRooms.value;
         }
 
       default:

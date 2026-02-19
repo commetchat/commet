@@ -1,4 +1,5 @@
 import 'package:commet/main.dart';
+import 'package:commet/ui/pages/settings/categories/app/boolean_toggle.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
@@ -13,8 +14,6 @@ class AdvancedSettingsPage extends StatefulWidget {
 }
 
 class _AdvancedSettingsPageState extends State<AdvancedSettingsPage> {
-  bool developerOptions = false;
-  bool stickerCompatibility = false;
   String get labelSettingsDeveloperMode => Intl.message("Developer mode",
       desc: "Header for the settings to enable developer mode",
       name: "labelSettingsDeveloperMode");
@@ -35,8 +34,6 @@ class _AdvancedSettingsPageState extends State<AdvancedSettingsPage> {
 
   @override
   void initState() {
-    developerOptions = preferences.developerMode;
-    stickerCompatibility = preferences.stickerCompatibilityMode;
     super.initState();
   }
 
@@ -47,70 +44,23 @@ class _AdvancedSettingsPageState extends State<AdvancedSettingsPage> {
         Panel(
           header: labelSettingsDeveloperMode,
           mode: TileType.surfaceContainerLow,
-          child: Column(children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    tiamat.Text.labelEmphasised(labelSettingsDeveloperMode),
-                    tiamat.Text.labelLow(labelSettingsDeveloperModeExplanation)
-                  ],
-                ),
-                tiamat.Switch(
-                  state: developerOptions,
-                  onChanged: (value) async {
-                    setState(() {
-                      developerOptions = value;
-                    });
-                    await preferences.setDeveloperMode(value);
-                    setState(() {
-                      developerOptions = preferences.developerMode;
-                    });
-                  },
-                )
-              ],
-            )
-          ]),
+          child: BooleanPreferenceToggle(
+            preference: preferences.developerMode,
+            title: labelSettingsDeveloperMode,
+            description: labelSettingsDeveloperModeExplanation,
+          ),
         ),
         const SizedBox(
           height: 10,
         ),
         Panel(
-          header: labelStickerCompatibility,
-          mode: TileType.surfaceContainerLow,
-          child: Column(children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Flexible(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      tiamat.Text.labelEmphasised(labelStickerCompatibility),
-                      tiamat.Text.labelLow(
-                          labelSettingsStickerCompatibilityExplanation)
-                    ],
-                  ),
-                ),
-                tiamat.Switch(
-                  state: stickerCompatibility,
-                  onChanged: (value) async {
-                    setState(() {
-                      stickerCompatibility = value;
-                    });
-                    await preferences.setStickerCompatibilityMode(value);
-                    setState(() {
-                      stickerCompatibility =
-                          preferences.stickerCompatibilityMode;
-                    });
-                  },
-                )
-              ],
-            )
-          ]),
-        ),
+            header: labelStickerCompatibility,
+            mode: TileType.surfaceContainerLow,
+            child: BooleanPreferenceToggle(
+              preference: preferences.stickerCompatibilityMode,
+              title: labelStickerCompatibility,
+              description: labelSettingsStickerCompatibilityExplanation,
+            )),
         const SizedBox(
           height: 10,
         ),
@@ -127,10 +77,10 @@ class _AdvancedSettingsPageState extends State<AdvancedSettingsPage> {
                     itemBuilder: (item) =>
                         tiamat.Text.label(item ?? "No Override"),
                     onItemSelected: (item) async {
-                      await preferences.setLayoutOverride(item);
+                      await preferences.layoutOverride.set(item);
                       setState(() {});
                     },
-                    value: preferences.layoutOverride)
+                    value: preferences.layoutOverride.value)
               ],
             ))
       ],
