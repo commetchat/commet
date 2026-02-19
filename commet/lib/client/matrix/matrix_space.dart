@@ -265,6 +265,31 @@ class MatrixSpace extends Space {
     var leftRoom = client.rooms[index];
     if (containsRoom(leftRoom.identifier)) {
       _rooms.remove(leftRoom);
+      _onUpdate.add(null);
+
+      // Update preview list
+      _matrixClient.getSpaceHierarchy(identifier, maxDepth: 1).then((value) {
+        var chunk = value.rooms
+            .where((element) => element.roomId == leftRoom.identifier)
+            .where((element) =>
+                _matrixClient.getRoomById(element.roomId)?.membership !=
+                matrix.Membership.join)
+            .firstOrNull;
+        if (chunk == null) return;
+
+        var viaContent = _matrixRoom
+            .getState(matrix.EventTypes.SpaceChild, chunk.roomId)
+            ?.content["via"];
+
+        List<String> via = const [];
+
+        if (viaContent is List) {
+          via = List.from(viaContent);
+        }
+        _previews
+            .add(MatrixSpaceRoomChunkPreview(chunk, _matrixClient, via: via));
+      });
+      _fullyLoaded = true;
     }
   }
 

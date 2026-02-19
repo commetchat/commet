@@ -680,16 +680,18 @@ class MatrixClient extends Client {
 
   @override
   Future<void> leaveRoom(Room room) async {
-    _rooms.remove(room);
+    await _matrixClient.leaveRoom(room.identifier);
+    await _matrixClient.waitForRoomInSync(room.identifier);
     await room.close();
-    return _matrixClient.leaveRoom(room.identifier);
+    _rooms.remove(room);
   }
 
   @override
   Future<void> leaveSpace(Space space) async {
+    await _matrixClient.leaveRoom(space.identifier);
+    await _matrixClient.waitForRoomInSync(space.identifier);
+    await space.close();
     _spaces.remove(space);
-    space.close();
-    return _matrixClient.leaveRoom(space.identifier);
   }
 
   void onSyncStatusChanged(matrix.SyncStatusUpdate event) {

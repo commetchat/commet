@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/message_effects/message_effect_particles.dart';
-import 'package:commet/client/room.dart';
-import 'package:commet/client/space.dart';
 import 'package:commet/ui/molecules/overlapping_panels.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
