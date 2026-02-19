@@ -41,6 +41,10 @@ import '../../ui/pages/matrix/verification/matrix_verification_page.dart';
 import 'matrix_room.dart';
 import 'matrix_space.dart';
 import 'package:vodozemac/vodozemac.dart' as vod;
+import 'dart:io';
+import 'package:vodozemac/src/generated/frb_generated.dart' as vod_frb;
+import 'package:flutter_rust_bridge/src/platform_types/_io.dart'
+    show ExternalLibrary;
 
 class MatrixClient extends Client {
   late matrix.Client _matrixClient;
@@ -201,7 +205,13 @@ class MatrixClient extends Client {
 
   static Future<void> _checkSystem(ClientManager clientManager) async {
     try {
-      await vod.init(wasmPath: './assets/assets/vodozemac/');
+      if (!kIsWeb && (Platform.isMacOS || Platform.isIOS)) {
+        await vod_frb.RustLib.init(
+          externalLibrary: ExternalLibrary.process(iKnowHowToUseIt: true),
+        );
+      } else {
+        await vod.init(wasmPath: './assets/assets/vodozemac/');
+      }
       if (!vod.isInitialized()) {
         throw Exception("Vodozemac failed to initialize!");
       }
