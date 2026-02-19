@@ -152,7 +152,15 @@ class MatrixUserPresenceComponent
     }
   }
 
-  void sawUser(String id, DateTime timestamp) {
+  void sawUser(String id, DateTime timestamp) async {
+    final presence = await client.matrixClient
+        .fetchCurrentPresence(id, fetchOnlyFromCached: true);
+
+    if (presence.presence != PresenceType.offline ||
+        presence.statusMsg != null) {
+      return;
+    }
+
     if (DateTime.now().difference(timestamp).inSeconds < 60) {
       var seen = lastSeen.get(id);
 
