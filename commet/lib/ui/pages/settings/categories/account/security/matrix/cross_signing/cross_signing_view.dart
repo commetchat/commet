@@ -20,7 +20,10 @@ class MatrixCrossSigningView extends StatefulWidget {
       this.wipeSsss,
       this.wipeExistingBackup,
       this.openExistingSsss,
-      this.wipeCrossSigning});
+      this.wipeCrossSigning,
+      this.ignoreBadSecrets,
+      this.unlockedSsss,
+      this.errorMessage});
   final BootstrapState state;
 
   final Function(String?)? onSetNewSsss;
@@ -31,7 +34,10 @@ class MatrixCrossSigningView extends StatefulWidget {
   final Function(bool)? wipeExistingBackup;
   final Function(String)? openExistingSsss;
   final Function(bool)? wipeCrossSigning;
+  final Function(bool)? ignoreBadSecrets;
+  final Function(String)? unlockedSsss;
   final String? recoveryKey;
+  final String? errorMessage;
   @override
   State<MatrixCrossSigningView> createState() => _MatrixCrossSigningViewState();
 }
@@ -194,6 +200,16 @@ class _MatrixCrossSigningViewState extends State<MatrixCrossSigningView> {
       desc: "Explains what the message backup does",
       name: "labelMatrixExplainOnlineKeyBackup");
 
+  String get labelMatrixBadSecretsWarning => Intl.message(
+      "Some of your encryption secrets appear to be corrupt or invalid. You can continue and ignore the bad secrets, but this may result in data loss.",
+      desc: "Warning shown when bad SSSS secrets are detected",
+      name: "labelMatrixBadSecretsWarning");
+
+  String get labelMatrixBootstrapError => Intl.message(
+      "An error occurred during the encryption setup process.",
+      desc: "Shown when the cross-signing bootstrap encounters an error",
+      name: "labelMatrixBootstrapError");
+
   @override
   void initState() {
     passphraseController.addListener(() {
@@ -236,13 +252,9 @@ class _MatrixCrossSigningViewState extends State<MatrixCrossSigningView> {
       case BootstrapState.askUseExistingSsss:
         return askUseExistingSsss();
       case BootstrapState.askUnlockSsss:
-        // ignore: todo
-        // TODO: Handle this case.
-        break;
+        return askUnlockSsss();
       case BootstrapState.askBadSsss:
-        // ignore: todo
-        // TODO: Handle this case.
-        break;
+        return askBadSsss();
       case BootstrapState.askNewSsss:
         return askNewSsss();
       case BootstrapState.openExistingSsss:
@@ -260,7 +272,6 @@ class _MatrixCrossSigningViewState extends State<MatrixCrossSigningView> {
       case BootstrapState.done:
         return done(context);
     }
-    return tiamat.Text.label(widget.state.toString());
   }
 
   Widget askSetupCrossSigning() {
@@ -648,14 +659,86 @@ class _MatrixCrossSigningViewState extends State<MatrixCrossSigningView> {
                 child: m.Icon(
               m.Icons.error,
               color: m.Colors.red,
-              size: 100,
+              size: 60,
             )),
           ),
+          tiamat.Text.label(labelMatrixBootstrapError),
+          if (widget.errorMessage != null)
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: tiamat.Text.labelLow(widget.errorMessage!),
+            ),
+          const SizedBox(height: 10),
           tiamat.Button.secondary(
             text: CommonStrings.promptBack,
             onTap: () => m.Navigator.pop(context),
           )
         ]);
+  }
+
+  Widget askUnlockSsss() {
+    return SizedBox(
+      width: 400,
+      child: m.Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          m.Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              tiamat.Text.label(labelMatrixRecoveryKeyPromptExplanation),
+              const SizedBox(height: 8),
+              tiamat.TextInput(
+                placeholder: promptMatrixRecoveryKeyInput,
+                controller: keyInputController,
+                obscureText: true,
+              )
+            ],
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          tiamat.Button(
+              text: CommonStrings.promptConfirm,
+              onTap: () {
+                widget.unlockedSsss?.call(keyInputController.text);
+              })
+        ],
+      ),
+    );
+  }
+
+  Widget askBadSsss() {
+    return m.SizedBox(
+      width: 500,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const m.Padding(
+            padding: EdgeInsets.all(20.0),
+            child: Center(
+                child: m.Icon(
+              m.Icons.warning_amber_rounded,
+              color: m.Colors.orange,
+              size: 60,
+            )),
+          ),
+          tiamat.Text.label(labelMatrixBadSecretsWarning),
+          const SizedBox(height: 20),
+          tiamat.Button.danger(
+            text: CommonStrings.promptContinue,
+            onTap: () => widget.ignoreBadSecrets?.call(true),
+          ),
+          const SizedBox(height: 10),
+          tiamat.Button.secondary(
+            text: CommonStrings.promptBack,
+            onTap: () => widget.ignoreBadSecrets?.call(false),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget askWipeOnlineKeybackup() {
