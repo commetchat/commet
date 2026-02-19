@@ -30,6 +30,10 @@ target 'Runner' do
   use_frameworks!
 
   flutter_install_all_macos_pods File.dirname(File.realpath(__FILE__))
+
+  # Required by matrix-dart-sdk for SSSS encryption (AES-CTR via FFI)
+  pod 'OpenSSL-Universal'
+
   target 'RunnerTests' do
     inherit! :search_paths
   end
