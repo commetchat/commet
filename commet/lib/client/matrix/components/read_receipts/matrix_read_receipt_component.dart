@@ -46,8 +46,6 @@ class MatrixReadReceiptComponent
 
           if (e is Map<String, dynamic>) {
             for (var k in e.keys) {
-              print("Received read receipt from ${k}");
-
               var lastEvent = userToPreviousReceipt[k];
               if (lastEvent != null) {
                 _controller.add(lastEvent);

@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:commet/client/components/user_presence/user_presence_component.dart';
 import 'package:commet/client/components/user_presence/user_presence_lifecycle_watcher.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
-import 'package:commet/debug/log.dart';
 import 'package:commet/utils/in_memory_cache.dart';
 import 'package:matrix/matrix.dart';
 
@@ -119,8 +118,6 @@ class MatrixUserPresenceComponent
           handleRoomMemberEvent(event);
           return;
         }
-
-        Log.i("(Last Seen) unhandled event: ${event.type}");
       } catch (_) {}
     }
   }
