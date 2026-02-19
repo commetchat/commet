@@ -407,6 +407,14 @@ class MainPageState extends State<MainPage> {
                 invitation,
                 showSuggestions: false,
                 onUserPicked: (userId) async {
+                  final confirm = await AdaptiveDialog.confirmation(context,
+                      prompt:
+                          "Are you sure you want to invite $userId to chat?",
+                      title: "Invitation");
+                  if (confirm != true) {
+                    return;
+                  }
+
                   var comp = client.getComponent<DirectMessagesComponent>();
                   await comp?.createDirectMessage(userId);
                 },
