@@ -296,7 +296,7 @@ class MainPageViewDesktop extends StatelessWidget {
   }
 
   Widget roomChatView() {
-    return Container(
+    return Expanded(
       key: ValueKey("room-chat-view-${state.currentRoom!.localId}"),
       child: Column(
         children: [
@@ -397,30 +397,33 @@ class MainPageViewDesktop extends StatelessWidget {
   }
 
   Widget mainView(BuildContext context) {
-    if (state.currentView == MainPageSubView.home) return homeView();
+    if (state.currentView == MainPageSubView.home)
+      return Flexible(child: homeView());
     if (state.currentRoom != null && state.currentView != MainPageSubView.home)
       return roomChatView();
     if (state.currentSpace != null && state.currentRoom == null)
-      return Tile(
-        caulkPadTop: true,
-        caulkPadBottom: true,
-        caulkPadLeft: true,
-        caulkClipTopLeft: true,
-        caulkBorderLeft: true,
-        caulkClipBottomLeft: true,
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            SpaceSummary(
-              key: ValueKey(
-                "space-summary-key-${state.currentSpace!.localId}",
+      return Expanded(
+        child: Tile(
+          caulkPadTop: true,
+          caulkPadBottom: true,
+          caulkPadLeft: true,
+          caulkClipTopLeft: true,
+          caulkBorderLeft: true,
+          caulkClipBottomLeft: true,
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              SpaceSummary(
+                key: ValueKey(
+                  "space-summary-key-${state.currentSpace!.localId}",
+                ),
+                space: state.currentSpace!,
+                onRoomTap: (room) => state.selectRoom(room),
+                onSpaceTap: (space) => state.selectSpace(space),
+                onLeaveRoom: state.clearRoomSelection,
               ),
-              space: state.currentSpace!,
-              onRoomTap: (room) => state.selectRoom(room),
-              onSpaceTap: (space) => state.selectSpace(space),
-              onLeaveRoom: state.clearRoomSelection,
-            ),
-          ],
+            ],
+          ),
         ),
       );
 
