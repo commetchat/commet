@@ -1,4 +1,4 @@
-FROM ghcr.io/cirruslabs/flutter:3.35.4 AS build
+FROM ghcr.io/cirruslabs/flutter:3.41.1 AS build
 
 RUN sudo apt-get update && sudo apt-get install -y \
     ninja-build \
