@@ -14,6 +14,7 @@ import 'package:commet/config/preferences.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
 import 'package:commet/generated/intl/messages_all.dart';
+import 'package:commet/generated/rust/api/simple.dart';
 import 'package:commet/single_instance.dart';
 import 'package:commet/ui/pages/bubble/bubble_page.dart';
 import 'package:commet/ui/pages/fatal_error/fatal_error_page.dart';
@@ -47,6 +48,8 @@ import 'package:tiamat/config/style/theme_changer.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:tiamat/config/style/theme_dark.dart';
 import 'package:desktop_webview_window/desktop_webview_window.dart';
+
+import 'package:commet/generated/rust/frb_generated.dart';
 
 final GlobalKey<NavigatorState> navigator = GlobalKey();
 FileCache? fileCache;
@@ -147,6 +150,8 @@ void appMain() async {
     }
 
     ensureBindingInit();
+    await RustLib.init();
+    print(greet(name: "Flutter in Rust!"));
 
     if (PlatformUtils.isLinux || PlatformUtils.isWindows) {
       if (await SingleInstance.tryConnectToMainInstance(commandLineArgs)) {

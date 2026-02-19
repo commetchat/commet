@@ -124,9 +124,12 @@ dependencies:
   dart_ipc: ^1.0.1
   dbus: ^0.7.11
   hotkey_manager: ^0.2.3
+  flutter_rust_bridge: 2.10.0
+  rust_lib_commet:
+    path: ../commet-rs/rust_builder
 dependency_overrides:
   analyzer: ^7.3.0
-
+  flutter_rust_bridge: 2.11.1
   ## For inline-reply 
   flutter_local_notifications_linux: 
     git: 

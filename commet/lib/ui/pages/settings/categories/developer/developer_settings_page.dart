@@ -5,6 +5,7 @@ import 'package:commet/config/app_config.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
+import 'package:commet/generated/rust/api/screen_cap.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/navigation_utils.dart';
 import 'package:commet/ui/pages/developer/benchmarks/timeline_viewer_benchmark.dart';
@@ -38,6 +39,7 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
       notificationTests(),
       rendering(),
       error(),
+      rust(),
       if (PlatformUtils.isAndroid) shortcuts(),
       backgroundTasks(),
       dumpDatabases(),
@@ -309,6 +311,24 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
                 // This should also throw an error!
                 String? empty;
                 empty!.split(" ");
+              }),
+        ])
+      ],
+    );
+  }
+
+  Widget rust() {
+    return ExpansionTile(
+      title: const tiamat.Text.labelEmphasised("Rust"),
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
+      collapsedBackgroundColor:
+          Theme.of(context).colorScheme.surfaceContainerLow,
+      children: [
+        Wrap(spacing: 8, runSpacing: 8, children: [
+          tiamat.Button(
+              text: "Screen Capture",
+              onTap: () {
+                captureScreen();
               }),
         ])
       ],
