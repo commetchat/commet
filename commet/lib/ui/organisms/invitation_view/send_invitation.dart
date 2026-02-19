@@ -39,6 +39,8 @@ class _SendInvitationWidgetState extends State<SendInvitationWidget> {
   bool isSearching = false;
   List<Profile>? searchResults;
 
+  bool loading = false;
+
   bool get showRecommendations =>
       (!(isSearching || searchResults?.isNotEmpty == true)) &&
       widget.showSuggestions;
@@ -60,65 +62,71 @@ class _SendInvitationWidgetState extends State<SendInvitationWidget> {
             ?.contains(dmComponent?.getDirectMessagePartnerId(element)) ==
         true);
 
-    return ScaledSafeArea(
-      child: SizedBox(
-          width: 500,
-          child: Column(children: [
-            tiamat.TextInput(
-              controller: controller,
-              icon: const Icon(Icons.search),
-              maxLines: 1,
-              onChanged: onSearchTextChanged,
-            ),
-            if (isSearching || searchResults?.isNotEmpty == true)
-              SizedBox(
-                  height: 300,
-                  child: isSearching
-                      ? const Center(child: CircularProgressIndicator())
-                      : ListView.builder(
-                          itemCount: searchResults!.length,
-                          shrinkWrap: true,
-                          itemBuilder: (context, index) {
-                            return MiniProfileView(
-                              client: widget.component.client,
-                              userId: searchResults![index].identifier,
-                              initialProfile: searchResults![index],
-                              onTap: () =>
-                                  invitePeer(searchResults![index].identifier),
-                            );
-                          },
-                        )),
-            if (!isSearching && searchResults?.isEmpty == true)
-              Column(
-                children: [
-                  tiamat.Text("Could not find any users"),
-                  tiamat.Button(
-                    text: "Send invite",
-                    onTap: () => invitePeer(controller.text),
-                  )
-                ],
-              ),
-            if (showRecommendations && recommended.isNotEmpty)
-              Column(
-                children: [
-                  const tiamat.Seperator(),
-                  const tiamat.Text.labelLow("Recommended"),
-                  ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: recommended.length,
-                    itemBuilder: (context, index) {
-                      var room = recommended[index];
-                      var userId =
-                          dmComponent!.getDirectMessagePartnerId(room)!;
-                      return MiniProfileView(
-                          client: room.client,
-                          onTap: () => invitePeer(userId),
-                          userId: userId);
-                    },
+    return Opacity(
+      opacity: loading ? 0.3 : 1.0,
+      child: IgnorePointer(
+        ignoring: loading,
+        child: ScaledSafeArea(
+          child: SizedBox(
+              width: 500,
+              child: Column(children: [
+                tiamat.TextInput(
+                  controller: controller,
+                  icon: const Icon(Icons.search),
+                  maxLines: 1,
+                  onChanged: onSearchTextChanged,
+                ),
+                if (isSearching || searchResults?.isNotEmpty == true)
+                  SizedBox(
+                      height: 300,
+                      child: isSearching
+                          ? const Center(child: CircularProgressIndicator())
+                          : ListView.builder(
+                              itemCount: searchResults!.length,
+                              shrinkWrap: true,
+                              itemBuilder: (context, index) {
+                                return MiniProfileView(
+                                  client: widget.component.client,
+                                  userId: searchResults![index].identifier,
+                                  initialProfile: searchResults![index],
+                                  onTap: () => invitePeer(
+                                      searchResults![index].identifier),
+                                );
+                              },
+                            )),
+                if (!isSearching && searchResults?.isEmpty == true)
+                  Column(
+                    children: [
+                      tiamat.Text("Could not find any users"),
+                      tiamat.Button(
+                        text: "Send invite",
+                        onTap: () => invitePeer(controller.text),
+                      )
+                    ],
                   ),
-                ],
-              )
-          ])),
+                if (showRecommendations && recommended.isNotEmpty)
+                  Column(
+                    children: [
+                      const tiamat.Seperator(),
+                      const tiamat.Text.labelLow("Recommended"),
+                      ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: recommended.length,
+                        itemBuilder: (context, index) {
+                          var room = recommended[index];
+                          var userId =
+                              dmComponent!.getDirectMessagePartnerId(room)!;
+                          return MiniProfileView(
+                              client: room.client,
+                              onTap: () => invitePeer(userId),
+                              userId: userId);
+                        },
+                      ),
+                    ],
+                  )
+              ])),
+        ),
+      ),
     );
   }
 
@@ -144,6 +152,10 @@ class _SendInvitationWidgetState extends State<SendInvitationWidget> {
   }
 
   void invitePeer(String userId) async {
+    setState(() {
+      loading = true;
+    });
+
     if (widget.onUserPicked != null) {
       await widget.onUserPicked?.call(userId);
 

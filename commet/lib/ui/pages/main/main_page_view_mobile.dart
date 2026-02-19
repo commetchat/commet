@@ -353,13 +353,21 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child:
                           tiamat.Text.labelLow(directMessagesListHeaderMobile),
                     ),
-                    tiamat.IconButton(icon: Icons.add),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(8, 12, 8, 8),
+                      child: tiamat.IconButton(
+                          size: 18,
+                          icon: Icons.add,
+                          onPressed: widget.state.searchUserToDm),
+                    ),
                   ],
                 ),
                 Flexible(
