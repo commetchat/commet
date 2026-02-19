@@ -22,6 +22,7 @@ import 'package:commet/ui/pages/main/room_primary_view.dart';
 import 'package:commet/ui/pages/settings/app_settings_page.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:tiamat/atoms/tile.dart';
 
@@ -194,10 +195,29 @@ class MainPageViewDesktop extends StatelessWidget {
                                 overflow: TextOverflow.ellipsis,
                                 color: current.defaultColor,
                                 current.displayName),
-                            tiamat.Text.labelLow(
-                              maxLines: 1,
-                              current.identifier,
-                              overflow: TextOverflow.ellipsis,
+                            Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                onTap: () => Clipboard.setData(
+                                    ClipboardData(text: current!.identifier)),
+                                child: Opacity(
+                                  opacity: 0.7,
+                                  child: Text(
+                                    maxLines: 1,
+                                    current.identifier,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .labelSmall
+                                        ?.copyWith(
+                                            fontFamily: "Code",
+                                            fontSize: 10,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .secondary),
+                                  ),
+                                ),
+                              ),
                             ),
                           ],
                         ),
