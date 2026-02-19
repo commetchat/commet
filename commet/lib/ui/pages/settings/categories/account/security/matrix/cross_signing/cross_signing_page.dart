@@ -28,6 +28,7 @@ class MatrixCrossSigningPage extends StatefulWidget {
 
 class MatrixCrossSigningPageState extends State<MatrixCrossSigningPage> {
   BootstrapState state = BootstrapState.loading;
+  String? errorMessage;
   Bootstrap? bootstrapper;
   @override
   void initState() {
@@ -42,6 +43,7 @@ class MatrixCrossSigningPageState extends State<MatrixCrossSigningPage> {
     return MatrixCrossSigningView(
       state,
       recoveryKey: bootstrapper?.newSsssKey?.recoveryKey,
+      errorMessage: errorMessage,
       onSetNewSsss: (passphrase) {
         bootstrapper?.newSsss(passphrase);
       },
@@ -69,12 +71,35 @@ class MatrixCrossSigningPageState extends State<MatrixCrossSigningPage> {
         bootstrapper?.wipeOnlineKeyBackup(wipe);
       },
       openExistingSsss: (key) async {
-        await bootstrapper?.newSsssKey!.unlock(keyOrPassphrase: key);
-        await bootstrapper?.client.encryption!.crossSigning
-            .selfSign(keyOrPassphrase: key);
-        await bootstrapper?.openExistingSsss();
-        await bootstrapper?.askSetupCrossSigning(setupMasterKey: true);
-        bootstrapper?.wipeOnlineKeyBackup(false);
+        try {
+          await bootstrapper?.newSsssKey!.unlock(keyOrPassphrase: key);
+          await bootstrapper?.openExistingSsss();
+        } catch (e, s) {
+          debugPrint('[Cross Signing] Error opening existing SSSS: $e\n$s');
+          setState(() {
+            errorMessage = e.toString();
+            state = BootstrapState.error;
+          });
+        }
+      },
+      ignoreBadSecrets: (ignore) {
+        bootstrapper?.ignoreBadSecrets(ignore);
+      },
+      unlockedSsss: (key) async {
+        try {
+          if (bootstrapper?.oldSsssKeys != null) {
+            for (final oldKey in bootstrapper!.oldSsssKeys!.values) {
+              await oldKey.unlock(keyOrPassphrase: key);
+            }
+          }
+          bootstrapper?.unlockedSsss();
+        } catch (e, s) {
+          debugPrint('[Cross Signing] Error unlocking old SSSS: $e\n$s');
+          setState(() {
+            errorMessage = e.toString();
+            state = BootstrapState.error;
+          });
+        }
       },
       wipeCrossSigning: (wipe) {
         bootstrapper?.wipeCrossSigning(wipe);
