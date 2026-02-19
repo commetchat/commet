@@ -13,13 +13,19 @@ import 'package:tiamat/tiamat.dart' as tiamat;
 class SendInvitationWidget extends StatefulWidget {
   const SendInvitationWidget(this.client, this.component,
       {super.key,
-      required this.roomId,
-      required this.displayName,
+      this.roomId,
+      this.displayName,
+      this.onUserPicked,
+      this.showSuggestions = true,
       this.existingMembers});
   final Client client;
+  final bool showSuggestions;
   final Iterable<String>? existingMembers;
-  final String roomId;
-  final String displayName;
+
+  final Future<void> Function(String userId)? onUserPicked;
+
+  final String? roomId;
+  final String? displayName;
   final InvitationComponent component;
 
   @override
@@ -34,7 +40,8 @@ class _SendInvitationWidgetState extends State<SendInvitationWidget> {
   List<Profile>? searchResults;
 
   bool get showRecommendations =>
-      !(isSearching || searchResults?.isNotEmpty == true);
+      (!(isSearching || searchResults?.isNotEmpty == true)) &&
+      widget.showSuggestions;
 
   @override
   void initState() {
@@ -137,6 +144,13 @@ class _SendInvitationWidgetState extends State<SendInvitationWidget> {
   }
 
   void invitePeer(String userId) async {
+    if (widget.onUserPicked != null) {
+      await widget.onUserPicked?.call(userId);
+
+      if (mounted) Navigator.pop(context);
+      return;
+    }
+
     final confirm = await AdaptiveDialog.confirmation(context,
         prompt:
             "Are you sure you want to Invite $userId to the room ${widget.displayName}?",
@@ -145,7 +159,7 @@ class _SendInvitationWidgetState extends State<SendInvitationWidget> {
       return;
     }
 
-    widget.component.inviteUserToRoom(userId: userId, roomId: widget.roomId);
+    widget.component.inviteUserToRoom(userId: userId, roomId: widget.roomId!);
 
     if (mounted) Navigator.pop(context);
   }

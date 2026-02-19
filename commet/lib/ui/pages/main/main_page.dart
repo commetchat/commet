@@ -4,6 +4,7 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/components/donation_awards/donation_awards_component.dart';
+import 'package:commet/client/components/invitation/invitation_component.dart';
 import 'package:commet/client/components/profile/profile_component.dart';
 import 'package:commet/client/components/voip/voip_component.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
@@ -12,6 +13,7 @@ import 'package:commet/config/layout_config.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
+import 'package:commet/ui/organisms/invitation_view/send_invitation.dart';
 import 'package:commet/ui/organisms/user_profile/user_profile.dart';
 import 'package:commet/ui/pages/get_or_create_room/get_or_create_room.dart';
 import 'package:commet/ui/pages/settings/donation_rewards_confirmation.dart';
@@ -392,6 +394,24 @@ class MainPageState extends State<MainPage> {
               dismissible: false);
         }
       }
+    }
+  }
+
+  void searchUserToDm() async {
+    var client = await AdaptiveDialog.pickClient(context);
+    final invitation = client?.getComponent<InvitationComponent>();
+    if (invitation != null) {
+      AdaptiveDialog.show(context,
+          builder: (context) => SendInvitationWidget(
+                client!,
+                invitation,
+                showSuggestions: false,
+                onUserPicked: (userId) async {
+                  var comp = client.getComponent<DirectMessagesComponent>();
+                  await comp?.createDirectMessage(userId);
+                },
+              ),
+          title: "Start Direct Message");
     }
   }
 }

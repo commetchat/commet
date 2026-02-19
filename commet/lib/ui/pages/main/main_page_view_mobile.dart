@@ -352,9 +352,15 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: tiamat.Text.labelLow(directMessagesListHeaderMobile),
+                Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child:
+                          tiamat.Text.labelLow(directMessagesListHeaderMobile),
+                    ),
+                    tiamat.IconButton(icon: Icons.add),
+                  ],
                 ),
                 Flexible(
                   child: DirectMessageList(

@@ -376,11 +376,25 @@ class MainPageViewDesktop extends StatelessWidget {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: tiamat.Text.labelLow(
-              directMessagesListHeaderDesktop,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: tiamat.Text.labelLow(
+                  directMessagesListHeaderDesktop,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: tiamat.IconButton(
+                  icon: Icons.add,
+                  onPressed: () {
+                    state.searchUserToDm();
+                  },
+                ),
+              ),
+            ],
           ),
           Flexible(
             child: DirectMessageList(
