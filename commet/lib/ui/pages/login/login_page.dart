@@ -20,31 +20,35 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => LoginPageState();
 }
 
-
 class LoginPageState extends State<LoginPage> {
-  String get messageLoginFailed => Intl.message("Login Failed...",
-      name: "messageLoginFailed",
-      desc: "Generic text to show that an attempted login has failed");
+  String get messageLoginFailed => Intl.message(
+    "Login Failed...",
+    name: "messageLoginFailed",
+    desc: "Generic text to show that an attempted login has failed",
+  );
 
-  String get messageLoginIncorrect => Intl.message("Incorrect username or password.",
-      name: "messageLoginIncorrect",
-      desc:
-          "A generic error message to convey that an error occured when attempting to login, usually an invalid username or password.");
+  String get messageLoginIncorrect => Intl.message(
+    "Incorrect username or password.",
+    name: "messageLoginIncorrect",
+    desc:
+        "A generic error message to convey that an error occured when attempting to login, usually an invalid username or password.",
+  );
 
   String get messageAlreadyLoggedIn => Intl.message(
-        "You have already logged in to this account",
-        name: "messageAlreadyLoggedIn",
-        desc:
-            "An error message displayed when the user attempts to add an account which has already been logged in to on this device",
-      );
+    "You have already logged in to this account",
+    name: "messageAlreadyLoggedIn",
+    desc:
+        "An error message displayed when the user attempts to add an account which has already been logged in to on this device",
+  );
 
   StreamSubscription? progressSubscription;
   double? progress;
   List<LoginFlow>? loginFlows;
   Client? loginClient;
 
-  final Debouncer homeserverUpdateDebouncer =
-      Debouncer(delay: const Duration(seconds: 1));
+  final Debouncer homeserverUpdateDebouncer = Debouncer(
+    delay: const Duration(seconds: 1),
+  );
 
   bool loadingServerInfo = false;
   bool isServerValid = false;
@@ -56,8 +60,9 @@ class LoginPageState extends State<LoginPage> {
     MatrixClient.create(internalId).then((client) {
       loginClient = client;
 
-      progressSubscription = loginClient!.connectionStatusChanged.stream
-          .listen(onLoginProgressChanged);
+      progressSubscription = loginClient!.connectionStatusChanged.stream.listen(
+        onLoginProgressChanged,
+      );
     });
 
     super.initState();
@@ -113,7 +118,7 @@ class LoginPageState extends State<LoginPage> {
       LoginResult.failed => messageLoginFailed,
       LoginResult.error => messageLoginIncorrect,
       LoginResult.alreadyLoggedIn => messageAlreadyLoggedIn,
-      LoginResult.cancelled => "Login cancelled"
+      LoginResult.cancelled => "Login cancelled",
     };
 
     if (message != null) {
@@ -121,11 +126,13 @@ class LoginPageState extends State<LoginPage> {
         AdaptiveDialog.show(
           context,
           title: "Login failed",
-          builder: (_) => Text("Incorrect login. Ensure that you have entered your username and password correctly, and that you have entered the homeserver address correctly.")
-          );
-        };
+          builder: (_) => Text(
+            "Incorrect login. Ensure that you have entered your username and password correctly, and that you have entered the homeserver address correctly.",
+          ),
+        );
       }
-
+      ;
+    }
 
     if (result == LoginResult.success) {
       clientManager?.addClient(loginClient!);
@@ -139,7 +146,10 @@ class LoginPageState extends State<LoginPage> {
   }
 
   Future<void> doPasswordLogin(
-      PasswordLoginFlow flow, String username, String password) async {
+    PasswordLoginFlow flow,
+    String username,
+    String password,
+  ) async {
     if (loginClient == null) return;
     flow.username = username;
     flow.password = password;
