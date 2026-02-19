@@ -398,28 +398,33 @@ class MainPageState extends State<MainPage> {
   }
 
   void searchUserToDm() async {
-    var client = await AdaptiveDialog.pickClient(context);
-    final invitation = client?.getComponent<InvitationComponent>();
-    if (invitation != null) {
-      AdaptiveDialog.show(context,
-          builder: (context) => SendInvitationWidget(
-                client!,
-                invitation,
-                showSuggestions: false,
-                onUserPicked: (userId) async {
-                  final confirm = await AdaptiveDialog.confirmation(context,
-                      prompt:
-                          "Are you sure you want to invite $userId to chat?",
-                      title: "Invitation");
-                  if (confirm != true) {
-                    return;
-                  }
+    var client = filterClient;
+    if (client == null) client = await AdaptiveDialog.pickClient(context);
 
-                  var comp = client.getComponent<DirectMessagesComponent>();
-                  await comp?.createDirectMessage(userId);
-                },
-              ),
-          title: "Start Direct Message");
+    if (client == null) {
+      return;
     }
+
+    final invitation = client.getComponent<InvitationComponent>();
+    if (invitation == null) return;
+
+    AdaptiveDialog.show(context,
+        builder: (context) => SendInvitationWidget(
+              client!,
+              invitation,
+              showSuggestions: false,
+              onUserPicked: (userId) async {
+                final confirm = await AdaptiveDialog.confirmation(context,
+                    prompt: "Are you sure you want to invite $userId to chat?",
+                    title: "Invitation");
+                if (confirm != true) {
+                  return;
+                }
+
+                var comp = client!.getComponent<DirectMessagesComponent>();
+                await comp?.createDirectMessage(userId);
+              },
+            ),
+        title: "Start Direct Message");
   }
 }
