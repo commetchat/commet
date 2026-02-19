@@ -133,14 +133,10 @@ class GeneralSettingsPageState extends State<GeneralSettingsPage> {
           header: labelAppBehaviourTitle,
           mode: TileType.surfaceContainerLow,
           child: Column(children: [
-            settingToggle(
-              preferences.askBeforeDeletingMessageEnabled,
+            BooleanPreferenceToggle(
+              preference: preferences.askBeforeDeletingMessageEnabled,
               title: labelAskBeforeDeletingMessageToggle,
               description: labelAskBeforeDeletingMessageDescription,
-              onChanged: (value) async {
-                await preferences.setAskBeforeDeletingMessageEnabled(value);
-                setState(() {});
-              },
             ),
           ]),
         ),

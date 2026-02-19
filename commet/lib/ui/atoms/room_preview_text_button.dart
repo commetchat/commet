@@ -31,8 +31,8 @@ class _RoomPreviewTextButtonState extends State<RoomPreviewTextButton> {
   Widget build(BuildContext context) {
     var color = Theme.of(context).colorScheme.secondary;
 
-    bool showRoomIcons = preferences.showRoomAvatars;
-    bool useGenericIcons = preferences.usePlaceholderRoomAvatars;
+    bool showRoomIcons = preferences.showRoomAvatars.value;
+    bool useGenericIcons = preferences.usePlaceholderRoomAvatars.value;
 
     String displayName = widget.room.displayName;
 

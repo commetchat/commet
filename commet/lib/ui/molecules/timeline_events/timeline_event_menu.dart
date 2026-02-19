@@ -264,7 +264,7 @@ class TimelineEventMenu {
           name: CommonStrings.promptDelete,
           icon: Icons.delete,
           action: (BuildContext context) {
-            if (preferences.askBeforeDeletingMessageEnabled) {
+            if (preferences.askBeforeDeletingMessageEnabled.value) {
               AdaptiveDialog.confirmation(context).then((value) {
                 if (value == true) {
                   timeline.deleteEvent(event);
