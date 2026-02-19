@@ -284,6 +284,9 @@ class Preferences {
   BoolPreference useLegacyNotificationHandler =
       BoolPreference("use_legacy_notification_handler", defaultValue: false);
 
+  BoolPreference askBeforeDeletingMessageEnabled =
+      BoolPreference("ask_before_deleting_message_enabled", defaultValue: true);
+
   BoolPreference silenceNotifications = BoolPreference(
       "silence_notifications_when_other_device_active",
       defaultValue: true);

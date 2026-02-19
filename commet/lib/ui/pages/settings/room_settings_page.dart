@@ -7,8 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class RoomSettingsPage extends StatefulWidget {
-  const RoomSettingsPage({super.key, required this.room});
+  const RoomSettingsPage({super.key, required this.room, this.onLeaveRoom});
   final Room room;
+  final Function()? onLeaveRoom;
 
   @override
   State<RoomSettingsPage> createState() => _RoomSettingsPageState();
@@ -50,6 +51,7 @@ class _RoomSettingsPageState extends State<RoomSettingsPage> {
         true) {
       if (context.mounted) Navigator.pop(context);
       widget.room.client.leaveRoom(widget.room);
+      widget.onLeaveRoom?.call();
     }
   }
 }

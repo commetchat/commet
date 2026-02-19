@@ -103,8 +103,7 @@ class MatrixLivekitBackend {
     final fociUrl = await getFociUrl();
 
     if (fociUrl.isEmpty) {
-      Log.e("Failed to find a valid LiveKit service");
-      return null;
+      throw Exception("Failed to find a valid LiveKit service");
     }
 
     final selectedFocus = fociUrl.first;
@@ -114,8 +113,7 @@ class MatrixLivekitBackend {
         .requestOpenIdToken(room.matrixRoom.client.userID!, {});
 
     if (selectedFocus.scheme != "https") {
-      Log.e("Selected focus jwt does not use https");
-      return null;
+      throw Exception("Selected focus JWT does not use HTTPS");
     }
 
     Log.d("Received token from homeserver: ${token}");
@@ -133,8 +131,7 @@ class MatrixLivekitBackend {
 
     var result = await http.post(uri, body: jsonEncode(body));
     if (result.statusCode != 200) {
-      Log.e("Failed to get sfu!");
-      return null;
+      throw Exception("Failed to get sfu! HTTP Error ${result.statusCode}");
     }
 
     var data = jsonDecode(result.body) as Map<String, dynamic>;
