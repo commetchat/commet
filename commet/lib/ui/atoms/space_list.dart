@@ -109,7 +109,8 @@ class _SpaceListState extends State<SpaceList> {
     return Column(
       children: [
         for (var child in children) buildChild(child),
-        for (var preview in previews) buildPreviewChild(preview),
+        if (preferences.showRoomPreviewsInSpaceSidebar.value)
+          for (var preview in previews) buildPreviewChild(preview),
       ],
     );
   }

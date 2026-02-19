@@ -297,6 +297,9 @@ class Preferences {
   BoolPreference hideRoomSidePanel =
       BoolPreference("hide_room_side_panel", defaultValue: false);
 
+  BoolPreference showRoomPreviewsInSpaceSidebar =
+      BoolPreference("show_room_previews_in_space_sidebar", defaultValue: true);
+
   DoublePreference appScale = DoublePreference("app_scale", defaultValue: 1.0);
 
   DoublePreference emojiPickerHeight =

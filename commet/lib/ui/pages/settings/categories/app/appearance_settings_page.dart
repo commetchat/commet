@@ -46,6 +46,17 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
       name: "labelUseRoomAvatarPlaceholdersDescription",
       desc: "Description for the enable generic icons setting");
 
+  String get labelShowRoomPreviewsInSpaceSidebar => Intl.message(
+      "Show unjoined rooms in sidebar",
+      name: "labelShowRoomPreviewsInSpaceSidebar",
+      desc: "Label for enabling using the preview list in the space sidebar");
+
+  String get labelShowRoomPreviewsInSpaceSidebarDescription => Intl.message(
+      "When there are rooms which you have not joined in a space, show them in the sidebar with the rest of the rooms in the space",
+      name: "labelShowRoomPreviewsInSpaceSidebarDescription",
+      desc:
+          "Description for enabling using the preview list in the space sidebar");
+
   @override
   void initState() {
     super.initState();
@@ -74,6 +85,12 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
             padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
             child: Column(
               children: [
+                BooleanPreferenceToggle(
+                  preference: preferences.showRoomPreviewsInSpaceSidebar,
+                  title: labelShowRoomPreviewsInSpaceSidebar,
+                  description: labelShowRoomPreviewsInSpaceSidebarDescription,
+                ),
+                const Seperator(),
                 BooleanPreferenceToggle(
                   preference: preferences.showRoomAvatars,
                   title: labelUseRoomAvatars,
