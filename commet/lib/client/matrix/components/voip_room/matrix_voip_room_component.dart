@@ -4,6 +4,7 @@ import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip_room/voip_room_component.dart';
 import 'package:commet/client/matrix/components/matrix_sync_listener.dart';
 import 'package:commet/client/matrix/components/voip_room/matrix_livekit_backend.dart';
+import 'package:commet/client/matrix/components/voip_room/matrix_livekit_rust_backend.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:matrix/matrix.dart';
@@ -20,12 +21,13 @@ class MatrixVoipRoomComponent
   @override
   MatrixRoom room;
 
-  late MatrixLivekitBackend backend;
+  late MatrixLivekitRustBackend backend;
 
   VoipSession? currentSession;
 
   MatrixVoipRoomComponent(this.client, this.room) {
-    backend = MatrixLivekitBackend(room);
+    backend = MatrixLivekitRustBackend(room);
+    // backend = MatrixLivekitBackend(room);
   }
 
   static bool isVoipRoom(MatrixRoom room) {

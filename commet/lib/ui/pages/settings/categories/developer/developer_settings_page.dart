@@ -5,7 +5,6 @@ import 'package:commet/config/app_config.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
-import 'package:commet/generated/rust/api/screen_cap.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/navigation_utils.dart';
 import 'package:commet/ui/pages/developer/benchmarks/timeline_viewer_benchmark.dart';
@@ -328,7 +327,6 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
           tiamat.Button(
               text: "Screen Capture",
               onTap: () {
-                captureScreen();
               }),
         ])
       ],
