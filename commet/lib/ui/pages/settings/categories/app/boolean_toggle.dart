@@ -29,31 +29,34 @@ class _BooleanPreferenceToggleState extends State<BooleanPreferenceToggle> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Flexible(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              tiamat.Text.labelEmphasised(widget.title),
-              if (widget.description != null)
-                tiamat.Text.labelLow(widget.description!)
-            ],
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Flexible(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                tiamat.Text.labelEmphasised(widget.title),
+                if (widget.description != null)
+                  tiamat.Text.labelLow(widget.description!)
+              ],
+            ),
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: tiamat.Switch(
-            state: widget.preference.value,
-            onChanged: (value) async {
-              await widget.preference.set(value);
-              setState(() {});
-              widget.onChanged?.call(value);
-            },
-          ),
-        )
-      ],
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: tiamat.Switch(
+              state: widget.preference.value,
+              onChanged: (value) async {
+                await widget.preference.set(value);
+                setState(() {});
+                widget.onChanged?.call(value);
+              },
+            ),
+          )
+        ],
+      ),
     );
   }
 }

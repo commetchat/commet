@@ -8,6 +8,7 @@ class DropdownSelector<T> extends StatelessWidget {
       this.itemHeight = 50,
       this.onItemSelected,
       this.hint,
+      this.color = Colors.transparent,
       required this.value,
       super.key});
 
@@ -16,6 +17,7 @@ class DropdownSelector<T> extends StatelessWidget {
   final void Function(T? item)? onItemSelected;
   final double itemHeight;
   final Widget? hint;
+  final Color color;
 
   final T value;
 
@@ -29,7 +31,7 @@ class DropdownSelector<T> extends StatelessWidget {
           side: BorderSide(
               color: Theme.of(context).colorScheme.outline, width: 1.4),
         ),
-        color: Colors.transparent,
+        color: color,
         child: LayoutBuilder(
             builder: (BuildContext context, BoxConstraints constraints) {
           return DropdownButtonHideUnderline(
