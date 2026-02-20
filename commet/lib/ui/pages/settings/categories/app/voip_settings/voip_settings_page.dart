@@ -86,7 +86,7 @@ class _VoipSettingsPage extends State<VoipSettingsPage> {
                   DoublePreferenceSlider(
                     preference: preferences.streamBitrate,
                     min: 1,
-                    max: 16,
+                    max: 32,
                     units: "Mbps",
                     title: "Stream Maximum Bitrate",
                     description:
