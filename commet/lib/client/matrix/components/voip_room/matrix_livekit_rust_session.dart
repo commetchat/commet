@@ -9,6 +9,11 @@ import 'package:flutter/src/painting/box_fit.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:webrtc_interface/src/mediadevices.dart';
 
+
+class LivekitRustScreenCaptureSource implements ScreenCaptureSource {
+
+}
+
 class MatrixLivekitRustSession implements VoipSession {
   MatrixRoom room;
   LivekitSessionReference session;
@@ -63,8 +68,8 @@ class MatrixLivekitRustSession implements VoipSession {
   Stream<void> get onUpdateVolumeVisualizers => _onVolumeChanged.stream;
 
   @override
-  Future<ScreenCaptureSource?> pickScreenCapture(BuildContext context) {
-    throw UnimplementedError();
+  Future<ScreenCaptureSource?> pickScreenCapture(BuildContext context) async {
+    return LivekitRustScreenCaptureSource();
   }
 
   @override
@@ -101,9 +106,8 @@ class MatrixLivekitRustSession implements VoipSession {
   }
 
   @override
-  Future<void> setScreenShare(ScreenCaptureSource source) {
-    // TODO: implement setScreenShare
-    throw UnimplementedError();
+  Future<void> setScreenShare(ScreenCaptureSource source) async {
+    session.startScreenshare();
   }
 
   @override
@@ -127,7 +131,7 @@ class MatrixLivekitRustSession implements VoipSession {
       session.remoteTracks().map((i) => LivekitRustVoipStream(i)).toList();
 
   @override
-  bool get supportsScreenshare => false;
+  bool get supportsScreenshare => true;
 
   @override
   Future<void> updateStats() async {}

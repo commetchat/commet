@@ -13,3 +13,4 @@ widgets/calendar/android/local.properties
 .vscode/settings.json
 .idea/
 /target
+/build
