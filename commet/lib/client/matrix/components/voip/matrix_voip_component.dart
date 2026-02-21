@@ -151,7 +151,7 @@ class MatrixVoipComponent
       if (preferences.useFallbackTurnServer.value) {
         servers = [
           {
-            "urls": [preferences.fallbackTurnServer]
+            "urls": [preferences.fallbackTurnServer.value]
           }
         ];
         configuration["iceServers"] = servers;
