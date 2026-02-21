@@ -19,7 +19,7 @@ class WebrtcDefaultDevices {
 
     if (preferences.voipDefaultAudioInput.value != null) {
       var pickedDevice = devices.firstWhereOrNull(
-          (i) => i.label == preferences.voipDefaultAudioInput);
+          (i) => i.label == preferences.voipDefaultAudioInput.value);
 
       if (pickedDevice != null) {
         print(
@@ -47,7 +47,8 @@ class WebrtcDefaultDevices {
     if (preferences.voipDefaultAudioInput.value == null) return null;
 
     return devices
-        .firstWhereOrNull((i) => i.label == preferences.voipDefaultAudioInput)
+        .firstWhereOrNull(
+            (i) => i.label == preferences.voipDefaultAudioInput.value)
         ?.deviceId;
   }
 
@@ -57,7 +58,7 @@ class WebrtcDefaultDevices {
 
     if (preferences.voipDefaultAudioInput.value != null) {
       var pickedDevice = devices.firstWhereOrNull(
-          (i) => i.label == preferences.voipDefaultAudioInput);
+          (i) => i.label == preferences.voipDefaultAudioInput.value);
 
       if (pickedDevice != null) {
         print(
@@ -76,8 +77,8 @@ class WebrtcDefaultDevices {
     var devices = (await webrtc.navigator.mediaDevices.enumerateDevices())
         .where((i) => i.kind == "audiooutput");
 
-    var device = devices
-        .firstWhereOrNull((i) => i.label == preferences.voipDefaultAudioOutput);
+    var device = devices.firstWhereOrNull(
+        (i) => i.label == preferences.voipDefaultAudioOutput.value);
 
     if (device != null) {
       Log.i("Setting webrtc output to: ${device.label}  (${device.deviceId})");

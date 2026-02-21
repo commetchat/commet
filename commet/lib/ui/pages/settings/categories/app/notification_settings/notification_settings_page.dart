@@ -67,7 +67,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
                             UnifiedPushSetupView(
                               onToggled: (_) => setState(() {}),
                             ),
-                            if (preferences.unifiedPushEnabled == true)
+                            if (preferences.unifiedPushEnabled.value == true)
                               pushGatewaySelector(),
                           ],
                         )),
@@ -110,7 +110,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
                 opacity: preferences.formatNotificationBody.value ? 1 : 0.3,
                 duration: Durations.short4,
                 child: IgnorePointer(
-                  ignoring: preferences.formatNotificationBody == false,
+                  ignoring: preferences.formatNotificationBody.value == false,
                   child: Column(
                     children: [
                       BooleanPreferenceToggle(

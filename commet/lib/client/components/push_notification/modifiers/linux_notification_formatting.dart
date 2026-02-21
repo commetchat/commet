@@ -27,7 +27,7 @@ class NotificationModifierLinuxFormatting implements NotificationModifier {
 
   @override
   Future<NotificationContent?> process(NotificationContent content) async {
-    if (preferences.formatNotificationBody == false) {
+    if (preferences.formatNotificationBody.value == false) {
       return content;
     }
 

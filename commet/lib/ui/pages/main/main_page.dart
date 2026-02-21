@@ -77,8 +77,8 @@ class MainPageState extends State<MainPage> {
 
     Client? client;
     if (preferences.filterClient.value != null) {
-      filterClient = clientManager.clients
-          .firstWhereOrNull((i) => i.identifier == preferences.filterClient);
+      filterClient = clientManager.clients.firstWhereOrNull(
+          (i) => i.identifier == preferences.filterClient.value);
     }
 
     if (widget.initialClientId != null) {

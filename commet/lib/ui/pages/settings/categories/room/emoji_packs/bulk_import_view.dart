@@ -330,7 +330,7 @@ class _EmoticonBulkImportDialogState extends State<EmoticonBulkImportDialog> {
                         "Supports: sgnl:// and signal.art")),
                 Flexible(
                   child: tiamat.Text.labelLow(
-                      "Request will be proxied via ${preferences.proxyUrl}"),
+                      "Request will be proxied via ${preferences.proxyUrl.value}"),
                 ),
               ],
             ),
