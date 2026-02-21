@@ -297,7 +297,7 @@ class RoomFieldVisibility implements RoomField {
   }
 
   static Widget buildSpaceIcon(Client client, String i) {
-    Space? space = client?.getSpace(i);
+    Space? space = client.getSpace(i);
 
     return tiamat.Tooltip(
       text: space?.displayName ?? i,
