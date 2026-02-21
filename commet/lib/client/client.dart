@@ -106,19 +106,19 @@ abstract class Client {
   List<Peer> get peers;
 
   /// When a room is added, this will be called with the index of the new room
-  Stream<int> get onRoomAdded;
+  Stream<Room> get onRoomAdded;
 
   /// When a space is added, this will be called with the index of the new space
-  Stream<int> get onSpaceAdded;
+  Stream<Space> get onSpaceAdded;
 
   /// When a room is removed, this will be called with the index of the room which was removed
-  Stream<int> get onRoomRemoved;
+  Stream<Room> get onRoomRemoved;
 
   /// When a space is removed, this will be called with the index of the space which was removed
-  Stream<int> get onSpaceRemoved;
+  Stream<Space> get onSpaceRemoved;
 
   /// When a new peer is found, this will be called with the index of the new peer
-  Stream<int> get onPeerAdded;
+  Stream<Peer> get onPeerAdded;
 
   /// When the client receives an update from the server, this will be called
   Stream<void> get onSync;
