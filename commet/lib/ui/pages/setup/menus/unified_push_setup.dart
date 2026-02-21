@@ -79,7 +79,7 @@ If you already have a Unified Push compatible distributor app installed, you can
         preferences.unifiedPushEnabled.value != null;
     notifier = NotificationManager.notifier as UnifiedPushNotifier?;
     notifier?.onEndpointChanged.stream.listen((event) => onEndpointChanged());
-    unifiedPushEnabled = preferences.unifiedPushEnabled == true;
+    unifiedPushEnabled = preferences.unifiedPushEnabled.value == true;
 
     getInitialToken();
 

@@ -40,7 +40,7 @@ class UnifiedPushNotifier implements Notifier {
   String? get endpoint => preferences.unifiedPushEndpoint.value;
 
   @override
-  bool get enabled => preferences.unifiedPushEnabled == true;
+  bool get enabled => preferences.unifiedPushEnabled.value == true;
 
   @override
   bool get hasPermission => notifier.hasPermission;
@@ -50,7 +50,7 @@ class UnifiedPushNotifier implements Notifier {
   @override
   Future<void> init() async {
     if (isInit) return;
-    if (preferences.unifiedPushEnabled != true) return;
+    if (preferences.unifiedPushEnabled.value != true) return;
 
     await notifier.init();
 
@@ -62,7 +62,7 @@ class UnifiedPushNotifier implements Notifier {
 
   @override
   Future<String?> getToken() async {
-    if (preferences.unifiedPushEnabled != true) {
+    if (preferences.unifiedPushEnabled.value != true) {
       return null;
     }
 
@@ -80,6 +80,7 @@ class UnifiedPushNotifier implements Notifier {
   }
 
   void onNewEndpoint(String endpoint, String instance) async {
+    print("Got new endpoint: $instance");
     await preferences.unifiedPushEndpoint.set(endpoint);
     await PushNotificationComponent.updateAllPushers();
     onEndpointChanged.add(endpoint);
