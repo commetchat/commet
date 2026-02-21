@@ -464,14 +464,44 @@ class MatrixClient extends Client {
       ];
     }
 
+    var visibility = switch (args.visibility) {
+      final RoomVisibilityPrivate _ => matrix.Visibility.private,
+      final RoomVisibilityPublic _ => matrix.Visibility.public,
+      final RoomVisibilityRestricted _ => null,
+      _ => matrix.Visibility.private,
+    };
+
+    if (args.visibility case RoomVisibilityRestricted restricted) {
+      initialState ??= List.empty(growable: true);
+
+      initialState = [
+        ...initialState,
+        for (var i in restricted.spaces)
+          matrix.StateEvent(
+              stateKey: i,
+              type: matrix.EventTypes.SpaceParent,
+              content: {
+                "canonical": true,
+                "via": [
+                  if (self?.identifier.domain != null) self?.identifier.domain
+                ]
+              }),
+        matrix.StateEvent(content: {
+          "join_rule": "restricted",
+          "allow": [
+            for (var i in restricted.spaces)
+              {"room_id": i, "type": "m.room_membership"},
+          ]
+        }, type: matrix.EventTypes.RoomJoinRules)
+      ];
+    }
+
     var id = await _matrixClient.createRoom(
       creationContent: creationContent,
       name: args.name,
       initialState: initialState,
       topic: args.topic,
-      visibility: args.visibility == RoomVisibility.private
-          ? matrix.Visibility.private
-          : matrix.Visibility.public,
+      visibility: visibility,
     );
 
     await _matrixClient.waitForRoomInSync(id);
@@ -492,7 +522,7 @@ class MatrixClient extends Client {
     var id = await _matrixClient.createSpace(
       name: args.name,
       waitForSync: true,
-      visibility: args.visibility == RoomVisibility.private
+      visibility: args.visibility is RoomVisibilityPrivate
           ? matrix.Visibility.private
           : matrix.Visibility.public,
     );

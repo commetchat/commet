@@ -42,11 +42,12 @@ extension MatrixExtensions on Client {
     };
 
     var visibility = switch (joinRule) {
-      "public" => RoomVisibility.public,
-      "knock" => RoomVisibility.knock,
-      "invite" => RoomVisibility.invite,
-      "private" => RoomVisibility.private,
-      _ => RoomVisibility.private,
+      "public" => commet.RoomVisibilityPublic(),
+      "knock" => commet.RoomVisibilityPrivate(),
+      "invite" => commet.RoomVisibilityPrivate(),
+      "private" => commet.RoomVisibilityPrivate(),
+      "restricted" => commet.RoomVisibilityRestricted([]),
+      _ => commet.RoomVisibilityPrivate(),
     };
 
     if (name != null && id != null) {

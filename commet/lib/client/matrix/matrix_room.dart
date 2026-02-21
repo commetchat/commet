@@ -748,7 +748,7 @@ class MatrixRoom extends Room {
 
       case matrix.JoinRules.restricted:
         if (_client.spaces.any((e) =>
-            e.visibility == RoomVisibility.public &&
+            e.visibility is RoomVisibilityPublic &&
             e.containsRoom(_matrixRoom.id))) {
           // if any public space contains this room, consider the room public
           // this is kind of flawed, because there could be public spaces we are not a member of

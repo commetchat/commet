@@ -56,6 +56,7 @@ class GetOrCreateRoom extends StatefulWidget {
     bool createPhotoRoom = false,
     bool createCalendar = false,
     String? initialRoomAddress,
+    Space? currentSpace,
     bool Function(SpaceChild child)? existingRoomsRemoveWhere,
   }) async {
     if (client == null) {
@@ -78,7 +79,7 @@ class GetOrCreateRoom extends StatefulWidget {
             fields: [
               RoomFieldName(),
               RoomFieldTopic(),
-              RoomFieldVisibility(),
+              RoomFieldVisibility(currentSpace: currentSpace),
               RoomFieldEncryption(
                   canEnableEncryption: true, defaultEnabled: true),
             ],
@@ -96,7 +97,7 @@ class GetOrCreateRoom extends StatefulWidget {
             fields: [
               RoomFieldName(),
               RoomFieldTopic(),
-              RoomFieldVisibility(),
+              RoomFieldVisibility(currentSpace: currentSpace),
               RoomFieldEncryption(
                   canEnableEncryption: false, defaultEnabled: false),
               RoomFieldType(RoomType.voipRoom),
@@ -115,7 +116,7 @@ class GetOrCreateRoom extends StatefulWidget {
             fields: [
               RoomFieldName(),
               RoomFieldTopic(),
-              RoomFieldVisibility(),
+              RoomFieldVisibility(currentSpace: currentSpace),
               RoomFieldEncryption(defaultEnabled: true),
               RoomFieldType(RoomType.photoAlbum),
             ],
@@ -133,7 +134,7 @@ class GetOrCreateRoom extends StatefulWidget {
             fields: [
               RoomFieldName(),
               RoomFieldTopic(),
-              RoomFieldVisibility(),
+              RoomFieldVisibility(currentSpace: currentSpace),
               RoomFieldEncryption(defaultEnabled: true),
               RoomFieldType(RoomType.calendar),
             ],
@@ -151,7 +152,7 @@ class GetOrCreateRoom extends StatefulWidget {
             fields: [
               RoomFieldName(),
               RoomFieldTopic(),
-              RoomFieldVisibility(),
+              RoomFieldVisibility(currentSpace: currentSpace),
             ],
           ),
           create: (args) async {

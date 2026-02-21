@@ -394,9 +394,8 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
   }
 
   Widget spaceVisibility() {
-    IconData data =
-        widget.visibility == RoomVisibility.public ? Icons.public : Icons.lock;
-    String text = widget.visibility == RoomVisibility.public
+    IconData data = RoomVisibility.icon(widget.visibility);
+    String text = widget.visibility is RoomVisibilityPublic
         ? labelSpaceVisibilityPublic
         : labelSpaceVisibilityPrivate;
     return Row(

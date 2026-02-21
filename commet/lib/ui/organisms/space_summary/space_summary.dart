@@ -99,6 +99,7 @@ class _SpaceSummaryState extends State<SpaceSummary> {
     var room = await GetOrCreateRoom.show(
       widget.space.client,
       context,
+      currentSpace: widget.space,
       joinRoom: false,
       showAllRoomTypes: true,
       existingRoomsRemoveWhere: (child) {

@@ -96,6 +96,8 @@ class MatrixDirectMessagesComponent
   }
 
   void onMatrixSync(SyncUpdate event) {
+    print(event);
+
     if (event.accountData?.any((e) => e.type == "m.direct") == true) {
       updateRoomsList();
     }
