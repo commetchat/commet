@@ -8,7 +8,6 @@ import 'package:commet/client/room_preview.dart';
 import 'package:commet/client/space_child.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/layout_config.dart';
-import 'package:commet/ui/atoms/adaptive_context_menu.dart';
 import 'package:commet/ui/atoms/room_panel.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/utils/common_strings.dart';
@@ -99,6 +98,10 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
   String get labelSpaceVisibilityPrivate => Intl.message("Private space",
       desc: "Label to display that the space is private",
       name: "labelSpaceVisibilityPrivate");
+
+  String get labelSpaceVisibilityRestricted => Intl.message("Restricted space",
+      desc: "Label to display that the space is restricted",
+      name: "labelSpaceVisibilityRestricted");
 
   String labelSpaceGettingText(spaceName) =>
       Intl.message("Welcome to \n\n # $spaceName",
@@ -394,11 +397,13 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
   }
 
   Widget spaceVisibility() {
-    IconData data =
-        widget.visibility == RoomVisibility.public ? Icons.public : Icons.lock;
-    String text = widget.visibility == RoomVisibility.public
-        ? labelSpaceVisibilityPublic
-        : labelSpaceVisibilityPrivate;
+    IconData data = RoomVisibility.icon(widget.visibility);
+    String text = switch (widget.visibility) {
+      final RoomVisibilityPublic _ => labelSpaceVisibilityPublic,
+      final RoomVisibilityPrivate _ => labelSpaceVisibilityPrivate,
+      final RoomVisibilityRestricted _ => labelSpaceVisibilityRestricted,
+      _ => "",
+    };
     return Row(
       children: [
         Icon(data),
@@ -599,16 +604,6 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
       result = Container();
     }
 
-    return AdaptiveContextMenu(
-      items: [
-        ContextMenuItem(
-          text: "Remove from ${parent.displayName}",
-          onPressed: () {
-            parent.removeChild(item);
-          },
-        )
-      ],
-      child: result,
-    );
+    return result;
   }
 }

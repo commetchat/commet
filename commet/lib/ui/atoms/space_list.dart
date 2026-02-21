@@ -4,6 +4,7 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/room_preview.dart';
 import 'package:commet/client/space_child.dart';
 import 'package:commet/main.dart';
+import 'package:commet/ui/atoms/adaptive_context_menu.dart';
 import 'package:commet/ui/atoms/room_preview_text_button.dart';
 import 'package:commet/ui/atoms/room_text_button.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
@@ -166,22 +167,36 @@ class _SpaceListState extends State<SpaceList> {
   Widget buildChild(SpaceChild child) {
     if (child case SpaceChildSpace _) {
       if (widget.currentDepth < widget.maxDepth) {
-        return tiamat.TextButtonExpander(child.child.displayName,
-            initiallyExpanded: true,
-            childrenPadding: const EdgeInsets.fromLTRB(2, 0, 0, 0),
-            iconColor: Theme.of(context).colorScheme.secondary,
-            textColor: Theme.of(context).colorScheme.secondary,
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
-                child: SpaceList(
-                  child.child,
-                  isTopLevel: false,
-                  currentDepth: widget.currentDepth + 1,
-                  onRoomSelected: widget.onRoomSelected,
-                ),
+        return AdaptiveContextMenu(
+          items: [
+            if (widget.space.permissions.canEditChildren)
+              tiamat.ContextMenuItem(
+                icon: Icons.remove_circle,
+                text: "Remove from ${widget.space.displayName}",
+                onPressed: () async {
+                  if (await AdaptiveDialog.confirmation(context) == true) {
+                    widget.space.removeChild(child);
+                  }
+                },
               )
-            ]);
+          ],
+          child: tiamat.TextButtonExpander(child.child.displayName,
+              initiallyExpanded: true,
+              childrenPadding: const EdgeInsets.fromLTRB(2, 0, 0, 0),
+              iconColor: Theme.of(context).colorScheme.secondary,
+              textColor: Theme.of(context).colorScheme.secondary,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
+                  child: SpaceList(
+                    child.child,
+                    isTopLevel: false,
+                    currentDepth: widget.currentDepth + 1,
+                    onRoomSelected: widget.onRoomSelected,
+                  ),
+                )
+              ]),
+        );
       } else {
         return tiamat.TextButton(widget.space.displayName);
       }

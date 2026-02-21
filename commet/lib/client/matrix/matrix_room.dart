@@ -748,7 +748,7 @@ class MatrixRoom extends Room {
 
       case matrix.JoinRules.restricted:
         if (_client.spaces.any((e) =>
-            e.visibility == RoomVisibility.public &&
+            e.visibility is RoomVisibilityPublic &&
             e.containsRoom(_matrixRoom.id))) {
           // if any public space contains this room, consider the room public
           // this is kind of flawed, because there could be public spaces we are not a member of
@@ -846,5 +846,55 @@ class MatrixRoom extends Room {
     var tl = await matrixRoom.getTimeline();
 
     await tl.setReadMarker();
+  }
+
+  @override
+  RoomVisibility get visibility {
+    switch (_matrixRoom.joinRules) {
+      case matrix.JoinRules.public:
+        return RoomVisibilityPublic();
+      case matrix.JoinRules.knock:
+        return RoomVisibilityPrivate();
+      case matrix.JoinRules.invite:
+        return RoomVisibilityPrivate();
+      case matrix.JoinRules.private:
+        return RoomVisibilityPrivate();
+      case matrix.JoinRules.restricted:
+        return RoomVisibilityRestricted(matrixRoom
+                .getState(matrix.EventTypes.RoomJoinRules)
+                ?.content
+                .tryGetList<Map<String, dynamic>>("allow")
+                ?.map((i) => i.tryGet<String>("room_id"))
+                .nonNulls
+                .toList() ??
+            []);
+      case matrix.JoinRules.knockRestricted:
+        return RoomVisibilityPrivate();
+      case null:
+        return RoomVisibilityPublic();
+    }
+  }
+
+  @override
+  Future<void> setVisibility(RoomVisibility visibility) async {
+    var state = switch (visibility) {
+      final RoomVisibilityPrivate _ => matrix.StateEvent(content: {
+          "join_rule": "invite",
+        }, type: matrix.EventTypes.RoomJoinRules),
+      final RoomVisibilityPublic _ => matrix.StateEvent(
+          content: {"join_rule": "public"},
+          type: matrix.EventTypes.RoomJoinRules),
+      final RoomVisibilityRestricted restricted => matrix.StateEvent(content: {
+          "join_rule": "restricted",
+          "allow": [
+            for (var i in restricted.spaces)
+              {"room_id": i, "type": "m.room_membership"},
+          ]
+        }, type: matrix.EventTypes.RoomJoinRules),
+      RoomVisibility() => throw UnimplementedError(),
+    };
+
+    await _matrixRoom.client
+        .setRoomStateWithKey(_matrixRoom.id, state.type, "", state.content);
   }
 }
