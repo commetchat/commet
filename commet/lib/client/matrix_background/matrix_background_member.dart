@@ -75,7 +75,9 @@ class MatrixBackgroundMember implements Member {
   String get displayName {
     if (event != null) {
       Log.i("Got user data: ${data!.content}");
-      return event!.content["displayname"] as String;
+      if (event!.content["displayname"] is String) {
+        return event!.content["displayname"] as String;
+      }
     }
 
     return identifier;
