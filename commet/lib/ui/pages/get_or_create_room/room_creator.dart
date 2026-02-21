@@ -233,7 +233,6 @@ class RoomFieldVisibility implements RoomField {
           String? title;
           Widget icon = Icon(RoomVisibility.icon(item));
           String? subtitle;
-          Widget? extra;
           switch (item) {
             case final RoomVisibilityPublic _:
               title = labelVisibilityPublic;
