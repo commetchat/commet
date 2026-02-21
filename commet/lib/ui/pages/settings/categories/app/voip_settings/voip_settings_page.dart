@@ -61,7 +61,7 @@ class _VoipSettingsPage extends State<VoipSettingsPage> {
             preference: preferences.useFallbackTurnServer,
             title: "Use TURN Fallback",
             description:
-                "Calls cannot be connected without a TURN server. If your homeserver does not provide a TURN server, fall back to using '${preferences.fallbackTurnServer}'. Your IP address will be revealed to this server when establishing calls",
+                "Calls cannot be connected without a TURN server. If your homeserver does not provide a TURN server, fall back to using '${preferences.fallbackTurnServer.value}'. Your IP address will be revealed to this server when establishing calls",
           ),
         ),
         tiamat.Panel(
