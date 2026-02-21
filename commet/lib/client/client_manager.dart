@@ -9,6 +9,7 @@ import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/stale_info.dart';
 import 'package:commet/client/tasks/client_connection_status_task.dart';
 import 'package:commet/main.dart';
+import 'package:commet/client/sidebar/sidebar_manager.dart';
 import 'package:commet/utils/notifying_list.dart';
 
 class ClientManager {
@@ -22,10 +23,12 @@ class ClientManager {
   late CallManager callManager;
 
   late final DirectMessagesAggregator directMessages;
+  late final SidebarManager sidebarManager;
 
   ClientManager() {
     directMessages = DirectMessagesAggregator(this);
     callManager = CallManager(this);
+    sidebarManager = SidebarManager(this);
   }
 
   List<Room> get rooms => _rooms;
@@ -98,6 +101,8 @@ class ClientManager {
       MatrixClient.loadFromDB(newClientManager,
           isBackgroundService: isBackgroundService),
     ]);
+
+    newClientManager.sidebarManager.init();
 
     return newClientManager;
   }
@@ -229,6 +234,7 @@ class ClientManager {
   }
 
   Future<void> close() async {
+    sidebarManager.dispose();
     for (var client in _clients.values) {
       client.close();
     }
