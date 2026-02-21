@@ -159,40 +159,41 @@ class RoomFieldEncryption implements RoomField {
 
 class RoomFieldVisibility implements RoomField {
   Space? currentSpace;
+  Client client;
 
-  RoomFieldVisibility({this.currentSpace});
+  RoomFieldVisibility({required this.client, this.currentSpace});
 
-  String get roomVisibilityPrivateExplanation => Intl.message(
+  static String get roomVisibilityPrivateExplanation => Intl.message(
         "This room will only be accessible by invitation",
         name: "roomVisibilityPrivateExplanation",
         desc: "Explains what 'private' room visibility means",
       );
 
-  String get roomVisibilityPublicExplanation => Intl.message(
+  static String get roomVisibilityPublicExplanation => Intl.message(
         "This room will be publically accessible by anyone on the internet",
         name: "roomVisibilityPublicExplanation",
         desc: "Explains what 'public' visibility means",
       );
 
-  String get labelVisibilityPrivate => Intl.message(
+  static String get labelVisibilityPrivate => Intl.message(
         "Private",
         name: "labelVisibilityPrivate",
         desc: "Short label for room visibility private",
       );
 
-  String get labelVisibilityPublic => Intl.message(
+  static String get labelVisibilityPublic => Intl.message(
         "Public",
         name: "labelVisibilityPublic",
         desc: "Short label for room visibility public",
       );
 
-  String get roomVisibilityRestrictedExplanation => Intl.message(
+  static String get roomVisibilityRestrictedExplanation => Intl.message(
         "This room will be available to anyone who is a member of it's parent spaces",
         name: "roomVisibilityRestrictedExplanation",
         desc: "Explains what 'restricted' visibility means",
       );
 
-  String get labelVisibilityRestricted => Intl.message(
+  static String get labelVisibilityRestricted => Intl.message(
         "Restricted",
         name: "labelVisibilityRestricted",
         desc: "Short label for room visibility restricted",
@@ -230,68 +231,72 @@ class RoomFieldVisibility implements RoomField {
           onArgsChanged();
         },
         itemBuilder: (item) {
-          String? title;
-          Widget icon = Icon(RoomVisibility.icon(item));
-          String? subtitle;
-          switch (item) {
-            case final RoomVisibilityPublic _:
-              title = labelVisibilityPublic;
-              subtitle = roomVisibilityPublicExplanation;
-              break;
-            case final RoomVisibilityPrivate _:
-              title = labelVisibilityPrivate;
-              subtitle = roomVisibilityPrivateExplanation;
-              break;
-            case final RoomVisibilityRestricted restricted:
-              title = labelVisibilityRestricted;
-              subtitle = roomVisibilityRestrictedExplanation;
-
-              icon =
-                  Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-                for (var i in restricted.spaces) buildSpaceIcon(i),
-              ]);
-              break;
-            case null:
-              break;
-          }
-
-          return Padding(
-            padding: const EdgeInsets.all(0.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.max,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    textBaseline: TextBaseline.alphabetic,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 2, 8, 0),
-                        child: icon,
-                      ),
-                      tiamat.Text.label(title!),
-                    ],
-                  ),
-                ),
-                tiamat.Text.labelLow(
-                  subtitle!,
-                  overflow: TextOverflow.fade,
-                ),
-              ],
-            ),
-          );
+          return buildRoomVisibility(client, item);
         },
       ),
     );
   }
 
-  Widget buildSpaceIcon(String i) {
-    var client = currentSpace?.client;
+  static Widget buildRoomVisibility(Client client, RoomVisibility? item) {
+    String? title;
+    Widget icon = Icon(RoomVisibility.icon(item));
+    String? subtitle;
+    switch (item) {
+      case final RoomVisibilityPublic _:
+        title = labelVisibilityPublic;
+        subtitle = roomVisibilityPublicExplanation;
+        break;
+      case final RoomVisibilityPrivate _:
+        title = labelVisibilityPrivate;
+        subtitle = roomVisibilityPrivateExplanation;
+        break;
+      case final RoomVisibilityRestricted restricted:
+        title = labelVisibilityRestricted;
+        subtitle = roomVisibilityRestrictedExplanation;
 
+        icon = Row(
+            spacing: 4,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              for (var i in restricted.spaces) buildSpaceIcon(client, i),
+            ]);
+        break;
+      case null:
+        break;
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(0.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              textBaseline: TextBaseline.alphabetic,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 2, 8, 0),
+                  child: icon,
+                ),
+                tiamat.Text.label(title!),
+              ],
+            ),
+          ),
+          tiamat.Text.labelLow(
+            subtitle!,
+            overflow: TextOverflow.fade,
+          ),
+        ],
+      ),
+    );
+  }
+
+  static Widget buildSpaceIcon(Client client, String i) {
     Space? space = client?.getSpace(i);
 
     return tiamat.Tooltip(

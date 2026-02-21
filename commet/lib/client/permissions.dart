@@ -20,6 +20,8 @@ abstract class Permissions {
 
   bool get canEnableE2EE => false;
 
+  bool get canChangeVisibility => false;
+
   bool get canEditRoomSecurity => canEnableE2EE;
 
   bool get canChangeNotificationSettings => true;

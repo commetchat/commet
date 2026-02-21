@@ -100,6 +100,10 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
       desc: "Label to display that the space is private",
       name: "labelSpaceVisibilityPrivate");
 
+  String get labelSpaceVisibilityRestricted => Intl.message("Restricted space",
+      desc: "Label to display that the space is restricted",
+      name: "labelSpaceVisibilityRestricted");
+
   String labelSpaceGettingText(spaceName) =>
       Intl.message("Welcome to \n\n # $spaceName",
           args: [spaceName],
@@ -395,9 +399,12 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
 
   Widget spaceVisibility() {
     IconData data = RoomVisibility.icon(widget.visibility);
-    String text = widget.visibility is RoomVisibilityPublic
-        ? labelSpaceVisibilityPublic
-        : labelSpaceVisibilityPrivate;
+    String text = switch (widget.visibility) {
+      final RoomVisibilityPublic _ => labelSpaceVisibilityPublic,
+      final RoomVisibilityPrivate _ => labelSpaceVisibilityPrivate,
+      final RoomVisibilityRestricted _ => labelSpaceVisibilityRestricted,
+      _ => "",
+    };
     return Row(
       children: [
         Icon(data),
@@ -598,16 +605,6 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
       result = Container();
     }
 
-    return AdaptiveContextMenu(
-      items: [
-        ContextMenuItem(
-          text: "Remove from ${parent.displayName}",
-          onPressed: () {
-            parent.removeChild(item);
-          },
-        )
-      ],
-      child: result,
-    );
+    return result;
   }
 }

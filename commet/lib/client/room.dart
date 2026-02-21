@@ -148,6 +148,8 @@ abstract class Room {
   int get displayHighlightedNotificationCount =>
       pushRule != PushRule.dontNotify ? highlightedNotificationCount : 0;
 
+  RoomVisibility get visibility;
+
   /// Send a message in this room
   Future<TimelineEvent?> sendMessage({
     String? message,
@@ -194,6 +196,8 @@ abstract class Room {
 
   /// Set a notification push rule
   Future<void> setPushRule(PushRule rule);
+
+  Future<void> setVisibility(RoomVisibility visibility);
 
   /// Gets the color of a user based on their ID
   Color getColorOfUser(String userId);

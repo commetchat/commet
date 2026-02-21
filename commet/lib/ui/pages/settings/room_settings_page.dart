@@ -7,8 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class RoomSettingsPage extends StatefulWidget {
-  const RoomSettingsPage({super.key, required this.room, this.onLeaveRoom});
+  const RoomSettingsPage(
+      {super.key, this.contextSpace, required this.room, this.onLeaveRoom});
   final Room room;
+  final Space? contextSpace;
   final Function()? onLeaveRoom;
 
   @override
@@ -31,6 +33,7 @@ class _RoomSettingsPageState extends State<RoomSettingsPage> {
       settings: [
         SettingsCategoryRoom(
           widget.room,
+          widget.contextSpace,
         ),
       ],
       buttons: [

@@ -16,8 +16,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class SettingsCategoryRoom implements SettingsCategory {
-  SettingsCategoryRoom(this.room);
+  SettingsCategoryRoom(this.room, this.contextSpace);
   Room room;
+  Space? contextSpace;
 
   String get labelRoomSettingsGeneral => Intl.message(
         "General",
@@ -94,14 +95,16 @@ class SettingsCategoryRoom implements SettingsCategory {
           return RoomAppearanceSettingsPage(room: room);
         },
       ),
-      if (room.permissions.canEditRoomSecurity)
-        SettingsTab(
-          label: labelRoomSettingsSecurity,
-          icon: Icons.lock,
-          pageBuilder: (context) {
-            return RoomSecuritySettingsPage(room: room);
-          },
-        ),
+      SettingsTab(
+        label: labelRoomSettingsSecurity,
+        icon: Icons.lock,
+        pageBuilder: (context) {
+          return RoomSecuritySettingsPage(
+            room: room,
+            contextSpace: contextSpace,
+          );
+        },
+      ),
       if (emoticons != null &&
           (room.permissions.canEditRoomEmoticons ||
               emoticons.ownedPacks.isNotEmpty))

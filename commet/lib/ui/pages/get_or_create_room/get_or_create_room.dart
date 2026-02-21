@@ -79,7 +79,7 @@ class GetOrCreateRoom extends StatefulWidget {
             fields: [
               RoomFieldName(),
               RoomFieldTopic(),
-              RoomFieldVisibility(currentSpace: currentSpace),
+              RoomFieldVisibility(client: client!, currentSpace: currentSpace),
               RoomFieldEncryption(
                   canEnableEncryption: true, defaultEnabled: true),
             ],
@@ -97,7 +97,7 @@ class GetOrCreateRoom extends StatefulWidget {
             fields: [
               RoomFieldName(),
               RoomFieldTopic(),
-              RoomFieldVisibility(currentSpace: currentSpace),
+              RoomFieldVisibility(client: client!, currentSpace: currentSpace),
               RoomFieldEncryption(
                   canEnableEncryption: false, defaultEnabled: false),
               RoomFieldType(RoomType.voipRoom),
@@ -116,7 +116,7 @@ class GetOrCreateRoom extends StatefulWidget {
             fields: [
               RoomFieldName(),
               RoomFieldTopic(),
-              RoomFieldVisibility(currentSpace: currentSpace),
+              RoomFieldVisibility(client: client!, currentSpace: currentSpace),
               RoomFieldEncryption(defaultEnabled: true),
               RoomFieldType(RoomType.photoAlbum),
             ],
@@ -134,7 +134,7 @@ class GetOrCreateRoom extends StatefulWidget {
             fields: [
               RoomFieldName(),
               RoomFieldTopic(),
-              RoomFieldVisibility(currentSpace: currentSpace),
+              RoomFieldVisibility(client: client!, currentSpace: currentSpace),
               RoomFieldEncryption(defaultEnabled: true),
               RoomFieldType(RoomType.calendar),
             ],
@@ -152,7 +152,7 @@ class GetOrCreateRoom extends StatefulWidget {
             fields: [
               RoomFieldName(),
               RoomFieldTopic(),
-              RoomFieldVisibility(currentSpace: currentSpace),
+              RoomFieldVisibility(client: client!, currentSpace: currentSpace),
             ],
           ),
           create: (args) async {

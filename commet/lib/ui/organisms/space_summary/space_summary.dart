@@ -92,7 +92,11 @@ class _SpaceSummaryState extends State<SpaceSummary> {
 
   void openRoomSettings(Room room) {
     NavigationUtils.navigateTo(
-        context, RoomSettingsPage(room: room, onLeaveRoom: widget.onLeaveRoom));
+        context,
+        RoomSettingsPage(
+            room: room,
+            contextSpace: widget.space,
+            onLeaveRoom: widget.onLeaveRoom));
   }
 
   void onAddRoomButtonTap() async {

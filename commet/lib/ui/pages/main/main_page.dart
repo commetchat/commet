@@ -355,6 +355,7 @@ class MainPageState extends State<MainPage> {
           context,
           RoomSettingsPage(
             room: currentRoom!,
+            contextSpace: currentSpace,
             onLeaveRoom: clearRoomSelection,
           ));
     }
