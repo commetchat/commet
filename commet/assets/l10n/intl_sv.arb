@@ -1,1 +1,206 @@
-{}
+{
+    "labelRoomsList": "Rum",
+    "@labelRoomsList": {
+        "description": "Header label for the list of rooms",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelHomeAlerts": "Notiser",
+    "@labelHomeAlerts": {
+        "description": "Short label for header of alerts",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelHomeRoomsList": "Rum",
+    "@labelHomeRoomsList": {
+        "description": "Short label for header of rooms list",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelHomeInvitations": "Inbjudningar",
+    "@labelHomeInvitations": {
+        "description": "Short label for header of invitations list",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelInvitations": "Inbjudningar",
+    "@labelInvitations": {
+        "description": "Label for the list of incoming invitations",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptOpenDirectMessage": "Skicka meddelande",
+    "@promptOpenDirectMessage": {
+        "description": "Prompt on the button to open a direct message with another user",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceRoomsList": "Rum",
+    "@labelSpaceRoomsList": {
+        "description": "Header label for the list of rooms in a space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceSubspacesList": "Utrymmen",
+    "@labelSpaceSubspacesList": {
+        "description": "Header label for the list of child spaces in a space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVisibilityPrivate": "Privat",
+    "@labelVisibilityPrivate": {
+        "description": "Short label for room visibility private",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVisibilityPublic": "Offentlig",
+    "@labelVisibilityPublic": {
+        "description": "Short label for room visibility public",
+        "type": "text",
+        "placeholders": {}
+    },
+    "placeholderRoomAlias": "#superbra-rum",
+    "@placeholderRoomAlias": {
+        "description": "Placeholder / Example for a room alias.",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelEnableUnifiedPushEndpoint": "Ändpunkt",
+    "@labelEnableUnifiedPushEndpoint": {
+        "description": "Label for the Unified Push endpoint",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptHomeserver": "Hemserver",
+    "@promptHomeserver": {
+        "description": "Placeholder text for homeserver field on login form",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptUsername": "Användarnamn",
+    "@promptUsername": {
+        "description": "Placeholder text for username field on login form",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptPassword": "Lösenord",
+    "@promptPassword": {
+        "description": "Placeholder text for password field on login form",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptSubmitLogin": "Logga in",
+    "@promptSubmitLogin": {
+        "description": "Prompt to submit the username and password, and attempt to login",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsAppGeneral": "Allmänt",
+    "@labelSettingsAppGeneral": {
+        "description": "Label for the App General settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsAppAppearance": "Utseende",
+    "@labelSettingsAppAppearance": {
+        "description": "Label for the App Appearance settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsAppAdvanced": "Avancerat",
+    "@labelSettingsAppAdvanced": {
+        "description": "Label for the App Advanced settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsAppNotifications": "Notifikationer",
+    "@labelSettingsAppNotifications": {
+        "description": "Label for the App notifications settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelThemeAmoled": "Amoled",
+    "@labelThemeAmoled": {
+        "description": "Label for the light theme",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsAppTheme": "Tema",
+    "@labelSettingsAppTheme": {
+        "description": "Label for theme section of app appearance",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsAppLogs": "Loggar",
+    "@labelSettingsAppLogs": {
+        "description": "Label for the logs settings page, usually hidden unless developer mode is turned on",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPushRuleNone": "Tysta",
+    "@labelPushRuleNone": {
+        "description": "Label for the push rule which sends no notifications",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomSettingsNotifications": "Notifikationer",
+    "@labelRoomSettingsNotifications": {
+        "description": "Label for the notifications section in room settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptConfirmSaveEmoticon": "Spara!",
+    "@promptConfirmSaveEmoticon": {
+        "description": "Prompt to confirm the creation of an Emoticon Pack, Emoji, or Sticker",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoleAdmin": "Administratör",
+    "@labelMatrixPermissionsRoleAdmin": {
+        "description": "Label for the room administrator role",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoleModerator": "Moderator",
+    "@labelMatrixPermissionsRoleModerator": {
+        "description": "Label for the room moderator role",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomSettingsGeneral": "Allmänt",
+    "@labelRoomSettingsGeneral": {
+        "description": "Label for general room settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomSettingsAppearance": "Utseende",
+    "@labelRoomSettingsAppearance": {
+        "description": "Label for room appearance settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomSettingsSecurity": "Säkerhet",
+    "@labelRoomSettingsSecurity": {
+        "description": "Label for room security settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomSettingsEmoticons": "Emotikoner",
+    "@labelRoomSettingsEmoticons": {
+        "description": "Label for room Emoticon settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomSettingsDeveloper": "Utvecklare",
+    "@labelRoomSettingsDeveloper": {
+        "description": "Label for room developer settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomSettingsPermissions": "Tillstånd",
+    "@labelRoomSettingsPermissions": {
+        "description": "Label for room permission settings",
+        "type": "text",
+        "placeholders": {}
+    }
+}
