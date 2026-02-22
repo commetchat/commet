@@ -112,7 +112,8 @@ class GeneralSettingsPageState extends State<GeneralSettingsPage> {
             BooleanPreferenceToggle(
               preference: preferences.tenorGifSearchEnabled,
               title: labelGifSearchToggle,
-              description: labelGifSearchDescription(preferences.proxyUrl),
+              description:
+                  labelGifSearchDescription(preferences.proxyUrl.value),
             ),
             const SizedBox(
               height: 10,
