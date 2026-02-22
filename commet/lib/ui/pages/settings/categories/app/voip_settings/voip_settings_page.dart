@@ -6,6 +6,8 @@ import 'package:commet/config/platform_utils.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/settings/categories/app/boolean_toggle.dart';
+import 'package:commet/ui/pages/settings/categories/app/double_preference_slider.dart';
+import 'package:commet/ui/pages/settings/categories/app/string_preference_options.dart';
 import 'package:commet/ui/pages/settings/categories/app/voip_settings/voip_debug_settings.dart';
 import 'package:flutter/widgets.dart';
 
@@ -69,6 +71,62 @@ class _VoipSettingsPage extends State<VoipSettingsPage> {
           mode: tiamat.TileType.surfaceContainerLow,
           child: devicePicker(),
         ),
+        tiamat.Panel(
+            header: "Stream Settings",
+            mode: tiamat.TileType.surfaceContainerLow,
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 12,
+                children: [
+                  BooleanPreferenceToggle(
+                      preference: preferences.doSimulcast,
+                      title: "Use simulcast",
+                      description:
+                          "Uploads your streams at multiple different levels of quality, so other users can decide which to use. This will use more bandwidth and system resources."),
+                  DoublePreferenceSlider(
+                    preference: preferences.streamBitrate,
+                    min: 1,
+                    max: 32,
+                    units: "Mbps",
+                    title: "Stream Maximum Bitrate",
+                    description:
+                        "Determines the overall quality of your stream. Higher is better, but also uses more resources",
+                  ),
+                  DoublePreferenceSlider(
+                    preference: preferences.streamFramerate,
+                    min: 5,
+                    max: 60,
+                    numDecimals: 0,
+                    units: "FPS",
+                    title: "Stream Framerate",
+                    description:
+                        "Target frames per second for screen sharing. Higher has smoother motion, but maybe reduce visual clarity.",
+                  ),
+                  StringPreferenceOptionsPicker(
+                      preference: preferences.streamCodec,
+                      title: "Stream Codec",
+                      description:
+                          "Choose which format to encode your stream in. Different codecs may run faster on certain devices, and may be unsupported on others. Most devices should support vp8 and h264.",
+                      options: [
+                        "h264",
+                        "h265",
+                        "vp9",
+                        "vp8",
+                        "av1",
+                      ]),
+                  StringPreferenceOptionsPicker(
+                      preference: preferences.streamResolution,
+                      title: "Stream Resolution",
+                      description:
+                          "The resolution of your stream, higher is better",
+                      options: [
+                        "640x360",
+                        "960x540",
+                        "1280x720",
+                        "1920x1080",
+                        "2560x1440",
+                      ])
+                ])),
         if (preferences.developerMode.value)
           const Padding(
             padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
