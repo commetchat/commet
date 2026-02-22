@@ -339,7 +339,7 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
         key: eventKey,
       );
 
-    if (preferences.developerMode == false &&
+    if (preferences.developerMode.value == false &&
         _widgetType == TimelineEventWidgetDisplayType.hidden) {
       return null;
     }
