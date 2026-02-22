@@ -104,7 +104,7 @@ class _VoipSettingsPage extends State<VoipSettingsPage> {
                   ),
                   StringPreferenceOptionsPicker(
                       preference: preferences.streamCodec,
-                      title: "Stream Codec",
+                      title: "Preferred Stream Codec",
                       description:
                           "Choose which format to encode your stream in. Different codecs may run faster on certain devices, and may be unsupported on others. Most devices should support vp8 and h264.",
                       options: [
@@ -114,18 +114,19 @@ class _VoipSettingsPage extends State<VoipSettingsPage> {
                         "vp8",
                         "av1",
                       ]),
-                  StringPreferenceOptionsPicker(
-                      preference: preferences.streamResolution,
-                      title: "Stream Resolution",
-                      description:
-                          "The resolution of your stream, higher is better",
-                      options: [
-                        "640x360",
-                        "960x540",
-                        "1280x720",
-                        "1920x1080",
-                        "2560x1440",
-                      ])
+                  if (preferences.developerMode.value)
+                    StringPreferenceOptionsPicker(
+                        preference: preferences.streamResolution,
+                        title: "Stream Resolution",
+                        description:
+                            "The resolution of your stream, higher is better",
+                        options: [
+                          "640x360",
+                          "960x540",
+                          "1280x720",
+                          "1920x1080",
+                          "2560x1440",
+                        ])
                 ])),
         if (preferences.developerMode.value)
           const Padding(
