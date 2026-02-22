@@ -119,6 +119,7 @@ class ChatState extends State<Chat> {
 
   Future<void> loadTimeline() async {
     var t = await room.getTimeline();
+    if (!mounted) return;
     setState(() {
       _timeline = t;
     });
@@ -130,6 +131,7 @@ class ChatState extends State<Chat> {
 
     var threadTimeline = await threadsComponent!.getThreadTimeline(
         roomTimeline: timeline, threadRootEventId: widget.threadId!);
+    if (!mounted) return;
     setState(() {
       _timeline = threadTimeline;
     });

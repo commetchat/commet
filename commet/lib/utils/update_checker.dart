@@ -24,7 +24,7 @@ class UpdateChecker {
       return;
     }
 
-    if (preferences.checkForUpdates != true) {
+    if (preferences.checkForUpdates.value != true) {
       return;
     }
 

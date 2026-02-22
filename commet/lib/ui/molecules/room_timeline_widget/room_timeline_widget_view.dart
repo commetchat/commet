@@ -225,6 +225,11 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
       setState(() {
         firstFrame = false;
       });
+    } else {
+      // If the scroll controller has no clients yet (e.g. no events loaded),
+      // retry on the next frame to avoid firstFrame staying true forever,
+      // which would keep the timeline permanently hidden via Offstage.
+      WidgetsBinding.instance.addPostFrameCallback(onAfterFirstFrame);
     }
 
     WidgetsBinding.instance.addPostFrameCallback((_) {

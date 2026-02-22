@@ -7,6 +7,7 @@ import 'package:commet/client/matrix/timeline_events/matrix_timeline_event.dart'
 import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/client/timeline_events/timeline_event_message.dart';
 import 'package:commet/client/timeline_events/timeline_event_sticker.dart';
+import 'package:commet/debug/log.dart';
 
 import '../client.dart';
 import 'package:matrix/matrix.dart' as matrix;
@@ -64,8 +65,14 @@ class MatrixTimeline extends Timeline {
 
   void convertAllTimelineEvents() {
     for (int i = 0; i < _matrixTimeline!.events.length; i++) {
-      var converted = _room.convertEvent(_matrixTimeline!.events[i]);
-      insertEvent(i, converted);
+      try {
+        var converted = _room.convertEvent(_matrixTimeline!.events[i]);
+        insertEvent(i, converted);
+      } catch (e, s) {
+        Log.onError(e, s,
+            content:
+                "Failed to convert timeline event at index $i: ${_matrixTimeline!.events[i].eventId}");
+      }
     }
   }
 

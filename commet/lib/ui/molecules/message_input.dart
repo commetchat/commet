@@ -528,6 +528,10 @@ class MessageInputState extends State<MessageInput> {
   KeyEventResult onKey(FocusNode node, KeyEvent event) {
     if (BuildConfig.MOBILE) return KeyEventResult.ignored;
 
+    // Only process KeyDownEvent to avoid duplicate handling from
+    // KeyUpEvent and KeyRepeatEvent on Windows
+    if (event is! KeyDownEvent) return KeyEventResult.ignored;
+
     if (!preferences.disableTextCursorManagement.value) {
       if (HardwareKeyboard.instance
           .isLogicalKeyPressed(LogicalKeyboardKey.backspace)) {
