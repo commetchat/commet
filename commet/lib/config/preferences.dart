@@ -310,7 +310,7 @@ class Preferences {
       DoublePreference("screenshare_fps", defaultValue: 60);
 
   StringPreference streamCodec =
-      StringPreference("livekit_screenshare_codec", defaultValue: "h264");
+      StringPreference("livekit_screenshare_codec", defaultValue: "av1");
 
   StringPreference streamResolution = StringPreference(
       "livekit_screenshare_resolution",
