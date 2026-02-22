@@ -73,7 +73,16 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
         Panel(
           header: labelAppScale,
           mode: TileType.surfaceContainerLow,
-          child: const UIScaleSelector(),
+          child: Column(
+            children: [
+              const UIScaleSelector(),
+              BooleanPreferenceToggle(
+                preference: preferences.overrideTextScale,
+                title: "Enable Text Scale",
+                description: "Overrides the system default text scale option",
+              ),
+            ],
+          ),
         ),
         const SizedBox(
           height: 10,

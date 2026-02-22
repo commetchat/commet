@@ -300,6 +300,12 @@ class Preferences {
   BoolPreference showRoomPreviewsInSpaceSidebar =
       BoolPreference("show_room_previews_in_space_sidebar", defaultValue: true);
 
+  BoolPreference overrideTextScale =
+      BoolPreference("use_text_scale", defaultValue: false);
+
+  DoublePreference textScale =
+      DoublePreference("text_scale", defaultValue: 1.0);
+
   DoublePreference appScale = DoublePreference("app_scale", defaultValue: 1.0);
 
   DoublePreference emojiPickerHeight =
