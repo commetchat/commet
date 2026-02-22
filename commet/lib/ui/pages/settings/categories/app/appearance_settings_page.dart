@@ -72,15 +72,29 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
           height: 10,
         ),
         Panel(
-          header: labelAppScale,
+          header: "Scaling",
           mode: TileType.surfaceContainerLow,
           child: Column(
             spacing: 12,
             children: [
-              const UIScaleSelector(),
+              DoublePreferenceSlider(
+                min: 0.2,
+                max: 2,
+                requiresConfirmationButton: true,
+                preference: preferences.appScale,
+                onChanged: (p0) {
+                  ScaledWidgetsFlutterBinding.instance.scaleFactor =
+                      (deviceSize) {
+                    return p0;
+                  };
+                },
+                title: labelAppScale,
+                description: "Resizes the overall interface of the app",
+              ),
               DoublePreferenceSlider(
                 min: 0.2,
                 max: 3,
+                requiresConfirmationButton: true,
                 preference: preferences.textScale,
                 title: "Text Scale",
                 description: "Multiply the size of text",
