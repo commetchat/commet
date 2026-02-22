@@ -124,7 +124,10 @@ class GeneralSettingsPageState extends State<GeneralSettingsPage> {
               description: labelUrlPreviewInEncryptedChatDescription,
             ),
             if (UpdateChecker.shouldCheckForUpdates)
-              CheckForUpdatesSettingWidget(),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                child: CheckForUpdatesSettingWidget(),
+              ),
           ]),
         ),
         const SizedBox(
