@@ -258,7 +258,7 @@ Future<void> startGui() async {
     }
   }
 
-  double scale = preferences.appScale;
+  double scale = preferences.appScale.value;
 
   ScaledWidgetsFlutterBinding.instance.scaleFactor = (deviceSize) {
     return scale;
@@ -266,7 +266,7 @@ Future<void> startGui() async {
 
   var initialTheme = await preferences.resolveTheme();
 
-  if (preferences.checkForUpdates == null &&
+  if (preferences.checkForUpdates.value == null &&
       UpdateChecker.shouldCheckForUpdates) {
     FirstTimeSetup.registerPostLoginSetup(UpdateCheckerSetup());
   }
@@ -310,7 +310,8 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ThemeChanger(
-        shouldFollowSystemTheme: () => preferences.shouldFollowSystemTheme,
+        shouldFollowSystemTheme: () =>
+            preferences.shouldFollowSystemTheme.value,
         getDarkTheme: () {
           return preferences.resolveTheme(overrideBrightness: Brightness.dark);
         },

@@ -1,12 +1,12 @@
 import 'package:commet/main.dart';
-import 'package:commet/ui/pages/settings/categories/app/general_settings_page.dart';
+import 'package:commet/ui/pages/settings/categories/app/boolean_toggle.dart';
 import 'package:commet/ui/pages/settings/categories/app/theme_settings/theme_settings_widget.dart';
 import 'package:commet/utils/common_strings.dart';
 import 'package:commet/utils/scaled_app.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart' as m;
 import 'package:intl/intl.dart';
-import 'package:tiamat/config/config.dart';
+import 'package:tiamat/config/style/theme_changer.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:tiamat/tiamat.dart';
 
@@ -46,6 +46,17 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
       name: "labelUseRoomAvatarPlaceholdersDescription",
       desc: "Description for the enable generic icons setting");
 
+  String get labelShowRoomPreviewsInSpaceSidebar => Intl.message(
+      "Show unjoined rooms in sidebar",
+      name: "labelShowRoomPreviewsInSpaceSidebar",
+      desc: "Label for enabling using the preview list in the space sidebar");
+
+  String get labelShowRoomPreviewsInSpaceSidebarDescription => Intl.message(
+      "When there are rooms which you have not joined in a space, show them in the sidebar with the rest of the rooms in the space",
+      name: "labelShowRoomPreviewsInSpaceSidebarDescription",
+      desc:
+          "Description for enabling using the preview list in the space sidebar");
+
   @override
   void initState() {
     super.initState();
@@ -74,27 +85,23 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
             padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
             child: Column(
               children: [
-                GeneralSettingsPageState.settingToggle(
-                  preferences.showRoomAvatars,
-                  title: labelUseRoomAvatars,
-                  description: labelEnableRoomIconsDescription,
-                  onChanged: (value) async {
-                    setState(() {
-                      preferences.setShowRoomAvatars(value);
-                    });
-                  },
+                BooleanPreferenceToggle(
+                  preference: preferences.showRoomPreviewsInSpaceSidebar,
+                  title: labelShowRoomPreviewsInSpaceSidebar,
+                  description: labelShowRoomPreviewsInSpaceSidebarDescription,
                 ),
                 const Seperator(),
-                GeneralSettingsPageState.settingToggle(
-                  preferences.usePlaceholderRoomAvatars,
+                BooleanPreferenceToggle(
+                  preference: preferences.showRoomAvatars,
+                  title: labelUseRoomAvatars,
+                  description: labelEnableRoomIconsDescription,
+                ),
+                const Seperator(),
+                BooleanPreferenceToggle(
+                  preference: preferences.usePlaceholderRoomAvatars,
                   title: labelUseRoomAvatarPlaceholders,
                   description: labelUseRoomAvatarPlaceholdersDescription,
-                  onChanged: (value) async {
-                    setState(() {
-                      preferences.setUsePlaceholderRoomAvatars(value);
-                    });
-                  },
-                ),
+                )
               ],
             ),
           ),
@@ -111,36 +118,27 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
           mode: TileType.surfaceContainerLow,
           child: Column(children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
-              child: GeneralSettingsPageState.settingToggle(
-                preferences.shouldFollowSystemTheme,
-                title: "Follow System Brightness",
-                description: "Automatically follow system Light / Dark mode",
-                onChanged: (value) async {
-                  setState(() {
-                    preferences.setShouldFollowSystemBrightness(value);
-                  });
-
-                  var theme = await preferences.resolveTheme();
-                  if (context.mounted) ThemeChanger.setTheme(context, theme);
-                },
-              ),
-            ),
+                padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
+                child: BooleanPreferenceToggle(
+                  preference: preferences.shouldFollowSystemTheme,
+                  title: "Follow System Brightness",
+                  description: "Automatically follow system Light / Dark mode",
+                  onChanged: (_) async {
+                    var theme = await preferences.resolveTheme();
+                    if (context.mounted) ThemeChanger.setTheme(context, theme);
+                  },
+                )),
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
-              child: GeneralSettingsPageState.settingToggle(
-                preferences.shouldFollowSystemColors,
-                title: "Follow System Colors",
-                description: "Automatically follow system color scheme",
-                onChanged: (value) async {
-                  setState(() {
-                    preferences.setShouldFollowSystemColors(value);
-                  });
-                  var theme = await preferences.resolveTheme();
-                  if (context.mounted) ThemeChanger.setTheme(context, theme);
-                },
-              ),
-            ),
+                padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
+                child: BooleanPreferenceToggle(
+                  preference: preferences.shouldFollowSystemColors,
+                  title: "Follow System Colors",
+                  description: "Automatically follow system color scheme",
+                  onChanged: (_) async {
+                    var theme = await preferences.resolveTheme();
+                    if (context.mounted) ThemeChanger.setTheme(context, theme);
+                  },
+                )),
             const Seperator(),
             const ThemeListWidget(),
           ]),
@@ -162,7 +160,7 @@ class _UIScaleSelectorState extends State<UIScaleSelector> {
 
   @override
   void initState() {
-    value = preferences.appScale;
+    value = preferences.appScale.value;
     super.initState();
   }
 
@@ -176,9 +174,9 @@ class _UIScaleSelectorState extends State<UIScaleSelector> {
           Expanded(
               child: Slider(
             min: 0.5,
-            max: preferences.developerMode ? 3 : 2,
+            max: preferences.developerMode.value ? 3 : 2,
             value: value,
-            divisions: preferences.developerMode ? 25 : 15,
+            divisions: preferences.developerMode.value ? 25 : 15,
             onChanged: (value) {
               setState(() {
                 this.value = value;
@@ -189,7 +187,7 @@ class _UIScaleSelectorState extends State<UIScaleSelector> {
             text: CommonStrings.promptApply,
             onTap: () {
               double newValue = value;
-              preferences.setAppScale(newValue);
+              preferences.appScale.set(newValue);
               ScaledWidgetsFlutterBinding.instance.scaleFactor = (deviceSize) {
                 return newValue;
               };

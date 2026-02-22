@@ -4,6 +4,7 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/components/donation_awards/donation_awards_component.dart';
+import 'package:commet/client/components/invitation/invitation_component.dart';
 import 'package:commet/client/components/profile/profile_component.dart';
 import 'package:commet/client/components/voip/voip_component.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
@@ -12,6 +13,7 @@ import 'package:commet/config/layout_config.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
+import 'package:commet/ui/organisms/invitation_view/send_invitation.dart';
 import 'package:commet/ui/organisms/user_profile/user_profile.dart';
 import 'package:commet/ui/pages/get_or_create_room/get_or_create_room.dart';
 import 'package:commet/ui/pages/settings/donation_rewards_confirmation.dart';
@@ -74,9 +76,9 @@ class MainPageState extends State<MainPage> {
     super.initState();
 
     Client? client;
-    if (preferences.filterClient != null) {
-      filterClient = clientManager.clients
-          .firstWhereOrNull((i) => i.identifier == preferences.filterClient);
+    if (preferences.filterClient.value != null) {
+      filterClient = clientManager.clients.firstWhereOrNull(
+          (i) => i.identifier == preferences.filterClient.value);
     }
 
     if (widget.initialClientId != null) {
@@ -343,7 +345,7 @@ class MainPageState extends State<MainPage> {
     if (confirm != true) return;
 
     EventBus.setFilterClient.add(newClient);
-    preferences.setFilterClient(newClient.identifier);
+    preferences.filterClient.set(newClient.identifier);
     EventBus.openRoom.add(strings);
   }
 
@@ -353,6 +355,8 @@ class MainPageState extends State<MainPage> {
           context,
           RoomSettingsPage(
             room: currentRoom!,
+            contextSpace: currentSpace,
+            onLeaveRoom: clearRoomSelection,
           ));
     }
   }
@@ -392,5 +396,36 @@ class MainPageState extends State<MainPage> {
         }
       }
     }
+  }
+
+  void searchUserToDm() async {
+    var client = filterClient;
+    if (client == null) client = await AdaptiveDialog.pickClient(context);
+
+    if (client == null) {
+      return;
+    }
+
+    final invitation = client.getComponent<InvitationComponent>();
+    if (invitation == null) return;
+
+    AdaptiveDialog.show(context,
+        builder: (context) => SendInvitationWidget(
+              client!,
+              invitation,
+              showSuggestions: false,
+              onUserPicked: (userId) async {
+                final confirm = await AdaptiveDialog.confirmation(context,
+                    prompt: "Are you sure you want to invite $userId to chat?",
+                    title: "Invitation");
+                if (confirm != true) {
+                  return;
+                }
+
+                var comp = client!.getComponent<DirectMessagesComponent>();
+                await comp?.createDirectMessage(userId);
+              },
+            ),
+        title: "Start Direct Message");
   }
 }

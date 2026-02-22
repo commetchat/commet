@@ -344,7 +344,7 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
       return null;
     }
 
-    return preferences.developerMode
+    return preferences.developerMode.value
         ? TimelineEventViewGeneric(
             timeline: widget.timeline,
             room: widget.timeline.room,

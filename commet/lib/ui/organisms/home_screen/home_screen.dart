@@ -53,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
       EventBus.setFilterClient.stream.listen(setFilterClient),
     ];
 
-    if (preferences.checkForUpdates == true) {
+    if (preferences.checkForUpdates.value == true) {
       UpdateChecker.checkForUpdates();
     }
 

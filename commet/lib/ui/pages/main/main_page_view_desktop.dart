@@ -22,6 +22,7 @@ import 'package:commet/ui/pages/main/room_primary_view.dart';
 import 'package:commet/ui/pages/settings/app_settings_page.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:tiamat/atoms/tile.dart';
 
@@ -159,7 +160,7 @@ class MainPageViewDesktop extends StatelessWidget {
                       text: "Mix Accounts",
                       onPressed: () {
                         EventBus.setFilterClient.add(null);
-                        preferences.setFilterClient(null);
+                        preferences.filterClient.set(null);
                       }),
                 if (clientManager!.clients.length > 1)
                   ...clientManager!.clients
@@ -168,7 +169,7 @@ class MainPageViewDesktop extends StatelessWidget {
                           onPressed: () {
                             print("Setting filter client");
                             EventBus.setFilterClient.add(i);
-                            preferences.setFilterClient(i.identifier);
+                            preferences.filterClient.set(i.identifier);
                           }))
                       .toList()
               ],
@@ -194,10 +195,29 @@ class MainPageViewDesktop extends StatelessWidget {
                                 overflow: TextOverflow.ellipsis,
                                 color: current.defaultColor,
                                 current.displayName),
-                            tiamat.Text.labelLow(
-                              maxLines: 1,
-                              current.identifier,
-                              overflow: TextOverflow.ellipsis,
+                            Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                onTap: () => Clipboard.setData(
+                                    ClipboardData(text: current!.identifier)),
+                                child: Opacity(
+                                  opacity: 0.7,
+                                  child: Text(
+                                    maxLines: 1,
+                                    current.identifier,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .labelSmall
+                                        ?.copyWith(
+                                            fontFamily: "Code",
+                                            fontSize: 10,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .secondary),
+                                  ),
+                                ),
+                              ),
                             ),
                           ],
                         ),
@@ -376,11 +396,25 @@ class MainPageViewDesktop extends StatelessWidget {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: tiamat.Text.labelLow(
-              directMessagesListHeaderDesktop,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: tiamat.Text.labelLow(
+                  directMessagesListHeaderDesktop,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: tiamat.IconButton(
+                  icon: Icons.add,
+                  onPressed: () {
+                    state.searchUserToDm();
+                  },
+                ),
+              ),
+            ],
           ),
           Flexible(
             child: DirectMessageList(
@@ -420,6 +454,7 @@ class MainPageViewDesktop extends StatelessWidget {
                 space: state.currentSpace!,
                 onRoomTap: (room) => state.selectRoom(room),
                 onSpaceTap: (space) => state.selectSpace(space),
+                onLeaveRoom: state.clearRoomSelection,
               ),
             ],
           ),

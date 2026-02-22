@@ -112,7 +112,7 @@ class SettingsCategoryApp implements SettingsCategory {
               pageBuilder: (context) {
                 return const ExperimentsSettingsPage();
               }),
-        if (preferences.developerMode)
+        if (preferences.developerMode.value)
           SettingsTab(
             label: labelSettingsAppDeveloperUtils,
             icon: m.Icons.bug_report,

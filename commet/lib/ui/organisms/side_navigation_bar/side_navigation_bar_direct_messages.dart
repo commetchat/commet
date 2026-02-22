@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
-import 'package:commet/client/room.dart';
 import 'package:commet/ui/atoms/space_icon.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';

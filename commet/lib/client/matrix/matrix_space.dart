@@ -100,15 +100,19 @@ class MatrixSpace extends Space {
   RoomVisibility get visibility {
     switch (_matrixRoom.joinRules) {
       case matrix.JoinRules.public:
-        return RoomVisibility.public;
+        return RoomVisibilityPublic();
       case matrix.JoinRules.knock:
-        return RoomVisibility.knock;
+        return RoomVisibilityPrivate();
       case matrix.JoinRules.invite:
-        return RoomVisibility.invite;
+        return RoomVisibilityPrivate();
       case matrix.JoinRules.private:
-        return RoomVisibility.private;
-      default:
-        return RoomVisibility.private;
+        return RoomVisibilityPrivate();
+      case matrix.JoinRules.restricted:
+        return RoomVisibilityRestricted([]);
+      case matrix.JoinRules.knockRestricted:
+        return RoomVisibilityPrivate();
+      case null:
+        return RoomVisibilityPublic();
     }
   }
 
@@ -265,6 +269,31 @@ class MatrixSpace extends Space {
     var leftRoom = client.rooms[index];
     if (containsRoom(leftRoom.identifier)) {
       _rooms.remove(leftRoom);
+      _onUpdate.add(null);
+
+      // Update preview list
+      _matrixClient.getSpaceHierarchy(identifier, maxDepth: 1).then((value) {
+        var chunk = value.rooms
+            .where((element) => element.roomId == leftRoom.identifier)
+            .where((element) =>
+                _matrixClient.getRoomById(element.roomId)?.membership !=
+                matrix.Membership.join)
+            .firstOrNull;
+        if (chunk == null) return;
+
+        var viaContent = _matrixRoom
+            .getState(matrix.EventTypes.SpaceChild, chunk.roomId)
+            ?.content["via"];
+
+        List<String> via = const [];
+
+        if (viaContent is List) {
+          via = List.from(viaContent);
+        }
+        _previews
+            .add(MatrixSpaceRoomChunkPreview(chunk, _matrixClient, via: via));
+      });
+      _fullyLoaded = true;
     }
   }
 
@@ -423,6 +452,16 @@ class MatrixSpace extends Space {
   void onMatrixSync(matrix.SyncUpdate event) {
     final update = event.rooms?.join;
     if (update == null) return;
+
+    var thisRoom = update[_matrixRoom.id];
+    if (thisRoom != null) {
+      if (thisRoom.timeline?.events
+              ?.any((i) => i.type == matrix.EventTypes.SpaceChild) ==
+          true) {
+        print("A child of this space has been modified!");
+        loadExtra();
+      }
+    }
 
     for (var id in update.keys) {
       if (roomsWithChildren.any((i) => i.identifier == id)) {

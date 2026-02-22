@@ -3,12 +3,12 @@ import 'dart:async';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/client_manager.dart';
 import 'package:commet/client/components/profile/profile_component.dart';
+import 'package:commet/client/sidebar/resolved_sidebar_item.dart';
 import 'package:commet/config/layout_config.dart';
-import 'package:commet/ui/molecules/space_selector.dart';
+import 'package:commet/ui/molecules/draggable_space_selector.dart';
 import 'package:commet/ui/organisms/side_navigation_bar/side_navigation_bar_direct_messages.dart';
 import 'package:commet/ui/pages/get_or_create_room/get_or_create_room.dart';
 import 'package:commet/utils/common_strings.dart';
-import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
@@ -75,52 +75,37 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
   String get promptAddSpace => Intl.message("Add Space",
       name: "promptAddSpace", desc: "Prompt to add a new space");
 
-  late List<Space> topLevelSpaces;
-
-  Client? filterClient;
+  late List<ResolvedSidebarItem> sidebarItems;
 
   @override
   void initState() {
     _clientManager = Provider.of<ClientManager>(context, listen: false);
 
-    void setFilterClient(Client? event) {
-      setState(() {
-        filterClient = event;
-
-        getSpaces();
-      });
-    }
-
     subs = [
-      _clientManager.onSpaceChildUpdated.stream.listen((_) => onSpaceUpdate()),
-      _clientManager.onSpaceUpdated.stream.listen((_) => onSpaceUpdate()),
-      _clientManager.onSpaceRemoved.listen((_) => onSpaceUpdate()),
-      _clientManager.onSpaceAdded.listen((_) => onSpaceUpdate()),
-      _clientManager.onClientRemoved.stream.listen((_) => onSpaceUpdate()),
+      _clientManager.onSpaceRemoved.listen((_) => onSidebarUpdate()),
+      _clientManager.onSpaceAdded.listen((_) => onSidebarUpdate()),
+      _clientManager.onClientRemoved.stream.listen((_) => onSidebarUpdate()),
+      _clientManager.sidebarManager.onSidebarChanged.stream
+          .listen((_) => onSidebarUpdate()),
+      _clientManager.onSpaceChildUpdated.stream
+          .listen((_) => onSidebarUpdate()),
+      _clientManager.onSpaceUpdated.stream.listen((_) => onSidebarUpdate()),
       _clientManager.onDirectMessageRoomUpdated.stream
           .listen(onDirectMessageUpdated),
-      EventBus.setFilterClient.stream.listen(setFilterClient),
     ];
 
-    getSpaces();
+    getSidebarItems();
 
     super.initState();
   }
 
-  void getSpaces() {
-    if (filterClient != null) {
-      topLevelSpaces = filterClient!.spaces.where((e) => e.isTopLevel).toList();
-    } else {
-      _clientManager = Provider.of<ClientManager>(context, listen: false);
-
-      topLevelSpaces =
-          _clientManager.spaces.where((e) => e.isTopLevel).toList();
-    }
+  void getSidebarItems() {
+    sidebarItems = _clientManager.sidebarManager.items;
   }
 
-  void onSpaceUpdate() {
+  void onSidebarUpdate() {
     setState(() {
-      getSpaces();
+      getSidebarItems();
     });
   }
 
@@ -143,9 +128,10 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
         child: Column(
           children: [
             Expanded(
-              child: SpaceSelector(
-                topLevelSpaces,
+              child: DraggableSpaceSelector(
+                sidebarItems,
                 width: 70,
+                sidebarManager: _clientManager.sidebarManager,
                 clearSelection: widget.clearSpaceSelection,
                 shouldShowAvatarForSpace: shouldShowAvatarForSpace,
                 header: Column(
@@ -188,7 +174,7 @@ class _SideNavigationBarState extends State<SideNavigationBar> {
                     ),
                   ],
                 ),
-                onSelected: (space) {
+                onSpaceSelected: (space) {
                   widget.onSpaceSelected?.call(space);
                 },
               ),

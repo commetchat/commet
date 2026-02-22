@@ -21,7 +21,7 @@ class ShortcutSettingsPage extends StatelessWidget {
 
     bool showHooksMenu = !showOutsourceMenu;
 
-    if (preferences.developerMode) {
+    if (preferences.developerMode.value) {
       showHooksMenu = true;
     }
 

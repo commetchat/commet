@@ -236,6 +236,7 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
                 widget.state.selectRoom(room);
               },
               onSpaceTap: (space) => widget.state.selectSpace(space),
+              onLeaveRoom: widget.state.clearRoomSelection,
             ),
           ),
         ),
@@ -351,9 +352,23 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: tiamat.Text.labelLow(directMessagesListHeaderMobile),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child:
+                          tiamat.Text.labelLow(directMessagesListHeaderMobile),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(8, 12, 8, 8),
+                      child: tiamat.IconButton(
+                          size: 18,
+                          icon: Icons.add,
+                          onPressed: widget.state.searchUserToDm),
+                    ),
+                  ],
                 ),
                 Flexible(
                   child: DirectMessageList(
