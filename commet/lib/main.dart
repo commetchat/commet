@@ -30,6 +30,7 @@ import 'package:commet/utils/first_time_setup.dart';
 import 'package:commet/utils/scaled_app.dart';
 import 'package:commet/utils/shortcuts_manager.dart';
 import 'package:commet/utils/system_wide_shortcuts/system_wide_shortcuts.dart';
+import 'package:commet/utils/text_scale_changer.dart';
 import 'package:commet/utils/update_checker.dart';
 import 'package:commet/utils/window_management.dart';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -309,33 +310,37 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ThemeChanger(
-        shouldFollowSystemTheme: () =>
-            preferences.shouldFollowSystemTheme.value,
-        getDarkTheme: () {
-          return preferences.resolveTheme(overrideBrightness: Brightness.dark);
-        },
-        getLightTheme: () {
-          return preferences.resolveTheme(overrideBrightness: Brightness.light);
-        },
-        initialTheme: initialTheme ?? ThemeDark.theme,
-        materialAppBuilder: (context, theme) {
-          return MaterialApp(
-            title: 'Commet',
-            theme: theme,
-            debugShowCheckedModeBanner: false,
-            navigatorKey: navigator,
-            builder: (context, child) => Provider<ClientManager>(
-              create: (context) => clientManager,
-              child: child,
-            ),
-            home: AppView(
-              clientManager: clientManager,
-              initialClientId: initialClientId,
-              initialRoom: initialRoom,
-            ),
-          );
-        });
+    return TextScaleChanger(
+      child: ThemeChanger(
+          shouldFollowSystemTheme: () =>
+              preferences.shouldFollowSystemTheme.value,
+          getDarkTheme: () {
+            return preferences.resolveTheme(
+                overrideBrightness: Brightness.dark);
+          },
+          getLightTheme: () {
+            return preferences.resolveTheme(
+                overrideBrightness: Brightness.light);
+          },
+          initialTheme: initialTheme ?? ThemeDark.theme,
+          materialAppBuilder: (context, theme) {
+            return MaterialApp(
+              title: 'Commet',
+              theme: theme,
+              debugShowCheckedModeBanner: false,
+              navigatorKey: navigator,
+              builder: (context, child) => Provider<ClientManager>(
+                create: (context) => clientManager,
+                child: child,
+              ),
+              home: AppView(
+                clientManager: clientManager,
+                initialClientId: initialClientId,
+                initialRoom: initialRoom,
+              ),
+            );
+          }),
+    );
   }
 }
 
