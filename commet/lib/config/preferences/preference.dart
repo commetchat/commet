@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:commet/config/preferences.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -8,6 +10,10 @@ class Preference<T> {
   final T defaultValue;
   late T Function() _getter;
   late Future<void> Function(T value) _setter;
+
+  Stream<T> get onChanged => _controller.stream;
+
+  StreamController<T> _controller = StreamController.broadcast();
 
   Preference(this.key,
       {required this.defaultValue,
@@ -20,6 +26,7 @@ class Preference<T> {
   Future<void> set(T value) async {
     await _setter(value);
     Preferences.onSettingChangedController.add(null);
+    _controller.add(value);
   }
 
   T get value => _getter();

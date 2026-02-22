@@ -300,6 +300,9 @@ class Preferences {
   BoolPreference showRoomPreviewsInSpaceSidebar =
       BoolPreference("show_room_previews_in_space_sidebar", defaultValue: true);
 
+  DoublePreference textScale =
+      DoublePreference("text_scale", defaultValue: 1.0);
+
   BoolPreference doSimulcast =
       BoolPreference("livekit_use_simulcast", defaultValue: false);
 

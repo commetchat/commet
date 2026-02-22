@@ -1,4 +1,5 @@
 import 'package:commet/config/preferences/double_preference.dart';
+import 'package:commet/utils/common_strings.dart';
 import 'package:flutter/material.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -12,6 +13,7 @@ class DoublePreferenceSlider extends StatefulWidget {
       this.units,
       this.description,
       this.numDecimals = 1,
+      this.requiresConfirmationButton = false,
       this.onChanged,
       super.key});
 
@@ -21,6 +23,7 @@ class DoublePreferenceSlider extends StatefulWidget {
 
   final double min;
   final double max;
+  final bool requiresConfirmationButton;
   final int numDecimals;
   final String title;
   final String? description;
@@ -69,11 +72,23 @@ class _DoublePreferenceSliderState extends State<DoublePreferenceSlider> {
                       var finalValue = double.parse(strValue);
                       setState(() {
                         value = finalValue;
-                        widget.preference.set(finalValue);
+
+                        if (!widget.requiresConfirmationButton) {
+                          widget.onChanged?.call(finalValue);
+                          widget.preference.set(finalValue);
+                        }
                       });
                     },
                   ),
-                )
+                ),
+                if (widget.requiresConfirmationButton)
+                  tiamat.Button.secondary(
+                    text: CommonStrings.promptApply,
+                    onTap: () {
+                      widget.preference.set(value);
+                      widget.onChanged?.call(value);
+                    },
+                  )
               ],
             )
           ],
