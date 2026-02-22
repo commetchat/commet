@@ -68,6 +68,7 @@ class MainPageViewDesktop extends StatelessWidget {
                             child: Padding(
                               padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
                               child: ScaledSafeArea(
+                                top: false,
                                 bottom: false,
                                 child: SideNavigationBar(
                                   currentUser: state.currentUser,
@@ -113,10 +114,13 @@ class MainPageViewDesktop extends StatelessWidget {
                       caulkClipTopRight: true,
                       caulkBorderTop: true,
                       caulkPadRight: Layout.mobile,
-                      child: SizedBox(
-                          height: 55,
-                          child: currentUserPanel(state, context,
-                              height: 55, avatarRadius: 16)),
+                      child: ScaledSafeArea(
+                        top: false,
+                        child: SizedBox(
+                            height: 55,
+                            child: currentUserPanel(state, context,
+                                height: 55, avatarRadius: 16)),
+                      ),
                     ),
                   ],
                 ),
@@ -304,9 +308,11 @@ class MainPageViewDesktop extends StatelessWidget {
               caulkClipBottomLeft: true,
               caulkPadTop: true,
               caulkPadBottom: true,
-              child: HomeScreen(
-                clientManager: state.clientManager,
-                filterClient: state.filterClient,
+              child: ScaledSafeArea(
+                child: HomeScreen(
+                  clientManager: state.clientManager,
+                  filterClient: state.filterClient,
+                ),
               ),
             ),
           ),
@@ -393,37 +399,39 @@ class MainPageViewDesktop extends StatelessWidget {
 
   Widget buildRoomPicker(BuildContext context) {
     if (state.currentSpace == null) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: tiamat.Text.labelLow(
-                  directMessagesListHeaderDesktop,
+      return ScaledSafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: tiamat.Text.labelLow(
+                    directMessagesListHeaderDesktop,
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: tiamat.IconButton(
-                  icon: Icons.add,
-                  onPressed: () {
-                    state.searchUserToDm();
-                  },
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: tiamat.IconButton(
+                    icon: Icons.add,
+                    onPressed: () {
+                      state.searchUserToDm();
+                    },
+                  ),
                 ),
-              ),
-            ],
-          ),
-          Flexible(
-            child: DirectMessageList(
-              filterClient: state.filterClient,
-              directMessages: state.clientManager.directMessages,
-              onSelected: (room) => state.selectRoom(room),
+              ],
             ),
-          ),
-        ],
+            Flexible(
+              child: DirectMessageList(
+                filterClient: state.filterClient,
+                directMessages: state.clientManager.directMessages,
+                onSelected: (room) => state.selectRoom(room),
+              ),
+            ),
+          ],
+        ),
       );
     } else {
       return spaceRoomSelector(context);
