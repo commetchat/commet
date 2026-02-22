@@ -1,5 +1,6 @@
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/settings/categories/app/boolean_toggle.dart';
+import 'package:commet/ui/pages/settings/categories/app/double_preference_slider.dart';
 import 'package:commet/ui/pages/settings/categories/app/theme_settings/theme_settings_widget.dart';
 import 'package:commet/utils/common_strings.dart';
 import 'package:commet/utils/scaled_app.dart';
@@ -74,13 +75,16 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
           header: labelAppScale,
           mode: TileType.surfaceContainerLow,
           child: Column(
+            spacing: 12,
             children: [
               const UIScaleSelector(),
-              BooleanPreferenceToggle(
-                preference: preferences.overrideTextScale,
-                title: "Enable Text Scale",
-                description: "Overrides the system default text scale option",
-              ),
+              DoublePreferenceSlider(
+                min: 0.2,
+                max: 3,
+                preference: preferences.textScale,
+                title: "Text Scale",
+                description: "Multiply the size of text",
+              )
             ],
           ),
         ),
