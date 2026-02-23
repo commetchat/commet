@@ -112,7 +112,8 @@ class GeneralSettingsPageState extends State<GeneralSettingsPage> {
             BooleanPreferenceToggle(
               preference: preferences.tenorGifSearchEnabled,
               title: labelGifSearchToggle,
-              description: labelGifSearchDescription(preferences.proxyUrl),
+              description:
+                  labelGifSearchDescription(preferences.proxyUrl.value),
             ),
             const SizedBox(
               height: 10,
@@ -123,7 +124,10 @@ class GeneralSettingsPageState extends State<GeneralSettingsPage> {
               description: labelUrlPreviewInEncryptedChatDescription,
             ),
             if (UpdateChecker.shouldCheckForUpdates)
-              CheckForUpdatesSettingWidget(),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                child: CheckForUpdatesSettingWidget(),
+              ),
           ]),
         ),
         const SizedBox(

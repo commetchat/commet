@@ -164,6 +164,7 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
                   mode: TileType.surfaceDim,
                   child: ScaledSafeArea(
                     bottom: false,
+                    top: false,
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
                       child: SideNavigationBar(
