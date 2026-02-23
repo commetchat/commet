@@ -489,8 +489,12 @@ class MatrixClient extends Client {
     }
 
     if (powerLevelAdditions.isNotEmpty) {
-      var currentPerms =
-          await matrixRoom.getState(matrix.EventTypes.RoomPowerLevels)?.content;
+      var events = await matrixClient.getRoomState(id);
+
+      var currentPerms = events
+          .firstWhereOrNull((i) => i.type == matrix.EventTypes.RoomPowerLevels)
+          ?.content;
+
       if (currentPerms != null) {
         var newPerms = <String, dynamic>{
           ...currentPerms,
