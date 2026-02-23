@@ -1,1 +1,434 @@
-{}
+{
+    "labelRoomsList": "Szobák",
+    "@labelRoomsList": {
+        "description": "Header label for the list of rooms",
+        "type": "text",
+        "placeholders": {}
+    },
+    "fileDragDropPrompt": "Húzz ide egy fájlt a feltöltéshez...",
+    "@fileDragDropPrompt": {
+        "description": "Text that is shown when a user is dragging a file",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelHomeRecentActivity": "Friss Aktivitás",
+    "@labelHomeRecentActivity": {
+        "description": "Short label for header of recent room activity",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelHomeAlerts": "Jelzések",
+    "@labelHomeAlerts": {
+        "description": "Short label for header of alerts",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelHomeRoomsList": "Szobák",
+    "@labelHomeRoomsList": {
+        "description": "Short label for header of rooms list",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelHomeInvitations": "Meghívások",
+    "@labelHomeInvitations": {
+        "description": "Short label for header of invitations list",
+        "type": "text",
+        "placeholders": {}
+    },
+    "noPinnedMessages": "Még nem tűztél ki üzenetet!",
+    "@noPinnedMessages": {
+        "description": "Placeholder label in the pinned messages menu that is shown when there are no pinned messages",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelInvitationsForUser": "Meghívások {user} számára",
+    "@labelInvitationsForUser": {
+        "description": "Label for the list of incoming invitations, specifying which user these invitations are intended for",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "labelInvitations": "Meghívások",
+    "@labelInvitations": {
+        "description": "Label for the list of incoming invitations",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptOpenDirectMessage": "Üzen",
+    "@promptOpenDirectMessage": {
+        "description": "Prompt on the button to open a direct message with another user",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelChatPageFileTooLarge": "Ez a fájl túl nagy a feltöltéshez!",
+    "@labelChatPageFileTooLarge": {
+        "description": "Text that is shown when the user attempts to upload a file that is greater than the allowed size",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelChatPageFileTooLargeTitle": "Maximum fájl méret túllépve",
+    "@labelChatPageFileTooLargeTitle": {
+        "description": "Title for the dialog that is shown when the user attempts to upload a file that is greater than the allowed size",
+        "type": "text",
+        "placeholders": {}
+    },
+    "sendEncryptedMessagePrompt": "Titkosított üzenet küldése",
+    "@sendEncryptedMessagePrompt": {
+        "description": "Placeholder text for message input in an encrypted room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "sendUnencryptedMessagePrompt": "Küldj egy üzenetet",
+    "@sendUnencryptedMessagePrompt": {
+        "description": "Placeholder text for message input in an unencrypted room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "cantSentMessagePrompt": "Nincs felhatalmazásod ebben a szobában üzenni",
+    "@cantSentMessagePrompt": {
+        "description": "Text that explains the user cannot send a message in this room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "tooltipSpaceSettings": "Helyiség beállítások",
+    "@tooltipSpaceSettings": {
+        "description": "Tooltip for the button that opens space settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "tooltipAddRoom": "Szoba hozzáadása",
+    "@tooltipAddRoom": {
+        "description": "Tooltip for the button that adds a new room to a space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceRoomsList": "Szobák",
+    "@labelSpaceRoomsList": {
+        "description": "Header label for the list of rooms in a space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceSubspacesList": "Helyiségek",
+    "@labelSpaceSubspacesList": {
+        "description": "Header label for the list of child spaces in a space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceAvailableRoomsList": "Elérherő szobák",
+    "@labelSpaceAvailableRoomsList": {
+        "description": "Header label for the list of rooms in a space, which the user has not yet joined but are available",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceVisibilityPublic": "Publikus helyiség",
+    "@labelSpaceVisibilityPublic": {
+        "description": "Label to display that the space is publically available",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceVisibilityPrivate": "Privát helyiség",
+    "@labelSpaceVisibilityPrivate": {
+        "description": "Label to display that the space is private",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceGettingText": "# Köszöntünk a \n **{spaceName}** helyiségben",
+    "@labelSpaceGettingText": {
+        "description": "Greeting to the space, supports markdown formatting",
+        "type": "text",
+        "placeholders": {
+            "spaceName": {}
+        }
+    },
+    "promptAddSpace": "Helyiség hozzáadása",
+    "@promptAddSpace": {
+        "description": "Prompt to add a new space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptAttachmentProcessingSendOriginal": "Eredeti küldése",
+    "@promptAttachmentProcessingSendOriginal": {
+        "description": "Prompt text for the option to send a file in its original state, without any further processing such as removing metadata",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelImageContainsLocationInfo": "Figyelem: Ebben a képben fellelhetőek helyzet beazonosítási meta-adatok",
+    "@labelImageContainsLocationInfo": {
+        "description": "Prompt text for the option to send a file in its original state, without any further processing such as removing metadata",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptRoomName": "Szoba neve",
+    "@promptRoomName": {
+        "description": "Prompt to enter a room name, placeholder text for text input",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptSpaceName": "Helyiség neve",
+    "@promptSpaceName": {
+        "description": "Prompt to enter a space name, placeholder text for text input",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptTopic": "Téma (opcionális)",
+    "@promptTopic": {
+        "description": "Prompt to enter a topic for room or space, specifying that doing so is optional",
+        "type": "text",
+        "placeholders": {}
+    },
+    "roomVisibilityPrivateExplanation": "Ez a szoba csak meghívás által lesz elérherő",
+    "@roomVisibilityPrivateExplanation": {
+        "description": "Explains what 'private' room visibility means",
+        "type": "text",
+        "placeholders": {}
+    },
+    "roomVisibilityPublicExplanation": "Ez a szoba az interneten bárki által elérherő lesz",
+    "@roomVisibilityPublicExplanation": {
+        "description": "Explains what 'public' visibility means",
+        "type": "text",
+        "placeholders": {}
+    },
+    "spaceVisibilityPrivateExplanation": "Ez a helyiség csak meghívás által lesz elérherő",
+    "@spaceVisibilityPrivateExplanation": {
+        "description": "Explains what 'private' space visibility means",
+        "type": "text",
+        "placeholders": {}
+    },
+    "spaceVisibilityPublicExplanation": "Ez a helyiség az interneten bárki által hozzáférhető lesz",
+    "@spaceVisibilityPublicExplanation": {
+        "description": "Explains what 'public' space visibility means",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVisibilityPrivate": "Privát",
+    "@labelVisibilityPrivate": {
+        "description": "Short label for room visibility private",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVisibilityPublic": "Publikus",
+    "@labelVisibilityPublic": {
+        "description": "Short label for room visibility public",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptEnableEncryption": "Titkosítás bekapcsolása",
+    "@promptEnableEncryption": {
+        "description": "Short prompt to enable encryption for a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "encryptionCannotBeDisabledExplanation": "Ha a titkosítás be van kapcsolva, később nem lesz kikapcsolható",
+    "@encryptionCannotBeDisabledExplanation": {
+        "description": "Explains that encryption cannot be disabled once enabled",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptConfirmRoomCreation": "Szoba létrehozása!",
+    "@promptConfirmRoomCreation": {
+        "description": "Label for a button which confirms the creation of a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptConfirmSpaceCreation": "Helyiség létrehozása!",
+    "@promptConfirmSpaceCreation": {
+        "description": "Label for a button which confirms the creation of a space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptConfirmRoomJoin": "Csatlakozás a szobához!",
+    "@promptConfirmRoomJoin": {
+        "description": "Label for a button which confirms the joining of a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptConfirmSpaceJoin": "Csatlakozás a helyiséghez!",
+    "@promptConfirmSpaceJoin": {
+        "description": "Label for a button which confirms the joining of a space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptRoomAddress": "Szoba címe:",
+    "@promptRoomAddress": {
+        "description": "Short label to prompt for the input of a room address",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptSpaceAddress": "Helyiség címe:",
+    "@promptSpaceAddress": {
+        "description": "Short label to prompt for the input of a space address",
+        "type": "text",
+        "placeholders": {}
+    },
+    "placeholderRoomAlias": "#menő-szoba",
+    "@placeholderRoomAlias": {
+        "description": "Placeholder / Example for a room alias.",
+        "type": "text",
+        "placeholders": {}
+    },
+    "placeholderSpaceAlias": "#menő-helyiség",
+    "@placeholderSpaceAlias": {
+        "description": "Placeholder / Example for a space alias.",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelCouldNotLoadRoomPreview": "A szoba előnézetének betöltése sikertelen",
+    "@labelCouldNotLoadRoomPreview": {
+        "description": "Error message for when a room preview was not able to be loaded",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptAddSelectedRooms": "Kiválasztott szobák hozzáadása",
+    "@promptAddSelectedRooms": {
+        "description": "Prompt to add the selected rooms to a space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptCreateNewSpace": "Új helyiség létrehozása",
+    "@promptCreateNewSpace": {
+        "description": "Prompt to create a new space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptJoinExistingSpace": "Csatlakozás létező helyiséghez",
+    "@promptJoinExistingSpace": {
+        "description": "Prompt to join a space which already exists",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptCreateNewRoom": "Új szoba létrehozása",
+    "@promptCreateNewRoom": {
+        "description": "Prompt to create a new room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptJoinExistingRoom": "Csatlakozás létező szobához",
+    "@promptJoinExistingRoom": {
+        "description": "Prompt to join a room which already exists",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptUseExistingRoom": "Létező szoba használata",
+    "@promptUseExistingRoom": {
+        "description": "Button text to choose to use an existing room when adding a room to a space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "directMessagesListHeaderMobile": "Közvetlen üzenetek",
+    "@directMessagesListHeaderMobile": {
+        "description": "The header for the direct messages list on desktop",
+        "type": "text",
+        "placeholders": {}
+    },
+    "directMessagesListHeaderDesktop": "Közvetlen üzenetek",
+    "@directMessagesListHeaderDesktop": {
+        "description": "The header for the direct messages list on desktop",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageWaitingOtherDeviceToAccept": "Várakozás a másik eszközön való elfogadásra",
+    "@messageWaitingOtherDeviceToAccept": {
+        "description": "Message to show while waiting for another device to accept a matrix session verification request",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageMatrixSessionVerificationRequest": "**{username}** felhatalmazást kért a munkameneted hitelesítésére",
+    "@messageMatrixSessionVerificationRequest": {
+        "description": "Message to show when another user has requested to verify your matrix session. Supports markdown to emphasise the user name",
+        "type": "text",
+        "placeholders": {
+            "username": {}
+        }
+    },
+    "messageSasEmojiVerificationPrompt": "Ellenőrizd, hogy az emojik ugyan azok és ugyan olyan sorrendben vannak, mint a másik eszközön",
+    "@messageSasEmojiVerificationPrompt": {
+        "description": "Explains what to look for when verifying using emoji. Needs to portray that the emoji MUST be the same AND in the same order",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptConfirmEmojiMatches": "Egyznek!",
+    "@promptConfirmEmojiMatches": {
+        "description": "Button text to confirm that the emoji matches",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptEmojiDoNotMatch": "Nem egyeznek",
+    "@promptEmojiDoNotMatch": {
+        "description": "Button text to confirm that the emoji do NOT match",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageVerificationComplete": "Hitelesítés elvégezve!",
+    "@messageVerificationComplete": {
+        "description": "Message to show when verification was completed successfully, and the session has been verified",
+        "type": "text",
+        "placeholders": {}
+    },
+    "setupPageBeforeYouBegin": "Mielőtt belevágnál...",
+    "@setupPageBeforeYouBegin": {
+        "description": "Title for first time setup page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "unifiedPushExplainer": "# Unified Push\nA Commet ezen verziója Google Play szervízek nélkül lett csinálva. Ahhoz, hogy értesítéseket kapj, [Unified Push](https://unifiedpush.org/)-ot kell használnod.\n\nHa már van egy Unified Push kompatibilis forgalmazó alkalmazásod, lentebb beállíthatod.\n",
+    "@unifiedPushExplainer": {
+        "description": "Explains the need for unified push. Supports markdown",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelEnableUnifiedPush": "Unified Push bekapcsolása",
+    "@labelEnableUnifiedPush": {
+        "description": "Label for the toggle to enable Unified Push",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelEnableUnifiedPushEndpoint": "Végpont",
+    "@labelEnableUnifiedPushEndpoint": {
+        "description": "Label for the Unified Push endpoint",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelUnifiedPushNoEndpointFound": "Végpont nem találva, valami nem sikerült :(",
+    "@labelUnifiedPushNoEndpointFound": {
+        "description": "Message for when a unified push endpoint could not be registered",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptHomeserver": "Homeszerver",
+    "@promptHomeserver": {
+        "description": "Placeholder text for homeserver field on login form",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptUsername": "Felhasználónév",
+    "@promptUsername": {
+        "description": "Placeholder text for username field on login form",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptPassword": "Jelszó",
+    "@promptPassword": {
+        "description": "Placeholder text for password field on login form",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptSubmitLogin": "Bejelentkezés",
+    "@promptSubmitLogin": {
+        "description": "Prompt to submit the username and password, and attempt to login",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageLoginFailed": "Nem sikerült a bejelentkezés...",
+    "@messageLoginFailed": {
+        "description": "Generic text to show that an attempted login has failed",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageLoginError": "Hiba történt",
+    "@messageLoginError": {
+        "description": "A generic error message to convey that an error occured when attempting to login",
+        "type": "text",
+        "placeholders": {}
+    }
+}
