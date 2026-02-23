@@ -422,6 +422,7 @@ class MatrixClient extends Client {
   @override
   Future<Room> createRoom(CreateRoomArgs args) async {
     var creationContent = null;
+    Map<String, Object?>? powerLevelAdditions = {};
 
     List<matrix.StateEvent>? initialState;
     if (args.roomType == RoomType.photoAlbum) {
@@ -430,6 +431,12 @@ class MatrixClient extends Client {
 
     if (args.roomType == RoomType.voipRoom) {
       creationContent = {"type": "org.matrix.msc3417.call"};
+      powerLevelAdditions = {
+        "events": {
+          "org.matrix.msc3401.call": 0,
+          "org.matrix.msc3401.call.member": 0
+        }
+      };
     }
 
     if (args.roomType == RoomType.calendar) {
@@ -509,6 +516,26 @@ class MatrixClient extends Client {
     var matrixRoom = _matrixClient.getRoomById(id)!;
     if (args.enableE2EE!) {
       await matrixRoom.enableEncryption();
+    }
+
+    if (powerLevelAdditions.isNotEmpty) {
+      var events = await matrixClient.getRoomState(id);
+
+      var currentPerms = events
+          .firstWhereOrNull((i) => i.type == matrix.EventTypes.RoomPowerLevels)
+          ?.content;
+
+      if (currentPerms != null) {
+        var newPerms = <String, dynamic>{
+          ...currentPerms,
+          "events": <String, dynamic>{
+            ...?currentPerms["events"] as Map<String, dynamic>?,
+            ...?powerLevelAdditions["events"] as Map<String, dynamic>?,
+          }
+        };
+        _matrixClient.setRoomStateWithKey(
+            id, matrix.EventTypes.RoomPowerLevels, "", newPerms);
+      }
     }
 
     if (hasRoom(id)) return getRoom(id)!;
