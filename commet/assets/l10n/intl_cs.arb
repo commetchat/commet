@@ -55,7 +55,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "promptOpenDirectMessage": "Poslat zprávu",
+    "promptOpenDirectMessage": "Zpráva",
     "@promptOpenDirectMessage": {
         "description": "Prompt on the button to open a direct message with another user",
         "type": "text",
@@ -73,13 +73,13 @@
         "type": "text",
         "placeholders": {}
     },
-    "sendEncryptedMessagePrompt": "Odeslat šifrovanou zprávu",
+    "sendEncryptedMessagePrompt": "Poslat šifrovanou zprávu",
     "@sendEncryptedMessagePrompt": {
         "description": "Placeholder text for message input in an encrypted room",
         "type": "text",
         "placeholders": {}
     },
-    "sendUnencryptedMessagePrompt": "Odeslat zprávu",
+    "sendUnencryptedMessagePrompt": "Poslat zprávu",
     "@sendUnencryptedMessagePrompt": {
         "description": "Placeholder text for message input in an unencrypted room",
         "type": "text",
@@ -213,7 +213,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "messageMatrixSessionVerificationRequest": "**{username}** požádal o ověření vaší relace",
+    "messageMatrixSessionVerificationRequest": "**{username}** požádal(a) o ověření vaší relace",
     "@messageMatrixSessionVerificationRequest": {
         "description": "Message to show when another user has requested to verify your matrix session. Supports markdown to emphasise the user name",
         "type": "text",
@@ -293,7 +293,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelUseRoomAvatarPlaceholdersDescription": "Pokud místnost nemá nastavený avatar nebo je jejich použití zakázáno, použije se jako náhrada obecná barva + zástupný symbol prvního písmene pro obrázek",
+    "labelUseRoomAvatarPlaceholdersDescription": "Pokud místnost nemá nastavený avatar nebo je jejich použití zakázáno, použije se jako náhrada náhodná barva + symbol prvního písmene jako obrázek",
     "@labelUseRoomAvatarPlaceholdersDescription": {
         "description": "Description for the enable generic icons setting",
         "type": "text",
@@ -377,13 +377,13 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelSettingsDeveloperModeExplanation": "Zobrazuje doplňující informace, užitečné pro vývojáře",
+    "labelSettingsDeveloperModeExplanation": "Zobrazuj extra informace navíc, užitečné pro vývojáře",
     "@labelSettingsDeveloperModeExplanation": {
         "description": "Explains what developer mode does",
         "type": "text",
         "placeholders": {}
     },
-    "labelMessageEffectsDescription": "Povolit speciální efekty u zpráv (např. konfety)",
+    "labelMessageEffectsDescription": "Povolit speciální efekty u zpráv (např. konfety a další)",
     "@labelMessageEffectsDescription": {
         "description": "Label describing what message effects are",
         "type": "text",
@@ -505,7 +505,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "messageAlreadyLoggedIn": "Už jste se přihlásili k tomuto účtu",
+    "messageAlreadyLoggedIn": "Už jste přihlášen k tomuto účtu",
     "@messageAlreadyLoggedIn": {
         "description": "An error message displayed when the user attempts to add an account which has already been logged in to on this device",
         "type": "text",
@@ -549,13 +549,13 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixPermissionsRoomAvatarTitle": "Nastavit avatara místnosti",
+    "labelMatrixPermissionsRoomAvatarTitle": "Nastavit avatar místnosti",
     "@labelMatrixPermissionsRoomAvatarTitle": {
         "description": "Title for the permission to add change the rooms avatar image",
         "type": "text",
         "placeholders": {}
     },
-    "labelSettingsStickerCompatibilityExplanation": "V některých Matrix klientech způsobí odeslání nálepky jako 'm.sticker' nesprávné načtení nálepky. Povolení tohoto nastavení způsobí odeslání nálepek jako 'm.image', což umožní jejich správné vykreslení",
+    "labelSettingsStickerCompatibilityExplanation": "V některých Matrix klientech způsobí odeslání samolepky formou 'm.sticker' její nesprávné načtení. Povolením tohoto nastavení odešle samolepky jako 'm.image', což umožní jejich správné vykreslení",
     "@labelSettingsStickerCompatibilityExplanation": {
         "description": "Explains what sticker compatibility mode does",
         "type": "text",
@@ -579,7 +579,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixPermissionsRoomAvatarDescription": "Změnit avatarový obrázek místnosti",
+    "labelMatrixPermissionsRoomAvatarDescription": "Změnit obrázek avataru místnosti",
     "@labelMatrixPermissionsRoomAvatarDescription": {
         "description": "Title for the permission to add change the rooms avatar image",
         "type": "text",
@@ -645,7 +645,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelUrlPreviewInEncryptedChatDescription": "Tím se odhalí všechny náhledy odkazů odeslané ve vašich šifrovaných chatech vašemu domácímu serveru, aby bylo možné náhled načíst",
+    "labelUrlPreviewInEncryptedChatDescription": "Tím se odhalí všechny náhledy odkazů odeslané ve vašich šifrovaných chatech vašemu domácímu serveru, aby bylo možné je načíst",
     "@labelUrlPreviewInEncryptedChatDescription": {
         "description": "description for the toggle for enabling and disabling use of url previews in encrypted chats",
         "type": "text",
@@ -807,7 +807,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixPermissionsChangeRoomTopicDescription": "Oprávnění měnit nastavení přístupů a rolí",
+    "labelMatrixPermissionsChangeRoomTopicDescription": "Oprávnění změnit téma místnosti",
     "@labelMatrixPermissionsChangeRoomTopicDescription": {
         "description": "Description for the permission to add change the rooms topic",
         "type": "text",
@@ -849,7 +849,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixPermissionsBanUserTitle": "Zabanování uživatele",
+    "labelMatrixPermissionsBanUserTitle": "Oprávnění zabanovat uživatele",
     "@labelMatrixPermissionsBanUserTitle": {
         "description": "Title for the permission to ban other users from the room",
         "type": "text",
@@ -957,13 +957,13 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixCrossSigning": "Křížové podepisování",
+    "labelMatrixCrossSigning": "Vzájemné podepisování",
     "@labelMatrixCrossSigning": {
         "description": "Title label for matrix cross signing",
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixCrossSigningAndBackup": "Křížové podepisování a záloha",
+    "labelMatrixCrossSigningAndBackup": "Vzájemné podepisování a záloha",
     "@labelMatrixCrossSigningAndBackup": {
         "description": "Header label for matrix cross signing and message backup section",
         "type": "text",
@@ -975,7 +975,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixResetCrossSigningTitle": "Resetovat křížové podepisování",
+    "labelMatrixResetCrossSigningTitle": "Resetovat vzájemné podepisování",
     "@labelMatrixResetCrossSigningTitle": {
         "description": "Title for the popup dialog when resetting cross signing",
         "type": "text",
@@ -987,7 +987,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixCrossSigningExplanation": "Křížové podepisování umožňuje ověřit všechna vaše zařízení najednou",
+    "labelMatrixCrossSigningExplanation": "Vzájemné podepisování umožní ověřit všechna vaše zařízení najednou",
     "@labelMatrixCrossSigningExplanation": {
         "description": "Explains what matrix cross signing does",
         "type": "text",
@@ -1127,7 +1127,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixRecoveryKeyExplanation": "Tohle je váš obnovovací klíč. Prosím, uložte si tento klíč na skutečně bezpečné místo!",
+    "labelMatrixRecoveryKeyExplanation": "Tohle je váš obnovovací klíč. Prosím, uložte si tento klíč na skutečně bezpečném místě!",
     "@labelMatrixRecoveryKeyExplanation": {
         "description": "Gives a brief description about the function on the recovery key",
         "type": "text",
@@ -1141,7 +1141,7 @@
             "user": {}
         }
     },
-    "labelMatrixRecoveryKeyPromptExplanation": "Chcete-li odemknout své staré zprávy, zadejte prosím svůj obnovovací klíč, který vám byl vygenerován v předchozí relaci. Pamatujte! Obnovovací klíč NENÍ to samé, co vaše HESLO.",
+    "labelMatrixRecoveryKeyPromptExplanation": "Chcete-li odemknout své staré zprávy, zadejte svůj obnovovací klíč, jenž vám byl vygenerován dříve. Pamatujte - Obnovovací klíč NENÍ to samé, jako vaše HESLO!",
     "@labelMatrixRecoveryKeyPromptExplanation": {
         "description": "Shown when a user is attempting to recover their old messages, explains that they need the recovery key",
         "type": "text",
@@ -1159,7 +1159,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "promptConfirmWipingCrossSigningKeys": "Opravdu chcete vymazat klíče pro křížové podepisování?",
+    "promptConfirmWipingCrossSigningKeys": "Opravdu chcete vymazat klíče pro vzájemné podepisování?",
     "@promptConfirmWipingCrossSigningKeys": {
         "description": "Asks the user if they are sure they want to wipe the keys",
         "type": "text",
@@ -1171,7 +1171,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixSecurityPhraseShouldNotBePassword": "Bezpečnostní fráze by neměla být shodná s vaším heslem",
+    "labelMatrixSecurityPhraseShouldNotBePassword": "Bezpečnostní fráze by neměla býti shodná s vaším heslem",
     "@labelMatrixSecurityPhraseShouldNotBePassword": {
         "description": "Tells the user to not use their password as their security phrase",
         "type": "text",
@@ -1209,7 +1209,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixAskWipeBackupToContinue": "Pokud měníte své křížové podpisové klíče, budete muset vymazat stávající zálohu... Chcete pokračovat?",
+    "labelMatrixAskWipeBackupToContinue": "Pokud změníte své vzájemné podpisové klíče, budete muset vymazat stávající zálohu... Chcete pokračovat?",
     "@labelMatrixAskWipeBackupToContinue": {
         "description": "Asks the user if they want to wipe their existing backup to continue changing their cross signing keys",
         "type": "text",
@@ -1319,7 +1319,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelSettingsTabDeveloper": "Vývojář",
+    "labelSettingsTabDeveloper": "Pro vývojáře",
     "@labelSettingsTabDeveloper": {
         "description": "Label for the Developer settings page",
         "type": "text",
@@ -1606,7 +1606,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "messagePlaceholderUserCreatedRoom": "{user} vytvořil(a) místnost",
+    "messagePlaceholderUserCreatedRoom": "{user} vytvořil(a) místnost!",
     "@messagePlaceholderUserCreatedRoom": {
         "description": "Message body for when a user created the room",
         "type": "text",
@@ -1614,7 +1614,7 @@
             "user": {}
         }
     },
-    "typingUsers": "{howMany,plural, =1{{user1} píše...}=2{{user1} a {user2} píší...}několik{{user1}, {user2} a {user3} píší...}další{Několik lidí píše...}}",
+    "typingUsers": "{howMany,plural,=1{{user1} píše...}=2{{user1} a {user2} píší...}few{{user1}, {user2} a {user3} píší...}other{Píše více lidí...}}",
     "@typingUsers": {
         "description": "Text to display which users are currently typing",
         "type": "text",
@@ -1625,7 +1625,7 @@
             "user3": {}
         }
     },
-    "messagePlaceholderUserUpdatedNameDetailed": "{oldUser} si změnil(a) jméno na {newUser}",
+    "messagePlaceholderUserUpdatedNameDetailed": "{user} si změnil(a) jméno na \"{newName}\"",
     "@messagePlaceholderUserUpdatedNameDetailed": {
         "description": "Message body for when a user updates their display name",
         "type": "text",
@@ -1634,7 +1634,7 @@
             "newName": {}
         }
     },
-    "messagePlaceholderUserInvited": "{user} pozval(a) uživatele {target}",
+    "messagePlaceholderUserInvited": "{sender} pozval(a) uživatele {invitedUser}",
     "@messagePlaceholderUserInvited": {
         "description": "Message body for when a user invites another user to the room",
         "type": "text",
@@ -1643,7 +1643,7 @@
             "invitedUser": {}
         }
     },
-    "messageUserRetractedInvite": "{user} odvolal(a) pozvání pro {target}",
+    "messageUserRetractedInvite": "{sender} odvolal(a) pozvání pro {user}",
     "@messageUserRetractedInvite": {
         "description": "Message body for when a user's invitation to a room was withdrawn",
         "type": "text",
@@ -1652,7 +1652,7 @@
             "user": {}
         }
     },
-    "messageUserBanned": "{user} zabanoval(a) uživatele {target}",
+    "messageUserBanned": "{sender} zabanoval(a) uživatele {user}",
     "@messageUserBanned": {
         "description": "Message body for when a user bans another user from the room",
         "type": "text",
@@ -1661,7 +1661,7 @@
             "user": {}
         }
     },
-    "messageUserUnbanned": "{user} odbanoval(a) uživatele {target}",
+    "messageUserUnbanned": "{sender} odbanoval(a) uživatele {user}",
     "@messageUserUnbanned": {
         "description": "Message body for when a user reverts a ban of another user",
         "type": "text",
