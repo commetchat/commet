@@ -504,7 +504,7 @@ class MatrixClient extends Client {
           }
         };
         _matrixClient.setRoomStateWithKey(
-            id, "m.room.power_levels", "", newPerms);
+            id, matrix.EventTypes.RoomPowerLevels, "", newPerms);
       }
     }
 
