@@ -7,6 +7,7 @@ import 'package:commet/client/matrix/timeline_events/matrix_timeline_event.dart'
 import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/client/timeline_events/timeline_event_message.dart';
 import 'package:commet/client/timeline_events/timeline_event_sticker.dart';
+import 'package:commet/debug/log.dart';
 
 import '../client.dart';
 import 'package:matrix/matrix.dart' as matrix;
@@ -126,9 +127,21 @@ class MatrixTimeline extends Timeline {
 
   @override
   void markAsRead(TimelineEvent event) async {
+    var rprr = await (client as MatrixClient)
+        .getRoomAccountData(
+            (client as MatrixClient).matrixClient.userID!,
+            (room as MatrixRoom).matrixRoom.id,
+            MatrixClient.privateReadReceiptsKey)
+        .catchError((e) {
+      if (!(e is matrix.MatrixException &&
+          e.error == matrix.MatrixError.M_NOT_FOUND)) Log.e(e);
+      return {"enabled": false};
+    });
+
     if (event.status == TimelineEventStatus.synced ||
         event.status == TimelineEventStatus.sent) {
-      await _matrixTimeline?.setReadMarker();
+      await _matrixTimeline?.setReadMarker(
+          public: rprr["enabled"] is bool ? !(rprr["enabled"] as bool) : null);
 
       var receipts = room.getComponent<MatrixReadReceiptComponent>();
       receipts?.handleEvent(event.eventId, room.client.self!.identifier);

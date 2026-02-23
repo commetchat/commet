@@ -1,4 +1,5 @@
 import 'package:commet/client/matrix/matrix_client.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/pages/settings/categories/account/security/matrix/session/matrix_session.dart';
 import 'package:commet/utils/common_strings.dart';
@@ -20,7 +21,37 @@ class MatrixSecurityTab extends StatefulWidget {
 class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
   bool crossSigningEnabled = false;
   bool? messageBackupEnabled;
+  bool privateReadReceipts = false;
+  bool privateTypingIndicator = false;
   List<Device>? devices;
+
+  String get labelChatPrivacyTitle => Intl.message("Chat Privacy",
+      desc: "Header for the chat privacy section in settings",
+      name: "labelChatPrivacyTitle");
+
+  String get labelPrivateReadReceiptsToggle => Intl.message(
+      "Private read receipts",
+      desc:
+          "Label for the toggle for enabling and disabling sending read receipts",
+      name: "labelPrivateReadReceiptsToggle");
+
+  String get labelPrivateReadReceiptsDescription => Intl.message(
+      "Prevent other members of a room from knowing when you have read their messages.",
+      desc:
+          "description for the toggle for enabling and disabling sending read receipts",
+      name: "labelPrivateReadReceiptsDescriptionn");
+
+  String get labelPrivateTypingIndicatorToggle => Intl.message(
+      "Private typing indicator",
+      desc:
+          "Label for the toggle for enabling and disabling sending typing indicator",
+      name: "labelPrivateTypingIndicatorToggle");
+
+  String get labelPrivateTypingIndicatorDescription => Intl.message(
+      "Prevent other members of a room from knowing when you are typing a message.",
+      desc:
+          "description for the toggle for enabling and disabling sending typing indicator",
+      name: "labelPrivateTypingIndicatorDescription");
 
   String get labelMatrixCrossSigning => Intl.message("Cross signing",
       desc: "Title label for matrix cross signing",
@@ -66,6 +97,7 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
   void initState() {
     checkState();
     getDevices();
+    getChatPrivacy();
     super.initState();
   }
 
@@ -89,6 +121,32 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
       });
   }
 
+  void getChatPrivacy() async {
+    var prr = await widget.client.matrixClient
+        .getAccountData(widget.client.matrixClient.userID!,
+            MatrixClient.privateReadReceiptsKey)
+        .catchError((e) {
+      if (!(e is MatrixException && e.error == MatrixError.M_NOT_FOUND))
+        Log.e(e);
+      return {"enabled": false};
+    });
+    var pti = await widget.client.matrixClient
+        .getAccountData(widget.client.matrixClient.userID!,
+            MatrixClient.privateTypingIndicatorKey)
+        .catchError((e) {
+      if (!(e is MatrixException && e.error == MatrixError.M_NOT_FOUND))
+        Log.e(e);
+      return {"enabled": false};
+    });
+
+    setState(() {
+      privateReadReceipts =
+          prr["enabled"] is bool ? prr["enabled"] as bool : false;
+      privateTypingIndicator =
+          pti["enabled"] is bool ? pti["enabled"] as bool : false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -96,9 +154,16 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
       mainAxisAlignment: MainAxisAlignment.start,
       mainAxisSize: MainAxisSize.max,
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
-          child: crossSigningPanel(),
+        const SizedBox(
+          height: 4,
+        ),
+        chatPrivacyPanel(),
+        const SizedBox(
+          height: 4,
+        ),
+        crossSigningPanel(),
+        const SizedBox(
+          height: 4,
         ),
         sessionsPanel()
       ],
@@ -233,6 +298,75 @@ class _MatrixSecurityTabState extends State<MatrixSecurityTab> {
                       )
                     : const CircularProgressIndicator())
       ],
+    );
+  }
+
+  Widget chatPrivacyPanel() {
+    return Panel(
+      header: labelChatPrivacyTitle,
+      mode: TileType.surfaceContainerLow,
+      child: Column(children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    tiamat.Text.labelEmphasised(labelPrivateReadReceiptsToggle),
+                    tiamat.Text.labelLow(labelPrivateReadReceiptsDescription)
+                  ]),
+              tiamat.Switch(
+                state: privateReadReceipts,
+                onChanged: (value) {
+                  setState(() {
+                    privateReadReceipts = value;
+                    widget.client.matrixClient.setAccountData(
+                        widget.client.matrixClient.userID!,
+                        MatrixClient.privateReadReceiptsKey,
+                        {"enabled": privateReadReceipts});
+                    widget.client.matrixClient.receiptsPublicByDefault =
+                        !privateReadReceipts;
+                  });
+                },
+              )
+            ],
+          ),
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    tiamat.Text.labelEmphasised(
+                        labelPrivateTypingIndicatorToggle),
+                    tiamat.Text.labelLow(labelPrivateTypingIndicatorDescription)
+                  ]),
+              tiamat.Switch(
+                state: privateTypingIndicator,
+                onChanged: (value) {
+                  setState(() {
+                    privateTypingIndicator = value;
+                    widget.client.matrixClient.setAccountData(
+                        widget.client.matrixClient.userID!,
+                        MatrixClient.privateTypingIndicatorKey,
+                        {"enabled": privateTypingIndicator});
+                  });
+                },
+              )
+            ],
+          ),
+        ),
+      ]),
     );
   }
 }

@@ -6,6 +6,8 @@ import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_member.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/member.dart';
+import 'package:commet/debug/log.dart';
+import 'package:matrix/matrix_api_lite/model/matrix_exception.dart';
 import 'package:matrix/matrix_api_lite/model/sync_update.dart';
 
 class MatrixTypingIndicatorsComponent
@@ -44,7 +46,28 @@ class MatrixTypingIndicatorsComponent
       .toList();
 
   @override
-  Future<void> setTypingStatus(bool status) {
-    return room.matrixRoom.setTyping(status, timeout: 2000);
+  Future<void> setTypingStatus(bool status) async {
+    var pti = await client.matrixClient
+        .getAccountData(
+            client.matrixClient.userID!, MatrixClient.privateTypingIndicatorKey)
+        .catchError((e) {
+      if (!(e is MatrixException && e.error == MatrixError.M_NOT_FOUND))
+        Log.e(e);
+      return {"enabled": false};
+    });
+
+    var rpti = await client
+        .getRoomAccountData(client.matrixClient.userID!, room.matrixRoom.id,
+            MatrixClient.privateTypingIndicatorKey)
+        .catchError((e) {
+      if (!(e is MatrixException && e.error == MatrixError.M_NOT_FOUND))
+        Log.e(e);
+      return {"enabled": false};
+    });
+    var rdisabled = rpti["enabled"] is bool ? !(rpti["enabled"] as bool) : null;
+    var enabled = pti["enabled"] is bool ? pti["enabled"] as bool : false;
+
+    if (rdisabled ?? !enabled)
+      return room.matrixRoom.setTyping(status, timeout: 2000);
   }
 }

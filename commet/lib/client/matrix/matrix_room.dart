@@ -845,7 +845,17 @@ class MatrixRoom extends Room {
   Future<void> markAsRead() async {
     var tl = await matrixRoom.getTimeline();
 
-    await tl.setReadMarker();
+    var rprr = await _client
+        .getRoomAccountData(_client.matrixClient.userID!, matrixRoom.id,
+            MatrixClient.privateReadReceiptsKey)
+        .catchError((e) {
+      if (!(e is matrix.MatrixException &&
+          e.error == matrix.MatrixError.M_NOT_FOUND)) Log.e(e);
+      return {"enabled": false};
+    });
+
+    await tl.setReadMarker(
+        public: rprr["enabled"] is bool ? !(rprr["enabled"] as bool) : null);
   }
 
   @override

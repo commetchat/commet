@@ -1,8 +1,12 @@
+import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/room.dart';
+import 'package:commet/debug/log.dart';
+import 'package:commet/ui/pages/matrix/matrix_room_chat_privacy.dart';
 import 'package:commet/ui/pages/matrix/room_address_settings/matrix_room_address_settings.dart';
 import 'package:commet/ui/pages/settings/categories/room/general/room_general_settings_view.dart';
 import 'package:flutter/widgets.dart';
+import 'package:matrix/matrix_api_lite/model/matrix_exception.dart';
 
 class RoomGeneralSettingsPage extends StatefulWidget {
   const RoomGeneralSettingsPage({super.key, required this.room});
@@ -32,8 +36,13 @@ class _RoomGeneralSettingsPageState extends State<RoomGeneralSettingsPage> {
         const SizedBox(
           height: 10,
         ),
-        if (widget.room is MatrixRoom)
-          MatrixRoomAddressSettings((widget.room as MatrixRoom).matrixRoom)
+        if (widget.room is MatrixRoom) ...[
+          MatrixRoomChatPrivacySettings(widget.room as MatrixRoom),
+          const SizedBox(
+            height: 10,
+          ),
+          MatrixRoomAddressSettings((widget.room as MatrixRoom).matrixRoom),
+        ]
       ],
     );
   }
