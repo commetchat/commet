@@ -11,6 +11,7 @@ import 'package:commet/ui/atoms/code_block.dart';
 import 'package:commet/ui/atoms/emoji_widget.dart';
 import 'package:commet/ui/atoms/mention.dart';
 import 'package:commet/ui/atoms/rich_text/spans/link.dart';
+import 'package:commet/utils/color_utils.dart';
 import 'package:commet/utils/emoji/unicode_emoji.dart';
 import 'package:commet/utils/links/link_utils.dart';
 import 'package:commet/utils/text_utils.dart';
@@ -50,7 +51,7 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
   static final CodeBlockHtmlExtension _codeBlock = CodeBlockHtmlExtension();
   static final CodeHtmlExtension _code = CodeHtmlExtension();
   static final LineBreakHtmlExtension _lineBreak = LineBreakHtmlExtension();
-
+  static final ColorHtmlExtension _color = ColorHtmlExtension();
   static const Set<String> allowedHtmlTags = {
     'body',
     'html',
@@ -113,6 +114,7 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
         MatrixEmoticonHtmlExtension(widget.client, widget.room, big);
     var imageExtension = MatrixImageExtension(widget.client, widget.room);
     var linkify = LinkifyHtmlExtension(widget.client, widget.room, openLink);
+
     var result = Html(
       data: widget.text,
       extensions: [
@@ -122,7 +124,8 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
         _code,
         linkify,
         _lineBreak,
-        imageExtension
+        imageExtension,
+        _color,
       ],
       style: {
         "body": Style(
@@ -235,12 +238,17 @@ class MatrixEmoticonHtmlExtension extends HtmlExtension {
       var spans = List<InlineSpan>.empty(growable: true);
 
       for (var char in context.node.text!.characters) {
-        if (char.trim() == "") continue;
-        spans.add(WidgetSpan(
-            child: EmojiWidget(
-          UnicodeEmoticon(char),
-          height: emojiSize,
-        )));
+        if (char.trim() == "") {
+          spans.add(TextSpan(
+            text: char,
+          ));
+        } else {
+          spans.add(WidgetSpan(
+              child: EmojiWidget(
+            UnicodeEmoticon(char),
+            height: emojiSize,
+          )));
+        }
       }
 
       return TextSpan(children: spans);
@@ -511,6 +519,30 @@ class SpoilerHtmlExtension extends HtmlExtension {
   @override
   bool matches(ExtensionContext context) {
     return context.attributes.containsKey("data-mx-spoiler");
+  }
+
+  @override
+  Set<String> get supportedTags => {};
+}
+
+class ColorHtmlExtension extends HtmlExtension {
+  ColorHtmlExtension();
+
+  @override
+  InlineSpan build(ExtensionContext context) {
+    var str = context.attributes["data-mx-color"];
+    str ??= context.attributes["color"];
+    Color? color;
+    if (str != null) {
+      color = ColorUtils.fromHexCode(str);
+    }
+    return TextSpan(text: context.node.text, style: TextStyle(color: color));
+  }
+
+  @override
+  bool matches(ExtensionContext context) {
+    return context.attributes.containsKey("data-mx-color") ||
+        context.attributes.containsKey("color");
   }
 
   @override
