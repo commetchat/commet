@@ -3,6 +3,10 @@ import 'dart:convert';
 
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/platform_utils.dart';
+import 'package:commet/config/preferences/bool_preference.dart';
+import 'package:commet/config/preferences/double_preference.dart';
+import 'package:commet/config/preferences/preference.dart';
+import 'package:commet/config/preferences/string_preference.dart';
 import 'package:commet/config/theme_config.dart';
 import 'package:commet/main.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +14,6 @@ import 'package:hotkey_manager/hotkey_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tiamat/config/style/theme_amoled.dart';
 import 'package:tiamat/config/style/theme_json_converter.dart';
-import 'package:window_manager/window_manager.dart';
 import 'package:tiamat/config/style/theme_dark.dart';
 import 'package:tiamat/config/style/theme_light.dart';
 import 'package:tiamat/config/style/theme_you.dart';
@@ -19,76 +22,25 @@ class Preferences {
   SharedPreferences? _preferences;
 
   static const String registeredMatrixClients = "registered_matrix_clients";
-  static const String _shouldFollowSystemTheme = "should_follow_system_theme";
-  static const String _shouldFollowSystemColors = "should_follow_system_colors";
-  static const String themeKey = "app_theme";
-  static const String appScaleKey = "app_scale";
-  static const String _minimizeOnCloseKey = "minimize_on_close";
-  static const String _developerMode = "developer_mode";
-  static const String _tenorGifSearch = "enable_tenor_gif_search";
-  static const String _proxyUrl = "proxy_url";
-  static const String _fcmKey = "fcm_key";
-  static const String _unifiedPushEnabled = "unified_push_enabled";
-  static const String _unifiedPushEndpoint = "unified_push_endpoint";
+
   static const String _pushGateway = "push_gateway";
-  static const String _lastDownloadLocation = "last_download_location";
-  static const String _stickerCompatibilityMode = "sticker_compatibility_mode";
-  static const String _useFallbackTurnServer = "use_fallback_turn_server";
-  static const String _fallbackTurnServer = "fallback_turn_server";
-  static const String _urlPreviewInE2EEChat = "use_url_preview_in_e2ee_chat";
-  static const String _messageEffectsEnabled = "message_effects_enabled";
-  static const String _lastForegroundServiceSucceeded =
-      "did_last_foreground_service_run_succeed";
-  static const String _showRoomAvatars = "show_room_avatars";
-  static const String _usePlaceholderRoomAvatars =
-      "use_placeholder_room_avatars";
-
-  static const String _previewMediaInPublicRooms =
-      "preview_media_in_public_rooms";
-
-  static const String _previewMediaInPrivateRooms =
-      "preview_media_in_private_rooms";
 
   static const String _optedInExperiments = "opted_in_experiments";
 
-  static const String _showMediaInNotifications = "show_media_in_notifications";
-
-  static const String _formatNotificationBody = "format_notification_body";
-
   static const String _syncedCalendarUrls = "synced_calendar_urls";
 
-  static const String _previewUrlsInNotification =
-      "preview_urls_in_notification";
-
-  static const String _legacyNotificationHandler =
-      "use_legacy_notification_handler";
-
-  static const String _silenceNotifications =
-      "silence_notifications_when_other_device_active";
-
-  static const String _disableTextCursorManagement =
-      "disable_text_cursor_management";
-
-  static const String _emojiPickerHeight = "emoji_picker_height";
-
-  static const String _voipDefaultAudioInput = "voip_default_audio_input";
-  static const String _voipDefaultAudioOutput = "voip_default_audio_output";
-  static const String _voipDefaultVideoInput = "voip_default_video_input";
-
-  static const String _hideRoomSidePanel = "hide_room_side_panel";
-  static const String _layoutOverride = "layout_override";
-
-  static const String _checkForUpdates = "check_for_updates";
   static const String _runningDonationCheckFlow = "running_donation_check_flow";
 
   static const String _systemHotkey = "system_wide_hotkey";
 
-  final StreamController _onSettingChanged = StreamController.broadcast();
-  Stream get onSettingChanged => _onSettingChanged.stream;
+  static final StreamController onSettingChangedController =
+      StreamController.broadcast();
+  Stream get onSettingChanged => onSettingChangedController.stream;
   bool isInit = false;
 
   Future<void> init() async {
     _preferences = await SharedPreferences.getInstance();
+    Preference.preferences = _preferences;
     isInit = true;
   }
 
@@ -125,35 +77,14 @@ class Preferences {
     }
   }
 
-  bool get shouldFollowSystemTheme =>
-      _preferences!.getBool(_shouldFollowSystemTheme) ?? false;
-
-  void setShouldFollowSystemBrightness(bool value) {
-    _preferences!.setBool(_shouldFollowSystemTheme, value);
-  }
-
-  bool get shouldFollowSystemColors =>
-      _preferences!.getBool(_shouldFollowSystemColors) ?? false;
-
-  void setShouldFollowSystemColors(bool value) {
-    _preferences!.setBool(_shouldFollowSystemColors, value);
-  }
-
-  void setTheme(String theme) {
-    if (theme == "amoled") {
-      setShouldFollowSystemColors(false);
-    }
-    _preferences!.setString(themeKey, theme);
-  }
-
   Future<ThemeData> resolveTheme({Brightness? overrideBrightness}) async {
-    if (overrideBrightness == null && shouldFollowSystemTheme) {
+    if (overrideBrightness == null && shouldFollowSystemTheme.value) {
       overrideBrightness =
           WidgetsBinding.instance.platformDispatcher.platformBrightness;
     }
 
     if (!PlatformUtils.isWeb) {
-      var custom = await ThemeConfig.getThemeByName(preferences.theme);
+      var custom = await ThemeConfig.getThemeByName(preferences.theme.value);
       if (custom != null) {
         var jsonString = await custom.readAsString();
         var json = const JsonDecoder().convert(jsonString);
@@ -164,22 +95,22 @@ class Preferences {
       }
     }
 
-    if (overrideBrightness == null && shouldFollowSystemColors) {
-      if (theme == "dark") {
+    if (overrideBrightness == null && shouldFollowSystemColors.value) {
+      if (theme.value == "dark") {
         overrideBrightness = Brightness.dark;
       }
 
-      if (theme == "light") {
+      if (theme.value == "light") {
         overrideBrightness = Brightness.light;
       }
     }
 
-    if (overrideBrightness != null && shouldFollowSystemColors) {
+    if (overrideBrightness != null && shouldFollowSystemColors.value) {
       return ThemeYou.theme(overrideBrightness);
     }
 
     if (overrideBrightness == Brightness.dark) {
-      return switch (theme) {
+      return switch (theme.value) {
         "dark" => ThemeDark.theme,
         "amoled" => ThemeAmoled.theme,
         _ => ThemeDark.theme,
@@ -190,7 +121,7 @@ class Preferences {
       return ThemeLight.theme;
     }
 
-    return switch (theme) {
+    return switch (theme.value) {
       "light" => ThemeLight.theme,
       "dark" => ThemeDark.theme,
       "amoled" => ThemeAmoled.theme,
@@ -198,83 +129,9 @@ class Preferences {
     };
   }
 
-  String get theme => _preferences!.getString(themeKey) ?? "dark";
-
-  double get appScale => _preferences!.getDouble(appScaleKey) ?? 1;
-
-  void setAppScale(double scale) {
-    _preferences!.setDouble(appScaleKey, scale);
-    _onSettingChanged.add(null);
-  }
-
-  String? get layoutOverride => _preferences!.getString(_layoutOverride);
-
-  Future<void> setLayoutOverride(String? value) async {
-    if (value == null) {
-      await _preferences!.remove(_layoutOverride);
-    } else {
-      await _preferences!.setString(_layoutOverride, value);
-    }
-    _onSettingChanged.add(null);
-  }
-
   Future<void> clear() async {
     await _preferences!.clear();
   }
-
-  bool get minimizeOnClose =>
-      _preferences!.getBool(_minimizeOnCloseKey) ?? false;
-
-  Future<void> setMinimizeOnClose(bool value) async {
-    if (BuildConfig.DESKTOP) {
-      windowManager.setPreventClose(value);
-    }
-
-    _preferences!.setBool(_minimizeOnCloseKey, value);
-    _onSettingChanged.add(null);
-  }
-
-  bool get developerMode => _preferences?.getBool(_developerMode) ?? false;
-
-  String get proxyUrl =>
-      _preferences?.getString(_proxyUrl) ?? "proxy.commet.chat";
-
-  Future<void> setDeveloperMode(bool value) async {
-    await _preferences!.setBool(_developerMode, value);
-    _onSettingChanged.add(null);
-  }
-
-  bool get tenorGifSearchEnabled =>
-      _preferences!.getBool(_tenorGifSearch) ?? false;
-
-  Future<void> setTenorGifSearch(bool value) async {
-    await _preferences!.setBool(_tenorGifSearch, value);
-    _onSettingChanged.add(null);
-  }
-
-  String? get fcmKey => _preferences!.getString(_fcmKey);
-
-  Future<void> setFcmKey(String key) async {
-    await _preferences!.setString(_fcmKey, key);
-    _onSettingChanged.add(null);
-  }
-
-  String? get unifiedPushEndpoint =>
-      _preferences!.getString(_unifiedPushEndpoint);
-
-  Future<void> setUnifiedPushEndpoint(String? value) async {
-    if (value == null) {
-      await _preferences!.remove(_unifiedPushEndpoint);
-    } else {
-      await _preferences!.setString(_unifiedPushEndpoint, value);
-    }
-  }
-
-  Future<void> setUnifiedPushEnabled(bool value) async {
-    await _preferences!.setBool(_unifiedPushEnabled, value);
-  }
-
-  bool? get unifiedPushEnabled => _preferences!.getBool(_unifiedPushEnabled);
 
   Future<void> setPushGateway(String value) async {
     await _preferences!.setString(_pushGateway, value);
@@ -283,89 +140,6 @@ class Preferences {
   String get pushGateway => BuildConfig.ENABLE_GOOGLE_SERVICES
       ? "push.commet.chat"
       : _preferences!.getString(_pushGateway) ?? "push.commet.chat";
-
-  String? get lastDownloadLocation =>
-      _preferences!.getString(_lastDownloadLocation);
-
-  Future<void> setLastDownloadLocation(String value) async {
-    await _preferences!.setString(_lastDownloadLocation, value);
-    _onSettingChanged.add(null);
-  }
-
-  //Workaround for: https://github.com/commetchat/commet/issues/202
-  bool get stickerCompatibilityMode =>
-      _preferences!.getBool(_stickerCompatibilityMode) ?? true;
-
-  Future<void> setStickerCompatibilityMode(bool value) async {
-    await _preferences!.setBool(_stickerCompatibilityMode, value);
-    _onSettingChanged.add(null);
-  }
-
-  bool get useFallbackTurnServer =>
-      _preferences!.getBool(_useFallbackTurnServer) ?? false;
-
-  Future<void> setUseFallbackTurnServer(bool value) async {
-    await _preferences!.setBool(_useFallbackTurnServer, value);
-    _onSettingChanged.add(null);
-  }
-
-  String get fallbackTurnServer =>
-      _preferences!.getString(_fallbackTurnServer) ?? "stun:turn.matrix.org";
-  Future<void> setUseUrlPreviewInE2EEChat(bool value) async {
-    await _preferences!.setBool(_urlPreviewInE2EEChat, value);
-  }
-
-  bool get urlPreviewInE2EEChat =>
-      _preferences!.getBool(_urlPreviewInE2EEChat) ?? false;
-
-  bool? get didLastForegroundServiceRunSucceed =>
-      _preferences!.getBool(_lastForegroundServiceSucceeded);
-
-  Future<void> setLastForegroundServiceRunSucceeded(bool? value) async {
-    if (value == null) {
-      await _preferences!.remove(_lastForegroundServiceSucceeded);
-    } else {
-      await _preferences!.setBool(_lastForegroundServiceSucceeded, value);
-    }
-  }
-
-  Future<void> setMessageEffectsEnabled(bool value) async {
-    await _preferences!.setBool(_messageEffectsEnabled, value);
-  }
-
-  bool get messageEffectsEnabled =>
-      _preferences!.getBool(_messageEffectsEnabled) ?? true;
-
-  bool get showRoomAvatars => _preferences!.getBool(_showRoomAvatars) ?? true;
-
-  Future<void> setShowRoomAvatars(bool value) async {
-    await _preferences!.setBool(_showRoomAvatars, value);
-    _onSettingChanged.add(null);
-  }
-
-  bool get usePlaceholderRoomAvatars =>
-      _preferences!.getBool(_usePlaceholderRoomAvatars) ?? false;
-
-  Future<void> setUsePlaceholderRoomAvatars(bool value) async {
-    await _preferences!.setBool(_usePlaceholderRoomAvatars, value);
-    _onSettingChanged.add(null);
-  }
-
-  bool get previewMediaInPublicRooms =>
-      _preferences!.getBool(_previewMediaInPublicRooms) ?? false;
-
-  Future<void> setMediaPreviewInPublicRooms(bool value) async {
-    await _preferences!.setBool(_previewMediaInPublicRooms, value);
-    _onSettingChanged.add(null);
-  }
-
-  bool get previewMediaInPrivateRooms =>
-      _preferences!.getBool(_previewMediaInPrivateRooms) ?? true;
-
-  Future<void> setMediaPreviewInPrivateRooms(bool value) async {
-    await _preferences!.setBool(_previewMediaInPrivateRooms, value);
-    _onSettingChanged.add(null);
-  }
 
   Future<void> setExperimentEnabled(String experiment, bool value) async {
     var experiments = _preferences?.getStringList(_optedInExperiments) ??
@@ -403,115 +177,6 @@ class Preferences {
         .setString(_syncedCalendarUrls + ".${roomId}", jsonEncode(sources));
   }
 
-  bool get showMediaInNotifications =>
-      _preferences!.getBool(_showMediaInNotifications) ?? true;
-
-  Future<void> setShowMediaInNotifications(bool value) async {
-    await _preferences!.setBool(_showMediaInNotifications, value);
-    _onSettingChanged.add(null);
-  }
-
-  bool get formatNotificationBody =>
-      _preferences!.getBool(_formatNotificationBody) ?? true;
-
-  Future<void> setFormatNotificationBody(bool value) async {
-    await _preferences!.setBool(_formatNotificationBody, value);
-    _onSettingChanged.add(null);
-  }
-
-  bool get previewUrlsInNotifications =>
-      _preferences!.getBool(_previewUrlsInNotification) ?? true;
-
-  Future<void> setPreviewUrlsInNotifications(bool value) async {
-    await _preferences!.setBool(_previewUrlsInNotification, value);
-    _onSettingChanged.add(null);
-  }
-
-  bool get useLegacyNotificationHandler =>
-      _preferences!.getBool(_legacyNotificationHandler) ?? false;
-
-  Future<void> setuseLegacyNotificationHandler(bool value) async {
-    await _preferences!.setBool(_legacyNotificationHandler, value);
-    _onSettingChanged.add(null);
-  }
-
-  bool get silenceNotifications =>
-      _preferences!.getBool(_silenceNotifications) ?? true;
-
-  Future<void> setSilenceNotifications(bool value) async {
-    await _preferences!.setBool(_silenceNotifications, value);
-    _onSettingChanged.add(null);
-  }
-
-  bool get disableTextCursorManagement =>
-      _preferences!.getBool(_disableTextCursorManagement) ?? false;
-
-  Future<void> setdisableTextCursorManagement(bool value) async {
-    await _preferences!.setBool(_disableTextCursorManagement, value);
-    _onSettingChanged.add(null);
-  }
-
-  double get emojiPickerHeight =>
-      _preferences!.getDouble(_emojiPickerHeight) ?? 300;
-
-  Future<void> setEmojiPickerHeight(double value) async {
-    await _preferences!.setDouble(_emojiPickerHeight, value);
-    _onSettingChanged.add(null);
-  }
-
-  String? get voipDefaultAudioInput =>
-      _preferences!.getString(_voipDefaultAudioInput);
-
-  Future<void> setVoipDefaultAudioInput(String? value) async {
-    if (value == null) {
-      await _preferences!.remove(_voipDefaultAudioInput);
-    } else {
-      await _preferences!.setString(_voipDefaultAudioInput, value);
-    }
-
-    _onSettingChanged.add(null);
-  }
-
-  String? get voipDefaultAudioOutput =>
-      _preferences!.getString(_voipDefaultAudioOutput);
-
-  Future<void> setVoipDefaultAudioOutput(String? value) async {
-    if (value == null) {
-      await _preferences!.remove(_voipDefaultAudioOutput);
-    } else {
-      await _preferences!.setString(_voipDefaultAudioOutput, value);
-    }
-
-    _onSettingChanged.add(null);
-  }
-
-  String? get voipDefaultVideoInput =>
-      _preferences!.getString(_voipDefaultVideoInput);
-
-  Future<void> setVoipDefaultVideoInput(String? value) async {
-    if (value == null) {
-      await _preferences!.remove(_voipDefaultVideoInput);
-    } else {
-      await _preferences!.setString(_voipDefaultVideoInput, value);
-    }
-
-    _onSettingChanged.add(null);
-  }
-
-  bool get hideRoomSidePanel =>
-      _preferences!.getBool(_hideRoomSidePanel) ?? false;
-
-  Future<void> setHideRoomSidePanel(bool value) async {
-    _preferences!.setBool(_hideRoomSidePanel, value);
-    _onSettingChanged.add(null);
-  }
-
-  bool? get checkForUpdates => _preferences!.getBool(_checkForUpdates);
-
-  Future<void> setCheckForUpdates(bool value) async {
-    await _preferences!.setBool(_checkForUpdates, value);
-  }
-
   (String, DateTime)? get runningDonationCheckFlow {
     var result = _preferences!.getString(_runningDonationCheckFlow);
 
@@ -537,13 +202,13 @@ class Preferences {
           "time": timestamp.millisecondsSinceEpoch,
         }));
 
-    _onSettingChanged.add(null);
+    onSettingChangedController.add(null);
   }
 
   Future<void> clearRunningDonationCheckFlow() async {
     _preferences!.remove(_runningDonationCheckFlow);
 
-    _onSettingChanged.add(null);
+    onSettingChangedController.add(null);
   }
 
   String getHotkeyId(String name) {
@@ -566,4 +231,134 @@ class Preferences {
 
     return HotKey.fromJson(jsonDecode(item));
   }
+
+  BoolPreference shouldFollowSystemTheme =
+      BoolPreference("should_follow_system_theme", defaultValue: false);
+
+  BoolPreference shouldFollowSystemColors =
+      BoolPreference("should_follow_system_colors", defaultValue: false);
+
+  BoolPreference minimizeOnClose =
+      BoolPreference("minimize_on_close", defaultValue: false);
+
+  BoolPreference developerMode =
+      BoolPreference("developer_mode", defaultValue: false);
+
+  BoolPreference tenorGifSearchEnabled =
+      BoolPreference("enable_tenor_gif_search", defaultValue: false);
+
+  //Workaround for: https://github.com/commetchat/commet/issues/202
+  BoolPreference stickerCompatibilityMode =
+      BoolPreference("sticker_compatibility_mode", defaultValue: true);
+
+  BoolPreference useFallbackTurnServer =
+      BoolPreference("use_fallback_turn_server", defaultValue: false);
+
+  BoolPreference urlPreviewInE2EEChat =
+      BoolPreference("use_url_preview_in_e2ee_chat", defaultValue: false);
+
+  BoolPreference messageEffectsEnabled =
+      BoolPreference("message_effects_enabled", defaultValue: true);
+
+  BoolPreference showRoomAvatars =
+      BoolPreference("show_room_avatars", defaultValue: true);
+
+  BoolPreference usePlaceholderRoomAvatars =
+      BoolPreference("use_placeholder_room_avatars", defaultValue: false);
+
+  BoolPreference previewMediaInPublicRooms =
+      BoolPreference("preview_media_in_public_rooms", defaultValue: false);
+
+  BoolPreference previewMediaInPrivateRooms =
+      BoolPreference("preview_media_in_private_rooms", defaultValue: true);
+
+  BoolPreference showMediaInNotifications =
+      BoolPreference("show_media_in_notifications", defaultValue: true);
+
+  BoolPreference formatNotificationBody =
+      BoolPreference("format_notification_body", defaultValue: true);
+
+  BoolPreference previewUrlInNotifications =
+      BoolPreference("preview_urls_in_notification", defaultValue: true);
+
+  BoolPreference useLegacyNotificationHandler =
+      BoolPreference("use_legacy_notification_handler", defaultValue: false);
+
+  BoolPreference askBeforeDeletingMessageEnabled =
+      BoolPreference("ask_before_deleting_message_enabled", defaultValue: true);
+
+  BoolPreference silenceNotifications = BoolPreference(
+      "silence_notifications_when_other_device_active",
+      defaultValue: true);
+
+  BoolPreference disableTextCursorManagement =
+      BoolPreference("disable_text_cursor_management", defaultValue: false);
+
+  BoolPreference hideRoomSidePanel =
+      BoolPreference("hide_room_side_panel", defaultValue: false);
+
+  BoolPreference showRoomPreviewsInSpaceSidebar =
+      BoolPreference("show_room_previews_in_space_sidebar", defaultValue: true);
+
+  DoublePreference textScale =
+      DoublePreference("text_scale", defaultValue: 1.0);
+
+  BoolPreference doSimulcast =
+      BoolPreference("livekit_use_simulcast", defaultValue: false);
+
+  DoublePreference streamBitrate =
+      DoublePreference("screenshare_bitrate_mbps", defaultValue: 8);
+
+  DoublePreference streamFramerate =
+      DoublePreference("screenshare_fps", defaultValue: 60);
+
+  StringPreference streamCodec =
+      StringPreference("livekit_screenshare_codec", defaultValue: "av1");
+
+  StringPreference streamResolution = StringPreference(
+      "livekit_screenshare_resolution",
+      defaultValue: "1920x1080");
+
+  DoublePreference appScale = DoublePreference("app_scale", defaultValue: 1.0);
+
+  DoublePreference emojiPickerHeight =
+      DoublePreference("emoji_picker_height", defaultValue: 300);
+
+  StringPreference proxyUrl =
+      StringPreference("proxy_url", defaultValue: "proxy.commet.chat");
+
+  StringPreference fallbackTurnServer = StringPreference("fallback_turn_server",
+      defaultValue: "stun:turn.matrix.org");
+
+  StringPreference theme = StringPreference("app_theme", defaultValue: "dark");
+
+  NullableBoolPreference unifiedPushEnabled =
+      NullableBoolPreference("unified_push_enabled", defaultValue: null);
+
+  NullableBoolPreference checkForUpdates =
+      NullableBoolPreference("check_for_updates", defaultValue: null);
+
+  NullableStringPreference layoutOverride =
+      NullableStringPreference("layout_override", defaultValue: null);
+
+  NullableStringPreference voipDefaultAudioInput =
+      NullableStringPreference("voip_default_audio_input", defaultValue: null);
+
+  NullableStringPreference voipDefaultAudioOutput =
+      NullableStringPreference("voip_default_audio_output", defaultValue: null);
+
+  NullableStringPreference voipDefaultVideoInput =
+      NullableStringPreference("voip_default_video_input", defaultValue: null);
+
+  NullableStringPreference filterClient =
+      NullableStringPreference("filter_client_id", defaultValue: null);
+
+  NullableStringPreference fcmKey =
+      NullableStringPreference("fcm_key", defaultValue: null);
+
+  NullableStringPreference unifiedPushEndpoint =
+      NullableStringPreference("unified_push_endpoint", defaultValue: null);
+
+  NullableStringPreference lastDownloadLocation =
+      NullableStringPreference("last_download_location", defaultValue: null);
 }

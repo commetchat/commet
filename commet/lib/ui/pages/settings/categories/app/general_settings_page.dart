@@ -1,10 +1,10 @@
 import 'package:commet/main.dart';
+import 'package:commet/ui/pages/settings/categories/app/boolean_toggle.dart';
 import 'package:commet/ui/pages/setup/menus/check_for_updates.dart';
 import 'package:commet/utils/update_checker.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
-import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:tiamat/tiamat.dart';
 
 class GeneralSettingsPage extends StatefulWidget {
@@ -15,9 +15,6 @@ class GeneralSettingsPage extends StatefulWidget {
 }
 
 class GeneralSettingsPageState extends State<GeneralSettingsPage> {
-  bool enableTenor = false;
-  bool enableEncryptedPreview = false;
-
   String get labelThirdPartyServicesTitle =>
       Intl.message("Third party services",
           desc: "Header for the third party services section in settings",
@@ -44,6 +41,22 @@ class GeneralSettingsPageState extends State<GeneralSettingsPage> {
       desc:
           "description for the toggle for enabling and disabling use of url previews in encrypted chats",
       name: "labelUrlPreviewInEncryptedChatDescription");
+
+  String get labelAppBehaviourTitle => Intl.message("App Behaviour",
+      desc: "Header for the app behaviour section in settings",
+      name: "labelAppBehaviourTitle");
+
+  String get labelAskBeforeDeletingMessageToggle => Intl.message(
+      "Ask before deleting messages",
+      desc:
+          "Label for the toggle for enabling and disabling message deletion confirmation",
+      name: "labelAskBeforeDeletingMessageToggle");
+
+  String get labelAskBeforeDeletingMessageDescription => Intl.message(
+      "Enables the pop-up asking for confirmation when deleting a message.",
+      desc:
+          "Label describing what 'asking before deleting messages' even means",
+      name: "labelAskBeforeDeletingMessageDescription");
 
   String get labelMessageEffectsTitle => Intl.message("Message Effects",
       desc:
@@ -85,8 +98,6 @@ class GeneralSettingsPageState extends State<GeneralSettingsPage> {
 
   @override
   void initState() {
-    enableTenor = preferences.tenorGifSearchEnabled;
-    enableEncryptedPreview = preferences.urlPreviewInE2EEChat;
     super.initState();
   }
 
@@ -98,39 +109,39 @@ class GeneralSettingsPageState extends State<GeneralSettingsPage> {
           header: labelThirdPartyServicesTitle,
           mode: TileType.surfaceContainerLow,
           child: Column(children: [
-            settingToggle(
-              enableTenor,
+            BooleanPreferenceToggle(
+              preference: preferences.tenorGifSearchEnabled,
               title: labelGifSearchToggle,
-              description: labelGifSearchDescription(preferences.proxyUrl),
-              onChanged: (value) async {
-                setState(() {
-                  enableTenor = value;
-                });
-                await preferences.setTenorGifSearch(value);
-                setState(() {
-                  enableTenor = preferences.tenorGifSearchEnabled;
-                });
-              },
+              description:
+                  labelGifSearchDescription(preferences.proxyUrl.value),
             ),
             const SizedBox(
               height: 10,
             ),
-            settingToggle(
-              enableEncryptedPreview,
+            BooleanPreferenceToggle(
+              preference: preferences.urlPreviewInE2EEChat,
               title: labelUrlPreviewInEncryptedChatTitle,
               description: labelUrlPreviewInEncryptedChatDescription,
-              onChanged: (value) async {
-                setState(() {
-                  enableEncryptedPreview = value;
-                });
-                await preferences.setUseUrlPreviewInE2EEChat(value);
-                setState(() {
-                  enableEncryptedPreview = preferences.urlPreviewInE2EEChat;
-                });
-              },
             ),
             if (UpdateChecker.shouldCheckForUpdates)
-              CheckForUpdatesSettingWidget(),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                child: CheckForUpdatesSettingWidget(),
+              ),
+          ]),
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        Panel(
+          header: labelAppBehaviourTitle,
+          mode: TileType.surfaceContainerLow,
+          child: Column(children: [
+            BooleanPreferenceToggle(
+              preference: preferences.askBeforeDeletingMessageEnabled,
+              title: labelAskBeforeDeletingMessageToggle,
+              description: labelAskBeforeDeletingMessageDescription,
+            ),
           ]),
         ),
         const SizedBox(
@@ -139,17 +150,11 @@ class GeneralSettingsPageState extends State<GeneralSettingsPage> {
         Panel(
           header: labelMessageEffectsTitle,
           mode: TileType.surfaceContainerLow,
-          child: Column(children: [
-            settingToggle(
-              preferences.messageEffectsEnabled,
-              title: labelMessageEffectsTitle,
-              description: labelMessageEffectsDescription,
-              onChanged: (value) async {
-                await preferences.setMessageEffectsEnabled(value);
-                setState(() {});
-              },
-            ),
-          ]),
+          child: BooleanPreferenceToggle(
+            preference: preferences.messageEffectsEnabled,
+            title: labelMessageEffectsTitle,
+            description: labelMessageEffectsDescription,
+          ),
         ),
         const SizedBox(
           height: 10,
@@ -158,50 +163,18 @@ class GeneralSettingsPageState extends State<GeneralSettingsPage> {
           header: labelMediaPreviewSettingsTitle,
           mode: TileType.surfaceContainerLow,
           child: Column(children: [
-            settingToggle(
-              preferences.previewMediaInPrivateRooms,
+            BooleanPreferenceToggle(
+              preference: preferences.previewMediaInPrivateRooms,
               title: labelMediaPreviewPrivateRoomsToggle,
               description: labelMediaPreviewPrivateRoomsToggleDescription,
-              onChanged: (value) async {
-                await preferences.setMediaPreviewInPrivateRooms(value);
-                setState(() {});
-              },
             ),
-            settingToggle(
-              preferences.previewMediaInPublicRooms,
+            BooleanPreferenceToggle(
+              preference: preferences.previewMediaInPublicRooms,
               title: labelMediaPreviewPublicRoomsToggle,
               description: labelMediaPreviewPublicRoomsToggleDescription,
-              onChanged: (value) async {
-                await preferences.setMediaPreviewInPublicRooms(value);
-                setState(() {});
-              },
             ),
           ]),
         ),
-      ],
-    );
-  }
-
-  static Row settingToggle(bool state,
-      {required String title,
-      required String description,
-      void Function(bool)? onChanged}) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Flexible(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              tiamat.Text.labelEmphasised(title),
-              tiamat.Text.labelLow(description)
-            ],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: tiamat.Switch(state: state, onChanged: onChanged),
-        )
       ],
     );
   }

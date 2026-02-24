@@ -1,5 +1,6 @@
 import 'package:commet/client/components/donation_awards/donation_awards_component.dart';
 import 'package:commet/ui/atoms/adaptive_context_menu.dart';
+import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/pages/settings/donation_rewards_confirmation.dart';
 import 'package:commet/ui/pages/settings/settings_button.dart';
@@ -69,12 +70,14 @@ class DesktopSettingsPageState extends State<DesktopSettingsPage> {
       caulkClipTopLeft: true,
       caulkClipBottomLeft: true,
       key: ValueKey(selectedTabIndex),
-      child: selectedCategoryIndex < categories.length &&
-              selectedTabIndex < categories[selectedCategoryIndex].tabs.length
-          ? settingsTab(categories[selectedCategoryIndex]
-              .tabs[selectedTabIndex]
-              .pageBuilder)
-          : null,
+      child: ScaledSafeArea(
+          child: selectedCategoryIndex < categories.length &&
+                  selectedTabIndex <
+                      categories[selectedCategoryIndex].tabs.length
+              ? settingsTab(categories[selectedCategoryIndex]
+                  .tabs[selectedTabIndex]
+                  .pageBuilder)
+              : Container()),
     );
   }
 
@@ -86,74 +89,76 @@ class DesktopSettingsPageState extends State<DesktopSettingsPage> {
       caulkClipTopRight: true,
       caulkClipBottomRight: true,
       caulkBorderRight: true,
-      child: SizedBox(
-        width: 240,
-        child: Column(
-          children: [
-            Flexible(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: CircleButton(
-                            key: backButtonKey,
-                            radius: 25,
-                            icon: m.Icons.arrow_back,
-                            onPressed: () => Navigator.of(context).pop(),
-                          )),
-                    ),
-                    Flexible(
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
-                        child: ListView(children: [
-                          ListView.builder(
-                            physics: const NeverScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            itemCount: categories.length,
-                            itemBuilder: (context, categoryIndex) {
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  if (categoryIndex != 0)
-                                    const tiamat.Seperator(),
-                                  if (categories[categoryIndex].title != null)
-                                    tiamat.Text.labelLow(
-                                        categories[categoryIndex].title!),
-                                  tabListBuilder(categoryIndex)
-                                ],
-                              );
-                            },
-                          ),
-                          if (widget.buttons != null) const Seperator(),
-                          if (widget.buttons != null)
+      child: ScaledSafeArea(
+        child: SizedBox(
+          width: 240,
+          child: Column(
+            children: [
+              Flexible(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: CircleButton(
+                              key: backButtonKey,
+                              radius: 25,
+                              icon: m.Icons.arrow_back,
+                              onPressed: () => Navigator.of(context).pop(),
+                            )),
+                      ),
+                      Flexible(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+                          child: ListView(children: [
                             ListView.builder(
                               physics: const NeverScrollableScrollPhysics(),
                               shrinkWrap: true,
-                              itemCount: widget.buttons!.length,
-                              itemBuilder: (context, index) {
-                                return button(
-                                    label: widget.buttons![index].label,
-                                    icon: widget.buttons![index].icon,
-                                    onTap: widget.buttons![index].onPress,
-                                    color: widget.buttons![index].color);
+                              itemCount: categories.length,
+                              itemBuilder: (context, categoryIndex) {
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    if (categoryIndex != 0)
+                                      const tiamat.Seperator(),
+                                    if (categories[categoryIndex].title != null)
+                                      tiamat.Text.labelLow(
+                                          categories[categoryIndex].title!),
+                                    tabListBuilder(categoryIndex)
+                                  ],
+                                );
                               },
                             ),
-                        ]),
+                            if (widget.buttons != null) const Seperator(),
+                            if (widget.buttons != null)
+                              ListView.builder(
+                                physics: const NeverScrollableScrollPhysics(),
+                                shrinkWrap: true,
+                                itemCount: widget.buttons!.length,
+                                itemBuilder: (context, index) {
+                                  return button(
+                                      label: widget.buttons![index].label,
+                                      icon: widget.buttons![index].icon,
+                                      onTap: widget.buttons![index].onPress,
+                                      color: widget.buttons![index].color);
+                                },
+                              ),
+                          ]),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-            if (widget.showDonateButton)
-              buildDonateButton(context,
-                  onTap: () => widget.onDonateButtonTapped?.call(context))
-          ],
+              if (widget.showDonateButton)
+                buildDonateButton(context,
+                    onTap: () => widget.onDonateButtonTapped?.call(context))
+            ],
+          ),
         ),
       ),
     );

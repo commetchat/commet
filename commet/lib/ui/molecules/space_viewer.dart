@@ -10,7 +10,7 @@ class SpaceViewer extends StatefulWidget {
     this.onRoomSelected,
   });
   final Space space;
-  final void Function(Room)? onRoomSelected;
+  final void Function(Room, {bool bypassSpecialRoomType})? onRoomSelected;
 
   @override
   State<SpaceViewer> createState() => _SpaceViewerState();

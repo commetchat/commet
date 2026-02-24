@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:commet/client/client.dart';
@@ -19,11 +20,21 @@ class _SpaceAppearanceSettingsPageState
     extends State<SpaceAppearanceSettingsPage> {
   ImageProvider? image;
   bool uploading = false;
+  late StreamSubscription _sub;
 
   @override
   void initState() {
     image = widget.space.getComponent<SpaceBannerComponent>()?.banner;
     super.initState();
+    _sub = widget.space.onUpdate.listen((_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _sub.cancel();
+    super.dispose();
   }
 
   @override

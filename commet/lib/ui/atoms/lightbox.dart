@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:commet/cache/file_provider.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/molecules/video_player/video_player.dart';
+import 'package:commet/ui/molecules/video_player/video_player_controller.dart';
 import 'package:commet/utils/image/lod_image.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/atoms/popup_dialog.dart';
@@ -17,11 +19,13 @@ class Lightbox extends StatefulWidget {
     this.aspectRatio,
     this.contentKey,
     this.customWidget,
+    this.videoController,
     super.key,
   });
   final ImageProvider? image;
   final FileProvider? video;
   final ImageProvider? thumbnail;
+  final VideoPlayerController? videoController;
   final Widget? customWidget;
   final double? aspectRatio;
   final Key? contentKey;
@@ -35,6 +39,7 @@ class Lightbox extends StatefulWidget {
     ImageProvider? thumbnail,
     FileProvider? video,
     Widget? customWidget,
+    VideoPlayerController? videoController,
     double? aspectRatio,
     Key? key,
   }) {
@@ -47,6 +52,7 @@ class Lightbox extends StatefulWidget {
           return Lightbox(
             image: image,
             video: video,
+            videoController: videoController,
             aspectRatio: aspectRatio,
             thumbnail: thumbnail,
             contentKey: key,
@@ -71,15 +77,22 @@ class _LightboxState extends State<Lightbox> {
   bool dismissing = false;
   final controller = TransformationController();
   bool loadingHighQuality = false;
+  bool rotate = false;
 
   @override
   void initState() {
     super.initState();
 
-    if (widget.aspectRatio == null) {
-      getImageInfo();
-    } else {
+    if (widget.aspectRatio != null) {
       aspectRatio = widget.aspectRatio!;
+    }
+
+    if (widget.image != null) {
+      getImageInfo();
+    }
+
+    if (widget.video != null) {
+      getVideoInfo();
     }
 
     if (widget.image is LODImageProvider) {
@@ -97,6 +110,36 @@ class _LightboxState extends State<Lightbox> {
     var image = await getImage();
     setState(() {
       aspectRatio = image.width / image.height;
+    });
+
+    shouldRotate();
+  }
+
+  void getVideoInfo() async {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      var size = await widget.videoController?.getSize();
+      print(size);
+      if (size != null) {
+        setState(() {
+          aspectRatio = size.width / size.height;
+        });
+      }
+
+      shouldRotate();
+    });
+  }
+
+  void shouldRotate() {
+    if (!Layout.mobile) {
+      return;
+    }
+
+    var size = MediaQuery.sizeOf(context);
+    var screenRatio = size.width / size.height;
+
+    setState(() {
+      rotate = (aspectRatio < 1 && screenRatio > 1) ||
+          (aspectRatio > 1 && screenRatio < 1);
     });
   }
 
@@ -131,77 +174,82 @@ class _LightboxState extends State<Lightbox> {
         child: Padding(
           padding: const EdgeInsets.all(BuildConfig.MOBILE ? 10 : 100.0),
           child: ScaledSafeArea(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: InteractiveViewer(
-                trackpadScrollCausesScale: true,
-                transformationController: controller,
-                maxScale: 3.5,
-                child: Container(
-                  alignment: Alignment.center,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: GestureDetector(
-                      onTap: () {},
-                      child: AspectRatio(
-                          aspectRatio: aspectRatio,
-                          child: widget.customWidget ??
-                              (widget.image != null
-                                  ? Stack(
-                                      fit: StackFit.expand,
-                                      children: [
-                                        Image(
-                                          fit: BoxFit.cover,
-                                          image: widget.image!,
-                                          isAntiAlias: true,
-                                          filterQuality: FilterQuality.medium,
-                                        ),
-                                        if (loadingHighQuality)
-                                          Align(
-                                            alignment: Alignment.bottomRight,
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Container(
-                                                  decoration: BoxDecoration(
-                                                      color: Theme.of(context)
-                                                          .colorScheme
-                                                          .surfaceContainer,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              8)),
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            8.0),
-                                                    child: SizedBox(
-                                                        width: 12,
-                                                        height: 12,
-                                                        child:
-                                                            CircularProgressIndicator()),
-                                                  )),
-                                            ),
-                                          )
-                                      ],
-                                    )
-                                  : widget.video != null
-                                      ? dismissing
-                                          ? widget.thumbnail != null
-                                              ? Image(
-                                                  fit: BoxFit.cover,
-                                                  image: widget.thumbnail!,
-                                                )
-                                              : Container(
-                                                  color: Colors.black,
-                                                )
-                                          : VideoPlayer(
-                                              widget.video!,
-                                              showProgressBar: true,
-                                              canGoFullscreen: false,
-                                              thumbnail: widget.thumbnail,
-                                              key: widget.contentKey,
+            child: RotatedBox(
+              quarterTurns: rotate ? 1 : 0,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: InteractiveViewer(
+                  trackpadScrollCausesScale: true,
+                  transformationController: controller,
+                  maxScale: 3.5,
+                  child: Container(
+                    alignment: Alignment.center,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: GestureDetector(
+                        onTap: () {},
+                        child: AspectRatio(
+                            aspectRatio: aspectRatio,
+                            child: widget.customWidget ??
+                                (widget.image != null
+                                    ? Stack(
+                                        fit: StackFit.expand,
+                                        children: [
+                                          Image(
+                                            fit: BoxFit.cover,
+                                            image: widget.image!,
+                                            isAntiAlias: true,
+                                            filterQuality: FilterQuality.medium,
+                                          ),
+                                          if (loadingHighQuality)
+                                            Align(
+                                              alignment: Alignment.bottomRight,
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Container(
+                                                    decoration: BoxDecoration(
+                                                        color: Theme.of(context)
+                                                            .colorScheme
+                                                            .surfaceContainer,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8)),
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8.0),
+                                                      child: SizedBox(
+                                                          width: 12,
+                                                          height: 12,
+                                                          child:
+                                                              CircularProgressIndicator()),
+                                                    )),
+                                              ),
                                             )
-                                      : const Placeholder())),
+                                        ],
+                                      )
+                                    : widget.video != null
+                                        ? dismissing
+                                            ? widget.thumbnail != null
+                                                ? Image(
+                                                    fit: BoxFit.cover,
+                                                    image: widget.thumbnail!,
+                                                  )
+                                                : Container(
+                                                    color: Colors.black,
+                                                  )
+                                            : VideoPlayer(
+                                                widget.video!,
+                                                controller:
+                                                    widget.videoController,
+                                                showProgressBar: true,
+                                                canGoFullscreen: false,
+                                                thumbnail: widget.thumbnail,
+                                                key: widget.contentKey,
+                                              )
+                                        : const Placeholder())),
+                      ),
                     ),
                   ),
                 ),

@@ -1,4 +1,5 @@
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/read_receipts/read_receipt_component.dart';
 import 'package:commet/client/components/threads/thread_component.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/client/timeline_events/timeline_event_emote.dart';
@@ -10,13 +11,19 @@ import 'package:commet/config/layout_config.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/diagnostic/benchmark_values.dart';
 import 'package:commet/main.dart';
+import 'package:commet/ui/atoms/adaptive_context_menu.dart';
+import 'package:commet/ui/atoms/emoji_widget.dart';
 import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_generic.dart';
 import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_message.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_date_time_marker.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_layout.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_menu.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_menu_dialog.dart';
+import 'package:commet/ui/molecules/user_panel.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:tiamat/atoms/context_menu.dart';
+import 'package:tiamat/tiamat.dart' as tiamat;
 
 class TimelineViewEntry extends StatefulWidget {
   const TimelineViewEntry(
@@ -84,6 +91,9 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
   bool showDateSeperator = false;
 
   ThreadsComponent? threads;
+
+  List<String> readReceipts = [];
+
   @override
   void initState() {
     threads = widget.timeline.room.client.getComponent<ThreadsComponent>();
@@ -99,6 +109,13 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
   void loadState(int eventIndex) {
     var event = widget.timeline.events[eventIndex];
     redacted = widget.timeline.isEventRedacted(event);
+
+    var receipts = widget.timeline.room
+        .getComponent<ReadReceiptComponent>()
+        ?.getReceipts(event);
+    if (receipts != null) {
+      readReceipts = receipts;
+    }
 
     eventId = event.eventId;
     status = event.status;
@@ -252,6 +269,77 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
       );
     }
 
+    if (Layout.desktop) {
+      var event = widget.timeline.tryGetEvent(eventId);
+      if (event != null) {
+        var menu = TimelineEventMenu(
+            timeline: widget.timeline,
+            event: event,
+            setEditingEvent: widget.setEditingEvent,
+            setReplyingEvent: widget.setReplyingEvent);
+        result = AdaptiveContextMenu(items: [
+          if (menu.addReactionAction != null)
+            ContextMenuItem(
+              text: "Add Reaction",
+              customBuilder: (context, onClick) => Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    for (var i = 0;
+                        i < 3 && i < menu.recentReactions.length;
+                        i++)
+                      InkWell(
+                          onTap: () {
+                            widget.timeline.room
+                                .addReaction(event, menu.recentReactions[i]);
+                            onClick();
+                          },
+                          child: SizedBox(
+                              height: 30,
+                              width: 30,
+                              child: EmojiWidget(menu.recentReactions[i]))),
+                    tiamat.IconButton(
+                      icon: Icons.add_reaction,
+                      size: 24,
+                      onPressed: () {
+                        AdaptiveDialog.show(
+                          context,
+                          builder: (newContext) {
+                            return SizedBox(
+                                width: 500,
+                                height: 500,
+                                child: menu
+                                    .addReactionAction!.secondaryMenuBuilder!
+                                    .call(
+                                  newContext,
+                                  () {
+                                    Navigator.of(newContext).pop();
+                                  },
+                                ));
+                          },
+                        );
+                        menu.addReactionAction?.action?.call(context);
+                      },
+                    )
+                  ],
+                ),
+              ),
+            ),
+          for (var i in menu.primaryActions)
+            ContextMenuItem(
+                text: i.name,
+                icon: i.icon,
+                onPressed: () => i.action?.call(context)),
+          for (var i in menu.secondaryActions)
+            ContextMenuItem(
+                text: i.name,
+                icon: i.icon,
+                onPressed: () => i.action?.call(context))
+        ], child: result);
+      }
+    }
+
     if (selected) {
       result = Container(
         color: Theme.of(context).hoverColor.withAlpha(5),
@@ -310,6 +398,8 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
           timeline: widget.timeline,
           isThreadTimeline: widget.isThreadTimeline,
           detailed: widget.showDetailed || selected,
+          onReadReceiptsTapped: onReadReceiptsTapped,
+          readReceipts: readReceipts,
           overrideShowSender: widget.singleEvent || showDateSeperator,
           jumpToEvent: widget.jumpToEvent,
           previewMedia: widget.previewMedia,
@@ -318,19 +408,25 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
       return TimelineEventViewGeneric(
         timeline: widget.timeline,
         initialIndex: widget.initialIndex,
+        room: widget.timeline.room,
+        readReceipts: readReceipts,
+        onReadReceiptsTapped: onReadReceiptsTapped,
         key: eventKey,
       );
 
-    if (preferences.developerMode == false &&
+    if (preferences.developerMode.value == false &&
         _widgetType == TimelineEventWidgetDisplayType.hidden) {
       return null;
     }
 
-    return preferences.developerMode
+    return preferences.developerMode.value
         ? TimelineEventViewGeneric(
             timeline: widget.timeline,
+            room: widget.timeline.room,
             initialIndex: widget.initialIndex,
             key: eventKey,
+            onReadReceiptsTapped: onReadReceiptsTapped,
+            readReceipts: readReceipts,
           )
         : Container(
             key: eventKey,
@@ -360,5 +456,19 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
       setState(() {
         highlighted = value;
       });
+  }
+
+  onReadReceiptsTapped() {
+    AdaptiveDialog.show(context, title: "Read Receipts", builder: (context) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: readReceipts
+            .map((i) => UserPanel(
+                userId: i,
+                client: widget.timeline.client,
+                contextRoom: widget.timeline.room))
+            .toList(),
+      );
+    });
   }
 }

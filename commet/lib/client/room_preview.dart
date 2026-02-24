@@ -1,5 +1,4 @@
 import 'package:commet/client/client.dart';
-import 'package:commet/client/room.dart';
 import 'package:flutter/material.dart';
 
 enum RoomPreviewType { room, space, inaccessible }

@@ -13,7 +13,7 @@ import 'package:commet/ui/atoms/code_block.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/navigation/navigation_utils.dart';
 import 'package:commet/ui/pages/developer/benchmarks/timeline_viewer_benchmark.dart';
-import 'package:commet/ui/pages/settings/categories/app/general_settings_page.dart';
+import 'package:commet/ui/pages/settings/categories/app/boolean_toggle.dart';
 import 'package:commet/ui/pages/settings/categories/developer/cumulative_diagnostics_widget.dart';
 import 'package:commet/utils/background_tasks/background_task_manager.dart';
 import 'package:commet/utils/background_tasks/mock_tasks.dart';
@@ -54,15 +54,12 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
         child: Column(
           children: [
             if (!BuildConfig.MOBILE)
-              GeneralSettingsPageState.settingToggle(
-                  preferences.disableTextCursorManagement, onChanged: (value) {
-                preferences
-                    .setdisableTextCursorManagement(value)
-                    .then((_) => setState(() {}));
-              },
-                  title: "Disable Text Cursor Management",
-                  description:
-                      "As part of the implementaton for the rich text editor, we sometimes have to make automated changes to the text cursor. This disables that"),
+              BooleanPreferenceToggle(
+                preference: preferences.disableTextCursorManagement,
+                title: "Disable Text Cursor Management",
+                description:
+                    "As part of the implementaton for the rich text editor, we sometimes have to make automated changes to the text cursor. This disables that",
+              )
           ],
         ),
       )

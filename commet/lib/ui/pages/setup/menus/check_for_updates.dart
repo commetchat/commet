@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:commet/main.dart';
-import 'package:commet/ui/pages/settings/categories/app/general_settings_page.dart';
+import 'package:commet/ui/pages/settings/categories/app/boolean_toggle.dart';
 import 'package:commet/ui/pages/setup/setup_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -43,8 +43,8 @@ class UpdateCheckerSetup implements SetupMenu {
 
   @override
   Future<void> submit() async {
-    if (preferences.checkForUpdates == null) {
-      preferences.setCheckForUpdates(false);
+    if (preferences.checkForUpdates.value == null) {
+      preferences.checkForUpdates.set(false);
     }
   }
 }
@@ -61,15 +61,11 @@ class _CheckForUpdatesSettingWidgetState
     extends State<CheckForUpdatesSettingWidget> {
   @override
   Widget build(BuildContext context) {
-    return GeneralSettingsPageState.settingToggle(
-      preferences.checkForUpdates ?? false,
+    return NullableBooleanPreferenceToggle(
+      preference: preferences.checkForUpdates,
       title: "Check for updates",
       description:
           "Automatically check if there is a newer version of Commet available",
-      onChanged: (v) {
-        preferences.setCheckForUpdates(v);
-        setState(() {});
-      },
     );
   }
 }

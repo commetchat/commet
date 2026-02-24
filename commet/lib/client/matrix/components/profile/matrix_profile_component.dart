@@ -46,15 +46,31 @@ class MatrixProfile
       : null;
 
   @override
-  ImageProvider? get banner =>
-      fields.containsKey(MatrixProfileComponent.bannerKey)
-          ? MatrixMxcImage(
+  ImageProvider? get banner {
+    try {
+      if (fields.containsKey(MatrixProfileComponent.bannerKey)) {
+        var url = fields[MatrixProfileComponent.bannerKey];
+
+        if (url is String) {
+          // There is an issue where some homeservers are returning extra quotes here
+          if (url.startsWith("\"") && url.endsWith("\"")) {
+            url = url.substring(1, url.length - 1);
+          }
+
+          return MatrixMxcImage(
               Uri.parse(fields[MatrixProfileComponent.bannerKey]),
               doFullres: true,
               doThumbnail: false,
               autoLoadFullRes: true,
-              client.matrixClient)
-          : null;
+              client.matrixClient);
+        }
+      }
+    } catch (e, s) {
+      Log.onError(e, s, content: "Error while getting profile banner");
+    }
+
+    return null;
+  }
 
   @override
   Color get defaultColor =>
@@ -325,25 +341,30 @@ class MatrixProfileComponent implements UserProfileComponent<MatrixClient> {
   MatrixProfileComponent(this.client);
 
   @override
-  Future<Profile?> getProfile(String identifier) async {
-    var fields = await client.matrixClient
-        .request(RequestType.GET, "/client/v3/profile/${identifier}");
-    fields["user_id"] = identifier;
+  Future<Profile> getProfile(String identifier) async {
+    try {
+      var fields = await client.matrixClient.request(RequestType.GET,
+          "/client/v3/profile/${Uri.encodeComponent(identifier)}");
+      fields["user_id"] = identifier;
 
-    var precense = await client
-        .getComponent<UserPresenceComponent>()
-        ?.getUserPresence(identifier);
+      var precense = await client
+          .getComponent<UserPresenceComponent>()
+          ?.getUserPresence(identifier);
 
-    if (precense == null || precense.message == null) {
-      if (fields.containsKey(statusKey)) {
-        precense = UserPresence(UserPresenceStatus.unknown,
-            message: UserPresenceMessage(
-                fields[statusKey].toString(), PresenceMessageType.userCustom));
+      if (precense == null || precense.message == null) {
+        if (fields.containsKey(statusKey)) {
+          precense = UserPresence(UserPresenceStatus.unknown,
+              message: UserPresenceMessage(fields[statusKey].toString(),
+                  PresenceMessageType.userCustom));
+        }
       }
-    }
 
-    return MatrixProfile(client, matrix.Profile.fromJson(fields),
-        precence: precense, fields: fields);
+      return MatrixProfile(client, matrix.Profile.fromJson(fields),
+          precence: precense, fields: fields);
+    } catch (e, s) {
+      Log.onError(e, s, content: "Error while fetching profile");
+      return MatrixProfile(client, matrix.Profile(userId: identifier));
+    }
   }
 
   @override
@@ -356,8 +377,8 @@ class MatrixProfileComponent implements UserProfileComponent<MatrixClient> {
   Future<void> setField(String field, dynamic content) async {
     final data = {field: content};
 
-    var response = await client.matrixClient.request(
-        RequestType.PUT, "/client/v3/profile/${client.self!.identifier}/$field",
+    var response = await client.matrixClient.request(RequestType.PUT,
+        "/client/v3/profile/${Uri.encodeComponent(client.self!.identifier)}/$field",
         data: data);
 
     print(response);
@@ -366,7 +387,7 @@ class MatrixProfileComponent implements UserProfileComponent<MatrixClient> {
   Future<void> removeField(String field) async {
     var response = await client.matrixClient.request(
       RequestType.DELETE,
-      "/client/v3/profile/${client.self!.identifier}/$field",
+      "/client/v3/profile/${Uri.encodeComponent(client.self!.identifier)}/$field",
     );
 
     print(response);

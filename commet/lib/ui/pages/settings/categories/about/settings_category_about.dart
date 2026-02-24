@@ -34,7 +34,7 @@ class SettingsCategoryAbout implements SettingsCategory {
             pageBuilder: (context) {
               return const _AppInfo();
             }),
-        if (preferences.developerMode)
+        if (preferences.developerMode.value)
           SettingsTab(
             label: labelSettingsAppLogs,
             icon: m.Icons.text_snippet,
@@ -169,9 +169,9 @@ class _AppInfoState extends State<_AppInfo> {
                         ),
                       if (Subplatforms.subplatform != null)
                         tiamat.Text.labelLow(Subplatforms.subplatform!.name),
-                      if (preferences.developerMode)
+                      if (preferences.developerMode.value)
                         tiamat.Text.labelLow(getEncryptionInfo()),
-                      if (preferences.developerMode)
+                      if (preferences.developerMode.value)
                         tiamat.Text.labelLow(commandLineArgs.join(" "))
                     ],
                   ),

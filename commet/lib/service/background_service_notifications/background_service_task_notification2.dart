@@ -102,7 +102,7 @@ class BackgroundNotificationsManager2 {
     try {
       var roomId = data["room_id"] as String?;
       var eventId = data["event_id"] as String?;
-      var counts = data["counts"] as String?;
+      var counts = data["counts"];
 
       if (roomId == null || eventId == null) {
         Log.w("TODO: Handle counts: $counts");

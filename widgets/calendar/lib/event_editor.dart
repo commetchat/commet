@@ -60,7 +60,7 @@ class _CalendarEventEditorState extends State<CalendarEventEditor> {
       ? DateTime(
           pickedStartDate.year,
           pickedStartDate.month,
-          pickedEndDate.day,
+          pickedStartDate.day,
         )
       : DateTime(
           pickedStartDate.year,
@@ -386,6 +386,21 @@ class _CalendarEventEditorState extends State<CalendarEventEditor> {
                                   };
 
                                   var tz = requiresTimezone ? timezone : null;
+
+                                  if (recurrenceRule?.frequency == "weekly" &&
+                                      recurrenceRule!.byDay == null) {
+                                    recurrenceRule?.byDay = [
+                                      Rfc8984NDay([
+                                        "mo",
+                                        "tu",
+                                        "we",
+                                        "th",
+                                        "fr",
+                                        "sa",
+                                        "su"
+                                      ][startTime.weekday - 1])
+                                    ];
+                                  }
 
                                   var event = RFC8984CalendarEvent(
                                     uid: widget.initialEvent?.uid ?? "",
