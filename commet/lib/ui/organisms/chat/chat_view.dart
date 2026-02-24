@@ -41,6 +41,24 @@ class ChatView extends StatelessWidget {
       name: "tombstoneEnterNewRoom",
       desc: "Button label for navigating to the replacement room");
 
+  Future<void> openReplacementRoomAndLeave(String replacementRoomId) async {
+    final client = state.room.client;
+    Room? targetRoom = client.getRoom(replacementRoomId);
+
+    targetRoom ??= client.getRoomByAlias(replacementRoomId);
+
+    if (targetRoom == null) {
+      try {
+        targetRoom = await client.joinRoom(replacementRoomId);
+      } catch (_) {
+        return;
+      }
+    }
+
+    EventBus.openRoom.add((targetRoom.identifier, client.identifier));
+    await client.leaveRoom(state.room);
+  }
+
   String? get relatedEventSenderName => state.interactingEvent == null
       ? null
       : state.room
@@ -130,10 +148,8 @@ class ChatView extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(top: 8),
                   child: TextButton.icon(
-                    onPressed: () {
-                      EventBus.openRoom.add(
-                        (replacementRoomId, state.room.client.identifier),
-                      );
+                    onPressed: () async {
+                      await openReplacementRoomAndLeave(replacementRoomId);
                     },
                     icon: const Icon(Icons.arrow_forward),
                     label: Text(tombstoneEnterNewRoom),
