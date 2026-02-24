@@ -29,18 +29,21 @@ class LoginPageState extends State<LoginPage> {
       desc:
           "A generic error message to convey that an error occured when attempting to login");
 
-  String get messageAlreadyLoggedIn => Intl.message("You have already logged in to this account",
+  String get messageAlreadyLoggedIn => Intl.message(
+        "You have already logged in to this account",
         name: "messageAlreadyLoggedIn",
         desc:
             "An error message displayed when the user attempts to add an account which has already been logged in to on this device",
       );
 
-  String get messageUserDeactivated => Intl.message("Your account has been deactivated",
+  String get messageUserDeactivated => Intl.message(
+      "Your account has been deactivated",
       name: "messageUserDeactivated",
       desc:
           "An error message displayed when the user attempts to log into an account that has been disabled");
 
-  String get messageInvalidUsernameOrPassword => Intl.message("Invalid username or password",
+  String get messageInvalidUsernameOrPassword => Intl.message(
+      "Invalid username or password",
       name: "messageInvalidUsernameOrPassword",
       desc:
           "An error message displayed when the user attempts to log into an account using the wrong username/password combination");

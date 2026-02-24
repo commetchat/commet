@@ -77,7 +77,10 @@ class CreateRoomArgs {
 }
 
 enum LoginResult {
-  success, failed, error, cancelled,
+  success,
+  failed,
+  error,
+  cancelled,
   alreadyLoggedIn,
   invalidUsernameOrPassword,
   userDeactivated

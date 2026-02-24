@@ -31,15 +31,16 @@ class MatrixPasswordLoginFlow implements PasswordLoginFlow {
           password: password,
           identifier: matrix.AuthenticationUserIdentifier(user: username!));
 
-      result = response.accessToken.isNotEmpty ? LoginResult.success : LoginResult.failed;
-
+      result = response.accessToken.isNotEmpty
+          ? LoginResult.success
+          : LoginResult.failed;
     } catch (exception) {
       result = LoginResult.error;
 
       if (exception is matrix.MatrixException) {
         if (exception.errcode == "M_USER_DEACTIVATED")
           result = LoginResult.userDeactivated;
-        else if (_containsWordUsernameOrPassword(exception.errorMessage ))
+        else if (_containsWordUsernameOrPassword(exception.errorMessage))
           result = LoginResult.invalidUsernameOrPassword;
       }
     }
@@ -51,6 +52,7 @@ class MatrixPasswordLoginFlow implements PasswordLoginFlow {
   bool _containsWordUsernameOrPassword(String? text) {
     if (text == null) return false;
     final String lowercaseText = text.toLowerCase();
-    return lowercaseText.contains('username') || lowercaseText.contains('password');
+    return (lowercaseText.contains('username') ||
+        lowercaseText.contains('password'));
   }
 }
