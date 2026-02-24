@@ -32,6 +32,15 @@ class ChatView extends StatelessWidget {
       name: "cantSentMessagePrompt",
       desc: "Text that explains the user cannot send a message in this room");
 
+  String get tombstoneRoomReplacedMessage =>
+      Intl.message("This room has been replaced",
+          name: "tombstoneRoomReplacedMessage",
+          desc: "Text that explains a room was replaced by another room");
+
+  String get tombstoneEnterNewRoom => Intl.message("Enter new room",
+      name: "tombstoneEnterNewRoom",
+      desc: "Button label for navigating to the replacement room");
+
   String? get relatedEventSenderName => state.interactingEvent == null
       ? null
       : state.room
@@ -50,7 +59,7 @@ class ChatView extends StatelessWidget {
         fit: StackFit.expand,
         children: [timeline(), const ParticlePlayer()],
       )),
-      input(),
+      input(context),
     ]);
   }
 
@@ -89,13 +98,51 @@ class ChatView extends StatelessWidget {
     NotificationManager.clearNotifications(room);
   }
 
-  Widget input() {
+  Widget input(BuildContext context) {
     String? interactingEventBody = state.interactingEvent?.plainTextBody;
 
     if (state.interactingEvent case TimelineEventMessage m) {
       if (state.timeline != null) {
         interactingEventBody = m.getPlaintextBody(state.timeline!);
       }
+    }
+
+    if (state.room.isTombstoned) {
+      final replacementRoomId = state.room.tombstoneReplacementRoomId;
+      final body = state.room.tombstoneBody?.trim();
+      final displayMessage =
+          body != null && body.isNotEmpty ? body : tombstoneRoomReplacedMessage;
+
+      return ClipRRect(
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
+          color: Theme.of(context).colorScheme.surface,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                displayMessage,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              if (replacementRoomId != null && replacementRoomId.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: TextButton.icon(
+                    onPressed: () {
+                      EventBus.openRoom.add(
+                        (replacementRoomId, state.room.client.identifier),
+                      );
+                    },
+                    icon: const Icon(Icons.arrow_forward),
+                    label: Text(tombstoneEnterNewRoom),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      );
     }
 
     return ClipRRect(

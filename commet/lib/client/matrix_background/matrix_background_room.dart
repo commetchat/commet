@@ -216,6 +216,20 @@ class MatrixBackgroundRoom implements Room {
       _stateEvents.any((e) => e.type == matrix.EventTypes.Encryption);
 
   @override
+  bool get isTombstoned => _stateEvents
+      .any((event) => event.type == matrix.EventTypes.RoomTombstone);
+
+  matrix.BasicEvent? get _tombstoneState => _stateEvents.firstWhereOrNull(
+      (event) => event.type == matrix.EventTypes.RoomTombstone);
+
+  @override
+  String? get tombstoneReplacementRoomId =>
+      _tombstoneState?.content["replacement_room"] as String?;
+
+  @override
+  String? get tombstoneBody => _tombstoneState?.content["body"] as String?;
+
+  @override
   bool get isMembersListComplete => throw UnimplementedError();
 
   @override
