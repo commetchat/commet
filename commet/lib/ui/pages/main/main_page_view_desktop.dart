@@ -1,4 +1,5 @@
 import 'package:commet/client/components/profile/profile_component.dart';
+import 'package:commet/config/build_config.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/adaptive_context_menu.dart';
@@ -17,6 +18,7 @@ import 'package:commet/ui/organisms/room_side_panel/room_side_panel.dart';
 import 'package:commet/ui/organisms/side_navigation_bar/side_navigation_bar.dart';
 import 'package:commet/ui/organisms/sidebar_call_icon/sidebar_calls_list.dart';
 import 'package:commet/ui/organisms/space_summary/space_summary.dart';
+import 'package:commet/ui/pages/get_or_create_room/get_or_create_room.dart';
 import 'package:commet/ui/pages/main/main_page.dart';
 import 'package:commet/ui/pages/main/room_primary_view.dart';
 import 'package:commet/ui/pages/settings/app_settings_page.dart';
@@ -414,11 +416,13 @@ class MainPageViewDesktop extends StatelessWidget {
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: tiamat.IconButton(
+                  child: tiamat.CircleButton(
+                    radius: BuildConfig.MOBILE ? 24 : 16,
                     icon: Icons.add,
-                    onPressed: () {
-                      state.searchUserToDm();
-                    },
+                    onPressed: () => GetOrCreateRoom.show(null, context,
+                        pickExisting: false,
+                        showAllRoomTypes: true,
+                        startdm: true),
                   ),
                 ),
               ],

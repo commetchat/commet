@@ -17,9 +17,11 @@ class SendInvitationWidget extends StatefulWidget {
       this.displayName,
       this.onUserPicked,
       this.showSuggestions = true,
-      this.existingMembers});
+      this.existingMembers,
+      this.embedded = false});
   final Client client;
   final bool showSuggestions;
+  final bool embedded;
   final Iterable<String>? existingMembers;
 
   final Future<void> Function(String userId)? onUserPicked;
@@ -67,8 +69,8 @@ class _SendInvitationWidgetState extends State<SendInvitationWidget> {
       child: IgnorePointer(
         ignoring: loading,
         child: ScaledSafeArea(
-          child: SizedBox(
-              width: 500,
+          child: Container(
+              width: widget.embedded ? null : 500,
               child: Column(children: [
                 tiamat.TextInput(
                   controller: controller,
@@ -77,8 +79,8 @@ class _SendInvitationWidgetState extends State<SendInvitationWidget> {
                   onChanged: onSearchTextChanged,
                 ),
                 if (isSearching || searchResults?.isNotEmpty == true)
-                  SizedBox(
-                      height: 300,
+                  Container(
+                      height: widget.embedded ? null : 300,
                       child: isSearching
                           ? const Center(child: CircularProgressIndicator())
                           : ListView.builder(
@@ -159,7 +161,7 @@ class _SendInvitationWidgetState extends State<SendInvitationWidget> {
     if (widget.onUserPicked != null) {
       await widget.onUserPicked?.call(userId);
 
-      if (mounted) Navigator.pop(context);
+      if (mounted && !widget.embedded) Navigator.pop(context);
       return;
     }
 
@@ -173,6 +175,6 @@ class _SendInvitationWidgetState extends State<SendInvitationWidget> {
 
     widget.component.inviteUserToRoom(userId: userId, roomId: widget.roomId!);
 
-    if (mounted) Navigator.pop(context);
+    if (mounted && !widget.embedded) Navigator.pop(context);
   }
 }

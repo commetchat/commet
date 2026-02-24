@@ -1,8 +1,11 @@
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/direct_messages/direct_message_component.dart';
+import 'package:commet/client/components/invitation/invitation_component.dart';
 import 'package:commet/client/space_child.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
+import 'package:commet/ui/organisms/invitation_view/send_invitation.dart';
 import 'package:commet/ui/pages/get_or_create_room/calendar_views.dart';
 import 'package:commet/ui/pages/get_or_create_room/existing_room_picker.dart';
 import 'package:commet/ui/pages/get_or_create_room/join_room_view.dart';
@@ -34,19 +37,21 @@ class RoomGetter {
   });
 }
 
-enum _RoomSourceOptions { create, existing, join }
+enum _RoomSourceOptions { create, existing, startdm, join }
 
 class GetOrCreateRoom extends StatefulWidget {
   const GetOrCreateRoom(
-      {super.key, required this.creators, this.existing, this.join});
+      {super.key, required this.creators, this.existing, this.dm, this.join});
 
   final List<RoomGetter> creators;
   final RoomGetter? existing;
+  final RoomGetter? dm;
   final RoomGetter? join;
 
   static Future<SpaceChild?> show(
     Client? client,
     BuildContext context, {
+    bool startdm = false,
     bool joinRoom = true,
     bool pickExisting = true,
     bool showAllRoomTypes = false,
@@ -175,6 +180,40 @@ class GetOrCreateRoom extends StatefulWidget {
           )
         : null;
 
+    final dm = startdm
+        ? RoomGetter(
+            label: "Start Direct Message",
+            hero: true,
+            icon: Icons.message,
+            descriptionBuilder: (_) => Placeholder(),
+            formBuilder: (context, {onPicked}) {
+              final invitation = client?.getComponent<InvitationComponent>();
+              if (invitation == null) return Placeholder();
+
+              return SendInvitationWidget(
+                client!,
+                invitation,
+                showSuggestions: false,
+                embedded: true,
+                onUserPicked: (userId) async {
+                  final confirm = await AdaptiveDialog.confirmation(context,
+                      prompt:
+                          "Are you sure you want to invite $userId to chat?",
+                      title: "Invitation");
+                  if (confirm != true) {
+                    return;
+                  }
+
+                  var comp = client!.getComponent<DirectMessagesComponent>();
+                  var room = await comp?.createDirectMessage(userId);
+
+                  if (room != null) onPicked!(SpaceChildRoom(room));
+                },
+              );
+            },
+          )
+        : null;
+
     final join = joinRoom
         ? RoomGetter(
             label: "Join Room",
@@ -199,6 +238,7 @@ class GetOrCreateRoom extends StatefulWidget {
             items: [
               _RoomSourceOptions.create,
               if (existing != null) _RoomSourceOptions.existing,
+              if (dm != null) _RoomSourceOptions.startdm,
               if (join != null) _RoomSourceOptions.join,
             ],
             itemBuilder: (context, item, callback) => SizedBox(
@@ -212,6 +252,11 @@ class GetOrCreateRoom extends StatefulWidget {
                     _RoomSourceOptions.existing => tiamat.TextButton(
                         "Use Existing Room",
                         icon: Icons.tag,
+                        onTap: callback,
+                      ),
+                    _RoomSourceOptions.startdm => tiamat.TextButton(
+                        "Start Direct Message",
+                        icon: Icons.message,
                         onTap: callback,
                       ),
                     _RoomSourceOptions.join => tiamat.TextButton(
@@ -231,6 +276,17 @@ class GetOrCreateRoom extends StatefulWidget {
             return GetOrCreateRoom(
               creators: creators,
             );
+          },
+        );
+      }
+
+      if (source == _RoomSourceOptions.startdm) {
+        return AdaptiveDialog.show<SpaceChild>(
+          context,
+          scrollable: false,
+          builder: (context) {
+            return dm!.formBuilder(context,
+                onPicked: (i) => Navigator.of(context).pop(i));
           },
         );
       }
@@ -269,6 +325,7 @@ class GetOrCreateRoom extends StatefulWidget {
         return GetOrCreateRoom(
           creators: creators,
           existing: existing,
+          dm: dm,
           join: join,
         );
       },
@@ -355,6 +412,7 @@ class _GetOrCreateRoomState extends State<GetOrCreateRoom> {
                         children: [
                           if (widget.existing != null)
                             createEntry(widget.existing!),
+                          if (widget.dm != null) createEntry(widget.dm!),
                           if (widget.join != null) createEntry(widget.join!),
                           if (widget.creators.isNotEmpty)
                             tiamat.Text.labelLow("Create Room:"),
