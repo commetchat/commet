@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/config/subplatforms/subplatforms.dart';
 import 'package:commet/debug/log.dart';
@@ -9,8 +7,21 @@ import 'package:window_manager/window_manager.dart';
 class SteamdeckSubplatform implements Subplatform {
   @override
   Future<void> init() async {
+    Log.i(
+        "Initializing steamdeck subplatform: ${_isSteamDeck} is gamemode: ${_isGameMode}");
+
     if (_isGameMode) {
-      await windowManager.setSize(Size(1280, 800));
+      await windowManager.setFullScreen(true);
+      ensureFullscreen();
+    }
+  }
+
+  Future<void> ensureFullscreen() async {
+    while (await windowManager.isFullScreen() == false) {
+      Log.i("Window is still not fullscreen, waiting and trying again");
+      await Future.delayed(Duration(seconds: 1));
+
+      await windowManager.setFullScreen(true);
     }
   }
 
