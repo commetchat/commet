@@ -76,7 +76,12 @@ class CreateRoomArgs {
   });
 }
 
-enum LoginResult { success, failed, error, alreadyLoggedIn, cancelled }
+enum LoginResult {
+  success, failed, error, cancelled,
+  alreadyLoggedIn,
+  invalidUsernameOrPassword,
+  userDeactivated
+}
 
 abstract class Client {
   /// Local identifier for this client instance

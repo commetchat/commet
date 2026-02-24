@@ -30,15 +30,27 @@ class MatrixPasswordLoginFlow implements PasswordLoginFlow {
           initialDeviceDisplayName: BuildConfig.appName,
           password: password,
           identifier: matrix.AuthenticationUserIdentifier(user: username!));
-      if (response.accessToken.isNotEmpty) {
-        result = LoginResult.success;
-      } else {
-        result = LoginResult.failed;
-      }
-    } catch (_) {
+
+      result = response.accessToken.isNotEmpty ? LoginResult.success : LoginResult.failed;
+
+    } catch (exception) {
       result = LoginResult.error;
+
+      if (exception is matrix.MatrixException) {
+        if (exception.errcode == "M_USER_DEACTIVATED")
+          result = LoginResult.userDeactivated;
+        else if (_containsWordUsernameOrPassword(exception.errorMessage ))
+          result = LoginResult.invalidUsernameOrPassword;
+      }
     }
 
     return result;
+  }
+
+  /// returns true if the text contains 'username' or 'password' case insensitive
+  bool _containsWordUsernameOrPassword(String? text) {
+    if (text == null) return false;
+    final String lowercaseText = text.toLowerCase();
+    return lowercaseText.contains('username') || lowercaseText.contains('password');
   }
 }
