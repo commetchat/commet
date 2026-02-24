@@ -18,12 +18,14 @@ class SteamdeckSubplatform implements Subplatform {
 
   Future<void> ensureFullscreen() async {
     for (int i = 0; i < 10; i++) {
-      if (await windowManager.isFullScreen() == false) {
-        Log.i("Window is still not fullscreen, waiting and trying again");
-
-        await Future.delayed(Duration(seconds: 1));
-        await windowManager.setFullScreen(true);
+      if (await windowManager.isFullScreen()) {
+        return;
       }
+
+      Log.i("Window is still not fullscreen, waiting and trying again");
+
+      await Future.delayed(Duration(seconds: 1));
+      await windowManager.setFullScreen(true);
     }
   }
 
