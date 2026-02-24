@@ -96,6 +96,20 @@ class MatrixRoom extends Room {
   bool get isE2EE => _matrixRoom.encrypted;
 
   @override
+  bool get isTombstoned =>
+      matrixRoom.getState(matrix.EventTypes.RoomTombstone) != null;
+
+  @override
+  String? get tombstoneReplacementRoomId => matrixRoom
+      .getState(matrix.EventTypes.RoomTombstone)
+      ?.content["replacement_room"] as String?;
+
+  @override
+  String? get tombstoneBody =>
+      matrixRoom.getState(matrix.EventTypes.RoomTombstone)?.content["body"]
+          as String?;
+
+  @override
   int get highlightedNotificationCount => _matrixRoom.highlightCount;
 
   @override
@@ -721,7 +735,8 @@ class MatrixRoom extends Room {
     _displayName = _matrixRoom.getLocalizedDisplayname();
     if (event.state.type == "m.room.name" ||
         event.state.type == "m.room.avatar" ||
-        event.state.type == "m.room.topic") {
+        event.state.type == "m.room.topic" ||
+        event.state.type == matrix.EventTypes.RoomTombstone) {
       _onUpdate.add(null);
     }
   }
