@@ -57,7 +57,7 @@ class _SpaceSelectorState extends State<SpaceSelector> {
                   BuildConfig.ANDROID ? const BouncingScrollPhysics() : null,
               child: Padding(
                 padding: EdgeInsets.fromLTRB(
-                    0, 0, 0, MediaQuery.of(context).scale().padding.bottom),
+                    0, MediaQuery.of(context).scale().padding.top, 0, 0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,

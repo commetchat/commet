@@ -300,10 +300,33 @@ class Preferences {
   BoolPreference showRoomPreviewsInSpaceSidebar =
       BoolPreference("show_room_previews_in_space_sidebar", defaultValue: true);
 
+  DoublePreference textScale =
+      DoublePreference("text_scale", defaultValue: 1.0);
+
+  BoolPreference doSimulcast =
+      BoolPreference("livekit_use_simulcast", defaultValue: false);
+
+  DoublePreference streamBitrate =
+      DoublePreference("screenshare_bitrate_mbps", defaultValue: 8);
+
+  DoublePreference streamFramerate =
+      DoublePreference("screenshare_fps", defaultValue: 60);
+
+  StringPreference streamCodec =
+      StringPreference("livekit_screenshare_codec", defaultValue: "av1");
+
+  StringPreference streamResolution = StringPreference(
+      "livekit_screenshare_resolution",
+      defaultValue: "1920x1080");
+
   DoublePreference appScale = DoublePreference("app_scale", defaultValue: 1.0);
 
   DoublePreference emojiPickerHeight =
       DoublePreference("emoji_picker_height", defaultValue: 300);
+
+  DoublePreference customOnscreenKeyboardViewOffset = DoublePreference(
+      "custom_onscreen_keyboard_view_offset",
+      defaultValue: 0.0);
 
   StringPreference proxyUrl =
       StringPreference("proxy_url", defaultValue: "proxy.commet.chat");

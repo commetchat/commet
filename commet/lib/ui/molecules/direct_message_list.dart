@@ -88,6 +88,7 @@ class _DirectMessageListState extends State<DirectMessageList> {
     return ImplicitlyAnimatedList(
       itemData: rooms,
       initialAnimation: false,
+      padding: EdgeInsets.zero,
       itemBuilder: (context, room) {
         final component = room.client.getComponent<DirectMessagesComponent>();
         final id = component?.getDirectMessagePartnerId(room);
