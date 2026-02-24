@@ -6,6 +6,7 @@ import 'package:commet/client/timeline_events/timeline_event_emote.dart';
 import 'package:commet/client/timeline_events/timeline_event_encrypted.dart';
 import 'package:commet/client/timeline_events/timeline_event_generic.dart';
 import 'package:commet/client/timeline_events/timeline_event_message.dart';
+import 'package:commet/client/timeline_events/timeline_event_room_tombstone.dart';
 import 'package:commet/client/timeline_events/timeline_event_sticker.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/debug/log.dart';
@@ -130,6 +131,8 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
         event is TimelineEventSticker ||
         event is TimelineEventEncrypted) {
       return TimelineEventWidgetDisplayType.message;
+    } else if (event is TimelineEventRoomTombstone) {
+      return TimelineEventWidgetDisplayType.generic;
     } else if (event is TimelineEventGeneric) {
       return TimelineEventWidgetDisplayType.generic;
     } else if (event.status == TimelineEventStatus.error) {
