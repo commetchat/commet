@@ -31,12 +31,13 @@ class MatrixPasswordLoginFlow implements PasswordLoginFlow {
           password: password,
           identifier: matrix.AuthenticationUserIdentifier(user: username!));
 
-      if(response.accessToken.isNotEmpty)
+      if (response.accessToken.isNotEmpty)
         result = LoginResult.success;
       else {
         result = LoginResult.failed;
       }
     } on matrix.MatrixException catch (exception) {
+      result = LoginResult.error;
       if (exception.errcode == "M_USER_DEACTIVATED")
         result = LoginResult.userDeactivated;
       else if (_containsWordUsernameOrPassword(exception.errorMessage)) {
