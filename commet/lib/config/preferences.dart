@@ -324,6 +324,10 @@ class Preferences {
   DoublePreference emojiPickerHeight =
       DoublePreference("emoji_picker_height", defaultValue: 300);
 
+  DoublePreference customOnscreenKeyboardViewOffset = DoublePreference(
+      "custom_onscreen_keyboard_view_offset",
+      defaultValue: 0.0);
+
   StringPreference proxyUrl =
       StringPreference("proxy_url", defaultValue: "proxy.commet.chat");
 
