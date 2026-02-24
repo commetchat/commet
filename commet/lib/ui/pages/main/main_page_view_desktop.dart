@@ -400,6 +400,8 @@ class MainPageViewDesktop extends StatelessWidget {
   Widget buildRoomPicker(BuildContext context) {
     if (state.currentSpace == null) {
       return ScaledSafeArea(
+        top: true,
+        bottom: false,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

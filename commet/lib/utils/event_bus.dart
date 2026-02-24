@@ -25,6 +25,9 @@ class EventBus {
   static StreamController<Client?> setFilterClient =
       StreamController.broadcast();
 
+  static StreamController<bool> onTextFieldFocused =
+      StreamController.broadcast();
+
   /// Called when the user initially logs in to the app, or on app startup when atleast one user account is already logged in
   static StreamController<BuildContext> onLoggedIn =
       StreamController<BuildContext>.broadcast();
