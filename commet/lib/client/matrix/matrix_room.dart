@@ -13,6 +13,7 @@ import 'package:commet/client/components/room_component.dart';
 import 'package:commet/client/components/user_color/user_color_component.dart';
 import 'package:commet/client/matrix/components/calendar_room_component/matrix_calendar_room_component.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_room_emoticon_component.dart';
+import 'package:commet/client/matrix/components/read_receipts/matrix_read_receipt_component.dart';
 import 'package:commet/client/matrix/matrix_attachment.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_member.dart';
@@ -844,18 +845,9 @@ class MatrixRoom extends Room {
   @override
   Future<void> markAsRead() async {
     var tl = await matrixRoom.getTimeline();
-
-    var rprr = await _client
-        .getRoomAccountData(_client.matrixClient.userID!, matrixRoom.id,
-            MatrixClient.privateReadReceiptsKey)
-        .catchError((e) {
-      if (!(e is matrix.MatrixException &&
-          e.error == matrix.MatrixError.M_NOT_FOUND)) Log.e(e);
-      return {"enabled": false};
-    });
-
+    var readReceiptComponent = getComponent<MatrixReadReceiptComponent>();
     await tl.setReadMarker(
-        public: rprr["enabled"] is bool ? !(rprr["enabled"] as bool) : null);
+        public: readReceiptComponent?.usePublicReadReceiptsForRoom);
   }
 
   @override

@@ -2,12 +2,11 @@ import 'dart:async';
 
 import 'package:commet/client/components/typing_indicators/typing_indicator_component.dart';
 import 'package:commet/client/matrix/components/matrix_sync_listener.dart';
+import 'package:commet/client/matrix/components/user_presence/matrix_user_presence.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_member.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/member.dart';
-import 'package:commet/debug/log.dart';
-import 'package:matrix/matrix_api_lite/model/matrix_exception.dart';
 import 'package:matrix/matrix_api_lite/model/sync_update.dart';
 
 class MatrixTypingIndicatorsComponent
@@ -21,7 +20,28 @@ class MatrixTypingIndicatorsComponent
 
   MatrixTypingIndicatorsComponent(this.client, this.room);
 
+  static const String publicTypingIndicatorKey =
+      "chat.commet.private_typing_indicator";
+
   final StreamController<void> _controller = StreamController.broadcast();
+
+  @override
+  bool? get typingIndicatorEnabledForRoom {
+    var publicTypingIndicatorForRoom = room.matrixRoom
+        .roomAccountData[publicTypingIndicatorKey]?.content["enabled"];
+    return publicTypingIndicatorForRoom is bool
+        ? publicTypingIndicatorForRoom
+        : null;
+  }
+
+  @override
+  Future<void> setTypingIndicatorEnabledForRoom(bool? value) async =>
+      await client.matrixClient.setAccountDataPerRoom(
+        client.matrixClient.userID!,
+        room.matrixRoom.id,
+        publicTypingIndicatorKey,
+        {"enabled": value},
+      );
 
   @override
   onSync(JoinedRoomUpdate update) {
@@ -47,27 +67,10 @@ class MatrixTypingIndicatorsComponent
 
   @override
   Future<void> setTypingStatus(bool status) async {
-    var pti = await client.matrixClient
-        .getAccountData(
-            client.matrixClient.userID!, MatrixClient.privateTypingIndicatorKey)
-        .catchError((e) {
-      if (!(e is MatrixException && e.error == MatrixError.M_NOT_FOUND))
-        Log.e(e);
-      return {"enabled": false};
-    });
-
-    var rpti = await client
-        .getRoomAccountData(client.matrixClient.userID!, room.matrixRoom.id,
-            MatrixClient.privateTypingIndicatorKey)
-        .catchError((e) {
-      if (!(e is MatrixException && e.error == MatrixError.M_NOT_FOUND))
-        Log.e(e);
-      return {"enabled": false};
-    });
-    var rdisabled = rpti["enabled"] is bool ? !(rpti["enabled"] as bool) : null;
-    var enabled = pti["enabled"] is bool ? pti["enabled"] as bool : false;
-
-    if (rdisabled ?? !enabled)
+    var typingIndicatorEnabled = client
+        .getComponent<MatrixUserPresenceComponent>()!
+        .typingIndicatorEnabled;
+    if (typingIndicatorEnabledForRoom ?? typingIndicatorEnabled)
       return room.matrixRoom.setTyping(status, timeout: 2000);
   }
 }

@@ -29,12 +29,10 @@ import 'package:crypto/crypto.dart';
 import 'dart:convert';
 import 'package:commet/client/client.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' show Request;
 import 'package:intl/intl.dart';
 import 'package:matrix/matrix.dart' as matrix;
 import 'package:matrix/encryption.dart';
 import 'package:flutter_vodozemac/flutter_vodozemac.dart' as vodozemac;
-import 'package:matrix/matrix_api_lite/generated/internal.dart' show ignore;
 
 import '../../ui/atoms/code_block.dart';
 import 'matrix_room.dart';
@@ -141,12 +139,6 @@ class MatrixClient extends Client {
   StoredStreamController<ClientConnectionStatusUpdate> connectionStatusChanged =
       StoredStreamController<ClientConnectionStatusUpdate>();
 
-  static const String privateReadReceiptsKey =
-      "chat.commet.private_read_receipts";
-
-  static const String privateTypingIndicatorKey =
-      "chat.commet.private_typing_indicator";
-
   static String get matrixClientOlmMissingMessage => Intl.message(
         "libolm is not installed or was not found. End to End Encryption will not be available until this is resolved",
         name: "matrixClientOlmMissingMessage",
@@ -215,21 +207,6 @@ class MatrixClient extends Client {
       }
 
       await Future.wait(futures);
-
-      for (final client in manager.clients) {
-        if (client is MatrixClient) {
-          var prr = await client.matrixClient
-              .getAccountData(client.matrixClient.userID!,
-                  MatrixClient.privateReadReceiptsKey)
-              .catchError((e) {
-            if (!(e is matrix.MatrixException &&
-                e.error == matrix.MatrixError.M_NOT_FOUND)) Log.e(e);
-            return {"enabled": false};
-          });
-          if (prr["enabled"] is bool ? prr["enabled"] as bool : false)
-            client.matrixClient.receiptsPublicByDefault = false;
-        }
-      }
     });
   }
 
@@ -657,54 +634,6 @@ class MatrixClient extends Client {
   @override
   bool hasSpace(String identifier) {
     return _spaces.any((element) => element.identifier == identifier);
-  }
-
-  Future<Map<String, Object?>> getRoomAccountData(
-    String userId,
-    String roomId,
-    String type,
-  ) async {
-    final requestUri = Uri(
-      path:
-          "_matrix/client/v3/user/${Uri.encodeComponent(userId)}/rooms/${Uri.encodeComponent(roomId)}/account_data/${Uri.encodeComponent(type)}",
-    );
-    final request =
-        Request('GET', matrixClient.baseUri!.resolveUri(requestUri));
-    request.headers['authorization'] = 'Bearer ${matrixClient.bearerToken!}';
-    final response = await matrixClient.httpClient.send(request);
-    final responseBody = await response.stream.toBytes();
-    if (response.statusCode == 404)
-      return {};
-    else if (response.statusCode != 200)
-      matrixClient.unexpectedResponse(response, responseBody);
-    final responseString = utf8.decode(responseBody);
-    final json = jsonDecode(responseString);
-    print(matrixClient.receiptsPublicByDefault);
-    return json as Map<String, Object?>;
-  }
-
-  Future<void> setRoomAccountData(
-    String userId,
-    String roomId,
-    String type,
-    Map<String, Object?> body,
-  ) async {
-    final requestUri = Uri(
-      path:
-          "_matrix/client/v3/user/${Uri.encodeComponent(userId)}/rooms/${Uri.encodeComponent(roomId)}/account_data/${Uri.encodeComponent(type)}",
-    );
-    final request =
-        Request('PUT', matrixClient.baseUri!.resolveUri(requestUri));
-    request.headers['authorization'] = 'Bearer ${matrixClient.bearerToken!}';
-    request.headers['content-type'] = 'application/json';
-    request.bodyBytes = utf8.encode(jsonEncode(body));
-    final response = await matrixClient.httpClient.send(request);
-    final responseBody = await response.stream.toBytes();
-    if (response.statusCode != 200)
-      matrixClient.unexpectedResponse(response, responseBody);
-    final responseString = utf8.decode(responseBody);
-    final json = jsonDecode(responseString);
-    return ignore(json);
   }
 
   (String, List<String>?)? parseAddressToIdAndVia(String address) {

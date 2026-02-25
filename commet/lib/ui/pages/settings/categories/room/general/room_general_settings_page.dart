@@ -1,8 +1,9 @@
+import 'package:commet/client/components/read_receipts/read_receipt_component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/debug/log.dart';
-import 'package:commet/ui/pages/matrix/matrix_room_chat_privacy.dart';
+import 'package:commet/ui/pages/settings/categories/room/general/room_general_chat_privacy.dart';
 import 'package:commet/ui/pages/matrix/room_address_settings/matrix_room_address_settings.dart';
 import 'package:commet/ui/pages/settings/categories/room/general/room_general_settings_view.dart';
 import 'package:flutter/widgets.dart';
@@ -36,8 +37,8 @@ class _RoomGeneralSettingsPageState extends State<RoomGeneralSettingsPage> {
         const SizedBox(
           height: 10,
         ),
+        RoomGeneralChatPrivacySettings(widget.room),
         if (widget.room is MatrixRoom) ...[
-          MatrixRoomChatPrivacySettings(widget.room as MatrixRoom),
           const SizedBox(
             height: 10,
           ),
