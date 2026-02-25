@@ -44,4 +44,8 @@ class MatrixRoomPermissions extends Permissions {
 
   @override
   bool get canChangeRoles => room.canChangePowerLevel;
+
+  @override
+  bool get canChangeVisibility =>
+      room.canChangeStateEvent(matrix.EventTypes.RoomJoinRules);
 }

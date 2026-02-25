@@ -27,7 +27,7 @@ class _VoipTurnFallbackDialogState extends State<VoipTurnFallbackDialog> {
                 padding: EdgeInsets.zero,
                 shrinkWrap: true,
                 data:
-                    "Your homeserver `(${widget.homeserver})` is not configured to route calls. Would you like to fall back to a seperate server `(${preferences.fallbackTurnServer})` to handle routing?"),
+                    "Your homeserver `(${widget.homeserver})` is not configured to route calls. Would you like to fall back to a seperate server `(${preferences.fallbackTurnServer.value})` to handle routing?"),
             const SizedBox(
               height: 20,
             ),

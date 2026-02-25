@@ -349,4 +349,14 @@ class MatrixBackgroundRoom implements Room {
     // TODO: implement markAsRead
     throw UnimplementedError();
   }
+
+  @override
+  // TODO: implement visibility
+  RoomVisibility get visibility => throw UnimplementedError();
+
+  @override
+  Future<void> setVisibility(RoomVisibility visibility) {
+    // TODO: implement setVisibility
+    throw UnimplementedError();
+  }
 }

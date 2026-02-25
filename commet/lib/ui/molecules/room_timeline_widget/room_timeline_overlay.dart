@@ -203,7 +203,7 @@ class TimelineOverlayState extends State<TimelineOverlay> {
       });
     } else {
       var obj = menuKey.currentContext?.findRenderObject() as RenderBox;
-      var pos = obj.localToGlobal(Offset.zero) * preferences.appScale;
+      var pos = obj.localToGlobal(Offset.zero) * preferences.appScale.value;
       openDownwards = pos.dy < (tooltipHeight + 100);
       setState(() {
         selectedEntry = entry;

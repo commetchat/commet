@@ -27,10 +27,10 @@ class MatrixGifComponent implements GifComponent<MatrixClient, MatrixRoom> {
   Future<List<GifSearchResult>> search(String query) async {
     // The ui should never actually let the user search if this is disabled, so this *shouldn't* be neccessary
     // but just to be safe!
-    if (!preferences.tenorGifSearchEnabled) return [];
+    if (!preferences.tenorGifSearchEnabled.value) return [];
 
     var uri = Uri.https(
-        preferences.proxyUrl, "/proxy/tenor/api/v2/search", {"q": query});
+        preferences.proxyUrl.value, "/proxy/tenor/api/v2/search", {"q": query});
 
     var result = await http.get(uri);
     if (result.statusCode == 200) {
@@ -60,8 +60,8 @@ class MatrixGifComponent implements GifComponent<MatrixClient, MatrixRoom> {
       var content = {
         "body": gif.fullResUrl.pathSegments.last,
         "url": uri.toString(),
-        if (preferences.stickerCompatibilityMode) "msgtype": "m.image",
-        if (preferences.stickerCompatibilityMode)
+        if (preferences.stickerCompatibilityMode.value) "msgtype": "m.image",
+        if (preferences.stickerCompatibilityMode.value)
           "chat.commet.type": "chat.commet.sticker",
         "info": {
           "chat.commet.animated": true,
@@ -76,7 +76,7 @@ class MatrixGifComponent implements GifComponent<MatrixClient, MatrixRoom> {
       }
 
       var id = await matrixRoom.sendEvent(content,
-          type: preferences.stickerCompatibilityMode
+          type: preferences.stickerCompatibilityMode.value
               ? matrix.EventTypes.Message
               : matrix.EventTypes.Sticker,
           inReplyTo: replyingTo);
@@ -131,7 +131,7 @@ class MatrixGifComponent implements GifComponent<MatrixClient, MatrixRoom> {
     var uri = Uri.parse(url);
 
     var proxyUri =
-        Uri.https(preferences.proxyUrl, "/proxy/tenor/media${uri.path}");
+        Uri.https(preferences.proxyUrl.value, "/proxy/tenor/media${uri.path}");
 
     return proxyUri;
   }

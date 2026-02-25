@@ -45,10 +45,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
     subscriptions = [
       widget.clientManager.onSync.stream.listen(onSync),
+      widget.clientManager.onClientRemoved.stream.listen((_) {
+        setState(() {
+          updateRecent();
+        });
+      }),
       EventBus.setFilterClient.stream.listen(setFilterClient),
     ];
 
-    if (preferences.checkForUpdates == true) {
+    if (preferences.checkForUpdates.value == true) {
       UpdateChecker.checkForUpdates();
     }
 
@@ -92,24 +97,25 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        tiamat.Tile.low(
-          caulkClipBottomRight: true,
-          caulkClipBottomLeft: true,
-          caulkBorderBottom: true,
-          child: ScaledSafeArea(
-            bottom: false,
-            left: false,
-            right: false,
-            child: SizedBox(
-              height: 50,
-              child: HeaderView(
-                showBurger: Layout.mobile,
-                onBurgerMenuTap: widget.onBurgerMenuTap,
-                text: CommonStrings.promptHome,
+        if (Layout.mobile)
+          tiamat.Tile.low(
+            caulkClipBottomRight: true,
+            caulkClipBottomLeft: true,
+            caulkBorderBottom: true,
+            child: ScaledSafeArea(
+              bottom: false,
+              left: false,
+              right: false,
+              child: SizedBox(
+                height: 50,
+                child: HeaderView(
+                  showBurger: Layout.mobile,
+                  onBurgerMenuTap: widget.onBurgerMenuTap,
+                  text: CommonStrings.promptHome,
+                ),
               ),
             ),
           ),
-        ),
         Flexible(
           child: ListView(
             padding: const EdgeInsets.all(0),

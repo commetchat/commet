@@ -4,7 +4,7 @@ import 'package:commet/client/components/push_notification/notifier.dart';
 import 'package:commet/client/components/push_notification/push_notification_component.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/main.dart';
-import 'package:commet/ui/pages/settings/categories/app/general_settings_page.dart';
+import 'package:commet/ui/pages/settings/categories/app/boolean_toggle.dart';
 import 'package:commet/ui/pages/settings/categories/app/notification_settings/notifier_debug_view.dart';
 import 'package:commet/ui/pages/setup/menus/unified_push_setup.dart';
 import 'package:commet/utils/common_strings.dart';
@@ -67,7 +67,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
                             UnifiedPushSetupView(
                               onToggled: (_) => setState(() {}),
                             ),
-                            if (preferences.unifiedPushEnabled == true)
+                            if (preferences.unifiedPushEnabled.value == true)
                               pushGatewaySelector(),
                           ],
                         )),
@@ -78,7 +78,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
                 ),
             ],
           ),
-        if (preferences.developerMode)
+        if (preferences.developerMode.value)
           const Panel(
             mode: tiamat.TileType.surfaceContainerLow,
             header: "Registered Pushers",
@@ -92,58 +92,38 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
     return Column(
       children: [
         if (PlatformUtils.isAndroid)
-          GeneralSettingsPageState.settingToggle(
-            preferences.silenceNotifications,
+          BooleanPreferenceToggle(
+            preference: preferences.silenceNotifications,
             title: "Silence Notifications",
             description:
                 "When another device or client is active, silence notifications on this device",
-            onChanged: (value) async {
-              setState(() {
-                preferences.setSilenceNotifications(value);
-              });
-            },
           ),
         if (PlatformUtils.isLinux)
           Column(
             children: [
-              GeneralSettingsPageState.settingToggle(
-                preferences.formatNotificationBody,
+              BooleanPreferenceToggle(
+                preference: preferences.formatNotificationBody,
                 title: "Message Body Formatting",
                 description: "Apply user formatting in message notifications",
-                onChanged: (value) async {
-                  setState(() {
-                    preferences.setFormatNotificationBody(value);
-                  });
-                },
               ),
               AnimatedOpacity(
-                opacity: preferences.formatNotificationBody ? 1 : 0.3,
+                opacity: preferences.formatNotificationBody.value ? 1 : 0.3,
                 duration: Durations.short4,
                 child: IgnorePointer(
-                  ignoring: preferences.formatNotificationBody == false,
+                  ignoring: preferences.formatNotificationBody.value == false,
                   child: Column(
                     children: [
-                      GeneralSettingsPageState.settingToggle(
-                        preferences.showMediaInNotifications,
+                      BooleanPreferenceToggle(
+                        preference: preferences.showMediaInNotifications,
                         title: "Show Images",
                         description:
                             "Show images in notifications, if allowed by 'General > Media Preview' settings",
-                        onChanged: (value) async {
-                          setState(() {
-                            preferences.setShowMediaInNotifications(value);
-                          });
-                        },
                       ),
-                      GeneralSettingsPageState.settingToggle(
-                        preferences.previewUrlsInNotifications,
+                      BooleanPreferenceToggle(
+                        preference: preferences.previewUrlInNotifications,
                         title: "Preview Urls",
                         description:
                             "Fetch URL previews to show extra information about links in notifications",
-                        onChanged: (value) async {
-                          setState(() {
-                            preferences.setPreviewUrlsInNotifications(value);
-                          });
-                        },
                       ),
                     ],
                   ),

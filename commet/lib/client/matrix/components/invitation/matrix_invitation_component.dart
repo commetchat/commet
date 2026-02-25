@@ -82,6 +82,16 @@ class MatrixInvitationComponent
     var mx = client.getMatrixClient();
     var result = await mx.searchUserDirectory(term);
 
-    return result.results.map((e) => MatrixProfile(client, e)).toList();
+    var finalResult =
+        result.results.map((e) => MatrixProfile(client, e)).toList();
+    if (term.isValidMatrixId && !finalResult.any((i) => i.identifier == term)) {
+      finalResult = [
+        MatrixProfile(
+            client, matrix.Profile(userId: term, displayName: term.localpart)),
+        ...finalResult
+      ];
+    }
+
+    return finalResult;
   }
 }

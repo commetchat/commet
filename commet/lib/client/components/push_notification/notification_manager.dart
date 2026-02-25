@@ -1,4 +1,3 @@
-import 'package:commet/client/alert.dart';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/push_notification/android/android_notifier.dart';
 import 'package:commet/client/components/push_notification/android/firebase_push_notifier.dart';
@@ -14,8 +13,6 @@ import 'package:commet/client/components/push_notification/windows/windows_notif
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/debug/log.dart';
-import 'package:commet/main.dart';
-import 'package:commet/utils/links/link_utils.dart';
 
 class NotificationManager {
   static Notifier? _notifier;
@@ -36,23 +33,6 @@ class NotificationManager {
     addModifier(NotificationModifierSuppressActiveRoom());
     if (BuildConfig.ANDROID) {
       addModifier(NotificationModifierSuppressOtherActiveDevice());
-
-      Log.i(
-          "Did the notification background service succeed: ${preferences.didLastForegroundServiceRunSucceed}");
-
-      if (preferences.didLastForegroundServiceRunSucceed == false) {
-        var alert = Alert(
-          AlertType.warning,
-          messageGetter: () =>
-              "The last attempt to start the notification updating service failed. Push notifications will not be updated in the background until this is resolved. Tap for more info",
-          titleGetter: () => "Couldn't update notifications in background",
-          action: (_) => LinkUtils.open(Uri.parse(
-              "https://commet.chat/troubleshoot/android-background-service-failed/")),
-        );
-
-        clientManager?.alertManager.addAlert(alert);
-        preferences.setLastForegroundServiceRunSucceeded(null);
-      }
     }
 
     if (PlatformUtils.isLinux) {

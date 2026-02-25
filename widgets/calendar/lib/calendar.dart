@@ -621,19 +621,13 @@ class MatrixCalendar {
     var content = eventData["content"];
     var eventId = content["redacts"];
 
-    print("Deleting event: $eventId");
-
     var events = List.empty(growable: true);
 
     for (int i = 0; i < controller.allEvents.length; i++) {
       var e = controller.allEvents[i];
 
-      print("Should delet: ${e.event?.eventId} == ${eventId}");
       if (e.event?.eventId == eventId) {
         events.add(e);
-        print("Yes");
-      } else {
-        print("no");
       }
     }
 

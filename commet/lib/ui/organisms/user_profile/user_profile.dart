@@ -164,9 +164,9 @@ class _UserProfileState extends State<UserProfile> {
       await Future.wait<dynamic>([
         if (banner != null) precacheImage(banner!, context),
         if (avatar != null) precacheImage(avatar!, context),
-      ]);
+      ]).timeout(Duration(seconds: 5));
     } catch (e, s) {
-      Log.onError(e, s);
+      Log.onError(e, s, content: "Error while fetching profile images");
     }
 
     setState(() {
