@@ -142,6 +142,12 @@ class GeneralSettingsPageState extends State<GeneralSettingsPage> {
               title: labelAskBeforeDeletingMessageToggle,
               description: labelAskBeforeDeletingMessageDescription,
             ),
+            BooleanPreferenceToggle(
+              preference: preferences.autoFocusMessageTextBox,
+              title: "Autofocus Message Input",
+              description:
+                  "Automatically focus on the message input text field when opening a chat",
+            )
           ]),
         ),
         const SizedBox(
