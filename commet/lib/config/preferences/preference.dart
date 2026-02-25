@@ -8,19 +8,24 @@ class Preference<T> {
 
   final String key;
   final T defaultValue;
-  late T Function() _getter;
+  late T? Function() _getter;
+  late T Function()? _defaultGetter;
   late Future<void> Function(T value) _setter;
 
   Stream<T> get onChanged => _controller.stream;
 
   StreamController<T> _controller = StreamController.broadcast();
 
-  Preference(this.key,
-      {required this.defaultValue,
-      required T Function() getter,
-      required Future<void> Function(T value) setter}) {
+  Preference(
+    this.key, {
+    required this.defaultValue,
+    required T? Function() getter,
+    required Future<void> Function(T value) setter,
+    T Function()? defaultGetter,
+  }) {
     _getter = getter;
     _setter = setter;
+    _defaultGetter = defaultGetter;
   }
 
   Future<void> set(T value) async {
@@ -29,7 +34,7 @@ class Preference<T> {
     _controller.add(value);
   }
 
-  T get value => _getter();
+  T get value => _getter() ?? _defaultGetter?.call() ?? defaultValue;
 
   @override
   bool operator ==(Object other) {

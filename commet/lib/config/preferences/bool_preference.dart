@@ -1,9 +1,11 @@
 import 'package:commet/config/preferences/preference.dart';
 
 class BoolPreference extends Preference<bool> {
-  BoolPreference(super.key, {required super.defaultValue})
+  BoolPreference(super.key,
+      {required super.defaultValue, bool Function()? defaultGetter})
       : super(
-          getter: () => Preference.preferences?.getBool(key) ?? defaultValue,
+          defaultGetter: defaultGetter,
+          getter: () => Preference.preferences?.getBool(key),
           setter: (v) async {
             await Preference.preferences?.setBool(key, v);
           },
@@ -13,7 +15,7 @@ class BoolPreference extends Preference<bool> {
 class NullableBoolPreference extends Preference<bool?> {
   NullableBoolPreference(super.key, {required super.defaultValue})
       : super(
-          getter: () => Preference.preferences?.getBool(key) ?? defaultValue,
+          getter: () => Preference.preferences?.getBool(key),
           setter: (v) async {
             if (v == null) {
               await Preference.preferences?.remove(key);

@@ -208,7 +208,7 @@ class MessageInputState extends State<MessageInput> {
     preferencesSubscription =
         preferences.onSettingChanged.listen((_) => setState(() {}));
 
-    if (Layout.desktop) {
+    if (preferences.autoFocusMessageTextBox.value) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         textFocus.requestFocus();
       });
