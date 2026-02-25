@@ -1735,5 +1735,35 @@
         "description": "Prompt to display a sticker, shown when media previews are disabled",
         "type": "text",
         "placeholders": {}
+    },
+    "labelUrlPreviewInEncryptedChatDescription": "Dies gibt deinem Homeserver Zugriff auf alle URLs aus deinen verschlüsselten Chats, damit eine Vorschau der Links angezeigt werden kann.",
+    "@labelUrlPreviewInEncryptedChatDescription": {
+        "description": "description for the toggle for enabling and disabling use of url previews in encrypted chats",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelUseRoomAvatarPlaceholdersDescription": "Wenn ein Raum keinen Avatar hat oder die Verwendung von Avataren deaktiviert ist, wird ein generischer Platzhalter mit Farbe und Anfangsbuchstaben für das Bild verwendet.",
+    "@labelUseRoomAvatarPlaceholdersDescription": {
+        "description": "Description for the enable generic icons setting",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptReplyInThread": "In Thread antworten",
+    "@promptReplyInThread": {
+        "description": "Label for the menu option to reply to a message inside a thread",
+        "type": "text",
+        "placeholders": {}
+    },
+    "placeholderSpaceAlias": "#awesome-space",
+    "@placeholderSpaceAlias": {
+        "description": "Placeholder / Example for a space alias.",
+        "type": "text",
+        "placeholders": {}
+    },
+    "placeholderRoomAlias": "#awesome-room",
+    "@placeholderRoomAlias": {
+        "description": "Placeholder / Example for a room alias.",
+        "type": "text",
+        "placeholders": {}
     }
 }
