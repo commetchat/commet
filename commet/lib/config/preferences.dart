@@ -306,6 +306,12 @@ class Preferences {
       defaultGetter: () => Layout.mobile ? false : true,
       defaultValue: false);
 
+  BoolPreference autoRotateImages =
+      BoolPreference("lightbox_rotate_images", defaultValue: false);
+
+  BoolPreference autoRotateVideos =
+      BoolPreference("lightbox_rotate_videos", defaultValue: false);
+
   DoublePreference textScale =
       DoublePreference("text_scale", defaultValue: 1.0);
 

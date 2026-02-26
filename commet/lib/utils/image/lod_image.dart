@@ -29,6 +29,10 @@ class LODImageProvider extends ImageProvider<String> {
   bool autoLoadFullRes;
   Future<Uint8List?> Function()? loadThumbnail;
   Future<Uint8List?> Function()? loadFullRes;
+
+  StreamController<void> _lodChangedController = StreamController.broadcast();
+
+  Stream<void> get onLODChanged => _lodChangedController.stream;
   LODImageCompleter? completer;
   int? thumbnailHeight;
   int? fullResHeight;
@@ -61,6 +65,9 @@ class LODImageProvider extends ImageProvider<String> {
         loadThumbnail: loadThumbnail,
         loadFullRes: loadFullRes,
         callback: decode,
+        onLODChanged: () {
+          _lodChangedController.add(null);
+        },
         hasCachedFullres: hasCachedFullres,
         hasCachedThumbnail: hasCachedThumbnail,
         thumbnailHeight: thumbnailHeight,
@@ -92,6 +99,7 @@ class LODImageCompleter extends ImageStreamCompleter {
   Future<bool> Function()? hasCachedFullres;
   Future<Uint8List?> Function()? loadThumbnail;
   Future<Uint8List?> Function()? loadFullRes;
+  Function()? onLODChanged;
   LODImageType? currentlyLoadedImage;
   final double _scale = 1;
   ImageInfo? currentImage;
@@ -119,6 +127,7 @@ class LODImageCompleter extends ImageStreamCompleter {
       this.hasCachedFullres,
       this.hasCachedThumbnail,
       this.thumbnailHeight,
+      this.onLODChanged,
       this.fullResHeight,
       this.autoLoadFullres = true}) {
     loadImages();
@@ -153,6 +162,8 @@ class LODImageCompleter extends ImageStreamCompleter {
       currentlyLoadedImage = LODImageType.blurhash;
       setImage(ImageInfo(image: image));
     }
+
+    onLODChanged?.call();
   }
 
   Future<void> _loadThumbnail() async {
@@ -178,6 +189,7 @@ class LODImageCompleter extends ImageStreamCompleter {
 
     await thumbnailLoading;
     thumbnailLoading = null;
+    onLODChanged?.call();
   }
 
   Future<void> fetchFullRes() async {
@@ -218,6 +230,7 @@ class LODImageCompleter extends ImageStreamCompleter {
 
     await fullResLoading;
     fullResLoading = null;
+    onLODChanged?.call();
   }
 
   Future<void> _setCodec(LODImageType type, Codec codec) async {
