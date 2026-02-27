@@ -309,6 +309,12 @@ class Preferences {
   BoolPreference automaticallyOpenSpace =
       BoolPreference("open_space_on_room_navigation", defaultValue: true);
 
+  BoolPreference autoRotateImages =
+      BoolPreference("lightbox_rotate_images", defaultValue: false);
+
+  BoolPreference autoRotateVideos =
+      BoolPreference("lightbox_rotate_videos", defaultValue: false);
+
   DoublePreference textScale =
       DoublePreference("text_scale", defaultValue: 1.0);
 
