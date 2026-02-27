@@ -676,5 +676,107 @@
         "description": "Label for enabling generic icons in the appearance settings",
         "type": "text",
         "placeholders": {}
+    },
+    "labelUseRoomAvatarPlaceholdersDescription": "Bir oda avatarı ayarlanmadığında veya avatarlar devre dışı bırakıldığında; görsel yerine, oda isminin ilk harfini ve standart bir rengi içeren yer tutucuya döner",
+    "@labelUseRoomAvatarPlaceholdersDescription": {
+        "description": "Description for the enable generic icons setting",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsAppLogs": "Kayıtlar",
+    "@labelSettingsAppLogs": {
+        "description": "Label for the logs settings page, usually hidden unless developer mode is turned on",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPushRuleNotifyAll": "Tüm Mesajlar",
+    "@labelPushRuleNotifyAll": {
+        "description": "Label for the push rule which notifies for all received messages",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPushRuleMentionsAndKeywords": "Bahsetmeler ve Anahtar Kelimeler",
+    "@labelPushRuleMentionsAndKeywords": {
+        "description": "Label for the push rule which notifies only for keywords and mentions",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPushRuleNone": "Sustur",
+    "@labelPushRuleNone": {
+        "description": "Label for the push rule which sends no notifications",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomSettingsNotifications": "Bildirimler",
+    "@labelRoomSettingsNotifications": {
+        "description": "Label for the notifications section in room settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptImportPack": "Paketi içe aktar",
+    "@promptImportPack": {
+        "description": "Prompt to import a set of emoticons from an existing pack",
+        "type": "text",
+        "placeholders": {}
+    },
+    "createEmoticonDialogTitle": "Emoji oluştur",
+    "@createEmoticonDialogTitle": {
+        "description": "Title of a dialog that pops up when choosing to create a new emoticon",
+        "type": "text",
+        "placeholders": {}
+    },
+    "editEmoticonDialogTitle": "Emojiyi düzenle",
+    "@editEmoticonDialogTitle": {
+        "description": "Title of a dialog that pops up when choosing to edit an existing emoticon",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptEmoticonPackName": "Paket adı",
+    "@promptEmoticonPackName": {
+        "description": "Prompt for the input of the name of an emoticon pack",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptEmoteName": "Emoji Adı",
+    "@promptEmoteName": {
+        "description": "Prompt for the input of the name of an emoji",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptConfirmSaveEmoticon": "Kaydet!",
+    "@promptConfirmSaveEmoticon": {
+        "description": "Prompt to confirm the creation of an Emoticon Pack, Emoji, or Sticker",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptEnableEncryptionRoomSettings": "Uçtan Uca Şifrelemeyi Etkinleştir",
+    "@promptEnableEncryptionRoomSettings": {
+        "description": "Short prompt to enable encryption for a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "encryptionCannotBeDisabledExplanationRoomSettings": "Uçtan uca şifreleme etkinleştirildikten sonra geri kapatılamaz",
+    "@encryptionCannotBeDisabledExplanationRoomSettings": {
+        "description": "Explains that encryption cannot be disabled once enabled",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoleAdmin": "Yönetici",
+    "@labelMatrixPermissionsRoleAdmin": {
+        "description": "Label for the room administrator role",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoleModerator": "Moderatör",
+    "@labelMatrixPermissionsRoleModerator": {
+        "description": "Label for the room moderator role",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoleMember": "Oda Üyesi",
+    "@labelMatrixPermissionsRoleMember": {
+        "description": "Label for the room member role",
+        "type": "text",
+        "placeholders": {}
     }
 }
