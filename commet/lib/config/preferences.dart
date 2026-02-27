@@ -306,6 +306,9 @@ class Preferences {
       defaultGetter: () => Layout.mobile ? false : true,
       defaultValue: false);
 
+  BoolPreference automaticallyOpenSpace =
+      BoolPreference("open_space_on_room_navigation", defaultValue: true);
+
   DoublePreference textScale =
       DoublePreference("text_scale", defaultValue: 1.0);
 

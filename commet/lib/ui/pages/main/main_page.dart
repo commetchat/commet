@@ -320,11 +320,13 @@ class MainPageState extends State<MainPage> {
     }
 
     if (room != null) {
-      var spacesWithRoom =
-          client.spaces.where((element) => element.containsRoom(roomId));
+      if (preferences.automaticallyOpenSpace.value) {
+        var spacesWithRoom =
+            client.spaces.where((element) => element.containsRoom(roomId));
 
-      if (spacesWithRoom.isNotEmpty) {
-        selectSpace(spacesWithRoom.first);
+        if (spacesWithRoom.isNotEmpty) {
+          selectSpace(spacesWithRoom.first);
+        }
       }
 
       selectRoom(room);
