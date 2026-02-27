@@ -22,9 +22,9 @@ class SettingsCategoryAccount implements SettingsCategory {
       name: "labelSettingsTabProfile",
       desc: "Label for the Profile settings page");
 
-  String get labelSettingsTabPreferences => Intl.message("Preferences",
-      name: "labelSettingsTabPreferences",
-      desc: "Label for the Preferences settings page");
+  String get labelSettingsTabPrivacy => Intl.message("Privacy",
+      name: "labelSettingsTabPrivacy",
+      desc: "Label for the Privacy settings page");
 
   String get labelSettingsTabSecurity => Intl.message("Security",
       name: "labelSettingsTabSecurity",
@@ -64,8 +64,8 @@ class SettingsCategoryAccount implements SettingsCategory {
               );
             }),
         SettingsTab(
-            label: labelSettingsTabPreferences,
-            icon: Icons.settings,
+            label: labelSettingsTabPrivacy,
+            icon: Icons.public,
             pageBuilder: (context) {
               return AccountSettingsTab(
                 clientManager: Provider.of<ClientManager>(context),

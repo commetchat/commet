@@ -37,7 +37,10 @@ class _AccountSettingsTabState extends State<AccountSettingsTab> {
         const SizedBox(
           height: 4,
         ),
-        ChatPrivacyPreferences(client: selectedClient),
+        ChatPrivacyPreferences(
+            client: selectedClient,
+            key: ValueKey(
+                "chat-privacy-preferences_${selectedClient.identifier}")),
       ],
     );
   }

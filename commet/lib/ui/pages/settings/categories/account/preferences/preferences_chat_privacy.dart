@@ -1,11 +1,12 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/user_presence/user_presence_component.dart';
+import 'package:commet/utils/error_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class ChatPrivacyPreferences<T extends Client> extends StatefulWidget {
-  const ChatPrivacyPreferences({required this.client});
+  const ChatPrivacyPreferences({required this.client, super.key});
   final T client;
 
   @override
@@ -23,8 +24,7 @@ class _ChatPrivacyPreferences extends State<ChatPrivacyPreferences> {
       desc: "Header for the chat privacy section in settings",
       name: "labelChatPrivacyTitle");
 
-  String get labelPublicReadReceiptsToggle => Intl.message(
-      "Public read receipts",
+  String get labelPublicReadReceiptsToggle => Intl.message("Read receipts",
       desc:
           "Label for the toggle for enabling and disabling sending read receipts",
       name: "labelPublicReadReceiptsToggle");
@@ -35,11 +35,10 @@ class _ChatPrivacyPreferences extends State<ChatPrivacyPreferences> {
           "description for the toggle for enabling and disabling sending read receipts",
       name: "labelPublicReadReceiptsDescriptionn");
 
-  String get labelPrivateTypingIndicatorToggle => Intl.message(
-      "Public typing indicator",
+  String get labelTypingIndicatorsToggle => Intl.message("Typing indicator",
       desc:
           "Label for the toggle for enabling and disabling sending typing indicator",
-      name: "labelPublicTypingIndicatorToggle");
+      name: "labelTypingIndicatorsToggle");
 
   String get labelPublicTypingIndicatorDescription => Intl.message(
       "Let other members of a room know when you are typing a message.",
@@ -67,18 +66,27 @@ class _ChatPrivacyPreferences extends State<ChatPrivacyPreferences> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    tiamat.Text.labelEmphasised(labelPublicReadReceiptsToggle),
-                    tiamat.Text.labelLow(labelPublicReadReceiptsDescription)
-                  ]),
+              Flexible(
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      tiamat.Text.labelEmphasised(
+                          labelPublicReadReceiptsToggle),
+                      tiamat.Text.labelLow(labelPublicReadReceiptsDescription)
+                    ]),
+              ),
               tiamat.Switch(
                   state: publicReadReceipts,
                   onChanged: (value) async {
+                    setState(() {
+                      publicReadReceipts = value;
+                    });
                     print(widget.client.getAllComponents());
-                    await userPresenceComponent.setUsePublicReadReceipts(value);
+                    await ErrorUtils.tryRun(context, () async {
+                      await userPresenceComponent
+                          .setUsePublicReadReceipts(value);
+                    });
                     setState(() => publicReadReceipts = value);
                   })
             ],
@@ -92,19 +100,26 @@ class _ChatPrivacyPreferences extends State<ChatPrivacyPreferences> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    tiamat.Text.labelEmphasised(
-                        labelPrivateTypingIndicatorToggle),
-                    tiamat.Text.labelLow(labelPublicTypingIndicatorDescription)
-                  ]),
+              Flexible(
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      tiamat.Text.labelEmphasised(labelTypingIndicatorsToggle),
+                      tiamat.Text.labelLow(
+                          labelPublicTypingIndicatorDescription)
+                    ]),
+              ),
               tiamat.Switch(
                   state: publicTypingIndicator,
                   onChanged: (value) async {
-                    await userPresenceComponent
-                        .setTypingIndicatorEnabled(value);
+                    setState(() {
+                      publicTypingIndicator = value;
+                    });
+                    await ErrorUtils.tryRun(context, () async {
+                      await userPresenceComponent
+                          .setTypingIndicatorEnabled(value);
+                    });
                     setState(() => publicTypingIndicator = value);
                   })
             ],

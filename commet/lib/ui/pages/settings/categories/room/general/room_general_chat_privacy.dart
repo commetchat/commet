@@ -4,6 +4,7 @@ import 'package:commet/client/components/read_receipts/read_receipt_component.da
 import 'package:commet/client/components/typing_indicators/typing_indicator_component.dart';
 import 'package:commet/client/components/user_presence/user_presence_component.dart';
 import 'package:commet/client/room.dart';
+import 'package:commet/utils/common_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart' as material;
 import 'package:intl/intl.dart';
@@ -24,28 +25,28 @@ class _RoomGeneralChatPrivacySettings
   bool? publicReadReceiptsForRoom;
   bool? typingIndicatorEnabledForRoom;
 
-  String get labelEnabledOption => Intl.message("Enabled",
-      desc: "Label for an enabled value", name: "labelEnabledOption");
-
-  String get labelDisabledOption => Intl.message("Disabled",
-      desc: "Label for an disabled value", name: "labelDisabledOption");
-
-  String labelDefaultOption(pref) => Intl.message("Use global preference $pref",
-      desc: "Label to use the global preference",
-      name: "labelOptionDefault",
+  String labelDefaultReadReceiptsOption(pref) => Intl.message(
+      "Use global preference ($pref)",
+      desc:
+          "Label to use the global preference, showing the current global preference value",
+      name: "labelDefaultReadReceiptsOption",
       args: [pref]);
 
-  String get labelPublicReadReceiptsTitle => Intl.message(
-      "Public read receipts",
+  String labelDefaultTypingIndicatorsOption(pref) => Intl.message(
+      "Use global preference ($pref)",
+      desc:
+          "Label to use the global preference, showing the current global preference value",
+      name: "labelDefaultTypingIndicatorsOption",
+      args: [pref]);
+
+  String get labelReadReceiptsTitle => Intl.message("Read receipts",
       desc:
           "Label for the toggle for enabling and disabling public read receipts",
-      name: "labelPublicReadReceiptsTitle");
+      name: "labelReadReceiptsTitle");
 
-  String get labelPublicTypingIndicatorTitle => Intl.message(
-      "Public typing indicator",
-      desc:
-          "Label for the toggle for enabling and disabling public typing indicator",
-      name: "labelPublicTypingIndicatorTitle");
+  String get labelTypingIndicatorTitle => Intl.message("Typing indicators",
+      desc: "Label for the toggle for enabling and disabling typing indicators",
+      name: "labelTypingIndicatorTitle");
 
   @override
   void initState() {
@@ -77,7 +78,7 @@ class _RoomGeneralChatPrivacySettings
         .usePublicReadReceipts;
     return tiamat.Panel(
         mode: tiamat.TileType.surfaceContainerLow,
-        header: labelPublicReadReceiptsTitle,
+        header: labelReadReceiptsTitle,
         child: material.Material(
           color: material.Colors.transparent,
           child: Column(
@@ -86,23 +87,23 @@ class _RoomGeneralChatPrivacySettings
                 groupValue: publicReadReceiptsForRoom,
                 value: null,
                 icon: material.Icons.remove_outlined,
-                text: labelDefaultOption(usePublicReadReceipts
-                    ? "($labelEnabledOption)"
-                    : "($labelDisabledOption)"),
+                text: labelDefaultReadReceiptsOption(usePublicReadReceipts
+                    ? CommonStrings.labelPublic
+                    : CommonStrings.labelPrivate),
                 onChanged: onReadReceiptPrefChanged,
               ),
               tiamat.RadioButton<bool?>(
                 groupValue: publicReadReceiptsForRoom,
                 value: false,
-                icon: material.Icons.close,
-                text: labelDisabledOption,
+                icon: material.Icons.hide_source,
+                text: CommonStrings.labelPrivate,
                 onChanged: onReadReceiptPrefChanged,
               ),
               tiamat.RadioButton<bool?>(
                 groupValue: publicReadReceiptsForRoom,
                 value: true,
-                icon: material.Icons.check,
-                text: labelEnabledOption,
+                icon: material.Icons.public,
+                text: CommonStrings.labelPublic,
                 onChanged: onReadReceiptPrefChanged,
               ),
             ],
@@ -116,7 +117,7 @@ class _RoomGeneralChatPrivacySettings
         .typingIndicatorEnabled;
     return tiamat.Panel(
         mode: tiamat.TileType.surfaceContainerLow,
-        header: labelPublicTypingIndicatorTitle,
+        header: labelTypingIndicatorTitle,
         child: material.Material(
           color: material.Colors.transparent,
           child: Column(
@@ -125,23 +126,23 @@ class _RoomGeneralChatPrivacySettings
                 groupValue: typingIndicatorEnabledForRoom,
                 value: null,
                 icon: material.Icons.remove_outlined,
-                text: labelDefaultOption(typingIndicatorEnabled
-                    ? "($labelEnabledOption)"
-                    : "($labelDisabledOption)"),
+                text: labelDefaultTypingIndicatorsOption(typingIndicatorEnabled
+                    ? CommonStrings.labelEnabled
+                    : CommonStrings.labelDisabled),
                 onChanged: onTypingIndicatorPrefChanged,
               ),
               tiamat.RadioButton<bool?>(
                 groupValue: typingIndicatorEnabledForRoom,
                 value: false,
                 icon: material.Icons.close,
-                text: labelDisabledOption,
+                text: CommonStrings.labelDisabled,
                 onChanged: onTypingIndicatorPrefChanged,
               ),
               tiamat.RadioButton<bool?>(
                 groupValue: typingIndicatorEnabledForRoom,
                 value: true,
                 icon: material.Icons.check,
-                text: labelEnabledOption,
+                text: CommonStrings.labelEnabled,
                 onChanged: onTypingIndicatorPrefChanged,
               ),
             ],
