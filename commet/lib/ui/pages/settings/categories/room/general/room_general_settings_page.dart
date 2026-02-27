@@ -1,13 +1,9 @@
-import 'package:commet/client/components/read_receipts/read_receipt_component.dart';
-import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/room.dart';
-import 'package:commet/debug/log.dart';
 import 'package:commet/ui/pages/settings/categories/room/general/room_general_chat_privacy.dart';
 import 'package:commet/ui/pages/matrix/room_address_settings/matrix_room_address_settings.dart';
 import 'package:commet/ui/pages/settings/categories/room/general/room_general_settings_view.dart';
 import 'package:flutter/widgets.dart';
-import 'package:matrix/matrix_api_lite/model/matrix_exception.dart';
 
 class RoomGeneralSettingsPage extends StatefulWidget {
   const RoomGeneralSettingsPage({super.key, required this.room});
