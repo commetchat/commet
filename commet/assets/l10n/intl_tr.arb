@@ -1,1 +1,680 @@
-{}
+{
+    "labelRoomsList": "Odalar",
+    "@labelRoomsList": {
+        "description": "Header label for the list of rooms",
+        "type": "text",
+        "placeholders": {}
+    },
+    "fileDragDropPrompt": "Dosya yüklemek için sürükleyin...",
+    "@fileDragDropPrompt": {
+        "description": "Text that is shown when a user is dragging a file",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelHomeRecentActivity": "Son Etkinlikler",
+    "@labelHomeRecentActivity": {
+        "description": "Short label for header of recent room activity",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelHomeAlerts": "Uyarılar",
+    "@labelHomeAlerts": {
+        "description": "Short label for header of alerts",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelHomeRoomsList": "Odalar",
+    "@labelHomeRoomsList": {
+        "description": "Short label for header of rooms list",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelHomeInvitations": "Davetiyeler",
+    "@labelHomeInvitations": {
+        "description": "Short label for header of invitations list",
+        "type": "text",
+        "placeholders": {}
+    },
+    "noPinnedMessages": "Sabitlenmiş mesaj yok!",
+    "@noPinnedMessages": {
+        "description": "Placeholder label in the pinned messages menu that is shown when there are no pinned messages",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelInvitationsForUser": "{user} için davetiyeler",
+    "@labelInvitationsForUser": {
+        "description": "Label for the list of incoming invitations, specifying which user these invitations are intended for",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "labelInvitations": "Davetiyeler",
+    "@labelInvitations": {
+        "description": "Label for the list of incoming invitations",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptOpenDirectMessage": "Sohbet Et",
+    "@promptOpenDirectMessage": {
+        "description": "Prompt on the button to open a direct message with another user",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelChatPageFileTooLarge": "Bu dosya yüklemek için çok büyük!",
+    "@labelChatPageFileTooLarge": {
+        "description": "Text that is shown when the user attempts to upload a file that is greater than the allowed size",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelChatPageFileTooLargeTitle": "Dosya boyutu yükleme sınırını aşıyor",
+    "@labelChatPageFileTooLargeTitle": {
+        "description": "Title for the dialog that is shown when the user attempts to upload a file that is greater than the allowed size",
+        "type": "text",
+        "placeholders": {}
+    },
+    "sendEncryptedMessagePrompt": "Uçtan uca şifreli mesaj gönder",
+    "@sendEncryptedMessagePrompt": {
+        "description": "Placeholder text for message input in an encrypted room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "sendUnencryptedMessagePrompt": "Mesaj gönder",
+    "@sendUnencryptedMessagePrompt": {
+        "description": "Placeholder text for message input in an unencrypted room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "cantSentMessagePrompt": "Bu odada mesaj gönderme yetkiniz yok",
+    "@cantSentMessagePrompt": {
+        "description": "Text that explains the user cannot send a message in this room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "tooltipSpaceSettings": "Topluluk Ayarları",
+    "@tooltipSpaceSettings": {
+        "description": "Tooltip for the button that opens space settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "tooltipAddRoom": "Oda ekle",
+    "@tooltipAddRoom": {
+        "description": "Tooltip for the button that adds a new room to a space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceRoomsList": "Odalar",
+    "@labelSpaceRoomsList": {
+        "description": "Header label for the list of rooms in a space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceSubspacesList": "Topluluklar",
+    "@labelSpaceSubspacesList": {
+        "description": "Header label for the list of child spaces in a space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceAvailableRoomsList": "Erişilebilir odalar",
+    "@labelSpaceAvailableRoomsList": {
+        "description": "Header label for the list of rooms in a space, which the user has not yet joined but are available",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceVisibilityPublic": "Herkese Açık Topluluk",
+    "@labelSpaceVisibilityPublic": {
+        "description": "Label to display that the space is publically available",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceVisibilityPrivate": "Gizli Topluluk",
+    "@labelSpaceVisibilityPrivate": {
+        "description": "Label to display that the space is private",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceGettingText": "Şuraya hoş geldiniz:\n\n# {spaceName} topluluğuna",
+    "@labelSpaceGettingText": {
+        "description": "Greeting to the space, supports markdown formatting",
+        "type": "text",
+        "placeholders": {
+            "spaceName": {}
+        }
+    },
+    "promptAddSpace": "Topluluk Ekle",
+    "@promptAddSpace": {
+        "description": "Prompt to add a new space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptAttachmentProcessingSendOriginal": "Dosyayı Değiştirmeden Gönder",
+    "@promptAttachmentProcessingSendOriginal": {
+        "description": "Prompt text for the option to send a file in its original state, without any further processing such as removing metadata",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelImageContainsLocationInfo": "Dikkat: Bu görsel konum bilgisi içeriyor",
+    "@labelImageContainsLocationInfo": {
+        "description": "Prompt text for the option to send a file in its original state, without any further processing such as removing metadata",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptRoomName": "Oda Adı",
+    "@promptRoomName": {
+        "description": "Prompt to enter a room name, placeholder text for text input",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptSpaceName": "Topluluk Adı",
+    "@promptSpaceName": {
+        "description": "Prompt to enter a space name, placeholder text for text input",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptTopic": "Başlık (Opsiyonel)",
+    "@promptTopic": {
+        "description": "Prompt to enter a topic for room or space, specifying that doing so is optional",
+        "type": "text",
+        "placeholders": {}
+    },
+    "roomVisibilityPrivateExplanation": "Bu odaya sadece davetiye ile girilebilir",
+    "@roomVisibilityPrivateExplanation": {
+        "description": "Explains what 'private' room visibility means",
+        "type": "text",
+        "placeholders": {}
+    },
+    "roomVisibilityPublicExplanation": "İnternetteki herkes bu odaya erişebilir",
+    "@roomVisibilityPublicExplanation": {
+        "description": "Explains what 'public' visibility means",
+        "type": "text",
+        "placeholders": {}
+    },
+    "spaceVisibilityPrivateExplanation": "Bu odaya sadece davetiye ile erişilebilir",
+    "@spaceVisibilityPrivateExplanation": {
+        "description": "Explains what 'private' space visibility means",
+        "type": "text",
+        "placeholders": {}
+    },
+    "spaceVisibilityPublicExplanation": "İnternetteki herkes bu odaya erişebilir",
+    "@spaceVisibilityPublicExplanation": {
+        "description": "Explains what 'public' space visibility means",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVisibilityPrivate": "Gizli",
+    "@labelVisibilityPrivate": {
+        "description": "Short label for room visibility private",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVisibilityPublic": "Herkese Açık",
+    "@labelVisibilityPublic": {
+        "description": "Short label for room visibility public",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptEnableEncryption": "Şifrelemeyi Aç",
+    "@promptEnableEncryption": {
+        "description": "Short prompt to enable encryption for a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "encryptionCannotBeDisabledExplanation": "Eğer şifreleme açılırsa bir daha kapatılamaz",
+    "@encryptionCannotBeDisabledExplanation": {
+        "description": "Explains that encryption cannot be disabled once enabled",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptConfirmRoomCreation": "Oda Oluştur!",
+    "@promptConfirmRoomCreation": {
+        "description": "Label for a button which confirms the creation of a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptConfirmSpaceCreation": "Topluluk Oluştur!",
+    "@promptConfirmSpaceCreation": {
+        "description": "Label for a button which confirms the creation of a space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptConfirmRoomJoin": "Odaya Katıl!",
+    "@promptConfirmRoomJoin": {
+        "description": "Label for a button which confirms the joining of a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptConfirmSpaceJoin": "Topluluğa Katıl!",
+    "@promptConfirmSpaceJoin": {
+        "description": "Label for a button which confirms the joining of a space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptRoomAddress": "Oda Adresi:",
+    "@promptRoomAddress": {
+        "description": "Short label to prompt for the input of a room address",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptSpaceAddress": "Topluluk Adresi:",
+    "@promptSpaceAddress": {
+        "description": "Short label to prompt for the input of a space address",
+        "type": "text",
+        "placeholders": {}
+    },
+    "placeholderRoomAlias": "#oda-adi",
+    "@placeholderRoomAlias": {
+        "description": "Placeholder / Example for a room alias.",
+        "type": "text",
+        "placeholders": {}
+    },
+    "placeholderSpaceAlias": "#topluluk-adi",
+    "@placeholderSpaceAlias": {
+        "description": "Placeholder / Example for a space alias.",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelCouldNotLoadRoomPreview": "Odanın önizlemesi yüklenemedi",
+    "@labelCouldNotLoadRoomPreview": {
+        "description": "Error message for when a room preview was not able to be loaded",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptAddSelectedRooms": "Seçilen odaları ekle",
+    "@promptAddSelectedRooms": {
+        "description": "Prompt to add the selected rooms to a space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptCreateNewSpace": "Yeni topluluk oluştur",
+    "@promptCreateNewSpace": {
+        "description": "Prompt to create a new space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptJoinExistingSpace": "Mevcut topluluğa katıl",
+    "@promptJoinExistingSpace": {
+        "description": "Prompt to join a space which already exists",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptCreateNewRoom": "Yeni oda oluştur",
+    "@promptCreateNewRoom": {
+        "description": "Prompt to create a new room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptJoinExistingRoom": "Mevcut odaya katıl",
+    "@promptJoinExistingRoom": {
+        "description": "Prompt to join a room which already exists",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptUseExistingRoom": "Mevcut odayı kullan",
+    "@promptUseExistingRoom": {
+        "description": "Button text to choose to use an existing room when adding a room to a space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "directMessagesListHeaderMobile": "Özel Mesajlar",
+    "@directMessagesListHeaderMobile": {
+        "description": "The header for the direct messages list on desktop",
+        "type": "text",
+        "placeholders": {}
+    },
+    "directMessagesListHeaderDesktop": "Özel Mesajlar",
+    "@directMessagesListHeaderDesktop": {
+        "description": "The header for the direct messages list on desktop",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageWaitingOtherDeviceToAccept": "Diğer cihazın onayı bekleniyor",
+    "@messageWaitingOtherDeviceToAccept": {
+        "description": "Message to show while waiting for another device to accept a matrix session verification request",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageMatrixSessionVerificationRequest": "**{username}** oturumunuzu doğrulamak istiyor",
+    "@messageMatrixSessionVerificationRequest": {
+        "description": "Message to show when another user has requested to verify your matrix session. Supports markdown to emphasise the user name",
+        "type": "text",
+        "placeholders": {
+            "username": {}
+        }
+    },
+    "messageSasEmojiVerificationPrompt": "Emojilerin ve sıralamalarının diğer cihazla eşleştiğinden emin olun",
+    "@messageSasEmojiVerificationPrompt": {
+        "description": "Explains what to look for when verifying using emoji. Needs to portray that the emoji MUST be the same AND in the same order",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptConfirmEmojiMatches": "Eşleşiyorlar!",
+    "@promptConfirmEmojiMatches": {
+        "description": "Button text to confirm that the emoji matches",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptEmojiDoNotMatch": "Eşleşmiyorlar",
+    "@promptEmojiDoNotMatch": {
+        "description": "Button text to confirm that the emoji do NOT match",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageVerificationComplete": "Doğrulama Başarılı!",
+    "@messageVerificationComplete": {
+        "description": "Message to show when verification was completed successfully, and the session has been verified",
+        "type": "text",
+        "placeholders": {}
+    },
+    "setupPageBeforeYouBegin": "Başlamadan önce...",
+    "@setupPageBeforeYouBegin": {
+        "description": "Title for first time setup page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "unifiedPushExplainer": "# Unified Push\nCommet'in bu sürümü Google Play Hizmetleri olmadan oluşturuldu. Bildirim alabilmek için [Unified Push](https://unifiedpush.org/) kullanmanız gerekecektir.\n\nHalihazırda Unified Push uyumlu bir dağıtıcı uygulama yüklüyse, aşağıdan yapılandırabilirsiniz.\n",
+    "@unifiedPushExplainer": {
+        "description": "Explains the need for unified push. Supports markdown",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelEnableUnifiedPush": "Unified Push'u etkinleştir",
+    "@labelEnableUnifiedPush": {
+        "description": "Label for the toggle to enable Unified Push",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelEnableUnifiedPushEndpoint": "Endpoint",
+    "@labelEnableUnifiedPushEndpoint": {
+        "description": "Label for the Unified Push endpoint",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelUnifiedPushNoEndpointFound": "Endpoint bulunamadı, bir şeyler ters gitti :(",
+    "@labelUnifiedPushNoEndpointFound": {
+        "description": "Message for when a unified push endpoint could not be registered",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptHomeserver": "Homeserver",
+    "@promptHomeserver": {
+        "description": "Placeholder text for homeserver field on login form",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptUsername": "Kullanıcı Adı",
+    "@promptUsername": {
+        "description": "Placeholder text for username field on login form",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptPassword": "Şifre",
+    "@promptPassword": {
+        "description": "Placeholder text for password field on login form",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptSubmitLogin": "Giriş Yap",
+    "@promptSubmitLogin": {
+        "description": "Prompt to submit the username and password, and attempt to login",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageLoginFailed": "Giriş Başarısız Oldu...",
+    "@messageLoginFailed": {
+        "description": "Generic text to show that an attempted login has failed",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageLoginError": "Bir hata oluştu",
+    "@messageLoginError": {
+        "description": "A generic error message to convey that an error occured when attempting to login",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageAlreadyLoggedIn": "Bu hesaba zaten giriş yaptınız",
+    "@messageAlreadyLoggedIn": {
+        "description": "An error message displayed when the user attempts to add an account which has already been logged in to on this device",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptLeaveSpace": "Topluluktan Ayrıl",
+    "@promptLeaveSpace": {
+        "description": "Text on a button to leave a space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptLeaveSpaceConfirmation": "{spaceName} Topluluğundan ayrılmak istediğinizde emin misiniz?",
+    "@promptLeaveSpaceConfirmation": {
+        "description": "Text for the popup dialog confirming the intent to leave a space",
+        "type": "text",
+        "placeholders": {
+            "spaceName": {}
+        }
+    },
+    "promptLeaveRoom": "Odadan Ayrıl",
+    "@promptLeaveRoom": {
+        "description": "Text on a button to leave a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptLeaveRoomConfirmation": "{roomName} Odasından ayrılmak istediğinize emin misiniz?",
+    "@promptLeaveRoomConfirmation": {
+        "description": "Text for the popup dialog confirming the intent to leave",
+        "type": "text",
+        "placeholders": {
+            "roomName": {}
+        }
+    },
+    "notificationSettingsNotSupported": "Bu sistemde anlık bildirimler desteklenmiyor",
+    "@notificationSettingsNotSupported": {
+        "description": "Message to display when push notifications are not supported",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsDeveloperMode": "Geliştirici modu",
+    "@labelSettingsDeveloperMode": {
+        "description": "Header for the settings to enable developer mode",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsDeveloperModeExplanation": "Geliştiriciler için yararlı olan ek bilgileri gösterir",
+    "@labelSettingsDeveloperModeExplanation": {
+        "description": "Explains what developer mode does",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelStickerCompatibility": "Çıkartma uyumluluğu",
+    "@labelStickerCompatibility": {
+        "description": "Header for the settings to enable sticker compatibility mode",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsStickerCompatibilityExplanation": "Bazı Matrix istemcilerinde çıkartmaların 'm.sticker' olarak gönderilmesi, çıkartmanın düzgün yüklenememesine neden olur. Bu ayarın etkinleştirilmesi, çıkartmaların 'm.image' olarak gönderilmesini sağlayarak doğru şekilde görüntülenmelerine olanak tanır",
+    "@labelSettingsStickerCompatibilityExplanation": {
+        "description": "Explains what sticker compatibility mode does",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsAppGeneral": "Genel",
+    "@labelSettingsAppGeneral": {
+        "description": "Label for the App General settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsAppAppearance": "Görünüm",
+    "@labelSettingsAppAppearance": {
+        "description": "Label for the App Appearance settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsWindowBehaviour": "Pencere Davranışı",
+    "@labelSettingsWindowBehaviour": {
+        "description": "Label for the Window Behaviour settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsAppAdvanced": "Gelişmiş",
+    "@labelSettingsAppAdvanced": {
+        "description": "Label for the App Advanced settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsAppNotifications": "Bildirimler",
+    "@labelSettingsAppNotifications": {
+        "description": "Label for the App notifications settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsAppDeveloperUtils": "Geliştirici Araçları",
+    "@labelSettingsAppDeveloperUtils": {
+        "description": "Label for the developer utils settings page, usually hidden unless developer mode is turned on",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsCategoryApp": "Uygulama Ayarları",
+    "@labelSettingsCategoryApp": {
+        "description": "Label for the settings category of the overall App settings/",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsWindowBehaviourTitle": "Pencere davranışı",
+    "@labelSettingsWindowBehaviourTitle": {
+        "description": "Header for the window behaviour section of settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsMinimizeOnCloseToggle": "Kapatıldığında küçült",
+    "@labelSettingsMinimizeOnCloseToggle": {
+        "description": "Label for the toggle to turn on and off minimize on close",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsMinimizeOnCloseExplanation": "Pencere kapatıldığında, uygulama tamamen kapanmak yerine simge durumuna küçültülür",
+    "@labelSettingsMinimizeOnCloseExplanation": {
+        "description": "Explains what the 'minimize on close' setting does",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelThirdPartyServicesTitle": "Üçüncü parti servisler",
+    "@labelThirdPartyServicesTitle": {
+        "description": "Header for the third party services section in settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelGifSearchToggle": "Gif araması",
+    "@labelGifSearchToggle": {
+        "description": "Label for the toggle for enabling and disabling gif search",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelGifSearchDescription": "Tenor Gif aramasını etkinleştirin. İstekler {proxyUrl} üzerinden vekil sunucuyla iletilecektir",
+    "@labelGifSearchDescription": {
+        "description": "Explains that gifs will be fetched via proxy",
+        "type": "text",
+        "placeholders": {
+            "proxyUrl": {}
+        }
+    },
+    "labelUrlPreviewInEncryptedChatTitle": "Uçtan Uca Şifreli Sohbetlerde URL Önizlemesi",
+    "@labelUrlPreviewInEncryptedChatTitle": {
+        "description": "Label for the toggle for enabling and disabling use of url previews in encrypted chats",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelUrlPreviewInEncryptedChatDescription": "Bu ayar, URL önizlemelerini almak için uçtan uca şifreli sohbetlerinizde gönderilen tüm bağlantıları ana sunucunuza (homeserver) iletecektir",
+    "@labelUrlPreviewInEncryptedChatDescription": {
+        "description": "description for the toggle for enabling and disabling use of url previews in encrypted chats",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMessageEffectsTitle": "Mesaj Efektleri",
+    "@labelMessageEffectsTitle": {
+        "description": "Header for the settings tile for message effects, such as confetti",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMessageEffectsDescription": "Mesajlar konfeti efekti gibi efektlerle gönderilebilir",
+    "@labelMessageEffectsDescription": {
+        "description": "Label describing what message effects are",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMediaPreviewSettingsTitle": "Medya Önizlemesi",
+    "@labelMediaPreviewSettingsTitle": {
+        "description": "Header for the settings tile for for media preview toggles",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMediaPreviewPrivateRoomsToggle": "Gizli Odalar",
+    "@labelMediaPreviewPrivateRoomsToggle": {
+        "description": "Short label for the private rooms toggle in media previews section",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMediaPreviewPrivateRoomsToggleDescription": "Gizli sohbet odalarında resim, video, çıkartma ve url önizlemelerini açıp kapatın",
+    "@labelMediaPreviewPrivateRoomsToggleDescription": {
+        "description": "Label describing toggle of media previews for private rooms",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMediaPreviewPublicRoomsToggle": "Herkese Açık Odalar",
+    "@labelMediaPreviewPublicRoomsToggle": {
+        "description": "Short label for the private rooms toggle in media previews section",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMediaPreviewPublicRoomsToggleDescription": "Herkese açık sohbet odalarında resim, video, çıkartma ve url önizlemelerini açıp kapatın",
+    "@labelMediaPreviewPublicRoomsToggleDescription": {
+        "description": "Label describing toggle of media previews for public rooms",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelThemeDark": "Karanlık Tema",
+    "@labelThemeDark": {
+        "description": "Label for the dark theme",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelThemeLight": "Aydınlık Tema",
+    "@labelThemeLight": {
+        "description": "Label for the light theme",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelThemeAmoled": "Amoled",
+    "@labelThemeAmoled": {
+        "description": "Label for the light theme",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsAppTheme": "Tema",
+    "@labelSettingsAppTheme": {
+        "description": "Label for theme section of app appearance",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelAppScale": "Uygulama Ölçeği",
+    "@labelAppScale": {
+        "description": "Label for the setting which controls the UI scale of the overall app",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelUseRoomAvatars": "Oda avatarlarını kullan",
+    "@labelUseRoomAvatars": {
+        "description": "Label for enabling using room avatars instead of icons",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelEnableRoomIconsDescription": "İkonlar yerine oda avatar resimlerini göster",
+    "@labelEnableRoomIconsDescription": {
+        "description": "Description for the enable room icons setting",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelUseRoomAvatarPlaceholders": "Yer tutucu avatarları kullan",
+    "@labelUseRoomAvatarPlaceholders": {
+        "description": "Label for enabling generic icons in the appearance settings",
+        "type": "text",
+        "placeholders": {}
+    }
+}
