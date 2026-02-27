@@ -82,7 +82,6 @@ class _ChatPrivacyPreferences extends State<ChatPrivacyPreferences> {
                     setState(() {
                       publicReadReceipts = value;
                     });
-                    print(widget.client.getAllComponents());
                     await ErrorUtils.tryRun(context, () async {
                       await userPresenceComponent
                           .setUsePublicReadReceipts(value);
