@@ -30,17 +30,17 @@ class UnifiedPushNotifier implements Notifier {
   UnifiedPushNotifier() {
     notifier = AndroidNotifier();
 
-    if (preferences.unifiedPushEnabled == null) {
+    if (preferences.unifiedPushEnabled.value == null) {
       FirstTimeSetup.registerPostLoginSetup(UnifiedPushSetup());
     }
   }
 
   StreamController<String> onEndpointChanged = StreamController.broadcast();
 
-  String? get endpoint => preferences.unifiedPushEndpoint;
+  String? get endpoint => preferences.unifiedPushEndpoint.value;
 
   @override
-  bool get enabled => preferences.unifiedPushEnabled == true;
+  bool get enabled => preferences.unifiedPushEnabled.value == true;
 
   @override
   bool get hasPermission => notifier.hasPermission;
@@ -50,7 +50,7 @@ class UnifiedPushNotifier implements Notifier {
   @override
   Future<void> init() async {
     if (isInit) return;
-    if (preferences.unifiedPushEnabled != true) return;
+    if (preferences.unifiedPushEnabled.value != true) return;
 
     await notifier.init();
 
@@ -62,11 +62,11 @@ class UnifiedPushNotifier implements Notifier {
 
   @override
   Future<String?> getToken() async {
-    if (preferences.unifiedPushEnabled != true) {
+    if (preferences.unifiedPushEnabled.value != true) {
       return null;
     }
 
-    return preferences.unifiedPushEndpoint;
+    return preferences.unifiedPushEndpoint.value;
   }
 
   @override
@@ -80,7 +80,8 @@ class UnifiedPushNotifier implements Notifier {
   }
 
   void onNewEndpoint(String endpoint, String instance) async {
-    await preferences.setUnifiedPushEndpoint(endpoint);
+    print("Got new endpoint: $instance");
+    await preferences.unifiedPushEndpoint.set(endpoint);
     await PushNotificationComponent.updateAllPushers();
     onEndpointChanged.add(endpoint);
   }
@@ -92,7 +93,7 @@ class UnifiedPushNotifier implements Notifier {
       await notificationManager.init();
 
       if (!message.containsKey("room_id") || !message.containsKey("event_id")) {
-        if (preferences.developerMode) {
+        if (preferences.developerMode.value) {
           // ignore {"prio": "high"} notifications
           if (message.length == 1 && message.containsKey("prio")) {
             return;
@@ -155,8 +156,8 @@ class UnifiedPushNotifier implements Notifier {
 
   Future<void> unregister() async {
     await UnifiedPush.unregister();
-    await preferences.setUnifiedPushEnabled(false);
-    await preferences.setUnifiedPushEndpoint(null);
+    await preferences.unifiedPushEnabled.set(false);
+    await preferences.unifiedPushEndpoint.set(null);
     await PushNotificationComponent.updateAllPushers();
   }
 

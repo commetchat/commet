@@ -60,6 +60,9 @@ class _RoomHeaderState extends State<RoomHeader> {
           setState(() {});
         }
       }),
+      widget.room.onUpdate.listen((_) {
+        if (mounted) setState(() {});
+      }),
       if (presence != null)
         presence!.onPresenceChanged.listen(onUserPresenceChanged),
     ];
@@ -83,8 +86,8 @@ class _RoomHeaderState extends State<RoomHeader> {
 
   @override
   Widget build(BuildContext context) {
-    bool showRoomIcons = preferences.showRoomAvatars;
-    bool useGenericIcons = preferences.usePlaceholderRoomAvatars;
+    bool showRoomIcons = preferences.showRoomAvatars.value;
+    bool useGenericIcons = preferences.usePlaceholderRoomAvatars.value;
 
     bool shouldShowDefaultIcon = (!showRoomIcons && !useGenericIcons) ||
         (showRoomIcons && !useGenericIcons && widget.room.avatar == null);

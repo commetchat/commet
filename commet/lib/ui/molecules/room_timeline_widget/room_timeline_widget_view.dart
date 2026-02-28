@@ -117,7 +117,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
         receipts.onReadReceiptsUpdated.listen(onReadReceiptUpdated),
     ];
 
-    if (preferences.messageEffectsEnabled) {
+    if (preferences.messageEffectsEnabled.value) {
       for (int i = 0; i < 5; i++) {
         if (i >= timeline.events.length) break;
 
@@ -156,16 +156,12 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
 
     if (index == 0) {
       if (attachedToBottom) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          controller.animateTo(controller.position.minScrollExtent,
-              duration: const Duration(milliseconds: 500),
-              curve: Curves.easeOutExpo);
-        });
+        scrollToBottom();
 
         widget.markAsRead?.call(timeline.events[0]);
       }
 
-      if (preferences.messageEffectsEnabled) {
+      if (preferences.messageEffectsEnabled.value) {
         effects?.doEffect(timeline.events[index]);
       }
     }
@@ -194,9 +190,19 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
 
     if (index == 0) {
       if (attachedToBottom) {
+        scrollToBottom();
+
         widget.markAsRead?.call(timeline.events[0]);
       }
     }
+  }
+
+  void scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.animateTo(controller.position.minScrollExtent,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeOutExpo);
+    });
   }
 
   void onEventRemoved(int index) {
@@ -390,11 +396,11 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
 
                           return Container(
                             alignment: Alignment.center,
-                            color:
-                                preferences.developerMode && BuildConfig.DEBUG
-                                    ? Colors.blue[200 + sliverIndex % 4 * 100]!
-                                        .withAlpha(30)
-                                    : null,
+                            color: preferences.developerMode.value &&
+                                    BuildConfig.DEBUG
+                                ? Colors.blue[200 + sliverIndex % 4 * 100]!
+                                    .withAlpha(30)
+                                : null,
                             child: TimelineViewEntry(
                                 key: key.$1,
                                 timeline: timeline,
@@ -439,11 +445,11 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
 
                           return Container(
                             alignment: Alignment.center,
-                            color:
-                                preferences.developerMode && BuildConfig.DEBUG
-                                    ? Colors.red[200 + sliverIndex % 4 * 100]!
-                                        .withAlpha(30)
-                                    : null,
+                            color: preferences.developerMode.value &&
+                                    BuildConfig.DEBUG
+                                ? Colors.red[200 + sliverIndex % 4 * 100]!
+                                    .withAlpha(30)
+                                : null,
                             child: TimelineViewEntry(
                                 key: key.$1,
                                 onEventHovered: eventHovered,

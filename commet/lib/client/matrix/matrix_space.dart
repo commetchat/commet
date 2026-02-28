@@ -56,31 +56,63 @@ class MatrixSpace extends Space {
 
   @override
   Color get color => MatrixPeer.hashColor(_matrixRoom.id);
+
+  // cache the result of push rule because this was becoming an expensive operation for ui stuff
+  matrix.PushRuleState? _pushRule;
   @override
   PushRule get pushRule {
-    switch (_matrixRoom.pushRuleState) {
+    if (_pushRule == null) {
+      _pushRule = _matrixRoom.pushRuleState;
+    }
+
+    switch (_pushRule!) {
       case matrix.PushRuleState.notify:
         return PushRule.notify;
       case matrix.PushRuleState.mentionsOnly:
-        return PushRule.notify;
+        return PushRule.mentionsOnly;
       case matrix.PushRuleState.dontNotify:
         return PushRule.dontNotify;
     }
   }
 
   @override
+  Future<void> setPushRule(PushRule rule) async {
+    var newRule = _matrixRoom.pushRuleState;
+
+    switch (rule) {
+      case PushRule.notify:
+        newRule = matrix.PushRuleState.notify;
+        break;
+      case PushRule.mentionsOnly:
+        newRule = matrix.PushRuleState.mentionsOnly;
+        break;
+      case PushRule.dontNotify:
+        newRule = matrix.PushRuleState.dontNotify;
+        break;
+    }
+
+    await _matrixRoom.setPushRuleState(newRule);
+    _pushRule = _matrixRoom.pushRuleState;
+    _onUpdate.add(null);
+  }
+
+  @override
   RoomVisibility get visibility {
     switch (_matrixRoom.joinRules) {
       case matrix.JoinRules.public:
-        return RoomVisibility.public;
+        return RoomVisibilityPublic();
       case matrix.JoinRules.knock:
-        return RoomVisibility.knock;
+        return RoomVisibilityPrivate();
       case matrix.JoinRules.invite:
-        return RoomVisibility.invite;
+        return RoomVisibilityPrivate();
       case matrix.JoinRules.private:
-        return RoomVisibility.private;
-      default:
-        return RoomVisibility.private;
+        return RoomVisibilityPrivate();
+      case matrix.JoinRules.restricted:
+        return RoomVisibilityRestricted([]);
+      case matrix.JoinRules.knockRestricted:
+        return RoomVisibilityPrivate();
+      case null:
+        return RoomVisibilityPublic();
     }
   }
 
@@ -132,6 +164,10 @@ class MatrixSpace extends Space {
   @override
   Stream<void> get onUpdate => _onUpdate.stream;
 
+  void notifyUpdate() {
+    _onUpdate.add(null);
+  }
+
   @override
   Permissions get permissions => _permissions;
 
@@ -143,14 +179,18 @@ class MatrixSpace extends Space {
 
   late List<StreamSubscription> _subscriptions;
 
+  bool _isTopLevel = false;
   @override
-  bool get isTopLevel {
+  bool get isTopLevel => _isTopLevel;
+
+  void _updateTopLevelStatus() {
     for (var room in _matrixClient.rooms.where((r) => r.isSpace)) {
       if (room.spaceChildren.any((child) => child.roomId == _matrixRoom.id)) {
-        return false;
+        _isTopLevel = false;
+        return;
       }
     }
-    return true;
+    _isTopLevel = true;
   }
 
   MatrixSpace(
@@ -169,6 +209,9 @@ class MatrixSpace extends Space {
       client.onRoomAdded.listen((_) => updateRoomsList()),
       client.onRoomRemoved.listen(onClientRoomRemoved),
       client.matrixClient.onSync.stream.listen(onMatrixSync),
+      client.matrixClient.onRoomState.stream
+          .where((i) => i.roomId == room.id)
+          .listen(onStateChanged),
 
       // Subscribe to all child update events
       _rooms.onAdd.listen(_onRoomAdded),
@@ -183,6 +226,12 @@ class MatrixSpace extends Space {
     }
 
     updateRoomsList();
+    _updateTopLevelStatus();
+  }
+
+  void onStateChanged(
+      ({String roomId, matrix.StrippedStateEvent state}) event) {
+    refresh();
   }
 
   @override
@@ -220,6 +269,31 @@ class MatrixSpace extends Space {
     var leftRoom = client.rooms[index];
     if (containsRoom(leftRoom.identifier)) {
       _rooms.remove(leftRoom);
+      _onUpdate.add(null);
+
+      // Update preview list
+      _matrixClient.getSpaceHierarchy(identifier, maxDepth: 1).then((value) {
+        var chunk = value.rooms
+            .where((element) => element.roomId == leftRoom.identifier)
+            .where((element) =>
+                _matrixClient.getRoomById(element.roomId)?.membership !=
+                matrix.Membership.join)
+            .firstOrNull;
+        if (chunk == null) return;
+
+        var viaContent = _matrixRoom
+            .getState(matrix.EventTypes.SpaceChild, chunk.roomId)
+            ?.content["via"];
+
+        List<String> via = const [];
+
+        if (viaContent is List) {
+          via = List.from(viaContent);
+        }
+        _previews
+            .add(MatrixSpaceRoomChunkPreview(chunk, _matrixClient, via: via));
+      });
+      _fullyLoaded = true;
     }
   }
 
@@ -306,25 +380,6 @@ class MatrixSpace extends Space {
         bytes: bytes,
         name: "avatar",
         mimeType: mimeType == "" ? null : mimeType));
-  }
-
-  @override
-  Future<void> setPushRule(PushRule rule) async {
-    var newRule = _matrixRoom.pushRuleState;
-
-    switch (rule) {
-      case PushRule.notify:
-        newRule = matrix.PushRuleState.notify;
-        break;
-      case PushRule.mentionsOnly:
-        newRule = matrix.PushRuleState.mentionsOnly;
-        break;
-      case PushRule.dontNotify:
-        newRule = matrix.PushRuleState.dontNotify;
-        break;
-    }
-
-    await _matrixRoom.setPushRuleState(newRule);
     _onUpdate.add(null);
   }
 
@@ -363,6 +418,7 @@ class MatrixSpace extends Space {
   Future<void> setDisplayName(String newName) async {
     _displayName = newName;
     await _matrixRoom.setName(newName);
+    _onUpdate.add(null);
   }
 
   @override
@@ -397,8 +453,19 @@ class MatrixSpace extends Space {
     final update = event.rooms?.join;
     if (update == null) return;
 
+    var thisRoom = update[_matrixRoom.id];
+    if (thisRoom != null) {
+      if (thisRoom.timeline?.events
+              ?.any((i) => i.type == matrix.EventTypes.SpaceChild) ==
+          true) {
+        print("A child of this space has been modified!");
+        loadExtra();
+      }
+    }
+
     for (var id in update.keys) {
       if (roomsWithChildren.any((i) => i.identifier == id)) {
+        _updateTopLevelStatus();
         _onUpdate.add(null);
       }
     }
@@ -464,7 +531,13 @@ class MatrixSpace extends Space {
   }
 
   @override
-  Future<void> setTopic(String topic) {
-    return matrixRoom.setDescription(topic);
+  Future<void> setTopic(String topic) async {
+    await matrixRoom.setDescription(topic);
+    _onUpdate.add(null);
+  }
+
+  @override
+  Future<void> removeChild(SpaceChild<dynamic> child) async {
+    await matrixRoom.removeSpaceChild(child.id);
   }
 }

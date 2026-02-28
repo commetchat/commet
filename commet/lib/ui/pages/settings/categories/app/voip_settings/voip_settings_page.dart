@@ -5,7 +5,9 @@ import 'package:commet/client/components/voip/webrtc_default_devices.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
-import 'package:commet/ui/molecules/settings_entry_bool.dart';
+import 'package:commet/ui/pages/settings/categories/app/boolean_toggle.dart';
+import 'package:commet/ui/pages/settings/categories/app/double_preference_slider.dart';
+import 'package:commet/ui/pages/settings/categories/app/string_preference_options.dart';
 import 'package:commet/ui/pages/settings/categories/app/voip_settings/voip_debug_settings.dart';
 import 'package:flutter/widgets.dart';
 
@@ -57,12 +59,11 @@ class _VoipSettingsPage extends State<VoipSettingsPage> {
         tiamat.Panel(
           mode: tiamat.TileType.surfaceContainerLow,
           header: "Call Connection",
-          child: SettingsEntryBool(
-            preferences.useFallbackTurnServer,
+          child: BooleanPreferenceToggle(
+            preference: preferences.useFallbackTurnServer,
             title: "Use TURN Fallback",
             description:
-                "Calls cannot be connected without a TURN server. If your homeserver does not provide a TURN server, fall back to using '${preferences.fallbackTurnServer}'. Your IP address will be revealed to this server when establishing calls",
-            onChanged: preferences.setUseFallbackTurnServer,
+                "Calls cannot be connected without a TURN server. If your homeserver does not provide a TURN server, fall back to using '${preferences.fallbackTurnServer.value}'. Your IP address will be revealed to this server when establishing calls",
           ),
         ),
         tiamat.Panel(
@@ -70,7 +71,64 @@ class _VoipSettingsPage extends State<VoipSettingsPage> {
           mode: tiamat.TileType.surfaceContainerLow,
           child: devicePicker(),
         ),
-        if (preferences.developerMode)
+        tiamat.Panel(
+            header: "Stream Settings",
+            mode: tiamat.TileType.surfaceContainerLow,
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 12,
+                children: [
+                  BooleanPreferenceToggle(
+                      preference: preferences.doSimulcast,
+                      title: "Use simulcast",
+                      description:
+                          "Uploads your streams at multiple different levels of quality, so other users can decide which to use. This will use more bandwidth and system resources."),
+                  DoublePreferenceSlider(
+                    preference: preferences.streamBitrate,
+                    min: 1,
+                    max: 32,
+                    units: "Mbps",
+                    title: "Stream Maximum Bitrate",
+                    description:
+                        "Determines the overall quality of your stream. Higher is better, but also uses more resources",
+                  ),
+                  DoublePreferenceSlider(
+                    preference: preferences.streamFramerate,
+                    min: 5,
+                    max: 60,
+                    numDecimals: 0,
+                    units: "FPS",
+                    title: "Stream Framerate",
+                    description:
+                        "Target frames per second for screen sharing. Higher has smoother motion, but maybe reduce visual clarity.",
+                  ),
+                  StringPreferenceOptionsPicker(
+                      preference: preferences.streamCodec,
+                      title: "Preferred Stream Codec",
+                      description:
+                          "Choose which format to encode your stream in. Different codecs may run faster on certain devices, and may be unsupported on others. Most devices should support vp8 and h264.",
+                      options: [
+                        "h264",
+                        "h265",
+                        "vp9",
+                        "vp8",
+                        "av1",
+                      ]),
+                  if (preferences.developerMode.value)
+                    StringPreferenceOptionsPicker(
+                        preference: preferences.streamResolution,
+                        title: "Stream Resolution",
+                        description:
+                            "The resolution of your stream, higher is better",
+                        options: [
+                          "640x360",
+                          "960x540",
+                          "1280x720",
+                          "1920x1080",
+                          "2560x1440",
+                        ])
+                ])),
+        if (preferences.developerMode.value)
           const Padding(
             padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
             child: tiamat.Panel(
@@ -88,10 +146,10 @@ class _VoipSettingsPage extends State<VoipSettingsPage> {
       if (microphones != null && !PlatformUtils.isAndroid)
         buildPicker(
           "Default Audio Input",
-          preferences.voipDefaultAudioInput,
+          preferences.voipDefaultAudioInput.value,
           microphones!,
           onSelected: (device) async {
-            await preferences.setVoipDefaultAudioInput(device?.label);
+            await preferences.voipDefaultAudioInput.set(device?.label);
 
             WebrtcDefaultDevices.selectInputDevice();
 
@@ -101,10 +159,10 @@ class _VoipSettingsPage extends State<VoipSettingsPage> {
       if (speakers != null)
         buildPicker(
           "Audio Output",
-          preferences.voipDefaultAudioOutput,
+          preferences.voipDefaultAudioOutput.value,
           speakers!,
           onSelected: (device) async {
-            await preferences.setVoipDefaultAudioOutput(device?.label);
+            await preferences.voipDefaultAudioOutput.set(device?.label);
 
             WebrtcDefaultDevices.selectOutputDevice();
             setState(() {});

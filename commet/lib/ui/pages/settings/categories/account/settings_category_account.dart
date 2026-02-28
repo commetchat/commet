@@ -2,6 +2,7 @@ import 'package:commet/client/client_manager.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/settings/categories/account/account_emoji/account_emoji_tab.dart';
 import 'package:commet/ui/pages/settings/categories/account/account_state/account_state_tab.dart';
+import 'package:commet/ui/pages/settings/categories/account/preferences/preferences_tab.dart';
 import 'package:commet/ui/pages/settings/categories/account/profile/profile_edit_tab.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
 import 'package:commet/ui/pages/settings/settings_tab.dart';
@@ -20,6 +21,10 @@ class SettingsCategoryAccount implements SettingsCategory {
   String get labelSettingsTabProfile => Intl.message("Profile",
       name: "labelSettingsTabProfile",
       desc: "Label for the Profile settings page");
+
+  String get labelSettingsTabPrivacy => Intl.message("Privacy",
+      name: "labelSettingsTabPrivacy",
+      desc: "Label for the Privacy settings page");
 
   String get labelSettingsTabSecurity => Intl.message("Security",
       name: "labelSettingsTabSecurity",
@@ -59,6 +64,14 @@ class SettingsCategoryAccount implements SettingsCategory {
               );
             }),
         SettingsTab(
+            label: labelSettingsTabPrivacy,
+            icon: Icons.public,
+            pageBuilder: (context) {
+              return AccountSettingsTab(
+                clientManager: Provider.of<ClientManager>(context),
+              );
+            }),
+        SettingsTab(
             label: labelSettingsTabSecurity,
             icon: Icons.security,
             pageBuilder: (context) {
@@ -74,7 +87,7 @@ class SettingsCategoryAccount implements SettingsCategory {
                 clientManager: Provider.of<ClientManager>(context));
           },
         ),
-        if (preferences.developerMode)
+        if (preferences.developerMode.value)
           SettingsTab(
             label: labelSettingsTabDeveloper,
             icon: Icons.code,

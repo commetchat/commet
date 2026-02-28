@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:commet/client/components/read_receipts/read_receipt_component.dart';
 import 'package:commet/client/matrix/components/matrix_sync_listener.dart';
+import 'package:commet/client/matrix/components/user_presence/matrix_user_presence.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
@@ -18,6 +19,9 @@ class MatrixReadReceiptComponent
   @override
   MatrixRoom room;
 
+  static const String publicReadReceiptsKey =
+      "chat.commet.public_read_receipts";
+
   final StreamController<String> _controller =
       StreamController<String>.broadcast();
 
@@ -29,6 +33,22 @@ class MatrixReadReceiptComponent
   }
 
   Map<String, String> userToPreviousReceipt = {};
+
+  @override
+  bool? get usePublicReadReceiptsForRoom {
+    var publicReadReceiptsForRoom = room
+        .matrixRoom.roomAccountData[publicReadReceiptsKey]?.content["enabled"];
+    return publicReadReceiptsForRoom is bool ? publicReadReceiptsForRoom : null;
+  }
+
+  @override
+  Future<void> setUsePublicReadReceiptsForRoom(bool? value) async =>
+      await client.matrixClient.setAccountDataPerRoom(
+        client.matrixClient.userID!,
+        room.matrixRoom.id,
+        publicReadReceiptsKey,
+        {"enabled": value},
+      );
 
   @override
   onSync(JoinedRoomUpdate update) {
@@ -46,8 +66,6 @@ class MatrixReadReceiptComponent
 
           if (e is Map<String, dynamic>) {
             for (var k in e.keys) {
-              print("Received read receipt from ${k}");
-
               var lastEvent = userToPreviousReceipt[k];
               if (lastEvent != null) {
                 _controller.add(lastEvent);
@@ -61,6 +79,10 @@ class MatrixReadReceiptComponent
         }
       }
     }
+
+    client.matrixClient.receiptsPublicByDefault = client
+        .getComponent<MatrixUserPresenceComponent>()!
+        .usePublicReadReceipts;
   }
 
   void handleEvent(String eventId, String userId) {

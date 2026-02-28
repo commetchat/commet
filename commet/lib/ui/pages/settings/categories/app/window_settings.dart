@@ -1,8 +1,8 @@
 import 'package:commet/main.dart';
+import 'package:commet/ui/pages/settings/categories/app/boolean_toggle.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
-import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:tiamat/tiamat.dart';
 
 class WindowSettingsPage extends StatefulWidget {
@@ -13,8 +13,6 @@ class WindowSettingsPage extends StatefulWidget {
 }
 
 class _WindowSettingsPageState extends State<WindowSettingsPage> {
-  bool minimizeOnClose = false;
-
   String get labelSettingsWindowBehaviourTitle =>
       Intl.message("Window behaviour",
           desc: "Header for the window behaviour section of settings",
@@ -32,7 +30,6 @@ class _WindowSettingsPageState extends State<WindowSettingsPage> {
 
   @override
   void initState() {
-    minimizeOnClose = preferences.minimizeOnClose;
     super.initState();
   }
 
@@ -42,32 +39,10 @@ class _WindowSettingsPageState extends State<WindowSettingsPage> {
       header: labelSettingsWindowBehaviourTitle,
       mode: TileType.surfaceContainerLow,
       child: Column(children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Flexible(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  tiamat.Text.labelEmphasised(
-                      labelSettingsMinimizeOnCloseToggle),
-                  tiamat.Text.labelLow(labelSettingsMinimizeOnCloseExplanation)
-                ],
-              ),
-            ),
-            tiamat.Switch(
-              state: preferences.minimizeOnClose,
-              onChanged: (value) async {
-                setState(() {
-                  minimizeOnClose = value;
-                });
-                await preferences.setMinimizeOnClose(value);
-                setState(() {
-                  minimizeOnClose = preferences.minimizeOnClose;
-                });
-              },
-            )
-          ],
+        BooleanPreferenceToggle(
+          preference: preferences.minimizeOnClose,
+          title: labelSettingsMinimizeOnCloseToggle,
+          description: labelSettingsMinimizeOnCloseExplanation,
         )
       ]),
     );

@@ -14,6 +14,7 @@ import 'package:commet/client/matrix/components/emoticon_recent/matrix_recent_em
 import 'package:commet/client/matrix/components/event_search/matrix_event_search_component.dart';
 import 'package:commet/client/matrix/components/gif/matrix_gif_component.dart';
 import 'package:commet/client/matrix/components/invitation/matrix_invitation_component.dart';
+import 'package:commet/client/matrix/components/key_verification_component/matrix_key_verification_component.dart';
 import 'package:commet/client/matrix/components/photo_album_room/matrix_photo_album_room_component.dart';
 import 'package:commet/client/matrix/components/pinned_messages/matrix_pinned_messages_component.dart';
 import 'package:commet/client/matrix/components/message_effects/matrix_message_effects_component.dart';
@@ -60,6 +61,7 @@ class ComponentRegistry {
       MatrixProfileComponent(client),
       MatrixUserColorComponent(client),
       MatrixDonationAwardsComponent(client),
+      MatrixKeyVerificationComponent(client),
     ];
   }
 

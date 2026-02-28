@@ -13,6 +13,8 @@ import 'package:commet/client/components/room_component.dart';
 import 'package:commet/client/components/user_color/user_color_component.dart';
 import 'package:commet/client/matrix/components/calendar_room_component/matrix_calendar_room_component.dart';
 import 'package:commet/client/matrix/components/emoticon/matrix_room_emoticon_component.dart';
+import 'package:commet/client/matrix/components/read_receipts/matrix_read_receipt_component.dart';
+import 'package:commet/client/matrix/components/user_presence/matrix_user_presence.dart';
 import 'package:commet/client/matrix/matrix_attachment.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_member.dart';
@@ -117,6 +119,7 @@ class MatrixRoom extends Room {
   String get developerInfo =>
       const JsonEncoder.withIndent('  ').convert(_matrixRoom.states);
 
+  Color? hashColor;
   @override
   Color get defaultColor {
     var comp = client.getComponent<DirectMessagesComponent>();
@@ -130,12 +133,22 @@ class MatrixRoom extends Room {
       }
     }
 
-    return getColorOfUser(identifier);
+    if (hashColor != null) return hashColor!;
+
+    hashColor = MatrixPeer.hashColor(identifier);
+
+    return hashColor!;
   }
 
+  // cache the result of push rule because this was becoming an expensive operation for ui stuff
+  matrix.PushRuleState? _pushRule;
   @override
   PushRule get pushRule {
-    switch (_matrixRoom.pushRuleState) {
+    if (_pushRule == null) {
+      _pushRule = _matrixRoom.pushRuleState;
+    }
+
+    switch (_pushRule!) {
       case matrix.PushRuleState.notify:
         return PushRule.notify;
       case matrix.PushRuleState.mentionsOnly:
@@ -143,6 +156,27 @@ class MatrixRoom extends Room {
       case matrix.PushRuleState.dontNotify:
         return PushRule.dontNotify;
     }
+  }
+
+  @override
+  Future<void> setPushRule(PushRule rule) async {
+    var newRule = _matrixRoom.pushRuleState;
+
+    switch (rule) {
+      case PushRule.notify:
+        newRule = matrix.PushRuleState.notify;
+        break;
+      case PushRule.mentionsOnly:
+        newRule = matrix.PushRuleState.mentionsOnly;
+        break;
+      case PushRule.dontNotify:
+        newRule = matrix.PushRuleState.dontNotify;
+        break;
+    }
+
+    await _matrixRoom.setPushRuleState(newRule);
+    _pushRule = _matrixRoom.pushRuleState;
+    _onUpdate.add(null);
   }
 
   @override
@@ -522,26 +556,6 @@ class MatrixRoom extends Room {
   }
 
   @override
-  Future<void> setPushRule(PushRule rule) async {
-    var newRule = _matrixRoom.pushRuleState;
-
-    switch (rule) {
-      case PushRule.notify:
-        newRule = matrix.PushRuleState.notify;
-        break;
-      case PushRule.mentionsOnly:
-        newRule = matrix.PushRuleState.mentionsOnly;
-        break;
-      case PushRule.dontNotify:
-        newRule = matrix.PushRuleState.dontNotify;
-        break;
-    }
-
-    await _matrixRoom.setPushRuleState(newRule);
-    _onUpdate.add(null);
-  }
-
-  @override
   Future<void> setDisplayName(String newName) async {
     _displayName = newName;
     _onUpdate.add(null);
@@ -615,8 +629,8 @@ class MatrixRoom extends Room {
           .getComponent<UserProfileComponent>()!
           .getProfile(comp!.getDirectMessagePartnerId(this)!);
 
-      if (user?.avatar != null) {
-        return user!.avatar;
+      if (user.avatar != null) {
+        return user.avatar;
       }
     }
 
@@ -704,7 +718,9 @@ class MatrixRoom extends Room {
 
   void onRoomStateUpdated(({String roomId, StrippedStateEvent state}) event) {
     _displayName = _matrixRoom.getLocalizedDisplayname();
-    if (event.state.type == "m.room.name") {
+    if (event.state.type == "m.room.name" ||
+        event.state.type == "m.room.avatar" ||
+        event.state.type == "m.room.topic") {
       _onUpdate.add(null);
     }
   }
@@ -725,22 +741,22 @@ class MatrixRoom extends Room {
   bool get shouldPreviewMedia {
     switch (_matrixRoom.joinRules) {
       case matrix.JoinRules.public:
-        return preferences.previewMediaInPublicRooms;
+        return preferences.previewMediaInPublicRooms.value;
 
       case matrix.JoinRules.knock:
       case matrix.JoinRules.invite:
       case matrix.JoinRules.private:
-        return preferences.previewMediaInPrivateRooms;
+        return preferences.previewMediaInPrivateRooms.value;
 
       case matrix.JoinRules.restricted:
         if (_client.spaces.any((e) =>
-            e.visibility == RoomVisibility.public &&
+            e.visibility is RoomVisibilityPublic &&
             e.containsRoom(_matrixRoom.id))) {
           // if any public space contains this room, consider the room public
           // this is kind of flawed, because there could be public spaces we are not a member of
-          return preferences.previewMediaInPublicRooms;
+          return preferences.previewMediaInPublicRooms.value;
         } else {
-          return preferences.previewMediaInPrivateRooms;
+          return preferences.previewMediaInPrivateRooms.value;
         }
 
       default:
@@ -760,6 +776,7 @@ class MatrixRoom extends Room {
 
   void onRoomSyncUpdate(matrix.SyncUpdate event) {
     var update = event.rooms?.join?[_matrixRoom.id];
+
     if (update == null) return;
 
     _onUpdate.add(null);
@@ -805,8 +822,9 @@ class MatrixRoom extends Room {
   String? get topic => matrixRoom.topic;
 
   @override
-  Future<void> setTopic(String topic) {
-    return matrixRoom.setDescription(topic);
+  Future<void> setTopic(String topic) async {
+    await matrixRoom.setDescription(topic);
+    _onUpdate.add(null);
   }
 
   @override
@@ -822,12 +840,75 @@ class MatrixRoom extends Room {
 
     await matrixRoom.setAvatar(matrix.MatrixFile(bytes: bytes, name: name));
     _avatar = MemoryImage(bytes);
+    _onUpdate.add(null);
   }
 
   @override
   Future<void> markAsRead() async {
     var tl = await matrixRoom.getTimeline();
+    var readReceiptComponent = getComponent<MatrixReadReceiptComponent>();
 
-    await tl.setReadMarker();
+    bool public = true;
+    var presenceComp = client.getComponent<MatrixUserPresenceComponent>();
+
+    if (presenceComp?.usePublicReadReceipts != null) {
+      public = presenceComp!.usePublicReadReceipts;
+    }
+
+    if (readReceiptComponent?.usePublicReadReceiptsForRoom != null) {
+      public = readReceiptComponent!.usePublicReadReceiptsForRoom!;
+    }
+
+    await tl.setReadMarker(public: public);
+  }
+
+  @override
+  RoomVisibility get visibility {
+    switch (_matrixRoom.joinRules) {
+      case matrix.JoinRules.public:
+        return RoomVisibilityPublic();
+      case matrix.JoinRules.knock:
+        return RoomVisibilityPrivate();
+      case matrix.JoinRules.invite:
+        return RoomVisibilityPrivate();
+      case matrix.JoinRules.private:
+        return RoomVisibilityPrivate();
+      case matrix.JoinRules.restricted:
+        return RoomVisibilityRestricted(matrixRoom
+                .getState(matrix.EventTypes.RoomJoinRules)
+                ?.content
+                .tryGetList<Map<String, dynamic>>("allow")
+                ?.map((i) => i.tryGet<String>("room_id"))
+                .nonNulls
+                .toList() ??
+            []);
+      case matrix.JoinRules.knockRestricted:
+        return RoomVisibilityPrivate();
+      case null:
+        return RoomVisibilityPublic();
+    }
+  }
+
+  @override
+  Future<void> setVisibility(RoomVisibility visibility) async {
+    var state = switch (visibility) {
+      final RoomVisibilityPrivate _ => matrix.StateEvent(content: {
+          "join_rule": "invite",
+        }, type: matrix.EventTypes.RoomJoinRules),
+      final RoomVisibilityPublic _ => matrix.StateEvent(
+          content: {"join_rule": "public"},
+          type: matrix.EventTypes.RoomJoinRules),
+      final RoomVisibilityRestricted restricted => matrix.StateEvent(content: {
+          "join_rule": "restricted",
+          "allow": [
+            for (var i in restricted.spaces)
+              {"room_id": i, "type": "m.room_membership"},
+          ]
+        }, type: matrix.EventTypes.RoomJoinRules),
+      RoomVisibility() => throw UnimplementedError(),
+    };
+
+    await _matrixRoom.client
+        .setRoomStateWithKey(_matrixRoom.id, state.type, "", state.content);
   }
 }

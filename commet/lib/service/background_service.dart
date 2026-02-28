@@ -100,8 +100,6 @@ Future<bool> initBackgroundService() async {
     } else {
       Log.w(
           "Failed to start background service!, ${Isolate.current.debugName}");
-      await preferences.init();
-      await preferences.setLastForegroundServiceRunSucceeded(false);
     }
     return false;
   }
@@ -136,7 +134,7 @@ void onServiceInit(Map<String, dynamic>? data) async {
     }
   }
 
-  if (preferences.useLegacyNotificationHandler) {
+  if (preferences.useLegacyNotificationHandler.value) {
     Log.i("Using legacy background notification handler");
     var notificationManager = BackgroundNotificationsManager(instance!);
 
@@ -156,7 +154,6 @@ void onServiceInit(Map<String, dynamic>? data) async {
     notificationManager.flushQueueLoop();
   }
 
-  preferences.setLastForegroundServiceRunSucceeded(true);
   instance?.invoke("ready");
 }
 

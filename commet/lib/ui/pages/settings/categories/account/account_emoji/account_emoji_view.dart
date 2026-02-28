@@ -70,7 +70,7 @@ class _AccountEmojiViewState extends State<AccountEmojiView> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       tiamat.Text.labelEmphasised(pack.displayName),
-                      tiamat.Text.labelLow(preferences.developerMode
+                      tiamat.Text.labelLow(preferences.developerMode.value
                           ? "${pack.ownerDisplayName} - (${pack.ownerId})"
                           : pack.ownerDisplayName),
                     ],

@@ -22,24 +22,23 @@ class LoginPage extends StatefulWidget {
 
 class LoginPageState extends State<LoginPage> {
   String get messageLoginFailed => Intl.message(
-    "Login Failed...",
-    name: "messageLoginFailed",
-    desc: "Generic text to show that an attempted login has failed",
-  );
-
-  String get messageLoginIncorrect => Intl.message(
-    "Incorrect username or password.",
-    name: "messageLoginIncorrect",
-    desc:
-        "A generic error message to convey that an error occured when attempting to login, usually an invalid username or password.",
-  );
+        "Login Failed...",
+        name: "messageLoginFailed",
+        desc: "Generic text to show that an attempted login has failed",
+      );
 
   String get messageAlreadyLoggedIn => Intl.message(
-    "You have already logged in to this account",
-    name: "messageAlreadyLoggedIn",
-    desc:
-        "An error message displayed when the user attempts to add an account which has already been logged in to on this device",
-  );
+        "You have already logged in to this account",
+        name: "messageAlreadyLoggedIn",
+        desc:
+            "An error message displayed when the user attempts to add an account which has already been logged in to on this device",
+      );
+
+  String get messageInvalidUsernameOrPassword => Intl.message(
+      "Invalid username or password",
+      name: "messageInvalidUsernameOrPassword",
+      desc:
+          "An error message displayed when the user attempts to log into an account using the wrong username/password combination");
 
   StreamSubscription? progressSubscription;
   double? progress;
@@ -102,23 +101,27 @@ class LoginPageState extends State<LoginPage> {
     setState(() {
       isLoggingIn = true;
     });
-    LoginResult result = LoginResult.error;
+
+    LoginResult? result;
+
     try {
       result = await login();
     } catch (_) {}
 
-    if (result != LoginResult.success) {
+    if (!(result is LoginResultSuccess)) {
       setState(() {
         isLoggingIn = false;
       });
     }
 
     String? message = switch (result) {
-      LoginResult.success => null,
-      LoginResult.failed => messageLoginFailed,
-      LoginResult.error => messageLoginIncorrect,
-      LoginResult.alreadyLoggedIn => messageAlreadyLoggedIn,
-      LoginResult.cancelled => "Login cancelled",
+      LoginResultSuccess _ => null,
+      LoginResultError e => e.errorMessage,
+      LoginResultCancelled _ => "Login Cancelled",
+      LoginResultAlreadyLoggedIn _ => messageAlreadyLoggedIn,
+      LoginResultFailed _ => messageLoginFailed,
+      LoginResult() => throw UnimplementedError(),
+      null => throw UnimplementedError(),
     };
 
     if (message != null) {
@@ -134,7 +137,7 @@ class LoginPageState extends State<LoginPage> {
       ;
     }
 
-    if (result == LoginResult.success) {
+    if (result is LoginResultSuccess) {
       clientManager?.addClient(loginClient!);
       widget.onSuccess?.call(loginClient!);
     }
@@ -158,6 +161,7 @@ class LoginPageState extends State<LoginPage> {
   }
 
   void onLoginProgressChanged(ClientConnectionStatusUpdate event) {
+    if (!mounted) return;
     setState(() {
       progress = event.progress;
     });

@@ -56,7 +56,7 @@ class Log {
         return;
       }
 
-      if (!preferences.isInit || preferences.developerMode == true) {
+      if (!preferences.isInit || preferences.developerMode.value == true) {
         add(LogEntry(LogType.info, line));
       }
     },

@@ -45,10 +45,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
     subscriptions = [
       widget.clientManager.onSync.stream.listen(onSync),
+      widget.clientManager.onClientRemoved.stream.listen((_) {
+        setState(() {
+          updateRecent();
+        });
+      }),
       EventBus.setFilterClient.stream.listen(setFilterClient),
     ];
 
-    if (preferences.checkForUpdates == true) {
+    if (preferences.checkForUpdates.value == true) {
       UpdateChecker.checkForUpdates();
     }
 

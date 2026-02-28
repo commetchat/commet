@@ -8,7 +8,8 @@ import 'package:commet/diagnostic/diagnostics.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/navigation_utils.dart';
 import 'package:commet/ui/pages/developer/benchmarks/timeline_viewer_benchmark.dart';
-import 'package:commet/ui/pages/settings/categories/app/general_settings_page.dart';
+import 'package:commet/ui/pages/settings/categories/app/boolean_toggle.dart';
+import 'package:commet/ui/pages/settings/categories/app/double_preference_slider.dart';
 import 'package:commet/ui/pages/settings/categories/developer/cumulative_diagnostics_widget.dart';
 import 'package:commet/utils/background_tasks/background_task_manager.dart';
 import 'package:commet/utils/background_tasks/mock_tasks.dart';
@@ -47,15 +48,20 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
         child: Column(
           children: [
             if (!BuildConfig.MOBILE)
-              GeneralSettingsPageState.settingToggle(
-                  preferences.disableTextCursorManagement, onChanged: (value) {
-                preferences
-                    .setdisableTextCursorManagement(value)
-                    .then((_) => setState(() {}));
-              },
-                  title: "Disable Text Cursor Management",
-                  description:
-                      "As part of the implementaton for the rich text editor, we sometimes have to make automated changes to the text cursor. This disables that"),
+              BooleanPreferenceToggle(
+                preference: preferences.disableTextCursorManagement,
+                title: "Disable Text Cursor Management",
+                description:
+                    "As part of the implementaton for the rich text editor, we sometimes have to make automated changes to the text cursor. This disables that",
+              ),
+            DoublePreferenceSlider(
+              preference: preferences.customOnscreenKeyboardViewOffset,
+              title: "Keyboard Offset",
+              min: 0.0,
+              max: 1000,
+              description:
+                  "Amount to shift the app view up by when the onscreen keyboard is shown",
+            )
           ],
         ),
       )
@@ -147,6 +153,10 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
               tiamat.Button(
                 text: "1280x720",
                 onTap: () => windowManager.setSize(const Size(1280, 720)),
+              ),
+              tiamat.Button(
+                text: "1280x800 (Steamdeck)",
+                onTap: () => windowManager.setSize(const Size(1280, 800)),
               ),
               tiamat.Button(
                 text: "1920x1080",

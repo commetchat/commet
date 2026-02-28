@@ -53,7 +53,8 @@ class MatrixSSOLoginFlow implements SsoLoginFlow {
   @override
   Future<LoginResult> submit(Client client) async {
     if (client is! MatrixClient) {
-      return LoginResult.error;
+      return LoginResultError(
+          "Attemted to login with the wrong type of client");
     }
 
     try {
@@ -90,7 +91,7 @@ class MatrixSSOLoginFlow implements SsoLoginFlow {
 
       var token = Uri.parse(result).queryParameters['loginToken'];
       if (token?.isEmpty ?? false) {
-        return LoginResult.failed;
+        return LoginResultFailed();
       }
 
       var login = await mx.login(
@@ -99,17 +100,17 @@ class MatrixSSOLoginFlow implements SsoLoginFlow {
       );
 
       if (login.accessToken.isNotEmpty) {
-        return LoginResult.success;
+        return LoginResultSuccess();
       } else {
-        return LoginResult.failed;
+        return LoginResultFailed();
       }
     } catch (e, t) {
       Log.onError(e, t);
       // I didn't spell this wrong, its just like that in flutter_web_auth_2
       if (e is PlatformException && e.code == "CANCELED") {
-        return LoginResult.cancelled;
+        return LoginResultCancelled();
       }
-      return LoginResult.error;
+      return LoginResultError(e.toString());
     }
   }
 }

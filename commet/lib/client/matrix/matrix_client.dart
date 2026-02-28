@@ -21,8 +21,6 @@ import 'package:commet/config/global_config.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
 import 'package:commet/main.dart';
-import 'package:commet/ui/navigation/adaptive_dialog.dart';
-import 'package:commet/ui/pages/matrix/authentication/matrix_uia_request.dart';
 import 'package:commet/utils/list_extension.dart';
 import 'package:commet/utils/notifying_list.dart';
 import 'package:commet/utils/stored_stream_controller.dart';
@@ -37,7 +35,6 @@ import 'package:matrix/encryption.dart';
 import 'package:flutter_vodozemac/flutter_vodozemac.dart' as vodozemac;
 
 import '../../ui/atoms/code_block.dart';
-import '../../ui/pages/matrix/verification/matrix_verification_page.dart';
 import 'matrix_room.dart';
 import 'matrix_space.dart';
 import 'package:vodozemac/vodozemac.dart' as vod;
@@ -73,7 +70,7 @@ class MatrixClient extends Client {
     required String identifier,
     required matrix.DatabaseApi database,
   }) {
-    if (preferences.developerMode) {
+    if (preferences.developerMode.value) {
       matrix.Logs().level = matrix.Level.verbose;
     } else {
       matrix.Logs().level = matrix.Level.warning;
@@ -268,24 +265,6 @@ class MatrixClient extends Client {
 
     _updateRoomslist();
     _updateSpacesList();
-
-    _matrixClient.onKeyVerificationRequest.stream.listen((event) {
-      AdaptiveDialog.show(
-        navigator.currentContext!,
-        builder: (_) => MatrixVerificationPage(request: event),
-        title: "Verification Request",
-      );
-    });
-
-    _matrixClient.onUiaRequest.stream.listen((event) {
-      if (event.state == matrix.UiaRequestState.waitForUser) {
-        AdaptiveDialog.show(
-          navigator.currentContext!,
-          builder: (_) => MatrixUIARequest(event, this),
-          title: "Authentication Request",
-        );
-      }
-    });
   }
 
   void onMatrixClientSync(matrix.SyncUpdate update) {
@@ -443,6 +422,7 @@ class MatrixClient extends Client {
   @override
   Future<Room> createRoom(CreateRoomArgs args) async {
     var creationContent = null;
+    Map<String, Object?>? powerLevelAdditions = {};
 
     List<matrix.StateEvent>? initialState;
     if (args.roomType == RoomType.photoAlbum) {
@@ -451,6 +431,12 @@ class MatrixClient extends Client {
 
     if (args.roomType == RoomType.voipRoom) {
       creationContent = {"type": "org.matrix.msc3417.call"};
+      powerLevelAdditions = {
+        "events": {
+          "org.matrix.msc3401.call": 0,
+          "org.matrix.msc3401.call.member": 0
+        }
+      };
     }
 
     if (args.roomType == RoomType.calendar) {
@@ -485,14 +471,44 @@ class MatrixClient extends Client {
       ];
     }
 
+    var visibility = switch (args.visibility) {
+      final RoomVisibilityPrivate _ => matrix.Visibility.private,
+      final RoomVisibilityPublic _ => matrix.Visibility.public,
+      final RoomVisibilityRestricted _ => null,
+      _ => matrix.Visibility.private,
+    };
+
+    if (args.visibility case RoomVisibilityRestricted restricted) {
+      initialState ??= List.empty(growable: true);
+
+      initialState = [
+        ...initialState,
+        for (var i in restricted.spaces)
+          matrix.StateEvent(
+              stateKey: i,
+              type: matrix.EventTypes.SpaceParent,
+              content: {
+                "canonical": true,
+                "via": [
+                  if (self?.identifier.domain != null) self?.identifier.domain
+                ]
+              }),
+        matrix.StateEvent(content: {
+          "join_rule": "restricted",
+          "allow": [
+            for (var i in restricted.spaces)
+              {"room_id": i, "type": "m.room_membership"},
+          ]
+        }, type: matrix.EventTypes.RoomJoinRules)
+      ];
+    }
+
     var id = await _matrixClient.createRoom(
       creationContent: creationContent,
       name: args.name,
       initialState: initialState,
       topic: args.topic,
-      visibility: args.visibility == RoomVisibility.private
-          ? matrix.Visibility.private
-          : matrix.Visibility.public,
+      visibility: visibility,
     );
 
     await _matrixClient.waitForRoomInSync(id);
@@ -500,6 +516,26 @@ class MatrixClient extends Client {
     var matrixRoom = _matrixClient.getRoomById(id)!;
     if (args.enableE2EE!) {
       await matrixRoom.enableEncryption();
+    }
+
+    if (powerLevelAdditions.isNotEmpty) {
+      var events = await matrixClient.getRoomState(id);
+
+      var currentPerms = events
+          .firstWhereOrNull((i) => i.type == matrix.EventTypes.RoomPowerLevels)
+          ?.content;
+
+      if (currentPerms != null) {
+        var newPerms = <String, dynamic>{
+          ...currentPerms,
+          "events": <String, dynamic>{
+            ...?currentPerms["events"] as Map<String, dynamic>?,
+            ...?powerLevelAdditions["events"] as Map<String, dynamic>?,
+          }
+        };
+        _matrixClient.setRoomStateWithKey(
+            id, matrix.EventTypes.RoomPowerLevels, "", newPerms);
+      }
     }
 
     if (hasRoom(id)) return getRoom(id)!;
@@ -513,7 +549,7 @@ class MatrixClient extends Client {
     var id = await _matrixClient.createSpace(
       name: args.name,
       waitForSync: true,
-      visibility: args.visibility == RoomVisibility.private
+      visibility: args.visibility is RoomVisibilityPrivate
           ? matrix.Visibility.private
           : matrix.Visibility.public,
     );
@@ -701,16 +737,18 @@ class MatrixClient extends Client {
 
   @override
   Future<void> leaveRoom(Room room) async {
-    _rooms.remove(room);
+    await _matrixClient.leaveRoom(room.identifier);
+    await _matrixClient.waitForRoomInSync(room.identifier);
     await room.close();
-    return _matrixClient.leaveRoom(room.identifier);
+    _rooms.remove(room);
   }
 
   @override
   Future<void> leaveSpace(Space space) async {
+    await _matrixClient.leaveRoom(space.identifier);
+    await _matrixClient.waitForRoomInSync(space.identifier);
+    await space.close();
     _spaces.remove(space);
-    space.close();
-    return _matrixClient.leaveRoom(space.identifier);
   }
 
   void onSyncStatusChanged(matrix.SyncStatusUpdate event) {
@@ -790,7 +828,7 @@ class MatrixClient extends Client {
   Future<LoginResult> executeLoginFlow(LoginFlow flow) async {
     var result = await flow.submit(this);
 
-    if (result == LoginResult.success) {
+    if (result is LoginResultSuccess) {
       preferences.addRegisteredMatrixClient(identifier);
       await _postLoginSuccess();
     }
