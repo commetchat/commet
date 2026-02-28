@@ -3,11 +3,9 @@ import 'package:commet/client/components/direct_messages/direct_message_componen
 import 'package:commet/client/room.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/room_panel.dart';
-import 'package:commet/utils/autofill_utils.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
 import 'package:fuzzy/fuzzy.dart';
-import 'package:tiamat/atoms/popup_dialog.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class QuickSwitcher extends StatefulWidget {

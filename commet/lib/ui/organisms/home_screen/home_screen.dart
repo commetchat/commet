@@ -14,8 +14,6 @@ import 'package:commet/ui/organisms/home_screen/home_screen_view.dart';
 import 'package:commet/utils/update_checker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:hotkey_manager/hotkey_manager.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class HomeScreen extends StatefulWidget {
@@ -144,7 +142,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         Icon(Icons.search),
                         tiamat.Text.labelLow("Search")
                       ]),
-                      if (Layout.desktop) tiamat.Text.labelLow("Ctrl + K")
+                      if (Layout.desktop)
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                          child: tiamat.Text.labelLow("Ctrl + K"),
+                        )
                     ],
                   ),
                 ),
