@@ -1,0 +1,28 @@
+# Git
+.git/
+
+# Build outputs
+commet/build/
+**/build/
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# Remove platforms not needed for web
+commet/android/
+commet/ios/
+commet/macos/
+commet/linux/
+commet/windows/
+
+# Other files
+commet/assets/js/package/
+commet/integration_test/
+commet/test_driver/
+commet/integration_test/
+commet/coverage/
+*.tar.gz
+
+
