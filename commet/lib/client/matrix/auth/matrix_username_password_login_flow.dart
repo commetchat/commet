@@ -2,8 +2,15 @@ import 'package:commet/client/auth.dart';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:intl/intl.dart';
 
 import 'package:matrix/matrix.dart' as matrix;
+
+String get messageUserDeactivated => Intl.message(
+    "Your account has been deactivated",
+    name: "messageUserDeactivated",
+    desc:
+        "An error message displayed when the user attempts to log into an account that has been disabled");
 
 class MatrixPasswordLoginFlow implements PasswordLoginFlow {
   @override
@@ -41,7 +48,11 @@ class MatrixPasswordLoginFlow implements PasswordLoginFlow {
         result = LoginResultFailed();
       }
     } on matrix.MatrixException catch (exception) {
-      result = LoginResultError(exception.errorMessage);
+      if (exception.errcode == "M_USER_DEACTIVATED") {
+        result = LoginResultError(messageUserDeactivated);
+      } else {
+        result = LoginResultError(exception.errorMessage);
+      }
     } catch (e) {
       result = LoginResultError(e.toString());
     }

@@ -36,12 +36,6 @@ class LoginPageState extends State<LoginPage> {
             "An error message displayed when the user attempts to add an account which has already been logged in to on this device",
       );
 
-  String get messageUserDeactivated => Intl.message(
-      "Your account has been deactivated",
-      name: "messageUserDeactivated",
-      desc:
-          "An error message displayed when the user attempts to log into an account that has been disabled");
-
   String get messageInvalidUsernameOrPassword => Intl.message(
       "Invalid username or password",
       name: "messageInvalidUsernameOrPassword",
