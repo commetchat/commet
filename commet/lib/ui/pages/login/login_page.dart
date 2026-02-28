@@ -10,6 +10,7 @@ import 'package:commet/utils/rng.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
+import 'package:tiamat/tiamat.dart' as tiamat;
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key, this.onSuccess, this.canNavigateBack = false});
@@ -129,12 +130,11 @@ class LoginPageState extends State<LoginPage> {
         AdaptiveDialog.show(
           context,
           title: "Login failed",
-          builder: (_) => Text(
-            "Incorrect login. Ensure that you have entered your username and password correctly, and that you have entered the homeserver address correctly.",
+          builder: (_) => tiamat.Text(
+            message,
           ),
         );
       }
-      ;
     }
 
     if (result is LoginResultSuccess) {
