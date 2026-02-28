@@ -72,6 +72,7 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
     'li',
     'b',
     'i',
+    's',
     'u',
     'strong',
     'em',
