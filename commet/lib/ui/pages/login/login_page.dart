@@ -9,6 +9,8 @@ import 'package:commet/utils/debounce.dart';
 import 'package:commet/utils/rng.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
+import 'package:tiamat/tiamat.dart' as tiamat;
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key, this.onSuccess, this.canNavigateBack = false});
@@ -20,14 +22,11 @@ class LoginPage extends StatefulWidget {
 }
 
 class LoginPageState extends State<LoginPage> {
-  String get messageLoginFailed => Intl.message("Login Failed...",
-      name: "messageLoginFailed",
-      desc: "Generic text to show that an attempted login has failed");
-
-  String get messageLoginError => Intl.message("An error occured",
-      name: "messageLoginError",
-      desc:
-          "A generic error message to convey that an error occured when attempting to login");
+  String get messageLoginFailed => Intl.message(
+        "Login Failed...",
+        name: "messageLoginFailed",
+        desc: "Generic text to show that an attempted login has failed",
+      );
 
   String get messageAlreadyLoggedIn => Intl.message(
         "You have already logged in to this account",
@@ -47,8 +46,9 @@ class LoginPageState extends State<LoginPage> {
   List<LoginFlow>? loginFlows;
   Client? loginClient;
 
-  final Debouncer homeserverUpdateDebouncer =
-      Debouncer(delay: const Duration(seconds: 1));
+  final Debouncer homeserverUpdateDebouncer = Debouncer(
+    delay: const Duration(seconds: 1),
+  );
 
   bool loadingServerInfo = false;
   bool isServerValid = false;
@@ -60,8 +60,9 @@ class LoginPageState extends State<LoginPage> {
     MatrixClient.create(internalId).then((client) {
       loginClient = client;
 
-      progressSubscription = loginClient!.connectionStatusChanged.stream
-          .listen(onLoginProgressChanged);
+      progressSubscription = loginClient!.connectionStatusChanged.stream.listen(
+        onLoginProgressChanged,
+      );
     });
 
     super.initState();
@@ -126,9 +127,11 @@ class LoginPageState extends State<LoginPage> {
 
     if (message != null) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(message),
+        AdaptiveDialog.show(
+          context,
+          title: "Login failed",
+          builder: (_) => tiamat.Text(
+            message,
           ),
         );
       }
@@ -146,7 +149,10 @@ class LoginPageState extends State<LoginPage> {
   }
 
   Future<void> doPasswordLogin(
-      PasswordLoginFlow flow, String username, String password) async {
+    PasswordLoginFlow flow,
+    String username,
+    String password,
+  ) async {
     if (loginClient == null) return;
     flow.username = username;
     flow.password = password;
