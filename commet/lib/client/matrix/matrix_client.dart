@@ -828,7 +828,7 @@ class MatrixClient extends Client {
   Future<LoginResult> executeLoginFlow(LoginFlow flow) async {
     var result = await flow.submit(this);
 
-    if (result == LoginResult.success) {
+    if (result is LoginResultSuccess) {
       preferences.addRegisteredMatrixClient(identifier);
       await _postLoginSuccess();
     }
