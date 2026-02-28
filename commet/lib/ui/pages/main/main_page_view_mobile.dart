@@ -13,6 +13,7 @@ import 'package:commet/ui/organisms/room_side_panel/room_side_panel.dart';
 import 'package:commet/ui/organisms/side_navigation_bar/side_navigation_bar.dart';
 import 'package:commet/ui/organisms/sidebar_call_icon/sidebar_calls_list.dart';
 import 'package:commet/ui/organisms/space_summary/space_summary.dart';
+import 'package:commet/ui/pages/get_or_create_room/get_or_create_room.dart';
 import 'package:commet/ui/pages/main/main_page.dart';
 import 'package:commet/ui/pages/main/main_page_view_desktop.dart';
 import 'package:commet/ui/pages/main/room_primary_view.dart';
@@ -364,10 +365,14 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
                     ),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(8, 12, 8, 8),
-                      child: tiamat.IconButton(
-                          size: 18,
-                          icon: Icons.add,
-                          onPressed: widget.state.searchUserToDm),
+                      child: tiamat.CircleButton(
+                        radius: 18,
+                        icon: Icons.add,
+                        onPressed: () => GetOrCreateRoom.show(null, context,
+                            pickExisting: false,
+                            showAllRoomTypes: true,
+                            startdm: true),
+                      ),
                     ),
                   ],
                 ),
