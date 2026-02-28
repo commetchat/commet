@@ -3,9 +3,11 @@ import 'package:commet/client/components/direct_messages/direct_message_componen
 import 'package:commet/client/room.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/room_panel.dart';
+import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
 import 'package:fuzzy/fuzzy.dart';
+import 'package:tiamat/atoms/tile.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class QuickSwitcher extends StatefulWidget {
@@ -17,25 +19,10 @@ class QuickSwitcher extends StatefulWidget {
     if (!isShowing) {
       isShowing = true;
 
-      await showGeneralDialog(
-        barrierLabel: "QUICK_SWITCHER",
-        context: context,
-        barrierDismissible: true,
-        transitionDuration: const Duration(milliseconds: 300),
-        transitionBuilder: (context, animation, secondaryAnimation, child) =>
-            SlideTransition(
-          position: Tween(begin: const Offset(0, 1), end: const Offset(0, 0))
-              .animate(CurvedAnimation(
-                  parent: animation, curve: Curves.easeOutCubic)),
-          child: child,
-        ),
-        pageBuilder: (context, _, __) {
-          return Center(
-            child: Theme(
-              data: Theme.of(context),
-              child: AlertDialog(title: null, content: QuickSwitcher()),
-            ),
-          );
+      await AdaptiveDialog.show(
+        context,
+        builder: (context) {
+          return QuickSwitcher();
         },
       );
 
@@ -138,6 +125,7 @@ class _QuickSwitcherState extends State<QuickSwitcher> {
           if (searchResults.isEmpty) buildDefaultView(),
           if (searchResults.isNotEmpty)
             tiamat.Panel(
+              mode: TileType.surfaceContainerLow,
               header: "Search Results",
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(0, 12, 0, 0),
@@ -157,6 +145,7 @@ class _QuickSwitcherState extends State<QuickSwitcher> {
     return Column(
       children: [
         tiamat.Panel(
+          mode: TileType.surfaceContainerLow,
           header: "Direct Messages",
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -168,6 +157,7 @@ class _QuickSwitcherState extends State<QuickSwitcher> {
                     .sorted((a, b) =>
                         b.lastEventTimestamp.compareTo(a.lastEventTimestamp)))
                   Material(
+                    color: Colors.transparent,
                     child: InkWell(
                       onTap: () {
                         EventBus.openRoom
@@ -186,6 +176,7 @@ class _QuickSwitcherState extends State<QuickSwitcher> {
           ),
         ),
         tiamat.Panel(
+            mode: TileType.surfaceContainerLow,
             header: "Recent Activity",
             child: Column(
               spacing: 0,
