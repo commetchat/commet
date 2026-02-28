@@ -76,14 +76,20 @@ class CreateRoomArgs {
   });
 }
 
-enum LoginResult {
-  success,
-  failed,
-  error,
-  cancelled,
-  alreadyLoggedIn,
-  invalidUsernameOrPassword,
-  userDeactivated
+abstract class LoginResult {}
+
+class LoginResultSuccess implements LoginResult {}
+
+class LoginResultCancelled implements LoginResult {}
+
+class LoginResultAlreadyLoggedIn implements LoginResult {}
+
+class LoginResultFailed implements LoginResult {}
+
+class LoginResultError implements LoginResult {
+  final String errorMessage;
+
+  LoginResultError(this.errorMessage);
 }
 
 abstract class Client {

@@ -107,25 +107,27 @@ class LoginPageState extends State<LoginPage> {
     setState(() {
       isLoggingIn = true;
     });
-    LoginResult result = LoginResult.error;
+
+    LoginResult? result;
+
     try {
       result = await login();
     } catch (_) {}
 
-    if (result != LoginResult.success) {
+    if (!(result is LoginResultSuccess)) {
       setState(() {
         isLoggingIn = false;
       });
     }
 
     String? message = switch (result) {
-      LoginResult.success => null,
-      LoginResult.failed => messageLoginFailed,
-      LoginResult.error => messageLoginError,
-      LoginResult.alreadyLoggedIn => messageAlreadyLoggedIn,
-      LoginResult.userDeactivated => messageUserDeactivated,
-      LoginResult.invalidUsernameOrPassword => messageInvalidUsernameOrPassword,
-      LoginResult.cancelled => "Login cancelled"
+      LoginResultSuccess _ => null,
+      LoginResultError e => e.errorMessage,
+      LoginResultCancelled _ => "Login Cancelled",
+      LoginResultAlreadyLoggedIn _ => messageAlreadyLoggedIn,
+      LoginResultFailed _ => messageLoginFailed,
+      LoginResult() => throw UnimplementedError(),
+      null => throw UnimplementedError(),
     };
 
     if (message != null) {
@@ -138,7 +140,7 @@ class LoginPageState extends State<LoginPage> {
       }
     }
 
-    if (result == LoginResult.success) {
+    if (result is LoginResultSuccess) {
       clientManager?.addClient(loginClient!);
       widget.onSuccess?.call(loginClient!);
     }

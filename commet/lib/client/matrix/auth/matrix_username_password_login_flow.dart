@@ -14,16 +14,20 @@ class MatrixPasswordLoginFlow implements PasswordLoginFlow {
 
   @override
   Future<LoginResult> submit(Client client) async {
-    if (username == null || password == null) {
-      return LoginResult.failed;
+    if (username == null) {
+      return LoginResultError("Enter a username");
+    }
+
+    if (password == null) {
+      return LoginResultError("Enter a password");
     }
 
     if (client is! MatrixClient) {
-      return LoginResult.failed;
+      return LoginResultFailed();
     }
 
     var mx = client.getMatrixClient();
-    var result = LoginResult.error;
+    LoginResult result = LoginResultError("An unknown error occurred");
 
     try {
       var response = await mx.login(matrix.LoginType.mLoginPassword,
@@ -32,29 +36,16 @@ class MatrixPasswordLoginFlow implements PasswordLoginFlow {
           identifier: matrix.AuthenticationUserIdentifier(user: username!));
 
       if (response.accessToken.isNotEmpty) {
-        result = LoginResult.success;
+        result = LoginResultSuccess();
       } else {
-        result = LoginResult.failed;
+        result = LoginResultFailed();
       }
     } on matrix.MatrixException catch (exception) {
-      result = LoginResult.error;
-      if (exception.errcode == "M_USER_DEACTIVATED")
-        result = LoginResult.userDeactivated;
-      else if (_containsWordUsernameOrPassword(exception.errorMessage)) {
-        result = LoginResult.invalidUsernameOrPassword;
-      }
-    } catch (_) {
-      result = LoginResult.error;
+      result = LoginResultError(exception.errorMessage);
+    } catch (e) {
+      result = LoginResultError(e.toString());
     }
 
     return result;
-  }
-
-  /// returns true if the text contains 'username' or 'password' case insensitive
-  bool _containsWordUsernameOrPassword(String? text) {
-    if (text == null) return false;
-    final String lowercaseText = text.toLowerCase();
-    return (lowercaseText.contains('username') ||
-        lowercaseText.contains('password'));
   }
 }
