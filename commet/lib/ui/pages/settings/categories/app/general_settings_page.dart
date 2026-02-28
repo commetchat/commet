@@ -152,6 +152,12 @@ class GeneralSettingsPageState extends State<GeneralSettingsPage> {
               title: "Autofocus Message Input",
               description:
                   "Automatically focus on the message input text field when opening a chat",
+            ),
+            BooleanPreferenceToggle(
+              preference: preferences.automaticallyOpenSpace,
+              title: "Always open space",
+              description:
+                  "When navigating to a room from outside of a space, also open the space the room is in, if any",
             )
           ]),
         ),

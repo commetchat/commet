@@ -954,7 +954,8 @@ class MessageInputState extends State<MessageInput> {
   Expanded textInput(BuildContext context) {
     var height = Theme.of(context).textTheme.bodyMedium!.fontSize!;
     var padding = widget.size - height;
-
+    var hintStyle = TextTheme.of(context).bodyMedium;
+    hintStyle = hintStyle?.copyWith(color: hintStyle.color?.withAlpha(120));
     return Expanded(
       child: Stack(
         children: [
@@ -976,6 +977,7 @@ class MessageInputState extends State<MessageInput> {
                       EdgeInsets.fromLTRB(8, padding / 2, 4, padding / 2),
                   border: InputBorder.none,
                   isDense: true,
+                  hintStyle: hintStyle,
                   hintText: widget.hintText),
             ),
           ),
