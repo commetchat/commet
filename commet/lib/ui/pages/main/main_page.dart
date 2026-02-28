@@ -13,6 +13,7 @@ import 'package:commet/config/layout_config.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
+import 'package:commet/ui/navigation/quick_switcher.dart';
 import 'package:commet/ui/organisms/invitation_view/send_invitation.dart';
 import 'package:commet/ui/organisms/user_profile/user_profile.dart';
 import 'package:commet/ui/pages/get_or_create_room/get_or_create_room.dart';
@@ -27,6 +28,8 @@ import 'package:commet/utils/first_time_setup.dart';
 import 'package:commet/utils/image/lod_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
+import 'package:hotkey_manager/hotkey_manager.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage(this.clientManager,
@@ -101,6 +104,8 @@ class MainPageState extends State<MainPage> {
       }
     }
 
+    ServicesBinding.instance.keyboard.addHandler(_onKeyPressed);
+
     // backgroundTaskManager.onListUpdate.listen((event) {
     //   setState(() {});
     // });
@@ -144,6 +149,7 @@ class MainPageState extends State<MainPage> {
     onCallStartedSubscription?.cancel();
     onClientRemovedSubscription?.cancel();
     onClientAddedSubscription?.cancel();
+    ServicesBinding.instance.keyboard.removeHandler(_onKeyPressed);
     super.dispose();
   }
 
@@ -427,5 +433,16 @@ class MainPageState extends State<MainPage> {
               },
             ),
         title: "Start Direct Message");
+  }
+
+  bool _onKeyPressed(KeyEvent event) {
+    if (event is KeyDownEvent) {
+      if (event.logicalKey == LogicalKeyboardKey.keyK &&
+          ServicesBinding.instance.keyboard.isControlPressed) {
+        QuickSwitcher.show(context);
+      }
+    }
+
+    return false;
   }
 }
