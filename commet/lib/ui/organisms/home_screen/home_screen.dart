@@ -6,6 +6,7 @@ import 'package:commet/config/layout_config.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/room_header.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
+import 'package:commet/ui/navigation/quick_switcher.dart';
 import 'package:commet/ui/organisms/invitation_view/incoming_invitations_view.dart';
 import 'package:commet/utils/common_strings.dart';
 import 'package:commet/utils/event_bus.dart';
@@ -112,6 +113,42 @@ class _HomeScreenState extends State<HomeScreen> {
                   showBurger: Layout.mobile,
                   onBurgerMenuTap: widget.onBurgerMenuTap,
                   text: CommonStrings.promptHome,
+                  menu: SizedBox(
+                      width: 50,
+                      height: 50,
+                      child: tiamat.IconButton(
+                        icon: Icons.search,
+                        onPressed: () => QuickSwitcher.show(context),
+                      )),
+                ),
+              ),
+            ),
+          ),
+        if (Layout.desktop)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+            child: Material(
+              clipBehavior: Clip.antiAlias,
+              borderRadius: BorderRadius.circular(8),
+              color: ColorScheme.of(context).surfaceContainerLow,
+              child: InkWell(
+                onTap: () => QuickSwitcher.show(context),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(spacing: 8, children: [
+                        Icon(Icons.search),
+                        tiamat.Text.labelLow("Search")
+                      ]),
+                      if (Layout.desktop)
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                          child: tiamat.Text.labelLow("Ctrl + K"),
+                        )
+                    ],
+                  ),
                 ),
               ),
             ),
