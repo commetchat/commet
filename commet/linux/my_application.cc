@@ -89,7 +89,8 @@ MyApplication* my_application_new() {
   // the application to be recognized beyond its binary name.
   g_set_prgname(APPLICATION_ID);
 
-
+  // https://github.com/commetchat/commet/issues/640
+  setenv("__NV_DISABLE_EXPLICIT_SYNC", "1", 1);
 
   return MY_APPLICATION(g_object_new(my_application_get_type(),
                                      "application-id", APPLICATION_ID,

@@ -100,7 +100,11 @@ dependencies:
   vodozemac: ^0.2.0
   intl_translation: ^0.20.1
 
-
+  desktop_webview_window:
+    git:
+      url: https://github.com/commetchat/mixin-flutter-plugins.git
+      ref: webview-patch
+      path: ./packages/desktop_webview_window
   ## ---- Putting some extra lines in here to help git with the diff
   ## ---- Probably good to keep this stuff at the bottom of the list
   ## Begin Google Services Dependencies
