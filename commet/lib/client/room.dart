@@ -91,6 +91,15 @@ abstract class Room {
   /// Returns true if the room is secured by end to end encryption
   bool get isE2EE;
 
+  /// Returns true if the room has a tombstone state
+  bool get isTombstoned;
+
+  /// Returns the replacement room ID when tombstoned
+  String? get tombstoneReplacementRoomId;
+
+  /// Returns the tombstone body message when available
+  String? get tombstoneBody;
+
   bool get isSpecialRoomType;
 
   IconData get icon {

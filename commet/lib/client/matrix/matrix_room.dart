@@ -35,6 +35,7 @@ import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_membe
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_message.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_pinned_messages.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_redaction.dart';
+import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_room_tombstone.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_sticker.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event_unknown.dart';
 import 'package:commet/client/member.dart';
@@ -95,6 +96,20 @@ class MatrixRoom extends Room {
 
   @override
   bool get isE2EE => _matrixRoom.encrypted;
+
+  @override
+  bool get isTombstoned =>
+      matrixRoom.getState(matrix.EventTypes.RoomTombstone) != null;
+
+  @override
+  String? get tombstoneReplacementRoomId => matrixRoom
+      .getState(matrix.EventTypes.RoomTombstone)
+      ?.content["replacement_room"] as String?;
+
+  @override
+  String? get tombstoneBody =>
+      matrixRoom.getState(matrix.EventTypes.RoomTombstone)?.content["body"]
+          as String?;
 
   @override
   int get highlightedNotificationCount => _matrixRoom.highlightCount;
@@ -533,6 +548,8 @@ class MatrixRoom extends Room {
           MatrixTimelineEventCall(event, client: c),
         matrix.EventTypes.RoomPinnedEvents =>
           MatrixTimelineEventPinnedMessages(event, client: c),
+        matrix.EventTypes.RoomTombstone =>
+          MatrixTimelineEventRoomTombstone(event, client: c),
         "chat.commet.calendar_events" =>
           MatrixTimelineEventEditCalendar(event, client: c),
         _ => null
@@ -720,7 +737,8 @@ class MatrixRoom extends Room {
     _displayName = _matrixRoom.getLocalizedDisplayname();
     if (event.state.type == "m.room.name" ||
         event.state.type == "m.room.avatar" ||
-        event.state.type == "m.room.topic") {
+        event.state.type == "m.room.topic" ||
+        event.state.type == matrix.EventTypes.RoomTombstone) {
       _onUpdate.add(null);
     }
   }
