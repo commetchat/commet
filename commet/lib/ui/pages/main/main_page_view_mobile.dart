@@ -119,10 +119,11 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
         child: Foundation(
             child: OverlappingPanels(
           key: panelsKey,
-          onDragStart: () {
-            FocusManager.instance.primaryFocus?.unfocus();
-          },
           onSideChange: (side) {
+            if (side != RevealSide.main) {
+              FocusManager.instance.primaryFocus?.unfocus();
+            }
+
             setState(() {
               shouldMainIgnoreInput = side != RevealSide.main;
             });
