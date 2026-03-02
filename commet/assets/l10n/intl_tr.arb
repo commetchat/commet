@@ -778,5 +778,239 @@
         "description": "Label for the room member role",
         "type": "text",
         "placeholders": {}
+    },
+    "labelMatrixPermissionsSpaceManageChildrenTitle": "Alt Birimleri Yönet",
+    "@labelMatrixPermissionsSpaceManageChildrenTitle": {
+        "description": "Title for permission to manage children",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsSpaceManageChildrenDescription": "Kullanıcıyı bu topluluğa dahil olan odaları yönetme yetkisi verir",
+    "@labelMatrixPermissionsSpaceManageChildrenDescription": {
+        "description": "Describes the permission to manage child rooms",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoomDeleteMessagesTitle": "Mesajları Silme",
+    "@labelMatrixPermissionsRoomDeleteMessagesTitle": {
+        "description": "Title for permission to delete messages",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoomDeleteMessagesDescription": "Kullanıcının başkaları tarafından gönderilen mesajları silmesine izin verir",
+    "@labelMatrixPermissionsRoomDeleteMessagesDescription": {
+        "description": "Describes the permission to delete messages",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoomSendMessagesTitle": "Mesaj Gönderme",
+    "@labelMatrixPermissionsRoomSendMessagesTitle": {
+        "description": "Title for the permission to send messages",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoomSendMessagesDescription": "Kullanıcıya bu odada mesaj göndermesine izin verir",
+    "@labelMatrixPermissionsRoomSendMessagesDescription": {
+        "description": "Describes the permission to send messages",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoomAddReactionsTitle": "Tepki Ekleme",
+    "@labelMatrixPermissionsRoomAddReactionsTitle": {
+        "description": "Title for the permission to add an emoji reaction to a message",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoomAddReactionsDescription": "Mesajlara tepki ekle",
+    "@labelMatrixPermissionsRoomAddReactionsDescription": {
+        "description": "describes the permission to add an emoji reaction to a message",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoomHistoryVisibilityTitle": "Geçmiş Görünürlüğü",
+    "@labelMatrixPermissionsRoomHistoryVisibilityTitle": {
+        "description": "Title for the permission to add change room history settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoomHistoryVisibilityDescription": "Kullanıcıya odadaki sohbet geçmişi görünürlüğünü değiştirmesine izin verir",
+    "@labelMatrixPermissionsRoomHistoryVisibilityDescription": {
+        "description": "describes the permission to change room history settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoomAvatarTitle": "Oda Avatarı Ayarlama",
+    "@labelMatrixPermissionsRoomAvatarTitle": {
+        "description": "Title for the permission to add change the rooms avatar image",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoomAvatarDescription": "Odanın avatarını değiştirme izni verir",
+    "@labelMatrixPermissionsRoomAvatarDescription": {
+        "description": "Title for the permission to add change the rooms avatar image",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsChangeRoomNameTitle": "Oda adı değiştirme",
+    "@labelMatrixPermissionsChangeRoomNameTitle": {
+        "description": "Title for the permission to add change the rooms name",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsChangeRoomNameDescription": "Kullanıcıya oda adını değiştirme izni verir",
+    "@labelMatrixPermissionsChangeRoomNameDescription": {
+        "description": "Description for the permission to add change the rooms name",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsChangeRoomTopicTitle": "Oda başlığı değiştirme",
+    "@labelMatrixPermissionsChangeRoomTopicTitle": {
+        "description": "Title for the permission to add change the rooms topic",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsChangeRoomTopicDescription": "Kullanıcının oda başlığını değiştirmesine izin verir",
+    "@labelMatrixPermissionsChangeRoomTopicDescription": {
+        "description": "Description for the permission to add change the rooms topic",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsChangeRoomPermissionsTitle": "İzinleri değiştirme",
+    "@labelMatrixPermissionsChangeRoomPermissionsTitle": {
+        "description": "Title for the permission to change permissions of the room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsChangeRoomPermissionsDescription": "Kullanıcının yetki ayarlarını değiştirmesine izin verir",
+    "@labelMatrixPermissionsChangeRoomPermissionsDescription": {
+        "description": "Description for the permission to change permissions of the room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsKickUserTitle": "Kullanıcıları atma",
+    "@labelMatrixPermissionsKickUserTitle": {
+        "description": "Title for the permission to kick other users out of the room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsKickUserDescription": "Kullanıcıları odadan atma izni verir",
+    "@labelMatrixPermissionsKickUserDescription": {
+        "description": "Description for the permission to kick other users out of the room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsBanUserTitle": "Kullanıcıları yasaklama",
+    "@labelMatrixPermissionsBanUserTitle": {
+        "description": "Title for the permission to ban other users from the room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsBanUserDescription": "Kullanıcıları odadan yasaklama izni verir",
+    "@labelMatrixPermissionsBanUserDescription": {
+        "description": "Description for the permission to ban other users from the room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomSettingsGeneral": "Genel",
+    "@labelRoomSettingsGeneral": {
+        "description": "Label for general room settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomSettingsAppearance": "Görünüm",
+    "@labelRoomSettingsAppearance": {
+        "description": "Label for room appearance settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomSettingsSecurity": "Güvenlik",
+    "@labelRoomSettingsSecurity": {
+        "description": "Label for room security settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomSettingsEmoticons": "Yüz İfadeleri",
+    "@labelRoomSettingsEmoticons": {
+        "description": "Label for room Emoticon settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomSettingsDeveloper": "Geliştirici",
+    "@labelRoomSettingsDeveloper": {
+        "description": "Label for room developer settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomSettingsCategory": "Oda Ayarları",
+    "@labelRoomSettingsCategory": {
+        "description": "Label for the overall settings category of a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomSettingsPermissions": "İzinler",
+    "@labelRoomSettingsPermissions": {
+        "description": "Label for room permission settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceSettingsGeneral": "Genel",
+    "@labelSpaceSettingsGeneral": {
+        "description": "Label for general space settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceAppearanceSettings": "Görünüm",
+    "@labelSpaceAppearanceSettings": {
+        "description": "Label for space appearance settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceEmoticonSettings": "Yüz İfadeleri",
+    "@labelSpaceEmoticonSettings": {
+        "description": "Label for space emoticon settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpacePermissionSettings": "İzinler",
+    "@labelSpacePermissionSettings": {
+        "description": "Label for space permission settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceDeveloperSettings": "Geliştirici",
+    "@labelSpaceDeveloperSettings": {
+        "description": "Label for space developer settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsCategorySpace": "Topluluk Ayarları",
+    "@labelSettingsCategorySpace": {
+        "description": "Label for the overall space settings category",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptMatrixVerifySession": "Doğrulama",
+    "@promptMatrixVerifySession": {
+        "description": "Text on the button to verify a session",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixCrossSigning": "Çapraz imzalama",
+    "@labelMatrixCrossSigning": {
+        "description": "Title label for matrix cross signing",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixCrossSigningAndBackup": "Çapraz İmzalama & Yedekleme",
+    "@labelMatrixCrossSigningAndBackup": {
+        "description": "Header label for matrix cross signing and message backup section",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixAccountSessions": "Oturumlar",
+    "@labelMatrixAccountSessions": {
+        "description": "Title label for account sessions",
+        "type": "text",
+        "placeholders": {}
     }
 }
