@@ -121,6 +121,9 @@ class _ContextMenuOverlayState extends State<ContextMenuOverlay>
 
   @override
   Widget build(BuildContext context) {
+    var view = WidgetsBinding.instance.platformDispatcher.views.first;
+    var viewSize = view.physicalSize;
+
     if (calculatedOffset == null) {
       return Container(
         child: Offstage(
@@ -130,11 +133,17 @@ class _ContextMenuOverlayState extends State<ContextMenuOverlay>
     } else {
       return Positioned(
           left: calculatedOffset!.dx - (leftAlign ? size!.width : 0),
-          top: calculatedOffset!.dy - (topAlign ? size!.height : 0),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(7),
-            child: Tile.low4(
-              child: buildMenu(context),
+          top: topAlign
+              ? null
+              : calculatedOffset!.dy - (topAlign ? size!.height : 0),
+          bottom: !topAlign ? null : viewSize.height - calculatedOffset!.dy,
+          child: SizeTransition(
+            sizeFactor: _animation,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(7),
+              child: Tile.low4(
+                child: buildMenu(context),
+              ),
             ),
           ));
     }
