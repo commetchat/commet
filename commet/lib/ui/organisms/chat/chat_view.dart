@@ -13,6 +13,7 @@ import 'package:commet/utils/autofill_utils.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:commet/utils/error_utils.dart';
 
 class ChatView extends StatelessWidget {
   const ChatView(this.state, {super.key});
@@ -41,22 +42,19 @@ class ChatView extends StatelessWidget {
       name: "tombstoneEnterNewRoom",
       desc: "Button label for navigating to the replacement room");
 
-  Future<void> openReplacementRoomAndLeave(String replacementRoomId) async {
+  Future<void> openReplacementRoomAndLeave(
+      BuildContext context, String replacementRoomId) async {
     final client = state.room.client;
     Room? targetRoom = client.getRoom(replacementRoomId);
 
     targetRoom ??= client.getRoomByAlias(replacementRoomId);
-
-    if (targetRoom == null) {
-      try {
+    ErrorUtils.tryRun(context, () async {
+      if (targetRoom == null) {
         targetRoom = await client.joinRoom(replacementRoomId);
-      } catch (_) {
-        return;
       }
-    }
-
-    EventBus.openRoom.add((targetRoom.identifier, client.identifier));
-    await client.leaveRoom(state.room);
+      EventBus.openRoom.add((targetRoom!.identifier, client.identifier));
+      await client.leaveRoom(state.room);
+    });
   }
 
   String? get relatedEventSenderName => state.interactingEvent == null
@@ -149,7 +147,8 @@ class ChatView extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 8),
                   child: TextButton.icon(
                     onPressed: () async {
-                      await openReplacementRoomAndLeave(replacementRoomId);
+                      await openReplacementRoomAndLeave(
+                          context, replacementRoomId);
                     },
                     icon: const Icon(Icons.arrow_forward),
                     label: Text(tombstoneEnterNewRoom),
