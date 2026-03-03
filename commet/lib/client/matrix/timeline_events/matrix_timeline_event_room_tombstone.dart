@@ -16,7 +16,7 @@ class MatrixTimelineEventRoomTombstone extends MatrixTimelineEvent
         desc: "Shown when a room was replaced by another room",
       );
 
-  String get fallbackMessage => Intl.message(
+  String get messageRoomReplaced => Intl.message(
         "This room has been upgraded or replaced",
         name: "messageRoomReplaced",
         desc: "Fallback tombstone text when no sender/body available",
@@ -38,7 +38,7 @@ class MatrixTimelineEventRoomTombstone extends MatrixTimelineEvent
       return messageRoomUpgraded(sender);
     }
 
-    return fallbackMessage;
+    return messageRoomReplaced;
   }
 
   @override
