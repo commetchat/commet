@@ -1,5 +1,6 @@
 import 'package:commet/client/components/account_switch_prefix/account_switch_prefix.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
+import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/client/timeline_events/timeline_event_message.dart';
@@ -45,12 +46,22 @@ class ChatView extends StatelessWidget {
   Future<void> openReplacementRoomAndLeave(
       BuildContext context, String replacementRoomId) async {
     final client = state.room.client;
-    Room? targetRoom = client.getRoom(replacementRoomId);
+    final joinAddress = replacementRoomId;
+    var lookupAddress = replacementRoomId;
 
-    targetRoom ??= client.getRoomByAlias(replacementRoomId);
+    if (client is MatrixClient) {
+      final info = client.parseAddressToIdAndVia(replacementRoomId);
+      if (info != null) {
+        lookupAddress = info.$1;
+      }
+    }
+
+    Room? targetRoom = client.getRoom(lookupAddress);
+
+    targetRoom ??= client.getRoomByAlias(lookupAddress);
     ErrorUtils.tryRun(context, () async {
       if (targetRoom == null) {
-        targetRoom = await client.joinRoom(replacementRoomId);
+        targetRoom = await client.joinRoom(joinAddress);
       }
       EventBus.openRoom.add((targetRoom!.identifier, client.identifier));
       await client.leaveRoom(state.room);
