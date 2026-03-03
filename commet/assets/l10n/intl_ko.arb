@@ -1497,5 +1497,47 @@
         "description": "Placeholder label in the pinned messages menu that is shown when there are no pinned messages",
         "type": "text",
         "placeholders": {}
+    },
+    "labelInvitations": "초대",
+    "@labelInvitations": {
+        "description": "Label for the list of incoming invitations",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceSubspacesList": "스페이스",
+    "@labelSpaceSubspacesList": {
+        "description": "Header label for the list of child spaces in a space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptAttachmentProcessingSendOriginal": "원본 보내기",
+    "@promptAttachmentProcessingSendOriginal": {
+        "description": "Prompt text for the option to send a file in its original state, without any further processing such as removing metadata",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelImageContainsLocationInfo": "주의: 이 이미지에 위치 메타데이터가 포함되어 있습니다",
+    "@labelImageContainsLocationInfo": {
+        "description": "Prompt text for the option to send a file in its original state, without any further processing such as removing metadata",
+        "type": "text",
+        "placeholders": {}
+    },
+    "placeholderRoomAlias": "#awesome-room",
+    "@placeholderRoomAlias": {
+        "description": "Placeholder / Example for a room alias.",
+        "type": "text",
+        "placeholders": {}
+    },
+    "placeholderSpaceAlias": "#awesome-space",
+    "@placeholderSpaceAlias": {
+        "description": "Placeholder / Example for a space alias.",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelUrlPreviewInEncryptedChatTitle": "암호화된 채팅에서의 URL 미리보기",
+    "@labelUrlPreviewInEncryptedChatTitle": {
+        "description": "Label for the toggle for enabling and disabling use of url previews in encrypted chats",
+        "type": "text",
+        "placeholders": {}
     }
 }
