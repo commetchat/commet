@@ -303,6 +303,8 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
                       icon: Icons.add_reaction,
                       size: 24,
                       onPressed: () {
+                        onClick();
+
                         AdaptiveDialog.show(
                           context,
                           builder: (newContext) {
