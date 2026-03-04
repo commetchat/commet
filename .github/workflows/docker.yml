@@ -44,16 +44,8 @@ jobs:
       - name: Add Rust nightly src component
         run: rustup component add rust-src --toolchain nightly-x86_64-unknown-linux-gnu
 
-      - name: Cache flutter_rust_bridge_codegen binary
-        id: cache-frb
-        uses: actions/cache@v4
-        with:
-          path: ~/.cargo/bin/flutter_rust_bridge_codegen
-          key: frb-codegen-${{ runner.os }}
-
       - name: Install flutter_rust_bridge_codegen
-        if: steps.cache-frb.outputs.cache-hit != 'true'
-        run: cargo install flutter_rust_bridge_codegen
+        run: cargo install flutter_rust_bridge_codegen --force
 
       - name: Prepare web (build vodozemac WASM)
         run: ./scripts/prepare-web.sh
