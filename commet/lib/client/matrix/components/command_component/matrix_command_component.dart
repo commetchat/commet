@@ -163,7 +163,7 @@ class MatrixCommandComponent extends CommandComponent<MatrixClient> {
 
     final content = {
       "msgtype": "m.text",
-      "body": "test",
+      "body": args.msg,
       "formatted_body": formatted,
       "format": "org.matrix.custom.html",
     };
