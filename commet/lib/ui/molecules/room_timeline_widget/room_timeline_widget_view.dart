@@ -615,8 +615,6 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
       print("Could not find the event in the timeline view");
     }
 
-    print("Updating read receipts state: $event");
-
     if (state is TimelineEventViewWidget) {
       (state as TimelineEventViewWidget).update(index);
     } else {
