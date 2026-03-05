@@ -58,6 +58,16 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
       desc:
           "Description for enabling using the preview list in the space sidebar");
 
+  String get labelShowUserHomeServerInMessage => Intl.message(
+      "Homeserver in timeline",
+      name: "labelShowUserHomeServerInMessage",
+      desc: "Label for showing homeserver in message rendering");
+
+  String get labelShowUserHomeServerInMessageDescription => Intl.message(
+    "Show the homeserver of a user next to their name in the timeline",
+    name: "labelShowUserHomeServerInMessageDescription",
+    desc: "Description for showing homeserver in message rendering");
+
   @override
   void initState() {
     super.initState();
@@ -128,6 +138,12 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
                   preference: preferences.usePlaceholderRoomAvatars,
                   title: labelUseRoomAvatarPlaceholders,
                   description: labelUseRoomAvatarPlaceholdersDescription,
+                ),
+                const Seperator(),
+                BooleanPreferenceToggle(
+                  preference: preferences.showHomeserverInTimeline,
+                  title: labelShowUserHomeServerInMessage,
+                  description: labelShowUserHomeServerInMessageDescription,
                 )
               ],
             ),

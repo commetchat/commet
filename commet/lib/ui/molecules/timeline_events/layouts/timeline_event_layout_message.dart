@@ -10,6 +10,7 @@ class TimelineEventLayoutMessage extends StatelessWidget {
       {super.key,
       required this.senderName,
       required this.senderColor,
+      this.senderId,
       this.senderAvatar,
       this.formattedContent,
       this.attachments,
@@ -26,6 +27,7 @@ class TimelineEventLayoutMessage extends StatelessWidget {
       this.avatarBuilder,
       this.showSender = true});
   final String senderName;
+  final String? senderId;
   final Color senderColor;
   final ImageProvider? senderAvatar;
   final Widget? formattedContent;
@@ -70,7 +72,15 @@ class TimelineEventLayoutMessage extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            name(),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              spacing: 3,
+                              children: [
+                                name(),
+                                if(senderId != null)
+                                  tiamat.Text.labelLow(senderId!.split(":")[1], color: Color.from(alpha: 1.0, red: 0.5, green: 0.5, blue: 0.5),)
+                              ]
+                            ),
                             if (timestamp != null)
                               tiamat.Text.labelLow(timestamp!),
                           ],
