@@ -1736,7 +1736,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelUrlPreviewInEncryptedChatDescription": "Dies gibt deinem Homeserver Zugriff auf alle URLs aus deinen verschlüsselten Chats, damit eine Vorschau der Links angezeigt werden kann.",
+    "labelUrlPreviewInEncryptedChatDescription": "Dies lässt alle URLs aus verschlüsselten Chats für deinen Homeserver sichtbar werden, damit eine Vorschau geladen werden kann.",
     "@labelUrlPreviewInEncryptedChatDescription": {
         "description": "description for the toggle for enabling and disabling use of url previews in encrypted chats",
         "type": "text",
@@ -1754,7 +1754,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "placeholderSpaceAlias": "#awesome-space",
+    "placeholderSpaceAlias": "#wunderbarer-bereich",
     "@placeholderSpaceAlias": {
         "description": "Placeholder / Example for a space alias.",
         "type": "text",
