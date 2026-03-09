@@ -69,11 +69,11 @@ dependencies:
   matrix:
     git: 
       url: https://github.com/commetchat/matrix-dart-sdk.git
-      ref: upstream-v1.1.1+patch.1
+      ref: upstream-v6.1.1
   matrix_dart_sdk_drift_db:
     git: 
       url: https://github.com/commetchat/matrix-dart-sdk-drift-db.git
-      ref: upstream-v1.1.1+patch.3
+      ref: upstream-v6.1.1
 
   signal_sticker_api: 
     git: 
@@ -96,8 +96,8 @@ dependencies:
       url: https://github.com/daadu/receive_intent
       ref: master
   flutter_shortcuts_new: ^2.0.0
-  flutter_vodozemac: ^0.2.2
-  vodozemac: ^0.2.0
+  flutter_vodozemac: ^0.5.0
+  vodozemac: ^0.5.0
   intl_translation: ^0.20.1
 
 
