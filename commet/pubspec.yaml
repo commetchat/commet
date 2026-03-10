@@ -20,7 +20,6 @@ dependencies:
   flutter_background_service: ^5.0.5
   flutter_blurhash: ^0.8.2
   flutter_markdown: ^0.6.9+1
-  flutter_openssl_crypto: ^0.5.0
   flutter_staggered_grid_view: ^0.7.0
   flutter_svg: ^2.0.7
   html: ^0.15.2
@@ -73,7 +72,7 @@ dependencies:
   matrix_dart_sdk_drift_db:
     git: 
       url: https://github.com/commetchat/matrix-dart-sdk-drift-db.git
-      ref: upstream-v6.1.1
+      ref: upstream-v6.1.1+patch.1
 
   signal_sticker_api: 
     git: 

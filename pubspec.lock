@@ -679,14 +679,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.23"
-  flutter_openssl_crypto:
-    dependency: transitive
-    description:
-      name: flutter_openssl_crypto
-      sha256: "293b4fcda13ab0710645a16e82f3d5b7de19bfc0ab2d06bcdb87637222eda5e1"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.5.0"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -1217,8 +1209,8 @@ packages:
     dependency: transitive
     description:
       path: "."
-      ref: "upstream-v6.1.1"
-      resolved-ref: "2fbca165f79d9c8fe65a848770b9ba4d9e0dcf38"
+      ref: "upstream-v6.1.1+patch.1"
+      resolved-ref: bb1abba161bd0e7438aa50e4ba8fb46408b69e67
       url: "https://github.com/commetchat/matrix-dart-sdk-drift-db.git"
     source: git
     version: "0.0.1"
