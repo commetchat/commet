@@ -10,6 +10,7 @@ import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
+import 'package:commet/client/timeline_events/timeline_event_message.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/ui/organisms/chat/chat.dart';
 import 'package:commet/utils/color_utils.dart';
@@ -21,6 +22,8 @@ import 'package:uuid/uuid.dart';
 class MatrixCommandComponent extends CommandComponent<MatrixClient> {
   @override
   MatrixClient client;
+
+  static RegExp sed_pattern = RegExp(r'^s\/([^\/]+)\/([^\n\r]*?)\/?\s*$');
 
   MatrixCommandComponent(this.client) {
     client.getMatrixClient().addCommand("sendjson", sendJson);
@@ -45,6 +48,25 @@ class MatrixCommandComponent extends CommandComponent<MatrixClient> {
       event = (interactingEvent as MatrixTimelineEvent).event;
     }
 
+    var match = sed_pattern.firstMatch(string);
+
+    if (match != null && interactingEvent == null && type == null) {
+      TimelineEvent? editingEvent;
+      for (final event in room.timeline!.events.take(20)) {
+        if (event.senderId != room.client.self!.identifier) continue;
+        if (event is! TimelineEventMessage) continue;
+        editingEvent = event;
+        break;
+      }
+      if (editingEvent != null) {
+        await room.sendMessage(
+            message:
+                editingEvent.plainTextBody.replaceFirst(match[1]!, match[2]!),
+            replaceEvent: editingEvent);
+        return;
+      }
+    }
+
     await client.getMatrixClient().parseAndRunCommand(
           mxRoom,
           string,
@@ -59,7 +81,7 @@ class MatrixCommandComponent extends CommandComponent<MatrixClient> {
     if (string.startsWith("/")) {
       var command = string.substring(1).split(" ").first;
       return client.getMatrixClient().commands.containsKey(command);
-    }
+    } else if (sed_pattern.firstMatch(string) != null) return true;
 
     return false;
   }
