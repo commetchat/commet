@@ -21,7 +21,7 @@ abstract class PollComponent<R extends Client> implements Component<R> {
 
   bool shouldShowResults(TimelineEvent<Client> event, Timeline timeline);
 
-  bool canVote(TimelineEvent<Client> event, Timeline timeline);
+  bool isFinished(TimelineEvent<Client> event, Timeline timeline);
 
   List<PollAnswer> getAllowedPollAnswers(TimelineEvent event);
 

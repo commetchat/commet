@@ -31,7 +31,7 @@ class _TimelineEventViewPollState extends State<TimelineEventViewPoll>
   late Color senderColor;
   int maxSelections = 0;
   bool showResults = false;
-  bool canVote = false;
+  bool isFinished = false;
   List<PollAnswer> allowedAnswers = [];
   Map<String, Set<String>> pollResponses = {};
   TimelineEvent? event;
@@ -50,17 +50,29 @@ class _TimelineEventViewPollState extends State<TimelineEventViewPoll>
       senderColor: senderColor,
       senderAvatar: senderAvatar,
       showSender: true,
-      formattedContent: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: 4,
-        children: [
-          if (body != null) tiamat.Text.label(body!),
-          for (var answer in allowedAnswers) buildAnswer(answer),
-          if (!showResults)
-            tiamat.Text.labelLow(
-                "Results will be visible once the poll has ended")
-        ],
+      formattedContent: ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: 500),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 4,
+          children: [
+            if (body != null) tiamat.Text.label(body!),
+            for (var answer in allowedAnswers) buildAnswer(answer),
+            Align(
+              alignment: AlignmentGeometry.topRight,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  if (!showResults)
+                    tiamat.Text.labelLow(
+                        "Results will be visible once the poll has ended"),
+                  if (isFinished) tiamat.Text.labelLow("This poll has ended")
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -82,7 +94,7 @@ class _TimelineEventViewPollState extends State<TimelineEventViewPoll>
       maxSelections = polls!.getMaxSelections(e);
       showResults = polls!.shouldShowResults(e, widget.timeline);
       body = polls!.getPollQuestion(e);
-      canVote = polls!.canVote(e, widget.timeline);
+      isFinished = polls!.isFinished(e, widget.timeline);
       allowedAnswers = polls!.getAllowedPollAnswers(e);
       pollResponses = polls!.getPollResponses(widget.timeline, e);
       event = e;
@@ -114,41 +126,43 @@ class _TimelineEventViewPollState extends State<TimelineEventViewPoll>
     return Material(
       clipBehavior: Clip.antiAlias,
       color: isOurResponse
-          ? ColorScheme.of(context).primaryContainer
+          ? ColorScheme.of(context).primary
           : ColorScheme.of(context).surfaceContainerLow,
       borderRadius: BorderRadius.circular(8),
       child: InkWell(
-        onLongPress: () {
-          AdaptiveDialog.show(
-            context,
-            scrollable: false,
-            builder: (context) => SizedBox(
-              height: 400,
-              width: 400,
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: tiamat.Text.largeTitle(answer.answer),
-                  ),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: responses?.length ?? 0,
-                      itemBuilder: (context, index) {
-                        final id = responses!.elementAt(index);
-                        return UserPanel(
-                            userId: id,
-                            contextRoom: widget.timeline.room,
-                            client: widget.timeline.client);
-                      },
+        onLongPress: !showResults
+            ? null
+            : () {
+                AdaptiveDialog.show(
+                  context,
+                  scrollable: false,
+                  builder: (context) => SizedBox(
+                    height: 400,
+                    width: 400,
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: tiamat.Text.largeTitle(answer.answer),
+                        ),
+                        Expanded(
+                          child: ListView.builder(
+                            itemCount: responses?.length ?? 0,
+                            itemBuilder: (context, index) {
+                              final id = responses!.elementAt(index);
+                              return UserPanel(
+                                  userId: id,
+                                  contextRoom: widget.timeline.room,
+                                  client: widget.timeline.client);
+                            },
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-            ),
-          );
-        },
-        onTap: !canVote
+                );
+              },
+        onTap: isFinished
             ? null
             : () {
                 List<PollAnswer> selectedAnswer;

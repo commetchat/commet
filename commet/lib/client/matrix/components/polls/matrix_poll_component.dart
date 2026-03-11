@@ -1,10 +1,8 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/polls/poll_component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
-import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event.dart';
-import 'package:commet/client/timeline.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:matrix/matrix.dart' as matrix;
 import 'package:matrix/msc_extensions/msc_3381_polls/poll_event_extension.dart';
@@ -87,10 +85,10 @@ class MatrixPollComponent implements PollComponent<MatrixClient> {
   }
 
   @override
-  bool canVote(TimelineEvent<Client> event, Timeline timeline) {
+  bool isFinished(TimelineEvent<Client> event, Timeline timeline) {
     var mxEvent = (event as MatrixTimelineEvent).event;
 
-    return !mxEvent
+    return mxEvent
         .getPollHasBeenEnded((timeline as MatrixTimeline).matrixTimeline!);
   }
 }
