@@ -460,14 +460,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.3.1"
-  enhanced_enum:
-    dependency: transitive
-    description:
-      name: enhanced_enum
-      sha256: "074c5a8b9664799ca91e1e8b68003b8694cb19998671cbafd9c7779c13fcdecf"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.2.4"
   equatable:
     dependency: transitive
     description:
@@ -687,14 +679,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.23"
-  flutter_openssl_crypto:
-    dependency: transitive
-    description:
-      name: flutter_openssl_crypto
-      sha256: "293b4fcda13ab0710645a16e82f3d5b7de19bfc0ab2d06bcdb87637222eda5e1"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.5.0"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -707,10 +691,10 @@ packages:
     dependency: transitive
     description:
       name: flutter_rust_bridge
-      sha256: b416ff56002789e636244fb4cc449f587656eff995e5a7169457eb0593fcaddb
+      sha256: "37ef40bc6f863652e865f0b2563ea07f0d3c58d8efad803cc01933a4b2ee067e"
       url: "https://pub.dev"
     source: hosted
-    version: "2.10.0"
+    version: "2.11.1"
   flutter_shortcuts_new:
     dependency: transitive
     description:
@@ -752,10 +736,10 @@ packages:
     dependency: transitive
     description:
       name: flutter_vodozemac
-      sha256: "2405ca121b84d1cd83200a14021022e1691b123a23bcefc36adc7740cefbc1f9"
+      sha256: ef4c3580a7f2fe8eebb7602c6cba593a42b4a5e5466c372a022f77ccc14914a5
       url: "https://pub.dev"
     source: hosted
-    version: "0.2.2"
+    version: "0.5.0"
   flutter_web_auth_2:
     dependency: transitive
     description:
@@ -1216,17 +1200,17 @@ packages:
     dependency: transitive
     description:
       path: "."
-      ref: "upstream-v1.1.1+patch.1"
-      resolved-ref: "1b9b673a9a5a96dc0b01e5dabee38de9840b0342"
+      ref: "upstream-v6.1.1"
+      resolved-ref: "58e0bd24c6a2d74d727dc92a24dc076144fae43b"
       url: "https://github.com/commetchat/matrix-dart-sdk.git"
     source: git
-    version: "1.1.1"
+    version: "6.1.1"
   matrix_dart_sdk_drift_db:
     dependency: transitive
     description:
       path: "."
-      ref: "upstream-v1.1.1+patch.3"
-      resolved-ref: "42fad58ce86ff67d84a8c176f46c45b1c36a965d"
+      ref: "upstream-v6.1.1+patch.1"
+      resolved-ref: bb1abba161bd0e7438aa50e4ba8fb46408b69e67
       url: "https://github.com/commetchat/matrix-dart-sdk-drift-db.git"
     source: git
     version: "0.0.1"
@@ -2258,10 +2242,10 @@ packages:
     dependency: transitive
     description:
       name: vodozemac
-      sha256: dba14017e042748fb22d270e8ab1d3e46965b89788dd3857dba938ec07571968
+      sha256: bbe7dd31d7f623e2aeedb92e4b71a8b519e6109ce1e2911b5a220f6752b65cda
       url: "https://pub.dev"
     source: hosted
-    version: "0.2.0"
+    version: "0.5.0"
   wakelock_plus:
     dependency: transitive
     description:
