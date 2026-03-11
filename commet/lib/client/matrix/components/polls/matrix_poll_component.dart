@@ -1,10 +1,12 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/polls/poll_component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
+import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event.dart';
 import 'package:commet/client/timeline.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
+import 'package:matrix/matrix.dart' as matrix;
 import 'package:matrix/msc_extensions/msc_3381_polls/poll_event_extension.dart';
 
 class MatrixPollComponent implements PollComponent<MatrixClient> {
@@ -26,6 +28,13 @@ class MatrixPollComponent implements PollComponent<MatrixClient> {
     return mxEvent.parsedPollEventContent.pollStartContent.answers
         .map((i) => PollAnswer(i.id, i.mText))
         .toList();
+  }
+
+  @override
+  int getMaxSelections(TimelineEvent event) {
+    var mxEvent = (event as MatrixTimelineEvent).event;
+
+    return mxEvent.parsedPollEventContent.pollStartContent.maxSelections;
   }
 
   @override
@@ -55,5 +64,33 @@ class MatrixPollComponent implements PollComponent<MatrixClient> {
     var mxEvent = (event as MatrixTimelineEvent).event;
 
     return mxEvent.parsedPollEventContent.pollStartContent.question.mText;
+  }
+
+  @override
+  Future<void> setAnswer(
+      TimelineEvent<Client> event, Room room, List<PollAnswer> answers) async {
+    var mxEvent = (event as MatrixTimelineEvent).event;
+    await mxEvent.answerPoll(answers.map((i) => i.id).toList());
+  }
+
+  @override
+  bool shouldShowResults(TimelineEvent<Client> event, Timeline timeline) {
+    var mxEvent = (event as MatrixTimelineEvent).event;
+
+    if (mxEvent.parsedPollEventContent.pollStartContent.kind ==
+        matrix.PollKind.disclosed) {
+      return true;
+    }
+
+    return mxEvent
+        .getPollHasBeenEnded((timeline as MatrixTimeline).matrixTimeline!);
+  }
+
+  @override
+  bool canVote(TimelineEvent<Client> event, Timeline timeline) {
+    var mxEvent = (event as MatrixTimelineEvent).event;
+
+    return !mxEvent
+        .getPollHasBeenEnded((timeline as MatrixTimeline).matrixTimeline!);
   }
 }

@@ -17,5 +17,14 @@ abstract class PollComponent<R extends Client> implements Component<R> {
 
   String getPollQuestion(TimelineEvent event);
 
+  int getMaxSelections(TimelineEvent event);
+
+  bool shouldShowResults(TimelineEvent<Client> event, Timeline timeline);
+
+  bool canVote(TimelineEvent<Client> event, Timeline timeline);
+
   List<PollAnswer> getAllowedPollAnswers(TimelineEvent event);
+
+  Future<void> setAnswer(
+      TimelineEvent event, Room room, List<PollAnswer> answer);
 }
