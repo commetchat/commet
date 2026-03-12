@@ -21,20 +21,33 @@ class MatrixPollComponent implements PollComponent<MatrixClient> {
     return e.event.type == "org.matrix.msc3381.poll.start";
   }
 
+  matrix.PollEventContent _parse(TimelineEvent event) {
+    var mxEvent = (event as MatrixTimelineEvent).event;
+    var c = mxEvent.content;
+
+    if (c.containsKey(matrix.PollEventContent.mTextJsonKey) == false) {
+      if (c["body"] is String) {
+        c[matrix.PollEventContent.mTextJsonKey] = c["body"];
+      } else {
+        c[matrix.PollEventContent.mTextJsonKey] = "";
+      }
+    }
+
+    return matrix.PollEventContent.fromJson(c);
+  }
+
   @override
   List<PollAnswer> getAllowedPollAnswers(TimelineEvent event) {
-    var mxEvent = (event as MatrixTimelineEvent).event;
-
-    return mxEvent.parsedPollEventContent.pollStartContent.answers
+    return _parse(event)
+        .pollStartContent
+        .answers
         .map((i) => PollAnswer(i.id, i.mText))
         .toList();
   }
 
   @override
   int getMaxSelections(TimelineEvent event) {
-    var mxEvent = (event as MatrixTimelineEvent).event;
-
-    return mxEvent.parsedPollEventContent.pollStartContent.maxSelections;
+    return _parse(event).pollStartContent.maxSelections;
   }
 
   @override
@@ -61,9 +74,7 @@ class MatrixPollComponent implements PollComponent<MatrixClient> {
 
   @override
   String getPollQuestion(TimelineEvent<Client> event) {
-    var mxEvent = (event as MatrixTimelineEvent).event;
-
-    return mxEvent.parsedPollEventContent.pollStartContent.question.mText;
+    return _parse(event).pollStartContent.question.mText;
   }
 
   @override
@@ -77,8 +88,7 @@ class MatrixPollComponent implements PollComponent<MatrixClient> {
   bool shouldShowResults(TimelineEvent<Client> event, Timeline timeline) {
     var mxEvent = (event as MatrixTimelineEvent).event;
 
-    if (mxEvent.parsedPollEventContent.pollStartContent.kind ==
-        matrix.PollKind.disclosed) {
+    if (_parse(event).pollStartContent.kind == matrix.PollKind.disclosed) {
       return true;
     }
 
