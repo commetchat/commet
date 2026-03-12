@@ -145,6 +145,19 @@ dependency_overrides:
       url: https://github.com/commetchat/mixin-flutter-plugins.git
       ref: webview-patch
       path: ./packages/desktop_webview_window
+  ## The media_kit macos and ios video libraries have an issue
+  ## in the published version. see: https://github.com/media-kit/media-kit/issues/709
+  ## this probably should be forked to prevent unstable updates.
+  media_kit_libs_macos_video:
+    git:
+      url: https://github.com/media-kit/media-kit
+      ref: main
+      path: libs/macos/media_kit_libs_macos_video
+  media_kit_libs_ios_video:
+    git:
+      url: https://github.com/media-kit/media-kit
+      ref: main
+      path: libs/ios/media_kit_libs_ios_video
 
 dev_dependencies: 
   drift_dev: ^2.28.0
