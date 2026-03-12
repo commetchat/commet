@@ -1,5 +1,4 @@
 import 'package:commet/client/components/polls/poll_component.dart';
-import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
