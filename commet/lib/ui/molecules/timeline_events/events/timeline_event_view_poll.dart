@@ -1,6 +1,7 @@
 import 'package:commet/client/components/polls/poll_component.dart';
 import 'package:commet/client/timeline.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
+import 'package:commet/ui/molecules/read_indicator.dart';
 import 'package:commet/ui/molecules/timeline_events/layouts/timeline_event_layout_message.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_layout.dart';
 import 'package:commet/ui/molecules/user_panel.dart';
@@ -45,6 +46,16 @@ class _TimelineEventViewPollState extends State<TimelineEventViewPoll>
 
   @override
   Widget build(BuildContext context) {
+    int totalVotes = 0;
+
+    for (var answer in allowedAnswers) {
+      var r = pollResponses[answer.id];
+      if (r != null) {
+        var len = r.length;
+        totalVotes += len;
+      }
+    }
+
     return TimelineEventLayoutMessage(
       senderName: senderName,
       senderColor: senderColor,
@@ -58,18 +69,22 @@ class _TimelineEventViewPollState extends State<TimelineEventViewPoll>
           spacing: 4,
           children: [
             if (body != null) tiamat.Text.label(body!),
-            for (var answer in allowedAnswers) buildAnswer(answer),
-            Align(
-              alignment: AlignmentGeometry.topRight,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  if (!showResults)
-                    tiamat.Text.labelLow(
-                        "Results will be visible once the poll has ended"),
-                  if (isFinished) tiamat.Text.labelLow("This poll has ended")
-                ],
-              ),
+            for (var answer in allowedAnswers)
+              buildAnswer(answer, totalVotes: totalVotes),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                tiamat.Text.labelLow("$totalVotes votes"),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    if (!showResults)
+                      tiamat.Text.labelLow(
+                          "Results will be visible once the poll has ended"),
+                    if (isFinished) tiamat.Text.labelLow("This poll has ended")
+                  ],
+                ),
+              ],
             )
           ],
         ),
@@ -101,33 +116,15 @@ class _TimelineEventViewPollState extends State<TimelineEventViewPoll>
     });
   }
 
-  Widget buildAnswer(PollAnswer answer) {
+  Widget buildAnswer(PollAnswer answer, {int totalVotes = 1}) {
     var responses = pollResponses[answer.id];
 
     var isOurResponse =
         responses?.contains(widget.timeline.client.self!.identifier) == true;
 
-    int mostVoted = 1;
-
-    if (responses != null) {
-      for (var answer in allowedAnswers) {
-        var r = pollResponses[answer.id];
-        if (r != null) {
-          var len = r.length;
-          if (len > mostVoted) {
-            mostVoted = len;
-          }
-        }
-      }
-    }
-
-    var bodyColor = isOurResponse ? ColorScheme.of(context).onPrimary : null;
-
     return Material(
       clipBehavior: Clip.antiAlias,
-      color: isOurResponse
-          ? ColorScheme.of(context).primary
-          : ColorScheme.of(context).surfaceContainerLow,
+      color: ColorScheme.of(context).surfaceContainerLow,
       borderRadius: BorderRadius.circular(8),
       child: InkWell(
         onLongPress: !showResults
@@ -192,31 +189,53 @@ class _TimelineEventViewPollState extends State<TimelineEventViewPoll>
                   );
                 });
               },
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            spacing: 4,
-            children: [
-              Row(
-                spacing: 8,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  tiamat.Text(
-                    answer.answer,
-                    color: bodyColor,
-                  ),
-                  if (showResults)
+        child: Container(
+          decoration: BoxDecoration(
+              border: BoxBorder.all(
+                  color: isOurResponse
+                      ? ColorScheme.of(context).onSurface.withAlpha(150)
+                      : Colors.transparent,
+                  strokeAlign: BorderSide.strokeAlignInside,
+                  width: 1.5),
+              borderRadius: BorderRadius.circular(8)),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              spacing: 4,
+              children: [
+                Row(
+                  spacing: 8,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
                     tiamat.Text(
-                      (responses?.length ?? 0).toString(),
-                      color: bodyColor,
-                    )
-                ],
-              ),
-              if (showResults)
-                LinearProgressIndicator(
-                    value: (responses?.length ?? 0) / mostVoted,
-                    color: bodyColor),
-            ],
+                      answer.answer,
+                    ),
+                    if (showResults)
+                      Row(
+                        spacing: 8,
+                        children: [
+                          SizedBox(
+                            width: 50,
+                            child: ReadIndicator(
+                                spacing: 10,
+                                room: widget.timeline.room,
+                                users: responses ?? {}),
+                          ),
+                          tiamat.Text(
+                            (responses?.length ?? 0).toString(),
+                          )
+                        ],
+                      )
+                  ],
+                ),
+                if (showResults)
+                  LinearProgressIndicator(
+                    value: totalVotes == 0
+                        ? 0
+                        : (responses?.length ?? 0) / totalVotes,
+                  ),
+              ],
+            ),
           ),
         ),
       ),

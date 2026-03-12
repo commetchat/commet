@@ -1,9 +1,11 @@
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/polls/poll_component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
+import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
+import 'package:commet/utils/rng.dart';
 import 'package:matrix/matrix.dart' as matrix;
 import 'package:matrix/msc_extensions/msc_3381_polls/poll_event_extension.dart';
 
@@ -90,5 +92,34 @@ class MatrixPollComponent implements PollComponent<MatrixClient> {
 
     return mxEvent
         .getPollHasBeenEnded((timeline as MatrixTimeline).matrixTimeline!);
+  }
+
+  @override
+  Future<void> createPoll(Room room, PollCreateArgs args) async {
+    await (room as MatrixRoom).matrixRoom.startPoll(
+        question: args.question,
+        answers: args.options
+            .map((i) => matrix.PollAnswer(
+                id: RandomUtils.getRandomString(10), mText: i))
+            .toList(),
+        kind: args.publicAnswers
+            ? matrix.PollKind.disclosed
+            : matrix.PollKind.undisclosed,
+        maxSelections: args.multiAnswer ? args.options.length : 1);
+  }
+
+  @override
+  bool canEndPoll(Room room, TimelineEvent<Client> event, Timeline timeline) {
+    if (isFinished(event, timeline)) {
+      return false;
+    }
+
+    return event.senderId == room.client.self!.identifier;
+  }
+
+  @override
+  Future<void> endPoll(Room room, TimelineEvent<Client> event) async {
+    var mxEvent = (event as MatrixTimelineEvent).event;
+    await mxEvent.endPoll();
   }
 }
