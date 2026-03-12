@@ -1,6 +1,7 @@
 import 'package:commet/client/components/polls/poll_component.dart';
 import 'package:commet/client/timeline.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
+import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/molecules/read_indicator.dart';
 import 'package:commet/ui/molecules/timeline_events/layouts/timeline_event_layout_message.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_layout.dart';
@@ -62,7 +63,8 @@ class _TimelineEventViewPollState extends State<TimelineEventViewPoll>
       senderAvatar: senderAvatar,
       showSender: true,
       formattedContent: ConstrainedBox(
-        constraints: BoxConstraints(maxWidth: 500),
+        constraints:
+            BoxConstraints(maxWidth: Layout.desktop ? 500 : double.infinity),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
