@@ -20,6 +20,8 @@ mixin MatrixTimelineEventRelated on MatrixTimelineEvent
 
     var reply = event.inReplyToEventId();
     if (reply != null) return EventRelationshipType.reply;
+
+    return null;
   }
 
   String? _getThreadRichResponseId() {
