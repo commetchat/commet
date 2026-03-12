@@ -8,14 +8,21 @@ mixin MatrixTimelineEventRelated on MatrixTimelineEvent
   String? get relatedEventId => _getRelatedEventId();
 
   @override
-  EventRelationshipType? get relationshipType =>
-      switch (event.relationshipType) {
-        "m.in_reply_to" => EventRelationshipType.reply,
-        "m.thread" => _getThreadRichResponseId() != null
-            ? EventRelationshipType.reply
-            : null,
-        _ => null,
-      };
+  EventRelationshipType? get relationshipType {
+    var result = switch (event.relationshipType) {
+      "m.in_reply_to" => EventRelationshipType.reply,
+      "m.thread" =>
+        _getThreadRichResponseId() != null ? EventRelationshipType.reply : null,
+      _ => null,
+    };
+
+    if (result != null) return result;
+
+    var reply = event.inReplyToEventId();
+    if (reply != null) return EventRelationshipType.reply;
+
+    return null;
+  }
 
   String? _getThreadRichResponseId() {
     var rel = event.content["m.relates_to"] as Map<String, dynamic>?;
@@ -40,6 +47,9 @@ mixin MatrixTimelineEventRelated on MatrixTimelineEvent
     if (event.relationshipType == "m.thread") {
       return _getThreadRichResponseId();
     }
+
+    var reply = event.inReplyToEventId();
+    if (reply != null) return reply;
 
     return event.relationshipEventId;
   }
