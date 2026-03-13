@@ -301,6 +301,9 @@ class Preferences {
   BoolPreference showRoomPreviewsInSpaceSidebar =
       BoolPreference("show_room_previews_in_space_sidebar", defaultValue: true);
 
+  BoolPreference showUserIdInTimeline =
+      BoolPreference("show_user_id_in_timeline", defaultValue: false);
+
   BoolPreference autoFocusMessageTextBox = BoolPreference(
       "auto_focus_message_textbox",
       defaultGetter: () => Layout.mobile ? false : true,
