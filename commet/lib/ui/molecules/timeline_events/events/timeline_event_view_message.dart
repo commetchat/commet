@@ -126,7 +126,7 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
     return TimelineEventLayoutMessage(
       senderName: senderName,
       senderColor: senderColor,
-      senderId: preferences.showHomeserverInTimeline.value ? senderId : null,
+      senderId: preferences.showUserIdInTimeline.value ? senderId : null,
       senderAvatar: senderAvatar,
       showSender: showSender,
       formattedContent: formattedContent,

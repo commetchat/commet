@@ -78,7 +78,7 @@ class TimelineEventLayoutMessage extends StatelessWidget {
                               children: [
                                 name(),
                                 if(senderId != null)
-                                  tiamat.Text.labelLow(senderId!.split(":")[1], color: Color.from(alpha: 1.0, red: 0.5, green: 0.5, blue: 0.5),)
+                                  tiamat.Text.labelLow(senderId!, color: Color.from(alpha: 1.0, red: 0.5, green: 0.5, blue: 0.5),)
                               ]
                             ),
                             if (timestamp != null)

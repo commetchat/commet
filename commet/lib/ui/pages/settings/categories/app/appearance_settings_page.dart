@@ -58,15 +58,15 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
       desc:
           "Description for enabling using the preview list in the space sidebar");
 
-  String get labelShowUserHomeServerInMessage => Intl.message(
-      "Homeserver in timeline",
-      name: "labelShowUserHomeServerInMessage",
-      desc: "Label for showing homeserver in message rendering");
+  String get labelShowUserIdInMessage => Intl.message(
+      "Show User ID in Timeline",
+      name: "labelShowUserIdInMessage",
+      desc: "Label for showing full user ID in message rendering");
 
-  String get labelShowUserHomeServerInMessageDescription => Intl.message(
-    "Show the homeserver of a user next to their name in the timeline",
-    name: "labelShowUserHomeServerInMessageDescription",
-    desc: "Description for showing homeserver in message rendering");
+  String get labelShowUserIdInMessageDescription => Intl.message(
+    "Show the full address of a user next to their name in the timeline",
+    name: "labelShowUserIdInMessageDescription",
+    desc: "Description for showing full user ID in message rendering");
 
   @override
   void initState() {
@@ -141,9 +141,9 @@ class _AppearanceSettingsPageState extends State<AppearanceSettingsPage> {
                 ),
                 const Seperator(),
                 BooleanPreferenceToggle(
-                  preference: preferences.showHomeserverInTimeline,
-                  title: labelShowUserHomeServerInMessage,
-                  description: labelShowUserHomeServerInMessageDescription,
+                  preference: preferences.showUserIdInTimeline,
+                  title: labelShowUserIdInMessage,
+                  description: labelShowUserIdInMessageDescription,
                 )
               ],
             ),
