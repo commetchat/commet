@@ -1,6 +1,5 @@
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/ui/pages/settings/categories/account/security/matrix/cross_signing/cross_signing_view.dart';
-import 'package:commet/utils/error_utils.dart';
 import 'package:flutter/widgets.dart';
 
 import 'package:matrix/encryption.dart';
