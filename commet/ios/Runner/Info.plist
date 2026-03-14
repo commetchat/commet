@@ -47,5 +47,10 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+    <key>NSCameraUsageDescription</key>
+    <string>Commet needs camera access for video calls.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Commet needs microphone access for voice calls.</string>
+    
 </dict>
 </plist>
