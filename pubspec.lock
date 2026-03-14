@@ -1099,6 +1099,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.0.12"
+  launcher_entry:
+    dependency: transitive
+    description:
+      name: launcher_entry
+      sha256: "87c403fce3f9beea51514a7c5859aac57c9af6b795433a29ee9caa7b5bba9ac1"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.1"
   leak_tracker:
     dependency: transitive
     description:

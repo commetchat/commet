@@ -5,6 +5,7 @@ import 'package:commet/client/components/user_presence/user_presence_component.d
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/main.dart'; // For preferences
 import 'package:commet/ui/molecules/user_panel.dart';
+import 'package:commet/utils/notification_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' as m;
 import 'package:flutter/widgets.dart';
@@ -298,18 +299,9 @@ class _HeaderBurgerState extends State<HeaderBurger> {
     highlightedNotificationCount = 0;
     notificationCount = 0;
 
-    var topLevelSpaces =
-        clientManager!.spaces.where((e) => e.isTopLevel).toList();
-
-    for (var i in topLevelSpaces) {
-      highlightedNotificationCount += i.displayHighlightedNotificationCount;
-      notificationCount += i.displayNotificationCount;
-    }
-
-    for (var dm in clientManager!.directMessages.highlightedRoomsList) {
-      highlightedNotificationCount += dm.displayNotificationCount;
-      notificationCount += dm.displayNotificationCount;
-    }
+    var counts = NotificationUtils.getNotificationCounts();
+    highlightedNotificationCount = counts.$1;
+    notificationCount = counts.$2;
 
     if (notificationCount > 0) {
       color = widget.notificationColor;
