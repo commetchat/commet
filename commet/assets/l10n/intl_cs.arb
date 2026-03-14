@@ -5,19 +5,19 @@
         "type": "text",
         "placeholders": {}
     },
-    "fileDragDropPrompt": "Přetáhněte soubor k nahrání...",
+    "fileDragDropPrompt": "Soubor nahrajete přetažením sem...",
     "@fileDragDropPrompt": {
         "description": "Text that is shown when a user is dragging a file",
         "type": "text",
         "placeholders": {}
     },
-    "labelHomeRecentActivity": "Naposledy Aktivní",
+    "labelHomeRecentActivity": "Poslední aktivita",
     "@labelHomeRecentActivity": {
         "description": "Short label for header of recent room activity",
         "type": "text",
         "placeholders": {}
     },
-    "labelHomeAlerts": "Oznámení",
+    "labelHomeAlerts": "Upozornění",
     "@labelHomeAlerts": {
         "description": "Short label for header of alerts",
         "type": "text",
@@ -29,7 +29,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelHomeInvitations": "Žádosti",
+    "labelHomeInvitations": "Pozvánky",
     "@labelHomeInvitations": {
         "description": "Short label for header of invitations list",
         "type": "text",
@@ -41,7 +41,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelInvitationsForUser": "Pozvánka pro {user}",
+    "labelInvitationsForUser": "Pozvánka pro uživatele {user}",
     "@labelInvitationsForUser": {
         "description": "Label for the list of incoming invitations, specifying which user these invitations are intended for",
         "type": "text",
@@ -55,7 +55,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "promptOpenDirectMessage": "Poslat zprávu",
+    "promptOpenDirectMessage": "Zpráva",
     "@promptOpenDirectMessage": {
         "description": "Prompt on the button to open a direct message with another user",
         "type": "text",
@@ -67,25 +67,25 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelChatPageFileTooLargeTitle": "Překročena maximální velikost souboru",
+    "labelChatPageFileTooLargeTitle": "Soubor je příliš velký",
     "@labelChatPageFileTooLargeTitle": {
         "description": "Title for the dialog that is shown when the user attempts to upload a file that is greater than the allowed size",
         "type": "text",
         "placeholders": {}
     },
-    "sendEncryptedMessagePrompt": "Odeslat šifrovanou zprávu",
+    "sendEncryptedMessagePrompt": "Poslat šifrovanou zprávu",
     "@sendEncryptedMessagePrompt": {
         "description": "Placeholder text for message input in an encrypted room",
         "type": "text",
         "placeholders": {}
     },
-    "sendUnencryptedMessagePrompt": "Odeslat zprávu",
+    "sendUnencryptedMessagePrompt": "Poslat zprávu",
     "@sendUnencryptedMessagePrompt": {
         "description": "Placeholder text for message input in an unencrypted room",
         "type": "text",
         "placeholders": {}
     },
-    "cantSentMessagePrompt": "Nemáte oprávnění k odeslání zprávy v této místnosti",
+    "cantSentMessagePrompt": "V této místnosti nemáte oprávnění posílat zprávy",
     "@cantSentMessagePrompt": {
         "description": "Text that explains the user cannot send a message in this room",
         "type": "text",
@@ -153,7 +153,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelImageContainsLocationInfo": "Varování: Obrázek obsahuje metadata o poloze",
+    "labelImageContainsLocationInfo": "Pozor: Obrázek obsahuje metadata o poloze",
     "@labelImageContainsLocationInfo": {
         "description": "Prompt text for the option to send a file in its original state, without any further processing such as removing metadata",
         "type": "text",
@@ -198,6 +198,1493 @@
     "spaceVisibilityPublicExplanation": "Tento prostor bude veřejně přístupný komukoli na internetu",
     "@spaceVisibilityPublicExplanation": {
         "description": "Explains what 'public' space visibility means",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptConfirmSpaceJoin": "Připojit se k prostoru!",
+    "@promptConfirmSpaceJoin": {
+        "description": "Label for a button which confirms the joining of a space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptAddSelectedRooms": "Přidat vybrané místnosti",
+    "@promptAddSelectedRooms": {
+        "description": "Prompt to add the selected rooms to a space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageMatrixSessionVerificationRequest": "**{username}** požádal(a) o ověření vaší relace",
+    "@messageMatrixSessionVerificationRequest": {
+        "description": "Message to show when another user has requested to verify your matrix session. Supports markdown to emphasise the user name",
+        "type": "text",
+        "placeholders": {
+            "username": {}
+        }
+    },
+    "messageLoginError": "Při přihlašování došlo k chybě",
+    "@messageLoginError": {
+        "description": "A generic error message to convey that an error occured when attempting to login",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptConfirmEmojiMatches": "Emotikony se shodují!",
+    "@promptConfirmEmojiMatches": {
+        "description": "Button text to confirm that the emoji matches",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptEmojiDoNotMatch": "Emotikony se neshodují",
+    "@promptEmojiDoNotMatch": {
+        "description": "Button text to confirm that the emoji do NOT match",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoleAdmin": "Administrátor",
+    "@labelMatrixPermissionsRoleAdmin": {
+        "description": "Label for the room administrator role",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVisibilityPrivate": "Soukromá",
+    "@labelVisibilityPrivate": {
+        "description": "Short label for room visibility private",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVisibilityPublic": "Veřejná",
+    "@labelVisibilityPublic": {
+        "description": "Short label for room visibility public",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsWindowBehaviour": "Chování okna",
+    "@labelSettingsWindowBehaviour": {
+        "description": "Label for the Window Behaviour settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoleMember": "Člen",
+    "@labelMatrixPermissionsRoleMember": {
+        "description": "Label for the room member role",
+        "type": "text",
+        "placeholders": {}
+    },
+    "encryptionCannotBeDisabledExplanation": "Šifrování nelze po zapnutí vypnout",
+    "@encryptionCannotBeDisabledExplanation": {
+        "description": "Explains that encryption cannot be disabled once enabled",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsCategoryApp": "Nastavení aplikace",
+    "@labelSettingsCategoryApp": {
+        "description": "Label for the settings category of the overall App settings/",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMediaPreviewPrivateRoomsToggle": "Soukromé místnosti",
+    "@labelMediaPreviewPrivateRoomsToggle": {
+        "description": "Short label for the private rooms toggle in media previews section",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptConfirmRoomCreation": "Vytvořit místnost!",
+    "@promptConfirmRoomCreation": {
+        "description": "Label for a button which confirms the creation of a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelUseRoomAvatarPlaceholdersDescription": "Pokud místnost nemá nastavený avatar nebo je jejich použití zakázáno, použije se jako náhrada náhodná barva + symbol prvního písmene jako obrázek",
+    "@labelUseRoomAvatarPlaceholdersDescription": {
+        "description": "Description for the enable generic icons setting",
+        "type": "text",
+        "placeholders": {}
+    },
+    "editEmoticonDialogTitle": "Upravit emotikon",
+    "@editEmoticonDialogTitle": {
+        "description": "Title of a dialog that pops up when choosing to edit an existing emoticon",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptConfirmSpaceCreation": "Vytvořit prostor!",
+    "@promptConfirmSpaceCreation": {
+        "description": "Label for a button which confirms the creation of a space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptConfirmRoomJoin": "Připojit se k místnosti!",
+    "@promptConfirmRoomJoin": {
+        "description": "Label for a button which confirms the joining of a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptRoomAddress": "Adresa místnosti:",
+    "@promptRoomAddress": {
+        "description": "Short label to prompt for the input of a room address",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptSpaceAddress": "Adresa prostoru:",
+    "@promptSpaceAddress": {
+        "description": "Short label to prompt for the input of a space address",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptJoinExistingSpace": "Připojit se k existujícímu prostoru",
+    "@promptJoinExistingSpace": {
+        "description": "Prompt to join a space which already exists",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelEnableUnifiedPush": "Zapnout UnifiedPush",
+    "@labelEnableUnifiedPush": {
+        "description": "Label for the toggle to enable Unified Push",
+        "type": "text",
+        "placeholders": {}
+    },
+    "placeholderRoomAlias": "#moje-mistnost",
+    "@placeholderRoomAlias": {
+        "description": "Placeholder / Example for a room alias.",
+        "type": "text",
+        "placeholders": {}
+    },
+    "placeholderSpaceAlias": "#muj-prostor",
+    "@placeholderSpaceAlias": {
+        "description": "Placeholder / Example for a space alias.",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelCouldNotLoadRoomPreview": "Nepodařilo se načíst náhled místnosti",
+    "@labelCouldNotLoadRoomPreview": {
+        "description": "Error message for when a room preview was not able to be loaded",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelUnifiedPushNoEndpointFound": "Nenalezen žádný koncový bod, došlo k chybě :(",
+    "@labelUnifiedPushNoEndpointFound": {
+        "description": "Message for when a unified push endpoint could not be registered",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelAppScale": "Měřítko aplikace",
+    "@labelAppScale": {
+        "description": "Label for the setting which controls the UI scale of the overall app",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptCreateNewSpace": "Vytvořit nový prostor",
+    "@promptCreateNewSpace": {
+        "description": "Prompt to create a new space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsDeveloperModeExplanation": "Zobrazuj extra informace navíc, užitečné pro vývojáře",
+    "@labelSettingsDeveloperModeExplanation": {
+        "description": "Explains what developer mode does",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMessageEffectsDescription": "Povolit speciální efekty u zpráv (např. konfety a další)",
+    "@labelMessageEffectsDescription": {
+        "description": "Label describing what message effects are",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptCreateNewRoom": "Vytvořit novou místnost",
+    "@promptCreateNewRoom": {
+        "description": "Prompt to create a new room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoomHistoryVisibilityDescription": "Umožňuje uživateli změnit viditelnost starších zpráv v této místnosti",
+    "@labelMatrixPermissionsRoomHistoryVisibilityDescription": {
+        "description": "describes the permission to change room history settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptJoinExistingRoom": "Připojit se k existující místnosti",
+    "@promptJoinExistingRoom": {
+        "description": "Prompt to join a room which already exists",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelStickerCompatibility": "Kompatibilita samolepek",
+    "@labelStickerCompatibility": {
+        "description": "Header for the settings to enable sticker compatibility mode",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptUseExistingRoom": "Použít existující místnost",
+    "@promptUseExistingRoom": {
+        "description": "Button text to choose to use an existing room when adding a room to a space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageWaitingOtherDeviceToAccept": "Čekání na potvrzení druhým zařízením",
+    "@messageWaitingOtherDeviceToAccept": {
+        "description": "Message to show while waiting for another device to accept a matrix session verification request",
+        "type": "text",
+        "placeholders": {}
+    },
+    "unifiedPushExplainer": "# Unified Push\nTato verze aplikace Commet byla vytvořena bez služeb Google Play. Abyste mohli přijímat push oznámení, budete muset použít [Unified Push](https://unifiedpush.org/). \n\nPokud již máte nainstalovanou kompatibilní aplikaci s Unified Push, můžete ji nakonfigurovat níže\n",
+    "@unifiedPushExplainer": {
+        "description": "Explains the need for unified push. Supports markdown",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageSasEmojiVerificationPrompt": "Zkontrolujte, zda jsou emotikony stejné a ve stejném pořadí, jako na druhém zařízení",
+    "@messageSasEmojiVerificationPrompt": {
+        "description": "Explains what to look for when verifying using emoji. Needs to portray that the emoji MUST be the same AND in the same order",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptLeaveSpace": "Opustit prostor",
+    "@promptLeaveSpace": {
+        "description": "Text on a button to leave a space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMediaPreviewPublicRoomsToggle": "Veřejné místnosti",
+    "@labelMediaPreviewPublicRoomsToggle": {
+        "description": "Short label for the private rooms toggle in media previews section",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsDeveloperMode": "Vývojářský režim",
+    "@labelSettingsDeveloperMode": {
+        "description": "Header for the settings to enable developer mode",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsMinimizeOnCloseExplanation": "Místo ukončení se aplikace při zavření minimalizuje do oznamovací oblasti",
+    "@labelSettingsMinimizeOnCloseExplanation": {
+        "description": "Explains what the 'minimize on close' setting does",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelThirdPartyServicesTitle": "Služby třetích stran",
+    "@labelThirdPartyServicesTitle": {
+        "description": "Header for the third party services section in settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelEnableUnifiedPushEndpoint": "Koncový bod",
+    "@labelEnableUnifiedPushEndpoint": {
+        "description": "Label for the Unified Push endpoint",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptLeaveRoom": "Opustit místnost",
+    "@promptLeaveRoom": {
+        "description": "Text on a button to leave a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptHomeserver": "Domovský server",
+    "@promptHomeserver": {
+        "description": "Placeholder text for homeserver field on login form",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptSubmitLogin": "Přihlásit se",
+    "@promptSubmitLogin": {
+        "description": "Prompt to submit the username and password, and attempt to login",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptLeaveSpaceConfirmation": "Opravdu chcete opustit {spaceName}?",
+    "@promptLeaveSpaceConfirmation": {
+        "description": "Text for the popup dialog confirming the intent to leave a space",
+        "type": "text",
+        "placeholders": {
+            "spaceName": {}
+        }
+    },
+    "labelPushRuleNotifyAll": "Všechny zprávy",
+    "@labelPushRuleNotifyAll": {
+        "description": "Label for the push rule which notifies for all received messages",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageAlreadyLoggedIn": "Už jste přihlášen k tomuto účtu",
+    "@messageAlreadyLoggedIn": {
+        "description": "An error message displayed when the user attempts to add an account which has already been logged in to on this device",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsAppDeveloperUtils": "Nástroje pro vývojáře",
+    "@labelSettingsAppDeveloperUtils": {
+        "description": "Label for the developer utils settings page, usually hidden unless developer mode is turned on",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptLeaveRoomConfirmation": "Opravdu chcete opustit {roomName}?",
+    "@promptLeaveRoomConfirmation": {
+        "description": "Text for the popup dialog confirming the intent to leave",
+        "type": "text",
+        "placeholders": {
+            "roomName": {}
+        }
+    },
+    "labelRoomSettingsNotifications": "Oznámení",
+    "@labelRoomSettingsNotifications": {
+        "description": "Label for the notifications section in room settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "notificationSettingsNotSupported": "Push notifikace nejsou v tomto systému podporovány",
+    "@notificationSettingsNotSupported": {
+        "description": "Message to display when push notifications are not supported",
+        "type": "text",
+        "placeholders": {}
+    },
+    "createEmoticonDialogTitle": "Vytvořit emotikon",
+    "@createEmoticonDialogTitle": {
+        "description": "Title of a dialog that pops up when choosing to create a new emoticon",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsSpaceManageChildrenDescription": "Umožňuje uživateli spravovat, které místnosti jsou součástí tohoto prostoru",
+    "@labelMatrixPermissionsSpaceManageChildrenDescription": {
+        "description": "Describes the permission to manage child rooms",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoomAvatarTitle": "Nastavit avatar místnosti",
+    "@labelMatrixPermissionsRoomAvatarTitle": {
+        "description": "Title for the permission to add change the rooms avatar image",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsStickerCompatibilityExplanation": "V některých Matrix klientech způsobí odeslání samolepky formou 'm.sticker' její nesprávné načtení. Povolením tohoto nastavení odešle samolepky jako 'm.image', což umožní jejich správné vykreslení",
+    "@labelSettingsStickerCompatibilityExplanation": {
+        "description": "Explains what sticker compatibility mode does",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsAppGeneral": "Obecné",
+    "@labelSettingsAppGeneral": {
+        "description": "Label for the App General settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsAppAppearance": "Vzhled",
+    "@labelSettingsAppAppearance": {
+        "description": "Label for the App Appearance settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptImportPack": "Importovat balíček",
+    "@promptImportPack": {
+        "description": "Prompt to import a set of emoticons from an existing pack",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoomAvatarDescription": "Změnit obrázek avataru místnosti",
+    "@labelMatrixPermissionsRoomAvatarDescription": {
+        "description": "Title for the permission to add change the rooms avatar image",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsAppAdvanced": "Pokročilé",
+    "@labelSettingsAppAdvanced": {
+        "description": "Label for the App Advanced settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoomDeleteMessagesTitle": "Mazání zpráv",
+    "@labelMatrixPermissionsRoomDeleteMessagesTitle": {
+        "description": "Title for permission to delete messages",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoomAddReactionsTitle": "Přidávání reakcí",
+    "@labelMatrixPermissionsRoomAddReactionsTitle": {
+        "description": "Title for the permission to add an emoji reaction to a message",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsAppNotifications": "Oznámení",
+    "@labelSettingsAppNotifications": {
+        "description": "Label for the App notifications settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelEnableRoomIconsDescription": "Zobrazovat avatary u místností v seznamu",
+    "@labelEnableRoomIconsDescription": {
+        "description": "Description for the enable room icons setting",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsWindowBehaviourTitle": "Nastavení okna",
+    "@labelSettingsWindowBehaviourTitle": {
+        "description": "Header for the window behaviour section of settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsChangeRoomNameTitle": "Změnit název místnosti",
+    "@labelMatrixPermissionsChangeRoomNameTitle": {
+        "description": "Title for the permission to add change the rooms name",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsMinimizeOnCloseToggle": "Minimalizovat při zavření",
+    "@labelSettingsMinimizeOnCloseToggle": {
+        "description": "Label for the toggle to turn on and off minimize on close",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMediaPreviewSettingsTitle": "Náhledy médií",
+    "@labelMediaPreviewSettingsTitle": {
+        "description": "Header for the settings tile for for media preview toggles",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelUrlPreviewInEncryptedChatTitle": "Zobrazovat náhledy odkazů i v konverzacích se zapnutým šifrováním",
+    "@labelUrlPreviewInEncryptedChatTitle": {
+        "description": "Label for the toggle for enabling and disabling use of url previews in encrypted chats",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelUrlPreviewInEncryptedChatDescription": "Tím se odhalí všechny náhledy odkazů odeslané ve vašich šifrovaných chatech vašemu domácímu serveru, aby bylo možné je načíst",
+    "@labelUrlPreviewInEncryptedChatDescription": {
+        "description": "description for the toggle for enabling and disabling use of url previews in encrypted chats",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoomHistoryVisibilityTitle": "Viditelnost historie",
+    "@labelMatrixPermissionsRoomHistoryVisibilityTitle": {
+        "description": "Title for the permission to add change room history settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMessageEffectsTitle": "Efekty zpráv",
+    "@labelMessageEffectsTitle": {
+        "description": "Header for the settings tile for message effects, such as confetti",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMediaPreviewPrivateRoomsToggleDescription": "Zobrazovat náhledy obrázků a videí v soukromých konverzacích",
+    "@labelMediaPreviewPrivateRoomsToggleDescription": {
+        "description": "Label describing toggle of media previews for private rooms",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptWipeMatrixKeys": "Vymazat klíče",
+    "@promptWipeMatrixKeys": {
+        "description": "Text on the button to wipe matrix encryption keys",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMediaPreviewPublicRoomsToggleDescription": "Zobrazovat náhledy obrázků a videí ve veřejných konverzacích",
+    "@labelMediaPreviewPublicRoomsToggleDescription": {
+        "description": "Label describing toggle of media previews for public rooms",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelThemeLight": "Světlý motiv",
+    "@labelThemeLight": {
+        "description": "Label for the light theme",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelThemeDark": "Tmavý motiv",
+    "@labelThemeDark": {
+        "description": "Label for the dark theme",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoomAddReactionsDescription": "Oprávnění reagovat na zprávy pomocí emoji",
+    "@labelMatrixPermissionsRoomAddReactionsDescription": {
+        "description": "describes the permission to add an emoji reaction to a message",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsAppTheme": "Motiv aplikace",
+    "@labelSettingsAppTheme": {
+        "description": "Label for theme section of app appearance",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelUseRoomAvatars": "Použijte avatary místností",
+    "@labelUseRoomAvatars": {
+        "description": "Label for enabling using room avatars instead of icons",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelUseRoomAvatarPlaceholders": "Použijte zástupné avatary",
+    "@labelUseRoomAvatarPlaceholders": {
+        "description": "Label for enabling generic icons in the appearance settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsAppLogs": "Protokoly aplikace",
+    "@labelSettingsAppLogs": {
+        "description": "Label for the logs settings page, usually hidden unless developer mode is turned on",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptEnableEncryptionRoomSettings": "Zapnout šifrování",
+    "@promptEnableEncryptionRoomSettings": {
+        "description": "Short prompt to enable encryption for a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPushRuleMentionsAndKeywords": "Zmínky a klíčová slova",
+    "@labelPushRuleMentionsAndKeywords": {
+        "description": "Label for the push rule which notifies only for keywords and mentions",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPushRuleNone": "Ztlumit",
+    "@labelPushRuleNone": {
+        "description": "Label for the push rule which sends no notifications",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptEmoticonPackName": "Název balíčku emotikonů",
+    "@promptEmoticonPackName": {
+        "description": "Prompt for the input of the name of an emoticon pack",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptEmoteName": "Název emotikonu",
+    "@promptEmoteName": {
+        "description": "Prompt for the input of the name of an emoji",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptConfirmSaveEmoticon": "Uložit!",
+    "@promptConfirmSaveEmoticon": {
+        "description": "Prompt to confirm the creation of an Emoticon Pack, Emoji, or Sticker",
+        "type": "text",
+        "placeholders": {}
+    },
+    "encryptionCannotBeDisabledExplanationRoomSettings": "Pokud je tato funkce povolena, nelze šifrování později deaktivovat",
+    "@encryptionCannotBeDisabledExplanationRoomSettings": {
+        "description": "Explains that encryption cannot be disabled once enabled",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoleModerator": "Moderátor",
+    "@labelMatrixPermissionsRoleModerator": {
+        "description": "Label for the room moderator role",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsSpaceManageChildrenTitle": "Správa podprostorů",
+    "@labelMatrixPermissionsSpaceManageChildrenTitle": {
+        "description": "Title for permission to manage children",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoomDeleteMessagesDescription": "Oprávnění mazat zprávy ostatních uživatelů",
+    "@labelMatrixPermissionsRoomDeleteMessagesDescription": {
+        "description": "Describes the permission to delete messages",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoomSendMessagesTitle": "Odesílání zpráv",
+    "@labelMatrixPermissionsRoomSendMessagesTitle": {
+        "description": "Title for the permission to send messages",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsRoomSendMessagesDescription": "Oprávnění posílat zprávy do této místnosti",
+    "@labelMatrixPermissionsRoomSendMessagesDescription": {
+        "description": "Describes the permission to send messages",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsChangeRoomNameDescription": "Oprávnění přejmenovat místnost",
+    "@labelMatrixPermissionsChangeRoomNameDescription": {
+        "description": "Description for the permission to add change the rooms name",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsChangeRoomTopicTitle": "Změnit téma místnosti",
+    "@labelMatrixPermissionsChangeRoomTopicTitle": {
+        "description": "Title for the permission to add change the rooms topic",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsChangeRoomTopicDescription": "Oprávnění změnit téma místnosti",
+    "@labelMatrixPermissionsChangeRoomTopicDescription": {
+        "description": "Description for the permission to add change the rooms topic",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsChangeRoomPermissionsTitle": "Správa oprávnění",
+    "@labelMatrixPermissionsChangeRoomPermissionsTitle": {
+        "description": "Title for the permission to change permissions of the room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsChangeRoomPermissionsDescription": "Oprávnění měnit nastavení přístupů a rolí",
+    "@labelMatrixPermissionsChangeRoomPermissionsDescription": {
+        "description": "Description for the permission to change permissions of the room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsKickUserTitle": "Vykopnutí uživatele",
+    "@labelMatrixPermissionsKickUserTitle": {
+        "description": "Title for the permission to kick other users out of the room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomSettingsCategory": "Nastavení místnosti",
+    "@labelRoomSettingsCategory": {
+        "description": "Label for the overall settings category of a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixMessageBackupExplanation": "Zálohujte si své šifrovací klíče, abyste případně neztratili přístup k historii zpráv",
+    "@labelMatrixMessageBackupExplanation": {
+        "description": "Explains what matrix message backup does",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsKickUserDescription": "Oprávnění vyhodit uživatele z místnosti",
+    "@labelMatrixPermissionsKickUserDescription": {
+        "description": "Description for the permission to kick other users out of the room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsBanUserTitle": "Oprávnění zabanovat uživatele",
+    "@labelMatrixPermissionsBanUserTitle": {
+        "description": "Title for the permission to ban other users from the room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsBanUserDescription": "Zakázat ostatním uživatelům přístup do místnosti",
+    "@labelMatrixPermissionsBanUserDescription": {
+        "description": "Description for the permission to ban other users from the room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomSettingsGeneral": "Obecné",
+    "@labelRoomSettingsGeneral": {
+        "description": "Label for general room settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomSettingsAppearance": "Vzhled",
+    "@labelRoomSettingsAppearance": {
+        "description": "Label for room appearance settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptSetupMatrixMessageBackup": "Nastavit zálohu zpráv",
+    "@promptSetupMatrixMessageBackup": {
+        "description": "Text on the button to begin the setup process for message backup",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomSettingsSecurity": "Zabezpečení",
+    "@labelRoomSettingsSecurity": {
+        "description": "Label for room security settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomSettingsEmoticons": "Emotikony",
+    "@labelRoomSettingsEmoticons": {
+        "description": "Label for room Emoticon settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomSettingsDeveloper": "Pro vývojáře",
+    "@labelRoomSettingsDeveloper": {
+        "description": "Label for room developer settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomSettingsPermissions": "Oprávnění",
+    "@labelRoomSettingsPermissions": {
+        "description": "Label for room permission settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceSettingsGeneral": "Obecné",
+    "@labelSpaceSettingsGeneral": {
+        "description": "Label for general space settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceAppearanceSettings": "Vzhled",
+    "@labelSpaceAppearanceSettings": {
+        "description": "Label for space appearance settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRestoreMatrixBackupTitle": "Obnovit zálohu",
+    "@labelRestoreMatrixBackupTitle": {
+        "description": "Title of the popup dialog for restoring message backup",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceEmoticonSettings": "Emotikony",
+    "@labelSpaceEmoticonSettings": {
+        "description": "Label for space emoticon settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpacePermissionSettings": "Oprávnění",
+    "@labelSpacePermissionSettings": {
+        "description": "Label for space permission settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceDeveloperSettings": "Pro vývojáře",
+    "@labelSpaceDeveloperSettings": {
+        "description": "Label for space developer settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsCategorySpace": "Nastavení prostoru",
+    "@labelSettingsCategorySpace": {
+        "description": "Label for the overall space settings category",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptEnableEncryption": "Zapnout šifrování",
+    "@promptEnableEncryption": {
+        "description": "Short prompt to enable encryption for a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptMatrixVerifySession": "Ověřit relaci",
+    "@promptMatrixVerifySession": {
+        "description": "Text on the button to verify a session",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixCrossSigning": "Vzájemné podepisování",
+    "@labelMatrixCrossSigning": {
+        "description": "Title label for matrix cross signing",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixCrossSigningAndBackup": "Vzájemné podepisování a záloha",
+    "@labelMatrixCrossSigningAndBackup": {
+        "description": "Header label for matrix cross signing and message backup section",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixAccountSessions": "Relace účtu",
+    "@labelMatrixAccountSessions": {
+        "description": "Title label for account sessions",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixResetCrossSigningTitle": "Resetovat vzájemné podepisování",
+    "@labelMatrixResetCrossSigningTitle": {
+        "description": "Title for the popup dialog when resetting cross signing",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptAbortWipingMatrixKeys": "Přerušit mazání klíčů!",
+    "@promptAbortWipingMatrixKeys": {
+        "description": "Text on the button which aborts wiping matrix encryption keys",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixCrossSigningExplanation": "Vzájemné podepisování umožní ověřit všechna vaše zařízení najednou",
+    "@labelMatrixCrossSigningExplanation": {
+        "description": "Explains what matrix cross signing does",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixMessageBackup": "Záloha zpráv",
+    "@labelMatrixMessageBackup": {
+        "description": "TItle label for matrix message backup settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptGenerateMatrixRecoveryKey": "Generovat obnovovací klíč",
+    "@promptGenerateMatrixRecoveryKey": {
+        "description": "Button text to generate a recovery key",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixRecoveryKeyCreateExplanation": "Musíme nastavit bezpečnostní klíč, který lze použít pro přístup k historii zpráv. Můžeme vygenerovat klíč, nebo si můžete vybrat vlastní bezpečnostní frázi",
+    "@labelMatrixRecoveryKeyCreateExplanation": {
+        "description": "Explains what the matrix recovery key does, and that it can be generated or user input",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptEdit": "Upravit",
+    "@promptEdit": {
+        "description": "Generic prompt to edit something",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptCopy": "Kopírovat",
+    "@promptCopy": {
+        "description": "Prompt to copy text",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptSetMatrixPassphrase": "Nastavit bezpečnostní frázi",
+    "@promptSetMatrixPassphrase": {
+        "description": "Button text to set a passphrase",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptUseExistingMatrixKeys": "Použít existující klíče",
+    "@promptUseExistingMatrixKeys": {
+        "description": "Button text to opt to use existing keys",
+        "type": "text",
+        "placeholders": {}
+    },
+    "errorMatrixPassphraseMustContainUpperAndLowercase": "Fráze musí obsahovat alespoň 1 velké a 1 malé písmeno",
+    "@errorMatrixPassphraseMustContainUpperAndLowercase": {
+        "description": "Explains constraints of recovery passphrase",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptReject": "Odmítnout",
+    "@promptReject": {
+        "description": "Generic prompt to reject something, probably a request of some kind",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptCreateNewMatrixKeys": "Vytvořit nové klíče",
+    "@promptCreateNewMatrixKeys": {
+        "description": "Button text to opt to create new keys",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptReplayMessageEffect": "Zopakovat efekt zprávy",
+    "@promptReplayMessageEffect": {
+        "description": "If a message was sent with an effect, this prompts to replay the effect",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelInvitationBodyWithSender": "{user} vás pozval(a) do místnosti",
+    "@labelInvitationBodyWithSender": {
+        "description": "Message body for when an invitation was received, and we have a name for the sender",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "promptWipeMatrixBackup": "Vymazat zálohu",
+    "@promptWipeMatrixBackup": {
+        "description": "Button text to wipe the matrix message backup",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptSettings": "Nastavení",
+    "@promptSettings": {
+        "description": "Generic prompt for settings, usually will open a settings menu or similar",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptEnableMatrixBackup": "Zapnout zálohu",
+    "@promptEnableMatrixBackup": {
+        "description": "Button text to enable to encrypted message backup",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptReplyInThread": "Odpovědět ve vlákně",
+    "@promptReplyInThread": {
+        "description": "Label for the menu option to reply to a message inside a thread",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptDownload": "Stáhnout",
+    "@promptDownload": {
+        "description": "Generic prompt to download something",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelExistingMatrixKeysFound": "Nalezeny existující klíče!",
+    "@labelExistingMatrixKeysFound": {
+        "description": "Text that is shown when the user is setting up cross signing, but has existing keys",
+        "type": "text",
+        "placeholders": {}
+    },
+    "erroMatrixPassphraseMustBeLonger": "Fráze musí mít minimálně 10 znaků",
+    "@erroMatrixPassphraseMustBeLonger": {
+        "description": "Explains constraints of recovery passphrase",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelAskUseExistingMatrixKeys": "Chcete použít své stávající šifrovací klíče?",
+    "@labelAskUseExistingMatrixKeys": {
+        "description": "Text that is shown when the user is setting up cross signing, but has existing keys and asks the user if they would like to use those keys",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsTabProfile": "Profil",
+    "@labelSettingsTabProfile": {
+        "description": "Label for the Profile settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "directMessagesListHeaderMobile": "Přímé zprávy",
+    "@directMessagesListHeaderMobile": {
+        "description": "The header for the direct messages list on desktop",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixRecoveryKeyExplanation": "Tohle je váš obnovovací klíč. Prosím, uložte si tento klíč na skutečně bezpečném místě!",
+    "@labelMatrixRecoveryKeyExplanation": {
+        "description": "Gives a brief description about the function on the recovery key",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messagePlaceholderUserJoinedRoom": "{user} vstoupil(a) do místnosti!",
+    "@messagePlaceholderUserJoinedRoom": {
+        "description": "Message body for when a user joins the room",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "labelMatrixRecoveryKeyPromptExplanation": "Chcete-li odemknout své staré zprávy, zadejte svůj obnovovací klíč, jenž vám byl vygenerován dříve. Pamatujte - Obnovovací klíč NENÍ to samé, jako vaše HESLO!",
+    "@labelMatrixRecoveryKeyPromptExplanation": {
+        "description": "Shown when a user is attempting to recover their old messages, explains that they need the recovery key",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptShowSource": "Zobrazit zdroj",
+    "@promptShowSource": {
+        "description": "Label for the menu option to view the JSON source of an event",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptMatrixRecoveryKeyInput": "Vložit obnovovací klíč",
+    "@promptMatrixRecoveryKeyInput": {
+        "description": "Placeholder text for the recovery key input box",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptConfirmWipingCrossSigningKeys": "Opravdu chcete vymazat klíče pro vzájemné podepisování?",
+    "@promptConfirmWipingCrossSigningKeys": {
+        "description": "Asks the user if they are sure they want to wipe the keys",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptCopyComplete": "Zkopírováno!",
+    "@promptCopyComplete": {
+        "description": "Prompt text for after a copy has been completed",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixSecurityPhraseShouldNotBePassword": "Bezpečnostní fráze by neměla býti shodná s vaším heslem",
+    "@labelMatrixSecurityPhraseShouldNotBePassword": {
+        "description": "Tells the user to not use their password as their security phrase",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageUserUnpinnedEvent": "{user} odepnul(a) zprávu",
+    "@messageUserUnpinnedEvent": {
+        "description": "Message body for when a user removes an event from the room's pinned messages",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "promptAddAccount": "Přidat účet",
+    "@promptAddAccount": {
+        "description": "Label for button in settings to add another account",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelCurrentAccountsHeader": "Aktuální účty",
+    "@labelCurrentAccountsHeader": {
+        "description": "Label for header of accounts list",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelEmojiPickerStickerTab": "Samolepky",
+    "@labelEmojiPickerStickerTab": {
+        "description": "Label for the sticker tab in the emoji picker",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptRestore": "Obnovit",
+    "@promptRestore": {
+        "description": "Generic prompt to restore something",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixAskWipeBackupToContinue": "Pokud změníte své vzájemné podpisové klíče, budete muset vymazat stávající zálohu... Chcete pokračovat?",
+    "@labelMatrixAskWipeBackupToContinue": {
+        "description": "Asks the user if they want to wipe their existing backup to continue changing their cross signing keys",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsTabSecurity": "Zabezpečení",
+    "@labelSettingsTabSecurity": {
+        "description": "Label for the Security settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixAskEnableMessageBackup": "Chcete povolit zálohování klíčů online na serveru?",
+    "@labelMatrixAskEnableMessageBackup": {
+        "description": "Asks the user if they want to enable online backup",
+        "type": "text",
+        "placeholders": {}
+    },
+    "errorMatrixPassphraseMustContainNumber": "Fráze musí obsahovat alespoň 1 číslici",
+    "@errorMatrixPassphraseMustContainNumber": {
+        "description": "Explains constraints of recovery passphrase",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsTabEmoticons": "Emotikony",
+    "@labelSettingsTabEmoticons": {
+        "description": "Label for the Emoticons settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "errorMatrixPassphraseMustContainSymbol": "Fráze musí obsahovat alespoň 1 symbol",
+    "@errorMatrixPassphraseMustContainSymbol": {
+        "description": "Explains constraints of recovery passphrase",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixConfirmSecurityPhrase": "Potvrďte bezpečnostní frázi:",
+    "@labelMatrixConfirmSecurityPhrase": {
+        "description": "Prompts the user to input their passphrase again",
+        "type": "text",
+        "placeholders": {}
+    },
+    "placeholderMatrixConfirmSecurityPhrase": "Potvrdit bezpečnostní frázi",
+    "@placeholderMatrixConfirmSecurityPhrase": {
+        "description": "Placeholder text for the confirm passphrase text input",
+        "type": "text",
+        "placeholders": {}
+    },
+    "matrixClientEncryptionWarningTitle": "Upozornění na šifrování",
+    "@matrixClientEncryptionWarningTitle": {
+        "description": "Title of a warning about encryption",
+        "type": "text",
+        "placeholders": {}
+    },
+    "errorMatrixPassphrasesDontMatch": "Zadané fráze se neshodují",
+    "@errorMatrixPassphrasesDontMatch": {
+        "description": "Error when the user enters passphrase twice and the two dont match",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPromptPassphrase": "Zadejte bezpečnostní frázi:",
+    "@labelMatrixPromptPassphrase": {
+        "description": "Prompt the user to enter passphrase",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptOptions": "Možnosti",
+    "@promptOptions": {
+        "description": "Generic prompt for options, generally would be used to open a settings menu, extra details or similar",
+        "type": "text",
+        "placeholders": {}
+    },
+    "placeholderMatrixEnterSecutiyPhrase": "Zadejte bezpečnostní frázi",
+    "@placeholderMatrixEnterSecutiyPhrase": {
+        "description": "Placeholder text for the passphrase text box",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixExistingMessageBackupFound": "Byla nalezena existující záloha!",
+    "@labelMatrixExistingMessageBackupFound": {
+        "description": "Message to explain that existing backup has been found",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixExplainOnlineKeyBackup": "Online záloha klíče vám umožní obnovit historii zpráv v případě, že ztratíte přístup ke všem svým relacím",
+    "@labelMatrixExplainOnlineKeyBackup": {
+        "description": "Explains what the message backup does",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messagePlaceholderUserUpdatedName": "{user} si změnil(a) jméno",
+    "@messagePlaceholderUserUpdatedName": {
+        "description": "Message body for when a user updates their display name",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "labelSettingsTabManageAccounts": "Správa účtů",
+    "@labelSettingsTabManageAccounts": {
+        "description": "Label for the Manage Accounts settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptContinue": "Pokračovat",
+    "@promptContinue": {
+        "description": "Generic prompt to continue with some action",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsTabDeveloper": "Pro vývojáře",
+    "@labelSettingsTabDeveloper": {
+        "description": "Label for the Developer settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptPinMessage": "Připnout zprávu",
+    "@promptPinMessage": {
+        "description": "Label for the menu option to pin a message",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsCategoryAccount": "Účet",
+    "@labelSettingsCategoryAccount": {
+        "description": "Label for the settings category Account",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelEmojiPickerEmojiTab": "Emoji",
+    "@labelEmojiPickerEmojiTab": {
+        "description": "Label for the emoji tab in emoji picker",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptShowSticker": "Zobrazit samolepku",
+    "@promptShowSticker": {
+        "description": "Prompt to display a sticker, shown when media previews are disabled",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptSubmit": "Odeslat",
+    "@promptSubmit": {
+        "description": "Generic prompt to submit something",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messagePlaceholderUserRejectedInvite": "{user} odmítl(a) pozvání",
+    "@messagePlaceholderUserRejectedInvite": {
+        "description": "Message body for when a user rejected an invitation to a room",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "promptLogoutSingleAccount": "Odhlásit účet",
+    "@promptLogoutSingleAccount": {
+        "description": "Label for button in settings to log out of an account",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageEditedMarker": "(upraveno)",
+    "@messageEditedMarker": {
+        "description": "Short text to mark that a message has been edited",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptBack": "Zpět",
+    "@promptBack": {
+        "description": "Prompt text to go backwards, probably for navigation",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptUnpinMessage": "Odepnout zprávu",
+    "@promptUnpinMessage": {
+        "description": "Label for the menu option to unpin a message",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptCancelEventSend": "Zrušit odesílání",
+    "@promptCancelEventSend": {
+        "description": "When a message failed to send, this prompts to cancel sending the event",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptRetryEventSend": "Zkusit znovu",
+    "@promptRetryEventSend": {
+        "description": "When a message failed to send, this prompts to retry sending the event",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageFailedToDecrypt": "Nepodařilo se dešifrovat zprávu",
+    "@messageFailedToDecrypt": {
+        "description": "Placeholde text for when a message fails to decrypt",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messagePlaceholderSticker": "{user} poslal(a) nálepku",
+    "@messagePlaceholderSticker": {
+        "description": "Message body for when a user sends a sticker",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "promptAccept": "Přijmout",
+    "@promptAccept": {
+        "description": "Generic prompt to accept something, probably a request of some kind",
+        "type": "text",
+        "placeholders": {}
+    },
+    "errorMessageFailedToSend": "Odesílání selhalo",
+    "@errorMessageFailedToSend": {
+        "description": "Text that is placed below a message when the message fails to send",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelJumpToLatest": "Skočit na nejnovější",
+    "@labelJumpToLatest": {
+        "description": "Label for the button which jumps the room timeline view to the latest message",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageUserPinnedEvent": "{user} připnul(a) zprávu!",
+    "@messageUserPinnedEvent": {
+        "description": "Message body for when a user adds an event to the room's pinned messages",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "directMessagesListHeaderDesktop": "Přímé zprávy",
+    "@directMessagesListHeaderDesktop": {
+        "description": "The header for the direct messages list on desktop",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptReply": "Odpovědět",
+    "@promptReply": {
+        "description": "Generic prompt to reply to a message",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptAddReaction": "Přidat reakci",
+    "@promptAddReaction": {
+        "description": "Generic prompt to add reaction to a message",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptHome": "Domů",
+    "@promptHome": {
+        "description": "Generic prompt to go home, usually will go back to a main menu, or similar",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptApply": "Použít",
+    "@promptApply": {
+        "description": "Generic prompt to apply something, probably a setting",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptDelete": "Smazat",
+    "@promptDelete": {
+        "description": "Generic prompt to delete something",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptJoin": "Připojit se",
+    "@promptJoin": {
+        "description": "Generic prompt to join a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptConfirm": "Potvrdit",
+    "@promptConfirm": {
+        "description": "Generic prompt to confirm some action",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptDone": "Hotovo",
+    "@promptDone": {
+        "description": "Generic prompt to confirm that you are done",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptReset": "Resetovat",
+    "@promptReset": {
+        "description": "Generic prompt to reset something",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptEnable": "Zapnout",
+    "@promptEnable": {
+        "description": "Generic prompt to enable something",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptPoliteNo": "Ne, děkuji",
+    "@promptPoliteNo": {
+        "description": "Generic message to decline something, using nice manners :)",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelOr": "nebo",
+    "@labelOr": {
+        "description": "Text that is placed between two or more options: [button1] or [button2]",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageUserEmote": "*{user} {emote}",
+    "@messageUserEmote": {
+        "description": "Message to display when a user does a custom emote (/me)",
+        "type": "text",
+        "placeholders": {
+            "user": {},
+            "emote": {}
+        }
+    },
+    "messagePlaceholderUserLeftRoom": "{user} opustil(a) místnost",
+    "@messagePlaceholderUserLeftRoom": {
+        "description": "Message body for when a user leaves the room",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "messagePlaceholderUserUpdatedAvatar": "{user} si změnil(a) avatar",
+    "@messagePlaceholderUserUpdatedAvatar": {
+        "description": "Message body for when a user updates their avatar",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "messageUserAcceptedInvite": "{user} přijal(a) pozvání",
+    "@messageUserAcceptedInvite": {
+        "description": "Message body for when a user accepted an invitation to a room",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "matrixClientOlmMissingMessage": "libolm není nainstalován nebo nebyl nalezen. Šifrování typu End-to-End nebude k dispozici, dokud nebude tento problém vyřešen",
+    "@matrixClientOlmMissingMessage": {
+        "description": "Text that explains to the user that libolm dependency is not found",
+        "type": "text",
+        "placeholders": {}
+    },
+    "notificationModifiersPrivacyEnhanced": "Odeslat zprávu se zvýšeným soukromím",
+    "@notificationModifiersPrivacyEnhanced": {
+        "description": "Placeholder text to put in a notification when the user has privacy enhanced notifications enabled.",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageVerificationComplete": "Ověření dokončeno!",
+    "@messageVerificationComplete": {
+        "description": "Message to show when verification was completed successfully, and the session has been verified",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageLoginFailed": "Přihlášení se nezdařilo...",
+    "@messageLoginFailed": {
+        "description": "Generic text to show that an attempted login has failed",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelGifSearchToggle": "Vyhledávání GIFů",
+    "@labelGifSearchToggle": {
+        "description": "Label for the toggle for enabling and disabling gif search",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelGifSearchDescription": "Povolit vyhledávání a odesílání GIFů. Požadavky budou zprostředkovány prostřednictvím {proxyUrl}",
+    "@labelGifSearchDescription": {
+        "description": "Explains that gifs will be fetched via proxy",
+        "type": "text",
+        "placeholders": {
+            "proxyUrl": {}
+        }
+    },
+    "labelThemeAmoled": "AMOLED (černý)",
+    "@labelThemeAmoled": {
+        "description": "Label for the light theme",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixWarnResetKeysIsPermanent": "Resetování klíčů je trvalé a nelze jej vrátit zpět! Dobře si tento krok rozmyslete.",
+    "@labelMatrixWarnResetKeysIsPermanent": {
+        "description": "Explains that resetting keys is permanent, should emphasize that this isnt really a great idea",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelEmojiPickerGifTab": "GIFy",
+    "@labelEmojiPickerGifTab": {
+        "description": "Label for the gif search tab in the emoji picker",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messagePlaceholderUserCreatedRoom": "{user} vytvořil(a) místnost!",
+    "@messagePlaceholderUserCreatedRoom": {
+        "description": "Message body for when a user created the room",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "typingUsers": "{howMany,plural,=1{{user1} píše...}=2{{user1} a {user2} píší...}few{{user1}, {user2} a {user3} píší...}other{Píše více lidí...}}",
+    "@typingUsers": {
+        "description": "Text to display which users are currently typing",
+        "type": "text",
+        "placeholders": {
+            "howMany": {},
+            "user1": {},
+            "user2": {},
+            "user3": {}
+        }
+    },
+    "messagePlaceholderUserUpdatedNameDetailed": "{user} si změnil(a) jméno na \"{newName}\"",
+    "@messagePlaceholderUserUpdatedNameDetailed": {
+        "description": "Message body for when a user updates their display name",
+        "type": "text",
+        "placeholders": {
+            "user": {},
+            "newName": {}
+        }
+    },
+    "messagePlaceholderUserInvited": "{sender} pozval(a) uživatele {invitedUser}",
+    "@messagePlaceholderUserInvited": {
+        "description": "Message body for when a user invites another user to the room",
+        "type": "text",
+        "placeholders": {
+            "sender": {},
+            "invitedUser": {}
+        }
+    },
+    "messageUserRetractedInvite": "{sender} odvolal(a) pozvání pro {user}",
+    "@messageUserRetractedInvite": {
+        "description": "Message body for when a user's invitation to a room was withdrawn",
+        "type": "text",
+        "placeholders": {
+            "sender": {},
+            "user": {}
+        }
+    },
+    "messageUserBanned": "{sender} zabanoval(a) uživatele {user}",
+    "@messageUserBanned": {
+        "description": "Message body for when a user bans another user from the room",
+        "type": "text",
+        "placeholders": {
+            "sender": {},
+            "user": {}
+        }
+    },
+    "messageUserUnbanned": "{sender} odbanoval(a) uživatele {user}",
+    "@messageUserUnbanned": {
+        "description": "Message body for when a user reverts a ban of another user",
+        "type": "text",
+        "placeholders": {
+            "sender": {},
+            "user": {}
+        }
+    },
+    "setupPageBeforeYouBegin": "Než začnete...",
+    "@setupPageBeforeYouBegin": {
+        "description": "Title for first time setup page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptUsername": "Uživatelské jméno",
+    "@promptUsername": {
+        "description": "Placeholder text for username field on login form",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptPassword": "Heslo",
+    "@promptPassword": {
+        "description": "Placeholder text for password field on login form",
         "type": "text",
         "placeholders": {}
     }
