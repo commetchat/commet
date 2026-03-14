@@ -5,6 +5,7 @@ import 'package:commet/client/components/emoticon_recent/recent_emoticon_compone
 import 'package:commet/client/components/message_effects/message_effect_component.dart';
 import 'package:commet/client/components/photo_album_room/photo_album_room_component.dart';
 import 'package:commet/client/components/pinned_messages/pinned_messages_component.dart';
+import 'package:commet/client/components/polls/poll_component.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/matrix/timeline_events/matrix_timeline_event.dart';
@@ -87,6 +88,12 @@ class TimelineEventMenu {
         name: "promptRetryEventSend",
       );
 
+  String get promptEndPoll => Intl.message(
+        "End Poll",
+        desc: "Prompt the user to end a poll",
+        name: "promptEndPoll",
+      );
+
   TimelineEventMenu({
     required this.timeline,
     required this.event,
@@ -106,6 +113,7 @@ class TimelineEventMenu {
     bool hasEffect = false;
     bool canReply = false;
     bool canDeleteEvent = false;
+    bool canEndPoll = false;
 
     bool canRetrySend = event.status != TimelineEventStatus.synced;
     bool canCancelSend = event.status != TimelineEventStatus.synced;
@@ -114,6 +122,7 @@ class TimelineEventMenu {
     var emoticons = timeline.room.getComponent<RoomEmoticonComponent>();
     var pins = timeline.room.getComponent<PinnedMessagesComponent>();
     var photos = timeline.room.getComponent<PhotoAlbumRoom>();
+    var polls = timeline.client.getComponent<PollComponent>();
 
     if (event.status == TimelineEventStatus.synced) {
       canEditEvent = event is TimelineEventMessage &&
@@ -145,6 +154,11 @@ class TimelineEventMenu {
       canReplyInThread = !isThreadTimeline && event is TimelineEventMessage;
 
       canCopy = event is TimelineEventMessage;
+
+      if (polls?.isPollEvent(event) == true &&
+          polls?.canEndPoll(timeline.room, event, timeline) == true) {
+        canEndPoll = true;
+      }
 
       canEditPinState = pins?.canPinMessages == true &&
           (event is TimelineEventMessage ||
@@ -205,6 +219,17 @@ class TimelineEventMenu {
     }
 
     primaryActions = [
+      if (canEndPoll)
+        TimelineEventMenuEntry(
+          name: promptEndPoll,
+          icon: Icons.poll,
+          action: (context) async {
+            if (await AdaptiveDialog.confirmation(context,
+                    title: promptEndPoll,
+                    prompt: "Are you sure you want to end the poll?") ==
+                true) polls?.endPoll(timeline.room, event);
+          },
+        ),
       if (event is TimelineEventEncrypted)
         TimelineEventMenuEntry(
           name: "Retry Decrypt",

@@ -40,9 +40,11 @@ class CircleButton extends StatelessWidget {
             splashColor: Theme.of(context)
                 .colorScheme
                 .onSecondaryContainer, // Splash color
-            onTap: () {
-              onPressed?.call();
-            },
+            onTap: onPressed == null
+                ? null
+                : () {
+                    onPressed?.call();
+                  },
             child: SizedBox(
                 width: radius * 2,
                 height: radius * 2,
