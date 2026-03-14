@@ -7,9 +7,11 @@ import 'package:commet/client/components/photo_album_room/photo_album_room_compo
 import 'package:commet/client/components/pinned_messages/pinned_messages_component.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
+import 'package:commet/client/matrix/timeline_events/matrix_timeline_event.dart';
 import 'package:commet/client/timeline.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/client/timeline_events/timeline_event_emote.dart';
+import 'package:commet/client/timeline_events/timeline_event_encrypted.dart';
 import 'package:commet/client/timeline_events/timeline_event_message.dart';
 import 'package:commet/client/timeline_events/timeline_event_sticker.dart';
 import 'package:commet/main.dart';
@@ -19,6 +21,7 @@ import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/utils/autofill_utils.dart';
 import 'package:commet/utils/common_strings.dart';
 import 'package:commet/utils/download_utils.dart';
+import 'package:commet/utils/error_utils.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -202,6 +205,18 @@ class TimelineEventMenu {
     }
 
     primaryActions = [
+      if (event is TimelineEventEncrypted)
+        TimelineEventMenuEntry(
+          name: "Retry Decrypt",
+          icon: Icons.lock_open,
+          action: (context) {
+            var mx = (event as MatrixTimelineEvent).event;
+
+            ErrorUtils.tryRun(context, () async {
+              await mx.requestKey();
+            });
+          },
+        ),
       if (canRetrySend)
         TimelineEventMenuEntry(
           name: promptRetryEventSend,
