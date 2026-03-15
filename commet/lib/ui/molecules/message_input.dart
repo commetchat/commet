@@ -312,14 +312,21 @@ class MessageInputState extends State<MessageInput> {
     return (start, end);
   }
 
+  Debouncer sendDebouncer = Debouncer(delay: Duration(milliseconds: 20));
   void sendMessage() {
-    if (widget.attachments == null || widget.attachments!.isEmpty) {
-      if (controller.text.isEmpty) return;
-      if (controller.text.trim().isEmpty) return;
-    }
+    sendDebouncer.run(() {
+      if (widget.attachments == null || widget.attachments!.isEmpty) {
+        if (controller.text.isEmpty) return;
+        if (controller.text.trim().isEmpty) return;
+      }
 
-    widget.onSendMessage
-        ?.call(controller.text.trim(), overrideClient: senderOverride);
+      var result = widget.onSendMessage
+          ?.call(controller.text.trim(), overrideClient: senderOverride);
+
+      if (result == MessageInputSendResult.success) {
+        controller.text = "";
+      }
+    });
   }
 
   void showMoreAttachmentOptions() {}
@@ -908,31 +915,39 @@ class MessageInputState extends State<MessageInput> {
               child: Material(
                 child: AdaptiveContextMenu(
                   modal: true,
-                  items: [
-                    if (pollComponent != null)
-                      tiamat.ContextMenuItem(
-                        text: "Poll",
-                        icon: Icons.poll,
-                        onPressed: () async {
-                          var createArgs =
-                              await AdaptiveDialog.show<PollCreateArgs>(context,
-                                  title: "Create Poll",
-                                  builder: (context) => PollCreator());
+                  items: canSend
+                      ? List.empty()
+                      : [
+                          if (pollComponent != null)
+                            tiamat.ContextMenuItem(
+                              text: "Poll",
+                              icon: Icons.poll,
+                              onPressed: () async {
+                                var createArgs =
+                                    await AdaptiveDialog.show<PollCreateArgs>(
+                                        context,
+                                        title: "Create Poll",
+                                        builder: (context) => PollCreator());
 
-                          if (createArgs != null) {
-                            print(createArgs);
-                            pollComponent.createPoll(widget.room!, createArgs);
-                          }
-                        },
-                      )
-                  ],
+                                if (createArgs != null) {
+                                  print(createArgs);
+                                  pollComponent.createPoll(
+                                      widget.room!, createArgs);
+                                }
+                              },
+                            )
+                        ],
                   child: SizedBox(
                       width: widget.size,
                       height: widget.size,
                       child: tiamat.CircleButton(
                         icon: canSend ? Icons.send : Icons.more_horiz,
                         radius: widget.size * widget.iconScale,
-                        onPressed: canSend ? sendMessage : null,
+                        onPressed: canSend
+                            ? () {
+                                sendMessage();
+                              }
+                            : null,
                         color: Color.lerp(
                             Theme.of(context).colorScheme.primary.withAlpha(0),
                             Theme.of(context).colorScheme.primary,
