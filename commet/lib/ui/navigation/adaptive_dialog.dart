@@ -6,6 +6,7 @@ import 'package:commet/ui/molecules/user_panel.dart';
 import 'package:commet/utils/common_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:flutter/material.dart' as m;
@@ -169,6 +170,10 @@ class AdaptiveDialog {
     );
   }
 
+  static String get labelDialogConfirmation => Intl.message("Confirmation",
+      name: "labelDialogConfirmation",
+      desc: "label for the dialog which asks the user to confirm some action");
+
   static Future<bool?> confirmation(BuildContext context,
       {String prompt = "Are you sure?",
       String title = "Confirmation",
@@ -220,7 +225,7 @@ class AdaptiveDialog {
           ),
         ),
       );
-    }, title: title);
+    }, title: title == "Confirmation" ? labelDialogConfirmation : title);
   }
 
   static Future<String?> textPrompt(BuildContext context,
@@ -254,7 +259,9 @@ class AdaptiveDialog {
                 height: 10,
               ),
               tiamat.Button(
-                text: submitText,
+                text: submitText == "Submit"
+                    ? CommonStrings.promptSubmit
+                    : submitText,
                 onTap: () {
                   print(result);
                   Navigator.of(context).pop(result);
@@ -338,7 +345,7 @@ class __SelectMultipleViewState<T> extends State<_SelectMultipleView<T>> {
                   ))
               .toList(),
           tiamat.Button(
-            text: "Submit",
+            text: CommonStrings.promptSubmit,
             onTap: () => Navigator.of(context).pop(selection),
           )
         ]);

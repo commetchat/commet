@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2026-03-15T23:08:47.349121",
+  "@@last_modified": "2026-03-15T23:33:18.647923",
   "labelRoomsList": "Rooms",
   "@labelRoomsList": {
     "description": "Header label for the list of rooms",
@@ -59,6 +59,99 @@
   "promptOpenDirectMessage": "Message",
   "@promptOpenDirectMessage": {
     "description": "Prompt on the button to open a direct message with another user",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptProfileChangeBanner": "Change Banner",
+  "@promptProfileChangeBanner": {
+    "description": "Prompt to change the banner on the user's profile",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptProfileSetStatus": "Set Status",
+  "@promptProfileSetStatus": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptProfileClearStatus": "Clear Status",
+  "@promptProfileClearStatus": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptProfileSetBadges": "Set Badges",
+  "@promptProfileSetBadges": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptProfileSetBio": "Set Bio",
+  "@promptProfileSetBio": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptProfileClearBio": "Clear Bio",
+  "@promptProfileClearBio": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptProfileShareTimezone": "Share Timezone",
+  "@promptProfileShareTimezone": {
+    "description": "Prompt the user to add their current timezone to their user profile",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptProfileClearTimezone": "Remove Timezone",
+  "@promptProfileClearTimezone": {
+    "description": "Prompt to remove the shared timezone from a users profile",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptProfileEditColorScheme": "Edit Color Scheme",
+  "@promptProfileEditColorScheme": {
+    "description": "Prompt to edit the color scheme of the user's own profile",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptProfileSetColorOverride": "Set Color Override",
+  "@promptProfileSetColorOverride": {
+    "description": "Prompt to override the display color of a user",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptProfileClearColorOverride": "Clear Color Override",
+  "@promptProfileClearColorOverride": {
+    "description": "Prompt to remove an override of the display color of a user",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptProfileShowRawProfile": "Show Raw Profile",
+  "@promptProfileShowRawProfile": {
+    "description": "Show the raw data of a user profile, typically this is hidden behind developer mode",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelConfirmShareTimezone": "Are you sure you want to share your timezone '{timezone}' publicly?",
+  "@labelConfirmShareTimezone": {
+    "description": "Ask the user to confirm that they want to share their current timezone as public information on their profile",
+    "type": "text",
+    "placeholders": {
+      "timezone": {}
+    }
+  },
+  "promptProfileWriteBioHint": "Write about yourself",
+  "@promptProfileWriteBioHint": {
+    "description": "Hint text for the profile bio editor",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelProfileYourBadges": "Your Badges",
+  "@labelProfileYourBadges": {
+    "description": "label for the ui to select which badges to display on the users profile",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelProfileNoBadges": "You don't have any badges. You can get badges by donating and supporting development of Commet",
+  "@labelProfileNoBadges": {
+    "description": "text that is shown when the user has no badges, and explain where they can get badges",
     "type": "text",
     "placeholders": {}
   },
@@ -1622,6 +1715,12 @@
     "type": "text",
     "placeholders": {}
   },
+  "labelDialogConfirmation": "Confirmation",
+  "@labelDialogConfirmation": {
+    "description": "label for the dialog which asks the user to confirm some action",
+    "type": "text",
+    "placeholders": {}
+  },
   "messageEditedMarker": "(Edited)",
   "@messageEditedMarker": {
     "description": "Short text to mark that a message has been edited",
@@ -1906,6 +2005,12 @@
   "promptBack": "Back",
   "@promptBack": {
     "description": "Prompt text to go backwards, probably for navigation",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptSearch": "Search",
+  "@promptSearch": {
+    "description": "Prompt the user to search for something, usually shown as the hint in a text box",
     "type": "text",
     "placeholders": {}
   },

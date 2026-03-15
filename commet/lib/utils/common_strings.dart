@@ -103,6 +103,11 @@ class CommonStrings {
       desc: "Prompt text to go backwards, probably for navigation",
       name: "promptBack");
 
+  static String get promptSearch => Intl.message("Search",
+      desc:
+          "Prompt the user to search for something, usually shown as the hint in a text box",
+      name: "promptSearch");
+
   static String get promptCopy =>
       Intl.message("Copy", desc: "Prompt to copy text", name: "promptCopy");
 

@@ -99,6 +99,52 @@ class _UserProfileViewState extends State<UserProfileView> {
       desc: "Prompt on the button to open a direct message with another user",
       name: "promptOpenDirectMessage");
 
+  String get promptProfileChangeBanner => Intl.message("Change Banner",
+      desc: "Prompt to change the banner on the user's profile",
+      name: "promptProfileChangeBanner");
+
+  String get promptProfileSetStatus =>
+      Intl.message("Set Status", name: "promptProfileSetStatus");
+
+  String get promptProfileClearStatus =>
+      Intl.message("Clear Status", name: "promptProfileClearStatus");
+
+  String get promptProfileSetBadges =>
+      Intl.message("Set Badges", name: "promptProfileSetBadges");
+
+  String get promptProfileSetBio =>
+      Intl.message("Set Bio", name: "promptProfileSetBio");
+
+  String get promptProfileClearBio =>
+      Intl.message("Clear Bio", name: "promptProfileClearBio");
+
+  String get promptProfileShareTimezone => Intl.message("Share Timezone",
+      name: "promptProfileShareTimezone",
+      desc:
+          "Prompt the user to add their current timezone to their user profile");
+
+  String get promptProfileClearTimezone => Intl.message("Remove Timezone",
+      name: "promptProfileClearTimezone",
+      desc: "Prompt to remove the shared timezone from a users profile");
+
+  String get promptProfileEditColorScheme => Intl.message("Edit Color Scheme",
+      name: "promptProfileEditColorScheme",
+      desc: "Prompt to edit the color scheme of the user's own profile");
+
+  String get promptProfileSetColorOverride => Intl.message("Set Color Override",
+      name: "promptProfileSetColorOverride",
+      desc: "Prompt to override the display color of a user");
+
+  String get promptProfileClearColorOverride =>
+      Intl.message("Clear Color Override",
+          name: "promptProfileClearColorOverride",
+          desc: "Prompt to remove an override of the display color of a user");
+
+  String get promptProfileShowRawProfile => Intl.message("Show Raw Profile",
+      name: "promptProfileShowRawProfile",
+      desc:
+          "Show the raw data of a user profile, typically this is hidden behind developer mode");
+
   bool editingColorScheme = false;
 
   Timer? timezoneTimer;
@@ -442,56 +488,56 @@ class _UserProfileViewState extends State<UserProfileView> {
     return [
       if (widget.isSelf)
         tiamat.ContextMenuItem(
-            text: "Change Banner",
+            text: promptProfileChangeBanner,
             onPressed: () => widget.onSetBanner?.call(),
             icon: Icons.image),
       if (widget.isSelf)
         tiamat.ContextMenuItem(
-            text: "Set Status",
+            text: promptProfileSetStatus,
             onPressed: () => widget.onSetStatus?.call(),
             icon: Icons.short_text),
       if (widget.isSelf && widget.presence?.message != null)
         tiamat.ContextMenuItem(
-            text: "Clear Status",
+            text: promptProfileClearStatus,
             onPressed: () => widget.clearStatus?.call(),
             icon: Icons.delete),
       if (widget.isSelf)
         tiamat.ContextMenuItem(
-            text: "Set Badges",
+            text: promptProfileSetBadges,
             onPressed: () => widget.editBadges?.call(),
             icon: Icons.star),
       if (widget.isSelf)
         tiamat.ContextMenuItem(
-            text: "Set Bio",
+            text: promptProfileSetBio,
             onPressed: () => widget.setBio?.call(),
             icon: Icons.text_snippet),
       if (widget.isSelf && widget.bio != null)
         tiamat.ContextMenuItem(
-            text: "Clear Bio",
+            text: promptProfileClearBio,
             onPressed: () => widget.clearBio?.call(),
             icon: Icons.delete),
       if (widget.isSelf)
         tiamat.ContextMenuItem(
-            text: "Share Current Timezone",
+            text: promptProfileShareTimezone,
             onPressed: () => widget.shareCurrentTimezone?.call(),
             icon: Icons.share_arrival_time),
       if (widget.isSelf && widget.timezone != null)
         tiamat.ContextMenuItem(
-            text: "Remove Timezone",
+            text: promptProfileClearTimezone,
             onPressed: () => widget.removeTimezone?.call(),
             icon: Icons.timer_off),
       if (widget.isSelf)
         tiamat.ContextMenuItem(
-            text: "Edit Color Scheme",
+            text: promptProfileEditColorScheme,
             onPressed: () => setState(() {
                   editingColorScheme = true;
                 }),
             icon: Icons.color_lens),
       tiamat.ContextMenuItem(
-          text: "Set Color Override",
+          text: promptProfileSetColorOverride,
           onPressed: () async {
             var color = await AdaptiveDialog.show<Color>(
-              title: "Color Override",
+              title: promptProfileSetColorOverride,
               context,
               builder: (context) {
                 return SizedBox(
@@ -536,14 +582,14 @@ class _UserProfileViewState extends State<UserProfileView> {
           icon: Icons.colorize),
       if (widget.hasColorOverride)
         tiamat.ContextMenuItem(
-            text: "Clear Color Override",
+            text: promptProfileClearColorOverride,
             icon: Icons.remove,
             onPressed: () async {
               widget.setColorOverride?.call(null);
             }),
       if (preferences.developerMode.value)
         tiamat.ContextMenuItem(
-            text: "Show Raw Profile",
+            text: promptProfileShowRawProfile,
             onPressed: () => widget.showSource?.call(),
             icon: Icons.code),
     ];
