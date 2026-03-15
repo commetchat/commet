@@ -89,10 +89,10 @@ class UserProfileView extends StatefulWidget {
   final Future<void> Function(Color?)? setColorOverride;
 
   @override
-  State<UserProfileView> createState() => _UserProfileViewState();
+  State<UserProfileView> createState() => UserProfileViewState();
 }
 
-class _UserProfileViewState extends State<UserProfileView> {
+class UserProfileViewState extends State<UserProfileView> {
   bool isLoadingDirectMessage = false;
 
   String get promptOpenDirectMessage => Intl.message("Message",
@@ -103,7 +103,7 @@ class _UserProfileViewState extends State<UserProfileView> {
       desc: "Prompt to change the banner on the user's profile",
       name: "promptProfileChangeBanner");
 
-  String get promptProfileSetStatus =>
+  static String get promptProfileSetStatus =>
       Intl.message("Set Status", name: "promptProfileSetStatus");
 
   String get promptProfileClearStatus =>
