@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-04-12T14:27:37.583027",
+  "@@last_modified": "2026-03-15T23:08:47.349121",
   "labelRoomsList": "Rooms",
   "@labelRoomsList": {
     "description": "Header label for the list of rooms",
@@ -134,6 +134,12 @@
     "type": "text",
     "placeholders": {}
   },
+  "labelSpaceVisibilityRestricted": "Restricted space",
+  "@labelSpaceVisibilityRestricted": {
+    "description": "Label to display that the space is restricted",
+    "type": "text",
+    "placeholders": {}
+  },
   "labelSpaceGettingText": "Welcome to \n\n # {spaceName}",
   "@labelSpaceGettingText": {
     "description": "Greeting to the space, supports markdown formatting",
@@ -148,6 +154,14 @@
     "type": "text",
     "placeholders": {}
   },
+  "incomingCallMessage": "Incoming call from {callingUserName}!",
+  "@incomingCallMessage": {
+    "description": "Label to display that a user is calling",
+    "type": "text",
+    "placeholders": {
+      "callingUserName": {}
+    }
+  },
   "promptAttachmentProcessingSendOriginal": "Send Original",
   "@promptAttachmentProcessingSendOriginal": {
     "description": "Prompt text for the option to send a file in its original state, without any further processing such as removing metadata",
@@ -160,57 +174,89 @@
     "type": "text",
     "placeholders": {}
   },
+  "labelTextChatDescription": "Simple text chat, with all the features you could want! Send messages, media, stickers, GIFs and more!",
+  "@labelTextChatDescription": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelVoiceChatDescription": "A dedicated room for voice calls, for two or more people",
+  "@labelVoiceChatDescription": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelCalendarDescription": "Create a shared calendar to keep track of your plans, and import your schedule from other calendars to let your friends know when you are busy.",
+  "@labelCalendarDescription": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelCreateRoom": "Create Room",
+  "@labelCreateRoom": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelPickExistingRoom": "Existing Room",
+  "@labelPickExistingRoom": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelJoinRoom": "Join Room",
+  "@labelJoinRoom": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomTypeTextChat": "Text Chat",
+  "@labelRoomTypeTextChat": {
+    "description": "Label for creating a regular text based chat room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomTypeVoiceChat": "Voice Chat",
+  "@labelRoomTypeVoiceChat": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomTypePhotoAlbum": "Photo Album",
+  "@labelRoomTypePhotoAlbum": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomTypeCalendar": "Calendar",
+  "@labelRoomTypeCalendar": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelRoomTypeSpace": "Space",
+  "@labelRoomTypeSpace": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptConfirmRoomJoin": "Join Room!",
+  "@promptConfirmRoomJoin": {
+    "description": "Label for a button which confirms the joining of a room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptRoomAddress": "Room Address",
+  "@promptRoomAddress": {
+    "description": "Short label to prompt for the input of a room address",
+    "type": "text",
+    "placeholders": {}
+  },
+  "placeholderRoomAlias": "#awesome-room",
+  "@placeholderRoomAlias": {
+    "description": "Placeholder / Example for a room alias.",
+    "type": "text",
+    "placeholders": {}
+  },
   "promptRoomName": "Room Name",
   "@promptRoomName": {
     "description": "Prompt to enter a room name, placeholder text for text input",
     "type": "text",
     "placeholders": {}
   },
-  "promptSpaceName": "Space Name",
-  "@promptSpaceName": {
-    "description": "Prompt to enter a space name, placeholder text for text input",
-    "type": "text",
-    "placeholders": {}
-  },
   "promptTopic": "Topic (Optional)",
   "@promptTopic": {
     "description": "Prompt to enter a topic for room or space, specifying that doing so is optional",
-    "type": "text",
-    "placeholders": {}
-  },
-  "roomVisibilityPrivateExplanation": "This room will only be accessible by invitation",
-  "@roomVisibilityPrivateExplanation": {
-    "description": "Explains what 'private' room visibility means",
-    "type": "text",
-    "placeholders": {}
-  },
-  "roomVisibilityPublicExplanation": "This room will be publically accessible by anyone on the internet",
-  "@roomVisibilityPublicExplanation": {
-    "description": "Explains what 'public' visibility means",
-    "type": "text",
-    "placeholders": {}
-  },
-  "spaceVisibilityPrivateExplanation": "This room will only be accessible by invitation",
-  "@spaceVisibilityPrivateExplanation": {
-    "description": "Explains what 'private' space visibility means",
-    "type": "text",
-    "placeholders": {}
-  },
-  "spaceVisibilityPublicExplanation": "This room will be publically accessible by anyone on the internet",
-  "@spaceVisibilityPublicExplanation": {
-    "description": "Explains what 'public' space visibility means",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelVisibilityPrivate": "Private",
-  "@labelVisibilityPrivate": {
-    "description": "Short label for room visibility private",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelVisibilityPublic": "Public",
-  "@labelVisibilityPublic": {
-    "description": "Short label for room visibility public",
     "type": "text",
     "placeholders": {}
   },
@@ -226,93 +272,50 @@
     "type": "text",
     "placeholders": {}
   },
+  "roomVisibilityPrivateExplanation": "This room will only be accessible by invitation",
+  "@roomVisibilityPrivateExplanation": {
+    "description": "Explains what 'private' room visibility means",
+    "type": "text",
+    "placeholders": {}
+  },
+  "roomVisibilityPublicExplanation": "This room will be publically accessible by anyone on the internet",
+  "@roomVisibilityPublicExplanation": {
+    "description": "Explains what 'public' visibility means",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelVisibilityPrivate": "Private",
+  "@labelVisibilityPrivate": {
+    "description": "Short label for room visibility private",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelVisibilityPublic": "Public",
+  "@labelVisibilityPublic": {
+    "description": "Short label for room visibility public",
+    "type": "text",
+    "placeholders": {}
+  },
+  "roomVisibilityRestrictedExplanation": "This room will be available to anyone who is a member of it's parent spaces",
+  "@roomVisibilityRestrictedExplanation": {
+    "description": "Explains what 'restricted' visibility means",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelVisibilityRestricted": "Restricted",
+  "@labelVisibilityRestricted": {
+    "description": "Short label for room visibility restricted",
+    "type": "text",
+    "placeholders": {}
+  },
   "promptConfirmRoomCreation": "Create Room!",
   "@promptConfirmRoomCreation": {
     "description": "Label for a button which confirms the creation of a room",
     "type": "text",
     "placeholders": {}
   },
-  "promptConfirmSpaceCreation": "Create Space!",
-  "@promptConfirmSpaceCreation": {
-    "description": "Label for a button which confirms the creation of a space",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptConfirmRoomJoin": "Join Room!",
-  "@promptConfirmRoomJoin": {
-    "description": "Label for a button which confirms the joining of a room",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptConfirmSpaceJoin": "Join Space!",
-  "@promptConfirmSpaceJoin": {
-    "description": "Label for a button which confirms the joining of a space",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptRoomAddress": "Room Address:",
-  "@promptRoomAddress": {
-    "description": "Short label to prompt for the input of a room address",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptSpaceAddress": "Space Address:",
-  "@promptSpaceAddress": {
-    "description": "Short label to prompt for the input of a space address",
-    "type": "text",
-    "placeholders": {}
-  },
-  "placeholderRoomAlias": "#awesome-room",
-  "@placeholderRoomAlias": {
-    "description": "Placeholder / Example for a room alias.",
-    "type": "text",
-    "placeholders": {}
-  },
-  "placeholderSpaceAlias": "#awesome-space",
-  "@placeholderSpaceAlias": {
-    "description": "Placeholder / Example for a space alias.",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelCouldNotLoadRoomPreview": "Could not load a preview of the room",
-  "@labelCouldNotLoadRoomPreview": {
-    "description": "Error message for when a room preview was not able to be loaded",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptAddSelectedRooms": "Add selected rooms",
-  "@promptAddSelectedRooms": {
-    "description": "Prompt to add the selected rooms to a space",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptCreateNewSpace": "Create new space",
-  "@promptCreateNewSpace": {
-    "description": "Prompt to create a new space",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptJoinExistingSpace": "Join existing space",
-  "@promptJoinExistingSpace": {
-    "description": "Prompt to join a space which already exists",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptCreateNewRoom": "Create new room",
-  "@promptCreateNewRoom": {
-    "description": "Prompt to create a new room",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptJoinExistingRoom": "Join existing room",
-  "@promptJoinExistingRoom": {
-    "description": "Prompt to join a room which already exists",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptUseExistingRoom": "Use existing room",
-  "@promptUseExistingRoom": {
-    "description": "Button text to choose to use an existing room when adding a room to a space",
+  "labelPhotoAlbumDescription": "Share photos and videos with your friends or community!",
+  "@labelPhotoAlbumDescription": {
     "type": "text",
     "placeholders": {}
   },
@@ -363,12 +366,6 @@
   "messageVerificationComplete": "Verification Complete!",
   "@messageVerificationComplete": {
     "description": "Message to show when verification was completed successfully, and the session has been verified",
-    "type": "text",
-    "placeholders": {}
-  },
-  "setupPageBeforeYouBegin": "Before you begin...",
-  "@setupPageBeforeYouBegin": {
-    "description": "Title for first time setup page",
     "type": "text",
     "placeholders": {}
   },
@@ -426,15 +423,75 @@
     "type": "text",
     "placeholders": {}
   },
-  "messageLoginError": "An error occured",
-  "@messageLoginError": {
-    "description": "A generic error message to convey that an error occured when attempting to login",
-    "type": "text",
-    "placeholders": {}
-  },
   "messageAlreadyLoggedIn": "You have already logged in to this account",
   "@messageAlreadyLoggedIn": {
     "description": "An error message displayed when the user attempts to add an account which has already been logged in to on this device",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageInvalidUsernameOrPassword": "Invalid username or password",
+  "@messageInvalidUsernameOrPassword": {
+    "description": "An error message displayed when the user attempts to log into an account using the wrong username/password combination",
+    "type": "text",
+    "placeholders": {}
+  },
+  "titleConfirmingDonation": "Confirming Donation",
+  "@titleConfirmingDonation": {
+    "description": "Title for the popup shown while waiting for the user to finish the donation flow, which checks for completion of the donation",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelDonationInstructions": "Follow the instructions in your browser. Please be patient, it may take a minute or two for your awards to appear once your donation has been received.",
+  "@labelDonationInstructions": {
+    "description": "Explains to the user to follow the donation instructions shown in the opened web page. Also asks for patience if the confirmation is taking a while to complete after donating",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelDonationConfirmationSucceeded": "Thank you for your generous donation!",
+  "@labelDonationConfirmationSucceeded": {
+    "description": "Text that is shown when the donation flow was successful, and the donation has been confirmed",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelDonationConfirmationFailed": "Could not find any donations :( Please consider donating to support development of Commet!",
+  "@labelDonationConfirmationFailed": {
+    "description": "Text that is shown when the donation flow was failed, and the no donation was found",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelConfirmCancelDonationConfirmation": "Are you sure you want to dismiss without accepting any award?",
+  "@labelConfirmCancelDonationConfirmation": {
+    "description": "Text that is shown when the user attempts to cancel the donation confirmation flow before the confirmation has finished",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelNoAccount": "No Account",
+  "@labelNoAccount": {
+    "description": "When the user is prompted to select an account to use for some action, this option is shown when the action can be completed without picking any account",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptPickDonationAccount": "Pick an account to donate with",
+  "@promptPickDonationAccount": {
+    "description": "Prompt the user to select an account to link to their donation",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelDonateAnonymously": "Donate without linking to an account",
+  "@labelDonateAnonymously": {
+    "description": "Prompt the user to donate to the project, without linking to their user account",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptDonate": "Donate",
+  "@promptDonate": {
+    "description": "Prompt the user to donate to the project",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptDonationsRefreshAwards": "Refresh Awards",
+  "@promptDonationsRefreshAwards": {
+    "description": "Prompt the user to refresh any awards they may have received for donating to the project",
     "type": "text",
     "placeholders": {}
   },
@@ -520,9 +577,21 @@
     "type": "text",
     "placeholders": {}
   },
+  "labelSettingsAppExperiments": "Experiments",
+  "@labelSettingsAppExperiments": {
+    "description": "Label for the App Experiments settings page",
+    "type": "text",
+    "placeholders": {}
+  },
   "labelSettingsAppNotifications": "Notifications",
   "@labelSettingsAppNotifications": {
     "description": "Label for the App notifications settings page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsShortcuts": "Shortcuts",
+  "@labelSettingsShortcuts": {
+    "description": "Label for the Keyboard shortcuts settings page",
     "type": "text",
     "placeholders": {}
   },
@@ -535,6 +604,41 @@
   "labelSettingsCategoryApp": "App Settings",
   "@labelSettingsCategoryApp": {
     "description": "Label for the settings category of the overall App settings/",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsCategoryVoiceAndVideo": "Voice and Video",
+  "@labelSettingsCategoryVoiceAndVideo": {
+    "description": "Label for the settings category related to voice and video calls",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSystemKeyboardShortcutsOutsourceDescription": "In your current environment, keyboard shortcuts must be configured in your system settings.",
+  "@labelSystemKeyboardShortcutsOutsourceDescription": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptSystemKeyboardShortcutsMoreInfo": "More Info",
+  "@promptSystemKeyboardShortcutsMoreInfo": {
+    "description": "Prompt for a button on the system keyboard shortcut page, which opens a webpage that provides further information about keyboard shortcuts setup",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelConfigureKeyboardShortcuts": "Configure Shortcuts",
+  "@labelConfigureKeyboardShortcuts": {
+    "description": "Label for the tile containing settings to configure system wide keyboard shortcuts, for muting, unmuting etc",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptShortcutsPressAKeyCombination": "Press a key combination",
+  "@promptShortcutsPressAKeyCombination": {
+    "description": "Prompt the user to input a key combination, which is recorded and used to activate a shortcut",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptShortcutsClearKeyboardShortcut": "Clear Shortcut",
+  "@promptShortcutsClearKeyboardShortcut": {
+    "description": "Prompt the user to clear a key combination shortcut",
     "type": "text",
     "placeholders": {}
   },
@@ -588,6 +692,24 @@
     "type": "text",
     "placeholders": {}
   },
+  "labelAppBehaviourTitle": "App Behaviour",
+  "@labelAppBehaviourTitle": {
+    "description": "Header for the app behaviour section in settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelAskBeforeDeletingMessageToggle": "Ask before deleting messages",
+  "@labelAskBeforeDeletingMessageToggle": {
+    "description": "Label for the toggle for enabling and disabling message deletion confirmation",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelAskBeforeDeletingMessageDescription": "Enables the pop-up asking for confirmation when deleting a message.",
+  "@labelAskBeforeDeletingMessageDescription": {
+    "description": "Label describing what 'asking before deleting messages' even means",
+    "type": "text",
+    "placeholders": {}
+  },
   "labelMessageEffectsTitle": "Message Effects",
   "@labelMessageEffectsTitle": {
     "description": "Header for the settings tile for message effects, such as confetti",
@@ -603,6 +725,12 @@
   "labelMediaPreviewSettingsTitle": "Media Preview",
   "@labelMediaPreviewSettingsTitle": {
     "description": "Header for the settings tile for for media preview toggles",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMediaSettings": "Media",
+  "@labelMediaSettings": {
+    "description": "Header for the settings tile for for media",
     "type": "text",
     "placeholders": {}
   },
@@ -648,6 +776,92 @@
     "type": "text",
     "placeholders": {}
   },
+  "headerVoipSettingsCallConnection": "Call Connection",
+  "@headerVoipSettingsCallConnection": {
+    "description": "Header for the settings tile containing configuration relating to the initial connection of a call",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelVoipSettingsStunFallback": "Use STUN Fallback",
+  "@labelVoipSettingsStunFallback": {
+    "description": "label for the setting to enable STUN callback for connecting calls",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelVoipSettingsStunFallbackDescription": "Calls cannot be connected without a STUN server. If your homeserver does not provide a STUN server, fall back to using '{stunServer}'. Your IP address will be revealed to this server when establishing calls",
+  "@labelVoipSettingsStunFallbackDescription": {
+    "type": "text",
+    "placeholders": {
+      "stunServer": {}
+    }
+  },
+  "headerVoipSettingsDevices": "Devices",
+  "@headerVoipSettingsDevices": {
+    "description": "Header for settings tile containing device configuration, for default audio / video inputs",
+    "type": "text",
+    "placeholders": {}
+  },
+  "headerVoipSettingsStreamSettings": "Stream Settings",
+  "@headerVoipSettingsStreamSettings": {
+    "description": "Header for settings tile containing stream quality configuration",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelVoipUseSimulcast": "Use Simulcast",
+  "@labelVoipUseSimulcast": {
+    "description": "label for setting toggle to enable use of Simulcast",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelVoipUseSimulcastDescription": "Uploads your streams at multiple different levels of quality, so other users can decide which to use. This will use more bandwidth and system resources.",
+  "@labelVoipUseSimulcastDescription": {
+    "description": "description for setting toggle to enable use of Simulcast",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelVoipStreamMaximumBitrate": "Stream Maximum Bitrate",
+  "@labelVoipStreamMaximumBitrate": {
+    "description": "label for setting slider to set the maximum bitrate that can be used when streaming",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelVoipStreamMaximumBitrateDescription": "Determines the overall quality of your stream. Higher is better, but also uses more resources",
+  "@labelVoipStreamMaximumBitrateDescription": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelVoipStreamFramerate": "Stream Framerate",
+  "@labelVoipStreamFramerate": {
+    "description": "label for setting slider to set the framerate at which the screen should be captured when streaming",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelVoipStreamFramerateDescription": "Target frames per second for screen sharing. Higher has smoother motion, but maybe reduce visual clarity.",
+  "@labelVoipStreamFramerateDescription": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelVoipStreamPreferredCodec": "Preferred Stream Codec",
+  "@labelVoipStreamPreferredCodec": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelVoipStreamPreferredCodecDescription": "Choose which format to encode your stream in. Different codecs may run faster on certain devices, and may be unsupported on others. Most devices should support vp8 and h264.",
+  "@labelVoipStreamPreferredCodecDescription": {
+    "description": "Explains the preferred stream codec setting. This is just a preference, and the picked codec may not be used if the user's device does not support it",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelVoipStreamResolution": "Stream Resolution",
+  "@labelVoipStreamResolution": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelVoipStreamResolutionDescription": "The resolution of your stream, higher is better",
+  "@labelVoipStreamResolutionDescription": {
+    "type": "text",
+    "placeholders": {}
+  },
   "labelSettingsAppTheme": "Theme",
   "@labelSettingsAppTheme": {
     "description": "Label for theme section of app appearance",
@@ -684,9 +898,27 @@
     "type": "text",
     "placeholders": {}
   },
+  "labelShowRoomPreviewsInSpaceSidebar": "Show unjoined rooms in sidebar",
+  "@labelShowRoomPreviewsInSpaceSidebar": {
+    "description": "Label for enabling using the preview list in the space sidebar",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelShowRoomPreviewsInSpaceSidebarDescription": "When there are rooms which you have not joined in a space, show them in the sidebar with the rest of the rooms in the space",
+  "@labelShowRoomPreviewsInSpaceSidebarDescription": {
+    "description": "Description for enabling using the preview list in the space sidebar",
+    "type": "text",
+    "placeholders": {}
+  },
   "labelSettingsAppLogs": "Logs",
   "@labelSettingsAppLogs": {
     "description": "Label for the logs settings page, usually hidden unless developer mode is turned on",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSettingsAppInfo": "About",
+  "@labelSettingsAppInfo": {
+    "description": "Label for the app info settings page",
     "type": "text",
     "placeholders": {}
   },
@@ -711,6 +943,34 @@
   "labelRoomSettingsNotifications": "Notifications",
   "@labelRoomSettingsNotifications": {
     "description": "Label for the notifications section in room settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelDefaultReadReceiptsOption": "Use global preference ({pref})",
+  "@labelDefaultReadReceiptsOption": {
+    "description": "Label to use the global preference, showing the current global preference value",
+    "type": "text",
+    "placeholders": {
+      "pref": {}
+    }
+  },
+  "labelDefaultTypingIndicatorsOption": "Use global preference ({pref})",
+  "@labelDefaultTypingIndicatorsOption": {
+    "description": "Label to use the global preference, showing the current global preference value",
+    "type": "text",
+    "placeholders": {
+      "pref": {}
+    }
+  },
+  "labelReadReceiptsTitle": "Read receipts",
+  "@labelReadReceiptsTitle": {
+    "description": "Label for the toggle for enabling and disabling public read receipts",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelTypingIndicatorTitle": "Typing indicators",
+  "@labelTypingIndicatorTitle": {
+    "description": "Label for the toggle for enabling and disabling typing indicators",
     "type": "text",
     "placeholders": {}
   },
@@ -912,6 +1172,30 @@
     "type": "text",
     "placeholders": {}
   },
+  "labelMatrixPermissionsJoinCallTitle": "Join Call",
+  "@labelMatrixPermissionsJoinCallTitle": {
+    "description": "Title for the permission to allow users to join a call in a room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsJoinCallDescription": "Allow users to join an ongoing call in this room",
+  "@labelMatrixPermissionsJoinCallDescription": {
+    "description": "Description for the permission to allow users to join a call in a room",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsAddCalendarEventTitle": "Edit Calendar Events",
+  "@labelMatrixPermissionsAddCalendarEventTitle": {
+    "description": "Title for the permission to allow users to edit the calendar",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelMatrixPermissionsAddCalendarEventDescription": "Allow users to edit events in the calendar",
+  "@labelMatrixPermissionsAddCalendarEventDescription": {
+    "description": "Description for the permission to allow users to create an event on the calendar",
+    "type": "text",
+    "placeholders": {}
+  },
   "labelRoomSettingsGeneral": "General",
   "@labelRoomSettingsGeneral": {
     "description": "Label for general room settings",
@@ -954,6 +1238,12 @@
     "type": "text",
     "placeholders": {}
   },
+  "labelRoomSettingsCalendar": "Calendar",
+  "@labelRoomSettingsCalendar": {
+    "description": "Label for room calendar settings",
+    "type": "text",
+    "placeholders": {}
+  },
   "labelSpaceSettingsGeneral": "General",
   "@labelSpaceSettingsGeneral": {
     "description": "Label for general space settings",
@@ -987,6 +1277,18 @@
   "labelSettingsCategorySpace": "Space Settings",
   "@labelSettingsCategorySpace": {
     "description": "Label for the overall space settings category",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceSettingsSecurity": "Security",
+  "@labelSpaceSettingsSecurity": {
+    "description": "Label for space security settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelSpaceSettingsMembers": "Members",
+  "@labelSpaceSettingsMembers": {
+    "description": "Label for space member settings",
     "type": "text",
     "placeholders": {}
   },
@@ -1242,6 +1544,12 @@
     "type": "text",
     "placeholders": {}
   },
+  "labelSettingsTabPrivacy": "Privacy",
+  "@labelSettingsTabPrivacy": {
+    "description": "Label for the Privacy settings page",
+    "type": "text",
+    "placeholders": {}
+  },
   "labelSettingsTabSecurity": "Security",
   "@labelSettingsTabSecurity": {
     "description": "Label for the Security settings page",
@@ -1263,6 +1571,36 @@
   "labelSettingsCategoryAccount": "Account",
   "@labelSettingsCategoryAccount": {
     "description": "Label for the settings category Account",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelChatPrivacyTitle": "Chat Privacy",
+  "@labelChatPrivacyTitle": {
+    "description": "Header for the chat privacy section in settings",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelPublicReadReceiptsToggle": "Read receipts",
+  "@labelPublicReadReceiptsToggle": {
+    "description": "Label for the toggle for enabling and disabling sending read receipts",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelPublicReadReceiptsDescription": "Let other members of a room know when you have read their messages.",
+  "@labelPublicReadReceiptsDescription": {
+    "description": "description for the toggle for enabling and disabling sending read receipts",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelTypingIndicatorsToggle": "Typing indicator",
+  "@labelTypingIndicatorsToggle": {
+    "description": "Label for the toggle for enabling and disabling sending typing indicator",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelPublicTypingIndicatorDescription": "Let other members of a room know when you are typing a message.",
+  "@labelPublicTypingIndicatorDescription": {
+    "description": "description for the toggle for enabling and disabling sending typing indicator",
     "type": "text",
     "placeholders": {}
   },
@@ -1350,6 +1688,12 @@
     "type": "text",
     "placeholders": {}
   },
+  "promptEndPoll": "End Poll",
+  "@promptEndPoll": {
+    "description": "Prompt the user to end a poll",
+    "type": "text",
+    "placeholders": {}
+  },
   "promptShowSticker": "Show sticker",
   "@promptShowSticker": {
     "description": "Prompt to display a sticker, shown when media previews are disabled",
@@ -1372,7 +1716,7 @@
   },
   "messagePlaceholderUserCreatedRoom": "{user} created the room!",
   "@messagePlaceholderUserCreatedRoom": {
-    "description": "Message body for when a user created the room",
+    "description": "Message body for when a user creates the room",
     "type": "text",
     "placeholders": {
       "user": {}
@@ -1439,6 +1783,12 @@
     "type": "text",
     "placeholders": {}
   },
+  "promptNext": "Next",
+  "@promptNext": {
+    "description": "Generic prompt for going to the next step of an activity or flow, usually on a button",
+    "type": "text",
+    "placeholders": {}
+  },
   "promptHome": "Home",
   "@promptHome": {
     "description": "Generic prompt to go home, usually will go back to a main menu, or similar",
@@ -1448,6 +1798,18 @@
   "promptAccept": "Accept",
   "@promptAccept": {
     "description": "Generic prompt to accept something, probably a request of some kind",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptDismiss": "Dismiss",
+  "@promptDismiss": {
+    "description": "Generic prompt to dismiss something, probably a popup",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptDecline": "Decline",
+  "@promptDecline": {
+    "description": "Generic prompt to decline something, probably a request of some kind",
     "type": "text",
     "placeholders": {}
   },
@@ -1517,6 +1879,18 @@
     "type": "text",
     "placeholders": {}
   },
+  "promptYes": "Yes",
+  "@promptYes": {
+    "description": "Generic prompt to say yes to a request, probably on a confirmation dialog 'are you sure you want to do x?' 'yes' ",
+    "type": "text",
+    "placeholders": {}
+  },
+  "promptNo": "No",
+  "@promptNo": {
+    "description": "Generic prompt to say no to a request, probably on a confirmation dialog 'are you sure you want to do x?' 'no' ",
+    "type": "text",
+    "placeholders": {}
+  },
   "promptRestore": "Restore",
   "@promptRestore": {
     "description": "Generic prompt to restore something",
@@ -1541,6 +1915,30 @@
     "type": "text",
     "placeholders": {}
   },
+  "labelPublic": "Public",
+  "@labelPublic": {
+    "description": "Label for public",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelPrivate": "Private",
+  "@labelPrivate": {
+    "description": "Label for private",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelEnabled": "Enabled",
+  "@labelEnabled": {
+    "description": "Label for enabled",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelDisabled": "Disabled",
+  "@labelDisabled": {
+    "description": "Label for disabled",
+    "type": "text",
+    "placeholders": {}
+  },
   "promptCopyComplete": "Copied!",
   "@promptCopyComplete": {
     "description": "Prompt text for after a copy has been completed",
@@ -1553,6 +1951,38 @@
     "type": "text",
     "placeholders": {}
   },
+  "shortcutNameMute": "Mute",
+  "@shortcutNameMute": {
+    "description": "name for the system wide shortcut to activate microphone mute",
+    "type": "text",
+    "placeholders": {}
+  },
+  "shortcutNameUnmute": "Unmute",
+  "@shortcutNameUnmute": {
+    "description": "name for the system wide shortcut to disable microphone mute",
+    "type": "text",
+    "placeholders": {}
+  },
+  "shortcutNameToggleMute": "Toggle Mute",
+  "@shortcutNameToggleMute": {
+    "description": "name for the system wide shortcut to toggle the microphone mute status",
+    "type": "text",
+    "placeholders": {}
+  },
+  "labelUpdateAvailable": "Update Available",
+  "@labelUpdateAvailable": {
+    "description": "Label for the the info popup when an update is available",
+    "type": "text",
+    "placeholders": {}
+  },
+  "descriptionUpdateAvailable": "There is a newer version of Commet available: {version}",
+  "@descriptionUpdateAvailable": {
+    "description": "describes the update, showing the version code for the available update",
+    "type": "text",
+    "placeholders": {
+      "version": {}
+    }
+  },
   "messageUserEmote": "*{user} {emote}",
   "@messageUserEmote": {
     "description": "Message to display when a user does a custom emote (/me)",
@@ -1560,6 +1990,14 @@
     "placeholders": {
       "user": {},
       "emote": {}
+    }
+  },
+  "messagePlaceholderUserEditedCalendar": "{user} edited the calendar",
+  "@messagePlaceholderUserEditedCalendar": {
+    "description": "Message body for when a user edits the room calendar",
+    "type": "text",
+    "placeholders": {
+      "user": {}
     }
   },
   "messagePlaceholderUserJoinedRoom": "{user} joined the room!",
@@ -1655,6 +2093,38 @@
       "user": {}
     }
   },
+  "messageUserAnsweredCall": "{user} answered the call",
+  "@messageUserAnsweredCall": {
+    "description": "Message body for when a user answers a call",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messageUserHangupCall": "{user} ended the call",
+  "@messageUserHangupCall": {
+    "description": "Message body for when a user hangs up a call",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messageUserRejectCall": "{user} rejected the call",
+  "@messageUserRejectCall": {
+    "description": "Message body for when a user rejects a call",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "messageUserInviteCall": "{user} started a call",
+  "@messageUserInviteCall": {
+    "description": "Message body for when a user starts a call",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
   "messageUserPinnedEvent": "{user} pinned a message!",
   "@messageUserPinnedEvent": {
     "description": "Message body for when a user adds an event to the room's pinned messages",
@@ -1677,9 +2147,21 @@
     "type": "text",
     "placeholders": {}
   },
+  "matrixClientVodozemacMissingMessage": "vodozemac is not installed or was not found. End to End Encryption will not be available until this is resolved",
+  "@matrixClientVodozemacMissingMessage": {
+    "description": "Text that explains to the user that vodozemac dependency is not found",
+    "type": "text",
+    "placeholders": {}
+  },
   "matrixClientEncryptionWarningTitle": "Encryption Warning",
   "@matrixClientEncryptionWarningTitle": {
     "description": "Title of a warning about encryption",
+    "type": "text",
+    "placeholders": {}
+  },
+  "messageUserDeactivated": "Your account has been deactivated",
+  "@messageUserDeactivated": {
+    "description": "An error message displayed when the user attempts to log into an account that has been disabled",
     "type": "text",
     "placeholders": {}
   },
@@ -1688,5 +2170,21 @@
     "description": "Placeholder text to put in a notification when the user has privacy enhanced notifications enabled.",
     "type": "text",
     "placeholders": {}
+  },
+  "notificationContentUserIsCalling": "{user} is calling!",
+  "@notificationContentUserIsCalling": {
+    "description": "Notification body content for when receiving an incoming call from another user",
+    "type": "text",
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "notificationTitleIncomingCall": "Incoming Call! ({roomName})",
+  "@notificationTitleIncomingCall": {
+    "description": "Notification title for when a call is being received",
+    "type": "text",
+    "placeholders": {
+      "roomName": {}
+    }
   }
 }

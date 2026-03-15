@@ -42,6 +42,10 @@ class SettingsCategoryApp implements SettingsCategory {
       name: "labelSettingsAppNotifications",
       desc: "Label for the App notifications settings page");
 
+  String get labelSettingsShortcuts => Intl.message("Shortcuts",
+      name: "labelSettingsShortcuts",
+      desc: "Label for the Keyboard shortcuts settings page");
+
   String get labelSettingsAppDeveloperUtils => Intl.message("Developer Utils",
       name: "labelSettingsAppDeveloperUtils",
       desc:
@@ -50,6 +54,11 @@ class SettingsCategoryApp implements SettingsCategory {
   String get labelSettingsCategoryApp => Intl.message("App Settings",
       name: "labelSettingsCategoryApp",
       desc: "Label for the settings category of the overall App settings/");
+
+  String get labelSettingsCategoryVoiceAndVideo => Intl.message(
+      "Voice and Video",
+      name: "labelSettingsCategoryVoiceAndVideo",
+      desc: "Label for the settings category related to voice and video calls");
 
   @override
   String get title => labelSettingsCategoryApp;
@@ -72,14 +81,14 @@ class SettingsCategoryApp implements SettingsCategory {
                 .any((e) => e.getComponent<VoipComponent>() != null) ==
             true)
           SettingsTab(
-              label: "Voice and Video",
+              label: labelSettingsCategoryVoiceAndVideo,
               icon: m.Icons.call,
               pageBuilder: (context) {
                 return const VoipSettingsPage();
               }),
         if (PlatformUtils.isLinux || PlatformUtils.isWindows)
           SettingsTab(
-              label: "Shortcuts",
+              label: labelSettingsShortcuts,
               icon: m.Icons.keyboard_alt_outlined,
               pageBuilder: (context) {
                 return const ShortcutSettingsPage();

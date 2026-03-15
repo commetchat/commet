@@ -3,6 +3,7 @@ import 'package:commet/config/layout_config.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/molecules/user_panel.dart';
+import 'package:commet/utils/common_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:tiamat/tiamat.dart';
@@ -202,7 +203,9 @@ class AdaptiveDialog {
                 height: 40,
                 child: tiamat.Button(
                   type: dangerous ? ButtonType.danger : ButtonType.primary,
-                  text: confirmationText,
+                  text: confirmationText == "Yes"
+                      ? CommonStrings.promptYes
+                      : confirmationText,
                   onTap: () => Navigator.pop(context, true),
                 ),
               ),
@@ -210,7 +213,7 @@ class AdaptiveDialog {
                 height: 5,
               ),
               tiamat.Button.secondary(
-                text: cancelText,
+                text: cancelText == "No" ? CommonStrings.promptNo : cancelText,
                 onTap: () => Navigator.pop(context, false),
               )
             ],
