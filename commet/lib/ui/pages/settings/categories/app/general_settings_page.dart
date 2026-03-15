@@ -1,3 +1,4 @@
+import 'package:commet/config/layout_config.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/settings/categories/app/boolean_toggle.dart';
 import 'package:commet/ui/pages/setup/menus/check_for_updates.dart';
@@ -72,6 +73,10 @@ class GeneralSettingsPageState extends State<GeneralSettingsPage> {
       desc: "Header for the settings tile for for media preview toggles",
       name: "labelMediaPreviewSettingsTitle");
 
+  String get labelMediaSettings => Intl.message("Media",
+      desc: "Header for the settings tile for for media",
+      name: "labelMediaSettings");
+
   String get labelMediaPreviewPrivateRoomsToggle => Intl.message(
         "Private Rooms",
         desc:
@@ -142,6 +147,18 @@ class GeneralSettingsPageState extends State<GeneralSettingsPage> {
               title: labelAskBeforeDeletingMessageToggle,
               description: labelAskBeforeDeletingMessageDescription,
             ),
+            BooleanPreferenceToggle(
+              preference: preferences.autoFocusMessageTextBox,
+              title: "Autofocus Message Input",
+              description:
+                  "Automatically focus on the message input text field when opening a chat",
+            ),
+            BooleanPreferenceToggle(
+              preference: preferences.automaticallyOpenSpace,
+              title: "Always open space",
+              description:
+                  "When navigating to a room from outside of a space, also open the space the room is in, if any",
+            )
           ]),
         ),
         const SizedBox(
@@ -160,7 +177,7 @@ class GeneralSettingsPageState extends State<GeneralSettingsPage> {
           height: 10,
         ),
         Panel(
-          header: labelMediaPreviewSettingsTitle,
+          header: labelMediaSettings,
           mode: TileType.surfaceContainerLow,
           child: Column(children: [
             BooleanPreferenceToggle(
@@ -173,6 +190,21 @@ class GeneralSettingsPageState extends State<GeneralSettingsPage> {
               title: labelMediaPreviewPublicRoomsToggle,
               description: labelMediaPreviewPublicRoomsToggleDescription,
             ),
+            if (Layout.mobile) ...[
+              Seperator(),
+              BooleanPreferenceToggle(
+                preference: preferences.autoRotateImages,
+                title: "Rotate Images",
+                description:
+                    "When showing images in fullscreen, automatically rotate the image to best fill the screen",
+              ),
+              BooleanPreferenceToggle(
+                preference: preferences.autoRotateVideos,
+                title: "Rotate Videos",
+                description:
+                    "When showing videos in fullscreen, automatically rotate the video to best fill the screen",
+              ),
+            ]
           ]),
         ),
       ],

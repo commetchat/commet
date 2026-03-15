@@ -1,4 +1,5 @@
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/polls/poll_component.dart';
 import 'package:commet/client/components/read_receipts/read_receipt_component.dart';
 import 'package:commet/client/components/threads/thread_component.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
@@ -16,6 +17,7 @@ import 'package:commet/ui/atoms/adaptive_context_menu.dart';
 import 'package:commet/ui/atoms/emoji_widget.dart';
 import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_generic.dart';
 import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_message.dart';
+import 'package:commet/ui/molecules/timeline_events/events/timeline_event_view_poll.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_date_time_marker.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_layout.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_event_menu.dart';
@@ -66,6 +68,7 @@ class TimelineViewEntry extends StatefulWidget {
 enum TimelineEventWidgetDisplayType {
   message,
   generic,
+  poll,
   hidden,
 }
 
@@ -92,12 +95,14 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
   bool showDateSeperator = false;
 
   ThreadsComponent? threads;
+  PollComponent? polls;
 
   List<String> readReceipts = [];
 
   @override
   void initState() {
     threads = widget.timeline.room.client.getComponent<ThreadsComponent>();
+    polls = widget.timeline.client.getComponent<PollComponent>();
 
     isThreadReply = threads?.isEventInResponseToThread(
             widget.timeline.events[widget.initialIndex], widget.timeline) ??
@@ -123,27 +128,37 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
     index = eventIndex;
     time = event.originServerTs;
 
-    _widgetType = eventToDisplayType(event);
+    _widgetType = eventToDisplayType(event, polls: polls);
 
     showDateSeperator = shouldEventShowDate(eventIndex);
     highlighted = event.eventId == widget.highlightedEventId;
   }
 
-  static TimelineEventWidgetDisplayType eventToDisplayType(
-      TimelineEvent event) {
+  static TimelineEventWidgetDisplayType eventToDisplayType(TimelineEvent event,
+      {PollComponent? polls}) {
     if (event is TimelineEventMessage ||
         event is TimelineEventSticker ||
         event is TimelineEventEncrypted) {
       return TimelineEventWidgetDisplayType.message;
-    } else if (event is TimelineEventRoomTombstone) {
+    } 
+    
+    if (event is TimelineEventRoomTombstone) {
       return TimelineEventWidgetDisplayType.generic;
-    } else if (event is TimelineEventGeneric) {
-      return TimelineEventWidgetDisplayType.generic;
-    } else if (event.status == TimelineEventStatus.error) {
-      return TimelineEventWidgetDisplayType.generic;
-    } else {
-      return TimelineEventWidgetDisplayType.hidden;
     }
+
+    if (event is TimelineEventGeneric) {
+      return TimelineEventWidgetDisplayType.generic;
+    }
+
+    if (polls?.isPollEvent(event) == true) {
+      return TimelineEventWidgetDisplayType.poll;
+    }
+
+    if (event.status == TimelineEventStatus.error) {
+      return TimelineEventWidgetDisplayType.generic;
+    }
+
+    return TimelineEventWidgetDisplayType.hidden;
   }
 
   bool shouldEventShowDate(int index) {
@@ -306,6 +321,8 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
                       icon: Icons.add_reaction,
                       size: 24,
                       onPressed: () {
+                        onClick();
+
                         AdaptiveDialog.show(
                           context,
                           builder: (newContext) {
@@ -407,6 +424,7 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
           jumpToEvent: widget.jumpToEvent,
           previewMedia: widget.previewMedia,
           initialIndex: widget.initialIndex);
+
     if (_widgetType == TimelineEventWidgetDisplayType.generic)
       return TimelineEventViewGeneric(
         timeline: widget.timeline,
@@ -416,6 +434,14 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
         onReadReceiptsTapped: onReadReceiptsTapped,
         key: eventKey,
       );
+
+    if (_widgetType == TimelineEventWidgetDisplayType.poll) {
+      return TimelineEventViewPoll(
+        initialIndex: widget.initialIndex,
+        timeline: widget.timeline,
+        key: eventKey,
+      );
+    }
 
     if (preferences.developerMode.value == false &&
         _widgetType == TimelineEventWidgetDisplayType.hidden) {

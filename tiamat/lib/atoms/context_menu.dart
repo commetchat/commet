@@ -121,23 +121,43 @@ class _ContextMenuOverlayState extends State<ContextMenuOverlay>
 
   @override
   Widget build(BuildContext context) {
+    var view = WidgetsBinding.instance.platformDispatcher.views.first;
+    var viewSize = view.physicalSize;
+
+    var scale = tiamat.getAppScale?.call() ?? 1.0;
+
     if (calculatedOffset == null) {
       return Container(
         child: Offstage(
           child: buildMenu(context, key: sizeGetKey),
         ),
       );
-    } else {
-      return Positioned(
-          left: calculatedOffset!.dx - (leftAlign ? size!.width : 0),
-          top: calculatedOffset!.dy - (topAlign ? size!.height : 0),
+    }
+
+    var offset = calculatedOffset! * scale;
+
+    var bottom =
+        !topAlign ? null : (viewSize.height - offset.dy) * (1.0 / scale);
+
+    var top = topAlign
+        ? null
+        : (offset.dy - (topAlign ? size!.height : 0)) * (1.0 / scale);
+
+    var left = offset.dx - (leftAlign ? size!.width * scale : 0);
+
+    return Positioned(
+        left: left * (1.0 / scale),
+        top: top,
+        bottom: bottom,
+        child: SizeTransition(
+          sizeFactor: _animation,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(7),
             child: Tile.low4(
               child: buildMenu(context),
             ),
-          ));
-    }
+          ),
+        ));
   }
 
   Widget buildMenu(BuildContext context, {GlobalKey? key}) {

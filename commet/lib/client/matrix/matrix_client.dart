@@ -245,7 +245,6 @@ class MatrixClient extends Client {
         await _matrixClient.init(
           waitForFirstSync: !loadingFromCache,
           waitUntilLoadCompletedLoaded: true,
-          startSyncLoop: !isBackgroundService,
           onMigration: () => Log.w("Matrix Database is migrating"),
         );
       });
@@ -616,9 +615,9 @@ class MatrixClient extends Client {
 
   @override
   Future<void> setDisplayName(String name) async {
-    await _matrixClient.setDisplayName(_matrixClient.userID!, name);
-    // TODO: Handle display name update
-    // self!.displayName = name;
+    _matrixClient.setProfileField(_matrixClient.userID!, "displayname", {
+      "displayname": name,
+    });
   }
 
   @override
@@ -828,7 +827,7 @@ class MatrixClient extends Client {
   Future<LoginResult> executeLoginFlow(LoginFlow flow) async {
     var result = await flow.submit(this);
 
-    if (result == LoginResult.success) {
+    if (result is LoginResultSuccess) {
       preferences.addRegisteredMatrixClient(identifier);
       await _postLoginSuccess();
     }

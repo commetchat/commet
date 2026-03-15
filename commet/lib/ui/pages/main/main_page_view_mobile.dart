@@ -1,3 +1,4 @@
+import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/atoms/room_header.dart';
@@ -90,6 +91,22 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
             return;
           }
 
+          if (widget.state.currentView == MainPageSubView.home &&
+              widget.state.currentRoom != null) {
+            if (widget.state.currentRoom != null) {
+              var dm = widget.state.currentRoom!.client
+                  .getComponent<DirectMessagesComponent>();
+              if (dm?.isRoomDirectMessage(widget.state.currentRoom!) == true) {
+                panelsKey.currentState?.reveal(RevealSide.left);
+                return;
+              }
+            }
+
+            widget.state.selectHome();
+
+            return;
+          }
+
           switch (panelsKey.currentState?.currentSide) {
             case RevealSide.right:
               panelsKey.currentState?.reveal(RevealSide.main);
@@ -102,8 +119,11 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
         child: Foundation(
             child: OverlappingPanels(
           key: panelsKey,
-          onDragStart: () {},
           onSideChange: (side) {
+            if (side != RevealSide.main) {
+              FocusManager.instance.primaryFocus?.unfocus();
+            }
+
             setState(() {
               shouldMainIgnoreInput = side != RevealSide.main;
             });

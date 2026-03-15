@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:commet/client/components/user_presence/user_presence_component.dart';
 import 'package:commet/client/components/user_presence/user_presence_lifecycle_watcher.dart';
+import 'package:commet/client/matrix/components/read_receipts/matrix_read_receipt_component.dart';
+import 'package:commet/client/matrix/components/typing_indicators/matrix_typing_indicators_component.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/utils/in_memory_cache.dart';
 import 'package:matrix/matrix.dart';
@@ -27,6 +29,42 @@ class MatrixUserPresenceComponent
 
     UserPresenceLifecycleWatcher().init();
   }
+
+  @override
+  bool get usePublicReadReceipts {
+    var publicReadReceipts = client
+        .matrixClient
+        .accountData[MatrixReadReceiptComponent.publicReadReceiptsKey]
+        ?.content["enabled"];
+    return publicReadReceipts is bool ? publicReadReceipts : true;
+  }
+
+  @override
+  Future<void> setUsePublicReadReceipts(bool value) async {
+    await client.matrixClient.setAccountData(
+      client.matrixClient.userID!,
+      MatrixReadReceiptComponent.publicReadReceiptsKey,
+      {"enabled": value},
+    );
+    client.matrixClient.receiptsPublicByDefault = value;
+  }
+
+  @override
+  bool get typingIndicatorEnabled {
+    var publicTypingIndicator = client
+        .matrixClient
+        .accountData[MatrixTypingIndicatorsComponent.publicTypingIndicatorKey]
+        ?.content["enabled"];
+    return publicTypingIndicator is bool ? publicTypingIndicator : true;
+  }
+
+  @override
+  Future<void> setTypingIndicatorEnabled(bool value) async =>
+      await client.matrixClient.setAccountData(
+        client.matrixClient.userID!,
+        MatrixTypingIndicatorsComponent.publicTypingIndicatorKey,
+        {"enabled": value},
+      );
 
   @override
   Future<UserPresence> getUserPresence(String userId) async {

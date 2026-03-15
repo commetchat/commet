@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:commet/client/components/typing_indicators/typing_indicator_component.dart';
 import 'package:commet/client/matrix/components/matrix_sync_listener.dart';
+import 'package:commet/client/matrix/components/user_presence/matrix_user_presence.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_member.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
@@ -19,7 +20,28 @@ class MatrixTypingIndicatorsComponent
 
   MatrixTypingIndicatorsComponent(this.client, this.room);
 
+  static const String publicTypingIndicatorKey =
+      "chat.commet.private_typing_indicator";
+
   final StreamController<void> _controller = StreamController.broadcast();
+
+  @override
+  bool? get typingIndicatorEnabledForRoom {
+    var publicTypingIndicatorForRoom = room.matrixRoom
+        .roomAccountData[publicTypingIndicatorKey]?.content["enabled"];
+    return publicTypingIndicatorForRoom is bool
+        ? publicTypingIndicatorForRoom
+        : null;
+  }
+
+  @override
+  Future<void> setTypingIndicatorEnabledForRoom(bool? value) async =>
+      await client.matrixClient.setAccountDataPerRoom(
+        client.matrixClient.userID!,
+        room.matrixRoom.id,
+        publicTypingIndicatorKey,
+        {"enabled": value},
+      );
 
   @override
   onSync(JoinedRoomUpdate update) {
@@ -44,7 +66,11 @@ class MatrixTypingIndicatorsComponent
       .toList();
 
   @override
-  Future<void> setTypingStatus(bool status) {
-    return room.matrixRoom.setTyping(status, timeout: 2000);
+  Future<void> setTypingStatus(bool status) async {
+    var typingIndicatorEnabled = client
+        .getComponent<MatrixUserPresenceComponent>()!
+        .typingIndicatorEnabled;
+    if (typingIndicatorEnabledForRoom ?? typingIndicatorEnabled)
+      return room.matrixRoom.setTyping(status, timeout: 2000);
   }
 }

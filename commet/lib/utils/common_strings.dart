@@ -87,6 +87,18 @@ class CommonStrings {
   static String get promptCopy =>
       Intl.message("Copy", desc: "Prompt to copy text", name: "promptCopy");
 
+  static String get labelPublic =>
+      Intl.message("Public", desc: "Label for public", name: "labelPublic");
+
+  static String get labelPrivate =>
+      Intl.message("Private", desc: "Label for private", name: "labelPrivate");
+
+  static String get labelEnabled =>
+      Intl.message("Enabled", desc: "Label for enabled", name: "labelEnabled");
+
+  static String get labelDisabled => Intl.message("Disabled",
+      desc: "Label for disabled", name: "labelDisabled");
+
   static String get promptCopyComplete => Intl.message("Copied!",
       desc: "Prompt text for after a copy has been completed",
       name: "promptCopyComplete");

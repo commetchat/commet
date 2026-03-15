@@ -50,6 +50,7 @@ import 'package:tiamat/config/style/theme_changer.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:tiamat/config/style/theme_dark.dart';
 import 'package:desktop_webview_window/desktop_webview_window.dart';
+import 'package:tiamat/tiamat.dart' as tiamat;
 
 final GlobalKey<NavigatorState> navigator = GlobalKey();
 FileCache? fileCache;
@@ -228,6 +229,10 @@ Future<void> initGuiRequirements() async {
     initializeDateFormatting(locale.languageCode),
     // initializeMessagesDebug()
   ]);
+
+  tiamat.getAppScale = () {
+    return preferences.appScale.value;
+  };
 
   Intl.defaultLocale = locale.languageCode;
 }

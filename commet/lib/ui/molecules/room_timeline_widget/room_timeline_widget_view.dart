@@ -156,11 +156,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
 
     if (index == 0) {
       if (attachedToBottom) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          controller.animateTo(controller.position.minScrollExtent,
-              duration: const Duration(milliseconds: 500),
-              curve: Curves.easeOutExpo);
-        });
+        scrollToBottom();
 
         widget.markAsRead?.call(timeline.events[0]);
       }
@@ -194,9 +190,19 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
 
     if (index == 0) {
       if (attachedToBottom) {
+        scrollToBottom();
+
         widget.markAsRead?.call(timeline.events[0]);
       }
     }
+  }
+
+  void scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.animateTo(controller.position.minScrollExtent,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeOutExpo);
+    });
   }
 
   void onEventRemoved(int index) {
@@ -608,8 +614,6 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
     if (index == -1) {
       print("Could not find the event in the timeline view");
     }
-
-    print("Updating read receipts state: $event");
 
     if (state is TimelineEventViewWidget) {
       (state as TimelineEventViewWidget).update(index);
