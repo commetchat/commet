@@ -215,7 +215,7 @@ class LinuxNotifier implements Notifier {
     };
 
     var player = NotificationManager.getSoundPlayer();
-    player?.open(Media("asset:///assets/sound/message.ogg"));
+    player.open(Media("asset:///assets/sound/message.ogg"));
 
     flutterLocalNotificationsPlugin?.show(
         notificationId++, title, notificationBody,
