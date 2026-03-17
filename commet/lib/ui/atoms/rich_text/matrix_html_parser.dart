@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:math';
 
 import 'package:commet/client/components/emoticon/emoticon.dart';
