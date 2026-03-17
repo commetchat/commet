@@ -1,549 +1,549 @@
 {
-  "labelRoomsList": "Rom",
-  "@labelRoomsList": {
-    "description": "Header label for the list of rooms",
-    "type": "text",
-    "placeholders": {}
-  },
-  "fileDragDropPrompt": "Slipp en fil for å laste opp...",
-  "@fileDragDropPrompt": {
-    "description": "Text that is shown when a user is dragging a file",
-    "type": "text",
-    "placeholders": {}
-  },
-  "typingUsers": "{howMany,plural, =1{{user1} skriver...}=2{{user1} og {user2} skriver...}few{{user1}, {user2}, og {user3} skriver...}other{Flere folk skriver...}}",
-  "@typingUsers": {
-    "description": "Text to display which users are currently typing",
-    "type": "text",
-    "placeholders": {
-      "howMany": {},
-      "user1": {},
-      "user2": {},
-      "user3": {}
+    "labelRoomsList": "Rom",
+    "@labelRoomsList": {
+        "description": "Header label for the list of rooms",
+        "type": "text",
+        "placeholders": {}
+    },
+    "fileDragDropPrompt": "Slipp en fil for å laste opp...",
+    "@fileDragDropPrompt": {
+        "description": "Text that is shown when a user is dragging a file",
+        "type": "text",
+        "placeholders": {}
+    },
+    "typingUsers": "{howMany,plural, =1{{user1} skriver...}=2{{user1} og {user2} skriver...}few{{user1}, {user2}, og {user3} skriver...}other{Flere folk skriver...}}",
+    "@typingUsers": {
+        "description": "Text to display which users are currently typing",
+        "type": "text",
+        "placeholders": {
+            "howMany": {},
+            "user1": {},
+            "user2": {},
+            "user3": {}
+        }
+    },
+    "messageEditedMarker": "(Redigert)",
+    "@messageEditedMarker": {
+        "description": "Short text to mark that a message has been edited",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messagePlaceholderSticker": "{user} sendte et klistremerke",
+    "@messagePlaceholderSticker": {
+        "description": "Message body for when a user sends a sticker",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "messagePlaceholderUserCreatedRoom": "{user} opprettet rommet!",
+    "@messagePlaceholderUserCreatedRoom": {
+        "description": "Message body for when a user created the room",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "messagePlaceholderUserJoinedRoom": "{user} ble med i rommet!",
+    "@messagePlaceholderUserJoinedRoom": {
+        "description": "Message body for when a user joins the room",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "messagePlaceholderUserLeftRoom": "{user} forlot rommet",
+    "@messagePlaceholderUserLeftRoom": {
+        "description": "Message body for when a user leaves the room",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "messagePlaceholderUserUpdatedAvatar": "{user} oppdaterte avataren sin",
+    "@messagePlaceholderUserUpdatedAvatar": {
+        "description": "Message body for when a user updates their avatar",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "messagePlaceholderUserUpdatedName": "{user} oppdaterte visningsnavnet sitt",
+    "@messagePlaceholderUserUpdatedName": {
+        "description": "Message body for when a user updates their display name",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "messageUserEmote": "*{user} {emote}",
+    "@messageUserEmote": {
+        "description": "Message to display when a user does a custom emote (/me)",
+        "type": "text",
+        "placeholders": {
+            "user": {},
+            "emote": {}
+        }
+    },
+    "errorMessageFailedToSend": "Kunne ikke sende",
+    "@errorMessageFailedToSend": {
+        "description": "Text that is placed below a message when the message fails to send",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageFailedToDecrypt": "Kunne ikke dekryptere hendelsen",
+    "@messageFailedToDecrypt": {
+        "description": "Placeholde text for when a message fails to decrypt",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelInvitationBodyWithSender": "{user} inviterte deg til et rom",
+    "@labelInvitationBodyWithSender": {
+        "description": "Message body for when an invitation was received, and we have a name for the sender",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "labelEmojiPickerEmojiTab": "Emoji",
+    "@labelEmojiPickerEmojiTab": {
+        "description": "Label for the emoji tab in emoji picker",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelEmojiPickerStickerTab": "Klistremerke",
+    "@labelEmojiPickerStickerTab": {
+        "description": "Label for the sticker tab in the emoji picker",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelEmojiPickerGifTab": "Gif",
+    "@labelEmojiPickerGifTab": {
+        "description": "Label for the gif search tab in the emoji picker",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelInvitationsForUser": "Invitasjoner for {user}",
+    "@labelInvitationsForUser": {
+        "description": "Label for the list of incoming invitations, specifying which user these invitations are intended for",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "labelInvitations": "Invitasjoner",
+    "@labelInvitations": {
+        "description": "Label for the list of incoming invitations",
+        "type": "text",
+        "placeholders": {}
+    },
+    "cantSentMessagePrompt": "Du har ikke tillatelse til å sende en melding i dette rommet",
+    "@cantSentMessagePrompt": {
+        "description": "Text that explains the user cannot send a message in this room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelChatPageFileTooLargeTitle": "Maks filstørrelse er overskredet",
+    "@labelChatPageFileTooLargeTitle": {
+        "description": "Title for the dialog that is shown when the user attempts to upload a file that is greater than the allowed size",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelHomeRecentActivity": "Nylig aktivitet",
+    "@labelHomeRecentActivity": {
+        "description": "Short label for header of recent room activity",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelHomeAlerts": "Varsler",
+    "@labelHomeAlerts": {
+        "description": "Short label for header of alerts",
+        "type": "text",
+        "placeholders": {}
+    },
+    "tooltipAddRoom": "Legg til rom",
+    "@tooltipAddRoom": {
+        "description": "Tooltip for the button that adds a new room to a space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceRoomsList": "Rom",
+    "@labelSpaceRoomsList": {
+        "description": "Header label for the list of rooms in a space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceSubspacesList": "Plasser",
+    "@labelSpaceSubspacesList": {
+        "description": "Header label for the list of child spaces in a space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceAvailableRoomsList": "Tilgjengelige rom",
+    "@labelSpaceAvailableRoomsList": {
+        "description": "Header label for the list of rooms in a space, which the user has not yet joined but are available",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceVisibilityPublic": "Offentlig plass",
+    "@labelSpaceVisibilityPublic": {
+        "description": "Label to display that the space is publically available",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptAddSpace": "Legg til plass",
+    "@promptAddSpace": {
+        "description": "Prompt to add a new space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "directMessagesListHeaderMobile": "Direkte Meldinger",
+    "@directMessagesListHeaderMobile": {
+        "description": "The header for the direct messages list on desktop",
+        "type": "text",
+        "placeholders": {}
+    },
+    "directMessagesListHeaderDesktop": "Direkte Meldinger",
+    "@directMessagesListHeaderDesktop": {
+        "description": "The header for the direct messages list on desktop",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelEnableUnifiedPush": "Aktiver Unified Push",
+    "@labelEnableUnifiedPush": {
+        "description": "Label for the toggle to enable Unified Push",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelEnableUnifiedPushEndpoint": "Endepunkt",
+    "@labelEnableUnifiedPushEndpoint": {
+        "description": "Label for the Unified Push endpoint",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelUnifiedPushNoEndpointFound": "Ingen endepunkt funnet, noe gikk galt :(",
+    "@labelUnifiedPushNoEndpointFound": {
+        "description": "Message for when a unified push endpoint could not be registered",
+        "type": "text",
+        "placeholders": {}
+    },
+    "setupPageBeforeYouBegin": "Før du begynner...",
+    "@setupPageBeforeYouBegin": {
+        "description": "Title for first time setup page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messagePlaceholderUserInvited": "{sender} inviterte {invitedUser}",
+    "@messagePlaceholderUserInvited": {
+        "description": "Message body for when a user invites another user to the room",
+        "type": "text",
+        "placeholders": {
+            "sender": {},
+            "invitedUser": {}
+        }
+    },
+    "messagePlaceholderUserRejectedInvite": "{user} avviste invitasjonen",
+    "@messagePlaceholderUserRejectedInvite": {
+        "description": "Message body for when a user rejected an invitation to a room",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "labelJumpToLatest": "Hopp til siste",
+    "@labelJumpToLatest": {
+        "description": "Label for the button which jumps the room timeline view to the latest message",
+        "type": "text",
+        "placeholders": {}
+    },
+    "sendUnencryptedMessagePrompt": "Send en melding",
+    "@sendUnencryptedMessagePrompt": {
+        "description": "Placeholder text for message input in an unencrypted room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "sendEncryptedMessagePrompt": "Send en kryptert melding",
+    "@sendEncryptedMessagePrompt": {
+        "description": "Placeholder text for message input in an encrypted room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelChatPageFileTooLarge": "Denne filen er for stor til å laste opp!",
+    "@labelChatPageFileTooLarge": {
+        "description": "Text that is shown when the user attempts to upload a file that is greater than the allowed size",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptAttachmentProcessingSendOriginal": "Send Original",
+    "@promptAttachmentProcessingSendOriginal": {
+        "description": "Prompt text for the option to send a file in its original state, without any further processing such as removing metadata",
+        "type": "text",
+        "placeholders": {}
+    },
+    "tooltipSpaceSettings": "Plassinnstillinger",
+    "@tooltipSpaceSettings": {
+        "description": "Tooltip for the button that opens space settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelImageContainsLocationInfo": "Advarsel: Dette bildet inneholder stedsmetadata",
+    "@labelImageContainsLocationInfo": {
+        "description": "Prompt text for the option to send a file in its original state, without any further processing such as removing metadata",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelHomeRoomsList": "Rom",
+    "@labelHomeRoomsList": {
+        "description": "Short label for header of rooms list",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceVisibilityPrivate": "Privat plass",
+    "@labelSpaceVisibilityPrivate": {
+        "description": "Label to display that the space is private",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelHomeInvitations": "Invitasjoner",
+    "@labelHomeInvitations": {
+        "description": "Short label for header of invitations list",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceGettingText": "Velkommen til \n\n # {spaceName}",
+    "@labelSpaceGettingText": {
+        "description": "Greeting to the space, supports markdown formatting",
+        "type": "text",
+        "placeholders": {
+            "spaceName": {}
+        }
+    },
+    "promptOpenDirectMessage": "Melding",
+    "@promptOpenDirectMessage": {
+        "description": "Prompt on the button to open a direct message with another user",
+        "type": "text",
+        "placeholders": {}
+    },
+    "unifiedPushExplainer": "# Unified Push\nDenne versjonen av Commet ble bygget uten Google Play Services. For å motta push-varsler, må du bruke [Unified Push](https://unifiedpush.org/). \n\nHvis du allerede har en Unified Push-kompatibel distributørapp installert, kan du konfigurere den nedenfor\n",
+    "@unifiedPushExplainer": {
+        "description": "Explains the need for unified push. Supports markdown",
+        "type": "text",
+        "placeholders": {}
+    },
+    "noPinnedMessages": "Ingen meldinger festet!",
+    "@noPinnedMessages": {
+        "description": "Placeholder label in the pinned messages menu that is shown when there are no pinned messages",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptRoomName": "Rom navn",
+    "@promptRoomName": {
+        "description": "Prompt to enter a room name, placeholder text for text input",
+        "type": "text",
+        "placeholders": {}
+    },
+    "roomVisibilityPrivateExplanation": "Dette romme blir tilgjengelig kun etter invitasjon",
+    "@roomVisibilityPrivateExplanation": {
+        "description": "Explains what 'private' room visibility means",
+        "type": "text",
+        "placeholders": {}
+    },
+    "roomVisibilityPublicExplanation": "Dette romme blir tilgjengelig for alle på internett",
+    "@roomVisibilityPublicExplanation": {
+        "description": "Explains what 'public' visibility means",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVisibilityPrivate": "Privat",
+    "@labelVisibilityPrivate": {
+        "description": "Short label for room visibility private",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVisibilityPublic": "Offentlig",
+    "@labelVisibilityPublic": {
+        "description": "Short label for room visibility public",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptEnableEncryption": "Aktiver kryptering",
+    "@promptEnableEncryption": {
+        "description": "Short prompt to enable encryption for a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "encryptionCannotBeDisabledExplanation": "Hvis aktivert, kryptering kan ikke be deaktivert seinere",
+    "@encryptionCannotBeDisabledExplanation": {
+        "description": "Explains that encryption cannot be disabled once enabled",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptConfirmRoomCreation": "Lag et Rom!",
+    "@promptConfirmRoomCreation": {
+        "description": "Label for a button which confirms the creation of a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptConfirmRoomJoin": "Bli med på Rom!",
+    "@promptConfirmRoomJoin": {
+        "description": "Label for a button which confirms the joining of a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptRoomAddress": "Romadresse:",
+    "@promptRoomAddress": {
+        "description": "Short label to prompt for the input of a room address",
+        "type": "text",
+        "placeholders": {}
+    },
+    "placeholderRoomAlias": "#kult-rom",
+    "@placeholderRoomAlias": {
+        "description": "Placeholder / Example for a room alias.",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelCouldNotLoadRoomPreview": "Kunne ikke laste inn forhåndsvisning av rom",
+    "@labelCouldNotLoadRoomPreview": {
+        "description": "Error message for when a room preview was not able to be loaded",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptAddSelectedRooms": "Legg til valgte rom",
+    "@promptAddSelectedRooms": {
+        "description": "Prompt to add the selected rooms to a space",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptConfirmSaveEmoticon": "Lagre!",
+    "@promptConfirmSaveEmoticon": {
+        "description": "Prompt to confirm the creation of an Emoticon Pack, Emoji, or Sticker",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptContinue": "Fortsett",
+    "@promptContinue": {
+        "description": "Generic prompt to continue with some action",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptAbortWipingMatrixKeys": "Vent, nei!",
+    "@promptAbortWipingMatrixKeys": {
+        "description": "Text on the button which aborts wiping matrix encryption keys",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptDelete": "Slett",
+    "@promptDelete": {
+        "description": "Generic prompt to delete something",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptEdit": "Rediger",
+    "@promptEdit": {
+        "description": "Generic prompt to edit something",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptOptions": "Instillinger",
+    "@promptOptions": {
+        "description": "Generic prompt for options, generally would be used to open a settings menu, extra details or similar",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptHome": "Hjemme",
+    "@promptHome": {
+        "description": "Generic prompt to go home, usually will go back to a main menu, or similar",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptEnable": "Akriver",
+    "@promptEnable": {
+        "description": "Generic prompt to enable something",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptDownload": "Last ned",
+    "@promptDownload": {
+        "description": "Generic prompt to download something",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptEmojiDoNotMatch": "De stemmer ikke",
+    "@promptEmojiDoNotMatch": {
+        "description": "Button text to confirm that the emoji do NOT match",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptEnableEncryptionRoomSettings": "Aktiver kryptering",
+    "@promptEnableEncryptionRoomSettings": {
+        "description": "Short prompt to enable encryption for a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptHomeserver": "Hjemmeserver",
+    "@promptHomeserver": {
+        "description": "Placeholder text for homeserver field on login form",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptPassword": "Passord",
+    "@promptPassword": {
+        "description": "Placeholder text for password field on login form",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptJoin": "Bli med",
+    "@promptJoin": {
+        "description": "Generic prompt to join a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptLogoutSingleAccount": "Logg ut",
+    "@promptLogoutSingleAccount": {
+        "description": "Label for button in settings to log out of an account",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptGenerateMatrixRecoveryKey": "Generer nøkkel",
+    "@promptGenerateMatrixRecoveryKey": {
+        "description": "Button text to generate a recovery key",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelOr": "Eller",
+    "@labelOr": {
+        "description": "Text that is placed between two or more options: [button1] or [button2]",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPushRuleNone": "Dempe",
+    "@labelPushRuleNone": {
+        "description": "Label for the push rule which sends no notifications",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomSettingsDeveloper": "Utvikler",
+    "@labelRoomSettingsDeveloper": {
+        "description": "Label for room developer settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomSettingsPermissions": "Rettigheter",
+    "@labelRoomSettingsPermissions": {
+        "description": "Label for room permission settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsChangeRoomPermissionsTitle": "Rediger rettigheter",
+    "@labelMatrixPermissionsChangeRoomPermissionsTitle": {
+        "description": "Title for the permission to change permissions of the room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsChangeRoomPermissionsDescription": "Lar brukeren endre rettigheter",
+    "@labelMatrixPermissionsChangeRoomPermissionsDescription": {
+        "description": "Description for the permission to change permissions of the room",
+        "type": "text",
+        "placeholders": {}
     }
-  },
-  "messageEditedMarker": "(Redigert)",
-  "@messageEditedMarker": {
-    "description": "Short text to mark that a message has been edited",
-    "type": "text",
-    "placeholders": {}
-  },
-  "messagePlaceholderSticker": "{user} sendte et klistremerke",
-  "@messagePlaceholderSticker": {
-    "description": "Message body for when a user sends a sticker",
-    "type": "text",
-    "placeholders": {
-      "user": {}
-    }
-  },
-  "messagePlaceholderUserCreatedRoom": "{user} opprettet rommet!",
-  "@messagePlaceholderUserCreatedRoom": {
-    "description": "Message body for when a user created the room",
-    "type": "text",
-    "placeholders": {
-      "user": {}
-    }
-  },
-  "messagePlaceholderUserJoinedRoom": "{user} ble med i rommet!",
-  "@messagePlaceholderUserJoinedRoom": {
-    "description": "Message body for when a user joins the room",
-    "type": "text",
-    "placeholders": {
-      "user": {}
-    }
-  },
-  "messagePlaceholderUserLeftRoom": "{user} forlot rommet",
-  "@messagePlaceholderUserLeftRoom": {
-    "description": "Message body for when a user leaves the room",
-    "type": "text",
-    "placeholders": {
-      "user": {}
-    }
-  },
-  "messagePlaceholderUserUpdatedAvatar": "{user} oppdaterte avataren sin",
-  "@messagePlaceholderUserUpdatedAvatar": {
-    "description": "Message body for when a user updates their avatar",
-    "type": "text",
-    "placeholders": {
-      "user": {}
-    }
-  },
-  "messagePlaceholderUserUpdatedName": "{user} oppdaterte visningsnavnet sitt",
-  "@messagePlaceholderUserUpdatedName": {
-    "description": "Message body for when a user updates their display name",
-    "type": "text",
-    "placeholders": {
-      "user": {}
-    }
-  },
-  "messageUserEmote": "*{user} {emote}",
-  "@messageUserEmote": {
-    "description": "Message to display when a user does a custom emote (/me)",
-    "type": "text",
-    "placeholders": {
-      "user": {},
-      "emote": {}
-    }
-  },
-  "errorMessageFailedToSend": "Kunne ikke sende",
-  "@errorMessageFailedToSend": {
-    "description": "Text that is placed below a message when the message fails to send",
-    "type": "text",
-    "placeholders": {}
-  },
-  "messageFailedToDecrypt": "Kunne ikke dekryptere hendelsen",
-  "@messageFailedToDecrypt": {
-    "description": "Placeholde text for when a message fails to decrypt",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelInvitationBodyWithSender": "{user} inviterte deg til et rom",
-  "@labelInvitationBodyWithSender": {
-    "description": "Message body for when an invitation was received, and we have a name for the sender",
-    "type": "text",
-    "placeholders": {
-      "user": {}
-    }
-  },
-  "labelEmojiPickerEmojiTab": "Emoji",
-  "@labelEmojiPickerEmojiTab": {
-    "description": "Label for the emoji tab in emoji picker",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelEmojiPickerStickerTab": "Klistremerke",
-  "@labelEmojiPickerStickerTab": {
-    "description": "Label for the sticker tab in the emoji picker",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelEmojiPickerGifTab": "Gif",
-  "@labelEmojiPickerGifTab": {
-    "description": "Label for the gif search tab in the emoji picker",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelInvitationsForUser": "Invitasjoner for {user}",
-  "@labelInvitationsForUser": {
-    "description": "Label for the list of incoming invitations, specifying which user these invitations are intended for",
-    "type": "text",
-    "placeholders": {
-      "user": {}
-    }
-  },
-  "labelInvitations": "Invitasjoner",
-  "@labelInvitations": {
-    "description": "Label for the list of incoming invitations",
-    "type": "text",
-    "placeholders": {}
-  },
-  "cantSentMessagePrompt": "Du har ikke tillatelse til å sende en melding i dette rommet",
-  "@cantSentMessagePrompt": {
-    "description": "Text that explains the user cannot send a message in this room",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelChatPageFileTooLargeTitle": "Maks filstørrelse er overskredet",
-  "@labelChatPageFileTooLargeTitle": {
-    "description": "Title for the dialog that is shown when the user attempts to upload a file that is greater than the allowed size",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelHomeRecentActivity": "Nylig aktivitet",
-  "@labelHomeRecentActivity": {
-    "description": "Short label for header of recent room activity",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelHomeAlerts": "Varsler",
-  "@labelHomeAlerts": {
-    "description": "Short label for header of alerts",
-    "type": "text",
-    "placeholders": {}
-  },
-  "tooltipAddRoom": "Legg til rom",
-  "@tooltipAddRoom": {
-    "description": "Tooltip for the button that adds a new room to a space",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelSpaceRoomsList": "Rom",
-  "@labelSpaceRoomsList": {
-    "description": "Header label for the list of rooms in a space",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelSpaceSubspacesList": "Plasser",
-  "@labelSpaceSubspacesList": {
-    "description": "Header label for the list of child spaces in a space",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelSpaceAvailableRoomsList": "Tilgjengelige rom",
-  "@labelSpaceAvailableRoomsList": {
-    "description": "Header label for the list of rooms in a space, which the user has not yet joined but are available",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelSpaceVisibilityPublic": "Offentlig plass",
-  "@labelSpaceVisibilityPublic": {
-    "description": "Label to display that the space is publically available",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptAddSpace": "Legg til plass",
-  "@promptAddSpace": {
-    "description": "Prompt to add a new space",
-    "type": "text",
-    "placeholders": {}
-  },
-  "directMessagesListHeaderMobile": "Direkte Meldinger",
-  "@directMessagesListHeaderMobile": {
-    "description": "The header for the direct messages list on desktop",
-    "type": "text",
-    "placeholders": {}
-  },
-  "directMessagesListHeaderDesktop": "Direkte Meldinger",
-  "@directMessagesListHeaderDesktop": {
-    "description": "The header for the direct messages list on desktop",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelEnableUnifiedPush": "Aktiver Unified Push",
-  "@labelEnableUnifiedPush": {
-    "description": "Label for the toggle to enable Unified Push",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelEnableUnifiedPushEndpoint": "Endepunkt",
-  "@labelEnableUnifiedPushEndpoint": {
-    "description": "Label for the Unified Push endpoint",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelUnifiedPushNoEndpointFound": "Ingen endepunkt funnet, noe gikk galt :(",
-  "@labelUnifiedPushNoEndpointFound": {
-    "description": "Message for when a unified push endpoint could not be registered",
-    "type": "text",
-    "placeholders": {}
-  },
-  "setupPageBeforeYouBegin": "Før du begynner...",
-  "@setupPageBeforeYouBegin": {
-    "description": "Title for first time setup page",
-    "type": "text",
-    "placeholders": {}
-  },
-  "messagePlaceholderUserInvited": "{sender} inviterte {invitedUser}",
-  "@messagePlaceholderUserInvited": {
-    "description": "Message body for when a user invites another user to the room",
-    "type": "text",
-    "placeholders": {
-      "sender": {},
-      "invitedUser": {}
-    }
-  },
-  "messagePlaceholderUserRejectedInvite": "{user} avviste invitasjonen",
-  "@messagePlaceholderUserRejectedInvite": {
-    "description": "Message body for when a user rejected an invitation to a room",
-    "type": "text",
-    "placeholders": {
-      "user": {}
-    }
-  },
-  "labelJumpToLatest": "Hopp til siste",
-  "@labelJumpToLatest": {
-    "description": "Label for the button which jumps the room timeline view to the latest message",
-    "type": "text",
-    "placeholders": {}
-  },
-  "sendUnencryptedMessagePrompt": "Send en melding",
-  "@sendUnencryptedMessagePrompt": {
-    "description": "Placeholder text for message input in an unencrypted room",
-    "type": "text",
-    "placeholders": {}
-  },
-  "sendEncryptedMessagePrompt": "Send en kryptert melding",
-  "@sendEncryptedMessagePrompt": {
-    "description": "Placeholder text for message input in an encrypted room",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelChatPageFileTooLarge": "Denne filen er for stor til å laste opp!",
-  "@labelChatPageFileTooLarge": {
-    "description": "Text that is shown when the user attempts to upload a file that is greater than the allowed size",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptAttachmentProcessingSendOriginal": "Send Original",
-  "@promptAttachmentProcessingSendOriginal": {
-    "description": "Prompt text for the option to send a file in its original state, without any further processing such as removing metadata",
-    "type": "text",
-    "placeholders": {}
-  },
-  "tooltipSpaceSettings": "Plassinnstillinger",
-  "@tooltipSpaceSettings": {
-    "description": "Tooltip for the button that opens space settings",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelImageContainsLocationInfo": "Advarsel: Dette bildet inneholder stedsmetadata",
-  "@labelImageContainsLocationInfo": {
-    "description": "Prompt text for the option to send a file in its original state, without any further processing such as removing metadata",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelHomeRoomsList": "Rom",
-  "@labelHomeRoomsList": {
-    "description": "Short label for header of rooms list",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelSpaceVisibilityPrivate": "Privat plass",
-  "@labelSpaceVisibilityPrivate": {
-    "description": "Label to display that the space is private",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelHomeInvitations": "Invitasjoner",
-  "@labelHomeInvitations": {
-    "description": "Short label for header of invitations list",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelSpaceGettingText": "Velkommen til \n\n # {spaceName}",
-  "@labelSpaceGettingText": {
-    "description": "Greeting to the space, supports markdown formatting",
-    "type": "text",
-    "placeholders": {
-      "spaceName": {}
-    }
-  },
-  "promptOpenDirectMessage": "Melding",
-  "@promptOpenDirectMessage": {
-    "description": "Prompt on the button to open a direct message with another user",
-    "type": "text",
-    "placeholders": {}
-  },
-  "unifiedPushExplainer": "# Unified Push\nDenne versjonen av Commet ble bygget uten Google Play Services. For å motta push-varsler, må du bruke [Unified Push](https://unifiedpush.org/). \n\nHvis du allerede har en Unified Push-kompatibel distributørapp installert, kan du konfigurere den nedenfor\n",
-  "@unifiedPushExplainer": {
-    "description": "Explains the need for unified push. Supports markdown",
-    "type": "text",
-    "placeholders": {}
-  },
-  "noPinnedMessages": "Ingen meldinger festet!",
-  "@noPinnedMessages": {
-    "description": "Placeholder label in the pinned messages menu that is shown when there are no pinned messages",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptRoomName": "Rom navn",
-  "@promptRoomName": {
-    "description": "Prompt to enter a room name, placeholder text for text input",
-    "type": "text",
-    "placeholders": {}
-  },
-  "roomVisibilityPrivateExplanation": "Dette romme blir tilgjengelig kun etter invitasjon",
-  "@roomVisibilityPrivateExplanation": {
-    "description": "Explains what 'private' room visibility means",
-    "type": "text",
-    "placeholders": {}
-  },
-  "roomVisibilityPublicExplanation": "Dette romme blir tilgjengelig for alle på internett",
-  "@roomVisibilityPublicExplanation": {
-    "description": "Explains what 'public' visibility means",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelVisibilityPrivate": "Privat",
-  "@labelVisibilityPrivate": {
-    "description": "Short label for room visibility private",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelVisibilityPublic": "Offentlig",
-  "@labelVisibilityPublic": {
-    "description": "Short label for room visibility public",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptEnableEncryption": "Aktiver kryptering",
-  "@promptEnableEncryption": {
-    "description": "Short prompt to enable encryption for a room",
-    "type": "text",
-    "placeholders": {}
-  },
-  "encryptionCannotBeDisabledExplanation": "Hvis aktivert, kryptering kan ikke be deaktivert seinere",
-  "@encryptionCannotBeDisabledExplanation": {
-    "description": "Explains that encryption cannot be disabled once enabled",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptConfirmRoomCreation": "Lag et Rom!",
-  "@promptConfirmRoomCreation": {
-    "description": "Label for a button which confirms the creation of a room",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptConfirmRoomJoin": "Bli med på Rom!",
-  "@promptConfirmRoomJoin": {
-    "description": "Label for a button which confirms the joining of a room",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptRoomAddress": "Romadresse:",
-  "@promptRoomAddress": {
-    "description": "Short label to prompt for the input of a room address",
-    "type": "text",
-    "placeholders": {}
-  },
-  "placeholderRoomAlias": "#kult-rom",
-  "@placeholderRoomAlias": {
-    "description": "Placeholder / Example for a room alias.",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelCouldNotLoadRoomPreview": "Kunne ikke laste inn forhåndsvisning av rom",
-  "@labelCouldNotLoadRoomPreview": {
-    "description": "Error message for when a room preview was not able to be loaded",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptAddSelectedRooms": "Legg til valgte rom",
-  "@promptAddSelectedRooms": {
-    "description": "Prompt to add the selected rooms to a space",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptConfirmSaveEmoticon": "Lagre!",
-  "@promptConfirmSaveEmoticon": {
-    "description": "Prompt to confirm the creation of an Emoticon Pack, Emoji, or Sticker",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptContinue": "Fortsett",
-  "@promptContinue": {
-    "description": "Generic prompt to continue with some action",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptAbortWipingMatrixKeys": "Vent, nei!",
-  "@promptAbortWipingMatrixKeys": {
-    "description": "Text on the button which aborts wiping matrix encryption keys",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptDelete": "Slett",
-  "@promptDelete": {
-    "description": "Generic prompt to delete something",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptEdit": "Rediger",
-  "@promptEdit": {
-    "description": "Generic prompt to edit something",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptOptions": "Instillinger",
-  "@promptOptions": {
-    "description": "Generic prompt for options, generally would be used to open a settings menu, extra details or similar",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptHome": "Hjemme",
-  "@promptHome": {
-    "description": "Generic prompt to go home, usually will go back to a main menu, or similar",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptEnable": "Akriver",
-  "@promptEnable": {
-    "description": "Generic prompt to enable something",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptDownload": "Last ned",
-  "@promptDownload": {
-    "description": "Generic prompt to download something",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptEmojiDoNotMatch": "De stemmer ikke",
-  "@promptEmojiDoNotMatch": {
-    "description": "Button text to confirm that the emoji do NOT match",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptEnableEncryptionRoomSettings": "Aktiver kryptering",
-  "@promptEnableEncryptionRoomSettings": {
-    "description": "Short prompt to enable encryption for a room",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptHomeserver": "Hjemmeserver",
-  "@promptHomeserver": {
-    "description": "Placeholder text for homeserver field on login form",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptPassword": "Passord",
-  "@promptPassword": {
-    "description": "Placeholder text for password field on login form",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptJoin": "Bli med",
-  "@promptJoin": {
-    "description": "Generic prompt to join a room",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptLogoutSingleAccount": "Logg ut",
-  "@promptLogoutSingleAccount": {
-    "description": "Label for button in settings to log out of an account",
-    "type": "text",
-    "placeholders": {}
-  },
-  "promptGenerateMatrixRecoveryKey": "Generer nøkkel",
-  "@promptGenerateMatrixRecoveryKey": {
-    "description": "Button text to generate a recovery key",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelOr": "Eller",
-  "@labelOr": {
-    "description": "Text that is placed between two or more options: [button1] or [button2]",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelPushRuleNone": "Dempe",
-  "@labelPushRuleNone": {
-    "description": "Label for the push rule which sends no notifications",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelRoomSettingsDeveloper": "Utvikler",
-  "@labelRoomSettingsDeveloper": {
-    "description": "Label for room developer settings",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelRoomSettingsPermissions": "Rettigheter",
-  "@labelRoomSettingsPermissions": {
-    "description": "Label for room permission settings",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelMatrixPermissionsChangeRoomPermissionsTitle": "Rediger rettigheter",
-  "@labelMatrixPermissionsChangeRoomPermissionsTitle": {
-    "description": "Title for the permission to change permissions of the room",
-    "type": "text",
-    "placeholders": {}
-  },
-  "labelMatrixPermissionsChangeRoomPermissionsDescription": "Lar brukeren endre rettigheter",
-  "@labelMatrixPermissionsChangeRoomPermissionsDescription": {
-    "description": "Description for the permission to change permissions of the room",
-    "type": "text",
-    "placeholders": {}
-  }
 }
