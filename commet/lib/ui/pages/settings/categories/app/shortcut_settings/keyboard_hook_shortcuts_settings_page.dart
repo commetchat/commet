@@ -1,8 +1,10 @@
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
+import 'package:commet/utils/common_strings.dart';
 import 'package:commet/utils/system_wide_shortcuts/system_wide_shortcuts.dart';
 import 'package:flutter/material.dart';
 import 'package:hotkey_manager/hotkey_manager.dart';
+import 'package:intl/intl.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;
 
@@ -12,15 +14,32 @@ class KeyboardHookShortcutsSettingsPage extends StatefulWidget {
   @override
   State<KeyboardHookShortcutsSettingsPage> createState() =>
       _KeyboardHookShortcutsSettingsPageState();
+
+  static String get labelConfigureKeyboardShortcuts => Intl.message(
+      "Configure Shortcuts",
+      name: "labelConfigureKeyboardShortcuts",
+      desc:
+          "Label for the tile containing settings to configure system wide keyboard shortcuts, for muting, unmuting etc");
 }
 
 class _KeyboardHookShortcutsSettingsPageState
     extends State<KeyboardHookShortcutsSettingsPage> {
+  String get promptShortcutsPressAKeyCombination => Intl.message(
+      "Press a key combination",
+      name: "promptShortcutsPressAKeyCombination",
+      desc:
+          "Prompt the user to input a key combination, which is recorded and used to activate a shortcut");
+
+  String get promptShortcutsClearKeyboardShortcut =>
+      Intl.message("Clear Shortcut",
+          name: "promptShortcutsClearKeyboardShortcut",
+          desc: "Prompt the user to clear a key combination shortcut");
+
   @override
   Widget build(BuildContext context) {
     return tiamat.Panel(
       mode: tiamat.TileType.surfaceContainerLow,
-      header: "Configure Shortcuts",
+      header: KeyboardHookShortcutsSettingsPage.labelConfigureKeyboardShortcuts,
       child: Column(
         spacing: 8,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,7 +59,8 @@ class _KeyboardHookShortcutsSettingsPageState
                       spacing: 8,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        tiamat.Text.largeTitle("Press A Key Combination"),
+                        tiamat.Text.largeTitle(
+                            promptShortcutsPressAKeyCombination),
                         SizedBox(
                           height: 50,
                           child: Center(
@@ -52,11 +72,11 @@ class _KeyboardHookShortcutsSettingsPageState
                           ),
                         ),
                         tiamat.Button(
-                          text: "Submit",
+                          text: CommonStrings.promptSubmit,
                           onTap: () => Navigator.of(context).pop(hotkey),
                         ),
                         tiamat.Button.secondary(
-                          text: "Clear Hotkey",
+                          text: promptShortcutsClearKeyboardShortcut,
                           onTap: () => Navigator.of(context).pop(null),
                         )
                       ],

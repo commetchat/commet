@@ -1,6 +1,7 @@
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/utils/autofill_utils.dart';
+import 'package:commet/utils/common_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/atoms/image_button.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -227,7 +228,7 @@ class _EmojiPickerState extends State<EmojiPicker> {
                               onChanged: onSearchTextChanged,
                               decoration: InputDecoration(
                                   border: InputBorder.none,
-                                  hintText: "Search",
+                                  hintText: CommonStrings.promptSearch,
                                   icon: Icon(Icons.search)),
                             ),
                           ),

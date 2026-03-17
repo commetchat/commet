@@ -245,6 +245,9 @@ class Preferences {
   BoolPreference developerMode =
       BoolPreference("developer_mode", defaultValue: false);
 
+  BoolPreference debugTranslations =
+      BoolPreference("enable_translations_debug", defaultValue: false);
+
   BoolPreference tenorGifSearchEnabled =
       BoolPreference("enable_tenor_gif_search", defaultValue: false);
 
