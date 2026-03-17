@@ -85,7 +85,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "cantSentMessagePrompt": "你沒有權限在此房間發送訊息",
+    "cantSentMessagePrompt": "您沒有權限在此房間發送訊息",
     "@cantSentMessagePrompt": {
         "description": "Text that explains the user cannot send a message in this room",
         "type": "text",
@@ -241,7 +241,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "promptRoomAddress": "房間地址：",
+    "promptRoomAddress": "房間地址",
     "@promptRoomAddress": {
         "description": "Short label to prompt for the input of a room address",
         "type": "text",
@@ -417,7 +417,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "messageAlreadyLoggedIn": "你已經在這個裝置上登入了此帳號",
+    "messageAlreadyLoggedIn": "您已經在這個裝置上登入了此帳號",
     "@messageAlreadyLoggedIn": {
         "description": "An error message displayed when the user attempts to add an account which has already been logged in to on this device",
         "type": "text",
@@ -429,7 +429,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "promptLeaveSpaceConfirmation": "你確定要離開 \"{spaceName}\" 嗎？",
+    "promptLeaveSpaceConfirmation": "您確定要離開 \"{spaceName}\" 嗎？",
     "@promptLeaveSpaceConfirmation": {
         "description": "Text for the popup dialog confirming the intent to leave a space",
         "type": "text",
@@ -443,7 +443,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "promptLeaveRoomConfirmation": "你確定要離開 \"{roomName}\" 嗎？",
+    "promptLeaveRoomConfirmation": "您確定要離開 \"{roomName}\" 嗎？",
     "@promptLeaveRoomConfirmation": {
         "description": "Text for the popup dialog confirming the intent to leave",
         "type": "text",
@@ -1115,7 +1115,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixRecoveryKeyExplanation": "這是您的回復金鑰。如果您失去所有連線裝置，可以用它來驗證你的連線。請將其保存在安全的地方！",
+    "labelMatrixRecoveryKeyExplanation": "這是您的回復金鑰。如果您失去所有連線裝置，可以用它來驗證您的連線。請將其保存在安全的地方！",
     "@labelMatrixRecoveryKeyExplanation": {
         "description": "Gives a brief description about the function on the recovery key",
         "type": "text",
@@ -1687,5 +1687,704 @@
         "description": "Placeholder text to put in a notification when the user has privacy enhanced notifications enabled.",
         "type": "text",
         "placeholders": {}
+    },
+    "promptProfileChangeBanner": "更改橫幅",
+    "@promptProfileChangeBanner": {
+        "description": "Prompt to change the banner on the user's profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileSetStatus": "設定狀態",
+    "@promptProfileSetStatus": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileClearStatus": "清除狀態",
+    "@promptProfileClearStatus": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileSetBadges": "設定徽章",
+    "@promptProfileSetBadges": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileSetBio": "設定個人簡介",
+    "@promptProfileSetBio": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileClearBio": "清除個人簡介",
+    "@promptProfileClearBio": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileShareTimezone": "分享時區",
+    "@promptProfileShareTimezone": {
+        "description": "Prompt the user to add their current timezone to their user profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileClearTimezone": "移除時區",
+    "@promptProfileClearTimezone": {
+        "description": "Prompt to remove the shared timezone from a users profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileEditColorScheme": "編輯主題配色",
+    "@promptProfileEditColorScheme": {
+        "description": "Prompt to edit the color scheme of the user's own profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileSetColorOverride": "設定名稱顏色",
+    "@promptProfileSetColorOverride": {
+        "description": "Prompt to override the display color of a user",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileClearColorOverride": "還原名稱顏色",
+    "@promptProfileClearColorOverride": {
+        "description": "Prompt to remove an override of the display color of a user",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileShowRawProfile": "顯示個人資料原始碼",
+    "@promptProfileShowRawProfile": {
+        "description": "Show the raw data of a user profile, typically this is hidden behind developer mode",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelConfirmShareTimezone": "您確定要公開分享您的時區 '{timezone}' 嗎？",
+    "@labelConfirmShareTimezone": {
+        "description": "Ask the user to confirm that they want to share their current timezone as public information on their profile",
+        "type": "text",
+        "placeholders": {
+            "timezone": {}
+        }
+    },
+    "promptProfileWriteBioHint": "介紹您自己",
+    "@promptProfileWriteBioHint": {
+        "description": "Hint text for the profile bio editor",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelProfileYourBadges": "您的徽章",
+    "@labelProfileYourBadges": {
+        "description": "label for the ui to select which badges to display on the users profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelProfileNoBadges": "您沒有任何徽章。贊助並支持 Commet 的開發即可獲得徽章",
+    "@labelProfileNoBadges": {
+        "description": "text that is shown when the user has no badges, and explain where they can get badges",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceVisibilityRestricted": "受限空間",
+    "@labelSpaceVisibilityRestricted": {
+        "description": "Label to display that the space is restricted",
+        "type": "text",
+        "placeholders": {}
+    },
+    "incomingCallMessage": "{callingUserName} 來電！",
+    "@incomingCallMessage": {
+        "description": "Label to display that a user is calling",
+        "type": "text",
+        "placeholders": {
+            "callingUserName": {}
+        }
+    },
+    "labelVoiceChatDescription": "供兩人或以上使用的語音聊天房間",
+    "@labelVoiceChatDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelCreateRoom": "建立房間",
+    "@labelCreateRoom": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPickExistingRoom": "現有房間",
+    "@labelPickExistingRoom": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelJoinRoom": "加入房間",
+    "@labelJoinRoom": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomTypeTextChat": "文字聊天",
+    "@labelRoomTypeTextChat": {
+        "description": "Label for creating a regular text based chat room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomTypeVoiceChat": "語音聊天",
+    "@labelRoomTypeVoiceChat": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomTypePhotoAlbum": "相簿",
+    "@labelRoomTypePhotoAlbum": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomTypeCalendar": "日曆",
+    "@labelRoomTypeCalendar": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomTypeSpace": "空間",
+    "@labelRoomTypeSpace": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVisibilityRestricted": "受限",
+    "@labelVisibilityRestricted": {
+        "description": "Short label for room visibility restricted",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPhotoAlbumDescription": "跟親朋好友們分享您的照片或影片！",
+    "@labelPhotoAlbumDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageInvalidUsernameOrPassword": "使用者名稱或密碼輸入錯誤",
+    "@messageInvalidUsernameOrPassword": {
+        "description": "An error message displayed when the user attempts to log into an account using the wrong username/password combination",
+        "type": "text",
+        "placeholders": {}
+    },
+    "titleConfirmingDonation": "贊助確認中",
+    "@titleConfirmingDonation": {
+        "description": "Title for the popup shown while waiting for the user to finish the donation flow, which checks for completion of the donation",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelDonationConfirmationSucceeded": "非常感謝您的慷慨贊助！",
+    "@labelDonationConfirmationSucceeded": {
+        "description": "Text that is shown when the donation flow was successful, and the donation has been confirmed",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelTextChatDescription": "易於使用的文字聊天，卻有著您需要的所有功能！傳送訊息、媒體、貼圖、GIF、或更多！",
+    "@labelTextChatDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelCalendarDescription": "建立一個幫助您規劃時程的分享日曆，並從其他日曆工具匯入您的時程，讓您的朋友知道您的行程。",
+    "@labelCalendarDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "roomVisibilityRestrictedExplanation": "這個房間將會公開給加入其父級空間的成員",
+    "@roomVisibilityRestrictedExplanation": {
+        "description": "Explains what 'restricted' visibility means",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelDonationInstructions": "請跟隨您的瀏覽器中的指示操作。您的獎勵將於收到贊助款項後的一至二分鐘內送達，請稍待片刻。",
+    "@labelDonationInstructions": {
+        "description": "Explains to the user to follow the donation instructions shown in the opened web page. Also asks for patience if the confirmation is taking a while to complete after donating",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelDonationConfirmationFailed": "無法找到任何贊助紀錄 :( 請考慮贊助支持 Commet 的開發！",
+    "@labelDonationConfirmationFailed": {
+        "description": "Text that is shown when the donation flow was failed, and the no donation was found",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelConfirmCancelDonationConfirmation": "您確定要退出並放棄接受任何獎勵嗎？",
+    "@labelConfirmCancelDonationConfirmation": {
+        "description": "Text that is shown when the user attempts to cancel the donation confirmation flow before the confirmation has finished",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelNoAccount": "無帳號",
+    "@labelNoAccount": {
+        "description": "When the user is prompted to select an account to use for some action, this option is shown when the action can be completed without picking any account",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptPickDonationAccount": "選擇一個帳號用於贊助",
+    "@promptPickDonationAccount": {
+        "description": "Prompt the user to select an account to link to their donation",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelDonateAnonymously": "贊助但不登入帳號",
+    "@labelDonateAnonymously": {
+        "description": "Prompt the user to donate to the project, without linking to their user account",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptDonate": "贊助",
+    "@promptDonate": {
+        "description": "Prompt the user to donate to the project",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptDonationsRefreshAwards": "重新整理獎勵狀態",
+    "@promptDonationsRefreshAwards": {
+        "description": "Prompt the user to refresh any awards they may have received for donating to the project",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsAppExperiments": "實驗性",
+    "@labelSettingsAppExperiments": {
+        "description": "Label for the App Experiments settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsShortcuts": "快捷鍵",
+    "@labelSettingsShortcuts": {
+        "description": "Label for the Keyboard shortcuts settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsCategoryVoiceAndVideo": "語音和視訊",
+    "@labelSettingsCategoryVoiceAndVideo": {
+        "description": "Label for the settings category related to voice and video calls",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSystemKeyboardShortcutsOutsourceDescription": "在您的裝置上若要設定快捷鍵，請至系統設定中設置。",
+    "@labelSystemKeyboardShortcutsOutsourceDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptSystemKeyboardShortcutsMoreInfo": "更多資訊",
+    "@promptSystemKeyboardShortcutsMoreInfo": {
+        "description": "Prompt for a button on the system keyboard shortcut page, which opens a webpage that provides further information about keyboard shortcuts setup",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelConfigureKeyboardShortcuts": "設定快捷鍵",
+    "@labelConfigureKeyboardShortcuts": {
+        "description": "Label for the tile containing settings to configure system wide keyboard shortcuts, for muting, unmuting etc",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptShortcutsPressAKeyCombination": "按下組合鍵",
+    "@promptShortcutsPressAKeyCombination": {
+        "description": "Prompt the user to input a key combination, which is recorded and used to activate a shortcut",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptShortcutsClearKeyboardShortcut": "清除快捷鍵",
+    "@promptShortcutsClearKeyboardShortcut": {
+        "description": "Prompt the user to clear a key combination shortcut",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelAppBehaviourTitle": "應用程式行為",
+    "@labelAppBehaviourTitle": {
+        "description": "Header for the app behaviour section in settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelAskBeforeDeletingMessageToggle": "刪除訊息前確認",
+    "@labelAskBeforeDeletingMessageToggle": {
+        "description": "Label for the toggle for enabling and disabling message deletion confirmation",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelAskBeforeDeletingMessageDescription": "在刪除訊息前彈出確認視窗。",
+    "@labelAskBeforeDeletingMessageDescription": {
+        "description": "Label describing what 'asking before deleting messages' even means",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMediaSettings": "媒體",
+    "@labelMediaSettings": {
+        "description": "Header for the settings tile for for media",
+        "type": "text",
+        "placeholders": {}
+    },
+    "headerVoipSettingsCallConnection": "通話連線",
+    "@headerVoipSettingsCallConnection": {
+        "description": "Header for the settings tile containing configuration relating to the initial connection of a call",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipSettingsStunFallback": "使用 STUN 應變方案",
+    "@labelVoipSettingsStunFallback": {
+        "description": "label for the setting to enable STUN callback for connecting calls",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipSettingsStunFallbackDescription": "通話連線需要連接 STUN 伺服器。如果您的主伺服器沒有支援 STUN，將會退回使用 '{stunServer}' 作為應變方案。進行通話時您的 IP 位置將會暴露給該伺服器",
+    "@labelVoipSettingsStunFallbackDescription": {
+        "type": "text",
+        "placeholders": {
+            "stunServer": {}
+        }
+    },
+    "headerVoipSettingsDevices": "裝置",
+    "@headerVoipSettingsDevices": {
+        "description": "Header for settings tile containing device configuration, for default audio / video inputs",
+        "type": "text",
+        "placeholders": {}
+    },
+    "headerVoipSettingsStreamSettings": "直播設定",
+    "@headerVoipSettingsStreamSettings": {
+        "description": "Header for settings tile containing stream quality configuration",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipUseSimulcast": "使用同步播放（Simulcast）",
+    "@labelVoipUseSimulcast": {
+        "description": "label for setting toggle to enable use of Simulcast",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipUseSimulcastDescription": "上傳不同畫質等級的直播畫面讓其他使用者選擇。這個選項會使用更多頻寬及系統資源。",
+    "@labelVoipUseSimulcastDescription": {
+        "description": "description for setting toggle to enable use of Simulcast",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipStreamMaximumBitrate": "最高直播位元率",
+    "@labelVoipStreamMaximumBitrate": {
+        "description": "label for setting slider to set the maximum bitrate that can be used when streaming",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipStreamMaximumBitrateDescription": "決定您的直播畫質。越高的設定畫質越好，但也會使用更多系統資源",
+    "@labelVoipStreamMaximumBitrateDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipStreamFramerate": "直播幀數",
+    "@labelVoipStreamFramerate": {
+        "description": "label for setting slider to set the framerate at which the screen should be captured when streaming",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipStreamFramerateDescription": "螢幕分享時的每秒目標幀數。越高的設定有越平滑的移動，但有可能降低清晰度。",
+    "@labelVoipStreamFramerateDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipStreamPreferredCodec": "直播編解碼器偏好",
+    "@labelVoipStreamPreferredCodec": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipStreamPreferredCodecDescription": "決定用什麼格式為您的直播編碼。部分編解碼器在特定裝置上運行得更快，但可能不被其他類型裝置支援。大部分的裝置都支援 vp8 和 h264。",
+    "@labelVoipStreamPreferredCodecDescription": {
+        "description": "Explains the preferred stream codec setting. This is just a preference, and the picked codec may not be used if the user's device does not support it",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipStreamResolution": "直播解析度",
+    "@labelVoipStreamResolution": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipStreamResolutionDescription": "決定您直播時的畫面解析度，越高的設定越好",
+    "@labelVoipStreamResolutionDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelShowRoomPreviewsInSpaceSidebar": "在側邊欄顯示尚未加入的房間",
+    "@labelShowRoomPreviewsInSpaceSidebar": {
+        "description": "Label for enabling using the preview list in the space sidebar",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelShowRoomPreviewsInSpaceSidebarDescription": "如果空間內有您尚未加入的房間，將它們和其它的房間一起顯示在側邊欄",
+    "@labelShowRoomPreviewsInSpaceSidebarDescription": {
+        "description": "Description for enabling using the preview list in the space sidebar",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsAppInfo": "關於",
+    "@labelSettingsAppInfo": {
+        "description": "Label for the app info settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelDefaultReadReceiptsOption": "使用全域偏好（{pref}）",
+    "@labelDefaultReadReceiptsOption": {
+        "description": "Label to use the global preference, showing the current global preference value",
+        "type": "text",
+        "placeholders": {
+            "pref": {}
+        }
+    },
+    "labelDefaultTypingIndicatorsOption": "使用全域偏好（{pref}）",
+    "@labelDefaultTypingIndicatorsOption": {
+        "description": "Label to use the global preference, showing the current global preference value",
+        "type": "text",
+        "placeholders": {
+            "pref": {}
+        }
+    },
+    "labelReadReceiptsTitle": "已讀標示",
+    "@labelReadReceiptsTitle": {
+        "description": "Label for the toggle for enabling and disabling public read receipts",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelTypingIndicatorTitle": "正在輸入狀態",
+    "@labelTypingIndicatorTitle": {
+        "description": "Label for the toggle for enabling and disabling typing indicators",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsJoinCallTitle": "加入通話",
+    "@labelMatrixPermissionsJoinCallTitle": {
+        "description": "Title for the permission to allow users to join a call in a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsJoinCallDescription": "允許使用者加入正在進行的通話",
+    "@labelMatrixPermissionsJoinCallDescription": {
+        "description": "Description for the permission to allow users to join a call in a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsAddCalendarEventTitle": "編輯日曆活動",
+    "@labelMatrixPermissionsAddCalendarEventTitle": {
+        "description": "Title for the permission to allow users to edit the calendar",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsAddCalendarEventDescription": "允許使用者編輯日曆中的活動",
+    "@labelMatrixPermissionsAddCalendarEventDescription": {
+        "description": "Description for the permission to allow users to create an event on the calendar",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomSettingsCalendar": "日曆",
+    "@labelRoomSettingsCalendar": {
+        "description": "Label for room calendar settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceSettingsSecurity": "安全性",
+    "@labelSpaceSettingsSecurity": {
+        "description": "Label for space security settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceSettingsMembers": "成員",
+    "@labelSpaceSettingsMembers": {
+        "description": "Label for space member settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsTabPrivacy": "隱私",
+    "@labelSettingsTabPrivacy": {
+        "description": "Label for the Privacy settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelChatPrivacyTitle": "聊天內容隱私",
+    "@labelChatPrivacyTitle": {
+        "description": "Header for the chat privacy section in settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPublicReadReceiptsToggle": "已讀標示",
+    "@labelPublicReadReceiptsToggle": {
+        "description": "Label for the toggle for enabling and disabling sending read receipts",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPublicReadReceiptsDescription": "讓房間中的其他成員知道您已經閱讀他們的訊息。",
+    "@labelPublicReadReceiptsDescription": {
+        "description": "description for the toggle for enabling and disabling sending read receipts",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelTypingIndicatorsToggle": "正在輸入狀態",
+    "@labelTypingIndicatorsToggle": {
+        "description": "Label for the toggle for enabling and disabling sending typing indicator",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPublicTypingIndicatorDescription": "讓房間中的其他成員知道您正在輸入訊息。",
+    "@labelPublicTypingIndicatorDescription": {
+        "description": "description for the toggle for enabling and disabling sending typing indicator",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelDialogConfirmation": "確認",
+    "@labelDialogConfirmation": {
+        "description": "label for the dialog which asks the user to confirm some action",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptEndPoll": "結束投票",
+    "@promptEndPoll": {
+        "description": "Prompt the user to end a poll",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptNext": "下一步",
+    "@promptNext": {
+        "description": "Generic prompt for going to the next step of an activity or flow, usually on a button",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptDismiss": "關閉",
+    "@promptDismiss": {
+        "description": "Generic prompt to dismiss something, probably a popup",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptDecline": "拒絕",
+    "@promptDecline": {
+        "description": "Generic prompt to decline something, probably a request of some kind",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptYes": "是",
+    "@promptYes": {
+        "description": "Generic prompt to say yes to a request, probably on a confirmation dialog 'are you sure you want to do x?' 'yes' ",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptNo": "否",
+    "@promptNo": {
+        "description": "Generic prompt to say no to a request, probably on a confirmation dialog 'are you sure you want to do x?' 'no' ",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptSearch": "搜尋",
+    "@promptSearch": {
+        "description": "Prompt the user to search for something, usually shown as the hint in a text box",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPublic": "公開",
+    "@labelPublic": {
+        "description": "Label for public",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPrivate": "私人",
+    "@labelPrivate": {
+        "description": "Label for private",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelEnabled": "開啟",
+    "@labelEnabled": {
+        "description": "Label for enabled",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelDisabled": "關閉",
+    "@labelDisabled": {
+        "description": "Label for disabled",
+        "type": "text",
+        "placeholders": {}
+    },
+    "shortcutNameMute": "靜音",
+    "@shortcutNameMute": {
+        "description": "name for the system wide shortcut to activate microphone mute",
+        "type": "text",
+        "placeholders": {}
+    },
+    "shortcutNameUnmute": "解除靜音",
+    "@shortcutNameUnmute": {
+        "description": "name for the system wide shortcut to disable microphone mute",
+        "type": "text",
+        "placeholders": {}
+    },
+    "shortcutNameToggleMute": "靜音開關",
+    "@shortcutNameToggleMute": {
+        "description": "name for the system wide shortcut to toggle the microphone mute status",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelUpdateAvailable": "有新的更新",
+    "@labelUpdateAvailable": {
+        "description": "Label for the the info popup when an update is available",
+        "type": "text",
+        "placeholders": {}
+    },
+    "descriptionUpdateAvailable": "有新的 Commet 更新可供使用：{version}",
+    "@descriptionUpdateAvailable": {
+        "description": "describes the update, showing the version code for the available update",
+        "type": "text",
+        "placeholders": {
+            "version": {}
+        }
+    },
+    "messagePlaceholderUserEditedCalendar": "{user} 編輯了日曆",
+    "@messagePlaceholderUserEditedCalendar": {
+        "description": "Message body for when a user edits the room calendar",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "messageUserAnsweredCall": "{user} 加入了通話",
+    "@messageUserAnsweredCall": {
+        "description": "Message body for when a user answers a call",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "messageUserHangupCall": "{user} 結束了通話",
+    "@messageUserHangupCall": {
+        "description": "Message body for when a user hangs up a call",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "messageUserRejectCall": "{user} 拒絕了通話",
+    "@messageUserRejectCall": {
+        "description": "Message body for when a user rejects a call",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "messageUserInviteCall": "{user} 開始了新的通話",
+    "@messageUserInviteCall": {
+        "description": "Message body for when a user starts a call",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "matrixClientVodozemacMissingMessage": "無法找到或未安裝 vodozemac，在解決前將無法開啟端到端加密",
+    "@matrixClientVodozemacMissingMessage": {
+        "description": "Text that explains to the user that vodozemac dependency is not found",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageUserDeactivated": "您的帳號已被停用",
+    "@messageUserDeactivated": {
+        "description": "An error message displayed when the user attempts to log into an account that has been disabled",
+        "type": "text",
+        "placeholders": {}
+    },
+    "notificationContentUserIsCalling": "{user} 來電！",
+    "@notificationContentUserIsCalling": {
+        "description": "Notification body content for when receiving an incoming call from another user",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "notificationTitleIncomingCall": "通話來電！（{roomName}）",
+    "@notificationTitleIncomingCall": {
+        "description": "Notification title for when a call is being received",
+        "type": "text",
+        "placeholders": {
+            "roomName": {}
+        }
     }
 }
