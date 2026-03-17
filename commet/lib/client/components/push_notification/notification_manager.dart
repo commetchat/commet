@@ -13,6 +13,8 @@ import 'package:commet/client/components/push_notification/windows/windows_notif
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/debug/log.dart';
+import 'package:commet/main.dart';
+import 'package:media_kit/media_kit.dart';
 
 class NotificationManager {
   static Notifier? _notifier;
@@ -23,6 +25,15 @@ class NotificationManager {
       List.empty(growable: true);
 
   static Future<void>? notifierLoading;
+
+  static Player? _player;
+
+  static Player getSoundPlayer() {
+    _player ??= Player(configuration: PlayerConfiguration());
+    _player!.setVolume(preferences.notificationsVolume.value);
+
+    return _player!;
+  }
 
   static Future<void> init({bool isBackgroundService = false}) async {
     Log.i("Initializing NotificationManager");
@@ -88,6 +99,10 @@ class NotificationManager {
     }
 
     NotificationContent? content = notification;
+
+    if (preferences.enableNotifications.value == false) {
+      return;
+    }
 
     for (var modifier in _modifiers) {
       Log.d("Processing modifier: $modifier");

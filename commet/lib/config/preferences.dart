@@ -321,6 +321,16 @@ class Preferences {
   BoolPreference doSimulcast =
       BoolPreference("livekit_use_simulcast", defaultValue: false);
 
+  BoolPreference enableNotifications =
+      BoolPreference("notifications_enabled", defaultValue: true);
+
+  BoolPreference suppressNotificationWhenRoomFocused = BoolPreference(
+      "suppress_notification_when_room_focused",
+      defaultValue: true);
+
+  DoublePreference notificationsVolume =
+      DoublePreference("notifications_volume", defaultValue: 90.0);
+
   DoublePreference streamBitrate =
       DoublePreference("screenshare_bitrate_mbps", defaultValue: 8);
 
