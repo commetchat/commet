@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:commet/client/components/emoticon/emoticon.dart';
@@ -138,7 +139,6 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
             right: Margin.zero(),
           ),
           color: Theme.of(context).colorScheme.onSurface,
-          whiteSpace: WhiteSpace.pre, // handled whitespace for #237
         ),
         "code": Style(backgroundColor: Colors.black.withAlpha(40)),
         "blockquote": Style(
@@ -173,8 +173,15 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
           padding: HtmlPaddings.all(0),
           color: Theme.of(context).colorScheme.onSurface,
         ),
+        "ul": Style(
+          margin: Margins.all(2),
+          padding: HtmlPaddings.all(2),
+        ),
+        "li": Style(
+          margin: Margins.all(0),
+          padding: HtmlPaddings.all(0),
+        ),
         "p": Style(
-          border: Border.all(),
           margin: Margins.all(0),
           padding: HtmlPaddings.all(0),
         )
@@ -307,6 +314,9 @@ class MatrixEmoticonHtmlExtension extends HtmlExtension {
   bool matches(ExtensionContext context) {
     // If text contains only emojis and spaces we can handle this too
     if (context.node is dom.Text) {
+      if (context.node.text == null) return false;
+      if (context.node.text!.trim().isEmpty) return false;
+
       for (var char in context.node.text!.characters) {
         if (char.trim() == "") continue;
 
