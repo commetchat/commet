@@ -216,6 +216,32 @@ Future<void> initNecessary() async {
   NeedsPostLoginInit.doPostLoginInit();
 }
 
+/// Wrapping the initialization functions in closures prevents an exception
+/// "Null check operator used on a null value". Despite the try/catch,
+/// the error does not actually occur inside of the closure now.
+/// This has the added benefit of providing a stacktrace if there is an
+/// error.
+Future<List> _loadLocalization(Locale locale) async {
+  // Wrap the localization initialization functions with a try/catch
+  // and if there is an exception print the error and stack trace.
+  Future<void> _load(dynamic Function() loadFunction) async {
+    try {
+      await loadFunction();
+    } catch (e, st) {
+      Log.e("Error loading localization: $e\n$st");
+    }
+  }
+
+  return await Future.wait<dynamic>([
+    _load(() async => UnicodeEmojis.load()),
+    if (!preferences.debugTranslations.value)
+      _load(() async => initializeMessages(locale.languageCode)),
+    if (preferences.debugTranslations.value)
+      _load(() async => initializeMessagesDebug()),
+    _load(() async => initializeDateFormatting(locale.languageCode)),
+  ]);
+}
+
 /// Initializes everything that is needed to run in GUI mode
 Future<void> initGuiRequirements() async {
   isHeadless = false;
@@ -223,15 +249,7 @@ Future<void> initGuiRequirements() async {
   MediaKit.ensureInitialized();
 
   var locale = PlatformDispatcher.instance.locale;
-
-  Future.wait<dynamic>([
-    UnicodeEmojis.load(),
-    if (!preferences.debugTranslations.value)
-      initializeMessages(locale.languageCode),
-    if (preferences.debugTranslations.value) initializeMessagesDebug(),
-    initializeDateFormatting(locale.languageCode),
-  ]);
-
+  await _loadLocalization(locale);
   tiamat.getAppScale = () {
     return preferences.appScale.value;
   };
