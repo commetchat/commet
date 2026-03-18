@@ -6,7 +6,6 @@ import 'package:commet/client/components/push_notification/notification_manager.
 import 'package:commet/config/app_config.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/platform_utils.dart';
-import 'package:commet/debug/log.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/code_block.dart';
