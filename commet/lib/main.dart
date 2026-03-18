@@ -11,6 +11,7 @@ import 'package:commet/config/global_config.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/config/preferences.dart';
+import 'package:commet/config/subplatforms/subplatforms.dart';
 import 'package:commet/debug/l10n_debug_lookup.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
@@ -288,7 +289,9 @@ Future<void> startGui() async {
     initialRoom: initialRoomId,
   ));
 
-  WindowManagement.init();
+  WindowManagement.init().then((_) {
+    Subplatforms.init();
+  });
 }
 
 void enableEdgeToEdge() async {
