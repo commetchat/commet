@@ -6,6 +6,7 @@ import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/background_tasks/background_task_manager.dart';
+import 'package:matrix/matrix_api_lite.dart';
 
 class MatrixImportEmoticonPackTask
     implements BackgroundTaskWithIntegerProgress {
@@ -53,19 +54,39 @@ class MatrixImportEmoticonPackTask
     var results = List<Uri?>.generate(images.length, (index) => null);
     var mx = client.getMatrixClient();
 
+    var failed = 0;
     for (var i = 0; i < images.length; i++) {
       var data = images[i];
-      var uri = await mx.uploadContent(data);
+      var uri;
+      var waitSec = 4;
+      while (true)
+        try {
+          uri = await mx.uploadContent(data);
+          break;
+        } catch (e) {
+          if (e is MatrixException && e.error == MatrixError.M_LIMIT_EXCEEDED) {
+            Log.i("Rate limited, waiting $waitSec second(s)...");
+            await Future.delayed(Duration(seconds: waitSec));
+            waitSec *= 2;
+            continue;
+          } else {
+            failed++;
+            Log.e(e);
+            break;
+          }
+        }
       fileCache?.putFile(MatrixMxcImage.getIdentifier(uri), data);
       results[i] = uri;
 
       current += 1;
-      Log.i("Uploaded sticker: $uri ($current/$total)");
-      label = "Uploading stickers: ($current/$total)";
+      if (uri != null) Log.i("Uploaded sticker: $uri ($current/$total)");
+      var failedLabel = "";
+      if (failed != 0) failedLabel = "; Failed: $failed";
+      label = "Uploading stickers: ($current/$total)$failedLabel";
       progressStream.add(current);
     }
 
-    return results;
+    return results.where((v) => v != null).toList();
   }
 
   void complete() {
