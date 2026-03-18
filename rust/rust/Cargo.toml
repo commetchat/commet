@@ -7,7 +7,10 @@ edition = "2021"
 crate-type = ["cdylib", "staticlib"]
 
 [dependencies]
+env_logger = "0.11.9"
 flutter_rust_bridge = "=2.11.1"
+log = "0.4.29"
+stderrlog = "0.6.0"
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(frb_expand)'] }

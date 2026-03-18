@@ -1,9 +1,11 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:commet/client/components/push_notification/notification_content.dart';
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/config/app_config.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/platform_utils.dart';
+import 'package:commet/debug/log.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/navigation_utils.dart';
@@ -39,6 +41,7 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
       notificationTests(),
       rendering(),
       error(),
+      subprocesses(),
       if (PlatformUtils.isAndroid) shortcuts(),
       backgroundTasks(),
       dumpDatabases(),
@@ -319,6 +322,47 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
                 // This should also throw an error!
                 String? empty;
                 empty!.split(" ");
+              }),
+        ])
+      ],
+    );
+  }
+
+  Widget subprocesses() {
+    return ExpansionTile(
+      title: const tiamat.Text.labelEmphasised("Subprocesses"),
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
+      collapsedBackgroundColor:
+          Theme.of(context).colorScheme.surfaceContainerLow,
+      children: [
+        Wrap(spacing: 8, runSpacing: 8, children: [
+          tiamat.Button(
+              text: "Launch Subprocess",
+              onTap: () async {
+                var exe = Platform.resolvedExecutable;
+
+                var process = await Process.start(exe, ['--entry']);
+                process.stdout.listen((data) {
+                  Log.i("Got data from subprocess: ${utf8.decode(data)}");
+                });
+
+                process.stderr.listen((data) {
+                  Log.i("Subprocess logs: ${utf8.decode(data)}");
+                });
+
+                process.exitCode.then((i) {
+                  Log.i("Subprocess exited: $i");
+                });
+
+                for (int i = 0; i < 10; i++) {
+                  Log.i("Sending data to subprocess");
+                  process.stdin.writeln("Sending some data to stdin!!!");
+                  process.stdin.flush();
+
+                  await Future.delayed(Duration(seconds: 5));
+                }
+
+                process.kill(ProcessSignal.sigsegv);
               }),
         ])
       ],
