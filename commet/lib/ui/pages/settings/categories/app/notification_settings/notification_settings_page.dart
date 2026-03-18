@@ -116,55 +116,64 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
                 description:
                     "When receiving a message, if you have the chat selected and the app is in focus, dont show the notification",
               ),
-              SizedBox(
-                height: 20,
-              ),
-              BooleanPreferenceToggle(
-                preference: preferences.formatNotificationBody,
-                title: "Message Body Formatting",
-                description: "Apply user formatting in message notifications",
-              ),
-              AnimatedOpacity(
-                opacity: preferences.formatNotificationBody.value ? 1 : 0.3,
-                duration: Durations.short4,
-                child: IgnorePointer(
-                  ignoring: preferences.formatNotificationBody.value == false,
-                  child: Column(
-                    children: [
-                      BooleanPreferenceToggle(
-                        preference: preferences.showMediaInNotifications,
-                        title: "Show Images",
-                        description:
-                            "Show images in notifications, if allowed by 'General > Media Preview' settings",
+              if (PlatformUtils.isLinux || PlatformUtils.isWindows)
+                Column(
+                  children: [
+                    SizedBox(
+                      height: 20,
+                    ),
+                    BooleanPreferenceToggle(
+                      preference: preferences.formatNotificationBody,
+                      title: "Message Body Formatting",
+                      description:
+                          "Apply user formatting in message notifications",
+                    ),
+                    AnimatedOpacity(
+                      opacity:
+                          preferences.formatNotificationBody.value ? 1 : 0.3,
+                      duration: Durations.short4,
+                      child: IgnorePointer(
+                        ignoring:
+                            preferences.formatNotificationBody.value == false,
+                        child: Column(
+                          children: [
+                            BooleanPreferenceToggle(
+                              preference: preferences.showMediaInNotifications,
+                              title: "Show Images",
+                              description:
+                                  "Show images in notifications, if allowed by 'General > Media Preview' settings",
+                            ),
+                            BooleanPreferenceToggle(
+                              preference: preferences.previewUrlInNotifications,
+                              title: "Preview Urls",
+                              description:
+                                  "Fetch URL previews to show extra information about links in notifications",
+                            ),
+                          ],
+                        ),
                       ),
-                      BooleanPreferenceToggle(
-                        preference: preferences.previewUrlInNotifications,
-                        title: "Preview Urls",
-                        description:
-                            "Fetch URL previews to show extra information about links in notifications",
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ),
               SizedBox(
                 height: 20,
               ),
-              DoublePreferenceSlider(
-                preference: preferences.notificationsVolume,
-                min: 0,
-                max: 150,
-                numDecimals: 0,
-                units: "%",
-                title: "Notification volume",
-                description:
-                    "Controls the volume of notifications and ringtones",
-                onChanged: (p0) {
-                  Player p = NotificationManager.getSoundPlayer();
-                  p.setVolume(p0);
-                  p.open(Media("asset:///assets/sound/message.ogg"));
-                },
-              ),
+              if (PlatformUtils.isLinux || PlatformUtils.isWindows)
+                DoublePreferenceSlider(
+                  preference: preferences.notificationsVolume,
+                  min: 0,
+                  max: 150,
+                  numDecimals: 0,
+                  units: "%",
+                  title: "Notification volume",
+                  description:
+                      "Controls the volume of notifications and ringtones",
+                  onChanged: (p0) {
+                    Player p = NotificationManager.getSoundPlayer();
+                    p.setVolume(p0);
+                    p.open(Media("asset:///assets/sound/message.ogg"));
+                  },
+                ),
             ],
           ),
       ],
