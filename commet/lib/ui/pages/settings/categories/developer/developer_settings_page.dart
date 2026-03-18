@@ -353,17 +353,16 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
                 var exe = Platform.resolvedExecutable;
 
                 var process = await Process.start(exe, ['--entry']);
-                process.stdout.listen((data) {
-                  Log.i("Got data from subprocess: ${utf8.decode(data)}");
-                });
-
-                process.stderr.listen((data) {
-                  Log.i("Subprocess logs: ${utf8.decode(data)}");
-                });
 
                 process.exitCode.then((i) {
                   Log.i("Subprocess exited: $i");
                 });
+
+                AdaptiveDialog.show(context,
+                    builder: (context) => ProcessOutputViewer(
+                          process,
+                          showStdErr: true,
+                        ));
 
                 for (int i = 0; i < 10; i++) {
                   Log.i("Sending data to subprocess");
@@ -451,8 +450,9 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
 }
 
 class ProcessOutputViewer extends StatefulWidget {
-  const ProcessOutputViewer(this.process, {super.key});
+  const ProcessOutputViewer(this.process, {super.key, this.showStdErr = false});
   final Process process;
+  final bool showStdErr;
 
   @override
   State<ProcessOutputViewer> createState() => _ProcessOutputViewerState();
@@ -484,16 +484,57 @@ class _ProcessOutputViewerState extends State<ProcessOutputViewer> {
     super.dispose();
   }
 
+  ScrollController stdoutScrollController = ScrollController();
+  ScrollController stdErrScrollController = ScrollController();
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: 1000,
-      child: SingleChildScrollView(
-        child: Codeblock(
-          text: stdOut,
-          clipboardText: stdOut,
-          language: "stdout",
-        ),
+      child: Column(
+        spacing: 4,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: tiamat.Panel(
+              header: "stdout",
+              child: SingleChildScrollView(
+                child: Scrollbar(
+                  controller: stdoutScrollController,
+                  child: SingleChildScrollView(
+                    controller: stdoutScrollController,
+                    scrollDirection: Axis.horizontal,
+                    child: Codeblock(
+                      text: stdOut,
+                      clipboardText: stdOut,
+                      language: "stdout",
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          if (widget.showStdErr)
+            Expanded(
+              child: tiamat.Panel(
+                header: "stderr",
+                child: SingleChildScrollView(
+                  child: Scrollbar(
+                    controller: stdErrScrollController,
+                    child: SingleChildScrollView(
+                      controller: stdErrScrollController,
+                      scrollDirection: Axis.horizontal,
+                      child: Codeblock(
+                        text: stdError,
+                        clipboardText: stdError,
+                        language: "stderr",
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

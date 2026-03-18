@@ -1,4 +1,3 @@
-use env_logger::Env;
 use log::*;
 use std::io::{self, BufRead, Write};
 
@@ -20,11 +19,10 @@ pub extern "C" fn commet_entry() {
 
     loop {
         for line in stdin.lock().lines() {
-            info!("{}", line.unwrap());
+            info!("received: '{}'", line.unwrap());
 
-            stdout.write(b"Sending some data back").unwrap();
+            stdout.write(b"Sending some data back\n").unwrap();
             stdout.flush().unwrap();
-            io::stderr().flush();
         }
     }
 }
