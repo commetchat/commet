@@ -54,6 +54,9 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
                 description:
                     "As part of the implementaton for the rich text editor, we sometimes have to make automated changes to the text cursor. This disables that",
               ),
+            BooleanPreferenceToggle(
+                preference: preferences.debugTranslations,
+                title: "Debug Translations"),
             DoublePreferenceSlider(
               preference: preferences.customOnscreenKeyboardViewOffset,
               title: "Keyboard Offset",
@@ -61,7 +64,7 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
               max: 1000,
               description:
                   "Amount to shift the app view up by when the onscreen keyboard is shown",
-            )
+            ),
           ],
         ),
       )

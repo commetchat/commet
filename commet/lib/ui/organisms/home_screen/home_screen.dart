@@ -140,7 +140,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Row(spacing: 8, children: [
                         Icon(Icons.search),
-                        tiamat.Text.labelLow("Search")
+                        tiamat.Text.labelLow(CommonStrings.promptSearch),
                       ]),
                       if (Layout.desktop)
                         Padding(

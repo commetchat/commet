@@ -5,11 +5,13 @@ import 'package:commet/client/components/push_notification/push_notification_com
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/pages/settings/categories/app/boolean_toggle.dart';
+import 'package:commet/ui/pages/settings/categories/app/double_preference_slider.dart';
 import 'package:commet/ui/pages/settings/categories/app/notification_settings/notifier_debug_view.dart';
 import 'package:commet/ui/pages/setup/menus/unified_push_setup.dart';
 import 'package:commet/utils/common_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:media_kit/media_kit.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:tiamat/tiamat.dart';
@@ -101,34 +103,77 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
         if (PlatformUtils.isLinux)
           Column(
             children: [
-              BooleanPreferenceToggle(
-                preference: preferences.formatNotificationBody,
-                title: "Message Body Formatting",
-                description: "Apply user formatting in message notifications",
-              ),
-              AnimatedOpacity(
-                opacity: preferences.formatNotificationBody.value ? 1 : 0.3,
-                duration: Durations.short4,
-                child: IgnorePointer(
-                  ignoring: preferences.formatNotificationBody.value == false,
-                  child: Column(
-                    children: [
-                      BooleanPreferenceToggle(
-                        preference: preferences.showMediaInNotifications,
-                        title: "Show Images",
-                        description:
-                            "Show images in notifications, if allowed by 'General > Media Preview' settings",
-                      ),
-                      BooleanPreferenceToggle(
-                        preference: preferences.previewUrlInNotifications,
-                        title: "Preview Urls",
-                        description:
-                            "Fetch URL previews to show extra information about links in notifications",
-                      ),
-                    ],
-                  ),
+              if (PlatformUtils.isLinux || PlatformUtils.isWindows)
+                BooleanPreferenceToggle(
+                  preference: preferences.enableNotifications,
+                  title: "Show notifications",
+                  description:
+                      "Enable or disable the display of notifications entirely",
                 ),
-              )
+              BooleanPreferenceToggle(
+                preference: preferences.suppressNotificationWhenRoomFocused,
+                title: "Hide notifications for current room",
+                description:
+                    "When receiving a message, if you have the chat selected and the app is in focus, dont show the notification",
+              ),
+              if (PlatformUtils.isLinux || PlatformUtils.isWindows)
+                Column(
+                  children: [
+                    SizedBox(
+                      height: 20,
+                    ),
+                    BooleanPreferenceToggle(
+                      preference: preferences.formatNotificationBody,
+                      title: "Message Body Formatting",
+                      description:
+                          "Apply user formatting in message notifications",
+                    ),
+                    AnimatedOpacity(
+                      opacity:
+                          preferences.formatNotificationBody.value ? 1 : 0.3,
+                      duration: Durations.short4,
+                      child: IgnorePointer(
+                        ignoring:
+                            preferences.formatNotificationBody.value == false,
+                        child: Column(
+                          children: [
+                            BooleanPreferenceToggle(
+                              preference: preferences.showMediaInNotifications,
+                              title: "Show Images",
+                              description:
+                                  "Show images in notifications, if allowed by 'General > Media Preview' settings",
+                            ),
+                            BooleanPreferenceToggle(
+                              preference: preferences.previewUrlInNotifications,
+                              title: "Preview Urls",
+                              description:
+                                  "Fetch URL previews to show extra information about links in notifications",
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              SizedBox(
+                height: 20,
+              ),
+              if (PlatformUtils.isLinux || PlatformUtils.isWindows)
+                DoublePreferenceSlider(
+                  preference: preferences.notificationsVolume,
+                  min: 0,
+                  max: 150,
+                  numDecimals: 0,
+                  units: "%",
+                  title: "Notification volume",
+                  description:
+                      "Controls the volume of notifications and ringtones",
+                  onChanged: (p0) {
+                    Player p = NotificationManager.getSoundPlayer();
+                    p.setVolume(p0);
+                    p.open(Media("asset:///assets/sound/message.ogg"));
+                  },
+                ),
             ],
           ),
       ],

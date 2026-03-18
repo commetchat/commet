@@ -11,6 +11,7 @@ import 'package:commet/ui/pages/settings/settings_button.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
 import 'package:commet/utils/links/link_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import 'desktop_settings_page.dart';
 
@@ -51,9 +52,25 @@ class SettingsPage extends StatelessWidget {
         "No SettingsPage has been defined for the current build config");
   }
 
+  static String get labelNoAccount => Intl.message("No Account",
+      name: "labelNoAccount",
+      desc:
+          "When the user is prompted to select an account to use for some action, this option is shown when the action can be completed without picking any account");
+
+  static String get promptPickDonationAccount => Intl.message(
+      "Pick an account to donate with",
+      name: "promptPickDonationAccount",
+      desc: "Prompt the user to select an account to link to their donation");
+
+  static String get labelDonateAnonymously => Intl.message(
+      "Donate without linking to an account",
+      name: "labelDonateAnonymously",
+      desc:
+          "Prompt the user to donate to the project, without linking to their user account");
+
   onDonateButtonTapped(BuildContext context) async {
     var client = await AdaptiveDialog.pickOne<dynamic>(
-      title: "Pick an account to donate with",
+      title: promptPickDonationAccount,
       context,
       items: [
         ...clientManager!.clients,
@@ -72,8 +89,8 @@ class SettingsPage extends StatelessWidget {
         return UserPanelView(
           color: Theme.of(context).colorScheme.primaryContainer,
           avatarColor: Theme.of(context).colorScheme.primaryContainer,
-          displayName: "No Account",
-          detail: "Donate without linking to an account",
+          displayName: labelNoAccount,
+          detail: labelDonateAnonymously,
           onClicked: callback,
         );
       },

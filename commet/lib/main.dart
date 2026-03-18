@@ -11,6 +11,7 @@ import 'package:commet/config/global_config.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/config/preferences.dart';
+import 'package:commet/debug/l10n_debug_lookup.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
 import 'package:commet/generated/intl/messages_all.dart';
@@ -225,35 +226,11 @@ Future<void> initGuiRequirements() async {
 
   Future.wait<dynamic>([
     UnicodeEmojis.load(),
-    // Wrapping the initialization functions in closures prevents an exception
-    // "Null check operator used on a null value". Despite the try/catch,
-    // the error does not actually occur inside of the closure now.
-    (() async {
-      try {
-        await initializeMessages(locale.languageCode);
-        Log.i("Initialized messages for locale ${locale.languageCode}");
-      } catch (e) {
-        Log.e(
-            "Error initializing messages for locale ${locale.languageCode}: $e");
-        Log.d("StackTrace: ${StackTrace.current}");
-      }
-    })(),
-    (() async {
-      try {
-        await initializeDateFormatting(locale.languageCode);
-        Log.i("Initialized date formatting for locale ${locale.languageCode}");
-      } catch (e) {
-        Log.e(
-            "Error initializing date formatting for locale ${locale.languageCode}: $e");
-        Log.d("StackTrace: ${StackTrace.current}");
-      }
-    })(),
-    // initializeMessagesDebug()
-  ]).catchError((e) {
-    Log.e("Error during GUI initialization: $e");
-    Log.d("StackTrace: ${StackTrace.current}");
-    return [];
-  });
+    if (!preferences.debugTranslations.value)
+      initializeMessages(locale.languageCode),
+    if (preferences.debugTranslations.value) initializeMessagesDebug(),
+    initializeDateFormatting(locale.languageCode),
+  ]);
 
   tiamat.getAppScale = () {
     return preferences.appScale.value;
