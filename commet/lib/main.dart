@@ -223,12 +223,37 @@ Future<void> initGuiRequirements() async {
 
   var locale = PlatformDispatcher.instance.locale;
 
-  Future.wait([
+  Future.wait<dynamic>([
     UnicodeEmojis.load(),
-    initializeMessages(locale.languageCode),
-    initializeDateFormatting(locale.languageCode),
+    // Wrapping the initialization functions in closures prevents an exception
+    // "Null check operator used on a null value". Despite the try/catch,
+    // the error does not actually occur inside of the closure now.
+    (() async {
+      try {
+        await initializeMessages(locale.languageCode);
+        Log.i("Initialized messages for locale ${locale.languageCode}");
+      } catch (e) {
+        Log.e(
+            "Error initializing messages for locale ${locale.languageCode}: $e");
+        Log.d("StackTrace: ${StackTrace.current}");
+      }
+    })(),
+    (() async {
+      try {
+        await initializeDateFormatting(locale.languageCode);
+        Log.i("Initialized date formatting for locale ${locale.languageCode}");
+      } catch (e) {
+        Log.e(
+            "Error initializing date formatting for locale ${locale.languageCode}: $e");
+        Log.d("StackTrace: ${StackTrace.current}");
+      }
+    })(),
     // initializeMessagesDebug()
-  ]);
+  ]).catchError((e) {
+    Log.e("Error during GUI initialization: $e");
+    Log.d("StackTrace: ${StackTrace.current}");
+    return [];
+  });
 
   tiamat.getAppScale = () {
     return preferences.appScale.value;
