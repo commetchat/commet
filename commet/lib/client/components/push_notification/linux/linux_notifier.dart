@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
+import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/components/push_notification/notifier.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/debug/log.dart';
@@ -17,6 +18,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_local_notifications_linux/src/model/hint.dart' as notif;
 import 'package:launcher_entry/launcher_entry.dart';
+import 'package:media_kit/media_kit.dart';
 import 'package:window_manager/window_manager.dart';
 import 'dart:ui' as ui;
 
@@ -211,6 +213,9 @@ class LinuxNotifier implements Notifier {
       "client_id": content.clientId,
       "event_id": content.eventId,
     };
+
+    var player = NotificationManager.getSoundPlayer();
+    player.open(Media("asset:///assets/sound/message.ogg"));
 
     flutterLocalNotificationsPlugin?.show(
         notificationId++, title, notificationBody,
