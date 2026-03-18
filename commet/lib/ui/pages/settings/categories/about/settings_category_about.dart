@@ -25,10 +25,14 @@ class SettingsCategoryAbout implements SettingsCategory {
       desc:
           "Label for the logs settings page, usually hidden unless developer mode is turned on");
 
+  String get labelSettingsAppInfo => Intl.message("About",
+      name: "labelSettingsAppInfo",
+      desc: "Label for the app info settings page");
+
   @override
   List<SettingsTab> get tabs => List.from([
         SettingsTab(
-            label: "About",
+            label: labelSettingsAppInfo,
             icon: Icons.info_outline,
             makeScrollable: false,
             pageBuilder: (context) {

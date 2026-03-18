@@ -4,16 +4,19 @@ import 'package:commet/client/client.dart';
 import 'package:commet/client/components/emoticon/dynamic_emoticon_pack.dart';
 import 'package:commet/client/components/emoticon_recent/recent_emoticon_component.dart';
 import 'package:commet/client/components/gif/gif_component.dart';
+import 'package:commet/client/components/polls/poll_component.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/main.dart';
+import 'package:commet/ui/atoms/adaptive_context_menu.dart';
 import 'package:commet/ui/atoms/emoji_widget.dart';
 import 'package:commet/ui/atoms/keyboard_adaptor.dart';
 import 'package:commet/ui/atoms/random_emoji_button.dart';
 import 'package:commet/ui/atoms/rich_text_field.dart';
 import 'package:commet/ui/molecules/attachment_icon.dart';
 import 'package:commet/ui/molecules/overlapping_panels.dart';
+import 'package:commet/ui/molecules/poll_creator.dart';
 import 'package:commet/ui/organisms/attachment_processor/attachment_processor.dart';
 import 'package:commet/ui/molecules/emoticon_picker.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
@@ -208,7 +211,7 @@ class MessageInputState extends State<MessageInput> {
     preferencesSubscription =
         preferences.onSettingChanged.listen((_) => setState(() {}));
 
-    if (Layout.desktop) {
+    if (preferences.autoFocusMessageTextBox.value) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         textFocus.requestFocus();
       });
@@ -309,15 +312,24 @@ class MessageInputState extends State<MessageInput> {
     return (start, end);
   }
 
+  Debouncer sendDebouncer = Debouncer(delay: Duration(milliseconds: 20));
   void sendMessage() {
-    if (widget.attachments == null || widget.attachments!.isEmpty) {
-      if (controller.text.isEmpty) return;
-      if (controller.text.trim().isEmpty) return;
-    }
+    sendDebouncer.run(() {
+      if (widget.attachments == null || widget.attachments!.isEmpty) {
+        if (controller.text.isEmpty) return;
+        if (controller.text.trim().isEmpty) return;
+      }
 
-    widget.onSendMessage
-        ?.call(controller.text.trim(), overrideClient: senderOverride);
+      var result = widget.onSendMessage
+          ?.call(controller.text.trim(), overrideClient: senderOverride);
+
+      if (result == MessageInputSendResult.success) {
+        controller.text = "";
+      }
+    });
   }
+
+  void showMoreAttachmentOptions() {}
 
   // This duration is to try and hide the transition from keyboard popup animation
   Debouncer removeHeightOverrideDebouncer =
@@ -886,7 +898,10 @@ class MessageInputState extends State<MessageInput> {
   }
 
   Widget sendMessageButton() {
-    bool canSend = controller.text.isNotEmpty;
+    bool canSend =
+        controller.text.isNotEmpty || widget.attachments?.isNotEmpty == true;
+
+    var pollComponent = widget.room?.client.getComponent<PollComponent>();
 
     double targetValue = canSend ? 1 : 0;
     return Padding(
@@ -895,20 +910,56 @@ class MessageInputState extends State<MessageInput> {
           tween: Tween<double>(begin: 0, end: targetValue),
           duration: Durations.medium1,
           builder: (context, value, child) {
-            return SizedBox(
-                width: widget.size,
-                height: widget.size,
-                child: tiamat.CircleButton(
-                  icon: Icons.send,
-                  radius: widget.size * widget.iconScale,
-                  onPressed: sendMessage,
-                  color: Color.lerp(
-                      Theme.of(context).colorScheme.primary.withAlpha(0),
-                      Theme.of(context).colorScheme.primary,
-                      value),
-                  iconColor: Color.lerp(Theme.of(context).colorScheme.secondary,
-                      Theme.of(context).colorScheme.onPrimary, value),
-                ));
+            return ClipRRect(
+              borderRadius: BorderRadiusGeometry.circular(widget.size),
+              child: Material(
+                child: AdaptiveContextMenu(
+                  modal: true,
+                  items: canSend
+                      ? List.empty()
+                      : [
+                          if (pollComponent != null)
+                            tiamat.ContextMenuItem(
+                              text: "Poll",
+                              icon: Icons.poll,
+                              onPressed: () async {
+                                var createArgs =
+                                    await AdaptiveDialog.show<PollCreateArgs>(
+                                        context,
+                                        title: "Create Poll",
+                                        builder: (context) => PollCreator());
+
+                                if (createArgs != null) {
+                                  print(createArgs);
+                                  pollComponent.createPoll(
+                                      widget.room!, createArgs);
+                                }
+                              },
+                            )
+                        ],
+                  child: SizedBox(
+                      width: widget.size,
+                      height: widget.size,
+                      child: tiamat.CircleButton(
+                        icon: canSend ? Icons.send : Icons.more_horiz,
+                        radius: widget.size * widget.iconScale,
+                        onPressed: canSend
+                            ? () {
+                                sendMessage();
+                              }
+                            : null,
+                        color: Color.lerp(
+                            Theme.of(context).colorScheme.primary.withAlpha(0),
+                            Theme.of(context).colorScheme.primary,
+                            value),
+                        iconColor: Color.lerp(
+                            Theme.of(context).colorScheme.secondary,
+                            Theme.of(context).colorScheme.onPrimary,
+                            value),
+                      )),
+                ),
+              ),
+            );
           },
         ));
   }
@@ -954,7 +1005,8 @@ class MessageInputState extends State<MessageInput> {
   Expanded textInput(BuildContext context) {
     var height = Theme.of(context).textTheme.bodyMedium!.fontSize!;
     var padding = widget.size - height;
-
+    var hintStyle = TextTheme.of(context).bodyMedium;
+    hintStyle = hintStyle?.copyWith(color: hintStyle.color?.withAlpha(120));
     return Expanded(
       child: Stack(
         children: [
@@ -976,6 +1028,7 @@ class MessageInputState extends State<MessageInput> {
                       EdgeInsets.fromLTRB(8, padding / 2, 4, padding / 2),
                   border: InputBorder.none,
                   isDense: true,
+                  hintStyle: hintStyle,
                   hintText: widget.hintText),
             ),
           ),

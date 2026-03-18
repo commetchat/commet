@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:commet/config/build_config.dart';
+import 'package:commet/config/layout_config.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/config/preferences/bool_preference.dart';
 import 'package:commet/config/preferences/double_preference.dart';
@@ -244,6 +245,9 @@ class Preferences {
   BoolPreference developerMode =
       BoolPreference("developer_mode", defaultValue: false);
 
+  BoolPreference debugTranslations =
+      BoolPreference("enable_translations_debug", defaultValue: false);
+
   BoolPreference tenorGifSearchEnabled =
       BoolPreference("enable_tenor_gif_search", defaultValue: false);
 
@@ -299,6 +303,20 @@ class Preferences {
 
   BoolPreference showRoomPreviewsInSpaceSidebar =
       BoolPreference("show_room_previews_in_space_sidebar", defaultValue: true);
+
+  BoolPreference autoFocusMessageTextBox = BoolPreference(
+      "auto_focus_message_textbox",
+      defaultGetter: () => Layout.mobile ? false : true,
+      defaultValue: false);
+
+  BoolPreference automaticallyOpenSpace =
+      BoolPreference("open_space_on_room_navigation", defaultValue: true);
+
+  BoolPreference autoRotateImages =
+      BoolPreference("lightbox_rotate_images", defaultValue: false);
+
+  BoolPreference autoRotateVideos =
+      BoolPreference("lightbox_rotate_videos", defaultValue: false);
 
   DoublePreference textScale =
       DoublePreference("text_scale", defaultValue: 1.0);

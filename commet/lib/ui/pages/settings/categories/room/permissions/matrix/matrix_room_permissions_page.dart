@@ -223,13 +223,13 @@ class _MatrixRoomPermissionsPageState extends State<MatrixRoomPermissionsPage> {
 
   String get labelMatrixPermissionsAddCalendarEventTitle => Intl.message(
         "Edit Calendar Events",
-        name: "labelMatrixPermissionsAddCalendarEvent",
+        name: "labelMatrixPermissionsAddCalendarEventTitle",
         desc: "Title for the permission to allow users to edit the calendar",
       );
 
   String get labelMatrixPermissionsAddCalendarEventDescription => Intl.message(
         "Allow users to edit events in the calendar",
-        name: "labelMatrixPermissionsCreateCalendarEventDescription",
+        name: "labelMatrixPermissionsAddCalendarEventDescription",
         desc:
             "Description for the permission to allow users to create an event on the calendar",
       );

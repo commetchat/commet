@@ -5,10 +5,15 @@ import '../../client/room.dart';
 
 class ReadIndicator extends StatelessWidget {
   const ReadIndicator(
-      {required this.room, required this.users, this.onTap, super.key});
+      {required this.room,
+      required this.users,
+      this.spacing = 6,
+      this.onTap,
+      super.key});
   final Room room;
   final Function()? onTap;
-  final List<String> users;
+  final Iterable<String> users;
+  final double spacing;
 
   static const int maxItems = 4;
 
@@ -36,11 +41,11 @@ class ReadIndicator extends StatelessWidget {
   }
 
   Widget buildEntry(int index, BuildContext context, {bool fade = false}) {
-    var member = room.getMemberOrFallback(users[index]);
+    var member = room.getMemberOrFallback(users.elementAt(index));
     return Opacity(
       opacity: fade ? index / (maxItems - 1) : 1.0,
       child: Padding(
-        padding: EdgeInsets.fromLTRB(index.toDouble() * 6, 0, 0, 0),
+        padding: EdgeInsets.fromLTRB(index.toDouble() * spacing, 0, 0, 0),
         child: tiamat.Avatar(
           border: BoxBorder.all(
               color: ColorScheme.of(context).surfaceContainerLow,

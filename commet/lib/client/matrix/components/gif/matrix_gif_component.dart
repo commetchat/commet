@@ -21,7 +21,7 @@ class MatrixGifComponent implements GifComponent<MatrixClient, MatrixRoom> {
   MatrixGifComponent(this.client, this.room);
 
   @override
-  String get searchPlaceholder => "Search Tenor";
+  String get searchPlaceholder => "Search KLIPY";
 
   @override
   Future<List<GifSearchResult>> search(String query) async {
@@ -30,7 +30,10 @@ class MatrixGifComponent implements GifComponent<MatrixClient, MatrixRoom> {
     if (!preferences.tenorGifSearchEnabled.value) return [];
 
     var uri = Uri.https(
-        preferences.proxyUrl.value, "/proxy/tenor/api/v2/search", {"q": query});
+        preferences.proxyUrl.value, "/proxy/klipy/api/v2/search", {"q": query});
+
+    // var uri =
+    //     Uri.http("localhost:8788", "/proxy/klipy/api/v2/search", {"q": query});
 
     var result = await http.get(uri);
     if (result.statusCode == 200) {
@@ -131,7 +134,9 @@ class MatrixGifComponent implements GifComponent<MatrixClient, MatrixRoom> {
     var uri = Uri.parse(url);
 
     var proxyUri =
-        Uri.https(preferences.proxyUrl.value, "/proxy/tenor/media${uri.path}");
+        Uri.https(preferences.proxyUrl.value, "/proxy/klipy/media${uri.path}");
+
+    // proxyUri = Uri.http("localhost:8788", "/proxy/klipy/media${uri.path}");
 
     return proxyUri;
   }

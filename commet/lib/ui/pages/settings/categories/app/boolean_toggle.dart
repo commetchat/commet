@@ -45,7 +45,7 @@ class _BooleanPreferenceToggleState extends State<BooleanPreferenceToggle> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.fromLTRB(8, 8, 0, 8),
             child: tiamat.Switch(
               state: widget.preference.value,
               onChanged: (value) async {
@@ -100,7 +100,7 @@ class _NullableBooleanPreferenceToggleState
           ),
         ),
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.fromLTRB(8, 8, 0, 8),
           child: tiamat.Switch(
             state: widget.preference.value ?? false,
             onChanged: (value) async {

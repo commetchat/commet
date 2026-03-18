@@ -12,6 +12,7 @@ import 'package:commet/config/layout_config.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/config/preferences.dart';
 import 'package:commet/config/subplatforms/subplatforms.dart';
+import 'package:commet/debug/l10n_debug_lookup.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/diagnostic/diagnostics.dart';
 import 'package:commet/generated/intl/messages_all.dart';
@@ -51,6 +52,7 @@ import 'package:tiamat/config/style/theme_changer.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:tiamat/config/style/theme_dark.dart';
 import 'package:desktop_webview_window/desktop_webview_window.dart';
+import 'package:tiamat/tiamat.dart' as tiamat;
 
 final GlobalKey<NavigatorState> navigator = GlobalKey();
 FileCache? fileCache;
@@ -225,10 +227,15 @@ Future<void> initGuiRequirements() async {
 
   Future.wait([
     UnicodeEmojis.load(),
-    initializeMessages(locale.languageCode),
+    if (!preferences.debugTranslations.value)
+      initializeMessages(locale.languageCode),
+    if (preferences.debugTranslations.value) initializeMessagesDebug(),
     initializeDateFormatting(locale.languageCode),
-    // initializeMessagesDebug()
   ]);
+
+  tiamat.getAppScale = () {
+    return preferences.appScale.value;
+  };
 
   Intl.defaultLocale = locale.languageCode;
 }

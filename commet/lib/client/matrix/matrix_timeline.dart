@@ -126,11 +126,12 @@ class MatrixTimeline extends Timeline {
 
   @override
   void markAsRead(TimelineEvent event) async {
+    var receipts = room.getComponent<MatrixReadReceiptComponent>();
     if (event.status == TimelineEventStatus.synced ||
         event.status == TimelineEventStatus.sent) {
-      await _matrixTimeline?.setReadMarker();
+      await _matrixTimeline?.setReadMarker(
+          public: receipts?.usePublicReadReceiptsForRoom);
 
-      var receipts = room.getComponent<MatrixReadReceiptComponent>();
       receipts?.handleEvent(event.eventId, room.client.self!.identifier);
     }
   }

@@ -10,11 +10,13 @@ import 'package:commet/utils/common_strings.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/image/lod_image.dart';
 import 'package:commet/utils/image_utils.dart';
+import 'package:commet/utils/notification_utils.dart';
 import 'package:commet/utils/shortcuts_manager.dart';
 import 'package:desktop_notifications/desktop_notifications.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_local_notifications_linux/src/model/hint.dart' as notif;
+import 'package:launcher_entry/launcher_entry.dart';
 import 'package:window_manager/window_manager.dart';
 import 'dart:ui' as ui;
 
@@ -43,6 +45,9 @@ class LinuxNotifier implements Notifier {
   static int notificationId = 0;
 
   late LinuxServerCapabilities capabilities;
+
+  final service = LauncherEntryService(
+      appUri: 'application://chat.commet.commetapp.desktop');
 
   static void notificationResponse(NotificationResponse details) {
     final payload = jsonDecode(details.payload!) as Map<String, dynamic>;
@@ -116,6 +121,18 @@ class LinuxNotifier implements Notifier {
         onDidReceiveNotificationResponse: notificationResponse);
 
     capabilities = await flutterLocalNotificationsPlugin!.getCapabilities();
+
+    clientManager!.directMessages.onHighlightedRoomsListUpdated
+        .listen((_) => updateBadgeCount());
+    clientManager!.onSpaceUpdated.stream.listen((_) => updateBadgeCount());
+
+    updateBadgeCount();
+  }
+
+  void updateBadgeCount() {
+    var counts = NotificationUtils.getNotificationCounts();
+    var count = counts.$2;
+    service.update(countVisible: count > 0, count: count);
   }
 
   @override
