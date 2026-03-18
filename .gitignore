@@ -13,3 +13,6 @@ widgets/calendar/android/local.properties
 .vscode/settings.json
 .idea/
 /build
+
+# FVM Version Cache
+.fvm/

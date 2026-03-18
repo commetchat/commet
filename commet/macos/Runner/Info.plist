@@ -28,5 +28,13 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Commet needs microphone access for voice calls.</string>
+    <key>NSCameraUsageDescription</key>
+    <string>Commet needs camera access for video calls.</string>
+    <key>NSScreenCaptureDescription</key>
+    <string>Commet needs screen recording permission to share your screen during calls.</string>
+    <key>NSSystemAudioUsageDescription</key>
+    <string>Commet needs system audio access to capture audio.</string>
 </dict>
 </plist>
