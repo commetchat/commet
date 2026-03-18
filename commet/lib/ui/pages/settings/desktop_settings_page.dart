@@ -7,6 +7,7 @@ import 'package:commet/ui/pages/settings/settings_button.dart';
 import 'package:commet/ui/pages/settings/settings_category.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart' as m;
+import 'package:intl/intl.dart';
 
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -164,13 +165,22 @@ class DesktopSettingsPageState extends State<DesktopSettingsPage> {
     );
   }
 
+  static String get promptDonate => Intl.message("Donate",
+      name: "promptDonate", desc: "Prompt the user to donate to the project");
+
+  static String get promptDonationsRefreshAwards => Intl.message(
+      "Refresh Awards",
+      name: "promptDonationsRefreshAwards",
+      desc:
+          "Prompt the user to refresh any awards they may have received for donating to the project");
+
   static Widget buildDonateButton(BuildContext context, {Function()? onTap}) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(2, 0, 2, 2),
       child: AdaptiveContextMenu(
         items: [
           ContextMenuItem(
-              text: "Refresh Awards",
+              text: promptDonationsRefreshAwards,
               icon: m.Icons.refresh,
               onPressed: () async {
                 var client = await AdaptiveDialog.pickClient(context);
@@ -215,7 +225,7 @@ class DesktopSettingsPageState extends State<DesktopSettingsPage> {
                         ),
                       ),
                       tiamat.Text(
-                        "Donate",
+                        promptDonate,
                         color: m.ColorScheme.of(context).onSurface,
                       ),
                     ],

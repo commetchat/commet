@@ -2,6 +2,7 @@ import 'package:commet/config/platform_utils.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/system_wide_shortcuts/system_wide_shortcuts_linux.dart';
 import 'package:hotkey_manager/hotkey_manager.dart';
+import 'package:intl/intl.dart';
 
 class SystemWideShortcuts {
   static void init() async {
@@ -31,15 +32,28 @@ class SystemWideShortcuts {
     return false;
   }
 
+  static String get shortcutNameMute => Intl.message("Mute",
+      name: "shortcutNameMute",
+      desc: "name for the system wide shortcut to activate microphone mute");
+
+  static String get shortcutNameUnmute => Intl.message("Unmute",
+      name: "shortcutNameUnmute",
+      desc: "name for the system wide shortcut to disable microphone mute");
+
+  static String get shortcutNameToggleMute => Intl.message("Toggle Mute",
+      name: "shortcutNameToggleMute",
+      desc:
+          "name for the system wide shortcut to toggle the microphone mute status");
+
   static Map<String, AppShortcut> shortcuts = {
     "mute": AppShortcut(
-        getDisplayName: () => "Mute",
+        getDisplayName: () => shortcutNameMute,
         callback: () => clientManager?.callManager.mute()),
     "unmute": AppShortcut(
-        getDisplayName: () => "Unmute",
+        getDisplayName: () => shortcutNameUnmute,
         callback: () => clientManager?.callManager.unmute()),
     "toggle_mute": AppShortcut(
-        getDisplayName: () => "Toggle Mute",
+        getDisplayName: () => shortcutNameToggleMute,
         callback: () => clientManager?.callManager.toggleMute()),
   };
 

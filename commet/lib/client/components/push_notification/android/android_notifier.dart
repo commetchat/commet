@@ -236,6 +236,7 @@ class AndroidNotifier implements Notifier {
         groupKey: content.roomId,
         groupAlertBehavior: GroupAlertBehavior.all,
         styleInformation: style,
+        sound: RawResourceAndroidNotificationSound('message'),
         shortcutId: content.roomId,
         silent: content.priority == NotificationPriority.low,
         ticker: content.content,
