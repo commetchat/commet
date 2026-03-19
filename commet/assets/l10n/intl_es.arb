@@ -11,7 +11,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "promptRoomAddress": "Dirección de la sala:",
+    "promptRoomAddress": "Dirección de la Sala",
     "@promptRoomAddress": {
         "description": "Short label to prompt for the input of a room address",
         "type": "text",
@@ -595,13 +595,13 @@
         "type": "text",
         "placeholders": {}
     },
-    "directMessagesListHeaderDesktop": "Mensajes directos",
+    "directMessagesListHeaderDesktop": "Mensajes Directos",
     "@directMessagesListHeaderDesktop": {
         "description": "The header for the direct messages list on desktop",
         "type": "text",
         "placeholders": {}
     },
-    "directMessagesListHeaderMobile": "Mensajes directos",
+    "directMessagesListHeaderMobile": "Mensajes Directos",
     "@directMessagesListHeaderMobile": {
         "description": "The header for the direct messages list on desktop",
         "type": "text",
@@ -781,7 +781,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelEnableUnifiedPushEndpoint": "Endpoint",
+    "labelEnableUnifiedPushEndpoint": "Destino",
     "@labelEnableUnifiedPushEndpoint": {
         "description": "Label for the Unified Push endpoint",
         "type": "text",
@@ -1771,5 +1771,111 @@
         "placeholders": {
             "user": {}
         }
+    },
+    "promptProfileShareTimezone": "Compartir Zona Horaria",
+    "@promptProfileShareTimezone": {
+        "description": "Prompt the user to add their current timezone to their user profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileClearTimezone": "Eliminar Zona Horaria",
+    "@promptProfileClearTimezone": {
+        "description": "Prompt to remove the shared timezone from a users profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileEditColorScheme": "Editar Paleta de Colores",
+    "@promptProfileEditColorScheme": {
+        "description": "Prompt to edit the color scheme of the user's own profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelProfileNoBadges": "No tienes ninguna insignia. Puedes obtener insignias al realizar una donación y apoyar el desarrollo de Commet",
+    "@labelProfileNoBadges": {
+        "description": "text that is shown when the user has no badges, and explain where they can get badges",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceVisibilityRestricted": "Espacio restringido",
+    "@labelSpaceVisibilityRestricted": {
+        "description": "Label to display that the space is restricted",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelCreateRoom": "Crear Sala",
+    "@labelCreateRoom": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPickExistingRoom": "Sala Existente",
+    "@labelPickExistingRoom": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelJoinRoom": "Unirse a la Sala",
+    "@labelJoinRoom": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomTypeCalendar": "Calendario",
+    "@labelRoomTypeCalendar": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomTypeSpace": "Espacio",
+    "@labelRoomTypeSpace": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomTypeTextChat": "Conversación de texto",
+    "@labelRoomTypeTextChat": {
+        "description": "Label for creating a regular text based chat room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomTypeVoiceChat": "Conversación de voz",
+    "@labelRoomTypeVoiceChat": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomTypePhotoAlbum": "Album de Fotos",
+    "@labelRoomTypePhotoAlbum": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "roomVisibilityRestrictedExplanation": "Esta sala estará disponible para cualquiera que sea miembro de uno de sus espacios padre",
+    "@roomVisibilityRestrictedExplanation": {
+        "description": "Explains what 'restricted' visibility means",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVisibilityRestricted": "Restringida",
+    "@labelVisibilityRestricted": {
+        "description": "Short label for room visibility restricted",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPhotoAlbumDescription": "¡Comparte imágenes y videos con tus amigos o comunidad!",
+    "@labelPhotoAlbumDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageInvalidUsernameOrPassword": "Usuario o contraseña incorrectos",
+    "@messageInvalidUsernameOrPassword": {
+        "description": "An error message displayed when the user attempts to log into an account using the wrong username/password combination",
+        "type": "text",
+        "placeholders": {}
+    },
+    "titleConfirmingDonation": "Confirmar Donación",
+    "@titleConfirmingDonation": {
+        "description": "Title for the popup shown while waiting for the user to finish the donation flow, which checks for completion of the donation",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelDonationInstructions": "Sigue las instrucciones en tu navegador. Por favor, ten paciencia; puede llevar uno o dos minutos para que se muestren tus recompensas una vez que tu donación haya sido recibida.",
+    "@labelDonationInstructions": {
+        "description": "Explains to the user to follow the donation instructions shown in the opened web page. Also asks for patience if the confirmation is taking a while to complete after donating",
+        "type": "text",
+        "placeholders": {}
     }
 }
