@@ -362,7 +362,9 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
                     builder: (context) => ProcessOutputViewer(
                           process,
                           showStdErr: true,
-                        ));
+                        )).then((_) {
+                  process.kill(ProcessSignal.sigkill);
+                });
 
                 for (int i = 0; i < 10; i++) {
                   Log.i("Sending data to subprocess");
@@ -371,8 +373,6 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
 
                   await Future.delayed(Duration(seconds: 5));
                 }
-
-                process.kill(ProcessSignal.sigsegv);
               }),
           tiamat.Button(
             text: "Get Process List",

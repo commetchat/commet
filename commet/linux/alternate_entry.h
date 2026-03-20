@@ -19,7 +19,7 @@ int alternate_entry_point(int argc,
         return 0;
     }
 
-    std::cout << "Opening alternate entry point";
+    std::cerr << "Opening alternate entry point";
     void *plibobj = dlopen("librust_lib_commet.so", RTLD_LAZY);
 
     if (!plibobj)
@@ -38,7 +38,7 @@ int alternate_entry_point(int argc,
         return -1;
     }
 
-    std::cout << "Found entry: " << std::hex << symbol_ptr;
+    std::cerr << "Found entry: " << std::hex << symbol_ptr;
 
     rust_entry = reinterpret_cast<decltype(rust_entry)>(symbol_ptr);
     rust_entry();
