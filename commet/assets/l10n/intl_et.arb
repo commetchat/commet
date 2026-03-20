@@ -1166,7 +1166,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "promptRoomAddress": "Jututoa aadress:",
+    "promptRoomAddress": "Jututoa aadress",
     "@promptRoomAddress": {
         "description": "Short label to prompt for the input of a room address",
         "type": "text",
@@ -1316,7 +1316,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "promptEmojiDoNotMatch": "Nad EI klapi omavahel",
+    "promptEmojiDoNotMatch": "Nad ei klapi omavahel",
     "@promptEmojiDoNotMatch": {
         "description": "Button text to confirm that the emoji do NOT match",
         "type": "text",
@@ -1763,6 +1763,61 @@
     "promptShowSticker": "Näita kleepsu",
     "@promptShowSticker": {
         "description": "Prompt to display a sticker, shown when media previews are disabled",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceVisibilityRestricted": "Piirangutega kogukond",
+    "@labelSpaceVisibilityRestricted": {
+        "description": "Label to display that the space is restricted",
+        "type": "text",
+        "placeholders": {}
+    },
+    "incomingCallMessage": "Kõne kasutajalt {callingUserName}!",
+    "@incomingCallMessage": {
+        "description": "Label to display that a user is calling",
+        "type": "text",
+        "placeholders": {
+            "callingUserName": {}
+        }
+    },
+    "labelCreateRoom": "Loo jututuba",
+    "@labelCreateRoom": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPickExistingRoom": "Olemasolev jututuba",
+    "@labelPickExistingRoom": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelJoinRoom": "Liitu jututoaga",
+    "@labelJoinRoom": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomTypeTextChat": "Tekstisõnumite vahetus",
+    "@labelRoomTypeTextChat": {
+        "description": "Label for creating a regular text based chat room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomTypeVoiceChat": "Häälvestlus",
+    "@labelRoomTypeVoiceChat": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomTypePhotoAlbum": "Fotoalbum",
+    "@labelRoomTypePhotoAlbum": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomTypeCalendar": "Kalender",
+    "@labelRoomTypeCalendar": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomTypeSpace": "Kogukond",
+    "@labelRoomTypeSpace": {
         "type": "text",
         "placeholders": {}
     }
