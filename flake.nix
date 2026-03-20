@@ -18,7 +18,6 @@
           config = {
             android_sdk.accept_license = true;
             allowUnfree = true;
-            permittedInsecurePackages = [ "olm-3.2.16" ];
           };
         };
         aapt2buildToolsVersion = "34.0.0";
@@ -47,7 +46,6 @@
         androidSdk = androidComposition.androidsdk;
 
         libraries = with pkgs; [
-              olm
               libdrm
               mesa
         ];
@@ -68,6 +66,10 @@
               android-tools
               android-studio
               bashInteractive
+              libsysprof-capture
+              webkitgtk_4_1
+              keybinder3
+              pcre2
         ];
 
       in
