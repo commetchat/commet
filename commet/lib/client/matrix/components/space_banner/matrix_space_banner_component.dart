@@ -48,5 +48,18 @@ class MatrixSpaceBannerComponent
   }
 
   @override
+  Future<void> removeBanner() async {
+    await client.matrixClient.setRoomStateWithKey(
+      space.matrixRoom.id,
+      key,
+      '',
+      {
+        'url': '',
+      },
+    );
+    space.notifyUpdate();
+  }
+
+  @override
   bool get canEditBanner => space.matrixRoom.canChangeStateEvent(key);
 }
