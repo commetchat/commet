@@ -82,7 +82,7 @@ class ImageCropView extends StatelessWidget {
       Expanded(
         flex: Layout.desktop ? 1 : 0,
         child: tiamat.Button.secondary(
-          text: "Use Original Image",
+          text: "Use Without Cropping",
           onTap: () async {
             onImageSubmitted?.call(imageBytes);
           },

@@ -19,6 +19,12 @@ import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
+enum _BannerEditAction {
+  cancel,
+  remove,
+  pick,
+}
+
 class UserProfile extends StatefulWidget {
   const UserProfile(
       {super.key,
@@ -270,6 +276,112 @@ class _UserProfileState extends State<UserProfile> {
   }
 
   Future<void> setBanner() async {
+    final action = await AdaptiveDialog.show<_BannerEditAction>(
+      context,
+      title: "Change Banner",
+      scrollable: false,
+      builder: (dialogContext) {
+        final currentBanner = banner;
+
+        Widget buttons = Row(
+          spacing: 8,
+          children: [
+            Expanded(
+              child: tiamat.Button.secondary(
+                text: "Cancel",
+                onTap: () => Navigator.of(dialogContext)
+                    .pop(_BannerEditAction.cancel),
+              ),
+            ),
+            Expanded(
+              child: tiamat.Button(
+                text: "Remove Banner",
+                type: tiamat.ButtonType.danger,
+                onTap: () => Navigator.of(dialogContext)
+                    .pop(_BannerEditAction.remove),
+              ),
+            ),
+            Expanded(
+              child: tiamat.Button(
+                text: "Pick Image",
+                onTap: () => Navigator.of(dialogContext).pop(_BannerEditAction.pick),
+              ),
+            ),
+          ],
+        );
+
+        if (Layout.mobile) {
+          buttons = Column(
+            spacing: 8,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              tiamat.Button.secondary(
+                text: "Cancel",
+                onTap: () => Navigator.of(dialogContext)
+                    .pop(_BannerEditAction.cancel),
+              ),
+              tiamat.Button(
+                text: "Remove Banner",
+                type: tiamat.ButtonType.danger,
+                onTap: () => Navigator.of(dialogContext)
+                    .pop(_BannerEditAction.remove),
+              ),
+              tiamat.Button(
+                text: "Pick Image",
+                onTap: () =>
+                    Navigator.of(dialogContext).pop(_BannerEditAction.pick),
+              ),
+            ],
+          );
+        }
+
+        return SizedBox(
+          width: 700,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            spacing: 12,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: AspectRatio(
+                  aspectRatio: 700 / 230,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: Theme.of(dialogContext)
+                          .colorScheme
+                          .surfaceContainerLow,
+                      image: currentBanner != null
+                          ? DecorationImage(
+                              image: currentBanner,
+                              fit: BoxFit.cover,
+                            )
+                          : null,
+                    ),
+                    child: currentBanner == null
+                        ? Center(
+                            child: tiamat.Text.labelLow("No banner set"),
+                          )
+                        : null,
+                  ),
+                ),
+              ),
+              buttons,
+            ],
+          ),
+        );
+      },
+    );
+
+    if (!mounted) return;
+
+    if (action == _BannerEditAction.remove) {
+      await removeBanner();
+      return;
+    }
+
+    if (action != _BannerEditAction.pick) return;
+
     var result =
         await PickerUtils.pickImageAndCrop(context, aspectRatio: 700 / 230);
     if (result == null) return;
@@ -279,6 +391,14 @@ class _UserProfileState extends State<UserProfile> {
     });
 
     await component.setBanner(result);
+  }
+
+  Future<void> removeBanner() async {
+    await component.removeBanner();
+
+    setState(() {
+      banner = null;
+    });
   }
 
   Color previewColor = Colors.blue;
