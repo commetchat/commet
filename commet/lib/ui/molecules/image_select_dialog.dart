@@ -58,7 +58,11 @@ class ImageSelectDialog extends StatelessWidget {
           child: tiamat.Button(
             text: "Remove Image",
             type: tiamat.ButtonType.danger,
-            onTap: onRemove,
+            onTap: () async {
+              if (await confirmRemove(context)) {
+                onRemove();
+              }
+            },
           ),
         ),
         Expanded(
@@ -75,18 +79,22 @@ class ImageSelectDialog extends StatelessWidget {
         spacing: 8,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          tiamat.Button.secondary(
-            text: "Cancel",
-            onTap: onCancel,
+          tiamat.Button(
+            text: "Pick Image",
+            onTap: onPick,
           ),
           tiamat.Button(
             text: "Remove Image",
             type: tiamat.ButtonType.danger,
-            onTap: onRemove,
+            onTap: () async {
+              if (await confirmRemove(context)) {
+                onRemove();
+              }
+            },
           ),
-          tiamat.Button(
-            text: "Pick Image",
-            onTap: onPick,
+          tiamat.Button.secondary(
+            text: "Cancel",
+            onTap: onCancel,
           ),
         ],
       );
@@ -125,5 +133,45 @@ class ImageSelectDialog extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Future<bool> confirmRemove(BuildContext context) async {
+    final confirmed = await AdaptiveDialog.show<bool>(
+      context,
+      title: "Remove Image",
+      scrollable: false,
+      builder: (dialogContext) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          spacing: 12,
+          children: [
+            tiamat.Text.body(
+              "Are you sure you want to remove this image?",
+            ),
+            Row(
+              spacing: 8,
+              children: [
+                Expanded(
+                  child: tiamat.Button.secondary(
+                    text: "Cancel",
+                    onTap: () => Navigator.of(dialogContext).pop(false),
+                  ),
+                ),
+                Expanded(
+                  child: tiamat.Button(
+                    text: "Remove",
+                    type: tiamat.ButtonType.danger,
+                    onTap: () => Navigator.of(dialogContext).pop(true),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+
+    return confirmed ?? false;
   }
 }
