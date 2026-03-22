@@ -8,6 +8,7 @@ import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/ui/atoms/code_block.dart';
+import 'package:commet/ui/molecules/image_select_dialog.dart';
 import 'package:commet/ui/molecules/message_input.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/utils/event_bus.dart';
@@ -18,12 +19,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
-
-enum _BannerEditAction {
-  cancel,
-  remove,
-  pick,
-}
 
 class UserProfile extends StatefulWidget {
   const UserProfile(
@@ -276,111 +271,19 @@ class _UserProfileState extends State<UserProfile> {
   }
 
   Future<void> setBanner() async {
-    final action = await AdaptiveDialog.show<_BannerEditAction>(
+    final action = await showImageSelectDialog(
       context,
-      title: "Change Banner",
-      scrollable: false,
-      builder: (dialogContext) {
-        final currentBanner = banner;
-
-        Widget buttons = Row(
-          spacing: 8,
-          children: [
-            Expanded(
-              child: tiamat.Button.secondary(
-                text: "Cancel",
-                onTap: () => Navigator.of(dialogContext)
-                    .pop(_BannerEditAction.cancel),
-              ),
-            ),
-            Expanded(
-              child: tiamat.Button(
-                text: "Remove Banner",
-                type: tiamat.ButtonType.danger,
-                onTap: () => Navigator.of(dialogContext)
-                    .pop(_BannerEditAction.remove),
-              ),
-            ),
-            Expanded(
-              child: tiamat.Button(
-                text: "Pick Image",
-                onTap: () => Navigator.of(dialogContext).pop(_BannerEditAction.pick),
-              ),
-            ),
-          ],
-        );
-
-        if (Layout.mobile) {
-          buttons = Column(
-            spacing: 8,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              tiamat.Button.secondary(
-                text: "Cancel",
-                onTap: () => Navigator.of(dialogContext)
-                    .pop(_BannerEditAction.cancel),
-              ),
-              tiamat.Button(
-                text: "Remove Banner",
-                type: tiamat.ButtonType.danger,
-                onTap: () => Navigator.of(dialogContext)
-                    .pop(_BannerEditAction.remove),
-              ),
-              tiamat.Button(
-                text: "Pick Image",
-                onTap: () =>
-                    Navigator.of(dialogContext).pop(_BannerEditAction.pick),
-              ),
-            ],
-          );
-        }
-
-        return SizedBox(
-          width: 700,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: 12,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: AspectRatio(
-                  aspectRatio: 700 / 230,
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: Theme.of(dialogContext)
-                          .colorScheme
-                          .surfaceContainerLow,
-                      image: currentBanner != null
-                          ? DecorationImage(
-                              image: currentBanner,
-                              fit: BoxFit.cover,
-                            )
-                          : null,
-                    ),
-                    child: currentBanner == null
-                        ? Center(
-                            child: tiamat.Text.labelLow("No banner set"),
-                          )
-                        : null,
-                  ),
-                ),
-              ),
-              buttons,
-            ],
-          ),
-        );
-      },
+      image: banner,
     );
 
     if (!mounted) return;
 
-    if (action == _BannerEditAction.remove) {
+    if (action == ImageEditAction.remove) {
       await removeBanner();
       return;
     }
 
-    if (action != _BannerEditAction.pick) return;
+    if (action != ImageEditAction.pick) return;
 
     var result =
         await PickerUtils.pickImageAndCrop(context, aspectRatio: 700 / 230);

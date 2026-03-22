@@ -3,16 +3,11 @@ import 'dart:typed_data';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/space_banner/space_banner_component.dart';
+import 'package:commet/ui/molecules/image_select_dialog.dart';
 import 'package:commet/ui/pages/settings/categories/room/appearance/room_appearance_settings_view.dart';
 import 'package:commet/utils/picker_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
-
-enum _BannerAction { 
-  change, 
-  remove, 
-  cancel 
-}
 
 class SpaceAppearanceSettingsPage extends StatefulWidget {
   const SpaceAppearanceSettingsPage({super.key, required this.space});
@@ -82,34 +77,12 @@ class _SpaceAppearanceSettingsPageState
                 color: Colors.transparent,
                 child: InkWell(
                   onTap: () async {
+                    final action = await showImageSelectDialog(
+                      context,
+                      image: image,
+                    );
 
-                    final action = await showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            title: Text("Change Banner"),
-                            content: Text("Do you want to change the banner?"),
-                            actions: [
-                              TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop(_BannerAction.cancel);
-                                  },
-                                  child: Text("Cancel")),
-                              TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop(_BannerAction.remove);
-                                  },
-                                  child: Text("Remove")),
-                              TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop(_BannerAction.change);
-                                  },
-                                  child: Text("Change")),
-                            ],
-                          );
-                        });
-
-                    if (action == _BannerAction.remove) {
+                    if (action == ImageEditAction.remove) {
                       setState(() {
                         image = null;
                         uploading = true;
@@ -121,7 +94,7 @@ class _SpaceAppearanceSettingsPageState
                         uploading = false;
                       });
                       return;
-                    } else if (action != _BannerAction.change) {
+                    } else if (action != ImageEditAction.pick) {
                       return;
                     }
 
