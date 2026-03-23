@@ -317,7 +317,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "promptRoomAddress": "Adresa místnosti:",
+    "promptRoomAddress": "Adresa místnosti",
     "@promptRoomAddress": {
         "description": "Short label to prompt for the input of a room address",
         "type": "text",
@@ -1687,5 +1687,704 @@
         "description": "Placeholder text for password field on login form",
         "type": "text",
         "placeholders": {}
+    },
+    "promptProfileChangeBanner": "Změnit banner",
+    "@promptProfileChangeBanner": {
+        "description": "Prompt to change the banner on the user's profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileSetStatus": "Nastavit stav",
+    "@promptProfileSetStatus": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileClearStatus": "Vymazat stav",
+    "@promptProfileClearStatus": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileSetBadges": "Nastavit odznaky",
+    "@promptProfileSetBadges": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileSetBio": "Nastavit profilový popisek",
+    "@promptProfileSetBio": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileClearBio": "Vymazat profilový popisek",
+    "@promptProfileClearBio": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileShareTimezone": "Sdílet časové pásmo",
+    "@promptProfileShareTimezone": {
+        "description": "Prompt the user to add their current timezone to their user profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileClearTimezone": "Odstranit časové pásmo",
+    "@promptProfileClearTimezone": {
+        "description": "Prompt to remove the shared timezone from a users profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileEditColorScheme": "Upravit barevné schéma",
+    "@promptProfileEditColorScheme": {
+        "description": "Prompt to edit the color scheme of the user's own profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileSetColorOverride": "Nastavit zobrazovanou barvu",
+    "@promptProfileSetColorOverride": {
+        "description": "Prompt to override the display color of a user",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileClearColorOverride": "Obnovit výchozí barvu",
+    "@promptProfileClearColorOverride": {
+        "description": "Prompt to remove an override of the display color of a user",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileShowRawProfile": "Zobrazit profil v nezformátované podobě",
+    "@promptProfileShowRawProfile": {
+        "description": "Show the raw data of a user profile, typically this is hidden behind developer mode",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelConfirmShareTimezone": "Opravdu chcete sdílet své časové pásmo '{timezone}' veřejně?",
+    "@labelConfirmShareTimezone": {
+        "description": "Ask the user to confirm that they want to share their current timezone as public information on their profile",
+        "type": "text",
+        "placeholders": {
+            "timezone": {}
+        }
+    },
+    "promptProfileWriteBioHint": "Napiš něco o sobě",
+    "@promptProfileWriteBioHint": {
+        "description": "Hint text for the profile bio editor",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelProfileYourBadges": "Tvé odznaky",
+    "@labelProfileYourBadges": {
+        "description": "label for the ui to select which badges to display on the users profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelProfileNoBadges": "Nemáš žádné odznaky. Odznak můžeš získat například tím, že přispěješ a podpoříš tak vývoj Commetu",
+    "@labelProfileNoBadges": {
+        "description": "text that is shown when the user has no badges, and explain where they can get badges",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceVisibilityRestricted": "Prostor s omezeným přístupem",
+    "@labelSpaceVisibilityRestricted": {
+        "description": "Label to display that the space is restricted",
+        "type": "text",
+        "placeholders": {}
+    },
+    "incomingCallMessage": "Příchozí hovor od {callingUserName}!",
+    "@incomingCallMessage": {
+        "description": "Label to display that a user is calling",
+        "type": "text",
+        "placeholders": {
+            "callingUserName": {}
+        }
+    },
+    "labelTextChatDescription": "Jednoduchý textový chat se všemi funkcemi, které si jen můžeš přát! Posílej zprávy, multimédia, samolepky, GIFy a další!",
+    "@labelTextChatDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoiceChatDescription": "Místnost určená pro hlasové hovory dvou a více lidí",
+    "@labelVoiceChatDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelCalendarDescription": "Vytvoř si sdílený kalendář, ve kterém si můžeš hlídat své plány, a importuj si rozvrh z jiných kalendářů, aby přátelé viděli, kdy máš čas a kdy jsi zaneprázdněný.",
+    "@labelCalendarDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelCreateRoom": "Vytvořit místnost",
+    "@labelCreateRoom": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPickExistingRoom": "Existující místnost",
+    "@labelPickExistingRoom": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelJoinRoom": "Vstoupit do místnosti",
+    "@labelJoinRoom": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomTypeTextChat": "Textový chat",
+    "@labelRoomTypeTextChat": {
+        "description": "Label for creating a regular text based chat room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomTypeVoiceChat": "Hlasový chat",
+    "@labelRoomTypeVoiceChat": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomTypePhotoAlbum": "Fotoalbum",
+    "@labelRoomTypePhotoAlbum": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomTypeCalendar": "Kalendář",
+    "@labelRoomTypeCalendar": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomTypeSpace": "Prostor",
+    "@labelRoomTypeSpace": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "roomVisibilityRestrictedExplanation": "Tato místnost bude dostupná každému, kdo je členem jejího nadřazeného prostoru",
+    "@roomVisibilityRestrictedExplanation": {
+        "description": "Explains what 'restricted' visibility means",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVisibilityRestricted": "Omezený přístup",
+    "@labelVisibilityRestricted": {
+        "description": "Short label for room visibility restricted",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPhotoAlbumDescription": "Sdílejte fotky a videa se svými přáteli nebo komunitou!",
+    "@labelPhotoAlbumDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageInvalidUsernameOrPassword": "Neplatné uživatelské jméno nebo heslo",
+    "@messageInvalidUsernameOrPassword": {
+        "description": "An error message displayed when the user attempts to log into an account using the wrong username/password combination",
+        "type": "text",
+        "placeholders": {}
+    },
+    "titleConfirmingDonation": "Potvrzení daru",
+    "@titleConfirmingDonation": {
+        "description": "Title for the popup shown while waiting for the user to finish the donation flow, which checks for completion of the donation",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelDonationInstructions": "Postupuj podle pokynů v tvém prohlížeči. Prosíme o trpělivost, zobrazení odměn může po přijetí tvého daru trvat jednu až dvě minuty.",
+    "@labelDonationInstructions": {
+        "description": "Explains to the user to follow the donation instructions shown in the opened web page. Also asks for patience if the confirmation is taking a while to complete after donating",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelDonationConfirmationSucceeded": "Děkujeme za tvůj štědrý dar!",
+    "@labelDonationConfirmationSucceeded": {
+        "description": "Text that is shown when the donation flow was successful, and the donation has been confirmed",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelDonationConfirmationFailed": "Nepodařilo se najít žádný dar :( Zvaž tedy prosím podporu udržitelného vývoje Commetu darem!",
+    "@labelDonationConfirmationFailed": {
+        "description": "Text that is shown when the donation flow was failed, and the no donation was found",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelConfirmCancelDonationConfirmation": "Opravdu chceš zavřít okno, aniž bys ještě přijal(a) jakoukoli odměnu?",
+    "@labelConfirmCancelDonationConfirmation": {
+        "description": "Text that is shown when the user attempts to cancel the donation confirmation flow before the confirmation has finished",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelNoAccount": "Žádný účet",
+    "@labelNoAccount": {
+        "description": "When the user is prompted to select an account to use for some action, this option is shown when the action can be completed without picking any account",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptPickDonationAccount": "Vyber jeden z účtů, prostřednictvím kterého chceš přispět",
+    "@promptPickDonationAccount": {
+        "description": "Prompt the user to select an account to link to their donation",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelDonateAnonymously": "Darovat bez propojení s účtem",
+    "@labelDonateAnonymously": {
+        "description": "Prompt the user to donate to the project, without linking to their user account",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptDonate": "Přispějte",
+    "@promptDonate": {
+        "description": "Prompt the user to donate to the project",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptDonationsRefreshAwards": "Aktualizovat odměny",
+    "@promptDonationsRefreshAwards": {
+        "description": "Prompt the user to refresh any awards they may have received for donating to the project",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsAppExperiments": "Experimentální funkce",
+    "@labelSettingsAppExperiments": {
+        "description": "Label for the App Experiments settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsShortcuts": "Klávesové zkratky",
+    "@labelSettingsShortcuts": {
+        "description": "Label for the Keyboard shortcuts settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsCategoryVoiceAndVideo": "Hlas a video",
+    "@labelSettingsCategoryVoiceAndVideo": {
+        "description": "Label for the settings category related to voice and video calls",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSystemKeyboardShortcutsOutsourceDescription": "Ve tvém aktuálním prostředí se klávesové zkratky nastavují v nastavení systému.",
+    "@labelSystemKeyboardShortcutsOutsourceDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptSystemKeyboardShortcutsMoreInfo": "Více informací",
+    "@promptSystemKeyboardShortcutsMoreInfo": {
+        "description": "Prompt for a button on the system keyboard shortcut page, which opens a webpage that provides further information about keyboard shortcuts setup",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelConfigureKeyboardShortcuts": "Nastavit klávesové zkratky",
+    "@labelConfigureKeyboardShortcuts": {
+        "description": "Label for the tile containing settings to configure system wide keyboard shortcuts, for muting, unmuting etc",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptShortcutsPressAKeyCombination": "Stiskněte klávesovou zkratku",
+    "@promptShortcutsPressAKeyCombination": {
+        "description": "Prompt the user to input a key combination, which is recorded and used to activate a shortcut",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptShortcutsClearKeyboardShortcut": "Vymazat klávesovou zkratku",
+    "@promptShortcutsClearKeyboardShortcut": {
+        "description": "Prompt the user to clear a key combination shortcut",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelAppBehaviourTitle": "Chování aplikace",
+    "@labelAppBehaviourTitle": {
+        "description": "Header for the app behaviour section in settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelAskBeforeDeletingMessageToggle": "Potvrdit před smazáním zpráv",
+    "@labelAskBeforeDeletingMessageToggle": {
+        "description": "Label for the toggle for enabling and disabling message deletion confirmation",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelAskBeforeDeletingMessageDescription": "Při mazání zprávy zobrazí potvrzovací okno.",
+    "@labelAskBeforeDeletingMessageDescription": {
+        "description": "Label describing what 'asking before deleting messages' even means",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMediaSettings": "Média",
+    "@labelMediaSettings": {
+        "description": "Header for the settings tile for for media",
+        "type": "text",
+        "placeholders": {}
+    },
+    "headerVoipSettingsCallConnection": "Navázání hovoru",
+    "@headerVoipSettingsCallConnection": {
+        "description": "Header for the settings tile containing configuration relating to the initial connection of a call",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipSettingsStunFallback": "Použít záložní STUN",
+    "@labelVoipSettingsStunFallback": {
+        "description": "label for the setting to enable STUN callback for connecting calls",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipSettingsStunFallbackDescription": "Bez serveru STUN nelze hovory navázat. Pokud tvůj homeserver neposkytuje server STUN, použije se jako záloha '{stunServer}'. Při navazování hovorů bude tomuto serveru odhalena tvoje IP adresa",
+    "@labelVoipSettingsStunFallbackDescription": {
+        "type": "text",
+        "placeholders": {
+            "stunServer": {}
+        }
+    },
+    "headerVoipSettingsDevices": "Zařízení",
+    "@headerVoipSettingsDevices": {
+        "description": "Header for settings tile containing device configuration, for default audio / video inputs",
+        "type": "text",
+        "placeholders": {}
+    },
+    "headerVoipSettingsStreamSettings": "Nastavení vysílání",
+    "@headerVoipSettingsStreamSettings": {
+        "description": "Header for settings tile containing stream quality configuration",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipUseSimulcast": "Použít simulcast",
+    "@labelVoipUseSimulcast": {
+        "description": "label for setting toggle to enable use of Simulcast",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipUseSimulcastDescription": "Tvé vysílání se nahrává v několika různých úrovních kvality, aby si ostatní uživatelé mohli vybrat, kterou z nich chtějí použít. To bude vyžadovat větší šířku pásma a více systémových prostředků.",
+    "@labelVoipUseSimulcastDescription": {
+        "description": "description for setting toggle to enable use of Simulcast",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipStreamMaximumBitrate": "Maximální přenosová rychlost vysílání",
+    "@labelVoipStreamMaximumBitrate": {
+        "description": "label for setting slider to set the maximum bitrate that can be used when streaming",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipStreamMaximumBitrateDescription": "Určuje celkovou kvalitu vašeho streamu. Čím vyšší hodnota, tím lepší kvalita, ale také se spotřebovává více zdrojů",
+    "@labelVoipStreamMaximumBitrateDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipStreamFramerate": "Snímková frekvence vysílání",
+    "@labelVoipStreamFramerate": {
+        "description": "label for setting slider to set the framerate at which the screen should be captured when streaming",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipStreamFramerateDescription": "Četnost snímků za sekundu při sdílení obrazovky. Vyšší hodnota zajišťuje plynulejší pohyb, ale může snížit ostrost obrazu.",
+    "@labelVoipStreamFramerateDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipStreamPreferredCodec": "Preferovaný kodek pro vysílání",
+    "@labelVoipStreamPreferredCodec": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipStreamPreferredCodecDescription": "Vyber formát, ve kterém chceš vysílání kódovat. Různé kodeky mohou na některých zařízeních běžet rychleji, zatímco na jiných nemusí být podporovány. Většina zařízení by měla podporovat formáty VP8 a H.264.",
+    "@labelVoipStreamPreferredCodecDescription": {
+        "description": "Explains the preferred stream codec setting. This is just a preference, and the picked codec may not be used if the user's device does not support it",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipStreamResolution": "Rozlišení vysílání",
+    "@labelVoipStreamResolution": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipStreamResolutionDescription": "Čím vyšší rozlišení vysílání, tím lépe",
+    "@labelVoipStreamResolutionDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelShowRoomPreviewsInSpaceSidebar": "Zobrazovat i nepřidané místnosti v bočním panelu",
+    "@labelShowRoomPreviewsInSpaceSidebar": {
+        "description": "Label for enabling using the preview list in the space sidebar",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelShowRoomPreviewsInSpaceSidebarDescription": "Pokud jsou v prostoru místnosti, do kterých jsi nevstoupil, zobrazí se v bočním panelu spolu s ostatními místnostmi v tomto prostoru",
+    "@labelShowRoomPreviewsInSpaceSidebarDescription": {
+        "description": "Description for enabling using the preview list in the space sidebar",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsAppInfo": "O aplikaci",
+    "@labelSettingsAppInfo": {
+        "description": "Label for the app info settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelDefaultReadReceiptsOption": "Použít globální nastavení ({pref})",
+    "@labelDefaultReadReceiptsOption": {
+        "description": "Label to use the global preference, showing the current global preference value",
+        "type": "text",
+        "placeholders": {
+            "pref": {}
+        }
+    },
+    "labelDefaultTypingIndicatorsOption": "Použít globální nastavení ({pref})",
+    "@labelDefaultTypingIndicatorsOption": {
+        "description": "Label to use the global preference, showing the current global preference value",
+        "type": "text",
+        "placeholders": {
+            "pref": {}
+        }
+    },
+    "labelReadReceiptsTitle": "Potvrzení o přečtení",
+    "@labelReadReceiptsTitle": {
+        "description": "Label for the toggle for enabling and disabling public read receipts",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelTypingIndicatorTitle": "Indikátory psaní",
+    "@labelTypingIndicatorTitle": {
+        "description": "Label for the toggle for enabling and disabling typing indicators",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsJoinCallTitle": "Připojit se k hovoru",
+    "@labelMatrixPermissionsJoinCallTitle": {
+        "description": "Title for the permission to allow users to join a call in a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsJoinCallDescription": "Povolit uživatelům připojit se k probíhajícímu hovoru v této místnosti",
+    "@labelMatrixPermissionsJoinCallDescription": {
+        "description": "Description for the permission to allow users to join a call in a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsAddCalendarEventTitle": "Upravovat události v kalendáři",
+    "@labelMatrixPermissionsAddCalendarEventTitle": {
+        "description": "Title for the permission to allow users to edit the calendar",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsAddCalendarEventDescription": "Povolit uživatelům upravovat události v kalendáři",
+    "@labelMatrixPermissionsAddCalendarEventDescription": {
+        "description": "Description for the permission to allow users to create an event on the calendar",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomSettingsCalendar": "Kalendář",
+    "@labelRoomSettingsCalendar": {
+        "description": "Label for room calendar settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceSettingsSecurity": "Zabezpečení",
+    "@labelSpaceSettingsSecurity": {
+        "description": "Label for space security settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSpaceSettingsMembers": "Členové",
+    "@labelSpaceSettingsMembers": {
+        "description": "Label for space member settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsTabPrivacy": "Ochrana osobních údajů",
+    "@labelSettingsTabPrivacy": {
+        "description": "Label for the Privacy settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelChatPrivacyTitle": "Ochrana osobních údajů v chatu",
+    "@labelChatPrivacyTitle": {
+        "description": "Header for the chat privacy section in settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPublicReadReceiptsToggle": "Potvrzení o přečtení",
+    "@labelPublicReadReceiptsToggle": {
+        "description": "Label for the toggle for enabling and disabling sending read receipts",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPublicReadReceiptsDescription": "Umožní ostatním členům místnosti vidět, kdy jsi si přečetl jejich zprávy.",
+    "@labelPublicReadReceiptsDescription": {
+        "description": "description for the toggle for enabling and disabling sending read receipts",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelTypingIndicatorsToggle": "Indikátor psaní",
+    "@labelTypingIndicatorsToggle": {
+        "description": "Label for the toggle for enabling and disabling sending typing indicator",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPublicTypingIndicatorDescription": "Umožní ostatním členům místnosti vidět, když píšeš zprávu.",
+    "@labelPublicTypingIndicatorDescription": {
+        "description": "description for the toggle for enabling and disabling sending typing indicator",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelDialogConfirmation": "Potvrzení",
+    "@labelDialogConfirmation": {
+        "description": "label for the dialog which asks the user to confirm some action",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptEndPoll": "Ukončit hlasování",
+    "@promptEndPoll": {
+        "description": "Prompt the user to end a poll",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptNext": "Další",
+    "@promptNext": {
+        "description": "Generic prompt for going to the next step of an activity or flow, usually on a button",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptDismiss": "Zavřít",
+    "@promptDismiss": {
+        "description": "Generic prompt to dismiss something, probably a popup",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptDecline": "Zamítnout",
+    "@promptDecline": {
+        "description": "Generic prompt to decline something, probably a request of some kind",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptYes": "Ano",
+    "@promptYes": {
+        "description": "Generic prompt to say yes to a request, probably on a confirmation dialog 'are you sure you want to do x?' 'yes' ",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptNo": "Ne",
+    "@promptNo": {
+        "description": "Generic prompt to say no to a request, probably on a confirmation dialog 'are you sure you want to do x?' 'no' ",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptSearch": "Hledat",
+    "@promptSearch": {
+        "description": "Prompt the user to search for something, usually shown as the hint in a text box",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPublic": "Veřejné",
+    "@labelPublic": {
+        "description": "Label for public",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPrivate": "Soukromé",
+    "@labelPrivate": {
+        "description": "Label for private",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelEnabled": "Povoleno",
+    "@labelEnabled": {
+        "description": "Label for enabled",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelDisabled": "Vypnuto",
+    "@labelDisabled": {
+        "description": "Label for disabled",
+        "type": "text",
+        "placeholders": {}
+    },
+    "shortcutNameMute": "Ztlumit",
+    "@shortcutNameMute": {
+        "description": "name for the system wide shortcut to activate microphone mute",
+        "type": "text",
+        "placeholders": {}
+    },
+    "shortcutNameUnmute": "Zrušit ztlumení",
+    "@shortcutNameUnmute": {
+        "description": "name for the system wide shortcut to disable microphone mute",
+        "type": "text",
+        "placeholders": {}
+    },
+    "shortcutNameToggleMute": "Zapnout nebo vypnout ztlumení",
+    "@shortcutNameToggleMute": {
+        "description": "name for the system wide shortcut to toggle the microphone mute status",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelUpdateAvailable": "K dispozici je aktualizace",
+    "@labelUpdateAvailable": {
+        "description": "Label for the the info popup when an update is available",
+        "type": "text",
+        "placeholders": {}
+    },
+    "descriptionUpdateAvailable": "K dispozici je novější verze programu Commet: {version}",
+    "@descriptionUpdateAvailable": {
+        "description": "describes the update, showing the version code for the available update",
+        "type": "text",
+        "placeholders": {
+            "version": {}
+        }
+    },
+    "messagePlaceholderUserEditedCalendar": "{user} upravil(a) kalendář",
+    "@messagePlaceholderUserEditedCalendar": {
+        "description": "Message body for when a user edits the room calendar",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "messageUserAnsweredCall": "{user} přijal(a) hovor",
+    "@messageUserAnsweredCall": {
+        "description": "Message body for when a user answers a call",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "messageUserHangupCall": "{user} ukončil(a) hovor",
+    "@messageUserHangupCall": {
+        "description": "Message body for when a user hangs up a call",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "messageUserRejectCall": "{user} odmítl(a) hovor",
+    "@messageUserRejectCall": {
+        "description": "Message body for when a user rejects a call",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "messageUserInviteCall": "{user} zahájil(a) hovor",
+    "@messageUserInviteCall": {
+        "description": "Message body for when a user starts a call",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "matrixClientVodozemacMissingMessage": "vodozemac není nainstalovaný nebo se ho nepodařilo najít. End-to-end šifrování nebude k dispozici, dokud se tento problém nevyřeší",
+    "@matrixClientVodozemacMissingMessage": {
+        "description": "Text that explains to the user that vodozemac dependency is not found",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageUserDeactivated": "Tvůj účet byl deaktivován",
+    "@messageUserDeactivated": {
+        "description": "An error message displayed when the user attempts to log into an account that has been disabled",
+        "type": "text",
+        "placeholders": {}
+    },
+    "notificationContentUserIsCalling": "Volá {user}!",
+    "@notificationContentUserIsCalling": {
+        "description": "Notification body content for when receiving an incoming call from another user",
+        "type": "text",
+        "placeholders": {
+            "user": {}
+        }
+    },
+    "notificationTitleIncomingCall": "Příchozí hovor! ({roomName})",
+    "@notificationTitleIncomingCall": {
+        "description": "Notification title for when a call is being received",
+        "type": "text",
+        "placeholders": {
+            "roomName": {}
+        }
     }
 }
