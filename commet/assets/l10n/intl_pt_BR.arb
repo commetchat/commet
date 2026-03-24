@@ -1765,5 +1765,21 @@
         "description": "Label describing toggle of media previews for private rooms",
         "type": "text",
         "placeholders": {}
+    },
+    "promptProfileClearStatus": "Limpar status",
+    "@promptProfileClearStatus": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileSetStatus": "Configurar status",
+    "@promptProfileSetStatus": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileChangeBanner": "Mudar banner",
+    "@promptProfileChangeBanner": {
+        "description": "Prompt to change the banner on the user's profile",
+        "type": "text",
+        "placeholders": {}
     }
 }
