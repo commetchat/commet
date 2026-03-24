@@ -6,10 +6,10 @@ import 'package:commet/client/room.dart';
 import 'package:commet/client/space.dart';
 import 'package:commet/config/platform_utils.dart';
 import 'package:commet/main.dart';
+import 'package:commet/utils/tray_notification_manager.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/services.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:tray_manager/tray_manager.dart';
 
 class WindowManagement {
   static bool _isShuttingDown = false;
@@ -30,8 +30,10 @@ class WindowManagement {
 
     _registerProcessSignalHandlers();
 
-    await _initTrayManager();
-    TrayManager.instance.addListener(_TrayListener());
+    await TrayNotificationManager.init(
+      clientManager: clientManager,
+      onCloseApplication: _shutdownApplication,
+    );
 
     if (commandLineArgs.contains("--minimize")) {
       windowManager.minimize();
@@ -59,21 +61,6 @@ class WindowManagement {
     }
 
     exit(0);
-  }
-
-  static Future<void> _initTrayManager() async {
-    await TrayManager.instance.setIcon('assets/images/app_icon/app_icon_rounded.png');
-    await _setupTrayMenu();
-  }
-
-  static Future<void> _setupTrayMenu() async {
-    final menu = [
-      MenuItem(label: 'Commet', key: 'app_name', disabled: true),
-      MenuItem.separator(),
-      MenuItem(label: 'Open Commet', key: 'show'),
-      MenuItem(label: 'Quit Commet', key: 'close'),
-    ];
-    await TrayManager.instance.setContextMenu(Menu(items: menu));
   }
 
   static bool _onKeyEvent(KeyEvent event) {
@@ -122,37 +109,5 @@ class _WindowListener extends WindowListener {
     } else {
       await WindowManagement._shutdownApplication();
     }
-  }
-}
-
-class _TrayListener extends TrayListener {
-  @override
-  void onTrayIconMouseDown() {
-    _showWindow();
-  }
-
-  @override
-  void onTrayMenuItemClick(MenuItem menuItem) {
-    switch (menuItem.key) {
-      case 'show':
-        _showWindow();
-        break;
-      case 'close':
-        _closeApplication();
-        break;
-    }
-  }
-
-  Future<void> _showWindow() async {
-    if (await windowManager.isVisible()) {
-      await windowManager.focus();
-    } else {
-      await windowManager.show();
-      await windowManager.focus();
-    }
-  }
-
-  Future<void> _closeApplication() async {
-    await WindowManagement._shutdownApplication();
   }
 }
