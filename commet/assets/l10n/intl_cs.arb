@@ -5,7 +5,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "fileDragDropPrompt": "Soubor nahrajete přetažením sem...",
+    "fileDragDropPrompt": "Přetáhněte sem soubor určený k nahrání...",
     "@fileDragDropPrompt": {
         "description": "Text that is shown when a user is dragging a file",
         "type": "text",
@@ -41,7 +41,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelInvitationsForUser": "Pozvánka pro uživatele {user}",
+    "labelInvitationsForUser": "Pozvánky pro uživatele {user}",
     "@labelInvitationsForUser": {
         "description": "Label for the list of incoming invitations, specifying which user these invitations are intended for",
         "type": "text",
@@ -383,7 +383,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelMessageEffectsDescription": "Povolit speciální efekty u zpráv (např. konfety a další)",
+    "labelMessageEffectsDescription": "Zprávy lze odesílat s doplňkovými efekty (např. konfety a další)",
     "@labelMessageEffectsDescription": {
         "description": "Label describing what message effects are",
         "type": "text",
@@ -531,7 +531,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "notificationSettingsNotSupported": "Push notifikace nejsou v tomto systému podporovány",
+    "notificationSettingsNotSupported": "Push oznámení nejsou v tomto systému podporována",
     "@notificationSettingsNotSupported": {
         "description": "Message to display when push notifications are not supported",
         "type": "text",
@@ -555,7 +555,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelSettingsStickerCompatibilityExplanation": "V některých Matrix klientech způsobí odeslání samolepky formou 'm.sticker' její nesprávné načtení. Povolením tohoto nastavení odešle samolepky jako 'm.image', což umožní jejich správné vykreslení",
+    "labelSettingsStickerCompatibilityExplanation": "V některých Matrix klientech způsobí odeslání samolepky jako 'm.sticker', že se samolepka nenačte správně. Po zapnutí tohoto nastavení se budou samolepky odesílat jako 'm.image', což umožní jejich správné vykreslení",
     "@labelSettingsStickerCompatibilityExplanation": {
         "description": "Explains what sticker compatibility mode does",
         "type": "text",
@@ -663,7 +663,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelMediaPreviewPrivateRoomsToggleDescription": "Zobrazovat náhledy obrázků a videí v soukromých konverzacích",
+    "labelMediaPreviewPrivateRoomsToggleDescription": "Zobrazovat náhledy obrázků, videí, samolepek a odkazů v soukromých konverzacích",
     "@labelMediaPreviewPrivateRoomsToggleDescription": {
         "description": "Label describing toggle of media previews for private rooms",
         "type": "text",
@@ -675,7 +675,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelMediaPreviewPublicRoomsToggleDescription": "Zobrazovat náhledy obrázků a videí ve veřejných konverzacích",
+    "labelMediaPreviewPublicRoomsToggleDescription": "Zobrazovat náhledy obrázků, videí, samolepek a odkazů ve veřejných konverzacích",
     "@labelMediaPreviewPublicRoomsToggleDescription": {
         "description": "Label describing toggle of media previews for public rooms",
         "type": "text",
@@ -837,7 +837,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixMessageBackupExplanation": "Zálohujte si své šifrovací klíče, abyste případně neztratili přístup k historii zpráv",
+    "labelMatrixMessageBackupExplanation": "Udržuje zálohu historie vašich zpráv pro případ, že ztratíte přístup ke všem svým relacím. Zprávy budou před nahráním zašifrovány",
     "@labelMatrixMessageBackupExplanation": {
         "description": "Explains what matrix message backup does",
         "type": "text",
@@ -1127,7 +1127,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixRecoveryKeyExplanation": "Tohle je váš obnovovací klíč. Prosím, uložte si tento klíč na skutečně bezpečném místě!",
+    "labelMatrixRecoveryKeyExplanation": "Toto je váš obnovovací klíč. Můžete jej použít k ověření relace, pokud ztratíte přístup ke všem ostatním relacím. Uložte si jej na bezpečném místě!",
     "@labelMatrixRecoveryKeyExplanation": {
         "description": "Gives a brief description about the function on the recovery key",
         "type": "text",
@@ -1171,7 +1171,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixSecurityPhraseShouldNotBePassword": "Bezpečnostní fráze by neměla býti shodná s vaším heslem",
+    "labelMatrixSecurityPhraseShouldNotBePassword": "Bezpečnostní fráze by neměla být shodná s vaším heslem",
     "@labelMatrixSecurityPhraseShouldNotBePassword": {
         "description": "Tells the user to not use their password as their security phrase",
         "type": "text",
@@ -1405,7 +1405,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "messagePlaceholderSticker": "{user} poslal(a) nálepku",
+    "messagePlaceholderSticker": "{user} poslal(a) samolepku",
     "@messagePlaceholderSticker": {
         "description": "Message body for when a user sends a sticker",
         "type": "text",
@@ -1550,13 +1550,13 @@
             "user": {}
         }
     },
-    "matrixClientOlmMissingMessage": "libolm není nainstalován nebo nebyl nalezen. Šifrování typu End-to-End nebude k dispozici, dokud nebude tento problém vyřešen",
+    "matrixClientOlmMissingMessage": "libolm není nainstalován nebo nebyl nalezen. End-to-end šifrování nebude k dispozici, dokud tento problém nebude vyřešen",
     "@matrixClientOlmMissingMessage": {
         "description": "Text that explains to the user that libolm dependency is not found",
         "type": "text",
         "placeholders": {}
     },
-    "notificationModifiersPrivacyEnhanced": "Odeslat zprávu se zvýšeným soukromím",
+    "notificationModifiersPrivacyEnhanced": "Nová zpráva",
     "@notificationModifiersPrivacyEnhanced": {
         "description": "Placeholder text to put in a notification when the user has privacy enhanced notifications enabled.",
         "type": "text",
@@ -1688,7 +1688,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "promptProfileChangeBanner": "Změnit banner",
+    "promptProfileChangeBanner": "Změnit obrázek na pozadí",
     "@promptProfileChangeBanner": {
         "description": "Prompt to change the banner on the user's profile",
         "type": "text",
@@ -1769,13 +1769,13 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelProfileYourBadges": "Tvé odznaky",
+    "labelProfileYourBadges": "Vaše odznaky",
     "@labelProfileYourBadges": {
         "description": "label for the ui to select which badges to display on the users profile",
         "type": "text",
         "placeholders": {}
     },
-    "labelProfileNoBadges": "Nemáš žádné odznaky. Odznak můžeš získat například tím, že přispěješ a podpoříš tak vývoj Commetu",
+    "labelProfileNoBadges": "Nemáte žádné odznaky. Odznak můžete získat například tak, že přispějete a podpoříte tím vývoj aplikace Commet",
     "@labelProfileNoBadges": {
         "description": "text that is shown when the user has no badges, and explain where they can get badges",
         "type": "text",
@@ -1795,7 +1795,7 @@
             "callingUserName": {}
         }
     },
-    "labelTextChatDescription": "Jednoduchý textový chat se všemi funkcemi, které si jen můžeš přát! Posílej zprávy, multimédia, samolepky, GIFy a další!",
+    "labelTextChatDescription": "Jednoduchý textový chat se všemi funkcemi, které si jen můžete přát! Posílejte zprávy, multimédia, samolepky, GIFy a další!",
     "@labelTextChatDescription": {
         "type": "text",
         "placeholders": {}
@@ -1805,7 +1805,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelCalendarDescription": "Vytvoř si sdílený kalendář, ve kterém si můžeš hlídat své plány, a importuj si rozvrh z jiných kalendářů, aby přátelé viděli, kdy máš čas a kdy jsi zaneprázdněný.",
+    "labelCalendarDescription": "Vytvořte si sdílený kalendář, ve kterém budete mít přehled o svých plánech, či importujte rozvrh z jiných kalendářů, aby přátelé věděli, kdy máte čas a kdy ne.",
     "@labelCalendarDescription": {
         "type": "text",
         "placeholders": {}
@@ -1880,25 +1880,25 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelDonationInstructions": "Postupuj podle pokynů v tvém prohlížeči. Prosíme o trpělivost, zobrazení odměn může po přijetí tvého daru trvat jednu až dvě minuty.",
+    "labelDonationInstructions": "Postupujte podle pokynů ve svém prohlížeči. Zobrazení odměn může někdy po přijetí vašeho příspěvku trvat jednu až dvě minuty.",
     "@labelDonationInstructions": {
         "description": "Explains to the user to follow the donation instructions shown in the opened web page. Also asks for patience if the confirmation is taking a while to complete after donating",
         "type": "text",
         "placeholders": {}
     },
-    "labelDonationConfirmationSucceeded": "Děkujeme za tvůj štědrý dar!",
+    "labelDonationConfirmationSucceeded": "Děkujeme za tento štědrý příspěvek!",
     "@labelDonationConfirmationSucceeded": {
         "description": "Text that is shown when the donation flow was successful, and the donation has been confirmed",
         "type": "text",
         "placeholders": {}
     },
-    "labelDonationConfirmationFailed": "Nepodařilo se najít žádný dar :( Zvaž tedy prosím podporu udržitelného vývoje Commetu darem!",
+    "labelDonationConfirmationFailed": "Nepodařilo se najít žádné příspěvky :( Zvažte prosím podporu vývoje Commet příspěvkem!",
     "@labelDonationConfirmationFailed": {
         "description": "Text that is shown when the donation flow was failed, and the no donation was found",
         "type": "text",
         "placeholders": {}
     },
-    "labelConfirmCancelDonationConfirmation": "Opravdu chceš zavřít okno, aniž bys ještě přijal(a) jakoukoli odměnu?",
+    "labelConfirmCancelDonationConfirmation": "Opravdu chcete zavřít okno, aniž byste přijal(a) jakoukoli odměnu?",
     "@labelConfirmCancelDonationConfirmation": {
         "description": "Text that is shown when the user attempts to cancel the donation confirmation flow before the confirmation has finished",
         "type": "text",
@@ -1910,7 +1910,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "promptPickDonationAccount": "Vyber jeden z účtů, prostřednictvím kterého chceš přispět",
+    "promptPickDonationAccount": "Vyberte si jeden z účtů, prostřednictvím kterého chcete přispět",
     "@promptPickDonationAccount": {
         "description": "Prompt the user to select an account to link to their donation",
         "type": "text",
@@ -1952,7 +1952,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelSystemKeyboardShortcutsOutsourceDescription": "Ve tvém aktuálním prostředí se klávesové zkratky nastavují v nastavení systému.",
+    "labelSystemKeyboardShortcutsOutsourceDescription": "Ve vašem aktuálním prostředí se klávesové zkratky nastavují v nastavení systému.",
     "@labelSystemKeyboardShortcutsOutsourceDescription": {
         "type": "text",
         "placeholders": {}
@@ -2017,7 +2017,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelVoipSettingsStunFallbackDescription": "Bez serveru STUN nelze hovory navázat. Pokud tvůj homeserver neposkytuje server STUN, použije se jako záloha '{stunServer}'. Při navazování hovorů bude tomuto serveru odhalena tvoje IP adresa",
+    "labelVoipSettingsStunFallbackDescription": "Bez serveru STUN nelze hovory navázat. Pokud váš domovský server neposkytuje server STUN, použije se jako záloha '{stunServer}'. Při navazování hovorů bude tomuto serveru odhalena vaše IP adresa",
     "@labelVoipSettingsStunFallbackDescription": {
         "type": "text",
         "placeholders": {
@@ -2042,7 +2042,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelVoipUseSimulcastDescription": "Tvé vysílání se nahrává v několika různých úrovních kvality, aby si ostatní uživatelé mohli vybrat, kterou z nich chtějí použít. To bude vyžadovat větší šířku pásma a více systémových prostředků.",
+    "labelVoipUseSimulcastDescription": "Vaše vysílání se bude nahrávat v několika různých úrovních kvality, aby si ostatní uživatelé mohli vybrat, kterou z nich chtějí využít. To bude vyžadovat větší šířku pásma a více systémových prostředků.",
     "@labelVoipUseSimulcastDescription": {
         "description": "description for setting toggle to enable use of Simulcast",
         "type": "text",
@@ -2075,7 +2075,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelVoipStreamPreferredCodecDescription": "Vyber formát, ve kterém chceš vysílání kódovat. Různé kodeky mohou na některých zařízeních běžet rychleji, zatímco na jiných nemusí být podporovány. Většina zařízení by měla podporovat formáty VP8 a H.264.",
+    "labelVoipStreamPreferredCodecDescription": "Vyberte formát, ve kterém chcete vysílání kódovat. Různé kodeky mohou na některých zařízeních běžet rychleji, zatímco na jiných nemusí být podporovány. Většina zařízení by měla podporovat formáty VP8 a H.264.",
     "@labelVoipStreamPreferredCodecDescription": {
         "description": "Explains the preferred stream codec setting. This is just a preference, and the picked codec may not be used if the user's device does not support it",
         "type": "text",
@@ -2097,7 +2097,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelShowRoomPreviewsInSpaceSidebarDescription": "Pokud jsou v prostoru místnosti, do kterých jsi nevstoupil, zobrazí se v bočním panelu spolu s ostatními místnostmi v tomto prostoru",
+    "labelShowRoomPreviewsInSpaceSidebarDescription": "Pokud jsou v prostoru místnosti, do kterých jste se nepřipojili, zobrazí se v bočním panelu spolu s ostatními místnostmi v tomto prostoru",
     "@labelShowRoomPreviewsInSpaceSidebarDescription": {
         "description": "Description for enabling using the preview list in the space sidebar",
         "type": "text",
@@ -2197,7 +2197,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelPublicReadReceiptsDescription": "Umožní ostatním členům místnosti vidět, kdy jsi si přečetl jejich zprávy.",
+    "labelPublicReadReceiptsDescription": "Umožní ostatním členům místnosti vidět, kdy jste si přečetli jejich zprávy.",
     "@labelPublicReadReceiptsDescription": {
         "description": "description for the toggle for enabling and disabling sending read receipts",
         "type": "text",
@@ -2209,7 +2209,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelPublicTypingIndicatorDescription": "Umožní ostatním členům místnosti vidět, když píšeš zprávu.",
+    "labelPublicTypingIndicatorDescription": "Umožní ostatním členům místnosti vidět, když píšete zprávu.",
     "@labelPublicTypingIndicatorDescription": {
         "description": "description for the toggle for enabling and disabling sending typing indicator",
         "type": "text",
@@ -2311,7 +2311,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "descriptionUpdateAvailable": "K dispozici je novější verze programu Commet: {version}",
+    "descriptionUpdateAvailable": "K dispozici je novější verze aplikace Commet: {version}",
     "@descriptionUpdateAvailable": {
         "description": "describes the update, showing the version code for the available update",
         "type": "text",
@@ -2359,13 +2359,13 @@
             "user": {}
         }
     },
-    "matrixClientVodozemacMissingMessage": "vodozemac není nainstalovaný nebo se ho nepodařilo najít. End-to-end šifrování nebude k dispozici, dokud se tento problém nevyřeší",
+    "matrixClientVodozemacMissingMessage": "vodozemac není nainstalován nebo nebyl nalezen. End-to-end šifrování nebude k dispozici, dokud tento problém nebude vyřešen",
     "@matrixClientVodozemacMissingMessage": {
         "description": "Text that explains to the user that vodozemac dependency is not found",
         "type": "text",
         "placeholders": {}
     },
-    "messageUserDeactivated": "Tvůj účet byl deaktivován",
+    "messageUserDeactivated": "Váš účet byl deaktivován",
     "@messageUserDeactivated": {
         "description": "An error message displayed when the user attempts to log into an account that has been disabled",
         "type": "text",
