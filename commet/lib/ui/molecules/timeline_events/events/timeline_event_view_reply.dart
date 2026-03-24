@@ -111,7 +111,7 @@ class _TimelineEventViewReplyState extends State<TimelineEventViewReply> {
                           text: body ?? "Unknown",
                           style: Theme.of(context)
                               .textTheme
-                              .bodyMedium
+                              .bodySmall
                               ?.copyWith(
                                   color: material.Theme.of(context)
                                       .colorScheme

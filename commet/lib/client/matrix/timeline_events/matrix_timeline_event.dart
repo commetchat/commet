@@ -29,6 +29,12 @@ abstract class MatrixTimelineEvent implements TimelineEvent {
       const JsonEncoder.withIndent('  ').convert(event.toJson());
 
   @override
+  bool get mentionsRoom => event.mentions.room;
+
+  @override
+  List<String> get mentions => event.mentions.userIds;
+
+  @override
   TimelineEventStatus get status => switch (event.status) {
         matrix.EventStatus.error => TimelineEventStatus.error,
         matrix.EventStatus.sending => TimelineEventStatus.sending,

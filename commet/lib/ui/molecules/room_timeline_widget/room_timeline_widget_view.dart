@@ -89,7 +89,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
 
     initFromTimeline(widget.timeline);
 
-    controller = ScrollController(initialScrollOffset: -999999);
+    controller = ScrollController();
     EventBus.jumpToEvent.stream.listen(jumpToEvent);
     WidgetsBinding.instance.addPostFrameCallback(onAfterFirstFrame);
     super.initState();
@@ -218,22 +218,18 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
   }
 
   void onAfterFirstFrame(_) {
-    if (timeline.events.isNotEmpty) {
-      widget.markAsRead?.call(timeline.events.first);
-    }
-
     if (controller.hasClients) {
-      double extent = controller.position.minScrollExtent;
+      double extent = controller.position.maxScrollExtent;
       controller = ScrollController(initialScrollOffset: extent);
       scrollViewKey = GlobalKey();
       controller.addListener(onScroll);
-      widget.onAttachedToBottom?.call();
       setState(() {
         firstFrame = false;
       });
     }
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      jumpToEvent(timeline.room.lastRead, highlight: false);
       onScroll();
     });
   }
@@ -266,18 +262,24 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
     if (controller.offset >
             controller.position.maxScrollExtent - loadingThreshold &&
         !timeline.isLoadingHistory &&
-        timeline.canLoadHistory) {
-      timeline.loadMoreHistory().then((_) {
-        WidgetsBinding.instance.addPostFrameCallback((_) => onScroll());
+        timeline.canLoadHistory)
+      setState(() async {
+        await timeline.loadMoreHistory().then((_) {
+          WidgetsBinding.instance.addPostFrameCallback((_) => onScroll());
+        });
       });
-    }
 
     if (controller.offset <
             (controller.position.minScrollExtent + loadingThreshold) &&
         !timeline.isLoadingFuture &&
-        timeline.canLoadFuture) {
-      timeline.loadMoreFuture();
-    }
+        timeline.canLoadFuture)
+      setState(() async {
+        await timeline.loadMoreFuture();
+        eventKeys = List.from(
+            timeline.events
+                .map((e) => (GlobalKey(debugLabel: e.eventId), e.eventId)),
+            growable: true);
+      });
   }
 
   void animateAndSnapToBottom() {
@@ -379,6 +381,10 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
                           ),
                         );
                       })),
+                    // The slivers are split into recent and history events and
+                    // are rendered separately. This prevents the timeline from
+                    // jumping around and allows jumping to specific indices
+                    // with more reliability.
                     SliverList(
                       key: recentItemsKey,
                       // Recent Items
@@ -390,7 +396,12 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
                               recentItemsCount - sliverIndex - 1;
                           numBuilds += 1;
 
-                          var key = eventKeys[timelineIndex];
+                          var key;
+                          try {
+                            key = eventKeys[timelineIndex];
+                          } on RangeError {
+                            return Placeholder();
+                          }
                           assert(
                               key.$2 == timeline.events[timelineIndex].eventId);
 
@@ -439,7 +450,12 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
                           // ignore: avoid_print
                           var timelineIndex = recentItemsCount + sliverIndex;
 
-                          var key = eventKeys[timelineIndex];
+                          var key;
+                          try {
+                            key = eventKeys[timelineIndex];
+                          } on RangeError {
+                            return Placeholder();
+                          }
                           assert(
                               key.$2 == timeline.events[timelineIndex].eventId);
 
@@ -525,8 +541,8 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
     );
   }
 
-  void jumpToEvent(String eventId) async {
-    if (highlightedEventState?.mounted == true) {
+  void jumpToEvent(String eventId, {bool highlight = true}) async {
+    if (highlight && highlightedEventState?.mounted == true) {
       highlightedEventState!.setHighlighted(false);
       highlightedEventState = null;
     }
@@ -548,6 +564,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
 
       setState(() {
         initFromTimeline(newTimeline);
+        jumpToEvent(timeline.room.lastRead, highlight: false);
       });
     }
 
@@ -555,7 +572,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
       var key = eventKeys[index].$1;
       final state = key.currentState;
 
-      if (state is TimelineViewEntryState) {
+      if (highlight && state is TimelineViewEntryState) {
         state.setHighlighted(true);
         highlightedEventState = state;
       }
@@ -586,9 +603,11 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
 
     setState(() {
       recentItemsCount = index;
-      highlightedEventId = timeline.events[index].eventId;
-      highlightedEventOffstageIndex = index;
-      highlightedEventOffstageKey = GlobalKey();
+      if (highlight) {
+        highlightedEventId = timeline.events[index].eventId;
+        highlightedEventOffstageIndex = index;
+        highlightedEventOffstageKey = GlobalKey();
+      }
       loading = false;
     });
   }
@@ -612,7 +631,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
     var index = timeline.events.indexWhere((i) => i.eventId == event);
 
     if (index == -1) {
-      print("Could not find the event in the timeline view");
+      Log.w("Could not find the event in the timeline view");
     }
 
     if (state is TimelineEventViewWidget) {
