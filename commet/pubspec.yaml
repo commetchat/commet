@@ -123,7 +123,11 @@ dependencies:
   dart_ipc: ^1.0.1
   dbus: ^0.7.11
   hotkey_manager: ^0.2.3
+  rust_lib_commet:
+    path: ../rust/rust_builder
+  flutter_rust_bridge: 2.11.1
   launcher_entry: ^0.1.1
+  
 dependency_overrides:
   analyzer: ^7.3.0
 
