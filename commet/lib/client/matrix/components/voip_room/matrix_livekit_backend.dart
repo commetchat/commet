@@ -149,10 +149,7 @@ class MatrixLivekitBackend {
     }
 
     final roomOptions = lk.RoomOptions(
-      adaptiveStream: true,
-      dynacast: true,
-      e2eeOptions: e2eeOptions,
-    );
+        adaptiveStream: true, dynacast: true, encryption: e2eeOptions);
 
     final lkRoom = lk.Room(roomOptions: roomOptions);
 

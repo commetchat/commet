@@ -7,6 +7,8 @@ import 'package:webrtc_interface/src/frame_cryptor.dart';
 
 import 'package:matrix/matrix.dart' as mx;
 
+import 'package:flutter_webrtc/flutter_webrtc.dart' as rtc;
+
 class MatrixLivekitEncryptionKeyProvider implements BaseKeyProvider {
   mx.Room room;
   Room? lkRoom;
@@ -18,12 +20,21 @@ class MatrixLivekitEncryptionKeyProvider implements BaseKeyProvider {
   }
 
   static Future<MatrixLivekitEncryptionKeyProvider> create(mx.Room room) async {
-    var provider = await BaseKeyProvider.create(
-      sharedKey: false,
-      ratchetWindowSize: 10,
-      keyRingSize: 255,
-      failureTolerance: -1,
-    );
+    final rtc.KeyProviderOptions options = rtc.KeyProviderOptions(
+        sharedKey: false,
+        ratchetSalt: Uint8List.fromList(defaultRatchetSalt.codeUnits),
+        ratchetWindowSize: 10,
+        uncryptedMagicBytes: Uint8List.fromList(defaultMagicBytes.codeUnits),
+        failureTolerance: -1,
+        keyRingSize: 256,
+        keyDerivationAlgorithm: KeyDerivationAlgorithm.kHKDF,
+        discardFrameWhenCryptorNotReady:
+            defaultDiscardFrameWhenCryptorNotReady);
+
+    final keyProvider =
+        await rtc.frameCryptorFactory.createDefaultKeyProvider(options);
+
+    var provider = BaseKeyProvider(keyProvider, options);
 
     Log.i("Created livekit encryption key provider");
 
@@ -94,6 +105,8 @@ class MatrixLivekitEncryptionKeyProvider implements BaseKeyProvider {
 
     if (event.type == "io.element.call.encryption_keys") {
       var data = event.content["keys"] as Map<String, dynamic>;
+      Log.i("Setting encryption key");
+      Log.i(data);
 
       var index = data["index"];
       var key = data["key"] as String;
@@ -105,7 +118,9 @@ class MatrixLivekitEncryptionKeyProvider implements BaseKeyProvider {
 
       var participantId = event.senderId + ":" + deviceId;
 
-      setRawKey(b, keyIndex: index, participantId: participantId);
+      Log.i("Particpant: $participantId");
+
+      setRawKey(b, participantId: participantId, keyIndex: index);
     }
   }
 }

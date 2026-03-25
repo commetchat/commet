@@ -137,7 +137,7 @@ void main(List<String> args) async {
   }
 
   final format = DateFormat('HH:mm:ss');
-  Logger.root.level = Level.FINEST;
+  Logger.root.level = Level.FINE;
   Logger.root.onRecord.listen((record) {
     print('${format.format(record.time)} ${record.level} : ${record.message}');
   });

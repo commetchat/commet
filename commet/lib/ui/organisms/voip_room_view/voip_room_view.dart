@@ -82,9 +82,7 @@ class _VoipRoomViewState extends State<VoipRoomView> {
       mainAxisSize: MainAxisSize.max,
       children: [
         Expanded(
-          child: widget.voip.room.isE2EE && BuildConfig.RELEASE
-              ? e2eeUnsupportedView()
-              : joinCallView(),
+          child: joinCallView(),
         ),
         Align(
           alignment: AlignmentGeometry.bottomLeft,
