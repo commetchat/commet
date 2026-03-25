@@ -78,7 +78,7 @@ class ImageCropView extends StatelessWidget {
   final double width = 1000;
 
   String get noCroppingPrompt => Intl.message("Use Without Cropping",
-      name: "useWithoutCroppingPrompt", 
+      name: "useWithoutCroppingPrompt",
       desc: "Button text for using an image without cropping it");
 
   @override

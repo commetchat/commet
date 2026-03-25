@@ -44,19 +44,18 @@ class ImageSelectDialog extends StatelessWidget {
   });
 
   String get removeImagePrompt => Intl.message("Remove Image",
-      name: "removeImagePrompt", 
-      desc: "Button text for removing an image");
+      name: "removeImagePrompt", desc: "Button text for removing an image");
 
   String get pickImagePrompt => Intl.message("Pick Image",
-      name: "pickImagePrompt", 
-      desc: "Button text for picking an image");
+      name: "pickImagePrompt", desc: "Button text for picking an image");
 
-  String get confirmRemovePrompt => Intl.message("Are you sure you want to remove this image?",
-      name: "confirmRemovePrompt",
-      desc: "Prompt text for confirming image removal");
+  String get confirmRemovePrompt =>
+      Intl.message("Are you sure you want to remove this image?",
+          name: "confirmRemovePrompt",
+          desc: "Prompt text for confirming image removal");
 
   String get emptyImagePrompt => Intl.message("No image set",
-      name: "emptyImagePrompt", 
+      name: "emptyImagePrompt",
       desc: "Text shown when there is no image to display");
 
   final ImageProvider? image;
