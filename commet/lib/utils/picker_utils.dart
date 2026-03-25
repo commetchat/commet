@@ -93,7 +93,6 @@ class ImageCropView extends StatelessWidget {
         child: tiamat.Button(
           text: CommonStrings.promptSubmit,
           onTap: () async {
-            print("Hello!");
             var image = await controller.croppedBitmap();
 
             var data = await image.toByteData(format: ImageByteFormat.png);

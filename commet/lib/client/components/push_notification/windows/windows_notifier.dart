@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/push_notification/notification_content.dart';
+import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/components/push_notification/notifier.dart';
 import 'package:commet/client/room.dart';
 import 'package:commet/main.dart';
@@ -10,6 +11,7 @@ import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/shortcuts_manager.dart';
 import 'package:desktop_notifications/desktop_notifications.dart';
 import 'package:flutter/services.dart';
+import 'package:media_kit/media_kit.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:win_toast/win_toast.dart';
 import 'package:window_manager/window_manager.dart';
@@ -238,12 +240,17 @@ class WindowsNotifier implements Notifier {
          <image placement='appLogoOverride' src='$avatarFilePath' hint-crop='circle'/>
       </binding>
    </visual>
+   <audio silent='true'/>
    <actions>
       <input id="reply" type="text" placeHolderContent="Send a reply..." />
       <action content="Reply" activationType="background" arguments="action=reply&amp;client_id=${f(content.clientId)}&amp;room_id=${f(content.roomId)}&amp;event_id=${f(content.eventId)}" />
    </actions>
 </toast>
   """;
+
+    var player = NotificationManager.getSoundPlayer();
+    player.open(Media("asset:///assets/sound/message.ogg"));
+
     WinToast.instance().showCustomToast(xml: xml);
   }
 

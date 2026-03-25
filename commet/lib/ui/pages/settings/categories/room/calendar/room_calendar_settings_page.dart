@@ -194,7 +194,7 @@ class _RoomCalendarSettingsPageState extends State<RoomCalendarSettingsPage> {
           TextSpan(text: " with name ", style: entryStyle),
         if (calendar.overrideEventName != null)
           TextSpan(text: "'${calendar.overrideEventName!}'"),
-        if (preferences.developerMode)
+        if (preferences.developerMode.value)
           TextSpan(text: " (${calendar.id})", style: entryStyle)
       ]),
     );

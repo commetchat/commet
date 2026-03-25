@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:typed_data';
+import 'package:collection/collection.dart';
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/calendar_room/calendar_room_component.dart';
 import 'package:commet/client/components/direct_messages/direct_message_component.dart';
@@ -13,7 +15,50 @@ import 'package:flutter/material.dart';
 import 'attachment.dart';
 import 'permissions.dart';
 
-enum RoomVisibility { public, private, invite, knock }
+// enum RoomVisibility { public, private, invite, knock }
+
+abstract class RoomVisibility {
+  static IconData icon(RoomVisibility? visibility) {
+    return switch (visibility) {
+      final RoomVisibilityPublic _ => Icons.public,
+      final RoomVisibilityPrivate _ => Icons.lock,
+      final RoomVisibilityRestricted _ => Icons.shield,
+      _ => Icons.question_mark,
+    };
+  }
+}
+
+class RoomVisibilityPrivate implements RoomVisibility {
+  @override
+  bool operator ==(Object other) {
+    if (other is RoomVisibilityPrivate) return true;
+    if (identical(this, other)) return true;
+    return false;
+  }
+}
+
+class RoomVisibilityPublic implements RoomVisibility {
+  @override
+  bool operator ==(Object other) {
+    if (other is RoomVisibilityPublic) return true;
+    if (identical(this, other)) return true;
+    return false;
+  }
+}
+
+class RoomVisibilityRestricted implements RoomVisibility {
+  final List<String> spaces;
+
+  @override
+  bool operator ==(Object other) {
+    if (other is! RoomVisibilityRestricted) return false;
+    if (identical(this, other)) return true;
+
+    return ListEquality().equals(this.spaces, other.spaces);
+  }
+
+  RoomVisibilityRestricted(this.spaces);
+}
 
 enum PushRule { notify, mentionsOnly, dontNotify }
 
@@ -103,6 +148,8 @@ abstract class Room {
   int get displayHighlightedNotificationCount =>
       pushRule != PushRule.dontNotify ? highlightedNotificationCount : 0;
 
+  RoomVisibility get visibility;
+
   /// Send a message in this room
   Future<TimelineEvent?> sendMessage({
     String? message,
@@ -145,8 +192,12 @@ abstract class Room {
   /// Update the display name of this room
   Future<void> setDisplayName(String newName);
 
+  Future<void> setRoomAvatar(Uint8List bytes, String? mimeType);
+
   /// Set a notification push rule
   Future<void> setPushRule(PushRule rule);
+
+  Future<void> setVisibility(RoomVisibility visibility);
 
   /// Gets the color of a user based on their ID
   Color getColorOfUser(String userId);
@@ -188,6 +239,8 @@ abstract class Room {
   Future<void> setMemberRole(String id, Role role);
 
   Future<void> setTopic(String topic);
+
+  Future<void> markAsRead();
 
   @override
   bool operator ==(Object other) {

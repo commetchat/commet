@@ -1,7 +1,6 @@
 import 'package:commet/client/client.dart' as commet;
 import 'package:commet/client/matrix/components/emoticon/matrix_emoticon_component.dart';
 import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
-import 'package:commet/client/room.dart' show RoomVisibility;
 import 'package:commet/client/room_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix/matrix.dart';
@@ -42,11 +41,12 @@ extension MatrixExtensions on Client {
     };
 
     var visibility = switch (joinRule) {
-      "public" => RoomVisibility.public,
-      "knock" => RoomVisibility.knock,
-      "invite" => RoomVisibility.invite,
-      "private" => RoomVisibility.private,
-      _ => RoomVisibility.private,
+      "public" => commet.RoomVisibilityPublic(),
+      "knock" => commet.RoomVisibilityPrivate(),
+      "invite" => commet.RoomVisibilityPrivate(),
+      "private" => commet.RoomVisibilityPrivate(),
+      "restricted" => commet.RoomVisibilityRestricted([]),
+      _ => commet.RoomVisibilityPrivate(),
     };
 
     if (name != null && id != null) {

@@ -7,7 +7,9 @@ import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/organisms/particle_player/particle_system_confetti.dart';
+import 'package:commet/utils/common_strings.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:starfield/particle_system/ecs_particle_system.dart';
 import 'package:starfield/renderer/particle_system_renderer.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
@@ -118,6 +120,35 @@ class _DonationRewardsConfirmationState
     }
   }
 
+  String get titleConfirmingDonation => Intl.message("Confirming Donation",
+      name: "titleConfirmingDonation",
+      desc:
+          "Title for the popup shown while waiting for the user to finish the donation flow, which checks for completion of the donation");
+
+  String get labelDonationInstructions => Intl.message(
+      "Follow the instructions in your browser. Please be patient, it may take a minute or two for your awards to appear once your donation has been received.",
+      name: "labelDonationInstructions",
+      desc:
+          "Explains to the user to follow the donation instructions shown in the opened web page. Also asks for patience if the confirmation is taking a while to complete after donating");
+
+  String get labelDonationConfirmationSucceeded => Intl.message(
+      "Thank you for your generous donation!",
+      name: "labelDonationConfirmationSucceeded",
+      desc:
+          "Text that is shown when the donation flow was successful, and the donation has been confirmed");
+
+  String get labelDonationConfirmationFailed => Intl.message(
+      "Could not find any donations :( Please consider donating to support development of Commet!",
+      name: "labelDonationConfirmationFailed",
+      desc:
+          "Text that is shown when the donation flow was failed, and the no donation was found");
+
+  String get labelConfirmCancelDonationConfirmation => Intl.message(
+      "Are you sure you want to dismiss without accepting any award?",
+      name: "labelConfirmCancelDonationConfirmation",
+      desc:
+          "Text that is shown when the user attempts to cancel the donation confirmation flow before the confirmation has finished");
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -138,12 +169,11 @@ class _DonationRewardsConfirmationState
             children: [
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Text(
-                  "Confirming donation",
+                  titleConfirmingDonation,
                   style: TextTheme.of(context).headlineSmall,
                 ),
                 if (widget.didOpenDonationWindow)
-                  tiamat.Text.labelLow(
-                      "Follow the instructions in your browser. Please be patient, it may take a minute or two for your awards to appear once your donation has been received."),
+                  tiamat.Text.labelLow(labelDonationInstructions),
               ]),
               Column(
                 children: [
@@ -164,13 +194,12 @@ class _DonationRewardsConfirmationState
                               .toList()),
                     ),
                   if (receivedAwards?.isEmpty == true)
-                    tiamat.Text.labelLow(
-                        "Could not find any donations :( Please consider donating to support development of Commet!"),
+                    tiamat.Text.labelLow(labelDonationConfirmationFailed),
                   if (receivedAwards?.isNotEmpty == true)
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: tiamat.Text.labelLow(
-                          "Thank you for your generous donation!"),
+                          labelDonationConfirmationSucceeded),
                     )
                 ],
               ),
@@ -182,7 +211,7 @@ class _DonationRewardsConfirmationState
                     IgnorePointer(
                       ignoring: acceptLoading,
                       child: tiamat.Button(
-                          text: "Accept!",
+                          text: CommonStrings.promptAccept,
                           isLoading: acceptLoading,
                           onTap: () async {
                             setState(() {
@@ -201,12 +230,12 @@ class _DonationRewardsConfirmationState
                           }),
                     ),
                   tiamat.Button.secondary(
-                      text: "Dismiss",
+                      text: CommonStrings.promptDismiss,
                       onTap: () async {
                         if (receivedAwards?.isEmpty == true ||
                             await AdaptiveDialog.confirmation(context,
                                     prompt:
-                                        "Are you sure you want to dismiss without accepting any award?") ==
+                                        labelConfirmCancelDonationConfirmation) ==
                                 true) {
                           preferences.clearRunningDonationCheckFlow();
                           Navigator.of(context).pop();

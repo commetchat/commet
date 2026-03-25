@@ -16,6 +16,7 @@ import 'package:commet/utils/picker_utils.dart';
 import 'package:commet/utils/timezone_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
+import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class UserProfile extends StatefulWidget {
@@ -164,9 +165,9 @@ class _UserProfileState extends State<UserProfile> {
       await Future.wait<dynamic>([
         if (banner != null) precacheImage(banner!, context),
         if (avatar != null) precacheImage(avatar!, context),
-      ]);
+      ]).timeout(Duration(seconds: 5));
     } catch (e, s) {
-      Log.onError(e, s);
+      Log.onError(e, s, content: "Error while fetching profile images");
     }
 
     setState(() {
@@ -345,7 +346,7 @@ class _UserProfileState extends State<UserProfile> {
     var text = await AdaptiveDialog.textPrompt(
       context,
       initialText: presence?.message?.message,
-      title: "Change Status",
+      title: UserProfileViewState.promptProfileSetStatus,
     );
     if (text != null) {
       var client = widget.client;
@@ -391,11 +392,17 @@ class _UserProfileState extends State<UserProfile> {
     );
   }
 
+  String labelConfirmShareTimezone(String timezone) => Intl.message(
+      "Are you sure you want to share your timezone '$timezone' publicly?",
+      name: "labelConfirmShareTimezone",
+      args: [timezone],
+      desc:
+          "Ask the user to confirm that they want to share their current timezone as public information on their profile");
+
   Future<void> shareTimezone() async {
     final currentTimeZone = await FlutterTimezone.getLocalTimezone();
     if (await AdaptiveDialog.confirmation(context,
-            prompt:
-                "Are you sure you want to share your timezone '${currentTimeZone.identifier}' publicly?") ==
+            prompt: labelConfirmShareTimezone(currentTimeZone.identifier)) ==
         true) {
       setState(() {
         timezone = currentTimeZone.identifier;
@@ -416,6 +423,10 @@ class _UserProfileState extends State<UserProfile> {
     });
   }
 
+  String get promptProfileWriteBioHint => Intl.message("Write about yourself",
+      name: "promptProfileWriteBioHint",
+      desc: "Hint text for the profile bio editor");
+
   Future<void> setBio() async {
     AdaptiveDialog.show(context, builder: (context) {
       String? plaintext;
@@ -427,7 +438,7 @@ class _UserProfileState extends State<UserProfile> {
       return SizedBox(
         width: 600,
         child: MessageInput(
-          hintText: "Write about yourself!",
+          hintText: promptProfileWriteBioHint,
           initialText: bioText ?? plaintext,
           showAttachmentButton: false,
           client: widget.client,
@@ -465,6 +476,17 @@ class _UserProfileState extends State<UserProfile> {
     });
   }
 
+  String get labelProfileYourBadges => Intl.message("Your Badges",
+      name: "labelProfileYourBadges",
+      desc:
+          "label for the ui to select which badges to display on the users profile");
+
+  String get labelProfileNoBadges => Intl.message(
+      "You don't have any badges. You can get badges by donating and supporting development of Commet",
+      name: "labelProfileNoBadges",
+      desc:
+          "text that is shown when the user has no badges, and explain where they can get badges");
+
   Future<void> editBadges() async {
     var availableBadges = await component.getAvailableBadges();
 
@@ -474,12 +496,11 @@ class _UserProfileState extends State<UserProfile> {
                 height: 200,
                 child: Center(
                   child: Container(
-                    child: tiamat.Text.labelLow(
-                        "You don't have any badges. You can get badges by donating and supporting development of Commet"),
+                    child: tiamat.Text.labelLow(labelProfileNoBadges),
                   ),
                 ),
               ),
-          title: "Badges");
+          title: labelProfileYourBadges);
       return;
     }
 
@@ -487,7 +508,7 @@ class _UserProfileState extends State<UserProfile> {
       context,
       selected: badges,
       items: availableBadges,
-      title: "Your Badges",
+      title: labelProfileYourBadges,
       itemBuilder: (context, item) {
         return Row(
           spacing: 8,

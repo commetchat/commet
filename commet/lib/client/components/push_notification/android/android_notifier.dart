@@ -58,7 +58,7 @@ class AndroidNotifier implements Notifier {
   static Future<void> onForegroundMessage(Map<String, dynamic> message) async {
     var roomId = message["room_id"] as String?;
     var eventId = message["event_id"] as String?;
-    var counts = message["counts"] as String?;
+    var counts = message["counts"];
 
     if (roomId == null || eventId == null) {
       Log.w("TODO: Handle counts: $counts");
@@ -236,6 +236,7 @@ class AndroidNotifier implements Notifier {
         groupKey: content.roomId,
         groupAlertBehavior: GroupAlertBehavior.all,
         styleInformation: style,
+        sound: RawResourceAndroidNotificationSound('message'),
         shortcutId: content.roomId,
         silent: content.priority == NotificationPriority.low,
         ticker: content.content,

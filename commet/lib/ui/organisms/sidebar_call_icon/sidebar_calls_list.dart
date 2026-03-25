@@ -1,6 +1,7 @@
 import 'package:commet/client/call_manager.dart';
 import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/config/layout_config.dart';
+import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/organisms/mini_call_menu/mini_call_menu.dart';
 import 'package:commet/ui/organisms/sidebar_call_icon/sidebar_call_icon.dart';
 import 'package:commet/utils/notifying_list.dart';
@@ -9,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:implicitly_animated_list/implicitly_animated_list.dart';
 import 'package:tiamat/atoms/tile.dart';
+import 'package:tiamat/tiamat.dart' show Seperator;
 
 class SidebarCallsList extends StatefulWidget {
   const SidebarCallsList(this.callManager, this.width, {super.key});
@@ -58,13 +60,25 @@ class _SidebarCallsListState extends State<SidebarCallsList> {
 
   @override
   Widget build(BuildContext context) {
-    return ImplicitlyAnimatedList(
-      key: listKey,
-      shrinkWrap: true,
-      itemData: widget.callManager.currentSessions,
-      itemBuilder: (context, data) {
-        return buildItem(data);
-      },
+    bool hasSessions = widget.callManager.currentSessions.isNotEmpty;
+
+    return ScaledSafeArea(
+      top: false,
+      bottom: hasSessions,
+      child: Column(
+        children: [
+          if (hasSessions) const Seperator(),
+          ImplicitlyAnimatedList(
+            padding: EdgeInsets.zero,
+            key: listKey,
+            shrinkWrap: true,
+            itemData: widget.callManager.currentSessions,
+            itemBuilder: (context, data) {
+              return buildItem(data);
+            },
+          ),
+        ],
+      ),
     );
   }
 

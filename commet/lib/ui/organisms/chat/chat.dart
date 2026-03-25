@@ -341,7 +341,7 @@ class ChatState extends State<Chat> {
 
       if (event.senderId != room.client.self!.identifier) continue;
 
-      if (event is TimelineEventMessage) continue;
+      if (!(event is TimelineEventMessage)) continue;
 
       setInteractingEvent(event, type: EventInteractionType.edit);
       break;

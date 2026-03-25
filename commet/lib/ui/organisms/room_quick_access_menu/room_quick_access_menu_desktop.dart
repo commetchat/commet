@@ -47,6 +47,6 @@ class _RoomQuickAccessMenuViewDesktopState
   }
 
   void onChanged(event) {
-    setState(() {});
+    if (mounted) setState(() {});
   }
 }

@@ -2,11 +2,13 @@ import 'dart:async';
 
 import 'package:commet/client/components/read_receipts/read_receipt_component.dart';
 import 'package:commet/client/matrix/components/matrix_sync_listener.dart';
+import 'package:commet/client/matrix/components/user_presence/matrix_user_presence.dart';
 import 'package:commet/client/matrix/matrix_client.dart';
 import 'package:commet/client/matrix/matrix_room.dart';
 import 'package:commet/client/matrix/matrix_timeline.dart';
+import 'package:commet/client/matrix/timeline_events/matrix_timeline_event.dart';
+import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:matrix/matrix_api_lite/model/sync_update.dart';
-import 'package:matrix/matrix.dart' as matrix;
 
 class MatrixReadReceiptComponent
     implements
@@ -17,40 +19,86 @@ class MatrixReadReceiptComponent
   @override
   MatrixRoom room;
 
-  final StreamController _controller = StreamController.broadcast();
+  static const String publicReadReceiptsKey =
+      "chat.commet.public_read_receipts";
+
+  final StreamController<String> _controller =
+      StreamController<String>.broadcast();
 
   @override
-  Stream<void> get onReadReceiptsUpdated => _controller.stream;
-
-  @override
-  List<String> get receipts => getReceipts() ?? [];
+  Stream<String> get onReadReceiptsUpdated => _controller.stream;
 
   MatrixReadReceiptComponent(this.client, this.room) {
     room.onTimelineLoaded.stream.listen(onTimelineLoaded);
   }
 
+  Map<String, String> userToPreviousReceipt = {};
+
+  @override
+  bool? get usePublicReadReceiptsForRoom {
+    var publicReadReceiptsForRoom = room
+        .matrixRoom.roomAccountData[publicReadReceiptsKey]?.content["enabled"];
+    return publicReadReceiptsForRoom is bool ? publicReadReceiptsForRoom : null;
+  }
+
+  @override
+  Future<void> setUsePublicReadReceiptsForRoom(bool? value) async =>
+      await client.matrixClient.setAccountDataPerRoom(
+        client.matrixClient.userID!,
+        room.matrixRoom.id,
+        publicReadReceiptsKey,
+        {"enabled": value},
+      );
+
   @override
   onSync(JoinedRoomUpdate update) {
     final ephemeral = update.ephemeral;
-
-    if (update.timeline?.events?.isNotEmpty == true) {
-      _controller.add(null);
-    }
 
     if (ephemeral == null) {
       return;
     }
 
-    if (ephemeral.any((e) => e.type == "m.receipt")) {
-      _controller.add(null);
+    for (var event in ephemeral) {
+      if (event.type == "m.receipt") {
+        for (var key in event.content.keys) {
+          var e = (event.content[key]! as Map<String, dynamic>)["m.read"];
+          if (e == null) continue;
+
+          if (e is Map<String, dynamic>) {
+            for (var k in e.keys) {
+              var lastEvent = userToPreviousReceipt[k];
+              if (lastEvent != null) {
+                _controller.add(lastEvent);
+              }
+
+              userToPreviousReceipt[k] = key;
+            }
+          }
+
+          _controller.add(key);
+        }
+      }
     }
+
+    client.matrixClient.receiptsPublicByDefault = client
+        .getComponent<MatrixUserPresenceComponent>()!
+        .usePublicReadReceipts;
   }
 
-  void onTimelineLoaded(void event) {
-    _controller.add(null);
+  void handleEvent(String eventId, String userId) {
+    var lastEvent = userToPreviousReceipt[userId];
+    if (lastEvent != null) {
+      _controller.add(lastEvent);
+    }
+
+    userToPreviousReceipt[userId] = eventId;
+    _controller.add(eventId);
   }
 
-  List<String>? getReceipts() {
+  void onTimelineLoaded(void event) {}
+
+  @override
+  List<String>? getReceipts(TimelineEvent event) {
     if (room.timeline == null) {
       return null;
     }
@@ -60,37 +108,17 @@ class MatrixReadReceiptComponent
       return null;
     }
 
-    var matrixTimeline = timeline.matrixTimeline!;
+    if (event is! MatrixTimelineEvent) return [];
 
-    var state = matrixTimeline.room.receiptState;
+    var receipts = event.event.receipts;
 
-    const displayableTypes = [
-      matrix.EventTypes.Message,
-      matrix.EventTypes.Sticker,
-    ];
-
-    Set<String> ids = {};
-    matrix.Event? latestDisplayableEvent;
-    for (int i = 0; i < matrixTimeline.events.length; i++) {
-      var event = matrixTimeline.events[i];
-      ids.add(event.eventId);
-
-      if (displayableTypes.contains(event.type)) {
-        latestDisplayableEvent = event;
-        break;
-      }
+    for (var receipt in receipts) {
+      userToPreviousReceipt[receipt.user.id] = event.eventId;
     }
 
-    var receipts = state.global.otherUsers.entries
-        .where((element) => ids.contains(element.value.eventId))
-        .map((entry) => entry.key)
-        .toList(growable: true);
-
-    if (latestDisplayableEvent != null &&
-        latestDisplayableEvent.senderId != client.self!.identifier &&
-        !receipts.contains(latestDisplayableEvent.senderId))
-      receipts.add(latestDisplayableEvent.senderId);
-
-    return receipts;
+    return receipts
+        .where((i) => i.user.id != client.self!.identifier)
+        .map((i) => i.user.id)
+        .toList();
   }
 }

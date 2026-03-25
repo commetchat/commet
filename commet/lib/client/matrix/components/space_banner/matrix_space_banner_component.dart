@@ -35,7 +35,7 @@ class MatrixSpaceBannerComponent
     var uploadResponse =
         await client.matrixClient.uploadContent(data, contentType: mimeType);
 
-    client.matrixClient.setRoomStateWithKey(
+    await client.matrixClient.setRoomStateWithKey(
       space.matrixRoom.id,
       key,
       '',
@@ -44,6 +44,7 @@ class MatrixSpaceBannerComponent
         if (mimeType != null) 'mimetype': mimeType,
       },
     );
+    space.notifyUpdate();
   }
 
   @override

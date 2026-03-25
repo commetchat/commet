@@ -7,6 +7,7 @@ import 'package:commet/client/components/push_notification/notification_content.
 import 'package:commet/client/components/push_notification/notification_manager.dart';
 import 'package:commet/client/matrix_background/matrix_background_client.dart';
 import 'package:commet/client/matrix_background/matrix_background_room.dart';
+import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/utils/database/database_server.dart';
@@ -102,7 +103,7 @@ class BackgroundNotificationsManager2 {
     try {
       var roomId = data["room_id"] as String?;
       var eventId = data["event_id"] as String?;
-      var counts = data["counts"] as String?;
+      var counts = data["counts"];
 
       if (roomId == null || eventId == null) {
         Log.w("TODO: Handle counts: $counts");
@@ -141,13 +142,28 @@ class BackgroundNotificationsManager2 {
           directMessages?.isRoomDirectMessage(room!) == true;
       Log.i("Is direct message: $isDirectMessage");
 
-      var event = await room!.getEvent(eventId);
+      TimelineEvent? event;
+      Object? exception;
+
+      for (int i = 0; i < 5; i++) {
+        try {
+          event = await room!.getEvent(eventId);
+          break;
+        } catch (e, s) {
+          Log.onError(e, s);
+          exception = e;
+          await Future.delayed(Duration(seconds: i * 2));
+        }
+      }
+
+      if (event == null) {
+        throw Exception(
+            "Unable to fetch room event for notification\n${exception}");
+      }
 
       Log.e("got event: ${event}");
 
-      if (event == null) return;
-
-      var member = await room.fetchMember(event.senderId);
+      var member = await room!.fetchMember(event.senderId);
 
       var content = MessageNotificationContent(
           senderName: member.displayName,

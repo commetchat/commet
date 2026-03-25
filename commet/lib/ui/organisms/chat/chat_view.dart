@@ -5,7 +5,6 @@ import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/client/timeline_events/timeline_event_message.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/molecules/message_input.dart';
-import 'package:commet/ui/molecules/read_indicator.dart';
 import 'package:commet/ui/molecules/room_timeline_widget/room_timeline_widget.dart';
 import 'package:commet/ui/molecules/typing_indicators_widget.dart';
 import 'package:commet/ui/organisms/chat/chat.dart';
@@ -168,14 +167,6 @@ class ChatView extends StatelessWidget {
                 component: state.typingIndicators!,
                 key: ValueKey(
                     "room_typing_indicators_key_${state.room.identifier}"),
-              )
-            : null,
-        readIndicator: state.receipts != null
-            ? ReadIndicator(
-                key: ValueKey(
-                    "room_read_indicator_key_${state.room.identifier}"),
-                component: state.receipts!,
-                room: state.room,
               )
             : null,
         processAutofill: (text) =>

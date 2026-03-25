@@ -87,6 +87,7 @@ class TextInput extends StatefulWidget {
       this.maxLength,
       this.obscureText = false,
       this.onChanged,
+      this.onSubmitted,
       this.prefixText,
       this.suffixText,
       super.key});
@@ -101,6 +102,7 @@ class TextInput extends StatefulWidget {
   final String? suffixText;
   final bool obscureText;
   final void Function(String)? onChanged;
+  final void Function(String)? onSubmitted;
   @override
   State<TextInput> createState() => _TextInputState();
 }
@@ -114,6 +116,7 @@ class _TextInputState extends State<TextInput> {
       minLines: widget.minLines,
       obscureText: widget.obscureText,
       onChanged: widget.onChanged,
+      onSubmitted: widget.onSubmitted,
       maxLength: widget.maxLength,
       cursorColor: material.Theme.of(context).highlightColor,
       decoration: material.InputDecoration(

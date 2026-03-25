@@ -8,14 +8,26 @@ import 'package:commet/debug/log.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/utils/error_utils.dart';
-import 'package:commet/utils/link_utils.dart';
+import 'package:commet/utils/links/link_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:path/path.dart' as path;
 
 import 'package:http/http.dart' as http;
 
 class UpdateChecker {
   static bool foundUpdate = false;
+
+  static String get labelUpdateAvailable => Intl.message("Update Available",
+      name: "labelUpdateAvailable",
+      desc: "Label for the the info popup when an update is available");
+
+  static String descriptionUpdateAvailable(String version) => Intl.message(
+      "There is a newer version of Commet available: ${version}",
+      name: "descriptionUpdateAvailable",
+      args: [version],
+      desc:
+          "describes the update, showing the version code for the available update");
 
   static Future<void> checkForUpdates() async {
     if (foundUpdate) return;
@@ -24,7 +36,7 @@ class UpdateChecker {
       return;
     }
 
-    if (preferences.checkForUpdates != true) {
+    if (preferences.checkForUpdates.value != true) {
       return;
     }
 
@@ -54,9 +66,8 @@ class UpdateChecker {
       if (time.isAfter(BuildConfig.BUILD_DATE)) {
         var tag = fields[key];
         clientManager!.alertManager.addAlert(Alert(AlertType.info,
-            messageGetter: () =>
-                "There is a newer version of Commet available: ${tag}",
-            titleGetter: () => "Update Available",
+            messageGetter: () => descriptionUpdateAvailable(tag),
+            titleGetter: () => labelUpdateAvailable,
             action: (context) => doUpdateAction(context, canAutoUpdate)));
       } else {
         Log.i(
@@ -85,11 +96,15 @@ class UpdateChecker {
     }
 
     if (PlatformUtils.isAndroid) {
-      LinkUtils.open(Uri.parse("https://commet.chat/install/android/"));
+      LinkUtils.open(
+        Uri.parse("https://commet.chat/install/android/"),
+        context: context,
+      );
     }
 
     if (PlatformUtils.isLinux) {
-      LinkUtils.open(Uri.parse("https://commet.chat/install/linux/"));
+      LinkUtils.open(Uri.parse("https://commet.chat/install/linux/"),
+          context: context);
     }
   }
 
@@ -133,6 +148,7 @@ class UpdateChecker {
       if (confirmation == null) return;
     }
 
-    LinkUtils.open(Uri.parse("https://commet.chat/install/windows/"));
+    LinkUtils.open(Uri.parse("https://commet.chat/install/windows/"),
+        context: context);
   }
 }

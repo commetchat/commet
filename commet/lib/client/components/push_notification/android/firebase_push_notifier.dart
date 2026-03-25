@@ -44,7 +44,7 @@ Future<void> _firebaseMessagingBackgroundHandler(dynamic message) async {
     await notificationManager.init();
 
     if (!data.containsKey("room_id") || !data.containsKey("event_id")) {
-      if (preferences.developerMode) {
+      if (preferences.developerMode.value) {
         // ignore {"prio": "high"} notifications
         if (data.length == 1 && data.containsKey("prio")) {
           return;
@@ -99,7 +99,7 @@ class FirebasePushNotifier implements Notifier {
     FirebaseMessaging.instance.onTokenRefresh.listen((event) {
       token = event;
       Log.i("Got new token: $token");
-      preferences.setFcmKey(event);
+      preferences.fcmKey.set(event);
       preferences.setPushGateway("push.commet.chat");
     });
 
@@ -121,7 +121,7 @@ class FirebasePushNotifier implements Notifier {
 
   @override
   Future<String?> getToken() async {
-    return preferences.fcmKey;
+    return preferences.fcmKey.value;
   }
 
   @override

@@ -41,6 +41,18 @@ class _EditableLabelState extends State<EditableLabel> {
     );
   }
 
+  void _confirmName() {
+    var name = nameController.text.trim();
+    if (name.isEmpty) return;
+
+    widget.onTextConfirmed?.call(name);
+
+    setState(() {
+      text = nameController.text;
+      editingName = false;
+    });
+  }
+
   Widget nameEditor() {
     return material.Material(
         color: material.Colors.transparent,
@@ -50,6 +62,7 @@ class _EditableLabelState extends State<EditableLabel> {
                 child: TextInput(
                   maxLines: 1,
                   controller: nameController,
+                  onSubmitted: (_) => _confirmName(),
                 ),
               )
             : tiamat.Text(
@@ -65,17 +78,7 @@ class _EditableLabelState extends State<EditableLabel> {
             preferredDirection: AxisDirection.right,
             child: tiamat.IconButton(
               icon: material.Icons.check,
-              onPressed: () {
-                var name = nameController.text.trim();
-                if (name.isEmpty) return;
-
-                widget.onTextConfirmed?.call(name);
-
-                setState(() {
-                  text = nameController.text;
-                  editingName = false;
-                });
-              },
+              onPressed: () => _confirmName(),
             ),
           )
         : Tooltip(

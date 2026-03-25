@@ -21,16 +21,19 @@ class MatrixGifComponent implements GifComponent<MatrixClient, MatrixRoom> {
   MatrixGifComponent(this.client, this.room);
 
   @override
-  String get searchPlaceholder => "Search Tenor";
+  String get searchPlaceholder => "Search KLIPY";
 
   @override
   Future<List<GifSearchResult>> search(String query) async {
     // The ui should never actually let the user search if this is disabled, so this *shouldn't* be neccessary
     // but just to be safe!
-    if (!preferences.tenorGifSearchEnabled) return [];
+    if (!preferences.tenorGifSearchEnabled.value) return [];
 
     var uri = Uri.https(
-        preferences.proxyUrl, "/proxy/tenor/api/v2/search", {"q": query});
+        preferences.proxyUrl.value, "/proxy/klipy/api/v2/search", {"q": query});
+
+    // var uri =
+    //     Uri.http("localhost:8788", "/proxy/klipy/api/v2/search", {"q": query});
 
     var result = await http.get(uri);
     if (result.statusCode == 200) {
@@ -55,18 +58,19 @@ class MatrixGifComponent implements GifComponent<MatrixClient, MatrixRoom> {
 
       matrix.Event? replyingTo;
       var uri = await matrixRoom.client
-          .uploadContent(data, filename: "sticker", contentType: "image/gif");
+          .uploadContent(data, filename: "sticker", contentType: gif.mimeType);
 
       var content = {
         "body": gif.fullResUrl.pathSegments.last,
         "url": uri.toString(),
-        if (preferences.stickerCompatibilityMode) "msgtype": "m.image",
-        if (preferences.stickerCompatibilityMode)
+        if (preferences.stickerCompatibilityMode.value) "msgtype": "m.image",
+        if (preferences.stickerCompatibilityMode.value)
           "chat.commet.type": "chat.commet.sticker",
         "info": {
+          "chat.commet.animated": true,
           "w": gif.x.toInt(),
           "h": gif.y.toInt(),
-          "mimetype": "image/gif"
+          "mimetype": gif.mimeType
         }
       };
 
@@ -75,7 +79,7 @@ class MatrixGifComponent implements GifComponent<MatrixClient, MatrixRoom> {
       }
 
       var id = await matrixRoom.sendEvent(content,
-          type: preferences.stickerCompatibilityMode
+          type: preferences.stickerCompatibilityMode.value
               ? matrix.EventTypes.Message
               : matrix.EventTypes.Sticker,
           inReplyTo: replyingTo);
@@ -95,10 +99,10 @@ class MatrixGifComponent implements GifComponent<MatrixClient, MatrixRoom> {
 
     var formats = result['media_formats'] as Map<String, dynamic>;
 
+    String mimeType = "image/gif";
+
     var preview =
         formats['tinygif'] ?? formats['nanogif'] ?? formats['mediumgif'];
-
-    //dynamic fullRes;
 
     var fullRes = formats['gif'];
 
@@ -107,20 +111,32 @@ class MatrixGifComponent implements GifComponent<MatrixClient, MatrixRoom> {
       fullRes = formats['mediumgif'];
     }
 
+    if (formats["webp"]['size'] < fullRes['size']) {
+      fullRes = formats["webp"];
+      mimeType = "image/webp";
+    }
+
+    if (formats["webp"]['size'] < preview['size']) {
+      preview = formats["webp"];
+    }
+
     List<dynamic> dimensions = fullRes['dims']! as List<dynamic>;
 
     return GifSearchResult(
         convertUrl(preview['url']),
         convertUrl(fullRes['url']),
         (dimensions[0] as int).roundToDouble(),
-        (dimensions[1] as int).roundToDouble());
+        (dimensions[1] as int).roundToDouble(),
+        mimeType);
   }
 
   Uri convertUrl(String url) {
     var uri = Uri.parse(url);
 
     var proxyUri =
-        Uri.https(preferences.proxyUrl, "/proxy/tenor/media${uri.path}");
+        Uri.https(preferences.proxyUrl.value, "/proxy/klipy/media${uri.path}");
+
+    // proxyUri = Uri.http("localhost:8788", "/proxy/klipy/media${uri.path}");
 
     return proxyUri;
   }

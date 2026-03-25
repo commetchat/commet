@@ -3,6 +3,7 @@ import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/atoms/lightbox.dart';
 import 'package:commet/ui/molecules/audio_player/audio_player.dart';
 import 'package:commet/ui/molecules/video_player/video_player.dart';
+import 'package:commet/ui/molecules/video_player/video_player_controller.dart';
 import 'package:commet/utils/background_tasks/background_task_manager.dart';
 import 'package:commet/utils/download_utils.dart';
 import 'package:commet/utils/mime.dart';
@@ -24,6 +25,7 @@ class MessageAttachment extends StatefulWidget {
 class _MessageAttachmentState extends State<MessageAttachment> {
   late Key videoPlayerKey;
   bool isFullscreen = false;
+  var controller = VideoPlayerController();
   @override
   void initState() {
     videoPlayerKey = GlobalKey();
@@ -120,6 +122,7 @@ class _MessageAttachmentState extends State<MessageAttachment> {
                             doThumbnail: true,
                             canGoFullscreen: true,
                             onFullscreen: fullscreenVideo,
+                            controller: controller,
                             key: videoPlayerKey,
                           )))),
       ),
@@ -146,6 +149,7 @@ class _MessageAttachmentState extends State<MessageAttachment> {
             video: attachment.file,
             aspectRatio: attachment.aspectRatio,
             thumbnail: attachment.thumbnail,
+            videoController: controller,
             key: videoPlayerKey)
         .then((value) {
       setState(() {

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:commet/client/components/message_effects/message_effect_component.dart';
+import 'package:commet/client/components/read_receipts/read_receipt_component.dart';
 import 'package:commet/client/timeline.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/config/build_config.dart';
@@ -106,15 +107,17 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
 
     this.timeline = timeline;
     recentItemsCount = timeline.events.length;
-
+    var receipts = timeline.room.getComponent<ReadReceiptComponent>();
     subscriptions = [
       timeline.onEventAdded.stream.listen(onEventAdded),
       timeline.onChange.stream.listen(onEventChanged),
       timeline.onRemove.stream.listen(onEventRemoved),
       timeline.onLoadingStatusChanged.listen(onLoadingStatusChanged),
+      if (receipts != null)
+        receipts.onReadReceiptsUpdated.listen(onReadReceiptUpdated),
     ];
 
-    if (preferences.messageEffectsEnabled) {
+    if (preferences.messageEffectsEnabled.value) {
       for (int i = 0; i < 5; i++) {
         if (i >= timeline.events.length) break;
 
@@ -153,16 +156,12 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
 
     if (index == 0) {
       if (attachedToBottom) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          controller.animateTo(controller.position.minScrollExtent,
-              duration: const Duration(milliseconds: 500),
-              curve: Curves.easeOutExpo);
-        });
+        scrollToBottom();
 
         widget.markAsRead?.call(timeline.events[0]);
       }
 
-      if (preferences.messageEffectsEnabled) {
+      if (preferences.messageEffectsEnabled.value) {
         effects?.doEffect(timeline.events[index]);
       }
     }
@@ -188,6 +187,22 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
     } else {
       Log.w("Failed to get state");
     }
+
+    if (index == 0) {
+      if (attachedToBottom) {
+        scrollToBottom();
+
+        widget.markAsRead?.call(timeline.events[0]);
+      }
+    }
+  }
+
+  void scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.animateTo(controller.position.minScrollExtent,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeOutExpo);
+    });
   }
 
   void onEventRemoved(int index) {
@@ -381,11 +396,11 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
 
                           return Container(
                             alignment: Alignment.center,
-                            color:
-                                preferences.developerMode && BuildConfig.DEBUG
-                                    ? Colors.blue[200 + sliverIndex % 4 * 100]!
-                                        .withAlpha(30)
-                                    : null,
+                            color: preferences.developerMode.value &&
+                                    BuildConfig.DEBUG
+                                ? Colors.blue[200 + sliverIndex % 4 * 100]!
+                                    .withAlpha(30)
+                                : null,
                             child: TimelineViewEntry(
                                 key: key.$1,
                                 timeline: timeline,
@@ -430,11 +445,11 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
 
                           return Container(
                             alignment: Alignment.center,
-                            color:
-                                preferences.developerMode && BuildConfig.DEBUG
-                                    ? Colors.red[200 + sliverIndex % 4 * 100]!
-                                        .withAlpha(30)
-                                    : null,
+                            color: preferences.developerMode.value &&
+                                    BuildConfig.DEBUG
+                                ? Colors.red[200 + sliverIndex % 4 * 100]!
+                                    .withAlpha(30)
+                                : null,
                             child: TimelineViewEntry(
                                 key: key.$1,
                                 onEventHovered: eventHovered,
@@ -583,6 +598,28 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
       isLoadingFuture = timeline.isLoadingFuture;
       isLoadingHistory = timeline.isLoadingHistory;
     });
+  }
+
+  void onReadReceiptUpdated(String event) {
+    var key = eventKeys.firstWhere(
+      (element) => element.$2 == event,
+    );
+
+    assert(event == key.$2);
+
+    var state = key.$1.currentState;
+
+    var index = timeline.events.indexWhere((i) => i.eventId == event);
+
+    if (index == -1) {
+      print("Could not find the event in the timeline view");
+    }
+
+    if (state is TimelineEventViewWidget) {
+      (state as TimelineEventViewWidget).update(index);
+    } else {
+      Log.w("Failed to get state");
+    }
   }
 }
 

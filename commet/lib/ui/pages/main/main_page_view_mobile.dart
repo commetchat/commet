@@ -1,4 +1,6 @@
+import 'package:commet/client/components/direct_messages/direct_message_component.dart';
 import 'package:commet/client/room.dart';
+import 'package:commet/config/layout_config.dart';
 import 'package:commet/ui/atoms/room_header.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/atoms/space_header.dart';
@@ -13,6 +15,7 @@ import 'package:commet/ui/organisms/side_navigation_bar/side_navigation_bar.dart
 import 'package:commet/ui/organisms/sidebar_call_icon/sidebar_calls_list.dart';
 import 'package:commet/ui/organisms/space_summary/space_summary.dart';
 import 'package:commet/ui/pages/main/main_page.dart';
+import 'package:commet/ui/pages/main/main_page_view_desktop.dart';
 import 'package:commet/ui/pages/main/room_primary_view.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:commet/utils/scaled_app.dart';
@@ -88,6 +91,22 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
             return;
           }
 
+          if (widget.state.currentView == MainPageSubView.home &&
+              widget.state.currentRoom != null) {
+            if (widget.state.currentRoom != null) {
+              var dm = widget.state.currentRoom!.client
+                  .getComponent<DirectMessagesComponent>();
+              if (dm?.isRoomDirectMessage(widget.state.currentRoom!) == true) {
+                panelsKey.currentState?.reveal(RevealSide.left);
+                return;
+              }
+            }
+
+            widget.state.selectHome();
+
+            return;
+          }
+
           switch (panelsKey.currentState?.currentSide) {
             case RevealSide.right:
               panelsKey.currentState?.reveal(RevealSide.main);
@@ -100,8 +119,11 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
         child: Foundation(
             child: OverlappingPanels(
           key: panelsKey,
-          onDragStart: () {},
           onSideChange: (side) {
+            if (side != RevealSide.main) {
+              FocusManager.instance.primaryFocus?.unfocus();
+            }
+
             setState(() {
               shouldMainIgnoreInput = side != RevealSide.main;
             });
@@ -147,51 +169,77 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
   }
 
   Widget navigation(BuildContext newContext) {
-    return Row(
-      children: [
-        Tile(
-          caulkPadRight: true,
-          caulkClipTopRight: true,
-          caulkClipBottomRight: true,
-          caulkBorderRight: true,
-          mode: TileType.surfaceDim,
-          child: ScaledSafeArea(
-            bottom: false,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
-              child: SideNavigationBar(
-                currentUser: widget.state.getCurrentUser(),
-                onSpaceSelected: (space) {
-                  widget.state.selectSpace(space);
-                },
-                clearSpaceSelection: () {
-                  widget.state.clearSpaceSelection();
-                },
-                onHomeSelected: () {
-                  widget.state.selectHome();
-                },
-                onDirectMessageSelected: (room) {
-                  widget.state.selectHome();
-                  widget.state.selectRoom(room);
-                  panelsKey.currentState?.reveal(RevealSide.main);
-                },
-                extraEntryBuilders: [
-                  (width) {
-                    return SidebarCallsList(
-                        widget.state.clientManager.callManager, width);
-                  }
-                ],
-              ),
+    return Material(
+      color: Colors.transparent,
+      child: Column(
+        children: [
+          Expanded(
+            child: Row(
+              children: [
+                Tile(
+                  caulkPadRight: true,
+                  caulkClipTopRight: true,
+                  caulkClipBottomRight: true,
+                  caulkBorderRight: true,
+                  mode: TileType.surfaceDim,
+                  child: ScaledSafeArea(
+                    bottom: false,
+                    top: false,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
+                      child: SideNavigationBar(
+                        currentUser: widget.state.getCurrentUser(),
+                        onSpaceSelected: (space) {
+                          widget.state.selectSpace(space);
+                        },
+                        clearSpaceSelection: () {
+                          widget.state.clearSpaceSelection();
+                        },
+                        onHomeSelected: () {
+                          widget.state.selectHome();
+                        },
+                        onDirectMessageSelected: (room) {
+                          widget.state.selectHome();
+                          widget.state.selectRoom(room);
+                          panelsKey.currentState?.reveal(RevealSide.main);
+                        },
+                        extraEntryBuilders: [
+                          (width) {
+                            return SidebarCallsList(
+                                widget.state.clientManager.callManager, width);
+                          }
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                if (widget.state.currentView == MainPageSubView.home)
+                  directMessagesView(),
+                if (widget.state.currentView == MainPageSubView.space &&
+                    widget.state.currentSpace != null)
+                  spaceRoomSelector(newContext),
+                const BackgroundTaskViewContainer()
+              ],
             ),
           ),
-        ),
-        if (widget.state.currentView == MainPageSubView.home)
-          directMessagesView(),
-        if (widget.state.currentView == MainPageSubView.space &&
-            widget.state.currentSpace != null)
-          spaceRoomSelector(newContext),
-        const BackgroundTaskViewContainer()
-      ],
+          tiamat.Tile.low(
+            caulkPadTop: true,
+            caulkClipTopRight: true,
+            caulkBorderTop: true,
+            caulkPadRight: Layout.mobile,
+            child: ScaledSafeArea(
+              bottom: true,
+              top: false,
+              child: SizedBox(
+                height: 60,
+                child: MainPageViewDesktop.currentUserPanel(
+                    widget.state, context,
+                    height: 60, avatarRadius: 20),
+              ),
+            ),
+          )
+        ],
+      ),
     );
   }
 
@@ -209,6 +257,7 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
                 widget.state.selectRoom(room);
               },
               onSpaceTap: (space) => widget.state.selectSpace(space),
+              onLeaveRoom: widget.state.clearRoomSelection,
             ),
           ),
         ),
@@ -225,30 +274,47 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
         key: ValueKey("room-chat-view-${widget.state.currentRoom!.localId}"),
         child: Column(
           children: [
-            Tile.low(
-              caulkClipBottomRight: true,
-              caulkClipBottomLeft: true,
-              caulkBorderBottom: true,
-              child: ScaledSafeArea(
-                bottom: false,
-                left: false,
-                right: false,
-                child: SizedBox(
-                  height: 50,
-                  child: RoomHeader(
-                    widget.state.currentRoom!,
-                    onTap:
-                        widget.state.currentRoom?.permissions.canEditAnything ==
-                                true
-                            ? () => widget.state.navigateRoomSettings()
-                            : null,
+            if (Layout.mobile)
+              Tile.low(
+                caulkClipBottomRight: true,
+                caulkClipBottomLeft: true,
+                caulkBorderBottom: true,
+                child: ScaledSafeArea(
+                  bottom: false,
+                  left: false,
+                  right: false,
+                  child: SizedBox(
+                    height: 50,
+                    child: RoomHeader(
+                      widget.state.currentRoom!,
+                      onTap: widget.state.currentRoom?.permissions
+                                  .canEditAnything ==
+                              true
+                          ? () => widget.state.navigateRoomSettings()
+                          : null,
+                      menu: Center(
+                        child: SizedBox(
+                          width: 30,
+                          height: 30,
+                          child: tiamat.IconButton(
+                            icon: material.Icons.chevron_right,
+                            onPressed: () {
+                              panelsKey.currentState?.reveal(RevealSide.right);
+                            },
+                          ),
+                        ),
+                      ),
+                      onBurgerMenuTap: () {
+                        panelsKey.currentState?.reveal(RevealSide.left);
+                      },
+                    ),
                   ),
                 ),
               ),
-            ),
             Expanded(
               child: RoomPrimaryView(
                 widget.state.currentRoom!,
+                bypassSpecialRoomTypes: widget.state.showAsTextRoom,
               ),
             ),
           ],
@@ -257,8 +323,13 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
     }
 
     return Tile(
-        child: ScaledSafeArea(
-            child: HomeScreen(clientManager: widget.state.clientManager)));
+        child: HomeScreen(
+      clientManager: widget.state.clientManager,
+      filterClient: widget.state.filterClient,
+      onBurgerMenuTap: () {
+        panelsKey.currentState?.reveal(RevealSide.left);
+      },
+    ));
   }
 
   Widget userList() {
@@ -293,23 +364,42 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
         caulkPadRight: true,
         caulkClipTopRight: true,
         caulkClipBottomRight: true,
-        child: ScaledSafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(0, 0, 4, 0),
+          child: ScaledSafeArea(
+            top: true,
+            bottom: false,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: tiamat.Text.labelLow(directMessagesListHeaderMobile),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child:
+                          tiamat.Text.labelLow(directMessagesListHeaderMobile),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(8, 12, 8, 8),
+                      child: tiamat.IconButton(
+                          size: 18,
+                          icon: Icons.add,
+                          onPressed: widget.state.searchUserToDm),
+                    ),
+                  ],
                 ),
                 Flexible(
                   child: DirectMessageList(
+                    filterClient: widget.state.filterClient,
                     directMessages: widget.state.clientManager.directMessages,
                     onSelected: (room) {
                       setState(() {
-                        selectRoom(room);
+                        selectRoom(
+                          room,
+                        );
                       });
                     },
                   ),
@@ -344,8 +434,9 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
                 widget.state.currentSpace!,
                 key: ValueKey(
                     "space-view-key-${widget.state.currentSpace!.localId}"),
-                onRoomSelected: (room) async {
-                  selectRoom(room);
+                onRoomSelected: (room, {bypassSpecialRoomType = false}) async {
+                  selectRoom(room,
+                      bypassSpecialRoomType: bypassSpecialRoomType);
                 },
               ),
             )),
@@ -365,12 +456,12 @@ class _MainPageViewMobileState extends State<MainPageViewMobile> {
     widget.state.clearRoomSelection();
   }
 
-  void selectRoom(Room room) {
+  void selectRoom(Room room, {bypassSpecialRoomType = false}) {
     panelsKey.currentState!.reveal(RevealSide.main);
     setState(() {
       shouldMainIgnoreInput = false;
     });
 
-    widget.state.selectRoom(room);
+    widget.state.selectRoom(room, bypassSpecialRoomType: bypassSpecialRoomType);
   }
 }

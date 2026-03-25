@@ -223,13 +223,13 @@ class _MatrixRoomPermissionsPageState extends State<MatrixRoomPermissionsPage> {
 
   String get labelMatrixPermissionsAddCalendarEventTitle => Intl.message(
         "Edit Calendar Events",
-        name: "labelMatrixPermissionsAddCalendarEvent",
+        name: "labelMatrixPermissionsAddCalendarEventTitle",
         desc: "Title for the permission to allow users to edit the calendar",
       );
 
   String get labelMatrixPermissionsAddCalendarEventDescription => Intl.message(
         "Allow users to edit events in the calendar",
-        name: "labelMatrixPermissionsCreateCalendarEventDescription",
+        name: "labelMatrixPermissionsAddCalendarEventDescription",
         desc:
             "Description for the permission to allow users to create an event on the calendar",
       );
@@ -380,12 +380,12 @@ class _MatrixRoomPermissionsPageState extends State<MatrixRoomPermissionsPage> {
     if (isCalendarRoom) {
       permissions.addAll([
         MatrixRoomPermissionEntry(
-          key: "chat.commet.calendar_event",
+          key: "chat.commet.calendar_events",
           keyParent: "events",
           title: labelMatrixPermissionsAddCalendarEventTitle,
           description: labelMatrixPermissionsAddCalendarEventDescription,
           icon: Icons.calendar_month,
-          powerLevel: 25,
+          powerLevel: 0,
         ),
       ]);
     }

@@ -12,7 +12,7 @@ import 'package:commet/ui/atoms/room_panel.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/utils/common_strings.dart';
 import 'package:commet/utils/image/lod_image.dart';
-import 'package:commet/utils/link_utils.dart';
+import 'package:commet/utils/links/link_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -98,6 +98,10 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
   String get labelSpaceVisibilityPrivate => Intl.message("Private space",
       desc: "Label to display that the space is private",
       name: "labelSpaceVisibilityPrivate");
+
+  String get labelSpaceVisibilityRestricted => Intl.message("Restricted space",
+      desc: "Label to display that the space is restricted",
+      name: "labelSpaceVisibilityRestricted");
 
   String labelSpaceGettingText(spaceName) =>
       Intl.message("Welcome to \n\n # $spaceName",
@@ -233,7 +237,8 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
                               },
                               onTapLink: (text, href, title) {
                                 if (href != null) {
-                                  LinkUtils.open(Uri.parse(href));
+                                  LinkUtils.open(Uri.parse(href),
+                                      context: context);
                                 }
                               },
                               styleSheet: MarkdownStyleSheet.fromTheme(
@@ -392,11 +397,13 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
   }
 
   Widget spaceVisibility() {
-    IconData data =
-        widget.visibility == RoomVisibility.public ? Icons.public : Icons.lock;
-    String text = widget.visibility == RoomVisibility.public
-        ? labelSpaceVisibilityPublic
-        : labelSpaceVisibilityPrivate;
+    IconData data = RoomVisibility.icon(widget.visibility);
+    String text = switch (widget.visibility) {
+      final RoomVisibilityPublic _ => labelSpaceVisibilityPublic,
+      final RoomVisibilityPrivate _ => labelSpaceVisibilityPrivate,
+      final RoomVisibilityRestricted _ => labelSpaceVisibilityRestricted,
+      _ => "",
+    };
     return Row(
       children: [
         Icon(data),
@@ -429,9 +436,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
                   index: index,
                   child: Padding(
                     padding: pad,
-                    child: buildItem(
-                      item,
-                    ),
+                    child: buildItem(item, widget.space),
                   ));
             } else {
               return ReorderableDragStartListener(
@@ -440,9 +445,7 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
                   index: index,
                   child: Padding(
                     padding: pad,
-                    child: buildItem(
-                      item,
-                    ),
+                    child: buildItem(item, widget.space),
                   ));
             }
           },
@@ -544,10 +547,13 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
     );
   }
 
-  Widget buildItem(SpaceChild<dynamic> item) {
+  Widget buildItem(SpaceChild<dynamic> item, Space parent,
+      {int depth = 0, int maxDepth = 5}) {
+    Widget? result;
+
     if (item case SpaceChildRoom _) {
       final room = item.child;
-      return RoomPanel(
+      result = RoomPanel(
         displayName: room.displayName,
         avatar: room.avatar,
         color: room.defaultColor,
@@ -566,10 +572,8 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
             ? room.getColorOfUser(room.lastEvent!.senderId)
             : null,
       );
-    }
-
-    if (item case SpaceChildSpace _) {
-      return Padding(
+    } else if (item case SpaceChildSpace _) {
+      result = Padding(
         padding: const EdgeInsets.all(8.0),
         child: Container(
           decoration: BoxDecoration(
@@ -588,11 +592,18 @@ class SpaceSummaryViewState extends State<SpaceSummaryView> {
               initiallyExpanded: false,
               iconColor: Theme.of(context).colorScheme.secondary,
               textColor: Theme.of(context).colorScheme.secondary,
-              children: item.child.children.map((i) => buildItem(i)).toList()),
+              children: depth >= maxDepth
+                  ? []
+                  : item.child.children
+                      .map((i) => buildItem(i, item.child,
+                          depth: depth + 1, maxDepth: maxDepth))
+                      .toList()),
         ),
       );
+    } else {
+      result = Container();
     }
 
-    return Container();
+    return result;
   }
 }

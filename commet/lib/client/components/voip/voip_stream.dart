@@ -21,5 +21,7 @@ abstract class VoipStream {
 
   double get audiolevel;
 
+  bool get isMuted;
+
   double? get aspectRatio;
 }

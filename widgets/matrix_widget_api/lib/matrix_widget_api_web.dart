@@ -109,6 +109,8 @@ class MatrixWidgetApiWeb implements MatrixWidgetApi {
     print("Sending data: $fromWidgetAction  $data");
     var promise = w.transport.send(fromWidgetAction, data.toJSDeep);
     var result = (await promise.toDart).toMap();
+    result = jsonDecode(jsonEncode(result));
+
     print("Received result: $result");
 
     return result;

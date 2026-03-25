@@ -1,0 +1,15 @@
+New Features:
+- Rich profile customization
+- Partial support for Element Call and 1:1 Calls
+- Inline audio player for audio attachments
+- Calendar rooms
+- Photo album rooms
+- User presence 
+- Reorder rooms in spaces
+- Added an image cropper when changing avatars
+
+Changes:
+- Rewrote flow for creating and joining rooms
+- Improved UI of Spaces
+- Notifications on Android are more reliable
+- Many bug fixes

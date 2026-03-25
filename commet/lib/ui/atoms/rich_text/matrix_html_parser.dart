@@ -11,8 +11,9 @@ import 'package:commet/ui/atoms/code_block.dart';
 import 'package:commet/ui/atoms/emoji_widget.dart';
 import 'package:commet/ui/atoms/mention.dart';
 import 'package:commet/ui/atoms/rich_text/spans/link.dart';
+import 'package:commet/utils/color_utils.dart';
 import 'package:commet/utils/emoji/unicode_emoji.dart';
-import 'package:commet/utils/link_utils.dart';
+import 'package:commet/utils/links/link_utils.dart';
 import 'package:commet/utils/text_utils.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -50,7 +51,7 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
   static final CodeBlockHtmlExtension _codeBlock = CodeBlockHtmlExtension();
   static final CodeHtmlExtension _code = CodeHtmlExtension();
   static final LineBreakHtmlExtension _lineBreak = LineBreakHtmlExtension();
-
+  static final ColorHtmlExtension _color = ColorHtmlExtension();
   static const Set<String> allowedHtmlTags = {
     'body',
     'html',
@@ -71,6 +72,7 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
     'li',
     'b',
     'i',
+    's',
     'u',
     'strong',
     'em',
@@ -112,7 +114,8 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
     var extension =
         MatrixEmoticonHtmlExtension(widget.client, widget.room, big);
     var imageExtension = MatrixImageExtension(widget.client, widget.room);
-    var linkify = LinkifyHtmlExtension(widget.client, widget.room);
+    var linkify = LinkifyHtmlExtension(widget.client, widget.room, openLink);
+
     var result = Html(
       data: widget.text,
       extensions: [
@@ -122,7 +125,8 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
         _code,
         linkify,
         _lineBreak,
-        imageExtension
+        imageExtension,
+        _color,
       ],
       style: {
         "body": Style(
@@ -134,7 +138,6 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
             right: Margin.zero(),
           ),
           color: Theme.of(context).colorScheme.onSurface,
-          whiteSpace: WhiteSpace.pre, // handled whitespace for #237
         ),
         "code": Style(backgroundColor: Colors.black.withAlpha(40)),
         "blockquote": Style(
@@ -169,14 +172,21 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
           padding: HtmlPaddings.all(0),
           color: Theme.of(context).colorScheme.onSurface,
         ),
+        "ul": Style(
+          margin: Margins.all(2),
+          padding: HtmlPaddings.all(2),
+        ),
+        "li": Style(
+          margin: Margins.all(0),
+          padding: HtmlPaddings.all(0),
+        ),
         "p": Style(
-          border: Border.all(),
           margin: Margins.all(0),
           padding: HtmlPaddings.all(0),
         )
       },
       onLinkTap: (url, attributes, element) {
-        LinkUtils.open(Uri.parse(url!));
+        LinkUtils.open(Uri.parse(url!), context: context);
       },
       onlyRenderTheseTags: allowedHtmlTags,
     );
@@ -188,6 +198,13 @@ class _MatrixHtmlStateState extends State<MatrixHtmlState> {
     setState(() {
       hideSpoiler = !hideSpoiler;
     });
+  }
+
+  openLink(Uri uri) {
+    LinkUtils.open(uri,
+        clientId: widget.client.identifier,
+        context: context,
+        contextRoomId: widget.room?.identifier);
   }
 }
 
@@ -228,12 +245,17 @@ class MatrixEmoticonHtmlExtension extends HtmlExtension {
       var spans = List<InlineSpan>.empty(growable: true);
 
       for (var char in context.node.text!.characters) {
-        if (char.trim() == "") continue;
-        spans.add(WidgetSpan(
-            child: EmojiWidget(
-          UnicodeEmoticon(char),
-          height: emojiSize,
-        )));
+        if (char.trim() == "") {
+          spans.add(TextSpan(
+            text: char,
+          ));
+        } else {
+          spans.add(WidgetSpan(
+              child: EmojiWidget(
+            UnicodeEmoticon(char),
+            height: emojiSize,
+          )));
+        }
       }
 
       return TextSpan(children: spans);
@@ -291,6 +313,9 @@ class MatrixEmoticonHtmlExtension extends HtmlExtension {
   bool matches(ExtensionContext context) {
     // If text contains only emojis and spaces we can handle this too
     if (context.node is dom.Text) {
+      if (context.node.text == null) return false;
+      if (context.node.text!.trim().isEmpty) return false;
+
       for (var char in context.node.text!.characters) {
         if (char.trim() == "") continue;
 
@@ -382,7 +407,8 @@ class CodeHtmlExtension extends HtmlExtension {
 class LinkifyHtmlExtension extends HtmlExtension {
   final Room? room;
   final MatrixClient client;
-  const LinkifyHtmlExtension(this.client, this.room);
+  final Function(Uri uri) openLink;
+  const LinkifyHtmlExtension(this.client, this.room, this.openLink);
 
   @override
   InlineSpan build(ExtensionContext context) {
@@ -408,9 +434,7 @@ class LinkifyHtmlExtension extends HtmlExtension {
                 displayName: user.displayName,
                 placeholderColor: user.defaultColor,
                 avatar: user.avatar,
-                onTap: () => LinkUtils.open(href,
-                    clientId: client.identifier,
-                    contextRoomId: room?.identifier),
+                onTap: () => openLink(href),
               );
             }
           }
@@ -425,7 +449,7 @@ class LinkifyHtmlExtension extends HtmlExtension {
             overrideWidget = MentionWidget(
               displayName: mentionedRoom?.displayName ?? mxid.substring(1),
               vias: vias?.$2,
-              fallbackIcon: preferences.usePlaceholderRoomAvatars
+              fallbackIcon: preferences.usePlaceholderRoomAvatars.value
                   ? null
                   : mentionedRoom?.icon ?? Icons.tag,
               placeholderColor:
@@ -505,6 +529,30 @@ class SpoilerHtmlExtension extends HtmlExtension {
   @override
   bool matches(ExtensionContext context) {
     return context.attributes.containsKey("data-mx-spoiler");
+  }
+
+  @override
+  Set<String> get supportedTags => {};
+}
+
+class ColorHtmlExtension extends HtmlExtension {
+  ColorHtmlExtension();
+
+  @override
+  InlineSpan build(ExtensionContext context) {
+    var str = context.attributes["data-mx-color"];
+    str ??= context.attributes["color"];
+    Color? color;
+    if (str != null) {
+      color = ColorUtils.fromHexCode(str);
+    }
+    return TextSpan(text: context.node.text, style: TextStyle(color: color));
+  }
+
+  @override
+  bool matches(ExtensionContext context) {
+    return context.attributes.containsKey("data-mx-color") ||
+        context.attributes.containsKey("color");
   }
 
   @override

@@ -9,6 +9,7 @@ import 'package:commet/config/layout_config.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/ui/organisms/invitation_view/send_invitation.dart';
+import 'package:commet/utils/common_strings.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
 
@@ -51,7 +52,7 @@ class RoomQuickAccessMenu {
             action: (context) =>
                 calls.startCall(room.identifier, CallType.voice),
             icon: Icons.call),
-      if (!preferences.hideRoomSidePanel) ...[
+      if (!preferences.hideRoomSidePanel.value) ...[
         if (calendar?.hasCalendar == true && calendar?.isCalendarRoom == false)
           RoomQuickAccessMenuEntry(
               name: "Calendar",
@@ -64,7 +65,7 @@ class RoomQuickAccessMenu {
               icon: Icons.push_pin),
         if (canSearch)
           RoomQuickAccessMenuEntry(
-              name: "Search",
+              name: CommonStrings.promptSearch,
               action: (context) => EventBus.startSearch.add(null),
               icon: Icons.search),
       ],
@@ -72,7 +73,7 @@ class RoomQuickAccessMenu {
         RoomQuickAccessMenuEntry(
             name: "Toggle Panel",
             action: (context) => EventBus.toggleRoomSidePanel.add(null),
-            icon: preferences.hideRoomSidePanel
+            icon: preferences.hideRoomSidePanel.value
                 ? Icons.chevron_left
                 : Icons.chevron_right),
     ];

@@ -4,9 +4,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:tiamat/config/style/theme_dark.dart';
 import 'package:tiamat/config/style/theme_json_converter.dart';
-import 'package:tiamat/config/style/theme_light.dart';
 
 class ThemeChanger extends StatefulWidget {
   final ThemeData initialTheme;

@@ -53,7 +53,8 @@ class MatrixSSOLoginFlow implements SsoLoginFlow {
   @override
   Future<LoginResult> submit(Client client) async {
     if (client is! MatrixClient) {
-      return LoginResult.error;
+      return LoginResultError(
+          "Attemted to login with the wrong type of client");
     }
 
     try {
@@ -68,15 +69,11 @@ class MatrixSSOLoginFlow implements SsoLoginFlow {
       }
 
       String callbackScheme = Uri.parse(redirectUrl).scheme;
-      String? httpHost;
-      String? httpPath;
 
       // https://github.com/ThexXTURBOXx/flutter_web_auth_2/blob/2b67cb9674c7d3228de4f5728a73b09ae6598cf9/flutter_web_auth_2/README.md#windows-and-linux
       if (PlatformUtils.isLinux || PlatformUtils.isWindows) {
-        redirectUrl = "https://commet/login";
-        callbackScheme = "https";
-        httpHost = "commet";
-        httpPath = "/login";
+        redirectUrl = "http://localhost:3001/login";
+        callbackScheme = "http://localhost:3001";
       }
 
       final url = mx.homeserver!.replace(
@@ -89,14 +86,12 @@ class MatrixSSOLoginFlow implements SsoLoginFlow {
           url: url.toString(),
           callbackUrlScheme: callbackScheme,
           options: FlutterWebAuth2Options(
-            useWebview: true,
-            httpsHost: httpHost,
-            httpsPath: httpPath,
+            useWebview: false,
           ));
 
       var token = Uri.parse(result).queryParameters['loginToken'];
       if (token?.isEmpty ?? false) {
-        return LoginResult.failed;
+        return LoginResultFailed();
       }
 
       var login = await mx.login(
@@ -105,17 +100,17 @@ class MatrixSSOLoginFlow implements SsoLoginFlow {
       );
 
       if (login.accessToken.isNotEmpty) {
-        return LoginResult.success;
+        return LoginResultSuccess();
       } else {
-        return LoginResult.failed;
+        return LoginResultFailed();
       }
     } catch (e, t) {
       Log.onError(e, t);
       // I didn't spell this wrong, its just like that in flutter_web_auth_2
       if (e is PlatformException && e.code == "CANCELED") {
-        return LoginResult.cancelled;
+        return LoginResultCancelled();
       }
-      return LoginResult.error;
+      return LoginResultError(e.toString());
     }
   }
 }

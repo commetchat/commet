@@ -1,5 +1,6 @@
 import 'package:commet/client/components/calendar_room/calendar_room_component.dart';
 import 'package:commet/config/layout_config.dart';
+import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet_calendar_widget/main.dart';
 import 'package:flutter/material.dart';
 
@@ -35,11 +36,15 @@ class _CalendarRoomViewState extends State<CalendarRoomView> {
           width: constraints.maxWidth,
           child: MediaQuery(
             data: newQuery,
-            child: CalendarWidgetView(
-              calendar: widget.calendar.calendar!,
-              autoDisposeCalendar: false,
-              useMobileLayout: Layout.mobile,
-              watermark: false,
+            child: ScaledSafeArea(
+              bottom: true,
+              top: false,
+              child: CalendarWidgetView(
+                calendar: widget.calendar.calendar!,
+                autoDisposeCalendar: false,
+                useMobileLayout: Layout.mobile,
+                watermark: false,
+              ),
             ),
           ),
         );

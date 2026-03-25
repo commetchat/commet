@@ -3,8 +3,10 @@ import 'package:commet/config/layout_config.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/scaled_safe_area.dart';
 import 'package:commet/ui/molecules/user_panel.dart';
+import 'package:commet/utils/common_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 import 'package:flutter/material.dart' as m;
@@ -168,6 +170,10 @@ class AdaptiveDialog {
     );
   }
 
+  static String get labelDialogConfirmation => Intl.message("Confirmation",
+      name: "labelDialogConfirmation",
+      desc: "label for the dialog which asks the user to confirm some action");
+
   static Future<bool?> confirmation(BuildContext context,
       {String prompt = "Are you sure?",
       String title = "Confirmation",
@@ -188,6 +194,13 @@ class AdaptiveDialog {
                 padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
                 child: Markdown(
                   shrinkWrap: true,
+                  styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context))
+                      .copyWith(
+                          codeblockPadding: EdgeInsets.all(8),
+                          code: TextTheme.of(context).bodySmall!.copyWith(
+                              fontFamily: "Code",
+                              backgroundColor: ColorScheme.of(context)
+                                  .surfaceContainerLowest)),
                   data: prompt,
                 ),
               ),
@@ -195,7 +208,9 @@ class AdaptiveDialog {
                 height: 40,
                 child: tiamat.Button(
                   type: dangerous ? ButtonType.danger : ButtonType.primary,
-                  text: confirmationText,
+                  text: confirmationText == "Yes"
+                      ? CommonStrings.promptYes
+                      : confirmationText,
                   onTap: () => Navigator.pop(context, true),
                 ),
               ),
@@ -203,14 +218,14 @@ class AdaptiveDialog {
                 height: 5,
               ),
               tiamat.Button.secondary(
-                text: cancelText,
+                text: cancelText == "No" ? CommonStrings.promptNo : cancelText,
                 onTap: () => Navigator.pop(context, false),
               )
             ],
           ),
         ),
       );
-    }, title: title);
+    }, title: title == "Confirmation" ? labelDialogConfirmation : title);
   }
 
   static Future<String?> textPrompt(BuildContext context,
@@ -244,7 +259,9 @@ class AdaptiveDialog {
                 height: 10,
               ),
               tiamat.Button(
-                text: submitText,
+                text: submitText == "Submit"
+                    ? CommonStrings.promptSubmit
+                    : submitText,
                 onTap: () {
                   print(result);
                   Navigator.of(context).pop(result);
@@ -328,7 +345,7 @@ class __SelectMultipleViewState<T> extends State<_SelectMultipleView<T>> {
                   ))
               .toList(),
           tiamat.Button(
-            text: "Submit",
+            text: CommonStrings.promptSubmit,
             onTap: () => Navigator.of(context).pop(selection),
           )
         ]);

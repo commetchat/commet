@@ -7,10 +7,12 @@ import 'package:commet/ui/pages/get_or_create_room/calendar_views.dart';
 import 'package:commet/ui/pages/get_or_create_room/existing_room_picker.dart';
 import 'package:commet/ui/pages/get_or_create_room/join_room_view.dart';
 import 'package:commet/ui/pages/get_or_create_room/photo_album_views.dart';
+import 'package:commet/ui/pages/get_or_create_room/room_creation_strings.dart';
 import 'package:commet/ui/pages/get_or_create_room/room_creator.dart';
 import 'package:commet/ui/pages/get_or_create_room/space_views.dart';
 import 'package:commet/ui/pages/get_or_create_room/text_chat_views.dart';
 import 'package:commet/ui/pages/get_or_create_room/voice_chat_view.dart';
+import 'package:commet/utils/common_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
@@ -56,6 +58,7 @@ class GetOrCreateRoom extends StatefulWidget {
     bool createPhotoRoom = false,
     bool createCalendar = false,
     String? initialRoomAddress,
+    Space? currentSpace,
     bool Function(SpaceChild child)? existingRoomsRemoveWhere,
   }) async {
     if (client == null) {
@@ -71,14 +74,14 @@ class GetOrCreateRoom extends StatefulWidget {
     final creators = [
       if (showAllRoomTypes || createTextChat)
         RoomGetter(
-          label: "Text Chat",
+          label: RoomCreationStrings.labelRoomTypeTextChat,
           icon: Icons.tag,
           descriptionBuilder: (context) => TextChatCreatorDescription(),
           formBuilder: (context, {onPicked}) => RoomCreatorWidget(
             fields: [
               RoomFieldName(),
               RoomFieldTopic(),
-              RoomFieldVisibility(),
+              RoomFieldVisibility(client: client!, currentSpace: currentSpace),
               RoomFieldEncryption(
                   canEnableEncryption: true, defaultEnabled: true),
             ],
@@ -89,14 +92,14 @@ class GetOrCreateRoom extends StatefulWidget {
         ),
       if ((showAllRoomTypes || createVoiceChat))
         RoomGetter(
-          label: "Voice Chat",
+          label: RoomCreationStrings.labelRoomTypeVoiceChat,
           icon: Icons.volume_up,
           descriptionBuilder: (context) => VoiceChatCreatorDescription(),
           formBuilder: (context, {onPicked}) => RoomCreatorWidget(
             fields: [
               RoomFieldName(),
               RoomFieldTopic(),
-              RoomFieldVisibility(),
+              RoomFieldVisibility(client: client!, currentSpace: currentSpace),
               RoomFieldEncryption(
                   canEnableEncryption: false, defaultEnabled: false),
               RoomFieldType(RoomType.voipRoom),
@@ -108,14 +111,14 @@ class GetOrCreateRoom extends StatefulWidget {
         ),
       if ((showAllRoomTypes || createPhotoRoom))
         RoomGetter(
-          label: "Photo Album",
+          label: RoomCreationStrings.labelRoomTypePhotoAlbum,
           icon: Icons.photo,
           descriptionBuilder: (context) => PhotoAlbumCreatorDescription(),
           formBuilder: (context, {onPicked}) => RoomCreatorWidget(
             fields: [
               RoomFieldName(),
               RoomFieldTopic(),
-              RoomFieldVisibility(),
+              RoomFieldVisibility(client: client!, currentSpace: currentSpace),
               RoomFieldEncryption(defaultEnabled: true),
               RoomFieldType(RoomType.photoAlbum),
             ],
@@ -126,16 +129,15 @@ class GetOrCreateRoom extends StatefulWidget {
         ),
       if ((showAllRoomTypes || createCalendar))
         RoomGetter(
-          label: "Calendar",
+          label: RoomCreationStrings.labelRoomTypeCalendar,
           icon: Icons.calendar_month,
           descriptionBuilder: (context) => CalendarCreatorDescription(),
           formBuilder: (context, {onPicked}) => RoomCreatorWidget(
             fields: [
               RoomFieldName(),
               RoomFieldTopic(),
-              RoomFieldVisibility(),
-              RoomFieldEncryption(
-                  canEnableEncryption: false, defaultEnabled: false),
+              RoomFieldVisibility(client: client!, currentSpace: currentSpace),
+              RoomFieldEncryption(defaultEnabled: true),
               RoomFieldType(RoomType.calendar),
             ],
           ),
@@ -145,14 +147,14 @@ class GetOrCreateRoom extends StatefulWidget {
         ),
       if (showAllRoomTypes || createSpace)
         RoomGetter(
-          label: "Space",
+          label: RoomCreationStrings.labelRoomTypeSpace,
           icon: Icons.spoke,
           descriptionBuilder: (context) => SpaceCreatorDescription(),
           formBuilder: (context, {onPicked}) => RoomCreatorWidget(
             fields: [
               RoomFieldName(),
               RoomFieldTopic(),
-              RoomFieldVisibility(),
+              RoomFieldVisibility(client: client!, currentSpace: currentSpace),
             ],
           ),
           create: (args) async {
@@ -163,7 +165,7 @@ class GetOrCreateRoom extends StatefulWidget {
 
     final existing = pickExisting
         ? RoomGetter(
-            label: "Existing Room",
+            label: RoomCreationStrings.labelPickExistingRoom,
             hero: true,
             icon: Icons.add,
             descriptionBuilder: (_) => Placeholder(),
@@ -177,7 +179,7 @@ class GetOrCreateRoom extends StatefulWidget {
 
     final join = joinRoom
         ? RoomGetter(
-            label: "Join Room",
+            label: RoomCreationStrings.labelJoinRoom,
             hero: true,
             icon: Icons.search,
             descriptionBuilder: (_) => Placeholder(),
@@ -205,17 +207,17 @@ class GetOrCreateRoom extends StatefulWidget {
                   height: 50,
                   child: switch (item) {
                     _RoomSourceOptions.create => tiamat.TextButton(
-                        "Create Room",
+                        RoomCreationStrings.labelCreateRoom,
                         icon: Icons.add,
                         onTap: callback,
                       ),
                     _RoomSourceOptions.existing => tiamat.TextButton(
-                        "Use Existing Room",
+                        RoomCreationStrings.labelPickExistingRoom,
                         icon: Icons.tag,
                         onTap: callback,
                       ),
                     _RoomSourceOptions.join => tiamat.TextButton(
-                        "Join Room",
+                        RoomCreationStrings.labelJoinRoom,
                         icon: Icons.alternate_email,
                         onTap: callback,
                       ),
@@ -401,7 +403,7 @@ class _GetOrCreateRoomState extends State<GetOrCreateRoom> {
                               Align(
                                 alignment: AlignmentGeometry.bottomRight,
                                 child: tiamat.Button(
-                                  text: "Next",
+                                  text: CommonStrings.promptNext,
                                   onTap: () {
                                     onNextButtonPressed(selected!);
                                   },
@@ -475,7 +477,7 @@ class _GetOrCreateRoomState extends State<GetOrCreateRoom> {
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(0, 38, 0, 0),
                     child: tiamat.Button(
-                      text: "Next",
+                      text: CommonStrings.promptNext,
                       isLoading: entry == selected && loading,
                       onTap: () => onNextButtonPressed(entry),
                     ),

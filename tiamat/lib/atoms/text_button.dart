@@ -283,7 +283,7 @@ class TextButton extends StatelessWidget {
                       text,
                       maxLines: 1,
                       softwrap: softwrap,
-                      overflow: TextOverflow.fade,
+                      overflow: TextOverflow.ellipsis,
                       color: highlighted
                           ? Theme.of(context).colorScheme.onSecondaryContainer
                           : textColor,
