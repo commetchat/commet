@@ -24,7 +24,8 @@ class NotificationUtils {
     if (includeSingleRooms) {
       // Include rooms that are not part of any space and are not direct messages.
       for (var room in clientManager!.singleRooms()) {
-        highlightedNotificationCount += room.displayHighlightedNotificationCount;
+        highlightedNotificationCount +=
+            room.displayHighlightedNotificationCount;
         notificationCount += room.displayNotificationCount;
       }
     }

@@ -72,7 +72,8 @@ class TrayNotificationManager {
 
     final cache = fileCache;
     if (cache == null) {
-      Log.e('File cache is not initialized, cannot get or create cached tray icon with notification badge');
+      Log.e(
+          'File cache is not initialized, cannot get or create cached tray icon with notification badge');
       return; // TrayManager.instance.setIcon expects a file on disk so cannot continue without caching the icon
     }
 
@@ -83,10 +84,12 @@ class TrayNotificationManager {
       return;
     }
 
-    Log.i('No cached tray icon with notification badge found, creating new one');
+    Log.i(
+        'No cached tray icon with notification badge found, creating new one');
 
     final baseIconBytes = await rootBundle.load(_defaultTrayIconPath);
-    final codec = await ui.instantiateImageCodec(baseIconBytes.buffer.asUint8List());
+    final codec =
+        await ui.instantiateImageCodec(baseIconBytes.buffer.asUint8List());
     final frame = await codec.getNextFrame();
     final baseImage = frame.image;
 
@@ -98,8 +101,7 @@ class TrayNotificationManager {
 
     final badgeRadius = size.shortestSide / 6;
     final badgeCenter = Offset(size.width - badgeRadius, badgeRadius);
-    final paint = Paint()
-        ..color = Colors.red;
+    final paint = Paint()..color = Colors.red;
     canvas.drawCircle(badgeCenter, badgeRadius, paint);
 
     final picture = recorder.endRecording();
