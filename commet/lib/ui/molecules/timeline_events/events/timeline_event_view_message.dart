@@ -40,6 +40,7 @@ class TimelineEventViewMessage extends StatefulWidget {
       this.jumpToEvent,
       this.readReceipts = const [],
       this.onReadReceiptsTapped,
+      this.onDoubleTapMessage,
       this.detailed = false,
       this.previewMedia = false,
       required this.initialIndex});
@@ -56,6 +57,7 @@ class TimelineEventViewMessage extends StatefulWidget {
   final bool isThreadTimeline;
   final bool previewMedia;
   final Function()? onReadReceiptsTapped;
+  final Function()? onDoubleTapMessage;
 
   @override
   State<TimelineEventViewMessage> createState() =>
@@ -67,6 +69,9 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
   late String senderName;
   late String senderId;
   late Color senderColor;
+
+  late bool mentionsRoom;
+  late List<String> mentions;
 
   String get messageFailedToDecrypt => Intl.message("Failed to decrypt event",
       desc: "Placeholde text for when a message fails to decrypt",
@@ -131,6 +136,9 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
       formattedContent: formattedContent,
       timestamp: timestampToString(sentTime),
       edited: edited,
+      isMentioningSelf: mentionsRoom ||
+          mentions.contains(widget.timeline!.client.self!.identifier),
+      onDoubleTapMessage: widget.onDoubleTapMessage,
       avatarBuilder: (child) {
         var room = widget.room ?? widget.timeline?.room;
 
@@ -220,6 +228,8 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
   }
 
   void loadStateFromEvent(TimelineEvent event) {
+    mentionsRoom = event.mentionsRoom;
+    mentions = event.mentions;
     showSender = shouldShowSender(index);
     var room = widget.room ?? widget.timeline?.room;
 

@@ -7,6 +7,7 @@ import 'package:commet/client/matrix/timeline_events/matrix_timeline_event.dart'
 import 'package:commet/client/timeline_events/timeline_event.dart';
 import 'package:commet/client/timeline_events/timeline_event_message.dart';
 import 'package:commet/client/timeline_events/timeline_event_sticker.dart';
+import 'package:commet/debug/log.dart';
 
 import '../client.dart';
 import 'package:matrix/matrix.dart' as matrix;
@@ -117,10 +118,30 @@ class MatrixTimeline extends Timeline {
   @override
   Future<void> loadMoreFuture() async {
     if (canLoadFuture) {
-      var f = _matrixTimeline?.requestFuture();
-
+      int waitSec = 4;
       _loadingStatusChangedController.add(null);
-      await f;
+      while (true) {
+        var f = _matrixTimeline?.requestFuture();
+
+        try {
+          await f;
+          _loadingStatusChangedController.add(null);
+          break;
+        } on matrix.MatrixException catch (e) {
+          if (e.error == matrix.MatrixError.M_LIMIT_EXCEEDED) {
+            Log.i("Rate limited, waiting $waitSec second(s)...");
+            await Future.delayed(Duration(seconds: waitSec));
+            waitSec *= 2;
+            continue;
+          } else {
+            Log.e(e);
+            break;
+          }
+        } catch (e) {
+          Log.e(e);
+          break;
+        }
+      }
     }
   }
 

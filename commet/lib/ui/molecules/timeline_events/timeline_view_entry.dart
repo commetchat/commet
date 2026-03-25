@@ -40,17 +40,19 @@ class TimelineViewEntry extends StatefulWidget {
       this.isThreadTimeline = false,
       this.previewMedia = false,
       this.highlightedEventId,
+      this.overrideShowSender,
       super.key});
   final Timeline timeline;
   final int initialIndex;
   final Function(String eventId)? onEventHovered;
   final Function(TimelineEvent? event)? setReplyingEvent;
   final Function(TimelineEvent? event)? setEditingEvent;
-  final Function(String eventId)? jumpToEvent;
+  final Function(String eventId, {bool highlight})? jumpToEvent;
   final bool showDetailed;
   final bool isThreadTimeline;
   final String? highlightedEventId;
   final bool previewMedia;
+  final bool? overrideShowSender;
 
   // Should be true if we are showing this event on its own, and not as part of a timeline
   final bool singleEvent;
@@ -407,6 +409,7 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
       return null;
     }
 
+    var event = widget.timeline.tryGetEvent(eventId);
     if (_widgetType == TimelineEventWidgetDisplayType.message)
       return TimelineEventViewMessage(
           key: eventKey,
@@ -414,8 +417,10 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
           isThreadTimeline: widget.isThreadTimeline,
           detailed: widget.showDetailed || selected,
           onReadReceiptsTapped: onReadReceiptsTapped,
+          onDoubleTapMessage: () => widget.setReplyingEvent?.call(event),
           readReceipts: readReceipts,
-          overrideShowSender: widget.singleEvent || showDateSeperator,
+          overrideShowSender: widget.overrideShowSender ??
+              (widget.singleEvent || showDateSeperator),
           jumpToEvent: widget.jumpToEvent,
           previewMedia: widget.previewMedia,
           initialIndex: widget.initialIndex);

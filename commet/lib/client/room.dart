@@ -242,6 +242,8 @@ abstract class Room {
 
   Future<void> markAsRead();
 
+  String get lastRead;
+
   @override
   bool operator ==(Object other) {
     if (other is! Room) return false;
