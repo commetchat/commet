@@ -9,6 +9,7 @@ import 'package:crop_image/crop_image.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class PickerUtils {
@@ -76,13 +77,17 @@ class ImageCropView extends StatelessWidget {
 
   final double width = 1000;
 
+  String get noCroppingPrompt => Intl.message("Use Without Cropping",
+      name: "useWithoutCroppingPrompt", 
+      desc: "Button text for using an image without cropping it");
+
   @override
   Widget build(BuildContext context) {
     var buttons = [
       Expanded(
         flex: Layout.desktop ? 1 : 0,
         child: tiamat.Button.secondary(
-          text: "Use Without Cropping",
+          text: noCroppingPrompt,
           onTap: () async {
             onImageSubmitted?.call(imageBytes);
           },

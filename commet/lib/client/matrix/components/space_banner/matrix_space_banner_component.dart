@@ -53,9 +53,7 @@ class MatrixSpaceBannerComponent
       space.matrixRoom.id,
       key,
       '',
-      {
-        'url': '',
-      },
+      {},
     );
     space.notifyUpdate();
   }
