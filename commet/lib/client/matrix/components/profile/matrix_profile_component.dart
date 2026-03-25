@@ -374,6 +374,11 @@ class MatrixProfileComponent implements UserProfileComponent<MatrixClient> {
     await setField(bannerKey, mxc.toString());
   }
 
+  @override
+  Future<void> removeBanner() async {
+    await removeField(bannerKey);
+  }
+
   Future<void> setField(String field, dynamic content) async {
     final data = {field: content};
 

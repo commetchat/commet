@@ -99,6 +99,8 @@ abstract class UserProfileComponent<T extends Client> implements Component<T> {
 
   Future<void> removeBio();
 
+  Future<void> removeBanner();
+
   Future<void> removeTimezone();
 
   Future<List<ProfileBadge>> getAvailableBadges();

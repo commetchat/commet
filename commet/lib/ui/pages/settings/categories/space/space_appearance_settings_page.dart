@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:commet/client/client.dart';
 import 'package:commet/client/components/space_banner/space_banner_component.dart';
+import 'package:commet/ui/molecules/image_select_dialog.dart';
 import 'package:commet/ui/pages/settings/categories/room/appearance/room_appearance_settings_view.dart';
 import 'package:commet/utils/picker_utils.dart';
 import 'package:flutter/material.dart';
@@ -76,6 +77,27 @@ class _SpaceAppearanceSettingsPageState
                 color: Colors.transparent,
                 child: InkWell(
                   onTap: () async {
+                    final action = await showImageSelectDialog(
+                      context,
+                      image: image,
+                    );
+
+                    if (action == ImageEditAction.remove) {
+                      setState(() {
+                        image = null;
+                        uploading = true;
+                      });
+                      await widget.space
+                          .getComponent<SpaceBannerComponent>()
+                          ?.removeBanner();
+                      setState(() {
+                        uploading = false;
+                      });
+                      return;
+                    } else if (action != ImageEditAction.pick) {
+                      return;
+                    }
+
                     var result = await PickerUtils.pickImageAndCrop(context,
                         aspectRatio: 16 / 9);
 

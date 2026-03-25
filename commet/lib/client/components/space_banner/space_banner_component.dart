@@ -11,4 +11,5 @@ abstract class SpaceBannerComponent<R extends Client, T extends Space>
   bool get canEditBanner;
 
   Future<void> setBanner(Uint8List data, {String? mimeType});
+  Future<void> removeBanner();
 }

@@ -8,6 +8,7 @@ import 'package:commet/client/matrix/matrix_mxc_image_provider.dart';
 import 'package:commet/config/layout_config.dart';
 import 'package:commet/debug/log.dart';
 import 'package:commet/ui/atoms/code_block.dart';
+import 'package:commet/ui/molecules/image_select_dialog.dart';
 import 'package:commet/ui/molecules/message_input.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/utils/event_bus.dart';
@@ -270,6 +271,20 @@ class _UserProfileState extends State<UserProfile> {
   }
 
   Future<void> setBanner() async {
+    final action = await showImageSelectDialog(
+      context,
+      image: banner,
+    );
+
+    if (!mounted) return;
+
+    if (action == ImageEditAction.remove) {
+      await removeBanner();
+      return;
+    }
+
+    if (action != ImageEditAction.pick) return;
+
     var result =
         await PickerUtils.pickImageAndCrop(context, aspectRatio: 700 / 230);
     if (result == null) return;
@@ -279,6 +294,14 @@ class _UserProfileState extends State<UserProfile> {
     });
 
     await component.setBanner(result);
+  }
+
+  Future<void> removeBanner() async {
+    await component.removeBanner();
+
+    setState(() {
+      banner = null;
+    });
   }
 
   Color previewColor = Colors.blue;
