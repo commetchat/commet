@@ -61,7 +61,6 @@ class Log {
       }
     },
     errorCallback: (self, parent, zone, error, stackTrace) {
-      parent.print(zone, "ERROR CALLBACK");
       parent.print(zone, error.toString());
       parent.print(zone, stackTrace?.toString() ?? "");
       String? info =
