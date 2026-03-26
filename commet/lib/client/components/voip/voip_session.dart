@@ -16,6 +16,8 @@ enum VoipState {
 
 abstract class ScreenCaptureSource {}
 
+class WebrtcBrowserScreenCaptureSource implements ScreenCaptureSource {}
+
 abstract class VoipSession {
   Client get client;
 
