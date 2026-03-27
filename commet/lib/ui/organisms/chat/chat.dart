@@ -176,88 +176,92 @@ class ChatState extends State<Chat> {
   }
 
   void sendMessage(String message, {Client? overrideClient}) async {
+    if (processing) return;
+
     setState(() {
       processing = true;
     });
 
-    for (var file in attachments) {
-      await file.resolve();
-      var exif = await readExifFromBytes(file.data!);
+    try {
+      for (var file in attachments) {
+        await file.resolve();
+        var exif = await readExifFromBytes(file.data!);
 
-      if (exif.keys.any((e) => e.toLowerCase().contains("gps"))) {
-        // ignore: use_build_context_synchronously
-        var confirmation = await AdaptiveDialog.confirmation(context,
-            title: file.name ?? "File",
-            confirmationText: "Send File",
-            cancelText: "Don't send file",
-            dangerous: true,
-            prompt:
-                "Location data was detected in file '${file.name}', are you sure you want to send?");
+        if (exif.keys.any((e) => e.toLowerCase().contains("gps"))) {
+          // ignore: use_build_context_synchronously
+          var confirmation = await AdaptiveDialog.confirmation(context,
+              title: file.name ?? "File",
+              confirmationText: "Send File",
+              cancelText: "Don't send file",
+              dangerous: true,
+              prompt:
+                  "Location data was detected in file '${file.name}', are you sure you want to send?");
 
-        if (confirmation != true) {
-          setState(() {
-            processing = false;
-          });
+          if (confirmation != true) {
+            return;
+          }
+        }
+      }
+
+      var targetRoom = room;
+      var targetThread = threadsComponent;
+
+      if (overrideClient != null) {
+        var newRoom = overrideClient.getRoom(targetRoom.identifier);
+        if (newRoom != null) {
+          targetRoom = newRoom;
+          targetThread = targetRoom.client.getComponent<ThreadsComponent>();
+          Log.d("Overriding room for client: ${overrideClient}");
+        } else {
+          Log.e(
+              "Failed to find correct room to send event for override client. Cancelling");
+
           return;
         }
       }
-    }
 
-    var targetRoom = room;
-    var targetThread = threadsComponent;
+      var processedAttachments =
+          await targetRoom.processAttachments(attachments);
 
-    if (overrideClient != null) {
-      var newRoom = overrideClient.getRoom(targetRoom.identifier);
-      if (newRoom != null) {
-        targetRoom = newRoom;
-        targetThread = targetRoom.client.getComponent<ThreadsComponent>();
-        Log.d("Overriding room for client: ${overrideClient}");
+      var component = targetRoom.client.getComponent<CommandComponent>();
+
+      if (component?.isExecutable(message) == true) {
+        await doCommand(component, message);
+      } else if (isThread) {
+        await targetThread!.sendMessage(
+            threadRootEventId: widget.threadId!,
+            room: targetRoom,
+            message: message,
+            inReplyTo: interactionType == EventInteractionType.reply
+                ? interactingEvent
+                : null,
+            replaceEvent: interactionType == EventInteractionType.edit
+                ? interactingEvent
+                : null,
+            processedAttachments: processedAttachments);
       } else {
-        Log.e(
-            "Failed to find correct room to send event for override client. Cancelling");
+        await targetRoom.sendMessage(
+            message: message,
+            inReplyTo: interactionType == EventInteractionType.reply
+                ? interactingEvent
+                : null,
+            replaceEvent: interactionType == EventInteractionType.edit
+                ? interactingEvent
+                : null,
+            processedAttachments: processedAttachments);
+      }
 
-        return;
+      typingIndicators?.setTypingStatus(false);
+      setInteractingEvent(null);
+      clearAttachments();
+      setMessageInputText.add("");
+    } finally {
+      if (mounted) {
+        setState(() {
+          processing = false;
+        });
       }
     }
-
-    var processedAttachments = await targetRoom.processAttachments(attachments);
-
-    setState(() {
-      processing = false;
-    });
-
-    var component = targetRoom.client.getComponent<CommandComponent>();
-
-    if (component?.isExecutable(message) == true) {
-      doCommand(component, message);
-    } else if (isThread) {
-      targetThread!.sendMessage(
-          threadRootEventId: widget.threadId!,
-          room: targetRoom,
-          message: message,
-          inReplyTo: interactionType == EventInteractionType.reply
-              ? interactingEvent
-              : null,
-          replaceEvent: interactionType == EventInteractionType.edit
-              ? interactingEvent
-              : null,
-          processedAttachments: processedAttachments);
-    } else {
-      targetRoom.sendMessage(
-          message: message,
-          inReplyTo: interactionType == EventInteractionType.reply
-              ? interactingEvent
-              : null,
-          replaceEvent: interactionType == EventInteractionType.edit
-              ? interactingEvent
-              : null,
-          processedAttachments: processedAttachments);
-    }
-
-    typingIndicators?.setTypingStatus(false);
-    setInteractingEvent(null);
-    clearAttachments();
-    setMessageInputText.add("");
   }
 
   Future<void> doCommand(
