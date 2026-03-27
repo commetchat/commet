@@ -47,27 +47,37 @@
         androidSdk = androidComposition.androidsdk;
 
         libraries = with pkgs; [
-              olm
-              libdrm
-              mesa
+          olm
+          libdrm
+          mesa
+          webkitgtk_4_1
+          webkitgtk_4_1.dev
+          glib
+          glib.dev
+          dbus
+          dbus.dev
+          keybinder3
         ];
 
         packages = with pkgs; [
-              flutter
-              androidSdk
-              jdk17
-              ninja
-              gtk3
-              mpv
-              ffmpeg
-              mimalloc
-              libepoxy
-              dart
-              libass
-              pkg-config
-              android-tools
-              android-studio
-              bashInteractive
+          flutter
+          androidSdk
+          jdk17
+          ninja
+          gtk3
+          mpv
+          ffmpeg
+          mimalloc
+          libepoxy
+          dart
+          libass
+          pkg-config
+          android-tools
+          android-studio
+          bashInteractive
+          cargo
+          rustup
+          rustPlatform.bindgenHook
         ];
 
       in
@@ -82,6 +92,8 @@
             SHELL = "${pkgs.bashInteractive}/bin/bash";
             GRADLE_OPTS = "-Dorg.gradle.project.android.aapt2FromMavenOverride=${ANDROID_SDK_ROOT}/build-tools/${aapt2buildToolsVersion}/aapt2";
             LD_LIBRARY_PATH = "${pkgs.lib.makeLibraryPath libraries}";
+
+            CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER = "${pkgs.gcc}/bin/gcc";
             buildInputs = libraries ++ packages;
           };
       }
