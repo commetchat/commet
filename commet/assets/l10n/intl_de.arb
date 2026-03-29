@@ -1765,5 +1765,60 @@
         "description": "Placeholder / Example for a room alias.",
         "type": "text",
         "placeholders": {}
+    },
+    "promptProfileEditColorScheme": "Farbschema bearbeiten",
+    "@promptProfileEditColorScheme": {
+        "description": "Prompt to edit the color scheme of the user's own profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "incomingCallMessage": "Eingehender Anruf von {callingUserName}!",
+    "@incomingCallMessage": {
+        "description": "Label to display that a user is calling",
+        "type": "text",
+        "placeholders": {
+            "callingUserName": {}
+        }
+    },
+    "labelCalendarDescription": "Erstelle einen geteilten Kalender um einen Überblick über deine Pläne zu behalten, und importiere Zeitpläne von anderen Kalendern um deinen Freunden zu zeigen, wann du beschäftigt bist.",
+    "@labelCalendarDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelCreateRoom": "Raum erstellen",
+    "@labelCreateRoom": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPickExistingRoom": "Existierender Raum",
+    "@labelPickExistingRoom": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelJoinRoom": "Raum beitreten",
+    "@labelJoinRoom": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomTypePhotoAlbum": "Fotoalbum",
+    "@labelRoomTypePhotoAlbum": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomTypeCalendar": "Kalender",
+    "@labelRoomTypeCalendar": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPhotoAlbumDescription": "Teile Fotos und Videos mit deinen Freunden oder deiner Community!",
+    "@labelPhotoAlbumDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageInvalidUsernameOrPassword": "Ungültiger Nutzername oder Passwort",
+    "@messageInvalidUsernameOrPassword": {
+        "description": "An error message displayed when the user attempts to log into an account using the wrong username/password combination",
+        "type": "text",
+        "placeholders": {}
     }
 }
