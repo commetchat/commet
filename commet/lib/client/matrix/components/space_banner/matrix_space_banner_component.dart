@@ -19,6 +19,8 @@ class MatrixSpaceBannerComponent
     final url = state.content["url"] as String?;
     if (url == null) return null;
 
+    if (!url.startsWith("mxc://")) return null;
+
     return MatrixMxcImage(Uri.parse(url), client.matrixClient);
   }
 
