@@ -235,11 +235,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
     if (controller.hasClients) {
       double extent = controller.position.minScrollExtent;
 
-      print("Viewport dimension: ${controller.position.viewportDimension}");
-      print("Extent: ${extent}");
-
       if (controller.position.viewportDimension < -extent) {
-        print("Needs to jump to event");
         extent = -controller.position.viewportDimension / 2;
       }
 
