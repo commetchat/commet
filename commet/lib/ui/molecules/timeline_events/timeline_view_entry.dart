@@ -24,7 +24,9 @@ import 'package:commet/ui/molecules/timeline_events/timeline_event_menu_dialog.d
 import 'package:commet/ui/molecules/user_panel.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:tiamat/atoms/context_menu.dart';
+import 'package:tiamat/atoms/text.dart';
 import 'package:tiamat/tiamat.dart' as tiamat;
 
 class TimelineViewEntry extends StatefulWidget {
@@ -39,8 +41,8 @@ class TimelineViewEntry extends StatefulWidget {
       this.singleEvent = false,
       this.isThreadTimeline = false,
       this.previewMedia = false,
+      this.lastReadEventId,
       this.highlightedEventId,
-      this.overrideShowSender,
       super.key});
   final Timeline timeline;
   final int initialIndex;
@@ -51,8 +53,8 @@ class TimelineViewEntry extends StatefulWidget {
   final bool showDetailed;
   final bool isThreadTimeline;
   final String? highlightedEventId;
+  final String? lastReadEventId;
   final bool previewMedia;
-  final bool? overrideShowSender;
 
   // Should be true if we are showing this event on its own, and not as part of a timeline
   final bool singleEvent;
@@ -94,11 +96,16 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
 
   late DateTime time;
   bool showDateSeperator = false;
+  bool showUnreadMarker = false;
 
   ThreadsComponent? threads;
   PollComponent? polls;
 
   List<String> readReceipts = [];
+
+  String get labelTimelineNewMessagesMarker => Intl.message("New messages",
+      desc: "Text that is shown below the last read message",
+      name: "labelTimelineNewMessagesMarker");
 
   @override
   void initState() {
@@ -132,6 +139,7 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
     _widgetType = eventToDisplayType(event, polls: polls);
 
     showDateSeperator = shouldEventShowDate(eventIndex);
+    showUnreadMarker = shouldEventShowUnreadMarker(eventIndex);
     highlighted = event.eventId == widget.highlightedEventId;
   }
 
@@ -195,6 +203,29 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
         2) return true;
 
     return false;
+  }
+
+  bool shouldEventShowUnreadMarker(int index) {
+    final events = widget.timeline.events;
+
+    bool isHidden(event) =>
+        eventToDisplayType(event, polls: polls) ==
+        TimelineEventWidgetDisplayType.hidden;
+
+    if (index == 0 || events.take(index).every(isHidden)) return false;
+
+    final lastReadIndex =
+        events.indexWhere((e) => e.eventId == widget.lastReadEventId);
+
+    if (lastReadIndex == -1) {
+      return false;
+    }
+
+    //if (lastReadIndex > index) return false;
+    if (lastReadIndex == index + 1) return true;
+    if (!isHidden(events[lastReadIndex])) return false;
+
+    return events.getRange(lastReadIndex, index).every(isHidden);
   }
 
   @override
@@ -395,7 +426,44 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
       );
     }
 
+    if (showUnreadMarker)
+      result = Column(children: [
+        buildNewMessagesMarker(),
+        result,
+      ]);
+
     return result;
+  }
+
+  Row buildNewMessagesMarker() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Expanded(
+            child: Divider(
+          color: ColorScheme.of(context).primaryContainer,
+          thickness: 2.0,
+        )),
+        DecoratedBox(
+          decoration: BoxDecoration(
+              color: ColorScheme.of(context).primaryContainer,
+              borderRadius: BorderRadius.circular(8)),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 3),
+            child: tiamat.Text(
+              labelTimelineNewMessagesMarker,
+              color: ColorScheme.of(context).onPrimaryContainer,
+              type: TextType.labelLow,
+            ),
+          ),
+        ),
+        Expanded(
+            child: Divider(
+          color: ColorScheme.of(context).primaryContainer,
+          thickness: 2.0,
+        )),
+      ],
+    );
   }
 
   Widget? buildEvent() {
@@ -409,7 +477,6 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
       return null;
     }
 
-    var event = widget.timeline.tryGetEvent(eventId);
     if (_widgetType == TimelineEventWidgetDisplayType.message)
       return TimelineEventViewMessage(
           key: eventKey,
@@ -417,10 +484,9 @@ class TimelineViewEntryState extends State<TimelineViewEntry>
           isThreadTimeline: widget.isThreadTimeline,
           detailed: widget.showDetailed || selected,
           onReadReceiptsTapped: onReadReceiptsTapped,
-          onDoubleTapMessage: () => widget.setReplyingEvent?.call(event),
           readReceipts: readReceipts,
-          overrideShowSender: widget.overrideShowSender ??
-              (widget.singleEvent || showDateSeperator),
+          overrideShowSender:
+              widget.singleEvent || showDateSeperator || showUnreadMarker,
           jumpToEvent: widget.jumpToEvent,
           previewMedia: widget.previewMedia,
           initialIndex: widget.initialIndex);

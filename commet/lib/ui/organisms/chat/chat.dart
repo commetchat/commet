@@ -118,7 +118,7 @@ class ChatState extends State<Chat> {
   }
 
   Future<void> loadTimeline() async {
-    var t = await room.getTimeline();
+    var t = await room.getTimeline(contextEventId: room.lastRead);
     setState(() {
       _timeline = t;
     });

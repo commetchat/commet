@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:commet/client/components/message_effects/message_effect_component.dart';
-import 'package:commet/client/components/polls/poll_component.dart';
 import 'package:commet/client/components/read_receipts/read_receipt_component.dart';
 import 'package:commet/client/timeline.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
@@ -15,7 +14,6 @@ import 'package:commet/ui/molecules/timeline_events/timeline_event_menu.dart';
 import 'package:commet/ui/molecules/timeline_events/timeline_view_entry.dart';
 import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class RoomTimelineWidgetView extends StatefulWidget {
   const RoomTimelineWidgetView(
@@ -84,10 +82,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
   bool isLoadingHistory = false;
 
   MessageEffectComponent? effects;
-
-  String get labelTimelineNewMessagesMarker => Intl.message("New messages",
-      desc: "Text that is shown below the last read message",
-      name: "labelTimelineNewMessagesMarker");
+  String? lastReadEventId;
 
   @override
   void initState() {
@@ -95,7 +90,7 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
 
     initFromTimeline(widget.timeline);
 
-    controller = ScrollController();
+    controller = ScrollController(initialScrollOffset: -999999);
     EventBus.jumpToEvent.stream.listen(jumpToEvent);
     WidgetsBinding.instance.addPostFrameCallback(onAfterFirstFrame);
     super.initState();
@@ -108,11 +103,24 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
       }
     }
 
-    isLoadingFuture = false;
-    isLoadingHistory = false;
+    String? targetEventId = timeline.room.lastRead; // timeline.contextEventId;
 
     this.timeline = timeline;
-    recentItemsCount = timeline.events.length;
+    var index = timeline.events.indexWhere((i) => i.eventId == targetEventId);
+
+    if (index > 0) {
+      lastReadEventId = targetEventId;
+
+      isLoadingFuture = false;
+      isLoadingHistory = false;
+
+      recentItemsCount = index;
+    } else {
+      if (timeline.events.length > 1) {
+        recentItemsCount = 1;
+      }
+    }
+
     var receipts = timeline.room.getComponent<ReadReceiptComponent>();
     subscriptions = [
       timeline.onEventAdded.stream.listen(onEventAdded),
@@ -225,7 +233,16 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
 
   void onAfterFirstFrame(_) {
     if (controller.hasClients) {
-      double extent = controller.position.maxScrollExtent;
+      double extent = controller.position.minScrollExtent;
+
+      print("Viewport dimension: ${controller.position.viewportDimension}");
+      print("Extent: ${extent}");
+
+      if (controller.position.viewportDimension < -extent) {
+        print("Needs to jump to event");
+        extent = -controller.position.viewportDimension / 2;
+      }
+
       controller = ScrollController(initialScrollOffset: extent);
       scrollViewKey = GlobalKey();
       controller.addListener(onScroll);
@@ -235,7 +252,6 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
     }
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      jumpToEvent(timeline.room.lastRead, highlight: false);
       onScroll();
     });
   }
@@ -358,26 +374,6 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
     selectedEventView = null;
   }
 
-  bool shouldEventShowUnreadMarker(int index) {
-    final events = widget.timeline.events;
-    final polls = widget.timeline.client.getComponent<PollComponent>();
-
-    bool isHidden(event) =>
-        TimelineViewEntryState.eventToDisplayType(event, polls: polls) ==
-        TimelineEventWidgetDisplayType.hidden;
-
-    if (index == 0 || events.take(index).every(isHidden)) return false;
-
-    final lastReadIndex =
-        events.indexWhere((e) => e.eventId == widget.timeline.room.lastRead);
-
-    if (lastReadIndex > index) return false;
-    if (lastReadIndex == index) return true;
-    if (!isHidden(events[lastReadIndex])) return false;
-
-    return events.getRange(lastReadIndex, index).every(isHidden);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -423,18 +419,13 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
                           numBuilds += 1;
 
                           var key;
-                          try {
-                            key = eventKeys[timelineIndex];
-                          } on RangeError {
-                            return Placeholder();
-                          }
+
+                          key = eventKeys[timelineIndex];
+
                           assert(
                               key.$2 == timeline.events[timelineIndex].eventId);
 
-                          var showUnreadMarker =
-                              shouldEventShowUnreadMarker(timelineIndex);
-
-                          Widget result = Container(
+                          return Container(
                             alignment: Alignment.center,
                             color: preferences.developerMode.value &&
                                     BuildConfig.DEBUG
@@ -449,18 +440,12 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
                                 setReplyingEvent: widget.setReplyingEvent,
                                 isThreadTimeline: widget.isThreadTimeline,
                                 highlightedEventId: highlightedEventId,
-                                overrideShowSender:
-                                    showUnreadMarker ? true : null,
+                                lastReadEventId: lastReadEventId,
                                 previewMedia:
                                     widget.timeline.room.shouldPreviewMedia,
                                 jumpToEvent: jumpToEvent,
                                 initialIndex: timelineIndex),
                           );
-
-                          if (showUnreadMarker)
-                            result = newMessagesMarker(result);
-
-                          return result;
                         },
                         findChildIndexCallback: (key) {
                           var timelineIndex = eventKeys
@@ -487,18 +472,13 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
                           var timelineIndex = recentItemsCount + sliverIndex;
 
                           var key;
-                          try {
-                            key = eventKeys[timelineIndex];
-                          } on RangeError {
-                            return Placeholder();
-                          }
+
+                          key = eventKeys[timelineIndex];
+
                           assert(
                               key.$2 == timeline.events[timelineIndex].eventId);
 
-                          var showUnreadMarker =
-                              shouldEventShowUnreadMarker(timelineIndex);
-
-                          Widget result = Container(
+                          return Container(
                             alignment: Alignment.center,
                             color: preferences.developerMode.value &&
                                     BuildConfig.DEBUG
@@ -513,18 +493,12 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
                                 setReplyingEvent: widget.setReplyingEvent,
                                 isThreadTimeline: widget.isThreadTimeline,
                                 highlightedEventId: highlightedEventId,
-                                overrideShowSender:
-                                    showUnreadMarker ? true : null,
                                 previewMedia:
                                     widget.timeline.room.shouldPreviewMedia,
+                                lastReadEventId: lastReadEventId,
                                 jumpToEvent: jumpToEvent,
                                 initialIndex: timelineIndex),
                           );
-
-                          if (showUnreadMarker)
-                            result = newMessagesMarker(result);
-
-                          return result;
                         },
                         findChildIndexCallback: (key) {
                           var timelineIndex = eventKeys
@@ -584,37 +558,6 @@ class RoomTimelineWidgetViewState extends State<RoomTimelineWidgetView> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget newMessagesMarker(Widget child) {
-    return Column(
-      children: [
-        child,
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Expanded(
-                child: Divider(
-                    color: Colors.red,
-                    thickness: 4.0,
-                    radius: BorderRadiusGeometry.horizontal(
-                        right: Radius.circular(16.0)))),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15),
-              child: Text(labelTimelineNewMessagesMarker,
-                  style: TextStyle(
-                      color: Colors.red, fontWeight: FontWeight.bold)),
-            ),
-            Expanded(
-                child: Divider(
-                    color: Colors.red,
-                    thickness: 4.0,
-                    radius: BorderRadiusGeometry.horizontal(
-                        left: Radius.circular(16.0)))),
-          ],
-        ),
-      ],
     );
   }
 
