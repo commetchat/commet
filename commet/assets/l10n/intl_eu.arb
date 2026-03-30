@@ -2179,5 +2179,284 @@
         "description": "An error message displayed when the user attempts to log into an account using the wrong username/password combination",
         "type": "text",
         "placeholders": {}
+    },
+    "labelVoiceChatDescription": "Ahots bidezko deietarako gela dedikatua, bi edo pertsona gehiagorentzat",
+    "@labelVoiceChatDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelCalendarDescription": "Sortu egutegi partekatu bat zure planen jarraipena egiteko, eta inportatu zure plangintza beste egutegi batzuetatik lagunei jakinarazteko lanpetuta noiz zauden.",
+    "@labelCalendarDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelJoinRoom": "Sartu gelara",
+    "@labelJoinRoom": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "roomVisibilityRestrictedExplanation": "Gela hau erabilgarri egongo da gune nagusiko kide den edonorentzat",
+    "@roomVisibilityRestrictedExplanation": {
+        "description": "Explains what 'restricted' visibility means",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelDonationConfirmationFailed": "Ezin izan da donaziorik aurkitu :( Kontuan hartu Commet-en garapena babesteko donazioa egitea!",
+    "@labelDonationConfirmationFailed": {
+        "description": "Text that is shown when the donation flow was failed, and the no donation was found",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelDonateAnonymously": "Egin dohaintza kontuarekin erlazionatu gabe",
+    "@labelDonateAnonymously": {
+        "description": "Prompt the user to donate to the project, without linking to their user account",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptDonate": "Egin dohaintza",
+    "@promptDonate": {
+        "description": "Prompt the user to donate to the project",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSettingsShortcuts": "Laster-teklak",
+    "@labelSettingsShortcuts": {
+        "description": "Label for the Keyboard shortcuts settings page",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelSystemKeyboardShortcutsOutsourceDescription": "Uneko ingurunean, sistemaren ezarpenetan konfiguratu behar dira laster-teklak.",
+    "@labelSystemKeyboardShortcutsOutsourceDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelConfigureKeyboardShortcuts": "Konfiguratu laster-teklak",
+    "@labelConfigureKeyboardShortcuts": {
+        "description": "Label for the tile containing settings to configure system wide keyboard shortcuts, for muting, unmuting etc",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptShortcutsPressAKeyCombination": "Sakatu tekla-konbinazioa",
+    "@promptShortcutsPressAKeyCombination": {
+        "description": "Prompt the user to input a key combination, which is recorded and used to activate a shortcut",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptShortcutsClearKeyboardShortcut": "Garbitu laster-tekla",
+    "@promptShortcutsClearKeyboardShortcut": {
+        "description": "Prompt the user to clear a key combination shortcut",
+        "type": "text",
+        "placeholders": {}
+    },
+    "headerVoipSettingsCallConnection": "Deien konexioa",
+    "@headerVoipSettingsCallConnection": {
+        "description": "Header for the settings tile containing configuration relating to the initial connection of a call",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelShowRoomPreviewsInSpaceSidebar": "Erakutsi alboko barran batu ez zaren gelak",
+    "@labelShowRoomPreviewsInSpaceSidebar": {
+        "description": "Label for enabling using the preview list in the space sidebar",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelShowRoomPreviewsInSpaceSidebarDescription": "Gune batean batu ez zaren gelak daudenean, erakutsi gela horiek alboko barran guneko gainerako gelekin batera",
+    "@labelShowRoomPreviewsInSpaceSidebarDescription": {
+        "description": "Description for enabling using the preview list in the space sidebar",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelDefaultReadReceiptsOption": "Erabili hobespen orokorra ({pref})",
+    "@labelDefaultReadReceiptsOption": {
+        "description": "Label to use the global preference, showing the current global preference value",
+        "type": "text",
+        "placeholders": {
+            "pref": {}
+        }
+    },
+    "labelDefaultTypingIndicatorsOption": "Erabili hobespen orokorra ({pref})",
+    "@labelDefaultTypingIndicatorsOption": {
+        "description": "Label to use the global preference, showing the current global preference value",
+        "type": "text",
+        "placeholders": {
+            "pref": {}
+        }
+    },
+    "labelReadReceiptsTitle": "Irakurtze-agiriak",
+    "@labelReadReceiptsTitle": {
+        "description": "Label for the toggle for enabling and disabling public read receipts",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelMatrixPermissionsJoinCallTitle": "Deira batu",
+    "@labelMatrixPermissionsJoinCallTitle": {
+        "description": "Title for the permission to allow users to join a call in a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelChatPrivacyTitle": "Txataren pribatutasuna",
+    "@labelChatPrivacyTitle": {
+        "description": "Header for the chat privacy section in settings",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPublicReadReceiptsToggle": "Irakurri izanaren agiriak",
+    "@labelPublicReadReceiptsToggle": {
+        "description": "Label for the toggle for enabling and disabling sending read receipts",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPublicReadReceiptsDescription": "Baimendu gelako kideei jakitea beren mezuak irakurri dituzula.",
+    "@labelPublicReadReceiptsDescription": {
+        "description": "description for the toggle for enabling and disabling sending read receipts",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelPublicTypingIndicatorDescription": "Baimendu gelako kideei jakitea mezu bat idazten ari zarela.",
+    "@labelPublicTypingIndicatorDescription": {
+        "description": "description for the toggle for enabling and disabling sending typing indicator",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptEndPoll": "Amaitu bozketa",
+    "@promptEndPoll": {
+        "description": "Prompt the user to end a poll",
+        "type": "text",
+        "placeholders": {}
+    },
+    "descriptionUpdateAvailable": "Commet-en bertsio berriagoa dago eskuragarri: {version}",
+    "@descriptionUpdateAvailable": {
+        "description": "describes the update, showing the version code for the available update",
+        "type": "text",
+        "placeholders": {
+            "version": {}
+        }
+    },
+    "matrixClientVodozemacMissingMessage": "vodozemac ez dago instalatuta edo ez da aurkitu; konpondu arte muturretik muturrerako zifratzea ez da erabilgarri egongo",
+    "@matrixClientVodozemacMissingMessage": {
+        "description": "Text that explains to the user that vodozemac dependency is not found",
+        "type": "text",
+        "placeholders": {}
+    },
+    "messageUserDeactivated": "Zure kontua desaktibatu da",
+    "@messageUserDeactivated": {
+        "description": "An error message displayed when the user attempts to log into an account that has been disabled",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileSetColorOverride": "Ezarri kolorearen zuzenketa",
+    "@promptProfileSetColorOverride": {
+        "description": "Prompt to override the display color of a user",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileClearColorOverride": "Garbitu kolorearen zuzenketa",
+    "@promptProfileClearColorOverride": {
+        "description": "Prompt to remove an override of the display color of a user",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelTextChatDescription": "Testu-txat sinplea, nahi dituzun ezaugarri guztiekin! Bidali mezuak, multimedia, pegatinak, GIFak eta gehiago!",
+    "@labelTextChatDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelAskBeforeDeletingMessageDescription": "Mezuak ezabatu baino lehenagoko baieztapenerako laster-menua gaitzen du.",
+    "@labelAskBeforeDeletingMessageDescription": {
+        "description": "Label describing what 'asking before deleting messages' even means",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipUseSimulcastDescription": "Zure [datu-]korronteak kalitate maila desberdinetan igotzen ditu, beste erabiltzaileek zein erabili erabaki dezaten. Honek banda-zabalera eta sistemaren baliabide gehiago erabiliko ditu.",
+    "@labelVoipUseSimulcastDescription": {
+        "description": "description for setting toggle to enable use of Simulcast",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipStreamMaximumBitrate": "[Datu-]korrontearen gehienezko bit emaria",
+    "@labelVoipStreamMaximumBitrate": {
+        "description": "label for setting slider to set the maximum bitrate that can be used when streaming",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipStreamMaximumBitrateDescription": "[Datu-]korrontearen kalitate orokorra zehazten du. Zenbat eta handiagoa orduan eta hobeto, baina baliabide gehiago erabiltzen ditu",
+    "@labelVoipStreamMaximumBitrateDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipStreamFramerate": "[Datu-]korrontearen fotograma emaria",
+    "@labelVoipStreamFramerate": {
+        "description": "label for setting slider to set the framerate at which the screen should be captured when streaming",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipStreamFramerateDescription": "Pantaila partekatzean helburuko fotogramak segundoko. Zenbat eta altuagoa orduan eta mugimendu leunagoa, baina araztasuna murriztu dezake.",
+    "@labelVoipStreamFramerateDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipStreamPreferredCodec": "Hobetsitako [datu-]korronterako kodeka",
+    "@labelVoipStreamPreferredCodec": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipStreamPreferredCodecDescription": "Aukeratu zein formatutan kodetu nahi duzun [datu-]korrontea. Kode batzuk gailu batzuetan azkarrago funtziona dezakete, eta beste batzuetan ez dira bateragarriak izango. Ohikoena da gailu gehienak vp8 eta h264-ekin bateragarriak izatea.",
+    "@labelVoipStreamPreferredCodecDescription": {
+        "description": "Explains the preferred stream codec setting. This is just a preference, and the picked codec may not be used if the user's device does not support it",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipStreamResolution": "[Datu-]korrontearen bereizmena",
+    "@labelVoipStreamResolution": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipStreamResolutionDescription": "Zure [datu-]korrontearen bereizmena, zenbat eta altuagoa orduan eta hobeto",
+    "@labelVoipStreamResolutionDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelDialogConfirmation": "Baieztapena",
+    "@labelDialogConfirmation": {
+        "description": "label for the dialog which asks the user to confirm some action",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelUpdateAvailable": "Eguneraketa eskuragarri",
+    "@labelUpdateAvailable": {
+        "description": "Label for the the info popup when an update is available",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipSettingsStunFallback": "Erabili STUN bigarren aukera gisa",
+    "@labelVoipSettingsStunFallback": {
+        "description": "label for the setting to enable STUN callback for connecting calls",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoipSettingsStunFallbackDescription": "Deiak egiteko beharrezkoa da STUN zerbitzariren bat; zure sistemak STUN zerbitzaririk ez badu, erabili '{stunServer}' ordezko gisa. Zerbitzari horrek zure IP helbidea ikusiko du deiak ezartzean",
+    "@labelVoipSettingsStunFallbackDescription": {
+        "type": "text",
+        "placeholders": {
+            "stunServer": {}
+        }
+    },
+    "labelMatrixPermissionsJoinCallDescription": "Baimendu erabiltzaileei gelan aribidean dagoen deira batzea",
+    "@labelMatrixPermissionsJoinCallDescription": {
+        "description": "Description for the permission to allow users to join a call in a room",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelTypingIndicatorTitle": "Idazte-adierazleak",
+    "@labelTypingIndicatorTitle": {
+        "description": "Label for the toggle for enabling and disabling typing indicators",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelTypingIndicatorsToggle": "Idazte-adierazlea",
+    "@labelTypingIndicatorsToggle": {
+        "description": "Label for the toggle for enabling and disabling sending typing indicator",
+        "type": "text",
+        "placeholders": {}
     }
 }
