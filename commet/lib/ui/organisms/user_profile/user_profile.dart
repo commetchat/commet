@@ -271,7 +271,7 @@ class _UserProfileState extends State<UserProfile> {
   }
 
   Future<void> setBanner() async {
-    final action = await showImageSelectDialog(
+    final action = await ImageSelectDialog.show(
       context,
       image: banner,
     );

@@ -77,7 +77,7 @@ class _SpaceAppearanceSettingsPageState
                 color: Colors.transparent,
                 child: InkWell(
                   onTap: () async {
-                    final action = await showImageSelectDialog(
+                    final action = await ImageSelectDialog.show(
                       context,
                       image: image,
                     );

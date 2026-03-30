@@ -77,7 +77,7 @@ class ImageCropView extends StatelessWidget {
 
   final double width = 1000;
 
-  String get noCroppingPrompt => Intl.message("Use Without Cropping",
+  String get useWithoutCroppingPrompt => Intl.message("Use Without Cropping",
       name: "useWithoutCroppingPrompt",
       desc: "Button text for using an image without cropping it");
 
@@ -87,7 +87,7 @@ class ImageCropView extends StatelessWidget {
       Expanded(
         flex: Layout.desktop ? 1 : 0,
         child: tiamat.Button.secondary(
-          text: noCroppingPrompt,
+          text: useWithoutCroppingPrompt,
           onTap: () async {
             onImageSubmitted?.call(imageBytes);
           },

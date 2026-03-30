@@ -11,30 +11,29 @@ enum ImageEditAction {
   pick,
 }
 
-Future<ImageEditAction?> showImageSelectDialog(
-  BuildContext context, {
-  required ImageProvider? image,
-  String? title,
-}) {
-  return AdaptiveDialog.show<ImageEditAction>(
-    context,
-    title: title ??
-        Intl.message("Change Image",
-            name: "changeImageDialogTitle",
-            desc: "Title for the dialog used to change an image"),
-    scrollable: false,
-    builder: (dialogContext) {
-      return ImageSelectDialog(
-        image: image,
-        onCancel: () => Navigator.of(dialogContext).pop(ImageEditAction.cancel),
-        onRemove: () => Navigator.of(dialogContext).pop(ImageEditAction.remove),
-        onPick: () => Navigator.of(dialogContext).pop(ImageEditAction.pick),
-      );
-    },
-  );
-}
-
 class ImageSelectDialog extends StatelessWidget {
+  static Future<ImageEditAction?> show(
+    BuildContext context, {
+    required ImageProvider? image,
+    String? title,
+  }) {
+    return AdaptiveDialog.show<ImageEditAction>(
+      context,
+      title: title ?? changeImageDialogTitle,
+      scrollable: false,
+      builder: (dialogContext) {
+        return ImageSelectDialog(
+          image: image,
+          onCancel: () =>
+              Navigator.of(dialogContext).pop(ImageEditAction.cancel),
+          onRemove: () =>
+              Navigator.of(dialogContext).pop(ImageEditAction.remove),
+          onPick: () => Navigator.of(dialogContext).pop(ImageEditAction.pick),
+        );
+      },
+    );
+  }
+
   const ImageSelectDialog({
     super.key,
     required this.image,
@@ -42,6 +41,10 @@ class ImageSelectDialog extends StatelessWidget {
     required this.onRemove,
     required this.onPick,
   });
+
+  static String get changeImageDialogTitle => Intl.message("Change Image",
+      name: "changeImageDialogTitle",
+      desc: "Title for the dialog used to change an image");
 
   String get removeImagePrompt => Intl.message("Remove Image",
       name: "removeImagePrompt", desc: "Button text for removing an image");
