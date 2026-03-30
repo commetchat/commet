@@ -128,6 +128,7 @@ class TrayNotificationManager {
       MenuItem(label: 'Open Commet', key: 'show'),
       MenuItem(label: 'Quit Commet', key: 'close'),
     ];
+
     await TrayManager.instance.setContextMenu(Menu(items: menu));
   }
 }
@@ -140,6 +141,7 @@ class _TrayListener extends TrayListener {
 
   @override
   void onTrayMenuItemClick(MenuItem menuItem) {
+    print(menuItem.key);
     switch (menuItem.key) {
       case 'show':
         _showWindow();
@@ -151,12 +153,8 @@ class _TrayListener extends TrayListener {
   }
 
   Future<void> _showWindow() async {
-    if (await windowManager.isVisible()) {
-      await windowManager.focus();
-    } else {
-      await windowManager.show();
-      await windowManager.focus();
-    }
+    await windowManager.show();
+    await windowManager.focus();
   }
 
   Future<void> _closeApplication() async {
