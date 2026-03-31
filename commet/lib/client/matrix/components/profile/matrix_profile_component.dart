@@ -142,25 +142,47 @@ class MatrixProfile
   @override
   Widget buildBio(BuildContext context, ThemeData theme,
       {String? overrideText}) {
-    Map<String, dynamic>? content = fields[MatrixProfileComponent.bioKey];
-
-    if (overrideText != null) {
-      content = MatrixProfileComponent.textToContent(overrideText, client);
+    // to be compatible with both the MSC version and commet's own version
+    List<Map<String, dynamic>>? content = fields[MatrixProfileComponent.msc4440BioKey]['m.text'];
+    Map<String, dynamic>? commetBioContent = fields[MatrixProfileComponent.bioKey];
+    
+    Map<String, dynamic>? htmlPart;
+    Map<String, dynamic>? textPart;
+    if (content == null && commetBioContent != null) {
+      if (commetBioContent["formatted_body"] != null && commetBioContent["format"] == "org.matrix.custom.html"){
+        htmlPart = {
+          "body" : commetBioContent["formatted_body"],
+          "mimetype" : "text/html",
+        };
+      }
+      if (commetBioContent["body"] != null){
+        textPart = {
+          "body" : commetBioContent["body"],
+        };
+      }
+    } else if (content is List){
+      for (final item in content!) {
+        if(item['mimetype'] == "text/html"){
+          htmlPart = item;
+        } else if (item['body'] != null) {
+          textPart = item;
+        }
+      }
     }
 
-    if (content == null) return Container();
+    if (htmlPart == null && textPart == null) return Container();
 
-    if (content["format"] == "org.matrix.custom.html") {
+    if (htmlPart != null) {
       return Material(
         color: Colors.transparent,
-        child: MatrixHtmlParser.parse(content["formatted_body"], client, null),
+        child: MatrixHtmlParser.parse(htmlPart["body"], client, null),
       );
     }
 
     return Material(
       color: Colors.transparent,
       child: Text(
-        content["body"],
+        textPart?["body"],
         style: theme.textTheme.bodyMedium
             ?.copyWith(color: theme.colorScheme.onSurface),
       ),
@@ -331,6 +353,7 @@ class MatrixProfileComponent implements UserProfileComponent<MatrixClient> {
   static const String bannerKey = "chat.commet.profile_banner";
   static const String colorSchemeKey = "chat.commet.profile_color_scheme";
   static const String bioKey = "chat.commet.profile_bio";
+  static const String msc4440BioKey = "gay.fomx.biography";
   static const String badgeKey = "chat.commet.profile_badges";
   static const String statusKey = "chat.commet.profile_status";
   static const String pronounsKey = "io.fsky.nyx.pronouns";
