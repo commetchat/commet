@@ -143,26 +143,33 @@ class MatrixProfile
   Widget buildBio(BuildContext context, ThemeData theme,
       {String? overrideText}) {
     // to be compatible with both the MSC version and commet's own version
-    List<Map<String, dynamic>>? content = fields[MatrixProfileComponent.msc4440BioKey]['m.text'];
-    Map<String, dynamic>? commetBioContent = fields[MatrixProfileComponent.bioKey];
-    
+    List<Map<String, dynamic>>? content =
+        fields[MatrixProfileComponent.msc4440BioKey]['m.text'];
+    Map<String, dynamic>? commetBioContent =
+        fields[MatrixProfileComponent.bioKey];
+    if (overrideText != null) {
+      commetBioContent =
+          MatrixProfileComponent.textToContent(overrideText, client);
+    }
+
     Map<String, dynamic>? htmlPart;
     Map<String, dynamic>? textPart;
     if (content == null && commetBioContent != null) {
-      if (commetBioContent["formatted_body"] != null && commetBioContent["format"] == "org.matrix.custom.html"){
+      if (commetBioContent["formatted_body"] != null &&
+          commetBioContent["format"] == "org.matrix.custom.html") {
         htmlPart = {
-          "body" : commetBioContent["formatted_body"],
-          "mimetype" : "text/html",
+          "body": commetBioContent["formatted_body"],
+          "mimetype": "text/html",
         };
       }
-      if (commetBioContent["body"] != null){
+      if (commetBioContent["body"] != null) {
         textPart = {
-          "body" : commetBioContent["body"],
+          "body": commetBioContent["body"],
         };
       }
-    } else if (content is List){
+    } else if (content is List) {
       for (final item in content!) {
-        if(item['mimetype'] == "text/html"){
+        if (item['mimetype'] == "text/html") {
           htmlPart = item;
         } else if (item['body'] != null) {
           textPart = item;
