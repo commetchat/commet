@@ -197,10 +197,23 @@ class MatrixProfile
   }
 
   @override
-  bool get hasBio => fields.containsKey(MatrixProfileComponent.bioKey);
+  bool get hasBio =>
+      fields.containsKey(MatrixProfileComponent.bioKey) ||
+      fields.containsKey(MatrixProfileComponent.msc4440BioKey);
 
   @override
-  String? get plaintextBio => fields[MatrixProfileComponent.bioKey]?["body"];
+  String? get plaintextBio {
+    var plainTextBodyCommet = fields[MatrixProfileComponent.bioKey]?["body"];
+    List<Map<String, dynamic>>? content =
+        fields[MatrixProfileComponent.msc4440BioKey]['m.text'];
+
+    for (final item in content!) {
+      if (item['body'] != null && item['mimetype'] == null) {
+        return item['body'];
+      }
+    }
+    return plainTextBodyCommet;
+  }
 
   @override
   Future<List<ProfileBadge>> getBadges() async {
@@ -461,6 +474,27 @@ class MatrixProfileComponent implements UserProfileComponent<MatrixClient> {
   @override
   Future<void> setBio(String bio) async {
     Map<String, String> content = textToContent(bio, client);
+    
+    if (content['formatted_body'] != null && content['body'] != null) {
+      await setField(msc4440BioKey, {
+        'm.text': [
+          {'body': content['formatted_body'], 'mimetype': 'text/html'},
+          {'body': content['body']}
+        ]
+      });
+    } else if (content['formatted_body'] == null && content['body'] != null) {
+      await setField(msc4440BioKey, {
+        'm.text': [
+          {'body': content['body']}
+        ]
+      });
+    } else if (content['formatted_body'] != null && content['body'] == null) {
+      await setField(msc4440BioKey, {
+        'm.text': [
+          {'body': content['formatted_body'], 'mimetype': 'text/html'},
+        ]
+      });
+    }
 
     await setField(bioKey, content);
   }
@@ -488,6 +522,7 @@ class MatrixProfileComponent implements UserProfileComponent<MatrixClient> {
 
   @override
   Future<void> removeBio() {
+    removeField(msc4440BioKey);
     return removeField(bioKey);
   }
 
