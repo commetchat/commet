@@ -1820,5 +1820,62 @@
         "description": "An error message displayed when the user attempts to log into an account using the wrong username/password combination",
         "type": "text",
         "placeholders": {}
+    },
+    "promptProfileChangeBanner": "Banner ändern",
+    "@promptProfileChangeBanner": {
+        "description": "Prompt to change the banner on the user's profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileSetStatus": "Status setzen",
+    "@promptProfileSetStatus": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileClearStatus": "Status löschen",
+    "@promptProfileClearStatus": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "promptProfileShareTimezone": "Zeitzone teilen",
+    "@promptProfileShareTimezone": {
+        "description": "Prompt the user to add their current timezone to their user profile",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelConfirmShareTimezone": "Bist du dir sicher, dass du deine Zeitzone '{timezone}' öffentlich teilen möchtest?",
+    "@labelConfirmShareTimezone": {
+        "description": "Ask the user to confirm that they want to share their current timezone as public information on their profile",
+        "type": "text",
+        "placeholders": {
+            "timezone": {}
+        }
+    },
+    "labelSpaceVisibilityRestricted": "Eingeschränkter Bereich",
+    "@labelSpaceVisibilityRestricted": {
+        "description": "Label to display that the space is restricted",
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelTextChatDescription": "Einfacher Textchat mit allen Funktionen, die du dir wünschen könntest! Sende Nachrichten, Bilder, Sticker, GIFs und mehr!",
+    "@labelTextChatDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelVoiceChatDescription": "Ein dedizierter Raum für Sprachanrufe für zwei oder mehr Personen",
+    "@labelVoiceChatDescription": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomTypeVoiceChat": "Sprachchat",
+    "@labelRoomTypeVoiceChat": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "labelRoomTypeTextChat": "Textchat",
+    "@labelRoomTypeTextChat": {
+        "description": "Label for creating a regular text based chat room",
+        "type": "text",
+        "placeholders": {}
     }
 }
