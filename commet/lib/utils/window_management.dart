@@ -11,7 +11,7 @@ import 'package:window_manager/window_manager.dart';
 
 class WindowManagement {
   static Future<void> init() async {
-    if (!PlatformUtils.isLinux || PlatformUtils.isWindows) return;
+    if (!(PlatformUtils.isLinux || PlatformUtils.isWindows)) return;
 
     await windowManager.ensureInitialized();
     _WindowListener listener = _WindowListener();
@@ -21,13 +21,11 @@ class WindowManagement {
 
     HardwareKeyboard.instance.addHandler(_onKeyEvent);
 
-    if (PlatformUtils.isLinux || PlatformUtils.isWindows) {
-      EventBus.onSelectedRoomChanged.stream.listen(_onSelectedRoomChanged);
-      EventBus.onSelectedSpaceChanged.stream.listen(_onSelectedSpaceChanged);
+    EventBus.onSelectedRoomChanged.stream.listen(_onSelectedRoomChanged);
+    EventBus.onSelectedSpaceChanged.stream.listen(_onSelectedSpaceChanged);
 
-      if (commandLineArgs.contains("--minimize")) {
-        windowManager.minimize();
-      }
+    if (commandLineArgs.contains("--minimize")) {
+      windowManager.minimize();
     }
   }
 
