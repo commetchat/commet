@@ -73,21 +73,25 @@ class _MessageAttachmentState extends State<MessageAttachment> {
                     maxHeight: 200, minHeight: 40, maxWidth: 500, minWidth: 40),
                 child: InkWell(
                   onTap: fullscreenAttachment,
-                  child: FittedBox(
-                    fit: BoxFit.fitWidth,
-                    child: SizedBox(
-                      width: attachment.width ?? 500,
-                      height: attachment.height ?? 500,
-                      child: Image(
-                        image: attachment.image,
-                        filterQuality: FilterQuality.medium,
-                        // if we know the height, its safe to fill as it wont appear stretched
-                        fit: attachment.width != null &&
-                                attachment.height != null
-                            ? BoxFit.fill
-                            : BoxFit.fitWidth,
+                  child: Stack(
+                    children: [
+                      FittedBox(
+                        fit: BoxFit.fitWidth,
+                        child: SizedBox(
+                          width: attachment.width ?? 500,
+                          height: attachment.height ?? 500,
+                          child: Image(
+                            image: attachment.image,
+                            filterQuality: FilterQuality.medium,
+                            // if we know the height, its safe to fill as it wont appear stretched
+                            fit: attachment.width != null &&
+                                    attachment.height != null
+                                ? BoxFit.fill
+                                : BoxFit.fitWidth,
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   ),
                 ),
               ))),

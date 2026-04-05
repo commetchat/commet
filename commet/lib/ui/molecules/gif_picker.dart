@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:commet/client/components/gif/gif_component.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -14,8 +15,12 @@ class GifPicker extends StatefulWidget {
       this.gifPicked,
       this.search,
       this.focus,
+      this.favorites = const [],
+      this.favoritePicked,
       this.placeholderText = "Search Gif"});
+  final List<FavoriteGif> favorites;
   final Future<void> Function(GifSearchResult gif)? gifPicked;
+  final Future<void> Function(FavoriteGif gif)? favoritePicked;
   final Future<List<GifSearchResult>> Function(String query)? search;
   final FocusNode? focus;
 
@@ -129,7 +134,42 @@ class _GifPickerState extends State<GifPicker> {
 
   Widget buildSearch(BuildContext context) {
     if (!searching) {
-      return const Expanded(child: SizedBox());
+      return Expanded(
+          child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: MasonryGridView.extent(
+          maxCrossAxisExtent: 300,
+          mainAxisSpacing: 8,
+          padding: EdgeInsetsGeometry.all(0),
+          crossAxisSpacing: 8,
+          itemCount: widget.favorites!.length,
+          itemBuilder: (context, index) {
+            var result = widget.favorites.elementAt(index);
+            return MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: GestureDetector(
+                onTap: () => sendFavoriteGif(result),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Container(
+                    color: ColorScheme.of(context).surfaceContainerLowest,
+                    child: AspectRatio(
+                      aspectRatio: result.width / result.height,
+                      child: SizedBox(
+                        child: Image(
+                          fit: BoxFit.fill,
+                          filterQuality: FilterQuality.medium,
+                          image: result.image,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      ));
     }
 
     if (searchResult == null)
@@ -156,13 +196,16 @@ class _GifPickerState extends State<GifPicker> {
               onTap: () => sendGif(result),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: AspectRatio(
-                  aspectRatio: result.x / result.y,
-                  child: SizedBox(
-                    child: Image(
-                      fit: BoxFit.fill,
-                      filterQuality: FilterQuality.medium,
-                      image: NetworkImage(result.previewUrl.toString()),
+                child: Container(
+                  color: ColorScheme.of(context).surfaceContainerLowest,
+                  child: AspectRatio(
+                    aspectRatio: result.x / result.y,
+                    child: SizedBox(
+                      child: Image(
+                        fit: BoxFit.fill,
+                        filterQuality: FilterQuality.medium,
+                        image: NetworkImage(result.previewUrl.toString()),
+                      ),
                     ),
                   ),
                 ),
@@ -182,5 +225,9 @@ class _GifPickerState extends State<GifPicker> {
     widget.gifPicked?.call(gif).then((value) => setState(() {
           sending = false;
         }));
+  }
+
+  void sendFavoriteGif(FavoriteGif gif) {
+    widget.favoritePicked?.call(gif);
   }
 }

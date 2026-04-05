@@ -20,6 +20,7 @@ class EmoticonPicker extends StatefulWidget {
     this.onEmojiPressed,
     this.onStickerPressed,
     this.onGifPressed,
+    this.onFavoritePicked,
     this.gifComponent,
     this.emojiSearchFocus,
     this.stickerSearchFocus,
@@ -40,6 +41,7 @@ class EmoticonPicker extends StatefulWidget {
   final List<AutofillSearchResultEmoticon> Function(String text)?
       searchDelegate;
   final Future<void> Function(GifSearchResult emoticon)? onGifPressed;
+  final Future<void> Function(FavoriteGif gif)? onFavoritePicked;
   final Axis packListAxis;
 
   @override
@@ -121,8 +123,10 @@ class _EmoticonPickerState extends State<EmoticonPicker>
                   Tab(
                     child: GifPicker(
                       focus: widget.gifSearchFocus,
+                      favorites: widget.gifComponent?.favorites ?? [],
                       search: widget.gifComponent!.search,
                       placeholderText: widget.gifComponent!.searchPlaceholder,
+                      favoritePicked: widget.onFavoritePicked,
                       gifPicked: widget.onGifPressed,
                     ),
                   )

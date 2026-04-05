@@ -2,6 +2,7 @@ import 'package:commet/client/components/emoticon/dynamic_emoticon_pack.dart';
 import 'package:commet/client/components/emoticon/emoticon.dart';
 import 'package:commet/client/components/emoticon/emoticon_component.dart';
 import 'package:commet/client/components/emoticon_recent/recent_emoticon_component.dart';
+import 'package:commet/client/components/gif/gif_component.dart';
 import 'package:commet/client/components/message_effects/message_effect_component.dart';
 import 'package:commet/client/components/photo_album_room/photo_album_room_component.dart';
 import 'package:commet/client/components/pinned_messages/pinned_messages_component.dart';
@@ -94,6 +95,12 @@ class TimelineEventMenu {
         name: "promptEndPoll",
       );
 
+  String get promptFavoriteGif => Intl.message(
+        "Favorite GIF",
+        desc: "Prompt the user to mark a gif as a favorite",
+        name: "promptFavoriteGif",
+      );
+
   TimelineEventMenu({
     required this.timeline,
     required this.event,
@@ -117,12 +124,14 @@ class TimelineEventMenu {
 
     bool canRetrySend = event.status != TimelineEventStatus.synced;
     bool canCancelSend = event.status != TimelineEventStatus.synced;
+    bool canFavoriteGif = false;
 
     var effects = timeline.room.client.getComponent<MessageEffectComponent>();
     var emoticons = timeline.room.getComponent<RoomEmoticonComponent>();
     var pins = timeline.room.getComponent<PinnedMessagesComponent>();
     var photos = timeline.room.getComponent<PhotoAlbumRoom>();
     var polls = timeline.client.getComponent<PollComponent>();
+    var gifs = timeline.client.getComponent<GifComponent>();
 
     if (event.status == TimelineEventStatus.synced) {
       canEditEvent = event is TimelineEventMessage &&
@@ -136,6 +145,8 @@ class TimelineEventMenu {
       canReply = event is TimelineEventMessage ||
           event is TimelineEventSticker ||
           event is TimelineEventEmote;
+
+      canFavoriteGif = gifs?.isGif(event) == true;
 
       if (photos != null) {
         canReply = false;
@@ -219,6 +230,14 @@ class TimelineEventMenu {
     }
 
     primaryActions = [
+      if (canFavoriteGif)
+        TimelineEventMenuEntry(
+          name: promptFavoriteGif,
+          icon: Icons.star_rounded,
+          action: (context) {
+            onActionFinished?.call();
+          },
+        ),
       if (canEndPoll)
         TimelineEventMenuEntry(
           name: promptEndPoll,
@@ -228,6 +247,8 @@ class TimelineEventMenu {
                     title: promptEndPoll,
                     prompt: "Are you sure you want to end the poll?") ==
                 true) polls?.endPoll(timeline.room, event);
+
+            onActionFinished?.call();
           },
         ),
       if (event is TimelineEventEncrypted)
@@ -240,6 +261,8 @@ class TimelineEventMenu {
             ErrorUtils.tryRun(context, () async {
               await mx.requestKey();
             });
+
+            onActionFinished?.call();
           },
         ),
       if (canRetrySend)

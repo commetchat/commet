@@ -1,5 +1,6 @@
 import 'package:commet/client/attachment.dart';
 import 'package:commet/client/client.dart';
+import 'package:commet/client/components/gif/gif_component.dart';
 import 'package:commet/client/components/threads/thread_component.dart';
 import 'package:commet/client/components/url_preview/url_preview_component.dart';
 import 'package:commet/client/timeline_events/timeline_event.dart';
@@ -93,6 +94,9 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
   ThreadsComponent? threadComponent;
   bool isHeadOfThread = false;
 
+  bool isGif = false;
+  bool isFavoriteGif = false;
+
   int index = 0;
 
   bool edited = false;
@@ -163,6 +167,8 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
               sticker!,
               stickerName: body,
               previewMedia: widget.previewMedia,
+              isFavoriteGif: isFavoriteGif,
+              markAsFavorite: markGifAsFavorite,
             )
           : null,
       inResponseTo: isInResponse && widget.timeline != null
@@ -232,6 +238,14 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
     senderColor = sender.defaultColor;
 
     sentTime = event.originServerTs;
+
+    var gifs = (widget.room ?? widget.timeline?.room)
+        ?.client
+        .getComponent<GifComponent>();
+
+    isGif = gifs?.isGif(event) == true;
+
+    isFavoriteGif = gifs?.isFavoriteGif(event) == true;
 
     if (widget.timeline != null) {
       if (event is TimelineEventFeatureReactions) {
@@ -377,5 +391,31 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
         1) return true;
 
     return thisEvent.senderId != prevEvent.senderId;
+  }
+
+  markGifAsFavorite(bool favorite) async {
+    print(
+      "Marking gif as favorite: $favorite",
+    );
+
+    var gif = (widget.room ?? widget.timeline?.room)
+        ?.client
+        .getComponent<GifComponent>();
+
+    var event = widget.timeline!.events[index];
+    var isGif = gif?.isGif(event) == true;
+    if (!isGif) {
+      return;
+    }
+
+    setState(() {
+      isFavoriteGif = favorite;
+    });
+
+    if (favorite) {
+      await gif!.setFavorite(event);
+    } else {
+      await gif!.removeFavorite(event);
+    }
   }
 }
