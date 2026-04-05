@@ -1,23 +1,29 @@
 use std::{sync::Arc, thread};
 
 #[cfg(target_os = "linux")]
-use ::webrtc::mdns::message::builder;
 use log::{error, info};
 use tao::{
+    dpi::{PhysicalSize, Size},
     event::{Event, WindowEvent},
-    event_loop::{ControlFlow, EventLoopBuilder},
-    platform::unix::{EventLoopBuilderExtUnix, WindowBuilderExtUnix},
+    event_loop::{ControlFlow, EventLoop, EventLoopBuilder},
+    platform::unix::WindowBuilderExtUnix,
     window::WindowBuilder,
 };
-use tokio::{runtime::Runtime, sync::mpsc};
+use tokio::sync::mpsc;
 use wry::WebViewBuilder;
 
-use crate::app;
+use crate::widget_runner;
 mod webrtc;
 
 #[derive(Debug)]
 enum RuntimeMessage {
     HandleWebIpcCommand(String),
+}
+
+#[derive(Debug)]
+enum UserEvent {
+    ResolvePromise(String, String),
+    RaiseEvent(String, String),
 }
 
 pub fn run() {
@@ -28,6 +34,9 @@ pub fn run() {
         .unwrap();
 
     let (tx, mut rx) = mpsc::channel::<RuntimeMessage>(32);
+
+    let event_loop: EventLoop<UserEvent> = EventLoopBuilder::<UserEvent>::with_user_event().build();
+    let event_proxy = event_loop.create_proxy();
 
     thread::spawn(move || {
         let rt = tokio::runtime::Builder::new_current_thread()
@@ -46,7 +55,17 @@ pub fn run() {
                 match val {
                     Some(val) => match val {
                         RuntimeMessage::HandleWebIpcCommand(val) => {
-                            app::webrtc::handle(val).await;
+                            let result =
+                                widget_runner::webrtc::handle(val, event_proxy.clone()).await;
+
+                            if let Some(result) = result {
+                                event_proxy
+                                    .send_event(UserEvent::ResolvePromise(
+                                        result.promise_id,
+                                        serde_json::to_string(&result.value).unwrap(),
+                                    ))
+                                    .unwrap();
+                            }
                         }
                     },
                     None => (),
@@ -64,18 +83,17 @@ pub fn run() {
         std::env::set_var("__NV_DISABLE_EXPLICIT_SYNC", "1");
     }
 
-    let event_loop = EventLoopBuilder::new().build();
-
     let window = WindowBuilder::new()
         .with_skip_taskbar(false)
         .with_decorations(true)
+        .with_inner_size(Size::Physical(PhysicalSize::new(1920, 1080)))
         .build(&event_loop)
         .unwrap();
 
     let tx = Arc::new(tx);
 
     let builder = WebViewBuilder::new()
-        .with_url("https://draw-bevy.netlify.app/?room=3aefe4fc-8d3b-4ece-9329-cde00d4f688d")
+        .with_url("https://draw-bevy.netlify.app/?room=3384a152-6287-4160-b8dd-870a13f3189d")
         .with_ipc_handler(move |data| {
             let result = tx
                 .clone()
@@ -114,15 +132,40 @@ pub fn run() {
 
     _webview.open_devtools();
 
+    let view = Arc::new(_webview);
+
     event_loop.run(move |event, _, control_flow| {
         *control_flow = ControlFlow::Wait;
 
-        if let Event::WindowEvent {
-            event: WindowEvent::CloseRequested,
-            ..
-        } = event
-        {
-            *control_flow = ControlFlow::Exit;
+        match event {
+            Event::WindowEvent { event, .. } => match event {
+                WindowEvent::CloseRequested => {
+                    *control_flow = ControlFlow::Exit;
+                }
+                _ => {}
+            },
+            Event::UserEvent(event) => match event {
+                UserEvent::ResolvePromise(id, value) => {
+                    view.clone()
+                        .evaluate_script(
+                            format!("window.toWebView.resolvePromise(\"{}\", {})", id, value)
+                                .as_str(),
+                        )
+                        .unwrap();
+                }
+                UserEvent::RaiseEvent(callback_id, value) => {
+                    view.clone()
+                        .evaluate_script(
+                            format!(
+                                "window.toWebView.invokeEvent(\"{}\", {})",
+                                callback_id, value
+                            )
+                            .as_str(),
+                        )
+                        .unwrap();
+                }
+            },
+            _ => (),
         }
     });
 }

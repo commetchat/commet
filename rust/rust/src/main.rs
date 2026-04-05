@@ -1,6 +1,6 @@
-mod app;
+mod widget_runner;
 
 pub fn main() {
     println!("Hello!");
-    app::run();
+    widget_runner::run();
 }

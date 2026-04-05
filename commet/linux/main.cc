@@ -12,6 +12,7 @@ int main(int argc, char **argv)
     return is_shortcut;
   }
 
+  // flutter run -d linux --dart-entrypoint-args --entry
   int is_alternate_entry = alternate_entry_point(argc, argv);
   if (is_alternate_entry != 0)
   {

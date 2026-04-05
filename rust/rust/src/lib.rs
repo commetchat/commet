@@ -1,8 +1,8 @@
 pub mod api;
-mod app;
 mod frb_generated;
+mod widget_runner;
 
 #[no_mangle]
 pub extern "C" fn commet_entry() {
-    app::run();
+    widget_runner::run();
 }
