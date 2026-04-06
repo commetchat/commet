@@ -127,6 +127,7 @@
 
         invoke(type, value) {
             var list = this.callbacks.get(type);
+            if (list == undefined || list == null) return;
 
             for (var i = 0; i < list.length; i++) {
                 var callback = list[i];
