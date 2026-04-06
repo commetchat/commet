@@ -3,7 +3,10 @@ use tao::event_loop::EventLoopProxy;
 
 use crate::widget_runner::UserEvent;
 
+#[cfg(target_os = "linux")]
 pub mod data_channels;
+
+#[cfg(target_os = "linux")]
 pub mod peer_connections;
 
 #[derive(Serialize, Deserialize)]
@@ -48,6 +51,15 @@ pub struct ResolvedPromise {
     pub value: serde_json::Value,
 }
 
+#[cfg(not(target_os = "linux"))]
+pub async fn handle(
+    command: String,
+    event_sender: EventLoopProxy<UserEvent>,
+) -> Option<ResolvedPromise> {
+    None
+}
+
+#[cfg(target_os = "linux")]
 pub async fn handle(
     command: String,
     event_sender: EventLoopProxy<UserEvent>,

@@ -1,15 +1,20 @@
 use std::{sync::Arc, thread};
 
 use image::GenericImageView;
-#[cfg(target_os = "linux")]
 use log::{error, info};
 use tao::{
     dpi::{PhysicalSize, Size},
     event::{Event, WindowEvent},
     event_loop::{ControlFlow, EventLoop, EventLoopBuilder},
-    platform::unix::WindowBuilderExtUnix,
     window::{Icon, WindowBuilder},
 };
+
+#[cfg(target_os = "windows")]
+use tao::platform::windows::WindowBuilderExtWindows;
+
+#[cfg(target_os = "linux")]
+use tao::platform::unix::WindowBuilderExtUnix;
+
 use tokio::sync::mpsc;
 use wry::WebViewBuilder;
 
@@ -48,8 +53,7 @@ pub fn run() {
 
     thread::spawn(move || {
         let rt = tokio::runtime::Builder::new_current_thread()
-            .enable_time()
-            .enable_io()
+            .enable_all()
             .build()
             .unwrap();
         info!("Spawning tokio runtime");
@@ -132,12 +136,13 @@ pub fn run() {
         target_os = "ios",
         target_os = "android"
     ))]
-    let _webview = builder.build(&window)?;
+    let _webview = builder.build(&window).unwrap();
 
     #[cfg(target_os = "linux")]
     let builder =
         builder.with_initialization_script(include_str!("../javascript/webrtc_polyfill.js"));
 
+    #[cfg(target_os = "linux")]
     let _webview = {
         use tao::platform::unix::WindowExtUnix;
         use wry::WebViewBuilderExtUnix;
