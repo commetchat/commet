@@ -116,7 +116,7 @@ pub fn run() {
             None => "commet | Widget".to_string(),
         })
         .with_window_icon(icon)
-        .with_inner_size(Size::Physical(PhysicalSize::new(1920, 1080)))
+        .with_inner_size(Size::Physical(PhysicalSize::new(1280, 720)))
         .build(&event_loop)
         .unwrap();
 
