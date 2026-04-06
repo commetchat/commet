@@ -145,6 +145,7 @@ pub fn run() {
         builder.build_gtk(vbox).unwrap()
     };
 
+    #[cfg(any(debug_assertions))]
     _webview.open_devtools();
 
     let view = Arc::new(_webview);
