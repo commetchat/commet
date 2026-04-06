@@ -142,7 +142,7 @@ class _GifPickerState extends State<GifPicker> {
           mainAxisSpacing: 8,
           padding: EdgeInsetsGeometry.all(0),
           crossAxisSpacing: 8,
-          itemCount: widget.favorites!.length,
+          itemCount: widget.favorites.length,
           itemBuilder: (context, index) {
             var result = widget.favorites.elementAt(index);
             return MouseRegion(
