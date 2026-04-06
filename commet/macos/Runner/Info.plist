@@ -22,19 +22,23 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Commet needs camera access for video calls.</string>
+	<key>NSDownloadsFolderUsageDescription</key>
+	<string>Commet will let you save files sent via matrix chat to your Downloads folder</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>$(PRODUCT_COPYRIGHT)</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Commet needs microphone access for voice calls.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string></string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
-    <key>NSMicrophoneUsageDescription</key>
-    <string>Commet needs microphone access for voice calls.</string>
-    <key>NSCameraUsageDescription</key>
-    <string>Commet needs camera access for video calls.</string>
-    <key>NSScreenCaptureDescription</key>
-    <string>Commet needs screen recording permission to share your screen during calls.</string>
-    <key>NSSystemAudioUsageDescription</key>
-    <string>Commet needs system audio access to capture audio.</string>
+	<key>NSScreenCaptureDescription</key>
+	<string>Commet needs screen recording permission to share your screen during calls.</string>
+	<key>NSSystemAudioUsageDescription</key>
+	<string>Commet needs system audio access to capture audio.</string>
 </dict>
 </plist>
