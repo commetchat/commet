@@ -26,7 +26,6 @@ use crate::widget_runner::{
 pub struct PeerConnection {
     pub connection: Arc<RTCPeerConnection>,
     pub event_sender: EventLoopProxy<UserEvent>,
-    pub id: String,
     pub event_callback_id: String,
 }
 
@@ -58,7 +57,6 @@ pub async fn create(
     let connection = PeerConnection {
         event_sender: sender,
         connection: peer_connection,
-        id: id.clone(),
         event_callback_id: event_callback_id.clone(),
     };
 
