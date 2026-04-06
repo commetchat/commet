@@ -33,6 +33,13 @@ pub fn run() {
         .init()
         .unwrap();
 
+    // https://github.com/tauri-apps/tauri/issues/14251#issuecomment-3522660786
+    if cfg!(target_os = "linux") {
+        std::env::set_var("GDK_BACKEND", "x11");
+        std::env::set_var("WAYLAND_DISPLAY", "");
+        std::env::set_var("__NV_DISABLE_EXPLICIT_SYNC", "1");
+    }
+
     let (tx, mut rx) = mpsc::channel::<RuntimeMessage>(32);
 
     let event_loop: EventLoop<UserEvent> = EventLoopBuilder::<UserEvent>::with_user_event().build();
@@ -76,13 +83,6 @@ pub fn run() {
         info!("Finished task, shutting down");
     });
 
-    // https://github.com/tauri-apps/tauri/issues/14251#issuecomment-3522660786
-    if cfg!(target_os = "linux") {
-        std::env::set_var("GDK_BACKEND", "x11");
-        std::env::set_var("WAYLAND_DISPLAY", "");
-        std::env::set_var("__NV_DISABLE_EXPLICIT_SYNC", "1");
-    }
-
     let window = WindowBuilder::new()
         .with_skip_taskbar(false)
         .with_decorations(true)
@@ -93,7 +93,8 @@ pub fn run() {
     let tx = Arc::new(tx);
 
     let builder = WebViewBuilder::new()
-        .with_url("https://draw-bevy.netlify.app/?room=3384a152-6287-4160-b8dd-870a13f3189d")
+        .with_url("https://draw-bevy.netlify.app/?room=3aefe4fc-8d3b-4ece-9329-cde00d4f688d")
+        .with_incognito(true)
         .with_ipc_handler(move |data| {
             let result = tx
                 .clone()
