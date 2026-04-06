@@ -2812,6 +2812,7 @@ dependencies = [
  "base64",
  "bytes",
  "flutter_rust_bridge",
+ "hex",
  "lazy_static",
  "log",
  "once_cell",

@@ -58,6 +58,12 @@
             return window.btoa(binary);
         }
 
+        _arrayBufferToHex(buffer) {
+            return [...new Uint8Array(buffer)]
+                .map(x => x.toString(16).padStart(2, '0'))
+                .join('');
+        }
+
         handleEvent(type, data) {
 
             if (type == "data_channel_opened") {
@@ -65,8 +71,13 @@
                 this.onopen();
                 this._eventManager.invoke("open", null)
             } else if (type == "data_channel_on_message") {
+
+                var bytes = this._base64ToArrayBuffer(data.data)
+
+                console.log("Received bytes: ", bytes.byteLength, this._arrayBufferToHex(bytes));
+
                 var msg = {
-                    data: this._base64ToArrayBuffer(data.data)
+                    data: bytes
                 }
 
                 console.log(msg);
@@ -117,8 +128,8 @@
         invoke(type, value) {
             var list = this.callbacks.get(type);
 
-            for (var i = 0; i < this.callbacks.length; i++) {
-                var callback = this.callbacks[i];
+            for (var i = 0; i < list.length; i++) {
+                var callback = list[i];
                 callback(value);
             }
         }

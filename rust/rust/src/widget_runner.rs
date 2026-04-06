@@ -50,7 +50,7 @@ pub fn run() {
             loop {
                 let val = rx.recv().await;
 
-                info!("Handling IPC Request: {:?}", val);
+                // info!("Handling IPC Request: {:?}", val);
 
                 match val {
                     Some(val) => match val {

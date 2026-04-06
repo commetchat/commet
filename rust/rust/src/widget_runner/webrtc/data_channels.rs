@@ -62,6 +62,7 @@ pub async fn send(data_channel_id: String, data: String) {
 
             match decoded {
                 Ok(bytes) => {
+                    info!("Sending data: ({}) {}", bytes.len(), hex::encode(&bytes));
                     let _ = channel.send(&Bytes::from(bytes)).await;
                 }
                 Err(_) => (),
@@ -90,11 +91,19 @@ pub fn register_data_channel_callbacks(
     let id = data_channel_id.clone();
 
     data_channel.on_message(Box::new(move |x| {
+        let data = x.data;
+
+        info!(
+            "Received Data: ({}) {}",
+            data.len(),
+            hex::encode(data.clone())
+        );
+
         let val = json!({
             "event_type": "data_channel_on_message",
             "event_data": {
                 "channel": id,
-                "data":  BASE64_STANDARD.encode(x.data)
+                "data":  BASE64_STANDARD.encode(data)
             }
         });
 
