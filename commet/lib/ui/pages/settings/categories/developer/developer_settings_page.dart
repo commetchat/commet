@@ -348,11 +348,11 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
       children: [
         Wrap(spacing: 8, runSpacing: 8, children: [
           tiamat.Button(
-              text: "Launch Subprocess",
+              text: "Launch Widget Runner",
               onTap: () async {
                 var exe = Platform.resolvedExecutable;
 
-                var process = await Process.start(exe, ['--entry']);
+                var process = await Process.start(exe, ['--widget_runner']);
 
                 process.exitCode.then((i) {
                   Log.i("Subprocess exited: $i");
