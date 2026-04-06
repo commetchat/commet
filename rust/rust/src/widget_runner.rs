@@ -46,6 +46,14 @@ pub fn run() {
         std::env::set_var("__NV_DISABLE_EXPLICIT_SYNC", "1");
     }
 
+    let mut title: Option<String> = None;
+
+    for arg in std::env::args() {
+        if arg.starts_with("--title=") {
+            title = Some(arg["--title=".len()..].to_string());
+        }
+    }
+
     let (tx, mut rx) = mpsc::channel::<RuntimeMessage>(32);
 
     let event_loop: EventLoop<UserEvent> = EventLoopBuilder::<UserEvent>::with_user_event().build();
@@ -103,6 +111,10 @@ pub fn run() {
     let window = WindowBuilder::new()
         .with_skip_taskbar(false)
         .with_decorations(true)
+        .with_title(match title {
+            Some(title) => title,
+            None => "commet | Widget".to_string(),
+        })
         .with_window_icon(icon)
         .with_inner_size(Size::Physical(PhysicalSize::new(1920, 1080)))
         .build(&event_loop)
@@ -111,7 +123,7 @@ pub fn run() {
     let tx = Arc::new(tx);
 
     let builder = WebViewBuilder::new()
-        .with_url("https://draw-bevy.netlify.app/?room=3aefe4fc-8d3b-4ece-9329-cde00d4f688d")
+        .with_url("https://commet.chat/")
         .with_incognito(true)
         .with_ipc_handler(move |data| {
             let result = tx
