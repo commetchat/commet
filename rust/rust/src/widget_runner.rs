@@ -1,5 +1,6 @@
 use std::{sync::Arc, thread};
 
+use image::GenericImageView;
 #[cfg(target_os = "linux")]
 use log::{error, info};
 use tao::{
@@ -7,7 +8,7 @@ use tao::{
     event::{Event, WindowEvent},
     event_loop::{ControlFlow, EventLoop, EventLoopBuilder},
     platform::unix::WindowBuilderExtUnix,
-    window::WindowBuilder,
+    window::{Icon, WindowBuilder},
 };
 use tokio::sync::mpsc;
 use wry::WebViewBuilder;
@@ -83,9 +84,22 @@ pub fn run() {
         info!("Finished task, shutting down");
     });
 
+    let img = image::load_from_memory(include_bytes!("../assets/app_icon_rounded.png"));
+
+    let icon = match img {
+        Ok(img) => {
+            let (width, height) = img.dimensions();
+            let rgba = img.into_rgba8();
+
+            Some(Icon::from_rgba(rgba.into_raw(), width, height).expect("Failed to open icon"))
+        }
+        Err(_) => None,
+    };
+
     let window = WindowBuilder::new()
         .with_skip_taskbar(false)
         .with_decorations(true)
+        .with_window_icon(icon)
         .with_inner_size(Size::Physical(PhysicalSize::new(1920, 1080)))
         .build(&event_loop)
         .unwrap();
