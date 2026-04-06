@@ -5,7 +5,7 @@ mod frb_generated;
 mod widget_runner;
 
 #[no_mangle]
-pub extern "C" fn commet_entry() {
+pub extern "C" fn commet_widget_runner() {
     #[cfg(any(target_os = "windows", target_os = "linux"))]
     {
         widget_runner::run();

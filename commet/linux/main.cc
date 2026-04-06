@@ -1,6 +1,6 @@
 #include "my_application.h"
 #include "shortcuts.h"
-#include "alternate_entry.h"
+#include "widget_runner.h"
 
 int main(int argc, char **argv)
 {
@@ -12,11 +12,11 @@ int main(int argc, char **argv)
     return is_shortcut;
   }
 
-  // flutter run -d linux --dart-entrypoint-args --entry
-  int is_alternate_entry = alternate_entry_point(argc, argv);
-  if (is_alternate_entry != 0)
+  // flutter run -d linux --dart-entrypoint-args --widget_runner
+  int is_widget_runner = widget_runner(argc, argv);
+  if (is_widget_runner != 0)
   {
-    return is_alternate_entry;
+    return is_widget_runner;
   }
 
   if (is_shortcut == 0)

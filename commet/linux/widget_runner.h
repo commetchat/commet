@@ -5,8 +5,8 @@
 #include <dlfcn.h>
 #include <string>
 
-int alternate_entry_point(int argc,
-                          char *argv[])
+int widget_runner(int argc,
+                  char *argv[])
 {
 
     if (argc < 2)
@@ -14,12 +14,12 @@ int alternate_entry_point(int argc,
         return 0;
     }
 
-    if (strcmp(argv[1], "--entry") != 0)
+    if (strcmp(argv[1], "--widget_runner") != 0)
     {
         return 0;
     }
 
-    std::cerr << "Opening alternate entry point";
+    std::cerr << "Opening widget runner entry point";
     void *plibobj = dlopen("librust_lib_commet.so", RTLD_LAZY);
 
     if (!plibobj)
@@ -30,7 +30,7 @@ int alternate_entry_point(int argc,
 
     void (*rust_entry)();
 
-    void *symbol_ptr = dlsym(plibobj, "commet_entry");
+    void *symbol_ptr = dlsym(plibobj, "commet_widget_runner");
 
     if (!symbol_ptr)
     {
