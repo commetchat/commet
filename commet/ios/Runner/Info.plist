@@ -27,13 +27,13 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppleMusicUsageDescription</key>
-	<string></string>
+	<string>Commet uses media library access to allow you to send files to other users via matrix chat</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Commet needs camera access for video calls.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Commet needs microphone access for voice calls.</string>
 	<key>NSVoIPUsageDescription</key>
-	<string></string>
+	<string>Commet uses VoIP to allow you to recieve calls from other users in the background</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
