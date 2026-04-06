@@ -83,9 +83,6 @@ pub fn register_data_channel_callbacks(
     data_channel_id: String,
     data_channel: Arc<RTCDataChannel>,
 ) {
-    let id = peer_connection.id.clone();
-    let id2 = id.clone();
-
     let sender = peer_connection.event_sender.clone();
     let callback_id = peer_connection.event_callback_id.clone();
     let id = data_channel_id.clone();
