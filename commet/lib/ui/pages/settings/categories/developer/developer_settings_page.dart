@@ -352,8 +352,10 @@ class _DeveloperSettingsPageState extends State<DeveloperSettingsPage> {
               onTap: () async {
                 var exe = Platform.resolvedExecutable;
 
-                var process = await Process.start(exe,
-                    ['--widget_runner', '--title="commet | Widget Runner Test"']);
+                var process = await Process.start(exe, [
+                  '--widget_runner',
+                  '--title="commet | Widget Runner Test"'
+                ]);
 
                 process.exitCode.then((i) {
                   Log.i("Subprocess exited: $i");
