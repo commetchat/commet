@@ -1909,13 +1909,13 @@
         "type": "text",
         "placeholders": {}
     },
-    "promptProfileSetColorOverride": "Anulación de Ajuste de Color",
+    "promptProfileSetColorOverride": "Anulación de configuración de color",
     "@promptProfileSetColorOverride": {
         "description": "Prompt to override the display color of a user",
         "type": "text",
         "placeholders": {}
     },
-    "promptProfileClearColorOverride": "Vaciar Ajuste de Color",
+    "promptProfileClearColorOverride": "Anulación de color transparente",
     "@promptProfileClearColorOverride": {
         "description": "Prompt to remove an override of the display color of a user",
         "type": "text",
@@ -1955,7 +1955,7 @@
             "callingUserName": {}
         }
     },
-    "labelTextChatDescription": "¡Charla de texto simple, con todas las capacidades que pudo desear! Envía mensajes, medio, pegatinas, Gif y más!",
+    "labelTextChatDescription": "¡Charla de texto simple, con todas las capacidades que pudo desear! Envía mensajes, medio, pegatinas, GIF y más!",
     "@labelTextChatDescription": {
         "type": "text",
         "placeholders": {}
@@ -1976,7 +1976,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelDonationConfirmationFailed": "No pudo encontrar ninguna donación :( Considere donar para mantener desarrollo de Comentarios!",
+    "labelDonationConfirmationFailed": "No pudo encontrar ninguna donación :( Considere donar para mantener el desarrollo de Commet!",
     "@labelDonationConfirmationFailed": {
         "description": "Text that is shown when the donation flow was failed, and the no donation was found",
         "type": "text",
