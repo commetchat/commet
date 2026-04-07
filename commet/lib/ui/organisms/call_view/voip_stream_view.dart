@@ -160,8 +160,13 @@ class _VoipStreamViewState extends State<VoipStreamView>
   }
 
   Color getBorderColor(BuildContext context) {
+    final isLocalUser =
+        widget.stream.streamUserId == widget.session.client.self?.identifier;
+    final effectiveLevel = isLocalUser && widget.session.isMicrophoneMuted
+        ? 0.0
+        : audioLevel.value;
     return Color.lerp(Theme.of(context).primaryColor,
-        Theme.of(context).colorScheme.primary, audioLevel.value)!;
+        Theme.of(context).colorScheme.primary, effectiveLevel)!;
   }
 
   void onStreamChanged(void event) {

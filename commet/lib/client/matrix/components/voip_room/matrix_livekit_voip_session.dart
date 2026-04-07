@@ -24,6 +24,7 @@ class MatrixLivekitVoipSession implements VoipSession {
   lk.Room livekitRoom;
   Timer? heartbeatTimer;
   String? heartbeatDelayId;
+  bool _softMuted = false;
 
   final StreamController<void> _onVolumeChanged = StreamController.broadcast();
 
@@ -211,7 +212,7 @@ class MatrixLivekitVoipSession implements VoipSession {
       livekitRoom.localParticipant?.isCameraEnabled() ?? false;
 
   @override
-  bool get isMicrophoneMuted => livekitRoom.localParticipant?.isMuted ?? false;
+  bool get isMicrophoneMuted => _softMuted;
 
   @override
   bool get isSharingScreen =>
@@ -240,7 +241,22 @@ class MatrixLivekitVoipSession implements VoipSession {
 
   @override
   Future<void> setMicrophoneMute(bool state) async {
-    await livekitRoom.localParticipant?.setMicrophoneEnabled(!state);
+    final publication = livekitRoom.localParticipant
+        ?.getTrackPublicationBySource(lk.TrackSource.microphone);
+
+    if (publication?.track != null) {
+      final mediaStreamTrack = publication!.track!.mediaStreamTrack;
+      // Use SetVolume(0) for a soft mute that doesn't affect the system audio
+      // chain.
+      await Helper.setVolume(state ? 0.0 : 1.0, mediaStreamTrack);
+
+      // Signal the mute state to the LiveKit server sso remote participants
+      // see the correct muted indicator, without triggering track disable/stop.
+      // ignore: invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+      publication.track!.updateMuted(state, shouldSendSignal: true);
+    }
+
+    _softMuted = state;
     _stateChanged.add(());
   }
 
