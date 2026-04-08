@@ -337,6 +337,9 @@ class Preferences {
   DoublePreference streamBitrate =
       DoublePreference("screenshare_bitrate_mbps", defaultValue: 8);
 
+  DoublePreference streamAudioBitrate =
+      DoublePreference("stream_audio_kbps", defaultValue: 96);
+
   DoublePreference streamFramerate =
       DoublePreference("screenshare_fps", defaultValue: 60);
 

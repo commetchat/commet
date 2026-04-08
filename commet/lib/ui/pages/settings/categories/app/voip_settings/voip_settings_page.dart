@@ -107,6 +107,22 @@ class _VoipSettingsPage extends State<VoipSettingsPage> {
         name: "labelVoipStreamResolutionDescription",
       );
 
+  String get headerVoipSettingsAudioSettings => Intl.message("Audio Settings",
+      name: "headerVoipSettingsAudioSettings",
+      desc:
+          "Header for settings tile containing stream audio quality configuration");
+
+  String get labelVoipAudioBitrateSettings => Intl.message("Audio Bitrate",
+      name: "labelVoipAudioBitrateSettings",
+      desc:
+          "label for the slider to adjust the bitrate of outgoing audio on a call");
+
+  String get labelVoipAudioBitrateSettingsDescription => Intl.message(
+      "Adjust the bitrate of your outgoing audio. Higher is better",
+      name: "labelVoipAudioBitrateSettingsDescription",
+      desc:
+          "describes the behavior for the slider to adjust the bitrate of outgoing audio on a call");
+
   @override
   void initState() {
     super.initState();
@@ -148,6 +164,20 @@ class _VoipSettingsPage extends State<VoipSettingsPage> {
           mode: tiamat.TileType.surfaceContainerLow,
           child: devicePicker(),
         ),
+        tiamat.Panel(
+            header: headerVoipSettingsAudioSettings,
+            mode: tiamat.TileType.surfaceContainerLow,
+            child: Column(children: [
+              DoublePreferenceSlider(
+                preference: preferences.streamAudioBitrate,
+                title: labelVoipAudioBitrateSettings,
+                description: labelVoipAudioBitrateSettingsDescription,
+                numDecimals: 0,
+                min: 8,
+                max: 128,
+                units: "Kbps",
+              ),
+            ])),
         tiamat.Panel(
             header: headerVoipSettingsStreamSettings,
             mode: tiamat.TileType.surfaceContainerLow,
