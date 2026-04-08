@@ -4,7 +4,6 @@ import 'package:commet/client/components/voip/voip_session.dart';
 import 'package:commet/client/components/voip/voip_stream.dart';
 import 'package:commet/client/member.dart';
 import 'package:commet/debug/log.dart';
-import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/adaptive_context_menu.dart';
 import 'package:commet/ui/organisms/call_view/call_view.dart';
 import 'package:flutter/foundation.dart';
