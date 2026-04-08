@@ -98,7 +98,7 @@ class ChatState extends State<Chat> {
     onFileDroppedSubscription =
         EventBus.onFileDropped.stream.listen(onFileDropped);
 
-    gifs = room.getComponent<GifComponent>();
+    gifs = room.client.getComponent<GifComponent>();
     emoticons = room.getComponent<RoomEmoticonComponent>();
     threadsComponent = room.client.getComponent<ThreadsComponent>();
     receipts = room.getComponent<ReadReceiptComponent>();
@@ -326,6 +326,7 @@ class ChatState extends State<Chat> {
 
   Future<void> sendGif(GifSearchResult gif) async {
     await gifs?.sendGif(
+        room,
         gif,
         interactionType == EventInteractionType.reply
             ? interactingEvent
@@ -406,5 +407,14 @@ class ChatState extends State<Chat> {
         }
       }
     }
+  }
+
+  Future<void> sendFavoriteGif(FavoriteGif gif) async {
+    await room.client.getComponent<GifComponent>()?.sendFavoriteGif(
+        room,
+        gif,
+        interactionType == EventInteractionType.reply
+            ? interactingEvent
+            : null);
   }
 }

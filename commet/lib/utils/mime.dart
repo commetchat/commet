@@ -22,6 +22,11 @@ class Mime {
     "image/bmp",
   };
 
+  static const gifTypes = {
+    "image/gif",
+    "image/webp",
+  };
+
   static const playableAudioTypes = {
     "audio/x-wav",
     "audio/ogg",
