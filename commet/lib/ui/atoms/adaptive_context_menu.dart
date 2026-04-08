@@ -37,21 +37,27 @@ class AdaptiveContextMenu extends StatelessWidget {
                     child: Column(
                       spacing: 4,
                       mainAxisSize: MainAxisSize.min,
-                      children: items
-                          .map((item) => SizedBox(
-                                height: 50,
-                                child: tiamat.TextButton(
-                                  item.text,
-                                  textColor:
-                                      Theme.of(context).colorScheme.onSurface,
-                                  icon: item.icon,
-                                  onTap: () {
-                                    Navigator.of(modalContext).pop();
-                                    item.onPressed?.call();
-                                  },
-                                ),
-                              ))
-                          .toList(),
+                      children: items.map((item) {
+                        if (item.customBuilder != null) {
+                          return item.customBuilder!.call(context, () {
+                            Navigator.of(modalContext).pop();
+                            item.onPressed?.call();
+                          });
+                        }
+
+                        return SizedBox(
+                          height: 50,
+                          child: tiamat.TextButton(
+                            item.text,
+                            textColor: Theme.of(context).colorScheme.onSurface,
+                            icon: item.icon,
+                            onTap: () {
+                              Navigator.of(modalContext).pop();
+                              item.onPressed?.call();
+                            },
+                          ),
+                        );
+                      }).toList(),
                     ),
                   ),
                 ),

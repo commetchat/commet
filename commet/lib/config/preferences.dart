@@ -233,6 +233,14 @@ class Preferences {
     return HotKey.fromJson(jsonDecode(item));
   }
 
+  Future<void> setVoipUserVolume(String userId, double volume) async {
+    _preferences!.setDouble("call_user_volume:${userId}", volume);
+  }
+
+  double getVoipUserVolume(String userId) {
+    return _preferences?.getDouble("call_user_volume:${userId}") ?? 1.0;
+  }
+
   BoolPreference shouldFollowSystemTheme =
       BoolPreference("should_follow_system_theme", defaultValue: false);
 
