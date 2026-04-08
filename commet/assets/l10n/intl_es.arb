@@ -1556,7 +1556,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "placeholderRoomAlias": "#awesome-room",
+    "placeholderRoomAlias": "#sala-fabulosa",
     "@placeholderRoomAlias": {
         "description": "Placeholder / Example for a room alias.",
         "type": "text",
@@ -1909,7 +1909,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "promptProfileSetColorOverride": "Anulación de configuración de color",
+    "promptProfileSetColorOverride": "Anulación de ajuste del color",
     "@promptProfileSetColorOverride": {
         "description": "Prompt to override the display color of a user",
         "type": "text",
