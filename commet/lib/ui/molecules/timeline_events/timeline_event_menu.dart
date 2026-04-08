@@ -16,6 +16,7 @@ import 'package:commet/client/timeline_events/timeline_event_emote.dart';
 import 'package:commet/client/timeline_events/timeline_event_encrypted.dart';
 import 'package:commet/client/timeline_events/timeline_event_message.dart';
 import 'package:commet/client/timeline_events/timeline_event_sticker.dart';
+import 'package:commet/config/layout_config.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/code_block.dart';
 import 'package:commet/ui/molecules/emoji_picker.dart';
@@ -101,6 +102,12 @@ class TimelineEventMenu {
         name: "promptFavoriteGif",
       );
 
+  String get promptUnfavoriteGif => Intl.message(
+        "Unfavorite GIF",
+        desc: "Prompt the user remove a gif from favorites",
+        name: "promptUnfavoriteGif",
+      );
+
   TimelineEventMenu({
     required this.timeline,
     required this.event,
@@ -125,6 +132,7 @@ class TimelineEventMenu {
     bool canRetrySend = event.status != TimelineEventStatus.synced;
     bool canCancelSend = event.status != TimelineEventStatus.synced;
     bool canFavoriteGif = false;
+    bool canUnfavoriteGif = false;
 
     var effects = timeline.room.client.getComponent<MessageEffectComponent>();
     var emoticons = timeline.room.getComponent<RoomEmoticonComponent>();
@@ -146,7 +154,10 @@ class TimelineEventMenu {
           event is TimelineEventSticker ||
           event is TimelineEventEmote;
 
-      canFavoriteGif = gifs?.isGif(event) == true;
+      canFavoriteGif =
+          gifs?.isGif(event) == true && gifs?.isFavoriteGif(event) == false;
+      canUnfavoriteGif =
+          gifs?.isGif(event) == true && gifs?.isFavoriteGif(event) == true;
 
       if (photos != null) {
         canReply = false;
@@ -230,14 +241,26 @@ class TimelineEventMenu {
     }
 
     primaryActions = [
-      if (canFavoriteGif)
-        TimelineEventMenuEntry(
-          name: promptFavoriteGif,
-          icon: Icons.star_rounded,
-          action: (context) {
-            onActionFinished?.call();
-          },
-        ),
+      if (Layout.mobile) ...[
+        if (canFavoriteGif)
+          TimelineEventMenuEntry(
+            name: promptFavoriteGif,
+            icon: Icons.star_rounded,
+            action: (context) {
+              gifs?.setFavorite(event);
+              onActionFinished?.call();
+            },
+          ),
+        if (canUnfavoriteGif)
+          TimelineEventMenuEntry(
+            name: promptUnfavoriteGif,
+            icon: Icons.star_border_rounded,
+            action: (context) {
+              gifs?.removeFavorite(event);
+              onActionFinished?.call();
+            },
+          ),
+      ],
       if (canEndPoll)
         TimelineEventMenuEntry(
           name: promptEndPoll,

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:commet/client/client.dart';
@@ -46,12 +47,16 @@ class MatrixGifComponent implements GifComponent<MatrixClient> {
   @override
   MatrixClient client;
 
-  MatrixGifComponent(this.client);
+  MatrixGifComponent(this.client) {
+    client.matrixClient.onSync.stream.listen(_onSync);
+  }
 
   @override
   String get searchPlaceholder => "Search KLIPY";
 
   static const String favoritesKey = "chat.commet.favorite_stickers";
+
+  StreamController _changedController = StreamController.broadcast();
 
   @override
   Future<List<GifSearchResult>> search(String query) async {
@@ -77,6 +82,9 @@ class MatrixGifComponent implements GifComponent<MatrixClient> {
 
     return [];
   }
+
+  @override
+  Stream<dynamic> get onFavoritesChanged => _changedController.stream;
 
   @override
   Future<TimelineEvent?> sendGif(
@@ -295,5 +303,11 @@ class MatrixGifComponent implements GifComponent<MatrixClient> {
 
     await client.matrixClient.setAccountData(
         client.matrixClient.userID!, favoritesKey, {"favorites": newFavorites});
+  }
+
+  void _onSync(matrix.SyncUpdate event) {
+    if (event.accountData?.any((i) => i.type == favoritesKey) == true) {
+      _changedController.add(null);
+    }
   }
 }

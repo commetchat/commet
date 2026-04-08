@@ -27,6 +27,8 @@ abstract class GifComponent<T extends Client> implements Component<T> {
 
   bool isFavoriteGif(TimelineEvent event);
 
+  Stream get onFavoritesChanged;
+
   Future<void> setFavorite(TimelineEvent event);
 
   Future<void> removeFavorite(TimelineEvent event);

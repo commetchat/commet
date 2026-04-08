@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:commet/client/components/gif/gif_component.dart';
 import 'package:commet/config/build_config.dart';
 import 'package:commet/ui/molecules/emoji_picker.dart';
@@ -64,6 +66,9 @@ class _EmoticonPickerState extends State<EmoticonPicker>
       desc: "Label for the gif search tab in the emoji picker",
       name: "labelEmojiPickerGifTab");
 
+  List<FavoriteGif> favorites = [];
+  StreamSubscription? sub;
+
   @override
   void initState() {
     int tabs = 1;
@@ -78,7 +83,21 @@ class _EmoticonPickerState extends State<EmoticonPicker>
 
     controller = TabController(length: tabs, vsync: this);
 
+    favorites = widget.gifComponent?.favorites ?? [];
+
+    sub = widget.gifComponent?.onFavoritesChanged.listen((i) {
+      setState(() {
+        favorites = widget.gifComponent!.favorites;
+      });
+    });
+
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    sub?.cancel();
+    super.dispose();
   }
 
   @override
