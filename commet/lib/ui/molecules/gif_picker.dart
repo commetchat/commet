@@ -2,8 +2,10 @@ import 'dart:ui';
 
 import 'package:commet/client/components/gif/gif_component.dart';
 import 'package:commet/config/build_config.dart';
+import 'package:commet/ui/atoms/adaptive_context_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:intl/intl.dart';
 
 import 'package:tiamat/tiamat.dart' as tiamat;
 import '../../utils/debounce.dart';
@@ -17,10 +19,12 @@ class GifPicker extends StatefulWidget {
       this.focus,
       this.favorites = const [],
       this.favoritePicked,
+      this.onUnfavoriteGif,
       this.placeholderText = "Search Gif"});
   final List<FavoriteGif> favorites;
   final Future<void> Function(GifSearchResult gif)? gifPicked;
   final Future<void> Function(FavoriteGif gif)? favoritePicked;
+  final Future<void> Function(FavoriteGif gif)? onUnfavoriteGif;
   final Future<List<GifSearchResult>> Function(String query)? search;
   final FocusNode? focus;
 
@@ -28,6 +32,12 @@ class GifPicker extends StatefulWidget {
 
   @override
   State<GifPicker> createState() => _GifPickerState();
+
+  static String get promptUnfavoriteGif => Intl.message(
+        "Unfavorite GIF",
+        desc: "Prompt the user remove a gif from favorites",
+        name: "promptUnfavoriteGif",
+      );
 }
 
 class _GifPickerState extends State<GifPicker> {
@@ -145,21 +155,32 @@ class _GifPickerState extends State<GifPicker> {
           itemCount: widget.favorites.length,
           itemBuilder: (context, index) {
             var result = widget.favorites.elementAt(index);
-            return MouseRegion(
-              cursor: SystemMouseCursors.click,
-              child: GestureDetector(
-                onTap: () => sendFavoriteGif(result),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Container(
-                    color: ColorScheme.of(context).surfaceContainerLowest,
-                    child: AspectRatio(
-                      aspectRatio: result.width / result.height,
-                      child: SizedBox(
-                        child: Image(
-                          fit: BoxFit.fill,
-                          filterQuality: FilterQuality.medium,
-                          image: result.image,
+            return AdaptiveContextMenu(
+              items: [
+                tiamat.ContextMenuItem(
+                  text: GifPicker.promptUnfavoriteGif,
+                  icon: Icons.heart_broken,
+                  onPressed: () {
+                    widget.onUnfavoriteGif?.call(result);
+                  },
+                ),
+              ],
+              child: MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: GestureDetector(
+                  onTap: () => sendFavoriteGif(result),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Container(
+                      color: ColorScheme.of(context).surfaceContainerLowest,
+                      child: AspectRatio(
+                        aspectRatio: result.width / result.height,
+                        child: SizedBox(
+                          child: Image(
+                            fit: BoxFit.fill,
+                            filterQuality: FilterQuality.medium,
+                            image: result.image,
+                          ),
                         ),
                       ),
                     ),

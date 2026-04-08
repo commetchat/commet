@@ -7,6 +7,8 @@ import 'package:flutter/widgets.dart';
 abstract class FavoriteGif {
   ImageProvider get image;
 
+  String get url;
+
   double get width;
 
   double get height;
@@ -29,9 +31,11 @@ abstract class GifComponent<T extends Client> implements Component<T> {
 
   Stream get onFavoritesChanged;
 
-  Future<void> setFavorite(TimelineEvent event);
+  Future<void> setFavoriteFromEvent(TimelineEvent event);
 
-  Future<void> removeFavorite(TimelineEvent event);
+  Future<void> removeFavoriteFromEvent(TimelineEvent event);
+
+  Future<void> removeFavorite(FavoriteGif gif);
 
   List<FavoriteGif> get favorites;
 }

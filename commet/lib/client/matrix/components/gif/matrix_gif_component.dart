@@ -41,6 +41,9 @@ class MatrixFavoriteGif implements FavoriteGif {
     var info = data.tryGetMap("info");
     return info?.tryGetDouble("w") ?? 512;
   }
+
+  @override
+  String get url => data.tryGet<String>("url")!;
 }
 
 class MatrixGifComponent implements GifComponent<MatrixClient> {
@@ -200,7 +203,7 @@ class MatrixGifComponent implements GifComponent<MatrixClient> {
   }
 
   @override
-  Future<void> setFavorite(TimelineEvent<Client> ev) async {
+  Future<void> setFavoriteFromEvent(TimelineEvent<Client> ev) async {
     final event = (ev as MatrixTimelineEvent).event;
     var info = event.content.tryGetMap("info");
     var body = event.content.tryGet<String>("body");
@@ -288,7 +291,7 @@ class MatrixGifComponent implements GifComponent<MatrixClient> {
   }
 
   @override
-  Future<void> removeFavorite(TimelineEvent<Client> ev) async {
+  Future<void> removeFavoriteFromEvent(TimelineEvent<Client> ev) async {
     final event = (ev as MatrixTimelineEvent).event;
     var url = event.content.tryGet<String>("url");
 
@@ -309,5 +312,20 @@ class MatrixGifComponent implements GifComponent<MatrixClient> {
     if (event.accountData?.any((i) => i.type == favoritesKey) == true) {
       _changedController.add(null);
     }
+  }
+
+  @override
+  Future<void> removeFavorite(FavoriteGif gif) async {
+    var favorites = client.matrixClient.accountData[favoritesKey]?.content
+            .tryGetList<Map<String, dynamic>>("favorites") ??
+        List<Map<String, dynamic>>.empty();
+
+    var newFavorites =
+        List<Map<String, dynamic>>.from(favorites, growable: true);
+
+    newFavorites.removeWhere((i) => i["url"] == gif.url);
+
+    await client.matrixClient.setAccountData(
+        client.matrixClient.userID!, favoritesKey, {"favorites": newFavorites});
   }
 }

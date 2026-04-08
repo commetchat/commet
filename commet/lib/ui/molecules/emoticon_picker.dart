@@ -147,6 +147,9 @@ class _EmoticonPickerState extends State<EmoticonPicker>
                       placeholderText: widget.gifComponent!.searchPlaceholder,
                       favoritePicked: widget.onFavoritePicked,
                       gifPicked: widget.onGifPressed,
+                      onUnfavoriteGif: (gif) async {
+                        widget.gifComponent?.removeFavorite(gif);
+                      },
                     ),
                   )
               ]),

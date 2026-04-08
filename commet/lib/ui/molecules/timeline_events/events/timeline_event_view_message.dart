@@ -413,9 +413,9 @@ class _TimelineEventViewMessageState extends State<TimelineEventViewMessage>
     });
 
     if (favorite) {
-      await gif!.setFavorite(event);
+      await gif!.setFavoriteFromEvent(event);
     } else {
-      await gif!.removeFavorite(event);
+      await gif!.removeFavoriteFromEvent(event);
     }
   }
 }

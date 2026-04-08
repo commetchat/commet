@@ -20,6 +20,7 @@ import 'package:commet/config/layout_config.dart';
 import 'package:commet/main.dart';
 import 'package:commet/ui/atoms/code_block.dart';
 import 'package:commet/ui/molecules/emoji_picker.dart';
+import 'package:commet/ui/molecules/gif_picker.dart';
 import 'package:commet/ui/navigation/adaptive_dialog.dart';
 import 'package:commet/utils/autofill_utils.dart';
 import 'package:commet/utils/common_strings.dart';
@@ -100,12 +101,6 @@ class TimelineEventMenu {
         "Favorite GIF",
         desc: "Prompt the user to mark a gif as a favorite",
         name: "promptFavoriteGif",
-      );
-
-  String get promptUnfavoriteGif => Intl.message(
-        "Unfavorite GIF",
-        desc: "Prompt the user remove a gif from favorites",
-        name: "promptUnfavoriteGif",
       );
 
   TimelineEventMenu({
@@ -247,16 +242,16 @@ class TimelineEventMenu {
             name: promptFavoriteGif,
             icon: Icons.star_rounded,
             action: (context) {
-              gifs?.setFavorite(event);
+              gifs?.setFavoriteFromEvent(event);
               onActionFinished?.call();
             },
           ),
         if (canUnfavoriteGif)
           TimelineEventMenuEntry(
-            name: promptUnfavoriteGif,
+            name: GifPicker.promptUnfavoriteGif,
             icon: Icons.star_border_rounded,
             action: (context) {
-              gifs?.removeFavorite(event);
+              gifs?.removeFavoriteFromEvent(event);
               onActionFinished?.call();
             },
           ),
