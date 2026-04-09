@@ -1909,7 +1909,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "promptProfileSetColorOverride": "Anulación de ajuste del color",
+    "promptProfileSetColorOverride": "Anulación de Ajuste del Color",
     "@promptProfileSetColorOverride": {
         "description": "Prompt to override the display color of a user",
         "type": "text",
