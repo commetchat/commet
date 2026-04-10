@@ -547,7 +547,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelEmojiPickerStickerTab": "Sticker",
+    "labelEmojiPickerStickerTab": "Pegatina",
     "@labelEmojiPickerStickerTab": {
         "description": "Label for the sticker tab in the emoji picker",
         "type": "text",
@@ -559,7 +559,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelEmojiPickerEmojiTab": "Emoticonos",
+    "labelEmojiPickerEmojiTab": "Emoticono",
     "@labelEmojiPickerEmojiTab": {
         "description": "Label for the emoji tab in emoji picker",
         "type": "text",
@@ -847,13 +847,13 @@
         "type": "text",
         "placeholders": {}
     },
-    "encryptionCannotBeDisabledExplanationRoomSettings": "Si se activa, la encriptación no se puede desactivar posteriormente",
+    "encryptionCannotBeDisabledExplanationRoomSettings": "Si se activa, el cifrado no se puede desactivar posteriormente",
     "@encryptionCannotBeDisabledExplanationRoomSettings": {
         "description": "Explains that encryption cannot be disabled once enabled",
         "type": "text",
         "placeholders": {}
     },
-    "promptEnableEncryptionRoomSettings": "Activar la encriptación",
+    "promptEnableEncryptionRoomSettings": "Activar el cifrado",
     "@promptEnableEncryptionRoomSettings": {
         "description": "Short prompt to enable encryption for a room",
         "type": "text",
@@ -941,7 +941,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelRoomSettingsCategory": "Configuración de la sala",
+    "labelRoomSettingsCategory": "Ajustes de sala",
     "@labelRoomSettingsCategory": {
         "description": "Label for the overall settings category of a room",
         "type": "text",
@@ -1103,7 +1103,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelGifSearchToggle": "Buscar GIF",
+    "labelGifSearchToggle": "Buscar Gif",
     "@labelGifSearchToggle": {
         "description": "Label for the toggle for enabling and disabling gif search",
         "type": "text",
@@ -1153,13 +1153,13 @@
         "type": "text",
         "placeholders": {}
     },
-    "promptLeaveRoom": "Dejar sala",
+    "promptLeaveRoom": "Abandonar sala",
     "@promptLeaveRoom": {
         "description": "Text on a button to leave a room",
         "type": "text",
         "placeholders": {}
     },
-    "promptLeaveRoomConfirmation": "¿Estás seguro de que quieres salir de {roomName}?",
+    "promptLeaveRoomConfirmation": "¿Estás seguro que quieres salir de {roomName}?",
     "@promptLeaveRoomConfirmation": {
         "description": "Text for the popup dialog confirming the intent to leave",
         "type": "text",
@@ -1438,7 +1438,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixPermissionsChangeRoomPermissionsDescription": "Permitir al usuario cambiar la configuración de permisos",
+    "labelMatrixPermissionsChangeRoomPermissionsDescription": "Permitir al usuario cambiar ajustes de permisos",
     "@labelMatrixPermissionsChangeRoomPermissionsDescription": {
         "description": "Description for the permission to change permissions of the room",
         "type": "text",
@@ -1486,7 +1486,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixPermissionsBanUserDescription": "Banear a usuarios de la sala",
+    "labelMatrixPermissionsBanUserDescription": "Vetar a usuarios de la sala",
     "@labelMatrixPermissionsBanUserDescription": {
         "description": "Description for the permission to ban other users from the room",
         "type": "text",
@@ -1604,7 +1604,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelMediaPreviewPrivateRoomsToggleDescription": "Alternar la vista previa de imágenes, videos, stickers y urls en los chats privados",
+    "labelMediaPreviewPrivateRoomsToggleDescription": "Alternar la vista previa de imágenes, videos, stickers y las url en las charlas privadas",
     "@labelMediaPreviewPrivateRoomsToggleDescription": {
         "description": "Label describing toggle of media previews for private rooms",
         "type": "text",
@@ -1616,7 +1616,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelMediaPreviewPublicRoomsToggleDescription": "Alternar la vista previa de imágenes, videos, stickers y urls en las salas públicas",
+    "labelMediaPreviewPublicRoomsToggleDescription": "Alternar la vista previa de imágenes, videos, stickers y las url en las salas públicas",
     "@labelMediaPreviewPublicRoomsToggleDescription": {
         "description": "Label describing toggle of media previews for public rooms",
         "type": "text",
@@ -1812,7 +1812,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelJoinRoom": "Unirse a la Sala",
+    "labelJoinRoom": "Unirse a Sala",
     "@labelJoinRoom": {
         "type": "text",
         "placeholders": {}
@@ -1838,7 +1838,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelRoomTypePhotoAlbum": "Album de Fotos",
+    "labelRoomTypePhotoAlbum": "Álbum de Fotos",
     "@labelRoomTypePhotoAlbum": {
         "type": "text",
         "placeholders": {}
@@ -1947,7 +1947,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "incomingCallMessage": "Invocación entrante desde {callingUserName}",
+    "incomingCallMessage": "¡Invocación entrante desde {callingUserName}!",
     "@incomingCallMessage": {
         "description": "Label to display that a user is calling",
         "type": "text",
@@ -1960,7 +1960,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelVoiceChatDescription": "Una habitación dedicada para llamadas de voz, para dos o más personas",
+    "labelVoiceChatDescription": "Una sala dedicada para llamadas de voz, para dos o más personas",
     "@labelVoiceChatDescription": {
         "type": "text",
         "placeholders": {}
@@ -1982,7 +1982,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelConfirmCancelDonationConfirmation": "¿Está seguro de que desea despedirlo sin aceptar ningún premio?",
+    "labelConfirmCancelDonationConfirmation": "¿Está seguro que desea despedirlo sin aceptar ningún premio?",
     "@labelConfirmCancelDonationConfirmation": {
         "description": "Text that is shown when the user attempts to cancel the donation confirmation flow before the confirmation has finished",
         "type": "text",
@@ -2083,7 +2083,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelPublicReadReceiptsToggle": "Leer recetas",
+    "labelPublicReadReceiptsToggle": "Leer ingresos",
     "@labelPublicReadReceiptsToggle": {
         "description": "Label for the toggle for enabling and disabling sending read receipts",
         "type": "text",
@@ -2131,7 +2131,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelVoipSettingsStunFallbackDescription": "Las llamadas no se pueden conectar sin un servidor STUN. Si su servidor doméstico no proporciona un servidor STUN, utilice '{stunServer}'. Su dirección IP se revelará a este servidor al establecer las llamadas.",
+    "labelVoipSettingsStunFallbackDescription": "Las llamadas no se pueden conectar sin un servidor STUN. Si su servidor doméstico no proporciona un servidor STUN, utilice '{stunServer}'. Su dirección IP será reventada en este servidor al establecer llamadas",
     "@labelVoipSettingsStunFallbackDescription": {
         "type": "text",
         "placeholders": {
@@ -2150,46 +2150,46 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelVoipUseSimulcast": "Utilice Simulcast",
+    "labelVoipUseSimulcast": "Utilizar Simulcast",
     "@labelVoipUseSimulcast": {
         "description": "label for setting toggle to enable use of Simulcast",
         "type": "text",
         "placeholders": {}
     },
-    "labelVoipUseSimulcastDescription": "Sube tus transmisiones en varios niveles de calidad diferentes, para que otros usuarios puedan elegir cuál usar. Esto consumirá más ancho de banda y recursos del sistema.",
+    "labelVoipUseSimulcastDescription": "Sube tus transmisiones en múltiples niveles de calidad diferentes, para que otros usuarios puedan decidir cual usar. Esto consumirá más ancho de banda y recursos del sistema.",
     "@labelVoipUseSimulcastDescription": {
         "description": "description for setting toggle to enable use of Simulcast",
         "type": "text",
         "placeholders": {}
     },
-    "labelVoipStreamMaximumBitrate": "Transmisión a máxima velocidad de bit",
+    "labelVoipStreamMaximumBitrate": "Tasa de bit máxima de transmisión",
     "@labelVoipStreamMaximumBitrate": {
         "description": "label for setting slider to set the maximum bitrate that can be used when streaming",
         "type": "text",
         "placeholders": {}
     },
-    "labelVoipStreamMaximumBitrateDescription": "Determina la calidad general de tu transmisión. Cuanto mayor sea el valor, mejor, pero también consumirá más recursos.",
+    "labelVoipStreamMaximumBitrateDescription": "Determina la calidad general de tu transmisión. Cuanto mayor sea el valor, mejor, pero también consumirá más recursos",
     "@labelVoipStreamMaximumBitrateDescription": {
         "type": "text",
         "placeholders": {}
     },
-    "labelVoipStreamFramerate": "Velocidad de fotogramas de la transmisión",
+    "labelVoipStreamFramerate": "Velocidad de fotogramas de transmisión",
     "@labelVoipStreamFramerate": {
         "description": "label for setting slider to set the framerate at which the screen should be captured when streaming",
         "type": "text",
         "placeholders": {}
     },
-    "labelVoipStreamFramerateDescription": "Velocidad de fotogramas por segundo objetivo para compartir pantalla. Una mayor velocidad proporciona un movimiento más fluido, pero puede reducir la nitidez visual.",
+    "labelVoipStreamFramerateDescription": "Velocidad de fotogramas por segundo destino para compartir pantalla. Una mayor velocidad proporciona un movimiento más fluido, pero puede reducir la nitidez visual.",
     "@labelVoipStreamFramerateDescription": {
         "type": "text",
         "placeholders": {}
     },
-    "labelVoipStreamPreferredCodec": "Códec de flujo preferido",
+    "labelVoipStreamPreferredCodec": "Codec de flujo preferido",
     "@labelVoipStreamPreferredCodec": {
         "type": "text",
         "placeholders": {}
     },
-    "labelVoipStreamPreferredCodecDescription": "Elige el formato de codificación para tu transmisión. Algunos códecs pueden funcionar más rápido en ciertos dispositivos, mientras que otros podrían no ser compatibles. La mayoría de los dispositivos son compatibles con vp8 y h264.",
+    "labelVoipStreamPreferredCodecDescription": "Elige el formato de codificación para tu transmisión. Algunos codec pueden ejecutarse más rápido en ciertos dispositivos, mientras que otros podrían no ser compatibles. La mayoría de los dispositivos son compatibles con vp8 y h264.",
     "@labelVoipStreamPreferredCodecDescription": {
         "description": "Explains the preferred stream codec setting. This is just a preference, and the picked codec may not be used if the user's device does not support it",
         "type": "text",
@@ -2205,13 +2205,13 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelShowRoomPreviewsInSpaceSidebar": "Mostrar habitaciones no conectadas en la barra lateral",
+    "labelShowRoomPreviewsInSpaceSidebar": "Muestra salas no unidas dentro de barra lateral",
     "@labelShowRoomPreviewsInSpaceSidebar": {
         "description": "Label for enabling using the preview list in the space sidebar",
         "type": "text",
         "placeholders": {}
     },
-    "labelShowRoomPreviewsInSpaceSidebarDescription": "Cuando haya salas a las que no te hayas unido en un espacio, muéstralas en la barra lateral junto con el resto de las salas del espacio.",
+    "labelShowRoomPreviewsInSpaceSidebarDescription": "Cuando hay salas a las cuales no se han unido en un espacio, se muestran en la barra lateral con el resto de las salas del espacio",
     "@labelShowRoomPreviewsInSpaceSidebarDescription": {
         "description": "Description for enabling using the preview list in the space sidebar",
         "type": "text",
@@ -2223,7 +2223,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelDefaultReadReceiptsOption": "Utilice la preferencia global ({pref})",
+    "labelDefaultReadReceiptsOption": "Utilizar preferencia global ({pref})",
     "@labelDefaultReadReceiptsOption": {
         "description": "Label to use the global preference, showing the current global preference value",
         "type": "text",
@@ -2239,7 +2239,7 @@
             "pref": {}
         }
     },
-    "labelReadReceiptsTitle": "Lea los recibos",
+    "labelReadReceiptsTitle": "Leer ingresos",
     "@labelReadReceiptsTitle": {
         "description": "Label for the toggle for enabling and disabling public read receipts",
         "type": "text",
@@ -2269,7 +2269,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelMatrixPermissionsAddCalendarEventDescription": "Conceder a los usuarios editar eventos en el calendario",
+    "labelMatrixPermissionsAddCalendarEventDescription": "Concede a los usuarios editar eventos en el calendario",
     "@labelMatrixPermissionsAddCalendarEventDescription": {
         "description": "Description for the permission to allow users to create an event on the calendar",
         "type": "text",
@@ -2311,7 +2311,7 @@
         "type": "text",
         "placeholders": {}
     },
-    "labelPublicTypingIndicatorDescription": "Avisa a los demás miembros de la sala cuando estés escribiendo un mensaje.",
+    "labelPublicTypingIndicatorDescription": "Dejar a los demás miembros de la sala cuando estés tecleando un mensaje.",
     "@labelPublicTypingIndicatorDescription": {
         "description": "description for the toggle for enabling and disabling sending typing indicator",
         "type": "text",
@@ -2443,7 +2443,7 @@
             "user": {}
         }
     },
-    "matrixClientVodozemacMissingMessage": "Vodozemac no está instalado o no se encontró. El cifrado de extremo a extremo no estará disponible hasta que se resuelva este problema.",
+    "matrixClientVodozemacMissingMessage": "Vodozemac no está instalado o no se encontró. El cifrado de extremo a extremo no estará disponible hasta que se resuelva este problema",
     "@matrixClientVodozemacMissingMessage": {
         "description": "Text that explains to the user that vodozemac dependency is not found",
         "type": "text",
