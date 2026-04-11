@@ -15,6 +15,7 @@ import 'package:commet/utils/event_bus.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:commet/utils/error_utils.dart';
+import 'package:tiamat/tiamat.dart' as tiamat;
 
 class ChatView extends StatelessWidget {
   const ChatView(this.state, {super.key});
@@ -143,9 +144,8 @@ class ChatView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
+            tiamat.Text.labelLow(
               displayMessage,
-              style: Theme.of(context).textTheme.bodySmall,
             ),
             if (replacementRoomId != null && replacementRoomId.isNotEmpty)
               Padding(
