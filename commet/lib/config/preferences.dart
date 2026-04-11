@@ -303,6 +303,9 @@ class Preferences {
       "silence_notifications_when_other_device_active",
       defaultValue: true);
 
+  BoolPreference showNotificationBadgesInTaskbar =
+      BoolPreference("show_notification_badges_in_taskbar", defaultValue: true);
+
   BoolPreference disableTextCursorManagement =
       BoolPreference("disable_text_cursor_management", defaultValue: false);
 

@@ -266,4 +266,16 @@ class WindowsNotifier implements Notifier {
 
   @override
   Future<void> clearNotifications(Room room) async {}
+
+  @override
+  Future<void> disableBadges() {
+    // TODO: implement disableBadges
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> enableBadges() {
+    // TODO: implement enableBadges
+    throw UnimplementedError();
+  }
 }
